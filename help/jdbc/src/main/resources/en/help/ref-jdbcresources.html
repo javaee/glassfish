@@ -10,7 +10,7 @@ each database accessed by the applications deployed in a domain; however, more t
 JDBC resource can be created for a database.</p><p>Applications get a database connection from a connection pool by looking up a
 data source on the Java Naming and Directory Interface<sup>TM</sup> (JNDI) API tree and then requesting a connection.
 The connection pool associated with the data source provides the connection to the
-application.</p><p>Use the JDBC Resources page to configure JDBC resources.</p><p>For each resource, the JDBC Resources page contains the following information.</p><dl><dt>JNDI Name</dt>
+application.</p><p>Use the JDBC Resources page to configure JDBC resources.</p><p>For each resource, the following information is provided.</p><dl><dt>JNDI Name</dt>
 <dd><p>A unique name that identifies the JDBC resource.</p></dd>
 <dt>Enabled</dt>
 <dd><p>True if the resource is enabled, or false if the resource is disabled.</p></dd>
@@ -18,6 +18,15 @@ application.</p><p>Use the JDBC Resources page to configure JDBC resources.</p><
 <dd><p>The JDBC connection pool associated with the resource.</p></dd>
 <dt>Description</dt>
 <dd><p>A short description of the resource.</p></dd>
+</dl>
+<p>The Resources table also contains the following options.</p><dl><dt>New</dt>
+<dd><p>Button to create a new resource.</p></dd>
+<dt>Delete</dt>
+<dd><p>Button to delete one or more selected resources.</p></dd>
+<dt>Enable</dt>
+<dd><p>Button to enable one or more selected resources.</p></dd>
+<dt>Disable</dt>
+<dd><p>Button to disable one or more selected resources.</p></dd>
 </dl>
 <h5>Related Tasks</h5>
 

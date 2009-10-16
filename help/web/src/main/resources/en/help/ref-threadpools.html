@@ -22,7 +22,7 @@ The thread pool is dynamically adjusted between these two values. The minimum th
 pool size that is specified signals the server to allocate at least that
 many threads in reserve for requests. That number is increased up to the
 maximum thread pool size that is specified.</p><p>Increasing the number of threads available to a process allows the process to
-respond to more requests simultaneously.</p><p>For each thread pool, the Thread Pools page contains the following information.</p><dl><dt>Thread Pool ID</dt>
+respond to more requests simultaneously.</p><p>For each thread pool, the following information is provided.</p><dl><dt>Thread Pool ID</dt>
 <dd><p>The name of the thread pool.</p></dd>
 <dt>Max Thread Pool Size</dt>
 <dd><p>The maximum number of threads in the thread pool.</p></dd>
@@ -32,6 +32,11 @@ respond to more requests simultaneously.</p><p>For each thread pool, the Thread 
 <dd><p>The maximum number of messages that can be queued until threads are available to process them.</p></dd>
 <dt>Idle Thread Timeout</dt>
 <dd><p>The amount of time in seconds after which idle threads are removed from the pool.</p></dd>
+</dl>
+<p>The Thread Pools table also contains the following options.</p><dl><dt>New</dt>
+<dd><p>Button to create a new thread pool.</p></dd>
+<dt>Delete</dt>
+<dd><p>Button to delete one or more selected thread pools.</p></dd>
 </dl>
 <h5>Related Tasks</h5>
 

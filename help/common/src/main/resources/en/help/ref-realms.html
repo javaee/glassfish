@@ -4,16 +4,22 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-realms"></a><h4>Realms</h4>
-<a name="indexterm-175"></a><p>The Enterprise Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
+<a name="indexterm-181"></a><p>The Enterprise Server comes preconfigured with three realms: <tt>file</tt>, <tt>certificate</tt>, and <tt>admin-realm</tt>.
 It is also possible to create <tt>ldap</tt>, <tt>JDBC</tt>, <tt>solaris</tt>, and custom realms. Generally, you
 will have one realm of each type on a server, but on the
 Enterprise Server there are two file realms: <tt>file</tt> and <tt>admin-realm</tt>. These are
 two realms of the same type used for two different purposes. It is
 also possible to have a different certificate database for each virtual server on
-your system.</p><p>The Realms page displays a list of available realms. For each realm, the
-following information is provided:</p>
-<ul><li><p>Name</p></li>
-<li><p>Class Name</p></li></ul>
+your system.</p><p>Use the Realms page to configure realms.</p><p>For each realm, the following information is provided.</p><dl><dt>Name</dt>
+<dd><p>The name of the realm.</p></dd>
+<dt>Class Name</dt>
+<dd><p>The class name for the realm.</p></dd>
+</dl>
+<p>The Realms table also contains the following options.</p><dl><dt>New</dt>
+<dd><p>Button to create a new realm.</p></dd>
+<dt>Delete</dt>
+<dd><p>Button to delete one or more selected realms.</p></dd>
+</dl>
 <h5>Related Tasks</h5>
 
 <ul><li><p><a href="task-realmnew.html">To Create a Realm</a></p></li>

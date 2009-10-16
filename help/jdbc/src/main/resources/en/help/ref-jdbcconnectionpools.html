@@ -14,7 +14,7 @@ particular database. Because creating each new physical connection is time-consu
 pool of available connections to increase performance. When an application requests a connection,
 it obtains one from the pool. When an application closes a connection, the
 connection is returned to the pool.</p><p>When creating a connection pool with the Administration Console, you are defining the
-aspects of a connection to a specific database.</p><p>Use the JDBC Connection Pools page to configure JDBC connection pools.</p><p>For each connection pool, the JDBC Connection Pools page contains the following information.</p><dl><dt>JNDI Name</dt>
+aspects of a connection to a specific database.</p><p>Use the JDBC Connection Pools page to configure JDBC connection pools.</p><p>For each connection pool, the following information is provided.</p><dl><dt>JNDI Name</dt>
 <dd><p>The JNDI name associated with the connection pool.</p></dd>
 <dt>Resource Type</dt>
 <dd><p>The resource type of the connection pool.</p></dd>
@@ -22,6 +22,11 @@ aspects of a connection to a specific database.</p><p>Use the JDBC Connection Po
 <dd><p>The name of the vendor-specific class that implements the <tt>DataSource</tt> and/or <tt>XADataSource</tt> APIs.</p></dd>
 <dt>Description</dt>
 <dd><p>A short description of the connection pool.</p></dd>
+</dl>
+<p>The Pools table also contains the following options.</p><dl><dt>New</dt>
+<dd><p>Button to create a new connection pool.</p></dd>
+<dt>Delete</dt>
+<dd><p>Button to delete one or more selected connection pools.</p></dd>
 </dl>
 <h5>Related Tasks</h5>
 

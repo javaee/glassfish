@@ -53,12 +53,12 @@
  <indexitem text="components">
     <indexitem target="ref-uc-addon" text="installing add-on (reference)"></indexitem>
     <indexitem target="task-uc-addon" text="installing add-on (task)"></indexitem>
-    <indexitem target="task-uc-installed-remove" text="uninstalling"></indexitem>
     <indexitem target="ref-uc-update" text="viewing available updates (reference)"></indexitem>
     <indexitem target="task-uc-update" text="viewing available updates (task)"></indexitem>
     <indexitem target="ref-uc-pkgdetails" text="viewing information (reference)"></indexitem>
     <indexitem target="task-uc-pkgdetails" text="viewing information (task)"></indexitem>
-    <indexitem target="ref-uc-installed" text="viewing installed"></indexitem></indexitem>
+    <indexitem target="ref-uc-installed" text="viewing installed (reference)"></indexitem>
+    <indexitem target="task-uc-installed-remove" text="viewing installed (task)"></indexitem></indexitem>
  <indexitem text="connector modules">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-appdeployconn" text="deploying (task)"></indexitem></indexitem>
@@ -100,6 +100,8 @@
     <indexitem target="task-generaltab" text="viewing general information (task)"></indexitem>
     <indexitem target="ref-appmonitoringdata" text="viewing monitoring data for applications (reference)"></indexitem>
     <indexitem target="task-appmonitoringdata" text="viewing monitoring data for applications (task)"></indexitem>
+    <indexitem target="ref-resourcemonitoringdata" text="viewing monitoring data for resources (reference)"></indexitem>
+    <indexitem target="task-resourcemonitoringdata" text="viewing monitoring data for resources (task)"></indexitem>
     <indexitem target="ref-servermonitoringdata" text="viewing monitoring data for virtual servers (reference)"></indexitem>
     <indexitem target="task-servermonitoringdata" text="viewing monitoring data for virtual servers (task)"></indexitem>
     <indexitem target="ref-logviewer" text="viewing the server log (reference)"></indexitem>
@@ -187,6 +189,8 @@
  <indexitem text="monitoring data">
     <indexitem target="ref-appmonitoringdata" text="viewing for applications (reference)"></indexitem>
     <indexitem target="task-appmonitoringdata" text="viewing for applications (task)"></indexitem>
+    <indexitem target="ref-resourcemonitoringdata" text="viewing for resources (reference)"></indexitem>
+    <indexitem target="task-resourcemonitoringdata" text="viewing for resources (task)"></indexitem>
     <indexitem target="ref-servermonitoringdata" text="viewing for virtual servers (reference)"></indexitem>
     <indexitem target="task-servermonitoringdata" text="viewing for virtual servers (task)"></indexitem></indexitem>
  <indexitem target="task-uc-set-proxy" text="network proxy settings, configuring for Update Tool"></indexitem>
@@ -223,6 +227,9 @@
  <indexitem target="task-register" text="registering Enterprise Server (task)"></indexitem>
  <indexitem target="ref-serverinstappsconfig" text="reload settings for applications (reference)"></indexitem>
  <indexitem target="task-setadvanceappconfig" text="reload settings for applications (task)"></indexitem>
+ <indexitem text="resources">
+    <indexitem target="ref-resourcemonitoringdata" text="viewing monitoring data (reference)"></indexitem>
+    <indexitem target="task-resourcemonitoringdata" text="viewing monitoring data (task)"></indexitem></indexitem>
  <indexitem target="task-apprestart" text="restarting applications"></indexitem>
  <indexitem text="Ruby applications">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>

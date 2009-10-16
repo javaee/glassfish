@@ -13,7 +13,8 @@
         <tocitem target="task-setadminpassword" text="To Change the Administrator Password" expand="false"></tocitem>
         <tocitem target="task-systemproperties" text="To Manage System Properties" expand="false"></tocitem>
         <tocitem target="task-appmonitoringdata" text="To View Application Monitoring Data" expand="false"></tocitem>
-        <tocitem target="task-servermonitoringdata" text="To View Server Monitoring Data" expand="false"></tocitem></tocitem>
+        <tocitem target="task-servermonitoringdata" text="To View Server Monitoring Data" expand="false"></tocitem>
+        <tocitem target="task-resourcemonitoringdata" text="To View Resource Monitoring Data" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-applications" text="Viewing, Deploying, and Managing Applications" expand="false">
         <tocitem target="task-applistdeployed" text="To View a List of Deployed Applications" expand="false"></tocitem>
         <tocitem target="task-appdeployweb" text="To Deploy a Web Application" expand="false"></tocitem>
@@ -83,7 +84,7 @@
     <tocitem target="task-group-uc" text="Updating and Extending Enterprise Server" expand="false">
         <tocitem target="task-uc-addon" text="To Install Add-On Components" expand="false"></tocitem>
         <tocitem target="task-uc-update" text="To View Available Updates for Components" expand="false"></tocitem>
-        <tocitem target="task-uc-installed-remove" text="To Uninstall Components" expand="false"></tocitem>
+        <tocitem target="task-uc-installed-remove" text="To View Installed Components" expand="false"></tocitem>
         <tocitem target="task-uc-pkgdetails" text="To View Detailed Information About a Component" expand="false"></tocitem>
         <tocitem target="task-uc-set-proxy" text="To Configure Network Proxy Settings for Accessing Network Repositories" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
@@ -102,7 +103,8 @@
         <tocitem target="ref-systemproperties" text="System Properties" expand="false"></tocitem>
         <tocitem target="ref-preconfiguredprops" text="Predefined System Properties" expand="false"></tocitem>
         <tocitem target="ref-appmonitoringdata" text="Application Monitoring" expand="false"></tocitem>
-        <tocitem target="ref-servermonitoringdata" text="Server Monitoring" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-servermonitoringdata" text="Server Monitoring" expand="false"></tocitem>
+        <tocitem target="ref-resourcemonitoringdata" text="Resource Monitoring" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-applications" text="Applications" expand="false">
         <tocitem target="ref-applications" text="Applications" expand="false"></tocitem>
         <tocitem target="ref-appedit" text="Edit Application" expand="false"></tocitem>

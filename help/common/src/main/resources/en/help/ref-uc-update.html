@@ -4,16 +4,16 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uc-update"></a><h4>Available Updates</h4>
-<a name="indexterm-218"></a><p>The Available Updates page provides information about newer versions of <a href="ref-uc-concepts.html#ref-uc-about-component">components</a> of the <a href="ref-uc-concepts.html#ref-uc-about-repository">installation image</a>
-that are installed. </p><p>The Administration Console displays available updates for installed components. To install available updates,
-stop the Enterprise Server domain, then use one of these commands:</p>
+<a name="indexterm-224"></a><p>The Available Updates page provides information about newer versions of <a href="ref-uc-concepts.html#ref-uc-about-component">components</a> of the <a href="ref-uc-concepts.html#ref-uc-about-repository">installation image</a>
+that are installed.</p><p>To install available updates, first stop the Enterprise Server domain. Then use one
+of these commands:</p>
 <ul><li><p><tt>glassfishv3/bin/updatetool</tt>, which starts the Update Tool graphical utility</p></li>
 <li><p><tt>glassfishv3/bin/pkg</tt>, a command-line version of the Update Tool</p></li></ul>
 <p>For information on using the <tt>pkg</tt> command, see <a href="http://docs.sun.com/doc/820-7692/ghapp?a=view">Chapter 10, Extending Enterprise Server, in <i>Sun GlassFish Enterprise Server v3 Administration Guide</i></a>. The Update Tool
 utility has its own online help.</p><p>Restart the server after you have finished installing the updates.</p><p>The Available Updates page contains the following options.</p><dl><dt>Installation Path</dt>
 <dd><p>The file system path of the root or top level directory of the installation image.</p></dd>
 <dt>Available Updates</dt>
-<dd><p>This table provides the following information about each component for which a newer version is available:</p><dl><dt>Component</dt>
+<dd><p>For each component for which a newer version is available, this table provides the following information.</p><dl><dt>Component</dt>
 <dd><p>The name of the component.</p></dd>
 <dt>Category</dt>
 <dd><p>The category of software with which the component is associated, for example, Application Servers, System Tools, and Databases. The category is assigned to the component by the author of the component when the component is created.</p></dd>

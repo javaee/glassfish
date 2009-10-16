@@ -4,8 +4,16 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uc-concepts"></a><h4>Update Tool Key Concepts</h4>
-<a name="indexterm-215"></a><p>Update Tool manages the installations of Enterprise Server software components that are contained
-under a single file system directory on your system.</p><p>The key concepts for Update Tool are described in the sections that follow.</p><a name="ref-uc-about-component"></a><h5>Component</h5>
+<a name="indexterm-221"></a><p>Update Tool manages the installations of Enterprise Server software components that are contained
+under a single file system directory on your system.</p><p>The Administration Console version of Update Tool allows you to do the following:</p>
+<ul><li><p>Install add-on components</p></li>
+<li><p>View updates to installed components</p></li>
+<li><p>View installed components</p></li></ul>
+<p>To update or remove installed components, you must stop the Enterprise Server
+domain, then use one of the following commands:</p>
+<ul><li><p><tt><i>as-install-parent</i>/bin/updatetool</tt>, which starts the Update Tool graphical utility</p></li>
+<li><p><tt><i>as-install-parent</i>/bin/pkg</tt>, a command-line version of the Update Tool</p></li></ul>
+<p>The key concepts for Update Tool are described in the sections that follow.</p><a name="ref-uc-about-component"></a><h5>Component</h5>
 <p>A <b>component</b> is the installable unit that Update Tool manages. A component consists
 of files that are installed as a unit on your system within an
 installation image.</p><a name="ref-uc-about-image"></a><h5>Installation Image</h5>
