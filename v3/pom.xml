@@ -153,8 +153,8 @@
         <jersey.version>1.1.3-ea</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
-        <gmbal.version>3.0.0-b018</gmbal.version>
-        <glassfish-management-api.version>3.0.0-b010</glassfish-management-api.version>
+        <gmbal.version>3.0.0-b019</gmbal.version>
+        <glassfish-management-api.version>3.0.0-b011</glassfish-management-api.version>
         <mimepull.version>1.4</mimepull.version>
         <findbugs.exclude></findbugs.exclude>
     </properties>
