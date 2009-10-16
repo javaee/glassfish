@@ -18,7 +18,6 @@ import javax.annotation.PostConstruct;
  * @author mk
  */
 @Singleton
-//@DependsOn("ejb-ejb31-singleton-multimodule-ejb.jar#InitOrderTrackerBean")
 public class BeanA_Mod1 {
 
     @EJB

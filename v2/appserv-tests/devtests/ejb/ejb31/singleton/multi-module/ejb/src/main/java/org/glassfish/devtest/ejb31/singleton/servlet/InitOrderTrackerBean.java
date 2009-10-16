@@ -10,7 +10,8 @@ import javax.ejb.Startup;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.annotation.PostConstruct;
-import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.ArrayList;
 
 /**
@@ -23,18 +24,20 @@ import java.util.ArrayList;
 @Remote(RemoteInitTracker.class)
 public class InitOrderTrackerBean {
 
-    private List<String> initOrder = new ArrayList<String>();
+    private volatile int counter = 0;
+
+    private Map<String, Integer> initOrder = new HashMap<String, Integer>();
 
     @PostConstruct
     public void afterInit() {
         add(this.getClass().getName());
     }
 
-    public List getInitializedNames() {
+    public Map<String, Integer> getInitializedNames() {
         return initOrder;
     }
 
     public void add(String name) {
-        initOrder.add(name);
+        initOrder.put(name, counter++);
     }
 }
