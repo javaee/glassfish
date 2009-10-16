@@ -90,7 +90,7 @@
             <param name="webclient.war.classes" value="**/*.class"/>
         </antcall>
 
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar" includes="WebTest.java"/>
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar" includes="WebTest.java"/>
 
     </target>
     
@@ -107,7 +107,7 @@
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
             <classpath>
-                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="${build.classes.dir}"/>
             </classpath>
         </java>
@@ -122,7 +122,7 @@
             <arg value="${contextroot}"/>
             <arg value="notimeout"/>
             <classpath>
-                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="${build.classes.dir}"/>
             </classpath>
         </java>

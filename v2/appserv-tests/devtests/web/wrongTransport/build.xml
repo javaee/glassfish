@@ -71,7 +71,7 @@
     <target name="run" depends="init-common,prepare-truststore-common">
           <javac
             srcdir="."
-            classpath="${env.APS_HOME}/lib/reporter.jar"
+            classpath="${env.APS_HOME}/lib/reportbuilder.jar"
             includes="WebTest.java"/>
 
         <java classname="WebTest">
@@ -80,7 +80,7 @@
           <arg value="${contextroot}"/>
           <arg value="${truststore.db.file}"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>

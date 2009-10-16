@@ -1,0 +1,56 @@
+body {
+    text-align: center;
+}
+
+table {
+    border: 1px outset;
+    border-spacing: 2px;
+    empty-cells: show;
+    border-collapse: collapse;
+}
+
+table th {
+    border: 1px inset;
+    padding: 1px 1em;
+
+}
+
+table td {
+    border: 1px inset;
+    padding: 1px 1em;
+    white-space: nowrap;
+}
+
+td.fail {
+    background-color: lightpink;
+}
+
+td.pass {
+    background-color: lightgreen;
+}
+
+td.didnotrun {
+    background-color: yellow;
+}
+
+.nav {
+    font-size: smaller;
+    text-align: center;
+    background-color: lightgray;
+}
+
+.nav a {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+.suiteDetail {
+    display: none;
+    background-color: white;
+    width: 100%;
+}
+
+.suiteDetail table {
+    width: 100%;
+    border: 1px black solid;
+}

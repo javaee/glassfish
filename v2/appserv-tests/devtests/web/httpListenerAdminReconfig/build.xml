@@ -82,14 +82,14 @@
     </target>
     
     <target name="run" depends="init-common">
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
                includes="WebTest.java"/>
         <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>

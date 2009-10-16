@@ -69,7 +69,7 @@
         </antcall>
 
         <mkdir dir="build"/>
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar" includes="src/**/*.java"
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar" includes="src/**/*.java"
                destdir="build" debug="true"/>
 
     </target>
@@ -96,7 +96,7 @@
             <arg value="${contextroot}"/>
             <arg value="first"/>
             <classpath>
-                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="build"/>
             </classpath>
         </java>
@@ -110,7 +110,7 @@
             <arg value="second"/>
             <arg value="false"/>
             <classpath>
-                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="build"/>
             </classpath>
         </java>
@@ -125,7 +125,7 @@
             <arg value="third"/>
             <arg value="true"/>
             <classpath>
-                <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+                <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="build"/>
             </classpath>
         </java>

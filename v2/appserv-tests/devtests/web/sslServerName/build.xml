@@ -99,7 +99,7 @@
 
          <javac
             srcdir="."
-            classpath="${env.APS_HOME}/lib/reporter.jar"
+            classpath="${env.APS_HOME}/lib/reportbuilder.jar"
             includes="*.java"/>
 
     </target> 
@@ -117,7 +117,7 @@
           <arg value="${contextroot}"/>
           <arg value="${keystore.db.file}"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>

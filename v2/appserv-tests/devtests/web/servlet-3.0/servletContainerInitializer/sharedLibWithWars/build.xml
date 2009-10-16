@@ -106,7 +106,7 @@
     <target name="build">
 	<ant dir="webapp1" target="deploy"/>
 	<ant dir="webapp2" target="deploy"/>
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
                includes="WebTest.java"/>
     </target> 
 
@@ -117,7 +117,7 @@
           <arg value="/web-servlet-pluggability-1"/>
           <arg value="1"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>
@@ -127,7 +127,7 @@
           <arg value="/web-servlet-pluggability-2"/>
           <arg value="2"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>

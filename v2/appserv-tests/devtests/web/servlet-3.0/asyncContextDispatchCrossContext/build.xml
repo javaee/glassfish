@@ -54,7 +54,7 @@
        
     <target name="build" depends="compile">
         <javac srcdir="."
-               classpath="${env.APS_HOME}/lib/reporter.jar"
+               classpath="${env.APS_HOME}/lib/reportbuilder.jar"
                includes="WebTest.java"/>
     </target> 
 
@@ -80,7 +80,7 @@
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>

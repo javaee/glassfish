@@ -67,7 +67,7 @@
             <param name="webclient.war.classes" value="**/*.class"/> 
         </antcall>
 
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reporter.jar"
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
                includes="WebTest.java"/>
     </target> 
 
@@ -96,7 +96,7 @@
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
         </java>

@@ -87,7 +87,7 @@
     <target name="run" depends="init-common">
           <javac
             srcdir="."
-            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${env.S1AS_HOME}/lib/appserv-admin.jar:${env.S1AS_HOME}/lib/jmxremote.jar"
+            classpath="${env.APS_HOME}/lib/reportbuilder.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${env.S1AS_HOME}/lib/appserv-admin.jar:${env.S1AS_HOME}/lib/jmxremote.jar"
             includes="WebTest.java"/>
 
         <java classname="WebTest">
@@ -98,7 +98,7 @@
           <arg value="${admin.password}"/>
           <arg value="${admin.port}"/>
           <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
+           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
            <pathelement location="${env.S1AS_HOME}/lib/j2ee.jar"/>
            <pathelement location="${env.S1AS_HOME}/lib/appserv-rt.jar"/>
