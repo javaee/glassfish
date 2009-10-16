@@ -333,33 +333,41 @@ public class ConfigSupport {
 
 
         Transaction t = new Transaction();
-        for (Map.Entry<ConfigBean, Map<String, String>> configBeanChange : mapOfChanges.entrySet()) {
+        try {
+            for (Map.Entry<ConfigBean, Map<String, String>> configBeanChange : mapOfChanges.entrySet()) {
 
-            ConfigBean source = configBeanChange.getKey();
-            ConfigBeanProxy readableView = source.getProxy(source.getProxyType());
-            WriteableView writeable = getWriteableView(readableView, source);
-            if (!writeable.join(t)) {
-                t.rollback();
-                throw new TransactionFailure("Cannot enlist " + source.getProxyType() + " in transaction",null);
-            }
-            for (Map.Entry<String, String> change : configBeanChange.getValue().entrySet()) {
-                String xmlName = change.getKey();
-                ConfigModel.Property prop = writeable.getProperty(xmlName);
-                if (prop==null) {
-                    throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);
+                ConfigBean source = configBeanChange.getKey();
+                ConfigBeanProxy readableView = source.getProxy(source.getProxyType());
+                WriteableView writeable = getWriteableView(readableView, source);
+                if (!writeable.join(t)) {
+                    t.rollback();
+                    throw new TransactionFailure("Cannot enlist " + source.getProxyType() + " in transaction", null);
                 }
-                if (prop.isCollection()) {
-                    try {
-                        List<String> values = (List<String>) writeable.getter(prop,
-                                ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
-                        values.add(change.getValue());                        
-                    } catch (NoSuchMethodException e) {
-                        throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);                        
+                for (Map.Entry<String, String> change : configBeanChange.getValue().entrySet()) {
+                    String xmlName = change.getKey();
+                    ConfigModel.Property prop = writeable.getProperty(xmlName);
+                    if (prop == null) {
+                        throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);
                     }
-                } else {
-                    writeable.setter(prop, change.getValue(), String.class);
+                    if (prop.isCollection()) {
+                        try {
+                            List<String> values = (List<String>) writeable.getter(prop,
+                                    ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
+                            values.add(change.getValue());
+                        } catch (NoSuchMethodException e) {
+                            throw new TransactionFailure("Unknown property name " + xmlName + " on " + source.getProxyType(), null);
+                        }
+                    } else {
+                        writeable.setter(prop, change.getValue(), String.class);
+                    }
                 }
             }
+        } catch(TransactionFailure e) {
+            t.rollback();
+            throw e;
+        } catch (Exception e) {
+            t.rollback();
+            throw new TransactionFailure(e.getMessage(), e);
         }
         try {
             t.commit();
