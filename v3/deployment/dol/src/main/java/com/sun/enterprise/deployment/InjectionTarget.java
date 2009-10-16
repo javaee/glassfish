@@ -147,12 +147,17 @@ public class InjectionTarget implements Serializable {
         if (!(o instanceof InjectionTarget)) {
             return false;
         } else {
+            // Note that from xml, one only have className and targetName.
+            // From annotation processing, one may define methodName,
+            // fieldName and a different metadataSource.
+            // Since an applicient container also does annotation processing
+            // itself, one would like to avoid duplication from xml and
+            // annotation processing.
+            // So, one will only check className and targetName here.
+
             InjectionTarget injTarget = (InjectionTarget)o;
             return equals(className, injTarget.className) &&
-                   equals(targetName, injTarget.targetName) &&
-                   equals(fieldName, injTarget.fieldName) &&
-                   equals(methodName, injTarget.methodName) &&
-                   metadataSource == injTarget.metadataSource;
+                   equals(targetName, injTarget.targetName);
         }
     }
 
