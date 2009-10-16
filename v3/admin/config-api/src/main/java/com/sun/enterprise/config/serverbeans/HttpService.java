@@ -228,7 +228,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
     HttpListener getHttpListenerById(String id);
 
     @Attribute(defaultValue = "false")
-    @Pattern(regexp="(false|true|inherit)")
+    @Pattern(regexp="(false|true|on|off)")
     String getAccessLoggingEnabled();
 
     void setAccessLoggingEnabled(String enabled);
@@ -243,7 +243,7 @@ public interface HttpService extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "false")
-    @Pattern(regexp="(true|false|inherit)")
+    @Pattern(regexp="(true|false|on|off)")
     String getSsoEnabled();
 
     /**
