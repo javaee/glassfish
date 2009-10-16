@@ -184,6 +184,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections.toString());
         attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
         attrList.put(ResourceConstants.CONNECTOR_CONNECTION_POOL_NAME, poolname);
+        attrList.put(ResourceConstants.CONN_TRANSACTION_SUPPORT, transactionsupport);
 
         ResourceStatus rs;
 

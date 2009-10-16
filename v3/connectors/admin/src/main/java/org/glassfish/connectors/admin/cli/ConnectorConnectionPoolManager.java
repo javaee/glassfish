@@ -110,6 +110,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
     private String associateWithThread = Boolean.FALSE.toString();
     private String matchConnections = Boolean.FALSE.toString();
     private String maxConnectionUsageCount = "0";
+    private String transactionSupport = null;
 
     private String description = null;
     private String poolname = null;
@@ -205,6 +206,9 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
                                     connectionCreationRetryAttempts);
                     newResource.setAssociateWithThread(
                                     associateWithThread);
+                    if (transactionSupport != null) {
+                        newResource.setTransactionSupport(transactionSupport);
+                    }
                     if (description != null) {
                         newResource.setDescription(description);
                     }
@@ -262,6 +266,7 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         maxConnectionUsageCount = (String) attrList.get(MAX_CONNECTION_USAGE_COUNT);
         description = (String) attrList.get(DESCRIPTION);
         poolname = (String) attrList.get(CONNECTOR_CONNECTION_POOL_NAME);
+        transactionSupport = (String) attrList.get(CONN_TRANSACTION_SUPPORT);
     }
     
     private ResourceStatus validateCnctorConnPoolAttrList(String raName, String connDef)
