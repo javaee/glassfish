@@ -95,12 +95,12 @@
         -->       
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>webbeans-integration</artifactId>
+            <artifactId>weld-integration</artifactId>
             <version>${project.version}</version>
         </dependency> 
         <dependency>
-            <groupId>org.jboss.webbeans</groupId>
-            <artifactId>webbeans-osgi-bundle</artifactId>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-osgi-bundle</artifactId>
         </dependency> 
     </dependencies>
 
