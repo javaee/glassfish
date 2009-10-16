@@ -447,7 +447,8 @@ public final class LDAPRealm extends IASRealm
             grpList = new String[groupsList.size()];
             groupsList.toArray(grpList);
         } catch (Exception e) {
-            throw new LoginException(e.toString() );
+            _logger.log(Level.SEVERE, "ldaprealm.exception", e);
+            throw new LoginException(e.toString());
         } finally {
             if (ctx != null) {
                 try {
