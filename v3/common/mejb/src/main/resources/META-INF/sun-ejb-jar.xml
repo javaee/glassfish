@@ -44,23 +44,28 @@
 
 <!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 8.1 EJB 2.1//EN" "http://www.sun.com/software/appserver/dtds/sun-ejb-jar_2_1-1.dtd">
 <sun-ejb-jar xmlns="http://java.sun.com/xml/ns/j2ee">
-  <enterprise-beans>
-    <unique-id>1</unique-id>
-    <ejb>
-      <ejb-name>MEJBBean</ejb-name>
-      <jndi-name>ejb/mgmt/MEJB</jndi-name>
-      <pass-by-reference>false</pass-by-reference>
-      <ior-security-config>
-        <as-context>
-          <auth-method>USERNAME_PASSWORD</auth-method>
-          <realm>admin-realm</realm>
-          <required>true</required>
-        </as-context>
-      </ior-security-config>
-      <is-read-only-bean>false</is-read-only-bean>
-      <refresh-period-in-seconds>-1</refresh-period-in-seconds>
-      <cmt-timeout-in-seconds>0</cmt-timeout-in-seconds>
-      <gen-classes/>
-    </ejb>
-  </enterprise-beans>
+  <security-role-mapping>
+	<role-name>admin-role</role-name>
+	<group-name>asadmin</group-name>
+  </security-role-mapping>
+      
+	<enterprise-beans>
+	<unique-id>1</unique-id>
+	<ejb>
+	  <ejb-name>MEJBBean</ejb-name>
+	  <jndi-name>ejb/mgmt/MEJB</jndi-name>
+	  <pass-by-reference>false</pass-by-reference>
+	  <ior-security-config>
+		<as-context>
+		  <auth-method>USERNAME_PASSWORD</auth-method>
+		  <realm>admin-realm</realm>
+		  <required>true</required>
+		</as-context>
+	  </ior-security-config>
+	  <is-read-only-bean>false</is-read-only-bean>
+	  <refresh-period-in-seconds>-1</refresh-period-in-seconds>
+	  <cmt-timeout-in-seconds>0</cmt-timeout-in-seconds>
+	  <gen-classes/>
+	</ejb>
+	</enterprise-beans>
 </sun-ejb-jar>
