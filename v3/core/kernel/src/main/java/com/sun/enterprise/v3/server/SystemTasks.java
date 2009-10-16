@@ -43,7 +43,6 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import java.io.*;
 import java.io.File;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import org.glassfish.internal.api.Init;
@@ -52,7 +51,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.io.FileOutputStream;
+import com.sun.appserv.server.util.Version;
 import java.io.PrintWriter;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
@@ -84,14 +83,20 @@ public class SystemTasks implements Init, PostConstruct {
     
     @Inject
     Domain domain;
+
     
     Logger _logger = Logger.getLogger(SystemTasks.class.getName());
 
     public void postConstruct() {
+        setVersion();
         setSystemPropertiesFromEnv();
         setSystemPropertiesFromDomainXml();
         resolveJavaConfig();
         _logger.fine( "SystemTasks: loaded server named: " + server.getName() );
+    }
+
+    private void setVersion() {
+        System.setProperty("glassfish.version", Version.getFullVersion());
     }
 
     /**
