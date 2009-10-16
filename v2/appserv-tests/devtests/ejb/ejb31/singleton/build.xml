@@ -14,6 +14,8 @@
     <target name="all">
         <antcall target="cache"/>
         <antcall target="hello"/>
+        <antcall target="three-modules"/>
+        <antcall target="multi-module"/>
     </target>
 
     <target name="cache">
@@ -26,6 +28,18 @@
         <record name="hello.output" action="start" />
             <ant dir="hello" target="all"/>
         <record name="hello.output" action="stop" />
+    </target>
+
+    <target name="three-modules">
+        <record name="three-modules.output" action="start" />
+            <ant dir="threemodules" target="all"/>
+        <record name="three-modules.output" action="stop" />
+    </target>
+
+    <target name="multi-module">
+        <record name="multi-module.output" action="start" />
+            <ant dir="multi-module" target="all"/>
+        <record name="multi-module.output" action="stop" />
     </target>
 
     <target name="usage">
