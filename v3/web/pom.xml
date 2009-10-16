@@ -63,7 +63,7 @@
         <module>admin</module>
         <module>gf-web-connector</module>
         <module>javax.servlet</module>
-        <module>webbeans-integration</module>
+        <module>weld-integration</module>
         <module>osgi-http</module>
         <module>osgi-web-container</module>
         <module>web-embed</module>
