@@ -4141,8 +4141,10 @@ public abstract class BaseContainer
                         logParams);
 		        _logger.log(Level.FINE, "", namEx);
 	        }
+
+            ejbContainerUtilImpl.unregisterContainer(this);
             
-                unregisterProbeListeners();
+            unregisterProbeListeners();
 
         } finally {
             if(System.getSecurityManager() == null) {

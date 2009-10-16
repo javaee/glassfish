@@ -866,7 +866,13 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             String refType = jmsDestRef.getRefType();
             if( managedBeanMap.containsKey(refType) ) {
                 ManagedBeanDescriptor desc = managedBeanMap.get(refType);
-                jmsDestRef.setJndiName(desc.getGlobalJndiName());
+
+                // In app-client, keep lookup local to JVM so it doesn't need to access
+                // server's global JNDI namespace for managed bean.
+                String jndiName = ( bundleDescriptor instanceof ApplicationClientDescriptor )
+                        ?  desc.getAppJndiName() : desc.getGlobalJndiName();
+
+                jmsDestRef.setJndiName(jndiName);
                 jmsDestRef.setIsManagedBean(true);
                 jmsDestRef.setManagedBeanDescriptor(desc);
             }

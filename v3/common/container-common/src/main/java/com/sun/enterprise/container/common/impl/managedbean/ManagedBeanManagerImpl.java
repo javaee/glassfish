@@ -141,12 +141,28 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
          } else if( event.is(Deployment.APPLICATION_UNLOADED) ) {
              
              ApplicationInfo info =  Deployment.APPLICATION_UNLOADED.getHook(event);
-             
-             unloadManagedBeans(info);
+             Application app = info.getMetaData(Application.class);
 
-             unregisterAppLevelDependencies(info);
+             doCleanup(app);
+
+         } else if( event.is(Deployment.DEPLOYMENT_FAILURE) ) {
+
+             Application app = Deployment.DEPLOYMENT_FAILURE.getHook(event).getModuleMetaData(Application.class);
+
+             doCleanup(app);
 
          }
+    }
+
+    private void doCleanup(Application app) {
+
+        if( app != null ) {
+
+            unloadManagedBeans(app);
+
+            unregisterAppLevelDependencies(app);
+        }
+
     }
 
     private void registerAppLevelDependencies(ApplicationInfo appInfo) {
@@ -166,10 +182,8 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
 
     }
 
-     private void unregisterAppLevelDependencies(ApplicationInfo appInfo) {
 
-         Application app = appInfo.getMetaData(Application.class);
-
+    private void unregisterAppLevelDependencies(Application app) {
 
          if( app != null ) {
             try {
@@ -179,6 +193,8 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
             }
          }
      }
+
+
 
     private void loadManagedBeans(ApplicationInfo appInfo) {
 
@@ -307,18 +323,6 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
 
     }
 
-    private void unloadManagedBeans(ApplicationInfo appInfo) {
-
-        Application app = appInfo.getMetaData(Application.class);
-
-        if( app == null ) {
-            return;
-        }
-
-        unloadManagedBeans(app);
-
-    }
-
     public void unloadManagedBeans(Application app) {
 
         for(BundleDescriptor bundle : app.getBundleDescriptors()) {
@@ -330,11 +334,13 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
             Map<Object, JCDIService.JCDIInjectionContext> jcdiInstances =
                     jcdiManagedBeanInstanceMap.remove(bundle);
 
-            for(JCDIService.JCDIInjectionContext next : jcdiInstances.values()) {
-                try {
-                    next.cleanup(true);
-                } catch(Exception e) {
-                    _logger.log(Level.FINE, "Exception during JCDI cleanup for " + next, e);
+            if( jcdiInstances != null ) {
+                for(JCDIService.JCDIInjectionContext next : jcdiInstances.values()) {
+                    try {
+                        next.cleanup(true);
+                    } catch(Exception e) {
+                        _logger.log(Level.FINE, "Exception during JCDI cleanup for " + next, e);
+                    }
                 }
             }
 

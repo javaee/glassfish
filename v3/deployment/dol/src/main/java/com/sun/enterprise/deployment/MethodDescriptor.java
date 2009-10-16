@@ -67,8 +67,8 @@ public final class MethodDescriptor extends Descriptor {
     /** The method descriptor name representing all methods.*/
     public static final String ALL_EJB_METHODS = "*";
     public static final String ALL_METHODS = "*";
-    private static final String TIMER_METHODS = "Timer";
-    private static final String MESSAGE_ENDPOINT_METHODS = "MessageEndpoint";
+    private static final String TIMER_METHOD = "Timer";
+    private static final String MESSAGE_ENDPOINT_METHOD = "MessageEndpoint";
     
     private String[] parameterClassNames = null;
     private String[] javaParameterClassNames = null;
@@ -185,8 +185,7 @@ public final class MethodDescriptor extends Descriptor {
         if (isExact) {
             return true;
         }
-	boolean isExactName = !this.getName().equals(ALL_EJB_METHODS) && !this.getName().equals(TIMER_METHODS) &&
-            !this.getName().equals(MESSAGE_ENDPOINT_METHODS);
+	boolean isExactName = !this.getName().equals(ALL_EJB_METHODS);
 	boolean hasMethodIntf = getEjbClassSymbol()!=null;
 	boolean hasParamsListed = (this.getParameterClassNames() != null);
 	return isExactName && hasMethodIntf && hasParamsListed;
@@ -199,8 +198,7 @@ public final class MethodDescriptor extends Descriptor {
      * </p>
      */
     public int getStyle() {
-        if ( (getName().equals(ALL_EJB_METHODS)) || getName().equals(TIMER_METHODS) ||
-                getName().equals(MESSAGE_ENDPOINT_METHODS) ) {
+        if ( (getName().equals(ALL_EJB_METHODS)) ) {
             return 1;
         }
         if (getParameterClassNames()==null)
@@ -215,7 +213,8 @@ public final class MethodDescriptor extends Descriptor {
             String[] javaParamClassNames = getJavaParameterClassNames();
 
 	    if ( ejbClassSymbol == null || ejbClassSymbol.equals("") 
-		 || ejbClassSymbol.equals(EJB_BEAN) ) {
+		 || ejbClassSymbol.equals(EJB_BEAN) || ejbClassSymbol.equals(TIMER_METHOD)
+         || ejbClassSymbol.equals(MESSAGE_ENDPOINT_METHOD)) {
 		try {
                     if ( !(className.equals("")) ) {
                         // If declaring class is known, use it. Since method
