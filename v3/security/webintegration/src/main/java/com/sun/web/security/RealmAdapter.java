@@ -340,47 +340,10 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         //this.currentRequest are also removed from other methods.
         //String servletName = getResourceName( currentRequest.getRequestURI(),
         //                                      currentRequest.getContextPath());
-        HttpServletRequest hrequest = (HttpServletRequest) request;
-        String servletName = getResourceName(hrequest.getRequestURI(),
-                hrequest.getContextPath());
-        //END OF SJSAS 6232464 
+        String servletName = getCanonicalName(request);
 
-        // First try with the request.
-        boolean isGranted =
-                secMgr.hasRoleRefPermission(servletName, role, principal);
-
-        if (!isGranted) {
-            // START S1AS8PE 4966609
-            // This case occurs when a direct call is made
-            // to a jsp instead of using the server-name element defined in web.xml
-            servletName = getCanonicalName(hrequest);
-
-            // If we can't find any servletMapping for a resource
-            // (usually a jsp), return false. 
-            if (servletName.equalsIgnoreCase(UNCONSTRAINED)) {
-                if (_logger.isLoggable(Level.INFO)) {
-                    _logger.log(Level.INFO,
-                            "Unable to find a <servlet-name> element which map: " + hrequest.getRequestURI());
-                }
-
-                /*
-                 * For every security role in the web application add a
-                 * WebRoleRefPermission to the corresponding role. The name of all such
-                 * permissions shall be the empty string, and the actions of each 
-                 * permission shall be the corresponding role name. When checking a 
-                 * WebRoleRefPermission from a JSP not mapped to a servlet, use a 
-                 * permission with the empty string as its name
-                 * and with the argument to isUserInRole as its actions
-                 */
-                isGranted = secMgr.hasRoleRefPermission("", role, principal);
-
-            // END S1AS8PE 4966609
-            } else {
-                isGranted = secMgr.hasRoleRefPermission(servletName,
-                        role,
-                        principal);
-            }
-        }
+        // END S1AS8PE 4966609
+        boolean isGranted = secMgr.hasRoleRefPermission(servletName, role, principal);
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Checking if servlet " + servletName + " with principal " + principal + " has role " + role + " isGranted: " + isGranted);
@@ -946,39 +909,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     //START SJSAS 6232464
     //pass in HttpServletResponse instead of saving it as instance variable
     //private String getCanonicalName(){
-    private String getCanonicalName(HttpServletRequest currentRequest) {
-        //END SJSAS 6232464
-        String servletUri = "";
-        String currentUri = getResourceName(currentRequest.getRequestURI(), currentRequest.getContextPath());
-        String aliasUri = "";
-        String currentUriExtension = getExtension(currentUri);
-        String aliasUriExtension = "";
-        boolean isAliasExists = false;
-        for (Iterator<WebComponentDescriptor> itr = webDesc.getWebComponentDescriptors().iterator(); itr.hasNext();) {
-            WebComponentDescriptor webComponentDescriptor = itr.next();
-            servletUri = webComponentDescriptor.getWebComponentImplementation();
-
-            // First check the servlet mapping
-            for (Iterator<String> i = webComponentDescriptor.getUrlPatternsSet().iterator(); i.hasNext();) {
-                aliasUri = i.next();
-                aliasUriExtension = getExtension(aliasUri);
-
-                if (aliasUri.equalsIgnoreCase(currentUri)) {
-                    isAliasExists = true;
-                    break;
-                }
-
-                if (aliasUriExtension.equalsIgnoreCase(currentUriExtension) && aliasUri.equalsIgnoreCase("*" + aliasUriExtension)) {
-                    isAliasExists = true;
-                    break;
-                }
-            }
-
-            if (currentUri.equalsIgnoreCase(servletUri) || isAliasExists) {
-                return webComponentDescriptor.getCanonicalName();
-            }
-        }
-        return UNCONSTRAINED;
+    private String getCanonicalName(HttpRequest currentRequest) {
+        return currentRequest.getWrapper().getServletName();
     }
 
     private String getResourceName(String uri, String contextPath) {
@@ -989,14 +921,15 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
     }
 
-    private String getExtension(String uri) {
-        int index=uri.lastIndexOf(".");
-        if(index >= 0) {
-            return uri.substring(index);
-        } else {
-            return "";
-        }
-    }
+//    Function not required anymore.
+//    private String getExtension(String uri) {
+//        int index=uri.lastIndexOf(".");
+//        if(index >= 0) {
+//            return uri.substring(index);
+//        } else {
+//            return "";
+//        }
+//    }
 
     /**
      * Return a short name for this Realm Adapter implementation.
