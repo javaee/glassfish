@@ -41,6 +41,8 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilter;
 import org.glassfish.apf.impl.AnnotationUtils;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -63,6 +65,7 @@ import java.util.logging.Level;
 @Scoped(PerLookup.class)
 public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
 
+    @Inject ClassLoaderHierarchy clh;
 
     /**
      * This scanner will scan the archiveFile for annotation processing.
@@ -101,7 +104,57 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
             if (classes.exists()) {
                 addScanDirectory(classes);   
             }
+            scanXmlDefinedClassesIfNecessary(webBundleDesc);
         }
+    }
+
+    // This is not mandated by the spec. It is for WSIT.
+    // We will also scan any servlets/filters/listeners classes specified
+    // in web.xml additionally if those classes are not resided in the wars.
+    private void scanXmlDefinedClassesIfNecessary(
+            WebBundleDescriptor webBundleDesc) 
+            throws IOException {
+
+        ClassLoader commonCL = clh.getCommonClassLoader();
+
+        for (Iterator webComponents =
+            webBundleDesc.getWebComponentDescriptors().iterator();
+            webComponents.hasNext();) {
+            WebComponentDescriptor webCompDesc =
+                (WebComponentDescriptor)webComponents.next();
+            if (webCompDesc.isServlet()) {
+                String servletName = webCompDesc.getWebComponentImplementation();
+                if (isScan(servletName, commonCL)) {
+                    addScanClassName(servletName);
+                }
+            }
+        }
+
+        Vector servletFilters = webBundleDesc.getServletFilters();
+        for (int i = 0; i < servletFilters.size(); i++) {
+            ServletFilter filter = (ServletFilter)servletFilters.elementAt(i);
+            String filterName = filter.getClassName();
+            if (isScan(filterName, commonCL)) {
+                addScanClassName(filter.getClassName());
+            }
+        }
+
+        Vector listeners = webBundleDesc.getAppListenerDescriptors();
+        for (int j = 0; j < listeners.size(); j++) {
+            AppListenerDescriptor listenerDesc =
+                (AppListenerDescriptor) listeners.elementAt(j);
+            String listenerName = listenerDesc.getListener();
+            if (isScan(listenerName, commonCL)) {
+                addScanClassName(listenerDesc.getListener());
+            }
+        }
+    }
+
+    private boolean isScan(String className, ClassLoader commonCL) throws IOException {
+        boolean result = false;
+        //XXX TBD ignore delegate in sun-web.xml in this moment
+        String resourceName = "/" + className.replace(".", "/") + ".class";
+        return (commonCL.getResource(resourceName) != null);
     }
 }
  
