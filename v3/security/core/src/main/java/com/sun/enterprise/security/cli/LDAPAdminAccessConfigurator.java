@@ -68,10 +68,10 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     public volatile String basedn;
 
     @Param(name="url", shortName="u", optional=true)
-    public volatile String url = "ldap://localhost:389"; // the default ports for LDAP on localhost
+    public volatile String url = "ldap://localhost:389"; // the default port for LDAP on localhost
 
-    @Param(name="ping", shortName="p", optional=true, defaultValue="false")
-    public volatile Boolean ping = Boolean.FALSE;
+    @Param(name="ping", shortName="p", optional=true, defaultValue="true")
+    public volatile Boolean ping = Boolean.TRUE;
 
     @Param(name="ldap-group", shortName="g", optional=false)
     public volatile String ldapGroupName;         //required option, can't be null
@@ -98,10 +98,14 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         StringBuilder sb = new StringBuilder();
         if(url != null) {
             if (!url.startsWith("ldap://") && !url.startsWith("ldaps://")) {
-                url += "ldap://" + url;        //it's ok to accept just host:port
+                url = "ldap://" + url;        //it's ok to accept just host:port
             }
         }
-        pingLDAP(sb);
+        if (!pingLDAP(sb)) {
+            rep.setMessage(sb.toString());
+            rep.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         try {
             configure(sb);
             //Realm.getInstance(FIXED_ADMIN_REALM_NAME).refresh();
@@ -232,10 +236,10 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         return ar;
     }
 
-    private void pingLDAP(StringBuilder sb) {
+    private boolean pingLDAP(StringBuilder sb) {
         if (!ping) {
             appendNL(sb,lsm.getString("ldap.noping", url));
-            return;
+            return true;
         }
         Properties env = new Properties();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -243,8 +247,10 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         try {
             new InitialContext(env);
             appendNL(sb,lsm.getString("ldap.ok", url));
+            return true;
         } catch(Exception e) {
             appendNL(sb,lsm.getString("ldap.na", url, e.getClass().getName(), e.getMessage()));
+            return false;
         }
     }
 
