@@ -60,7 +60,8 @@ public class VetoableChangeListenerTest extends ConfigApiTest implements Vetoabl
                 }
             }, target);
         } catch(TransactionFailure e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Got exception: " + e.getClass().getName() + " as expected, with message: " + e.getMessage());
             result=true;
         }
 
@@ -78,7 +79,8 @@ public class VetoableChangeListenerTest extends ConfigApiTest implements Vetoabl
                 }
             }, target);
         } catch(TransactionFailure e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Got exception: " + e.getClass().getName() + " as expected, with message: " + e.getMessage());
             result=true;
         }
 
@@ -97,7 +99,8 @@ public class VetoableChangeListenerTest extends ConfigApiTest implements Vetoabl
                 }
             }, target);
         } catch(TransactionFailure e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("Got exception: " + e.getClass().getName() + " as expected, with message: " + e.getMessage());
             result=false;
         }
 

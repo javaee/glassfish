@@ -35,11 +35,8 @@
  */
 package com.sun.enterprise.config.serverbeans;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -115,7 +112,18 @@ public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
      *              {@link String }
      */
     void setClassname(String value) throws PropertyVetoException;
-    
+
+    @DuckTyped
+    String getGroupMapping();
+
+    class Duck {
+        public static String getGroupMapping(AuthRealm me) {
+            Property prop = me.getProperty("group-mapping"); //have to hard-code this, unfortunately :(
+            if (prop != null)
+                return prop.getValue();
+            return null;
+        }
+    }
     /**
         Properties.
      */

@@ -73,8 +73,8 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     @Param(name="ping", shortName="p", optional=true, defaultValue="true")
     public volatile Boolean ping = Boolean.TRUE;
 
-    @Param(name="ldap-group", shortName="g", optional=false)
-    public volatile String ldapGroupName;         //required option, can't be null
+    @Param(name="ldap-group", shortName="g", optional=true)
+    public volatile String ldapGroupName;        
     
     @Inject
     Configs allConfigs;
@@ -228,10 +228,12 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         p.setValue(JAAS_V);
         props.add(p);
 
-        p = ar.createChild(Property.class);
-        p.setName(Realm.PARAM_GROUP_MAPPING);
-        p.setValue(ldapGroupName +"->asadmin"); //appears as gfdomain1->asadmin in domain.xml
-        props.add(p);
+        if (ldapGroupName!= null) {
+            p = ar.createChild(Property.class);
+            p.setName(Realm.PARAM_GROUP_MAPPING);
+            p.setValue(ldapGroupName +"->asadmin"); //appears as gfdomain1->asadmin in domain.xml
+            props.add(p);
+        }
         
         return ar;
     }

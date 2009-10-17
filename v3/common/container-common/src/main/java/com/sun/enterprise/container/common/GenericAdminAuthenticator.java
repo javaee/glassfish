@@ -130,7 +130,10 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
                 LoginContextDriver.login(user, password, realm);
                 authenticated = true;
-                return ensureGroupMembership(user, realm);
+                if (as.getAssociatedAuthRealm().getGroupMapping() != null)
+                    return ensureGroupMembership(user, realm);
+                else
+                    return true;
            } catch(Exception e) {
 //              LoginException le = new LoginException("login failed!");
 //              le.initCause(e);
