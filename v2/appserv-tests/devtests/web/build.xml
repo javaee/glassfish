@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="461"/>
+    <property name="TOTAL_EXPECTED" value="462"/>
 
     &commonSetup;
     &commonBuild;
@@ -371,9 +371,7 @@
         <ant dir="virtualServerRedirectPropertyUrlPrefix" target="all"/>
         <ant dir="virtualServerSendErrorProperty" target="all"/>
         <ant dir="virtualServerUpdateHttpListenersDynamicReconfig" target="all"/>
-<!-- XXX temporarily commented out due to IT 10319 
         <ant dir="virtualServerUpdateHostsDynamicReconfig" target="all"/>
--->
         <ant dir="virtualServerChangeHttpListenerWebappNoLongerAccessible" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
         <ant dir="virtualServerCreateUpperCaseDeployExclusive" target="all"/>
