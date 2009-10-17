@@ -153,6 +153,9 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private List<ScheduledTimerDescriptor> timerSchedules =
             new ArrayList<ScheduledTimerDescriptor>();
 
+    private List<MethodDescriptor> timerMethodDescriptors =
+            new ArrayList<MethodDescriptor>();
+
     //
     // The set of all interceptor classes applicable to this bean.  This 
     // includes any interceptor class that is present at *either* the class
@@ -232,6 +235,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.usesCallerIdentity = other.usesCallerIdentity;
         this.bundleDescriptor = other.bundleDescriptor;
         this.timerSchedules = new ArrayList(other.timerSchedules);
+        this.timerMethodDescriptors = new ArrayList(other.timerMethodDescriptors);
     }
 
     /**
@@ -368,12 +372,20 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         timerSchedules.add(scheduleDescriptor);
     }
 
-    public boolean hasScheduledTimerMethod(Method timerMethod) {
+    /**
+     *  Special method for overrides because more than one schedule can be specified on a single method
+     */
+    public void addScheduledTimerDescriptorFromDD(ScheduledTimerDescriptor scheduleDescriptor) {
+        timerMethodDescriptors.add(scheduleDescriptor.getTimeoutMethod());
+        timerSchedules.add(scheduleDescriptor);
+    }
+
+    public boolean hasScheduledTimerMethodFromDD(Method timerMethod) {
         boolean match = false;
 
-        for(ScheduledTimerDescriptor next : timerSchedules) {
-            if( next.getTimeoutMethod().getName().equals(timerMethod.getName()) &&
-		( next.getTimeoutMethod().getParameterClassNames().length ==
+        for(MethodDescriptor next : timerMethodDescriptors) {
+            if( next.getName().equals(timerMethod.getName()) &&
+		( next.getParameterClassNames().length ==
 		  timerMethod.getParameterTypes().length) ) {
                 match = true;
                 break;

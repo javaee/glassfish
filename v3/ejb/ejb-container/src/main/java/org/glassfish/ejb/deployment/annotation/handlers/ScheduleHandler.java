@@ -92,36 +92,36 @@ public class ScheduleHandler extends AbstractAttributeHandler {
             if (ElementType.METHOD.equals(ainfo.getElementType())) {
                 Method annMethod = (Method) ainfo.getAnnotatedElement();
 
-                ScheduledTimerDescriptor sd = new ScheduledTimerDescriptor();
-                sd.setSecond(sch.second());
-                sd.setMinute(sch.minute());
-                sd.setHour(sch.hour());
-                sd.setDayOfMonth(sch.dayOfMonth());
-                sd.setMonth(sch.month());
-                sd.setDayOfWeek(sch.dayOfWeek());
-                sd.setYear(sch.year());
-                sd.setTimezone(sch.timezone());
-                sd.setPersistent(sch.persistent());
-                sd.setInfo(sch.info());
-                sd.setTimeoutMethod(new MethodDescriptor(annMethod));
-
                 // .xml-defined timer method overrides @Schedule
-                if( !ejbDesc.hasScheduledTimerMethod(annMethod)) {
+                if( !ejbDesc.hasScheduledTimerMethodFromDD(annMethod)) {
+                    ScheduledTimerDescriptor sd = new ScheduledTimerDescriptor();
+                    sd.setSecond(sch.second());
+                    sd.setMinute(sch.minute());
+                    sd.setHour(sch.hour());
+                    sd.setDayOfMonth(sch.dayOfMonth());
+                    sd.setMonth(sch.month());
+                    sd.setDayOfWeek(sch.dayOfWeek());
+                    sd.setYear(sch.year());
+                    sd.setTimezone(sch.timezone());
+                    sd.setPersistent(sch.persistent());
+                    sd.setInfo(sch.info());
+                    sd.setTimeoutMethod(new MethodDescriptor(annMethod));
+
                     ejbDesc.addScheduledTimerDescriptor(sd);
-                }
 
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("@@@ Found Schedule on " + annMethod);
-                    TimerSchedule ts = new TimerSchedule(sd, 
-                        annMethod.getName(), annMethod.getParameterTypes().length);
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("@@@ Found Schedule on " + annMethod);
+                        TimerSchedule ts = new TimerSchedule(sd, 
+                                annMethod.getName(), annMethod.getParameterTypes().length);
 
-                    java.util.Calendar date = ts.getNextTimeout();
-                    logger.fine("@@@ First timeout: " + 
-                            ((ts.isValid(date))? date.getTime() : "NEVER"));
-                    logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
-                    logger.fine("@@@ TimerConfig : " + 
-                            ((sd.getInfo() != null && !sd.getInfo().equals(""))? sd.getInfo() : null) + 
-                            " # " + sd.getPersistent());
+                        java.util.Calendar date = ts.getNextTimeout();
+                        logger.fine("@@@ First timeout: " + 
+                                ((ts.isValid(date))? date.getTime() : "NEVER"));
+                        logger.fine("@@@ Schedule : " + ts.getScheduleAsString());
+                        logger.fine("@@@ TimerConfig : " + 
+                                ((sd.getInfo() != null && !sd.getInfo().equals(""))? sd.getInfo() : null) + 
+                                " # " + sd.getPersistent());
+                    }
                 }
             }
         }
