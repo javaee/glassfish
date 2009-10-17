@@ -1,0 +1,78 @@
+
+asadmin Utility Subcommands               recover-transactions(1)
+
+NAME
+     recover transactions - manually  recovers  pending  transac-
+     tions
+
+SYNOPSIS
+     recover-transactions
+     [--help]
+      [ --txlogdir  transaction_log_dir ] [--destination destination_server_name ]
+      server_name
+
+DESCRIPTION
+     The recover-transactions subcommand manually recovers  pend-
+     ing  transactions.  This  subcommand  is used in remote mode
+     only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --transactionlogdir
+         The location of the transaction logs  for  a  particular
+         server.  When  a  server fails it writes the location in
+         its transaction log.
+
+         If the failed server's transaction logs  are  copied  to
+         some  other  location to make it available to the surro-
+         gate recovery server, use this option to specify the new
+         location of the transaction logs. If the failed server's
+         transaction service tx-log-dir property is  modified  to
+         reflect   a  new  location,  then  this  option  is  not
+         required.
+
+     --destination
+
+         The name of the destination server on which the  pending
+         transactions need to be recovered.
+
+OPERANDS
+     server_name
+         The name of the server that failed. The in-flight  tran-
+         sactions  on  this  server will be recovered. For stand-
+         alone servers the value of  this  operand  is  typically
+         server.
+
+Java EE 6           Last change: 29 Sep 2009                    1
+
+asadmin Utility Subcommands               recover-transactions(1)
+
+EXAMPLES
+     Example 1 Using recover-transactions
+
+       % asadmin recover-transactions server
+       Transaction recovered.
+
+EXIT STATUS
+     0    command executed successfully
+
+     1    error in executing the command
+
+SEE ALSO
+     freeze-transaction-service(1),         unfreeze-transaction-
+     service(1), rollback-transaction(1)
+
+     asadmin(1M)
+
+     Chapter 15, Using the Transaction Service, in Sun  GlassFish
+     Enterprise Server v3 Preview Application Development Guide
+
+     Chapter 29, Transactions, in The Java EE 6 Tutorial,  Volume
+     I
+
+Java EE 6           Last change: 29 Sep 2009                    2
+

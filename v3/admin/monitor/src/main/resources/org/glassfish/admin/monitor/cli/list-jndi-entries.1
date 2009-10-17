@@ -1,0 +1,64 @@
+
+asadmin Utility Subcommands                  list-jndi-entries(1)
+
+NAME
+     list-jndi-entries - browses and queries the JNDI tree
+
+SYNOPSIS
+     list-jndi-entries[--help]
+     [--context context_name]
+     [target]
+
+DESCRIPTION
+     Use this subcommand to browse and query the JNDI tree.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --context
+         The name of the JNDI context or subcontext.  If  context
+         is  not specified, all entries in the naming service are
+         returned. If context (such as  ejb)  is  specified,  all
+         those entries are returned.
+
+OPERANDS
+     target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using the list-jndi-entries subcommand
+
+       asadmin> list-jndi-entries
+       jndi_entry03
+       jndi_entry72
+       jndi_entry76
+       Command list-jndi-resources executed successfully
+
+EXIT STATUS
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands                  list-jndi-entries(1)
+
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-jndi-resource(1), delete-jndi-resource(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

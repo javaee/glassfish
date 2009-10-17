@@ -1,0 +1,76 @@
+
+asadmin Utility Subcommands       unfreeze-transaction-service(1)
+
+NAME
+     unfreeze-transaction-service - resumes all  suspended  tran-
+     sactions
+
+SYNOPSIS
+     unfreeze-transaction-service
+     [--help]
+      [ --target  target ]
+
+DESCRIPTION
+     The  unfreeze-transaction-service  subcommand  restarts  the
+     transaction  subsystem  and  resumes all suspended in-flight
+     transactions. Invoke this subcommand on  an  already  frozen
+     transaction  subsystem.  This  subcommand  is  supported  in
+     remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         The target server instance on which  the  subcommand  is
+         run.
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     target
+
+         The  name  of  the  target  server  instance,  typically
+         server.
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using unfreeze-transaction-service
+
+       % asadmin unfreeze-transaction-service
+       Command unfreeze-transaction-service executed successfully
+
+Java EE 6           Last change: 29 Sep 2009                    1
+
+asadmin Utility Subcommands       unfreeze-transaction-service(1)
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     freeze-transaction-service(1),      rollback-transaction(1),
+     recover-transactions(1)
+
+     asadmin(1M)
+
+     Chapter 15, Using the Transaction Service, in Sun  GlassFish
+     Enterprise Server v3 Preview Application Development Guide
+
+     Chapter 29, Transactions, in The Java EE 6 Tutorial,  Volume
+     I
+
+Java EE 6           Last change: 29 Sep 2009                    2
+

@@ -2,24 +2,30 @@
 asadmin Utility Subcommands           create-system-properties(1)
 
 NAME
-     create-system-properties - adds or updates one or more  sys-
-     tem  properties  of  the  domain, configuration, cluster, or
-     server instance
+     create-system-properties - adds one or more overridable sys-
+     tem property elements at the server level
 
 SYNOPSIS
-     create-system-properties
-     [--help]
-     [ --target  target_name]
-     [name=value)[:name=value]*]
+     create-system-properties [--help] [--target target-name] [name=value)[:name=value]*]
 
 DESCRIPTION
      The create-system-properties subcommand adds or updates  the
-     system  properties  of  a domain, configuration, cluster, or
-     server instance. Shared or clustered server instances  often
-     need to override attributes defined in their referenced con-
-     figuration. Any configuration attribute in a server instance
-     can   be   overridden  through  a  system  property  of  the
-     corresponding name.
+     system  properties  that  can be referenced elsewhere on the
+     server. Any configuration attribute in a server instance can
+     be overridden through a system property of the corresponding
+     name.
+
+     Enterprise Server provides hooks where tokens  (system  pro-
+     perties)  can  be  specified. Because Enterprise Server does
+     not have multiple server elements, you can specify a partic-
+     ular  token  at  any  level. When a domain supports multiple
+     servers, the override potential can  be  exploited.  When  a
+     domain  is  started or restarted, all <system-property> ele-
+     ments are resolved and available to the Java Virtual Machine
+     by using the System.setProperty() call on each of them (with
+     its name and value derived from the corresponding attributes
+     of  the  element). This is analogous to sending the elements
+     as -D parameters on the Java command line.
 
      This subcommand is supported in remote mode only.
 
@@ -39,22 +45,25 @@ OPTIONS
 OPERANDS
      name=value
 
-         The name value pairs (separated by the ':' character) of
-         the system properties to add to the specified target. If
-         any of the system properties were previously defined, it
-         will be updated with the newly specified value.
+         The name value pairs of the system properties to add  to
+         the specified target. Multiple system properties must be
+         separated by a : (colon). If a : (colon) appears in  the
+         name  or  value of a system property, it must be escaped
+
+Java EE 6           Last change: 12 Oct 2009                    1
+
+asadmin Utility Subcommands           create-system-properties(1)
+
+         with a  (blackslash). If any system properties were pre-
+         viously defined, they are updated with the new values.
 
 EXAMPLES
      Example 1 Creating System Properties
 
-Java EE 6            Last change: 4 Sep 2009                    1
-
-asadmin Utility Subcommands           create-system-properties(1)
-
      This example creates a system property  associated  with  an
      HTTP listener.
 
-       asadmin> create-system-properties mycluster http-listener-port=1088
+       asadmin> create-system-properties myserver http-listener-port=1088
        Command create-system-properties executed successfully.
 
 EXIT STATUS
@@ -68,5 +77,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 4 Sep 2009                    2
+Java EE 6           Last change: 12 Oct 2009                    2
 

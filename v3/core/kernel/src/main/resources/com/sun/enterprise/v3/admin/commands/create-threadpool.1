@@ -5,18 +5,18 @@ NAME
      create-threadpool - adds a thread pool
 
 SYNOPSIS
-     create-threadpool [--help] [--target target_name] [--idle-timeout idle_thread_timeout_in_seconds]
-     [--maxthreadpoolsize max_threadpool_size] [--minthreadpoolsize min_threadpool_size]
-     [max-queue-size max-queue-size] [--workqueues number_work_queues] threadpool_id
+     create-threadpool [--help] [--target target_name] [--maxthreadpoolsize max_threadpool_size]
+     [--minthreadpoolsize min_threadpool_size] [--idletimeout idletimeout-in-seconds]
+     [--workqueues number_work_queues] threadpool_id
 
 DESCRIPTION
      The create-threadpool subcommand creates a thread pool  with
      the  specified  name.  You  can  specify maximum and minimum
-     number of threads in the pool, the maximum queue  size,  and
-     the idle timeout of a thread. The created thread pool can be
-     used for servicing IIOP requests and for  resource  adapters
-     to  service  work  management requests. A thread pool can be
-     used in multiple resource adapters.
+     number of threads in the pool, the quantity of work  queues,
+     and  the  idle  timeout of a thread. The created thread pool
+     can be used for servicing IIOP  requests  and  for  resource
+     adapters  to service work management requests. A thread pool
+     can be used in multiple resource adapters.
 
      This subcommand is supported in remote mode only.
 
@@ -33,40 +33,32 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-     --idle-timeout
-
-         Specifies the amount of time in seconds after which idle
-         threads are removed from the pool. Default is 900.
-
      --maxthreadpoolsize
+
          Specifies the maximum number of  threads  the  pool  can
          contain. Default is 5.
 
      --minthreadpoolsize
-
          Specifies the minimum number of  threads  in  the  pool.
          These  are created when the thread pool is instantiated.
          Default is 2.
 
-Java EE 6            Last change: 9 Oct 2009                    1
+     --idletimeout
+
+         Specifies the amount of time in seconds after which idle
+         threads are removed from the pool. Default is 900.
+
+Java EE 6           Last change: 13 Oct 2009                    1
 
 asadmin Utility Subcommands                  create-threadpool(1)
 
-     --max-queue-size
-
-         Specifies the maximum number of  messages  that  can  be
-         queued  until  threads  are available to process them. A
-         value of -1 specifies no limit,  which  is  the  optimal
-         value  for  a  thread  pool  used with an IIOP listener.
-         Default is 4096.
-
      --workqueues
+
          Identifies the total number of work queues  serviced  by
-         this threadpool.
+         this thread pool.
 
 OPERANDS
      threadpool_id
-
          An ID for the work  queue;  for  example,  threadpool-1,
          threadpool-2, and so forth.
 
@@ -90,5 +82,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Oct 2009                    2
+Java EE 6           Last change: 13 Oct 2009                    2
 
