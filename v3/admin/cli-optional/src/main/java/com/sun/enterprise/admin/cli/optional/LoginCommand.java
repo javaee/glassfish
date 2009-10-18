@@ -95,17 +95,16 @@ public class LoginCommand extends CLICommand {
         programOpts.setInteractive(false);      // no more prompting allowed
  
         // Step 2: Invoke version command to validate the authentication info
-        boolean tryAgain = true;
-        while (tryAgain) {
+        boolean tryAgain = false;
+        do {
             switch (DASUtils.pingDASWithAuth(programOpts, env)) {
             case NONE:
-                tryAgain = false;
                 break;
             case AUTHENTICATION:
-                if (!tryAgain)
+                if (tryAgain)   // already tried once
                     throw new CommandException(strings.get("InvalidCredentials",
                                                     programOpts.getUser()));
-                tryAgain = false;       // only try twice
+                tryAgain = true;
 
                 // maybe we need a password?
                 programOpts.setInteractive(interactive);
@@ -124,7 +123,7 @@ public class LoginCommand extends CLICommand {
                 throw new CommandException(strings.get("UnknownException",
                     programOpts.getHost(), "" + programOpts.getPort()));
             }
-        }
+        } while (tryAgain);
 
         // Step 3: Save in <userhomedir>/.asadminpass the string 
         // asadmin://<adminuser>@<adminhost>:<adminport><encrypted adminpassword>
