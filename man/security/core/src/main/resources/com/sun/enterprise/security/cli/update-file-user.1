@@ -1,0 +1,73 @@
+
+asadmin Utility Subcommands                   update-file-user(1)
+
+NAME
+     update-file-user - updates a current file user as specified
+
+SYNOPSIS
+     update-file-user
+     [--help]
+     [ --groups  user_groups[:user_groups]*]
+     [--authrealmname authrealm_name]
+     username
+
+DESCRIPTION
+     This subcommand updates an existing  entry  in  the  keyfile
+     using the specified user name, password and groups. Multiple
+     groups can be entered by separating them, with a colon (:).
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --groups
+         This is the name of the group to  which  the  file  user
+         belongs.
+
+     --authrealmname
+
+         Name of the authentication realm where the  user  to  be
+         updated can be found.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     username
+
+         This is the name of the file user to be updated.
+
+EXAMPLES
+     Example 1 Updating a user's information in a file realm
+
+       asadmin> update-file-user
+        --groups staff:manager:engineer sample_user
+
+Java EE 6          Last change: 28 August 2009                  1
+
+asadmin Utility Subcommands                   update-file-user(1)
+
+       Command update-file-user executed successfully
+
+     Where sample_user is the file  user  for whom the groups and
+     the user name are updated.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-file-user(1),    list-file-users(1),     create-file-
+     user(1), list-file-groups(1)
+
+     asadmin(1M)
+
+Java EE 6          Last change: 28 August 2009                  2
+

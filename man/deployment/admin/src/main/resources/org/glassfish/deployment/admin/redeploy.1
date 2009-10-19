@@ -1,0 +1,424 @@
+
+asadmin Utility Subcommands                           redeploy(1)
+
+NAME
+     redeploy - redeploys the specified component
+
+SYNOPSIS
+     redeploy [--help] --name component-name [--upload={true|false}]
+     [--retrieve local-dirpath] [--dbvendorname dbvendorname]
+     [--createtables={true|false} | --dropandcreatetables={true|false}]
+     [--uniquetablenames={true|false}] [--deploymentplan deployment-plan]
+     [--enabled={true|false}] [--generatermistubs={false|true}]
+     [--contextroot context-root] [--precompilejsp={true|false}]
+     [--verify={false|true}][--virtualservers virtual-servers]
+     [--libraries jar-file[,jar-file]*] [--type pkg-type]
+     [--properties(name=value)[:name=value]*][archive-path]
+
+DESCRIPTION
+     The  redeploy subcommand redeploys  an  enterprise  applica-
+     tion,  web  application,  module  based  on  the  Enterprise
+     JavaBeansTM  (EJB)  specification  (EJB  module),  connector
+     module,   or  application  client  module  that  is  already
+     deployed  or  already  exists.   The   redeploy   subcommand
+     preserves  the  settings  and  other  options with which the
+     application was originally  deployed. The  application  must
+     already be deployed. Otherwise, an error occurs.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --virtualservers
+         One  or  more  virtual  server  IDs.  Multiple  IDs  are
+         separated by commas.
+
+     --contextroot
+
+         Valid only if the archive is a web module. It is ignored
+         for  other  archive  types; defaults to filename without
+         extension.
+
+     --precompilejsp
+         By default this option does not  allow  the  JSP  to  be
+         precompiled  during  deployment.  Instead, JSPs are com-
+         piled during runtime. Default is false.
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands                           redeploy(1)
+
+     --verify
+
+         If set to true and the required  verifier  packages  are
+         installed  from the Update Center, the syntax and seman-
+         tics of the deployment descriptor is  verified.  Default
+         is false.
+
+     --name
+         Name of the deployable component.
+
+     --upload
+
+         Uploads  the  deployable  file  to  the   administration
+         server.  The deployable file must be accessible from the
+         client. If the file is accessible  to  both  server  and
+         client,  set  the  --upload  option to false. Default is
+         true.
+
+     --retrieve
+         Retrieves the client  stub  JAR  file  from  the  server
+         machine to the local directory.
+
+     --dbvendorname
+
+         Specifies the name of  the  database  vendor  for  which
+         tables are created. Supported values include db2, mssql,
+         oracle,  derby,  javadb,  postgresql,   pointbase,   and
+         sybase, case-insensitive. If not specified, the value of
+         the database-vendor-name attribute in sun-ejb-jar.xml is
+         used.  If no value is specified, a connection is made to
+         the resource specified by the  jndi-name  subelement  of
+         the  cmp-resource  element  in the sun-ejb-jar.xml file,
+         and the database vendor name is read. If the  connection
+         cannot  be  established,  or  if the value is not recog-
+         nized, SQL-92 compliance is presumed.
+
+     --createtables
+         Creates tables at  deployment  of  an  application  with
+         unmapped  CMP  beans.  Default  is the create-tables-at-
+         deploy entry in the cmp-resource  element  of  the  sun-
+         ejb-jar.xml file.
+
+     --dropandcreatetables
+
+         If set to true, when the component  is  redeployed,  the
+         tables  created  by  the previous deployment are dropped
+         before creating  the  new  tables.  Applies  to  already
+
+Java EE 6            Last change: 8 Oct 2009                    2
+
+asadmin Utility Subcommands                           redeploy(1)
+
+         deployed  applications  with  unmapped CMP beans. If not
+         set, the  tables  are  dropped  if  the  drop-tables-at-
+         undeploy  entry  in the cmp-resource element of the sun-
+         ejb-jar.xml file is set to  true.  The  new  tables  are
+         created  if  the  create-tables-at-deploy  entry  in the
+         cmp-resource element of the sun-ejb-jar.xml file is  set
+         to true.
+
+     --uniquetablenames
+
+         Guarantees unique table names  for  all  the  beans  and
+         results in a hash code added to the table names. This is
+         useful if you have an  application  with  case-sensitive
+         bean  names.  Applies  to applications with unmapped CMP
+         beans.
+
+     --deploymentplan
+         Deploys the deployment plan, which is a  JAR  containing
+         Sun-specific  descriptors.  This  should be passed along
+         when deploying a pure EAR file. A pure EAR  file  is  an
+         EAR without Sun-specific descriptors.
+
+     --enabled
+
+         Allows users to access the application. If set to false,
+         users  will  not  be  able  to  access  the application.
+         Default is true.
+
+     --generatermistubs
+         If set to true, static RMI-IIOP stubs are generated  and
+         put  into the client.jar. If set to false, the stubs are
+         not generated. Default is false.
+
+     --availabilityenabled
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --libraries
+         A comma-separated list of library JAR files. Specify the
+         library  JAR  files by their relative or absolute paths.
+         Specify   relative   paths   relative    to    instance-
+         root/lib/applibs.  The  libraries  are made available to
+
+Java EE 6            Last change: 8 Oct 2009                    3
+
+asadmin Utility Subcommands                           redeploy(1)
+
+         the application in the order specified.
+
+     --target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --type
+         The packaging archive type  of  the  component  that  is
+         being deployed. Possible values are as follows:
+
+         osgi
+
+             The component is packaged as an OSGi  Alliance  bun-
+             dle.
+
+         The --type option is optional. If the component is pack-
+         aged as a regular archive, omit this option.
+
+     --properties or --property
+         Optional keyword-value  pairs  that  specify  additional
+         properties  for the deployment. The available properties
+         are determined by the implementation  of  the  component
+         that  is  being deployed or redeployed. The --properties
+         option and the --property option are equivalent. You can
+         use either option regardless of the number of properties
+         that you specify. You can specify the following  proper-
+         ties for a deployment:
+
+         jar-signing-alias
+
+             Specifies the alias  for  the  security  certificate
+             with which the application client container JAR file
+             is signed. Java Web Start will  not  run  code  that
+             requires elevated permissions unless it resides in a
+             JAR file signed with a certificate that  the  user's
+             system  trusts.  For  your  convenience,  Enterprise
+             Server signs the JAR file  automatically  using  the
+             certificate  with  this alias from the domain's key-
+             store. Java Web Start then asks the user whether  to
+             trust  the  code  and displays the Enterprise Server
+             certificate information.  To sign this JAR file with
+             a  different certificate, add the certificate to the
+             domain  keystore,  then  use  this   property.   For
+             instructions  on  adding a certificate to the domain
+             keystore, see Administering  JSSE  Certificates   in
+             Sun  GlassFish  Enterprise  Server v3 Administration
+
+Java EE 6            Last change: 8 Oct 2009                    4
+
+asadmin Utility Subcommands                           redeploy(1)
+
+             Guide. For example, you can use a certificate from a
+             trusted  authority,  which avoids the Java Web Start
+             prompt, or from your own company, which  users  know
+             they  can  trust. Default is s1as, the alias for the
+             self-signed certificate created for every domain.
+
+         java-web-start-enabled
+
+             Specifies whether Java Web Start access is permitted
+             for an application client module. Default is true.
+
+         jruby-home
+             Specifies the directory where JRuby itself (not  the
+             Enterprise  Server  JRuby  container)  is installed.
+             Default is as-install/jruby.
+
+         jruby-runtime
+
+             Specifies the initial number of  JRuby  runtimes  to
+             start.  Must  be  at  greater  than  zero,  at least
+             jruby.runtime.min, and  jruby.runtime.max  or  less.
+             Overrides  the  jruby-runtime  attribute  of  jruby-
+             runtime-pool. Default is 1.
+
+         jruby-runtime-min
+             Specifies the minimum number of  JRuby  runtimes  in
+             the  pool.  Must be greater than zero, jruby.runtime
+             or less, and jruby.runtime.max  or  less.  Overrides
+             the  jruby-runtime-min  attribute  of jruby-runtime-
+             pool. Default is 1.
+
+         jruby-runtime-max
+
+             Specifies the maximum number of  JRuby  runtimes  in
+             the  pool.  Must  be  greater  than  zero,  at least
+             jruby.runtime.min, and at least jruby.runtime. Over-
+             rides  the  jruby-runtime-max  attribute  of  jruby-
+             runtime-pool. Default is 1.
+
+         jruby-rackEnv
+             Specifies the environment in which a JRuby  applica-
+             tion  such as Rails or Merb runs. Allowed values are
+             development,  production,  or   test.   Default   is
+             development.
+
+Java EE 6            Last change: 8 Oct 2009                    5
+
+asadmin Utility Subcommands                           redeploy(1)
+
+         jruby-applicationType
+
+             Specifies the name of a supported framework  or  the
+             path  to a script that initializes the user's frame-
+             work.  Allowed  values  corresponding  to  supported
+             frameworks are Rails, Merb, or Sinatra. Setting this
+             property  bypasses  the  normal,   and   potentially
+             lengthy,  auto-detection  process and forces deploy-
+             ment on the specified  framework.  If  the  deployed
+             application  is not written for the specified frame-
+             work, errors result.  Default  is  computed  through
+             auto-detection.
+
+         jruby-MTSafe
+             If true, specifies that a  framework  being  started
+             using   jruby.applicationType   is  thread-safe  and
+             therefore does not need a pool created for it.  This
+             property   affects  applications  started  using  an
+             auto-detected  user-provided  startup   script.   If
+             jruby.applicationType is set and jruby.MTsafe is not
+             set or is set to false, the application starts  with
+             a  pool  of application instances, and each instance
+             of the application is accessed by one  thread  at  a
+             time.  This  property  only affects frameworks being
+             launched where the thread safety cannot be automati-
+             cally  determined. Setting jruby.MTsafe to true does
+             not cause an auto-detected Rails  2.1.x  application
+             to  be  launched  in thread-safe mode, nor can it be
+             used to force a thread-safe framework  to  start  in
+             pooled  mode.  Default  is  computed  through  auto-
+             detection.
+
+         compatibility
+
+             Specifies the Enterprise Server release  with  which
+             to be backward compatible in terms of JAR visibility
+             requirements  for  applications.  The  only  allowed
+             value  is v2, which refers to GlassFish version 2 or
+             Enterprise Server version 9.1 or 9.1.1.  The Java EE
+             6  platform  specification imposes stricter require-
+             ments than Java EE 5 did on which JAR files  can  be
+             visible  to  various  modules within an EAR file. In
+             particular, application clients must not have access
+             to  EJB JAR files or other JAR files in the EAR file
+             unless references use the standard Java  SE  mechan-
+             isms  (extensions,  for  example)  or  the  Java  EE
+             library-directory mechanism. Setting  this  property
+             to v2 removes these Java EE 6 restrictions.
+
+Java EE 6            Last change: 8 Oct 2009                    6
+
+asadmin Utility Subcommands                           redeploy(1)
+
+         keepSessions={false|true}
+
+             If the --force option is set to true, this  property
+             can  by  used  to specify whether active sessions of
+             the  application  that  is  being   redeployed   are
+             preserved and then restored when the redeployment is
+             complete. Applies to HTTP sessions  in  a  web  con-
+             tainer. Default is false.
+
+             false
+                 Active  sessions  of  the  application  are  not
+                 preserved and restored (default).
+
+             true
+
+                 Active sessions of the application are preserved
+                 and restored.
+
+                 If any active session of the  application  fails
+                 to  be  preserved  or restored, none of the ses-
+                 sions will be available when the redeployment is
+                 complete.  However,  the  redeployment continues
+                 and a warning is logged.
+
+                 To preserve active sessions,  Enterprise  Server
+                 serializes   the  sessions  and  saves  them  in
+                 memory.  To  restore  the  sessions,  the  class
+                 loader   of  the  newly  redeployed  application
+                 deserializes any sessions that  were  previously
+                 saved.
+
+             Other available properties  are  determined  by  the
+             implementation  of the component that is being rede-
+             ployed.
+
+OPERANDS
+     archive-path
+         The path to the archive that  contains  the  application
+         that  is  being  redeployed. This path can be a relative
+         path or an absolute path.
+
+         The archive can be in either of the following formats:
+
+             o    An     archive     file,      for      example,
+                  /export/JEE_apps/hello.war
+
+             o    A directory that contains the  exploded  format
+                  of the deployable archive
+         Whether this operand is  required  depends  on  how  the
+
+Java EE 6            Last change: 8 Oct 2009                    7
+
+asadmin Utility Subcommands                           redeploy(1)
+
+         application was originally deployed:
+
+             o    If the application was originally deployed from
+                  a  file,  the archive-path operand is required.
+                  The operand must specify an archive file.
+
+             o    If the application was originally deployed from
+                  a   directory,   the  archive-path  operand  is
+                  optional.
+
+                  If  this  operand  is  omitted,  the  path   is
+                  retrieved  from the domain.xml file. Otherwise,
+                  the operand  can  specify  a  directory  or  an
+                  archive file.
+
+EXAMPLES
+     Example 1 Redeploying a Web Application From a File
+
+     This example redeploys the web application  hello  from  the
+     hello.war  file in the current working directory. The appli-
+     cation was originally deployed from a file. Active  sessions
+     of  the  application  are  to be preserved and then restored
+     when the redeployment is complete.
+
+       asadmin> redeploy --name hello --properties keepSessions=true hello.war
+       Command redeploy executed successfully
+
+     Example 2 Redeploying a Web Application From a Directory
+
+     This example redeploys the  web  application  hellodir.  The
+     application  was  originally  deployed from a directory. The
+     path is retrieved from the domain.xml file.
+
+       asadmin> redeploy --name hellodir
+       Command redeploy executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 8 Oct 2009                    8
+
+asadmin Utility Subcommands                           redeploy(1)
+
+SEE ALSO
+     deploy(1), undeploy(1), list-components(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6            Last change: 8 Oct 2009                    9
+

@@ -1,0 +1,107 @@
+
+asadmin Utility Subcommands                 list-web-env-entry(1)
+
+NAME
+     list-web-env-entry  -  lists  environment  entries   for   a
+     deployed web application or module
+
+SYNOPSIS
+     list-web-env-entry [--help] [--name=env-entry-name] application-name[/module-name]
+
+DESCRIPTION
+     The  list-web-env-entry  subcommand  lists  the  environment
+     entries for one of the following items:
+
+         o    A deployed web application
+
+         o    A web module in a deployed  Java  Platform,  Enter-
+              prise Edition (Java EE) application
+
+     The application must  already  be  deployed.  Otherwise,  an
+     error occurs.
+
+     The list-web-env-entry subcommand lists  only  entries  that
+     have  previously  been set by using the set-web-env-entry(1)
+     subcommand. The subcommand does not list environment entries
+     that  are  set only in the application's deployment descrip-
+     tor.
+
+     For each entry, the following information is displayed:
+
+         o    The name of the entry
+
+         o    The Java type of the entry
+
+         o    The value to which the entry is set
+
+         o    The value of the --ignoreDescriptorItem  option  of
+              the set-web-env-entry subcommand that was specified
+              when the entry was set
+
+         o    The description of the entry or null if no descrip-
+              tion was specified when the entry was set
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+Java EE 6            Last change: 7 Oct 2009                    1
+
+asadmin Utility Subcommands                 list-web-env-entry(1)
+
+     --name
+
+         The name of the envTMonment entry that is to be  listed.
+         The  name is a JNDI   name relative to the java:comp/env
+         context. The name must be  unique  within  a  deployment
+         component.   If  this option is omitted, all environment
+         entries that have previously been set for  the  applica-
+         tion are listed.
+
+OPERANDS
+     application-name
+         The  name  of  the  application.  The  application  must
+         already be deployed. Otherwise, an error occurs.
+
+     module-name
+
+         The name of the module within the  application.  module-
+         name  is  required only if the environment entry applies
+         to a web module of a Java EE application. If  specified,
+         module-name must follow application-name, separated by a
+         slash (/).
+
+EXAMPLES
+     Example 1 Listing Environment Entries for a Web Application
+
+     This example lists all environment entries  that  have  been
+     set  for the web application hello by using the set-web-env-
+     entry subcommand. Because no description was specified  when
+     the  Hello Port environment entry was set, null is displayed
+     instead of a description for this entry.
+
+       asadmin> list-web-env-entry hello
+       Hello User (java.lang.String) = techscribe ignoreDescriptorItem=false
+        //User authentication for Hello appplication
+       Hello Port (java.lang.Integer) = null ignoreDescriptorItem=true //null
+
+       Command list-web-env-entry executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+Java EE 6            Last change: 7 Oct 2009                    2
+
+asadmin Utility Subcommands                 list-web-env-entry(1)
+
+SEE ALSO
+     set-web-env-entry(1), unset-web-env-entry(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    3
+

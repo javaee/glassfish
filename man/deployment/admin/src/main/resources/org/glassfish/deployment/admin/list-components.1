@@ -1,0 +1,84 @@
+
+asadmin Utility Subcommands                    list-components(1)
+
+NAME
+     list-components - lists deployed components
+
+SYNOPSIS
+     list-components [--help] [--type type] [target]
+
+DESCRIPTION
+     The list-components subcommand lists all  deployed  Java  EE
+     components.
+
+      If the --type option is not specified, all  components  are
+     listed.  If the type option is specified, you must specify a
+     type. The possible types are listed in the  Options  section
+     in this help page.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --type
+         Specifies the type of the  components  that  are  to  be
+         listed. The options are as follows:
+
+             o    application
+
+             o    appclient
+
+             o    connector
+
+             o    ejb
+
+             o    jruby
+
+             o    web
+
+             o    webservice
+         If no type is specified, all components are listed.
+
+OPERANDS
+     target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error  does  not  occur.  Instead,  the
+
+Java EE 6           Last change: 14 Sep 2009                    1
+
+asadmin Utility Subcommands                    list-components(1)
+
+         subcommand  runs successfully and the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing Components
+
+     This example lists the connector  components.  (cciblackbox-
+     tx.rar was deployed.)
+
+       asadmin> list-components --type connector
+       cciblackbox-tx <connector>
+       Command list-components executed successfully
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     list-applications(1), show-component-status(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6           Last change: 14 Sep 2009                    2
+

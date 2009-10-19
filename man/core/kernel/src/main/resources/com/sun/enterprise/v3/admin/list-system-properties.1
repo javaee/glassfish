@@ -1,0 +1,55 @@
+
+asadmin Utility Subcommands             list-system-properties(1)
+
+NAME
+     list-system-properties - lists the system properties of  the
+     domain
+
+SYNOPSIS
+     list-system-properties [--help] [--target target]
+
+DESCRIPTION
+     The list-system-properties subcommand lists the system  pro-
+     perties of a domain.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing System Properties
+
+     This example lists the system properties on localhost.
+
+       asadmin> list-system-properties
+       http-listener-port=1088
+       Command list-system-properties executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 9 Oct 2009                    1
+
+asadmin Utility Subcommands             list-system-properties(1)
+
+SEE ALSO
+     create-system-properties(1), delete-system-property(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    2
+

@@ -1,0 +1,88 @@
+
+asadmin Utility Subcommands                          multimode(1)
+
+NAME
+     multimode - allows multiple  subcommands  to  be  run  while
+     preserving environment settings and remaining in the asadmin
+     utility
+
+SYNOPSIS
+     multimode [--help] [--file filename] [--printprompt={true|false}] [--encoding encode]
+
+DESCRIPTION
+     The  multimode  subcommand  processes  asadmin   subcommands
+     sequentially in a single session. The command-line interface
+     prompts for a subcommand, runs that subcommand, displays the
+     results  of  that  subcommand, and then prompts for the next
+     subcommand. All the asadmin options set in  multimode  apply
+     to  subsequent  commands  until  the  multimode  session  is
+     exited. You exit multimode by typing exit, quit, or Ctrl-D.
+
+     You can use the export subcommand to set  your  environment,
+     or  use the unset subcommand to remove environment variables
+     from the multimode environment. You can also provide subcom-
+     mands  by  passing a previously prepared list of subcommands
+     from a file or standard input (pipe).
+
+     You can invoke multimode from within  a  multimode  session.
+     When  you  exit the second multimode environment, you return
+     to your original multimode environment.
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --file filename
+         Reads the subcommands as defined in filename.
+
+     --printprompt
+
+         Allows the printing of the  asadmin  prompt  after  each
+         subcommand  is  run.  Set  this option to false when the
+         commands are piped or redirected from the standard input
+         or file. By default the option is set to true.
+
+Java EE 6            Last change: 5 Oct 2009                    1
+
+asadmin Utility Subcommands                          multimode(1)
+
+     --encoding
+
+         Specifies the locale for the file to be decoded.
+
+EXAMPLES
+     Example 1 Starting a Multimode Session
+
+     This example starts a multimode session where: % is the sys-
+     tem prompt.
+
+       % asadmin multimode
+       asadmin>
+
+     You can also start a multimode  session  by  typing  asadmin
+     without options or subcommands at the system prompt.
+
+     Example 2  Running Multiple Commands From a File
+
+     This  example  runs  a  sequence  of  subcommands  from  the
+     commands_file.txt file.
+
+       % asadmin multimode --file commands_file.txt
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     export(1), unset(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 5 Oct 2009                    2
+

@@ -1,0 +1,60 @@
+
+asadmin Utility Subcommands               delete-http-listener(1)
+
+NAME
+     delete-http-listener - removes an HTTP network listener
+
+SYNOPSIS
+     delete-http-listener
+     [--help]
+     [ --target  server]
+     listener_id
+
+DESCRIPTION
+     The delete-http-listener subcommand  removes  the  specified
+     HTTP  network  listener.  This  subcommand  is  supported in
+     remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     listener_id                 The unique  identifier  for  the
+                                 HTTP   network  listener  to  be
+                                 deleted.
+
+EXAMPLES
+     Example 1 Using the delete-http-listener subcommand
+
+     The following command  deletes  the  HTTP  network  listener
+     named sampleListener:
+
+       asadmin> delete-http-listener sampleListener
+       Command delete-http-listener executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+Java EE 6            Last change: 2 Sep 2008                    1
+
+asadmin Utility Subcommands               delete-http-listener(1)
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-http-listener(1), list-http-listeners(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 2 Sep 2008                    2
+

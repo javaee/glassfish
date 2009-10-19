@@ -1,0 +1,78 @@
+
+asadmin Utility Subcommands         freeze-transaction-service(1)
+
+NAME
+     freeze-transaction-service - freezes the transaction subsys-
+     tem
+
+SYNOPSIS
+     freeze-transaction-service
+     [--help]
+      [ --target  target]
+
+DESCRIPTION
+     The freeze-transaction-service subcommand freezes the  tran-
+     saction  subsystem,  suspending  all in-flight transactions.
+     Invoke this command before rolling back any in-flight  tran-
+     sactions.  Invoking  this  subcommand  on  an already frozen
+     transaction subsystem has no effect. This subcommand is sup-
+     ported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         The target server instance on which  the  subcommand  is
+         run.
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     target
+
+         The  name  of  the  target  server  instance,  typically
+         server.
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using freeze-transaction-service
+
+       % asadmin freeze-transaction-service
+
+Java EE 6           Last change: 29 Sep 2009                    1
+
+asadmin Utility Subcommands         freeze-transaction-service(1)
+
+       Command freeze-transaction-service executed successfully
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     unfreeze-transaction-service(1),    rollback-transaction(1),
+     recover-transactions(1)
+
+     asadmin(1M)
+
+     Chapter 15, Using the Transaction Service, in Sun  GlassFish
+     Enterprise Server v3 Preview Application Development Guide
+
+     Chapter 29, Transactions, in The Java EE 6 Tutorial,  Volume
+     I
+
+Java EE 6           Last change: 29 Sep 2009                    2
+

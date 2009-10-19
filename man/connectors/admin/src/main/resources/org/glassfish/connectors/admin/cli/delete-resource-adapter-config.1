@@ -1,0 +1,58 @@
+
+asadmin Utility Subcommands     delete-resource-adapter-config(1)
+
+NAME
+     delete-resource-adapter-config  -   deletes   the   resource
+     adapter configuration
+
+SYNOPSIS
+     delete-resource-adapter-config [--help] raname
+
+DESCRIPTION
+     The delete-resource-adapter-config  subcommand  deletes  the
+     configuration information for the connector module.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         This option is deprecated.
+
+OPERANDS
+     raname
+
+         Specifies the connector module name. This value is  kept
+         in the resource-adapter-name in the domain.xml file.
+
+EXAMPLES
+     Example 1 Deleting a Resource Adapter Configuration
+
+     This example deletes the resource adapter configuration  for
+     ra1.
+
+       asadmin> delete-resource-adapter-config ra1
+       Command delete-resource-adapter-config executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands     delete-resource-adapter-config(1)
+
+SEE ALSO
+     create-resource-adapter-config(1),    list-resource-adapter-
+     configs(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
+

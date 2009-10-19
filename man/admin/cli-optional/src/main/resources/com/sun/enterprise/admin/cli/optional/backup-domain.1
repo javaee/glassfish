@@ -1,0 +1,78 @@
+
+asadmin Utility Subcommands                      backup-domain(1)
+
+NAME
+     backup-domain - performs a backup on the domain
+
+SYNOPSIS
+     backup-domain  [--domaindir domain_directory]
+      [--description description] [--echo={true | false}][--terse={true | false}]
+      [--verbose=false] [domain_name]
+
+DESCRIPTION
+     The backup-domain command backs up  files  under  the  named
+     domain. This command is supported in local mode only.
+
+OPTIONS
+     --domaindir
+
+         This option specifies the parent directory of the domain
+         upon  which  the  command  will  operate. The default is
+         install-dir/domains.
+
+     --description
+         A description can contain any string  to  help  identify
+         the  particular  backup. The description is displayed as
+         part of the information for any backup.
+
+     -e --echo
+
+         Setting to true will echo the command line statement  on
+         the standard output. Default is false.
+
+     -t --terse
+         Indicates that any output data  must  be  very  concise,
+         typically avoiding human-friendly sentences and favoring
+         well-formatted data for consumption by a script. Default
+         is false.
+
+     -v --verbose
+
+         Indicates that output data is  displayed  with  detailed
+         information. Default is false.
+
+OPERANDS
+     domain_name
+         This is the name of the domain to be backed up.  If  the
+         domain  is  not specified and only one domain exists, it
+         will be used automatically. If you have  more  than  one
+         domain, it is mandatory to specify a domain name.
+
+Java EE 6           Last change: 30 Jan 2007                    1
+
+asadmin Utility Subcommands                      backup-domain(1)
+
+EXAMPLES
+     Example 1 Using backup-domain
+
+       asadmin> backup-domain --domaindir /opt/SUNWappserver/mydomaindir domain1
+       Successfully backed up the domain
+
+       Description: 1137030607263
+       Backup Filename: /opt/SUNWappserver/mydomaindir/domain1/backups/sjsas_backup_v00001.zip
+       Date and time backup was performed: Wed Jan 11 17:50:07 PST 2006
+       Domains Directory: /opt/SUNWappserver/mydomaindir
+       Domain Directory: /opt/SUNWappserver/mydomaindir/domain1
+       Domain Name: domain1
+       Name of the user that performed the backup: jondoe
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     restore-domain(1), list-backups(1)
+
+Java EE 6           Last change: 30 Jan 2007                    2
+

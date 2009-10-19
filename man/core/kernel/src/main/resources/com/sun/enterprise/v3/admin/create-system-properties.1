@@ -1,0 +1,81 @@
+
+asadmin Utility Subcommands           create-system-properties(1)
+
+NAME
+     create-system-properties - adds one or more overridable sys-
+     tem property elements at the server level
+
+SYNOPSIS
+     create-system-properties [--help] [--target target-name] [name=value)[:name=value]*]
+
+DESCRIPTION
+     The create-system-properties subcommand adds or updates  the
+     system  properties  that  can be referenced elsewhere on the
+     server. Any configuration attribute in a server instance can
+     be overridden through a system property of the corresponding
+     name.
+
+     Enterprise Server provides hooks where tokens  (system  pro-
+     perties)  can  be  specified. Because Enterprise Server does
+     not have multiple server elements, you can specify a partic-
+     ular  token  at  any  level. When a domain supports multiple
+     servers, the override potential can  be  exploited.  When  a
+     domain  is  started or restarted, all <system-property> ele-
+     ments are resolved and available to the Java Virtual Machine
+     by using the System.setProperty() call on each of them (with
+     its name and value derived from the corresponding attributes
+     of  the  element). This is analogous to sending the elements
+     as -D parameters on the Java command line.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     name=value
+
+         The name value pairs of the system properties to add  to
+         the specified target. Multiple system properties must be
+         separated by a : (colon). If a : (colon) appears in  the
+         name  or  value of a system property, it must be escaped
+
+Java EE 6           Last change: 12 Oct 2009                    1
+
+asadmin Utility Subcommands           create-system-properties(1)
+
+         with a  (blackslash). If any system properties were pre-
+         viously defined, they are updated with the new values.
+
+EXAMPLES
+     Example 1 Creating System Properties
+
+     This example creates a system property  associated  with  an
+     HTTP listener.
+
+       asadmin> create-system-properties myserver http-listener-port=1088
+       Command create-system-properties executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     delete-system-property(1), list-system-properties(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 12 Oct 2009                    2
+

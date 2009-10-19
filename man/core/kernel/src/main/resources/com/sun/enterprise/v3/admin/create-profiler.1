@@ -1,0 +1,85 @@
+
+asadmin Utility Subcommands                    create-profiler(1)
+
+NAME
+     create-profiler - creates the profiler element
+
+SYNOPSIS
+     create-profiler [--help] [--target target_name]
+     [--classpath classpath] [--nativelibpath native_library_path] [--enabled=true]
+     [--property(name=value)[:name=value]*] profiler_name
+
+DESCRIPTION
+     The create-profiler subcommand creates the profiler element.
+     A  server  instance  is tied to the profiler by the profiler
+     element in the Java configuration. Only one profiler  exists
+     at  a  time.  If  you attempt to create a profiler while one
+     already exists, an error message is displayed.
+
+     For changes to take effect, the server must restarted.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --classpath
+
+         Java classpath string that specifies the classes  needed
+         by the profiler.
+
+     --nativelibpath
+         This path is automatically constructed to be a  concate-
+         nation  of  the Application Server installation relative
+         path for  its  native  shared  libraries,  standard  JRE
+         native  library  path,  the  shell  environment  setting
+         (LD_LIBRARY_PATH on UNIX)  and  any  path  that  may  be
+         specified in the profile element.
+
+Java EE 6           Last change: 22 Sep 2009                    1
+
+asadmin Utility Subcommands                    create-profiler(1)
+
+     --enabled
+
+         Profiler is enabled by default.
+
+     --property
+         Name/value pairs of provider-specific attributes.
+
+OPERANDS
+     profiler_name               Name of the profiler.
+
+EXAMPLES
+     Example 1 Creating a Profiler
+
+     This example creates a profiler named sample_profiler.
+
+       asadmin> create-profiler --classpath /home/appserver/
+       --nativelibpath /u/home/lib --enabled=false
+        --property defaultuser=admin:password=adminadmin sample_profiler
+       Created Profiler with id = sample_profiler
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     delete-profiler(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 22 Sep 2009                    2
+

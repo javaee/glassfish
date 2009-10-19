@@ -1,0 +1,60 @@
+
+asadmin Utility Subcommands                       list-domains(1)
+
+NAME
+     list-domains - lists the domains in the specified directory
+
+SYNOPSIS
+     list-domains [--help] [--domaindir domains]
+
+DESCRIPTION
+     The list-domains subcommand lists the domains in the  speci-
+     fied  domains  directory.  If  the  domains directory is not
+     specified, the domains  in  the  default  as-install/domains
+     directory  are  listed.  If  there  is more that one domains
+     directory, the --domaindir option  must  be  specified.  The
+     status of each domain is listed.
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --domaindir
+         The directory where the domains are  to  be  listed.  If
+         specified,  the  path  must  be  accessible in the files
+         stem. If not specified, the domains in the  default  as-
+         install/domains directory are listed.
+
+EXAMPLES
+     Example 1 Listing Domains
+
+     This example lists the domains  in  the  install-dir/domains
+     directory.
+
+       asadmin> list-domains
+       domain1 running
+       sampleDomain not running
+       Command list-domains executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6            Last change: 6 Oct 2009                    1
+
+asadmin Utility Subcommands                       list-domains(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-domain(1), delete-domain(1),  start-domain(1),  stop-
+     domain(1),
+
+     asadmin(1M)
+
+Java EE 6            Last change: 6 Oct 2009                    2
+

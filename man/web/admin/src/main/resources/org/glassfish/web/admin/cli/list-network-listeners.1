@@ -1,0 +1,44 @@
+
+asadmin Utility Subcommands             list-network-listeners(1)
+
+NAME
+     list-network-listeners  -   lists   the   existing   network
+     listeners
+
+SYNOPSIS
+     list-network-listeners
+     [--help]
+
+DESCRIPTION
+     The list-network-listeners command lists the  existing  net-
+     work  listeners.  This  command  is supported in remote mode
+     only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+EXAMPLES
+     Example 1 Using the list-network-listeners command
+
+     The following command lists all the  network  listeners  for
+     the server instance:
+
+       asadmin> list-network-listeners
+       admin-listener
+       http-listener-1
+       https-listener-2
+       Command list-network-listeners executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-network-listener(1), delete-network-listener(1)
+
+Java EE 6           Last change: 10 Sep 2009                    1
+

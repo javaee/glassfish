@@ -1,0 +1,43 @@
+
+asadmin Utility Subcommands                   list-threadpools(1)
+
+NAME
+     list-threadpools - lists all the thread pools
+
+SYNOPSIS
+     list-threadpools [--help]
+
+DESCRIPTION
+     Lists the Enterprise Server thread pools.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+EXAMPLES
+     Example 1 Listing Thread Pools
+
+     This example lists the current thread pools.
+
+       asadmin> list-threadpools
+       http-thread-pool
+       thread-pool-1
+       Command list-threadpools executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-threadpool(1), deletee-hreadpool(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 29 Sep 2009                    1
+

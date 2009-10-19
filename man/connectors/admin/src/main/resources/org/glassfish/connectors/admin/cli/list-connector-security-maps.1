@@ -1,0 +1,89 @@
+
+asadmin Utility Subcommands       list-connector-security-maps(1)
+
+NAME
+     list-connector-security-maps  -  lists  the  security   maps
+     belonging to the specified connector connection pool
+
+SYNOPSIS
+     list-connector-security-maps [--help]
+     [--securitymap security_map_name]
+     [--verbose={false|true}]
+     connector_connection_pool_name
+
+DESCRIPTION
+     Use this subcommand to list the security maps  belonging  to
+     the specified connector connection pool.
+
+     For this subcommand to succeed, you must have first  created
+     a  connector  connection  pool  using  the create-connector-
+     connection-pool subcommand.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --securitymap
+         Specifies the name of the security map contained  within
+         the  connector  connection  pool from which the identity
+         and principals should be listed. With  this  option,  --
+         verbose is redundant.
+
+     --verbose
+
+         If set to true, returns a list including  the  identity,
+         principals, and security name. The default is false.
+
+OPERANDS
+     connector_connection_pool_name
+         Name of the connector connection pool for which you want
+         to list security maps.
+
+EXAMPLES
+     Example 1 Using list-connector-security-maps with the  secu-
+     rity map option
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands       list-connector-security-maps(1)
+
+     It is assumed that  the  connector  pool  has  already  been
+     created using the create-connector-pool subcommand.
+
+       asadmin> list-connector-security-maps
+       --securitymap securityMap1 connector-Pool1
+       Command list-connector-security-maps executed successfully.
+
+     One  security  map  (securityMap1)   is   listed   for   the
+     connector-Pool1 pool.
+
+     Example 2  Using  list-connector-security-maps  without  the
+     security map option
+
+     It is assumed that  the  connector  pool  has  already  been
+     created using the create-connector-pool subcommand.
+
+       asadmin> list-connector-security-maps connector-Pool1
+       Command list-connector-security-maps executed successfully.
+
+     All  security  maps  contained  within  connector-Pool1  are
+     listed.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     delete-connector-security-map(1),          create-connector-
+     security-map(1), update-connector-security-map(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

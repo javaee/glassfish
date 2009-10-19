@@ -1,0 +1,61 @@
+
+asadmin Utility Subcommands                             enable(1)
+
+NAME
+     enable - enables the component
+
+SYNOPSIS
+     enable [--help] [--target target_name] [component_name]
+
+DESCRIPTION
+     The enable subcommand enables the  specified  deployed  com-
+     ponent.  If the component is already enabled, then it is re-
+     enabled. If it has not been deployed, then an error  message
+     is returned.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     component_name              name  of  the  component  to  be
+                                 enabled.
+
+EXAMPLES
+     Example 1 Enabling a Component
+
+     This example enables the disabled component, sampleApp.
+
+       asadmin> enable sampleApp
+       Command enable executed successfully
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+Java EE 6           Last change: 11 Sep 2009                    1
+
+asadmin Utility Subcommands                             enable(1)
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     deploy(1), , undeploy(1), disable(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6           Last change: 11 Sep 2009                    2
+

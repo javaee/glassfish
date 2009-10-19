@@ -1,0 +1,134 @@
+
+asadmin Utility Subcommands               create-jndi-resource(1)
+
+NAME
+     create-jndi-resource - registers a JNDI resource
+
+SYNOPSIS
+     create-jndi-resource [--help]
+     --restype type
+     --factoryclass class_name
+     --jndilookupname lookup_name
+     [--enabled={true|false}]
+     [--description text]
+     [--property (name=value)[:name=value]*]
+     [--target target]
+     jndi_name
+
+DESCRIPTION
+     The  create-jndi-resource  subcommand   registers   a   JNDI
+     resource.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --restype
+         The JNDI resource type. It can be topic or queue.
+
+     --factoryclass
+
+         The class that creates the JNDI resource.
+
+     --jndilookupname
+         The lookup name that the external container uses.
+
+     --enabled
+
+         Determines whether the resource is enabled  at  runtime.
+         The default is true.
+
+     --description
+         The text that provides details about the JNDI resource.
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands               create-jndi-resource(1)
+
+     --property
+
+         Optional attribute name/value pairs for configuring  the
+         resource. The following properties are available:
+
+         http-listener-1-port
+             This property specifies the port  number  for  http-
+             listener-1.  Valid  values  are  1-65535.  On  UNIX,
+             creating  sockets  that  listen  on   ports   1-1024
+             requires superuser privileges.
+
+         http-listener-2-port
+
+             This property specifies the port  number  for  http-
+             listener-2.  Valid  values  are  1-65535.  On  UNIX,
+             creating  sockets  that  listen  on   ports   1-1024
+             requires superuser privileges.
+
+         orb-listener-1-port
+             This property specifies the ORB  listener  port  for
+             IIOP connections that orb-listener-1 listens on.
+
+         IIOP_SSL_LISTENER_PORT
+
+             This property specifies the ORB  listener  port  for
+             IIOP  connections  that the IIOP listener called SSL
+             listens on.
+
+         IIOP_SSL_MUTUALAUTH_PORT
+             This property specifies the ORB  listener  port  for
+             IIOP  connections  that  the  IIOP  listener  called
+             SSL_MUTUALAUTH listens on.
+
+         JMX_SYSTEM_Connector-port
+
+             This property specifies the port number on which the
+             JMX  connector listens. Valid values are 1-65535. On
+             UNIX, creating sockets that listen on  ports  1-1024
+             requires superuser privileges.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+
+Java EE 6           Last change: 09 Oct 2009                    2
+
+asadmin Utility Subcommands               create-jndi-resource(1)
+
+         ignored.
+
+OPERANDS
+     jndi_name
+
+         The name of the JNDI resource to be created.  This  name
+         must be unique.
+
+EXAMPLES
+     Example 1 Using the create-jndi-resource subcommand
+
+       asadmin> create-jndi-resource
+       --restype queue --factoryclass sampleClass
+       --jndilookupname sample_jndi
+       --description "this is a sample jndi resource"
+       sample_jndi_resource
+       Command create-jndi-resource executed successfully
+
+     Where sample_jndi_resource is the new JNDI resource created.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     delete-jndi-resource(1), list-jndi-resources(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    3
+

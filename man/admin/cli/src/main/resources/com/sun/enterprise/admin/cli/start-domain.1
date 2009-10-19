@@ -1,0 +1,118 @@
+
+asadmin Utility Subcommands                       start-domain(1)
+
+NAME
+     start-domain - starts a domain
+
+SYNOPSIS
+     start-domain [--help] [--domaindir domain-dir] [--verbose={true|false}]
+     [ --debug ={true|false}] [--upgrade={true|false}] [domain-name]
+
+DESCRIPTION
+     The start-domain subcommand starts the specified domain.  If
+     the  domain  directory  is  not specified, the domain in the
+     default as-install/glassfish/domains directory  is  started.
+     If  there  are  two or more domains, the domain-name operand
+     must be specified.
+
+     Note -
+
+       On the Mac OS X platform, processes can bind to  the  same
+       port. To avoid this problem, do not start multiple domains
+       with the same port number at the same time.
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --domaindir
+         Specifies the directory where the domain to  be  started
+         is located. If specified, the path must be accessible in
+         the file system. If not specified,  the  domain  in  the
+         default   install-dir/glassfish/domains   directory   is
+         started.
+
+      --verbose
+     -v
+
+         Specifies whether detailed server startup  messages  are
+         displayed. Possible values are as follows:
+
+         false
+             Detailed server startup messages are not displayed.
+
+         true
+
+             A console window is opened in which detailed  server
+             startup  messages  are  displayed.  If the domain is
+
+Java EE 6            Last change: 7Oct 2009                     1
+
+asadmin Utility Subcommands                       start-domain(1)
+
+             later restarted by using the restart-domain  subcom-
+             mand, messages continue to be displayed in this con-
+             sole window. The console window that is opened  also
+             enables  you  to obtain a thread dump and, on UNIXTM
+             systems, to kill the server:
+
+                 o    On Windows  systems,  press  CTRL-Break  to
+                      obtain a thread dump.
+
+                 o    On UNIX systems, press CTRL-C to  kill  the
+                      server  and press CTRL-\ to obtain a thread
+                      dump.
+
+         --upgrade
+
+             Specifies upgrade TBWritten. Default is false.
+
+             false    TBW
+
+             true     TBW
+
+     --debug
+         If set to true, the server is started in debug mode  and
+         prints the JPDA port on the console. Default is false.
+
+OPERANDS
+     domain-name         The unique name of the domain  you  want
+                         to  start. Default is the name specified
+                         during installation, usually domain1.
+
+EXAMPLES
+     Example 1 Starting a Domain
+
+     This example starts mydomain4 in the default domains  direc-
+     tory.
+
+       asadmin> start-domain mydomain4
+       Waiting for DAS to start. ...........
+       Started domain: mydomain4
+       Domain location: /myhome/glassfishv3/glassfish/domains/mydomain4
+       Log file: /myhome/glassfishv3/glassfish/domains/mydomain4/logs/server.log
+       Admin port for the domain: 4848
+       Command start-domain executed successfully.
+
+Java EE 6            Last change: 7Oct 2009                     2
+
+asadmin Utility Subcommands                       start-domain(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-domain(1),     delete-domain(1),     list-domains(1),
+     restart-domain(1), stop-domain(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 7Oct 2009                     3
+

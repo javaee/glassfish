@@ -1,0 +1,104 @@
+
+asadmin Utility Subcommands                     create-service(1)
+
+NAME
+     create-service - configures the starting of a  DAS  or  node
+     agent on an unattended boot
+
+SYNOPSIS
+     create-service [--name servicename] [--serviceproperties serviceproperties]
+     [--dry-run={false|true}] [--domaindir domain-dir] [domain-name]
+
+DESCRIPTION
+     The create-service subcommand configures the starting  of  a
+     DAS or node agent on an unattended boot by using the Solaris
+     10 Service Management Facility (SMF). This  subcommand  must
+     be run as the OS-level user with superuser privileges. After
+     this subcommand creates the service, you must start, enable,
+     disable,  delete,  or  stop  the service. The DAS/node-agent
+     configuration must be  stored  on  a  folder  to  which  the
+     superuser  has access and cannot be stored on a network file
+     system. The service is created such that it is controlled by
+     the  OS-level user, who owns the folder where the configura-
+     tion of the DAS or node agent resides.
+
+     To run this subcommand, you must have solaris.smf.* authori-
+     zation.  (Refer  to  the useradd and usermod man pages.) You
+     must also have  write  permission  in  the  directory  tree:
+     /var/svc/manifest/application/SUNWappserver.   Usually,  the
+     superuser has both these permissions. To run these  commands
+     as non-root user, the system administrator must be contacted
+     so that the relevant authorizations are granted.   You  need
+     to also ensure that:
+
+         o    Solaris 10 administration commands such as  svccfg,
+              svcs,  and auths are available in the PATH, so that
+              these commands can be executed. A simple test to do
+              so  is  to  issue the subcommand, which svccfg on a
+              bash shell.
+
+         o    You should have  write  permission  for  the  path,
+              /var/svc/manifest/application.
+
+     This subcommand is supported in local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands                     create-service(1)
+
+     --name
+
+          Indicates the name of the  service  and  overrides  the
+         default, if present.
+
+     --serviceproperties
+          Specifies a : (colon)-separated list of various proper-
+         ties  that  are specific to the service. For Solaris 10,
+         if you specify  net_privaddr,  the  service's  processes
+         will  be able to bind to the privileged ports (<1024) on
+         the platform. You can bind to ports< 1024  only  if  the
+         owner  of  the  service is superuser, otherwise, this is
+         not allowed. If  you  specify  startinstances=true/false
+         for a node agent, all the instances are started when the
+         node agent starts.
+
+     --dry-run
+
+         Default is false.
+
+     --domaindir
+
+OPERANDS
+     domain-name
+
+          The absolute path of directory on  disk  that  contains
+         the configuration of the domain or node agent.
+
+EXAMPLES
+     Example 1 Creating a Service
+
+     This example creates a service.
+
+       asadmin> create-service
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 8 Oct 2009                    2
+
+asadmin Utility Subcommands                     create-service(1)
+
+SEE ALSO
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    3
+

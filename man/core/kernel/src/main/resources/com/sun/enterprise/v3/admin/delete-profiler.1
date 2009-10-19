@@ -1,0 +1,58 @@
+
+asadmin Utility Subcommands                    delete-profiler(1)
+
+NAME
+     delete-profiler - removes the profiler element
+
+SYNOPSIS
+     delete-profiler [--help] [--target target_name]
+
+DESCRIPTION
+     The delete-profiler subcommand deletes the profiler  element
+     in  the Java configuration. Only one profiler can exist at a
+     time. If you attempt to create a profiler while one  already
+     exists,  an error message is displayed and the existing pro-
+     filer must be deleted.
+
+     For changes to take effect, the server must restarted.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Deleting a Profile
+
+     This example deletes the profiler named sample_profiler.
+
+       asadmin> delete-profiler sample_profiler
+       Command delete-profiler executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6           Last change: 22 Sep 2009                    1
+
+asadmin Utility Subcommands                    delete-profiler(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-profiler(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 22 Sep 2009                    2
+

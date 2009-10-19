@@ -1,0 +1,60 @@
+
+asadmin Utility Subcommands                            disable(1)
+
+NAME
+     disable - disables the component
+
+SYNOPSIS
+     disable [--help] [--target target_name] component_name
+
+DESCRIPTION
+     The disable subcommand immediately  disables  the  specified
+     deployed  component. If the component has not been deployed,
+     an error message is returned.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     component_name              name of the component to be dis-
+                                 abled.
+
+EXAMPLES
+     Example 1 Disabling a Component
+
+     This example disables the deployed component sampleApp.
+
+       asadmin> disable sampleApp
+       Command disable executed successfully
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+Java EE 6            Last change: 9 Sep 2009                    1
+
+asadmin Utility Subcommands                            disable(1)
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     deploy(1), undeploy(1), enable(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6            Last change: 9 Sep 2009                    2
+

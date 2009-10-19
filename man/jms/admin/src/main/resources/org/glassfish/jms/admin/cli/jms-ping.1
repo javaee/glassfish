@@ -1,0 +1,63 @@
+
+asadmin Utility Subcommands                           jms-ping(1)
+
+NAME
+     jms-ping - checks if the JMS service is up and running
+
+SYNOPSIS
+     jms-ping [--help]
+     [target]
+
+DESCRIPTION
+     The jms-ping subcommand checks if the Java  Message  Service
+     (JMS)  service  (also  known  as the JMS provider) is up and
+     running. When you start the Enterprise Server, the JMS  ser-
+     vice starts by default.
+
+     The jms-ping subcommand pings  only  the  default  JMS  host
+     within the JMS service. It displays an error message when it
+     is unable to ping a built-in JMS service.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Verifying that the JMS service is running
+
+     The following subcommand checks to see if the JMS service is
+     running.
+
+       asadmin> jms-ping
+       JMS-ping command executed successfully
+       Command jms-ping executed successfully.
+
+Java EE 6           Last change: 16 Sep 2009                    1
+
+asadmin Utility Subcommands                           jms-ping(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-jms-host(1), list-jms-hosts(1), delete-jms-host(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 16 Sep 2009                    2
+

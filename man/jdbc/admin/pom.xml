@@ -52,7 +52,7 @@
         <developer>
             <id>pauldavies</id>
             <name>Paul Davies</name>
-            <url>http://blogs.sun.com/aquatic/techscribe</url>
+            <url>http://blogs.sun.com/techscribe</url>
             <organization>Sun Microsystems, Inc.</organization>
             <roles>
                 <role>developer</role>
@@ -63,9 +63,6 @@
 	<resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/*.1</include>
-                </includes>
             </resource>
           </resources>
     </build>

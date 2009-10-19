@@ -1,0 +1,61 @@
+
+asadmin Utility Subcommands                delete-jms-resource(1)
+
+NAME
+     delete-jms-resource - removes a JMS resource
+
+SYNOPSIS
+     delete-jms-resource [--help]
+     [--target target]
+     jndi_name
+
+DESCRIPTION
+     The delete-jms-resource  subcommand  removes  the  specified
+     Java  Message Service (JMS) resource. Ensure that you remove
+     all references to this resource before executing  this  sub-
+     command. This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi_name
+
+         The JNDI name of the JMS resource to be deleted.
+
+EXAMPLES
+     Example 1 Deleting a JMS destination resource
+
+     The  following  subcommand  deletes  the   JMS   destination
+     resource named jms/Queue.
+
+       asadmin> delete-jms-resource jms/Queue
+       Command delete-jms-resource executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6           Last change: 16 Sep 2009                    1
+
+asadmin Utility Subcommands                delete-jms-resource(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-jms-resource(1), list-jms-resources(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 16 Sep 2009                    2
+

@@ -1,0 +1,62 @@
+
+asadmin Utility Subcommands          delete-connector-resource(1)
+
+NAME
+     delete-connector-resource - removes the  connector  resource
+     with the specified JNDI name
+
+SYNOPSIS
+     delete-connector-resource [--help] [--target target] jndi_name
+
+DESCRIPTION
+     The delete-connector-resource subcommand removes the connec-
+     tor  resource  with the JNDI name, which is specified by the
+     jndi_name operand.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi_name
+
+         The JNDI name of this connector resource.
+
+EXAMPLES
+     Example 1 Using the delete-connector-resource subcommand
+
+       asadmin> delete-connector-resource jms/qConnFactory
+       Command delete-connector-resource executed successfully
+
+     Where jms/qConnFactory is the  connector  resource  that  is
+     removed.
+
+EXIT STATUS
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands          delete-connector-resource(1)
+
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-connector-resource(1), list-connector-resources(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

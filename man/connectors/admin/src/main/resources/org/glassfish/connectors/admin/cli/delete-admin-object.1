@@ -1,0 +1,60 @@
+
+asadmin Utility Subcommands                delete-admin-object(1)
+
+NAME
+     delete-admin-object - removes the administered  object  with
+     the specified JNDI name.
+
+SYNOPSIS
+     delete-admin-object [--help] [--target target] jndi-name
+
+DESCRIPTION
+     This subcommand removes the  administered  object  with  the
+     specified JNDI name.
+
+     This subcommand is supported in remote mote only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi-name
+
+         JNDI name of the administered object to be deleted.
+
+EXAMPLES
+     Example 1 Deleting an Administered Object
+
+     This  example  deletes   the   administered   object   named
+     jms/samplelqueue.
+
+       asadmin> delete-admin-object jms/samplequeue
+       Command delete-admin-object executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands                delete-admin-object(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-admin-object(1), list-admin-objects(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

@@ -1,0 +1,59 @@
+
+asadmin Utility Subcommands                list-http-listeners(1)
+
+NAME
+     list-http-listeners  -  lists  the  existing  HTTP   network
+     listeners
+
+SYNOPSIS
+     list-http-listeners
+     [--help]
+     [target]
+
+DESCRIPTION
+     The list-http-listeners subcommand lists the  existing  HTTP
+     network  listeners.  This  subcommand is supported in remote
+     mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Using the list-http-listeners subcommand
+
+     The following command lists all the HTTP  network  listeners
+     for the server instance:
+
+       asadmin> list-http-listeners
+       http-listener-1
+       http-listener-2
+       admin-listener
+       Command list-http-listeners executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+Java EE 6           Last change: 30 Jan 2007                    1
+
+asadmin Utility Subcommands                list-http-listeners(1)
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-http-listener(1), delete-http-listener(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 30 Jan 2007                    2
+

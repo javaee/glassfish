@@ -1,0 +1,56 @@
+
+asadmin Utility Subcommands            list-javamail-resources(1)
+
+NAME
+     list-javamail-resources - lists the existing  JavaMail  ses-
+     sion resources
+
+SYNOPSIS
+     list-javamail-resources [--help [--target target]
+
+DESCRIPTION
+     The list-javamail-resources subcommand  lists  the  existing
+     JavaMail session resources.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing JavaMail Resources
+
+     This example lists the JavaMail session  resources  for  the
+     server instance.
+
+       asadmin> list-javamail-resources
+       mail/MyMailSession
+       Command list-javamail-resources executed successfuly.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands            list-javamail-resources(1)
+
+SEE ALSO
+     create-javamail-resource(1), delete-javamail-resource(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
+

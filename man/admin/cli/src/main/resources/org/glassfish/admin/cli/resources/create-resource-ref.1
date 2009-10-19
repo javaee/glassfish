@@ -1,0 +1,80 @@
+
+asadmin Utility Subcommands                create-resource-ref(1)
+
+NAME
+     create-resource-ref - creates a reference to a resource
+
+SYNOPSIS
+     create-resource-ref
+     [--help]
+     [--target target]
+     [--enabled={false|true}]
+     reference_name
+
+DESCRIPTION
+     The create-resource-ref subcommand creates a reference  from
+     a  cluster or an unclustered server instance to a previously
+     created resource (for example, a JDBC resource created using
+     the   create-jdbc-resource   subcommand).  This  effectively
+     results in the resource being made  available  in  the  JNDI
+     tree of the targeted instance or cluster.
+
+     The target instance or instances making up the cluster  need
+     not  be running or available for this subcommand to succeed.
+     If one or  more  instances  are  not  available,  they  will
+     receive the new resource the next time they start.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --enabled
+
+         Indicates whether the resource should be  enabled.  This
+         value  will  take effect only if the resource is enabled
+         at the global level. The default is true.
+
+OPERANDS
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands                create-resource-ref(1)
+
+     reference_name
+
+         The name or JNDI name of the resource.
+
+EXAMPLES
+     Example 1 Using the create-resource-ref subcommand
+
+     The following subcommand creates a reference to the JMS des-
+     tination resource jms/Topic on the cluster Cluster1.
+
+       asadmin> create-resource-ref --user admin
+       --passwordfile passwords.txt --target Cluster1 jms/Topic
+       Command create-resource-ref executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     delete-resource-ref(1), list-resource-refs(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

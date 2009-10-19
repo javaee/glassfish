@@ -1,0 +1,103 @@
+
+asadmin Utility Subcommands                unset-web-env-entry(1)
+
+NAME
+     unset-web-env-entry - unsets  an  environment  entry  for  a
+     deployed web application or module
+
+SYNOPSIS
+     unset-web-env-entry [--help] --name=env-entry-name application-name[/module-name]
+
+DESCRIPTION
+     The unset-web-env-entry  subcommand  unsets  an  environment
+     entry for one of the following items:
+
+         o    A deployed web application
+
+         o    A web module in a deployed  Java  Platform,  Enter-
+              prise Edition (Java EE) application
+
+     When an entry is unset, its value reverts to the  value,  if
+     any, that is set in the application's deployment descriptor.
+
+     The application must  already  be  deployed.  Otherwise,  an
+     error occurs.
+
+     The entry must have previously been set by  using  the  set-
+     web-env-entry(1) subcommand. Otherwise, an error occurs.
+
+     Note -
+
+       Do not use the unset-web-env-entry  subcommand  to  change
+       the  value  of  an  environment  entry  that  is set in an
+       application's  deployment  descriptor.  Instead,  use  the
+       set-web-env-entry subcommand for this purpose.
+
+     This subcommand enables you to change the configuration of a
+     deployed   application   without  the  need  to  modify  the
+     application's deployment descriptors and repackage and rede-
+     ploy the application.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+Java EE 6            Last change: 7 Oct 2009                    1
+
+asadmin Utility Subcommands                unset-web-env-entry(1)
+
+     --name
+
+         The name of the environment entry that is to  be  unset.
+         The  name  is  a JNDI name relative to the java:comp/env
+         context. The name must be  unique  within  a  deployment
+         component.  This  entry must have previously been set by
+         using the set-web-env-entry  subcommand.  Otherwise,  an
+         error occurs.
+
+OPERANDS
+     application-name
+         The  name  of  the  application.  The  application  must
+         already be deployed. Otherwise, an error occurs.
+
+     module-name
+
+         The name of the module within the  application.  module-
+         name  is  required only if the environment entry applies
+         to a web module of a Java EE application. If  specified,
+         module-name must follow application-name, separated by a
+         slash (/).
+
+EXAMPLES
+     Example 1 Unsetting an Environment Entry for a Web  Applica-
+     tion
+
+     This example unsets the environment entry Hello User of  the
+     web  application  hello.  The entry reverts to the value, if
+     any,  that  is  defined  in  the  application's   deployment
+     descriptor.
+
+       asadmin> unset-web-env-entry --name="Hello User" hello
+
+       Command unset-web-env-entry executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     list-web-env-entry(1), set-web-env-entry(1)
+
+Java EE 6            Last change: 7 Oct 2009                    2
+
+asadmin Utility Subcommands                unset-web-env-entry(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    3
+

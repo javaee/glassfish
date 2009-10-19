@@ -1,0 +1,90 @@
+
+asadmin Utility Subcommands                create-admin-object(1)
+
+NAME
+     create-admin-object - adds the administered object with  the
+     specified JNDI name
+
+SYNOPSIS
+     create-admin-object [--help] --restype restype --raname  resource_adapter_name
+     [--enabled={true|false}] [--target target] [--description text]
+     [--classname class-name] [--property name=value[:name=value]*] jndi-name
+
+DESCRIPTION
+     The create-admin-object subcommand creates the  administered
+     object that has a specified JNDI name.
+
+     This subcommand is supported in remote mote only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --restype
+
+         Administers the object resource types, as defined by the
+         resource adapter in the ra.xml file.
+
+     --classname
+
+      --raname
+
+         Specifies the name of the  resource  adapter  associated
+         with this object.
+
+     --enabled
+         Specifies if this object is enabled. Default is true.
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands                create-admin-object(1)
+
+     --description
+
+         The text description of the administered object.
+
+     --property
+         Describes the "name/values" pairs  for  configuring  the
+         resource.  Dependent  on  the  resource adapter. For JMS
+         properties, see create-jms-resource(1) for JMS  destina-
+         tion resources.
+
+OPERANDS
+     jndi-name
+
+         This is the JNDI name of the administered object  to  be
+         created.
+
+EXAMPLES
+     Example 1 Creating an Administered Object
+
+     The javax.jms.Queue  resource  type  is  obtained  from  the
+     ra.xml  file. The jmsrar.rar must be deployed before running
+     this subcommand.
+
+       asadmin> create-admin-object --restype javax.jms.Queue --raname jmsra
+       --description "sample administered object" --property Name=sample_jmsqueue jms/samplequeue
+       Command create-admin-object executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     delete-admin-object(1), list-admin-objects(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
+

@@ -1,0 +1,68 @@
+
+asadmin Utility Subcommands                      flush-jmsdest(1)
+
+NAME
+     flush-jmsdest - purges messages in a JMS destination.
+
+SYNOPSIS
+     flush-jmsdest [--help]
+     --desttype {topic|queue}
+     [--target target]
+     destname
+
+DESCRIPTION
+     The flush-jmsdest subcommand purges the messages from a phy-
+     sical destination in the server's Java Message Service (JMS)
+     configuration.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     -T --desttype
+
+         This option indicates the type of  physical  destination
+         from  which  you  want  to purge messages. The supported
+         destination types are topic and queue.
+
+OPERANDS
+     dest_name
+         The unique identifier  of  the  JMS  destination  to  be
+         purged.
+
+EXAMPLES
+     Example 1 Purging messages from a physical destination
+
+     The following subcommand  purges  messages  from  the  queue
+     named PhysicalQueue.
+
+       asadmin> flush-jmsdest --desttype queue PhysicalQueue
+
+Java EE 6           Last change: 16 Sep 2009                    1
+
+asadmin Utility Subcommands                      flush-jmsdest(1)
+
+       Command flush-jmsdest executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-jmsdest(1), list-jmsdest(1), create-jmsdest(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 16 Sep 2009                    2
+

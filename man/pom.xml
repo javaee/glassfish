@@ -51,6 +51,24 @@
    </distributionManagement>
    <version>3.0-SNAPSHOT</version>
    <modules>
+       <module>admin/cli</module>
+       <module>admin/cli-optional</module>
+       <module>admin/monitor</module>
+       <module>appclient/client/acc</module>
+       <module>appclient/server/core</module>
+       <module>connectors/admin</module>
+       <module>core/kernel</module>
+       <module>deployment/admin</module>
+       <module>deployment/javaee-core</module>
+       <module>ejb/ejb-container</module>
+       <module>flashlight/framework</module>
        <module>jdbc/admin</module>
+       <module>jms/admin</module>
+       <module>orb/orb-connector</module>
+       <module>security/core</module>
+       <module>transaction/jta</module>
+       <module>transaction/jts</module>
+       <module>web/admin</module>
+       <module>web/gui-plugin-common</module>
    </modules>
 </project>

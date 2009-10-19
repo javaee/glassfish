@@ -1,0 +1,86 @@
+
+asadmin Utility Subcommands                  create-threadpool(1)
+
+NAME
+     create-threadpool - adds a thread pool
+
+SYNOPSIS
+     create-threadpool [--help] [--target target_name] [--maxthreadpoolsize max_threadpool_size]
+     [--minthreadpoolsize min_threadpool_size] [--idletimeout idletimeout-in-seconds]
+     [--workqueues number_work_queues] threadpool_id
+
+DESCRIPTION
+     The create-threadpool subcommand creates a thread pool  with
+     the  specified  name.  You  can  specify maximum and minimum
+     number of threads in the pool, the quantity of work  queues,
+     and  the  idle  timeout of a thread. The created thread pool
+     can be used for servicing IIOP  requests  and  for  resource
+     adapters  to service work management requests. A thread pool
+     can be used in multiple resource adapters.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --maxthreadpoolsize
+
+         Specifies the maximum number of  threads  the  pool  can
+         contain. Default is 5.
+
+     --minthreadpoolsize
+         Specifies the minimum number of  threads  in  the  pool.
+         These  are created when the thread pool is instantiated.
+         Default is 2.
+
+     --idletimeout
+
+         Specifies the amount of time in seconds after which idle
+         threads are removed from the pool. Default is 900.
+
+Java EE 6           Last change: 13 Oct 2009                    1
+
+asadmin Utility Subcommands                  create-threadpool(1)
+
+     --workqueues
+
+         Identifies the total number of work queues  serviced  by
+         this thread pool.
+
+OPERANDS
+     threadpool_id
+         An ID for the work  queue;  for  example,  threadpool-1,
+         threadpool-2, and so forth.
+
+EXAMPLES
+     Example 1 Creating a Thread Pool
+
+     This command creates a new thread pool called threadpool-l.
+
+       asadmin> create-threadpool --maxthreadpoolsize 100
+       --minthreadpoolsize 20 --idletimeout 2 threadpool-1
+       Command create-threadpool executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     deletee-hreadpool(1), list-threadpools(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 13 Oct 2009                    2
+

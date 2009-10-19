@@ -1,0 +1,62 @@
+
+asadmin Utility Subcommands                            version(1)
+
+NAME
+     version - displays the Enterprise Server version information
+
+SYNOPSIS
+     version [--help] [--verbose={false|true}]
+
+DESCRIPTION
+     Use the version subcommand to display the  version  informa-
+     tion for Enterprise Server. If the subcommand cannot commun-
+     icate  with   Enterprise   Server   by   using   the   given
+     user/password   and  host/port,  then  the  subcommand  will
+     retrieve the version locally and display a warning message.
+
+     This subcommand is supported in remote mode and local mode.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --verbose
+         If this flag is set to true, the  version  of  the  Java
+         Runtime  Environment  (JRE) that the server runs is pro-
+         vided. Default is false.
+
+EXAMPLES
+     Example 1 Displaying Enterprise Server Version Information
+
+       asadmin> version
+       GlassFish v3  (build b59)
+       Command version executed successfully.
+
+     If the server cannot be reached, you might receive  informa-
+     tion similar to the following.
+
+       Version string could not be obtained from Server [localhost:4848] for some reason.
+       (Turn debugging on to see details).
+       Locally retrieved version string from version class
+       (com.sun.appserv.server.util.Version) is [GlassFish v3.0-b59  (build 59)]
+       Command version executed successfully.
+
+Java EE 6           Last change: 29 Sep 2009                    1
+
+asadmin Utility Subcommands                            version(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     list-modules(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 29 Sep 2009                    2
+

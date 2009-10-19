@@ -1,0 +1,74 @@
+
+asadmin Utility Subcommands                  list-applications(1)
+
+NAME
+     list-applications - lists deployed applications
+
+SYNOPSIS
+     list-applications [--help] [--type type]
+
+DESCRIPTION
+     The list-applications  subcommand  lists  deployed  Java  EE
+     applications  and  the  type  of  each  application  that is
+     listed.
+
+      If the --type option is not specified, all applications are
+     listed.  If the type option is specified, you must specify a
+     type. The possible types are listed in the  Options  section
+     of this help page.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --type
+         Specifies the type of the applications that  are  to  be
+         listed. The options are as follows:
+
+             o    application
+
+             o    appclient
+
+             o    connector
+
+             o    ejb
+
+             o    jruby
+
+             o    web
+
+             o    webservice
+         If no type is specified, all applications are listed.
+
+EXAMPLES
+     Example 1 Listing the Web Applications
+
+       asadmin> list-applications --type web
+
+Java EE 6           Last change: 11 Sep 2009                    1
+
+asadmin Utility Subcommands                  list-applications(1)
+
+       hellojsp <web>
+       Command list-applications executed successfully
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     list-components(1), list-sub-components(1),  show-component-
+     status(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6           Last change: 11 Sep 2009                    2
+

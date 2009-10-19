@@ -1,0 +1,41 @@
+
+asadmin Utility Subcommands              flush-connection-pool(1)
+
+NAME
+     flush-connection-pool - reinitializes the connections in the
+     specified connection pool
+
+SYNOPSIS
+     flush-connection-pool [--help] pool_name
+
+DESCRIPTION
+     The flush-connection-pool  subcommand  resets  a  connection
+     pool to its initial state for both JDBC connection pools and
+     connector connection pools. It destroys any existing connec-
+     tions,  so  any  existing  transactions are lost and must be
+     retired. It then recreates connections established  for  the
+     pool and restores the pool to its steady pool size.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     pool_name
+         The name of the connection pool to reinitialize.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    1
+

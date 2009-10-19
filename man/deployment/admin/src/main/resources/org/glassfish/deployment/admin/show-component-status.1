@@ -1,0 +1,62 @@
+
+asadmin Utility Subcommands              show-component-status(1)
+
+NAME
+     show-component-status - displays the status of the  deployed
+     component
+
+SYNOPSIS
+     show-component-status  [--help] [--target target] component-name
+
+DESCRIPTION
+     The show-component-status subcommand gets the status (either
+     enabled or disabled) of the deployed component.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     component-name
+
+         The name of the component whose status is to be listed.
+
+EXAMPLES
+     Example 1 Showing the Status of a Component
+
+     This example gets the status of the MEjbApp component.
+
+       asadmin> show-component-status MEjbApp
+       Status of MEjbApp is enabled
+       Command show-component-status executed successfully.
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+Java EE 6           Last change: 11 Sep 2009                    1
+
+asadmin Utility Subcommands              show-component-status(1)
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     list-components(1), list-sub-components(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6           Last change: 11 Sep 2009                    2
+

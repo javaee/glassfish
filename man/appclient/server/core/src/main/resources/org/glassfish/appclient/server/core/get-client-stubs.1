@@ -1,0 +1,71 @@
+
+asadmin Utility Subcommands                   get-client-stubs(1)
+
+NAME
+     get-client-stubs - retrieves the client stub JAR file.
+
+SYNOPSIS
+     get-client-stubs
+     [--help]
+      --appname  application_name
+     [--target target_name] [local_directory_path]
+
+DESCRIPTION
+     The get-client-stubs  subcommand  copies  the  required  JAR
+     files  for an AppClient stand-alone module or each AppClient
+     module in an application from  the  server  machine  to  the
+     local  directory.  Each  client's stub JAR file is retrieved
+     separately, along with any required supporting JAR  files  .
+     The  client JAR file name is of the form app-nameClient.jar.
+     Before executing the get-client-stubs subcommand,  you  must
+     deploy  the  application or module. The client stub JAR file
+     is useful for running the application  using  the  appclient
+     utility. This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --appname
+         The  name  of  the  application  or  stand-alone  client
+         module.
+
+     --target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     local_directory_path
+         The path to the local directory where  the  client  stub
+         JAR  file  should  be stored. The default is the current
+         directory.
+
+EXAMPLES
+
+Java EE 6           Last change: 15 Sep 2009                    1
+
+asadmin Utility Subcommands                   get-client-stubs(1)
+
+     Example 1 Using get-client-stubs
+
+       asadmin> get-client-stubs --appname myapplication /sample/example
+       Command get-client-stubs executed successfully
+
+EXIT STATUS
+     0                   command executed successfully
+
+     1                   error in executing the command
+
+SEE ALSO
+     deploy(1)redeploy(1)undeploy(1)
+
+     appclient(1M), asadmin(1M), package-appclient(1M)
+
+Java EE 6           Last change: 15 Sep 2009                    2
+

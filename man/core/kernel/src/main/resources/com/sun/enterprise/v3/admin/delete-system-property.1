@@ -1,0 +1,64 @@
+
+asadmin Utility Subcommands             delete-system-property(1)
+
+NAME
+     delete-system-property - removes a system  property  of  the
+     domain, configuration, cluster, or server instance, one at a
+     time
+
+SYNOPSIS
+     delete-system-property [--help] [--target  target_name ]
+     [property_name]
+
+DESCRIPTION
+     The delete-system-property subcommand deletes a system  pro-
+     perty   of  a  domain,  configuration,  cluster,  or  server
+     instance. Make sure that the system property is  not  refer-
+     enced elsewhere in the configuration before deleting it.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     property_name
+
+         The name of the system property to remove.
+
+EXAMPLES
+     Example 1 Deleting a System Property
+
+     This  example  deletes  the  system  property  named   http-
+     listener-port.
+
+       asadmin> delete-system-property http-listener-port
+       Command delete-system-property executed successfully.
+
+Java EE 6            Last change: 9 Oct 2009                    1
+
+asadmin Utility Subcommands             delete-system-property(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-system-properties(1), list-system-properties(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 9 Oct 2009                    2
+

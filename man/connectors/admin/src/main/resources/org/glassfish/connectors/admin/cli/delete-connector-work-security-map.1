@@ -1,0 +1,73 @@
+
+asadmin Utility Subcommands
+                            delete-connector-work-security-map(1)
+
+NAME
+     delete-connector-work-security-map - deletes a work security
+     map for the specified resource adapter.
+
+SYNOPSIS
+     delete-connector-work-security-map [--help]
+     --raname resource-adapter-name
+     work-security-map-name
+
+DESCRIPTION
+     Use this subcommand to delete a security map associated with
+     the specified resource adapter.
+
+     The enterprise information system (EIS) is any  system  that
+     holds  the  information.  It can be a mainframe, a messaging
+     system, a database system, or an application.
+
+     For this subcommand to succeed, you must have first  created
+     and deployed the specified resource adapter.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --raname
+         Indicates the connector module name with which the  work
+         security map is associated.
+
+OPERANDS
+     work-security-map-name
+
+         The name of the work security map to be deleted.
+
+EXAMPLES
+     Example 1 Using the delete-connector-work-security-map  sub-
+     command
+
+       asadmin delete-connector-work-security-map
+       --raname resource_adapter_name my_work_security_map_name
+       Command delete-connector-work-security-map executed successfully.
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands
+                            delete-connector-work-security-map(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-connector-work-security-map(1),  list-connector-work-
+     security-maps(1), update-connector-work-security-map(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+
+asadmin Utility Subcommands
+                            delete-connector-work-security-map(1)
+
+Java EE 6           Last change: 09 Oct 2009                    3
+

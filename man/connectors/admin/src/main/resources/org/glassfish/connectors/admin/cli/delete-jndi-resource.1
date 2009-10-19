@@ -1,0 +1,61 @@
+
+asadmin Utility Subcommands               delete-jndi-resource(1)
+
+NAME
+     delete-jndi-resource - removes a JNDI resource
+
+SYNOPSIS
+     delete-jndi-resource [--help] [--target target] jndi_name
+
+DESCRIPTION
+     The delete-jndi-resource subcommand  removes  the  specified
+     JNDI resource.
+
+     You must remove all associations to the JNDI resource before
+     you execute this subcommand.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi_name
+
+         The name of the JNDI resource to be removed.
+
+EXAMPLES
+     Example 1 Using the delete-jndi-resource subcommand
+
+       asadmin> delete-jndi-resource sample_jndi_resource
+       Command delete-jndi-resource executed successfully.
+
+     Where sample_jndi_resource is the resource to be removed.
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands               delete-jndi-resource(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-jndi-resource(1), list-jndi-resources(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
+

@@ -1,0 +1,84 @@
+
+asadmin Utility Subcommands                         delete-ssl(1)
+
+NAME
+     delete-ssl - deletes the SSL element in  the  selected  HTTP
+     listener, IIOP listener, or IIOP service
+
+SYNOPSIS
+     delete-ssl
+     [--help]
+      --type  listener_or_service_type listener_id
+
+DESCRIPTION
+     The delete-ssl subcommand deletes the  SSL  element  in  the
+     selected HTTP listener, IIOP listener, or IIOP service.
+
+     The listener_id is not  required  if  the  --type  is  iiop-
+     service.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     If an option has a short option name, then the short  option
+     precedes  the  long option name. Short options have one dash
+     whereas long options have two dashes.
+
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+      --type
+
+         The type of service or listener for  which  the  SSL  is
+         deleted. The type must be one of the following types:
+
+             o    http-listener
+
+             o    iiop-listener
+
+             o    iiop-service
+
+Java EE 6           Last change: 28 Aug 2009                    1
+
+asadmin Utility Subcommands                         delete-ssl(1)
+
+OPERANDS
+     listener_id
+
+          The ID of the listener from which the SSL element is to
+         be deleted.
+
+         The listener_id operand is not required if the --type is
+         iiop-service.
+
+EXAMPLES
+     Example 1 Deleting an SSL element from an HTTP listener
+
+     The following example shows how to  delete  an  SSL  element
+     from an HTTP listener named http-listener-1.
+
+       asadmin> delete-ssl
+       --type http-listener http-listener-1
+       Command delete-ssl executed successfully.
+
+EXIT STATUS
+     0                            command executed successfully
+
+     1                            error in executing the command
+
+SEE ALSO
+     create-ssl(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 28 Aug 2009                    2
+

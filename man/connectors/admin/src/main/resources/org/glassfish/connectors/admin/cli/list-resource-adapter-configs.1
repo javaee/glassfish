@@ -1,0 +1,62 @@
+
+asadmin Utility Subcommands      list-resource-adapter-configs(1)
+
+NAME
+     list-resource-adapter-configs  -  lists  the  names  of  the
+     current resource adapter configurations
+
+SYNOPSIS
+     list-resource-adapter-configs [--help] [--raname connector-module-name]
+
+DESCRIPTION
+     This command lists  the  configuration  information  in  the
+     domain.xml  for  the  connector  module.   It lists an entry
+     called resource-adapter-config in the  domain.xml  file.  If
+     the  --raname option is specified, only the resource adapter
+     configurations  for  the  specified  connector  module   are
+     listed.
+
+     This command is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --raname
+         This option specifies the connector module name.
+
+OPERANDS
+     target
+
+         This operand is deprecated.
+
+EXAMPLES
+     Example 1 Listing the Resource Adapter Configurations
+
+     This example lists the current resource  adapter  configura-
+     tions.
+
+       asadmin> list-resource-adapter-configs
+       ra1
+       ra2
+       Command list-resource-adapter-configs executed successfully
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands      list-resource-adapter-configs(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-resource-adapter-config(1),  delete-resource-adapter-
+     config(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
+

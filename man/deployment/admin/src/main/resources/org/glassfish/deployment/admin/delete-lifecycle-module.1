@@ -1,0 +1,62 @@
+
+asadmin Utility Subcommands            delete-lifecycle-module(1)
+
+NAME
+     delete-lifecycle-module - removes the lifecycle module
+
+SYNOPSIS
+     delete-lifecycle-module
+     [--help]
+      [ --target  target]
+      module_name
+
+DESCRIPTION
+     The delete-lifecycle-module subcommand removes  a  lifecycle
+     module.  A  lifecycle  module  provides a means of running a
+     short or long duration Java-based task at a  specific  stage
+     in  the  server  life cycle. This subcommand is supported in
+     remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     module_name
+
+         This operand is a unique  identifier  for  the  deployed
+         server lifecycle event listener module.
+
+EXAMPLES
+     Example 1 Using delete-lifecycle-module
+
+       asadmin> delete-lifecycle-module customSetup
+       Command delete-lifecycle-module executed successfully
+
+     Where: customSetup is the lifecycle module deleted.
+
+Java EE 6            Last change: 2 Sep 2009                    1
+
+asadmin Utility Subcommands            delete-lifecycle-module(1)
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-lifecycle-module(1), list-lifecycle-modules(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 2 Sep 2009                    2
+

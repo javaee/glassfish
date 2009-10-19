@@ -1,0 +1,45 @@
+
+asadmin Utility Subcommands                    delete-protocol(1)
+
+NAME
+     delete-protocol - removes a protocol
+
+SYNOPSIS
+     delete-protocol
+     [--help]
+     protocol-name
+
+DESCRIPTION
+     The delete-protocol subcommand removes the specified  proto-
+     col. This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     protocol-name               The name of the protocol  to  be
+                                 deleted.
+
+EXAMPLES
+     Example 1 Using the delete-protocol subcommand
+
+     The following command deletes the protocol named http-1:
+
+       asadmin> delete-protocol http-1
+       Command delete-protocol executed successfully.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-protocol(1), list-protocols(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 10 Sep 2009                    1
+

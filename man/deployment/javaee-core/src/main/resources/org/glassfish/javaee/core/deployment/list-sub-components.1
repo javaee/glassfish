@@ -1,0 +1,72 @@
+
+asadmin Utility Subcommands                list-sub-components(1)
+
+NAME
+     list-sub-components - lists EJBs  or  Servlets  in  deployed
+     module or module of deployed application
+
+SYNOPSIS
+     list-sub-components [--help] [--type type]
+     [--appname appname] modulename
+
+DESCRIPTION
+     The list-sub-commands subcommand lists EJBs or servlets in a
+     deployed module or in a module of a deployed application. If
+     a module is not specified, all modules are  listed.  The  --
+     appname  option  functions only when the specified module is
+     standalone. To display a specific module in an  application,
+     you must specify the module name with the --appname option.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --type
+         Specifies the  type  of  component  to  be  listed.  The
+         options  are ejbs and servlets. If nothing is specified,
+         then all of the components are listed.
+
+     --appname
+
+         Identifies the name of the application. This  option  is
+         required when the desired output is the subcomponents of
+         an embedded module of a deployed application.
+
+OPERANDS
+     modulename
+         Specifies the name of the module containing the  subcom-
+         ponent.
+
+EXAMPLES
+     Example 1 Listing Subcomponents
+
+     This example lists the subcomponents of the MEjbApp applica-
+     tion within the mejb.jar module.
+
+Java EE 6           Last change: 11 Sep 2009                    1
+
+asadmin Utility Subcommands                list-sub-components(1)
+
+       asadmin> list-sub-components --appname MEjbApp mejb.jar
+       MEJBBean <StatelessSessionBean>
+       Command list-sub-components executed successfully.
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     enable(1), disable(1), list-components(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6           Last change: 11 Sep 2009                    2
+

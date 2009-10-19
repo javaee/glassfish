@@ -1,0 +1,57 @@
+
+asadmin Utility Subcommands                   list-auth-realms(1)
+
+NAME
+     list-auth-realms - lists the authentication realms
+
+SYNOPSIS
+     list-auth-realms
+     [--help]
+
+DESCRIPTION
+     The list-auth-realms  subcommand  lists  the  authentication
+     realms. This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target_name
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing authentication realms
+
+       asadmin> list-auth-realms
+       file
+       ldap
+       certificate
+       db
+       Command list-auth-realms executed successfully
+
+     Where file, ldap, certificate,  and  db  are  the  available
+     authentication realms.
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+Java EE 6          Last change: 28 August 2009                  1
+
+asadmin Utility Subcommands                   list-auth-realms(1)
+
+SEE ALSO
+     create-auth-realm(1), delete-auth-realm(1)
+
+     asadmin(1M)
+
+Java EE 6          Last change: 28 August 2009                  2
+

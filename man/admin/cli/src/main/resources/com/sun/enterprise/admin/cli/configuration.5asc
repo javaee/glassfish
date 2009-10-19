@@ -1,0 +1,60 @@
+
+Enterprise Server Concepts                    configuration(5ASC)
+
+NAME
+     configuration - the data set that determines how  Enterprise
+     Server operates
+
+DESCRIPTION
+     The configuration of Enterprise Server is the data set  that
+     determines  how  it  operates.  Parts  of this configuration
+     determine the operation  of  specific  parts  of  Enterprise
+     Server, such as the following:
+
+         o    Services, such as the transaction service
+
+         o    Resources, such as databases
+
+         o    Deployed  applications  or  modules,  such  as  web
+              applications
+
+     The term configuration is also used to describe  a  part  of
+     the  overall  configuration, such as the transaction service
+     configuration or the configuration of a database.
+
+     Examples of configuration data are port numbers, flags  that
+     enable  or  disable processes, application names, and so on.
+     Most of these  data  points  are  name/value  pairs,  either
+     hard-coded attributes or more flexibly defined properties.
+
+     The hierarchical structure of the configuration is explained
+     in  the  dotted  names page. You can view and change most of
+     the  Enterprise  Server  configuration  using   either   the
+     Administration  Console  or the asadmin utility and its sub-
+     commands. To list the structure of all or part of the confi-
+     guration,  use the list subcommand. To view the value of one
+     or more attributes or properties, use the get subcommand. To
+     change  the  value  of an attribute or property, use the set
+     subcommand.
+
+     Most of the Enterprise Server configuration is stored in the
+     domain.xml  file.  For  full  details about the structure of
+     this file, see the Sun GlassFish Enterprise Server v3 Domain
+     File Format Reference.
+
+SEE ALSO
+     get(1), list(1), set(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 22 Sep 2009                    1
+
+Enterprise Server Concepts                    configuration(5ASC)
+
+     dotted-names(5ASC)
+
+     Configuration Tasks in Sun GlassFish  Enterprise  Server  v3
+     Administration Guide
+
+Java EE 6           Last change: 22 Sep 2009                    2
+

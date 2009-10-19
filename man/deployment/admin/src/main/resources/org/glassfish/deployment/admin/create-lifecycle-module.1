@@ -1,0 +1,112 @@
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
+
+NAME
+     create-lifecycle-module - adds a lifecycle module
+
+SYNOPSIS
+     create-lifecycle-module
+     [--help]
+       --classname  classname
+      [--enabled={true|false}] [ --target  target]
+      [--classpath classpath] [--loadorder loadorder]
+      [--failurefatal={false|true} ] [ --description  description]
+      [--property (name=value)[:name=value]*]
+      module_name
+
+DESCRIPTION
+     Creates a lifecycle module. A lifecycle  module  provides  a
+     means of running a short or long duration Java-based task at
+     a specific stage in the server life cycle.  This  subcommand
+     is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --classname
+         This is the fully qualified name of the startup class.
+
+     --target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --classpath
+         This option indicates  where  this  module  is  actually
+         located  if it is not under the applications root direc-
+         tory.
+
+     --loadorder
+
+         This option represents an integer value that can be used
+         to  force  the order in which deployed lifecycle modules
+         are loaded at server startup. Smaller  numbered  modules
+         are  loaded  sooner. Order is unspecified if two or more
+         lifecycle modules have the same load-order value.
+
+Java EE 6            Last change: 2 Sep 2009                    1
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
+
+     --failurefatal
+
+         This options tells the system what to do if the  lifecy-
+         cle  module does not load correctly. When this option is
+         set to true, the system aborts  the  server  startup  if
+         this module does not load properly. The default value is
+         false.
+
+     --enabled
+         This option determines whether the resource  is  enabled
+         at runtime. The default value is true.
+
+     --description
+
+         This is the text description of the resource  associated
+         with this module.
+
+     --property
+         This is  an  optional  attribute  containing  name/value
+         pairs used to configure the resource.
+
+OPERANDS
+     module_name
+
+         This operand is a unique  identifier  for  the  deployed
+         server lifecycle event listener module.
+
+EXAMPLES
+     Example 1 Using create-lifecycle-module
+
+       asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
+       --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
+       --description "this is a sample customSetup"
+       --property rmi="Server=acme1:7070":timeout=30 customSetup
+       Command create-lifecycle-module executed successfully
+
+     Where: customSetup is  the  lifecycle  module  created.  The
+     escape  character \fR is used in the property option to dis-
+     tinguish the colons (:).
+
+EXIT STATUS
+     0                           command executed successfully
+
+Java EE 6            Last change: 2 Sep 2009                    2
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-lifecycle-module(1), list-lifecycle-modules(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 2 Sep 2009                    3
+

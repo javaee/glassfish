@@ -1,0 +1,76 @@
+
+asadmin Utility Subcommands    list-message-security-providers(1)
+
+NAME
+     list-message-security-providers - enables administrators  to
+     list  all  security  message providers (provider-config sub-
+     elements) for the  given  message  layer  (message-security-
+     config element of domain.xml)
+
+SYNOPSIS
+     list-message-security-providers
+     [--help]
+       --layer   message_layer
+
+DESCRIPTION
+     The   list-message-security-providers   subcommand   enables
+     administrators   to  list  all  security  message  providers
+     (provider-config sub-elements) for the given  message  layer
+     (message-security-config element of domain.xml).
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     If an option has a short option name, then the short  option
+     precedes  the  long option name. Short options have one dash
+     whereas long options have two dashes.
+
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --layer
+         The message-layer for  which  the  provider  has  to  be
+         listed. The default value is HttpServlet.
+
+OPERANDS
+     target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing message security providers
+
+Java EE 6           Last change: 28 Aug 2009                    1
+
+asadmin Utility Subcommands    list-message-security-providers(1)
+
+     The following example shows how  to  list  message  security
+     providers for a message layer.
+
+       asadmin> list-message-security-providers
+       --layer SOAP
+       XWS_ClientProvider
+       ClientProvider
+       XWS_ServerProvider
+       ServerProvider
+       Command list-message-security-providers executed successfully.
+
+EXIT STATUS
+     0                            command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     create-message-security-provider(1),         delete-message-
+     security-provider(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 28 Aug 2009                    2
+

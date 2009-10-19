@@ -6,19 +6,18 @@ NAME
      specified JNDI name
 
 SYNOPSIS
-     delete-jdbc-resource
-     [--help]
-     [ --target  target]
-     jndi_name
+     delete-jdbc-resource [--help] [--target target] jndi_name
 
 DESCRIPTION
-     The delete-jdbc-resource command removes  a  JDBC  resource.
+     The delete-jdbc-resource subcommand removes a JDBC resource.
      Ensure  that  all  associations  to  the  JDBC  resource are
-     removed before you execute this  command.  This  command  is
-     supported in remote mode only.
+     removed before you execute this subcommand.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
+     -?
 
          Displays the help text for the subcommand.
 
@@ -30,39 +29,32 @@ OPTIONS
          ignored.
 
 OPERANDS
-     jndi_name                   The  JNDI  name  of  this   JDBC
-                                 resource to be removed.
+     jndi_name
+
+         The JNDI name of this JDBC resource to be removed.
 
 EXAMPLES
-     Example 1 Using the delete-jdbc-resource command
+     Example 1 Using the delete-jdbc-resource subcommand
 
-     The following example shows how to delete a JDBC resource in
-     a domain whose profile is the developer profile.
+     The following example shows how to delete a JDBC resource.
 
-       asadmin> delete-jdbc-resource --user admin --passwordfile passwords.txt
-       jdbc/DerbyPool
-       Command delete-jdbc-resource executed successfully.
-
-     Example 2 Using the delete-jdbc-resource command
-
-Java EE 6            Last change: 2 Sep 2008                    1
-
-asadmin Utility Subcommands               delete-jdbc-resource(1)
-
-     The following example shows how to delete a JDBC resource in
-     a domain whose profile is the cluster profile.
-
-       asadmin> delete-jdbc-resource --user admin --passwordfile passwords.txt
-       --target domain jdbc/DerbyPool
+       asadmin> delete-jdbc-resource jdbc/DerbyPool
        Command delete-jdbc-resource executed successfully.
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands               delete-jdbc-resource(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-jdbc-resource(1), list-jdbc-resources(1)
 
-Java EE 6            Last change: 2 Sep 2008                    2
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    2
 

@@ -1,0 +1,63 @@
+
+asadmin Utility Subcommands                        stop-domain(1)
+
+NAME
+     stop-domain -  stops the Domain Administration Server of the
+     specified domain
+
+SYNOPSIS
+     stop-domain [--help] [--domaindir domain-dir] [domain-name]
+
+DESCRIPTION
+     The stop-domain subcommand stops the  Domain  Administration
+     Server  (DAS)  of  the specified domain. If there are two or
+     more  domains  in  the  domain  directory,  the  domain-name
+     operand must be specified.
+
+     This subcommand is supported in the local mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --domaindir
+         Specifies the directory of the  domain  that  is  to  be
+         stopped.  If  specified,  the path must be accessible in
+         the file system. If not specified,  the  domain  in  the
+         default    as-install/glassfish/domains   directory   is
+         stopped.
+
+OPERANDS
+     domain-name         The name of the domain you want to stop.
+                         Default  is  the  name  specified during
+                         installation, usually domain1.
+
+EXAMPLES
+     Example 1 Stopping a Domain
+
+     This example stops the  domain  named  sampleDomain  in  the
+     default domains directory.
+
+       asadmin> stop-domain sampleDomain
+       Waiting for the domain to stop .................
+       Command stop-domain executed successfully.
+
+Java EE 6            Last change: 7 Oct 2009                    1
+
+asadmin Utility Subcommands                        stop-domain(1)
+
+EXIT STATUS
+     0                   subcommand executed successfully
+
+     1                   error in executing the subcommand
+
+SEE ALSO
+     delete-domain(1),    list-domains(1),     restart-domain(1),
+     start-domain(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    2
+

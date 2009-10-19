@@ -1,0 +1,72 @@
+
+asadmin Utility Subcommands                       list-jmsdest(1)
+
+NAME
+     list-jmsdest - lists the existing JMS physical destinations
+
+SYNOPSIS
+     list-jmsdest [--help]
+     [--desttype type]
+     [target]
+
+DESCRIPTION
+     The list-jmsdest subcommand lists the Java  Message  Service
+     (JMS) physical destinations. This subcommand is supported in
+     remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     -T--desttype
+         The type of JMS destination to be listed.  Valid  values
+         are topic and queue.
+
+OPERANDS
+     target
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing all physical destinations
+
+     The following subcommand lists  all  the  physical  destina-
+     tions.
+
+       asadmin> list-jmsdest
+       PhysicalQueue
+       PhysicalTopic
+       Command list-jmsdest executed successfully.
+
+Java EE 6           Last change: 16 Sep 2009                    1
+
+asadmin Utility Subcommands                       list-jmsdest(1)
+
+     Example 2 Listing all physical destinations of  a  specified
+     type
+
+     The following subcommand lists all physical topics.
+
+       asadmin> list-jmsdest --desttype topic
+       PhysicalTopic
+       Command list-jmsdest executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-jmsdest(1), delete-jmsdest(1), flush-jmsdest(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 16 Sep 2009                    2
+

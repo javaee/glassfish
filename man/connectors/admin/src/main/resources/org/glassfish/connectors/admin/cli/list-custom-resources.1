@@ -1,0 +1,56 @@
+
+asadmin Utility Subcommands;             list-custom-resources(1)
+
+NAME
+     list-custom-resources - gets all custom resources
+
+SYNOPSIS
+     list-custom-resources [--help] [--target target]
+
+DESCRIPTION
+     The  list-custom-resources  subcommand  lists   the   custom
+     resources.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+OPERANDS
+     target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+EXAMPLES
+     Example 1 Listing Custom Resources
+
+     This example lists the current custom resources.
+
+       asadmin> list-custom-resources
+       sample_custom_resource01
+       sample_custom_resource02
+       Command list-custom-resources executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6            Last change: 8 Oct 2009                    1
+
+asadmin Utility Subcommands;             list-custom-resources(1)
+
+SEE ALSO
+     create-custom-resource(1),delete-custom-resource(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 8 Oct 2009                    2
+

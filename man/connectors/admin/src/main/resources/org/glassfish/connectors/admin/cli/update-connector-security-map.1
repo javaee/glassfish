@@ -1,0 +1,105 @@
+
+asadmin Utility Subcommands      update-connector-security-map(1)
+
+NAME
+     update-connector-security-map - creates or modifies a  secu-
+     rity map for the specified connector connection pool
+
+SYNOPSIS
+     update-connector-security-map [--help]
+     --poolname connector_connection_pool_name
+     [--addprincipals principal_name1[, principal_name1]* |
+      --addusergroups user_group1[,user_group2] ]
+     [--removeprincipals principal_name1[,principal_name2]*]
+     [--removeusergroups user_group1[, user_group2]* ]
+     [--mappedusername  username]
+     security_map_name
+
+DESCRIPTION
+     Use this subcommand to modify a security map for the  speci-
+     fied connector connection pool.
+
+     For this subcommand to succeed, you must have first  created
+     a  connector  connection  pool  using  the create-connector-
+     connection-pool subcommand.
+
+     The enterprise information system (EIS) is any  system  that
+     holds  the dats of the enterprise. organization. It can be a
+     mainframe, a messaging system,  a  database  system,  or  an
+     application.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --poolname
+         Specifies the name of the connector connection  pool  to
+         which  the security map that is to be updated or created
+         belongs.
+
+     --addprincipals
+
+         Specifies a comma-separated list of EIS-specific princi-
+         pals  to  be added. Use either the --addprincipals or --
+         addusergroups options, but not both at the same time.
+
+Java EE 6           Last change: 09 Oct 2009                    1
+
+asadmin Utility Subcommands      update-connector-security-map(1)
+
+     --addusergroups
+
+         Specifies a comma-separated list of EIS user  groups  to
+         be   added.   Use   either  the  --addprincipals  or  --
+         addusergroups options, but not both at the same time.
+
+     --removeprincipals
+         Specifies a comma-separated list of EIS-specific princi-
+         pals to be removed.
+
+     --removeusergroups
+
+         Specifies a comma-separated list of EIS user  groups  to
+         be removed.
+
+     --mappedusername
+         Specifies the EIS username.
+
+OPERANDS
+     security_map_name
+
+         The name of the security map to be created or updated.
+
+EXAMPLES
+     Example 1 Using the update-connector-security-map subcommand
+
+     It is assumed that  the  connector  pool  has  already  been
+     created using the create-connector-pool subcommand.
+
+       asadmin> update-connector-security-map
+       --poolname connector-pool1 --addprincipals principal1, principal2
+       securityMap1
+       Command update-connector-security-map executed successfully
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+Java EE 6           Last change: 09 Oct 2009                    2
+
+asadmin Utility Subcommands      update-connector-security-map(1)
+
+SEE ALSO
+     delete-connector-security-map(1),   list-connector-security-
+     maps(1), create-connector-security-map(1)
+
+     asadmin(1M)
+
+Java EE 6           Last change: 09 Oct 2009                    3
+

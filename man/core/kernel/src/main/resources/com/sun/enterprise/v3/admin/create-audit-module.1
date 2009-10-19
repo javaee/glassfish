@@ -1,0 +1,78 @@
+
+asadmin Utility Subcommands                create-audit-module(1)
+
+NAME
+     create-audit-module - adds an audit module
+
+SYNOPSIS
+     create-audit-module   --classname classname
+     [--help]
+
+      [ --property (name=value)[:name=value]*]
+       audit_module_name
+
+DESCRIPTION
+     This subcommand adds the named audit module for the  plug-in
+     module that implements the audit capabilities. Audit modules
+     collect  and  store   information   on   incoming   requests
+     (servlets, EJB components) and outgoing responses. This sub-
+     command is supported in remote mode only.
+
+OPTIONS
+     --classname
+
+         The name of the Java class that  implements  this  audit
+         module.     If     not     specified,     defaults    to
+         com.sun.enterprise.security.Audit.
+
+     --help
+     -?
+         Displays the help text for the subcommand.
+
+     --property
+
+         Optional attributes name/value pairs of provider  imple-
+         mentation specific attributes.
+
+          The only valid property is auditOn, which can be speci-
+         fied  as  true  or false. If true, causes the loading of
+         the audit module and ensures that it is  called  by  the
+         Enterprise Server's audit library at audit points.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+
+Java EE 6          Last change: 28 August 2009                  1
+
+asadmin Utility Subcommands                create-audit-module(1)
+
+     audit_module_name
+
+         The name of this audit module.
+
+EXAMPLES
+     Example 1 Creating an audit module
+
+       asadmin> create-audit-module
+        --classname com.sun.appserv.auditmodule
+       --property defaultuser=admin:Password=admin sampleAuditModule
+       Command create-audit-module executed successfully
+
+EXIT STATUS
+     0                           command executed successfully
+
+     1                           error in executing the command
+
+SEE ALSO
+     delete-audit-module(1), list-audit-modules(1)
+
+     asadmin(1M)
+
+Java EE 6          Last change: 28 August 2009                  2
+

@@ -1,0 +1,108 @@
+
+asadmin Utility Subcommands                           undeploy(1)
+
+NAME
+     undeploy - removes a deployed component
+
+SYNOPSIS
+     undeploy [--help] [--droptables=true|false]
+     [--cascade=false] [--target target] component_name
+
+DESCRIPTION
+     The undeploy subcommand uninstalls a deployed application or
+     module and removes it from the repository.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --droptables
+         Drops the tables that the application created  by  using
+         CMP   beans   during  deployment.  The  default  is  the
+         corresponding entry in the cmp-resource element  of  the
+         sun-ejb-jar.xml  file.  If not specified, it defaults to
+         the entries specified in the deployment descriptors.  In
+         a  production environment, database tables contain valu-
+         able information, so use the  --droptables  option  with
+         care.
+
+     --cascade
+
+         If set to true, deletes all  the  connection  pools  and
+         connector resources associated with the resource adapter
+         being undeployed. If set to false, the undeploy fails if
+         any  pools  and  resources are still associated with the
+         resource adapter. Then, either those pools and resources
+         must be deleted explicitly, or the option must be set to
+         true. If the option is set to false, and if there are no
+         pools  and  resources still associated with the resource
+         adapter, the resource adapter is undeployed. This option
+         is  applicable  to  connectors  (resource  adapters) and
+         applications. Default is false.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error  does  not  occur.  Instead,  the
+
+Java EE 6           Last change: 16 Sep 2009                    1
+
+asadmin Utility Subcommands                           undeploy(1)
+
+         subcommand  runs successfully and the option is silently
+         ignored.
+
+OPERANDS
+     component_name              Name of the deployed component.
+
+EXAMPLES
+     Example 1 Undeploying an Enterprise Application
+
+     This  example  undeploys  an  enterprise  application  named
+     Cart.ear.
+
+       asadmin> undeploy Cart
+       Command undeploy executed successfully.
+
+     Example 2 Undeploying an  Enterprise  Bean  With  Container-
+     Managed Persistence (CMP)
+
+     This example undeploys a CMP bean named myejb and drops  the
+     corresponding database tables.
+
+       asadmin> undeploy --droptables=true myejb
+       Command undeploy executed successfully.
+
+     Example 3 Undeploying a Connector (Resource Adapter)
+
+     This example undeploys the connector module named jdbcra and
+     performs   a  cascading  delete  to  remove  the  associated
+     resources and connection pools.
+
+       asadmin> undeploy --cascade=true jdbcra
+       Command undeploy executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6           Last change: 16 Sep 2009                    2
+
+asadmin Utility Subcommands                           undeploy(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     deploy(1), redeploy(1), list-components(1)
+
+     asadmin(1M)
+
+     Sun GlassFish Enterprise Server  v3  Application  Deployment
+     Guide
+
+Java EE 6           Last change: 16 Sep 2009                    3
+

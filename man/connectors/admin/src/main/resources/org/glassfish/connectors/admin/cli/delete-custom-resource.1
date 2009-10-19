@@ -1,0 +1,59 @@
+
+asadmin Utility Subcommands             delete-custom-resource(1)
+
+NAME
+     delete-custom-resource - removes a custom resource
+
+SYNOPSIS
+     delete-custom-resource [--help] [--target target] jndi-name
+
+DESCRIPTION
+     The  delete-custom-resource  subcommand  removes  a   custom
+     resource.
+
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+     --help
+     -?
+
+         Displays the help text for the subcommand.
+
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+OPERANDS
+     jndi-name
+
+         The JNDI name of this resource.
+
+EXAMPLES
+     Example 1 Deleting a Custom Resource
+
+     This example  deletes  a  custom  resource  named  mycustom-
+     resource.
+
+       asadmin> delete-custom-resource mycustomresource
+       Command delete-custom-resource executed successfully.
+
+EXIT STATUS
+     0                           subcommand executed successfully
+
+Java EE 6            Last change: 7 Oct 2009                    1
+
+asadmin Utility Subcommands             delete-custom-resource(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
+     create-custom-resource(1), list-custom-resources(1)
+
+     asadmin(1M)
+
+Java EE 6            Last change: 7 Oct 2009                    2
+
