@@ -177,6 +177,13 @@ public class ApplicationLifecycle implements Deployment {
         final DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
 
         final String appName = commandParams.name();
+
+        // if the virtualservers param is not defined, set it to all
+        // defined virtual servers minus __asadmin on that target
+        if (commandParams.virtualservers == null) {
+            commandParams.virtualservers = getVirtualServers(
+                commandParams.target);
+        }
         
         ProgressTracker tracker = new ProgressTracker() {
             public void actOn(Logger logger) {
@@ -1056,6 +1063,41 @@ public class ApplicationLifecycle implements Deployment {
         }
         initial.setArchiveHandler(archiveHandler);
         return initial;
+    }
+
+    /*
+     * @return comma-separated list of all defined virtual servers (exclusive
+     * of __asadmin)
+     */
+    private String getVirtualServers(String target) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        Server server = domain.getServerNamed(target);
+        if (server != null) {
+            Config config = domain.getConfigs().getConfigByName(
+                server.getConfigRef());
+            if (config != null) {
+                HttpService httpService = config.getHttpService();
+                if (httpService != null) {
+                    List<VirtualServer> hosts = httpService.getVirtualServer();
+                    if (hosts != null) {
+                        for (VirtualServer host : hosts) {
+                            if (("__asadmin").equals(host.getId())) {
+                                continue;
+                            }
+                            if (first) {
+                                sb.append(host.getId());
+                                first = false;
+                            } else {
+                                sb.append(",");
+                                sb.append(host.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 }
 

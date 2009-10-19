@@ -222,14 +222,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 file = expansionDir;
             }
 
-            /*
-             * If the virtualservers param is not defined, set it to all
-             * defined virtual servers minus __asadmin
-             */
-            if (virtualservers == null) {
-                virtualservers = getVirtualServers();
-            }
-
             // create the parent class loader
             final ExtendedDeploymentContext deploymentContext =
                     deployment.getBuilder(logger, this, report).
@@ -556,40 +548,5 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 "Verifier class not found: ", cnfe); 
             return false;
         }
-    }
-
-    /*
-     * @return comma-separated list of all defined virtual servers (exclusive
-     * of __asadmin)
-     */
-    private String getVirtualServers() {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        Server server = domain.getServerNamed(target);
-        if (server != null) {
-            Config config = domain.getConfigs().getConfigByName(
-                server.getConfigRef());
-            if (config != null) {
-                HttpService httpService = config.getHttpService();
-                if (httpService != null) {
-                    List<VirtualServer> hosts = httpService.getVirtualServer();
-                    if (hosts != null) {
-                        for (VirtualServer host : hosts) {
-                            if (("__asadmin").equals(host.getId())) {
-                                continue;
-                            }
-                            if (first) {
-                                sb.append(host.getId());
-                                first = false;
-                            } else {
-                                sb.append(",");
-                                sb.append(host.getId());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return sb.toString();
     }
 }
