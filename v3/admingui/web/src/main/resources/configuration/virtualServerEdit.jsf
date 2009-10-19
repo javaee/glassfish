@@ -46,8 +46,9 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        
-        setPageSessionAttribute(key="selfPage"             value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="selfPage"             value="#{request.contextPath}/web/configuration/virtualServerEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage"           value="#{request.contextPath}/web/configuration/virtualServers.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         setPageSessionAttribute(key="childType"            value="virtual-server");

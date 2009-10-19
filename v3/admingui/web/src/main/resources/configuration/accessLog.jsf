@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/accessLog.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/configuration/accessLog.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="convertToFalseList" value={"SsoEnabled", "AccessLogEnabled" });
 
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
