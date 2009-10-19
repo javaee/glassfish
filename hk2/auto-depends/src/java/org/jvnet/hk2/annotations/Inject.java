@@ -59,7 +59,6 @@ import java.lang.annotation.Target;
         MBeanServer mbeanserver;
 </pre>
  *
- * @see org.jvnet.hk2.annotations.Extract
  * @see org.jvnet.hk2.component.Habitat
  *
  * @author Jerome Dochez
