@@ -13,9 +13,6 @@
         </schedule>
         <timeout-method>
           <method-name>ddTimeout</method-name>
-          <method-params>
-              <method-param>javax.ejb.Timer</method-param>
-          </method-params>
         </timeout-method>
         <info>dd_timer1</info>
       </timer>
@@ -28,9 +25,6 @@
         </schedule>
         <timeout-method>
           <method-name>ddTimeout</method-name>
-          <method-params>
-              <method-param>javax.ejb.Timer</method-param>
-          </method-params>
         </timeout-method>
         <info>dd_timer2</info>
       </timer>
