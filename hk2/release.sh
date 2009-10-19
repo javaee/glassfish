@@ -16,6 +16,7 @@ uname -a
 
 # don't let the crash logs fail the release
 rm hs_err*.log || true
+mvn release:clean
 
 # First, get to the base line. This is probably not a requirement.
 mvn clean install
