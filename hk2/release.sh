@@ -14,6 +14,9 @@
 export MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
 uname -a
 
+# don't let the crash logs fail the release
+rm -rf hs_err*.log || true
+
 # First, get to the base line. This is probably not a requirement.
 mvn clean install
 
