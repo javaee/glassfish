@@ -385,8 +385,9 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
         for(MethodDescriptor next : timerMethodDescriptors) {
             if( next.getName().equals(timerMethod.getName()) &&
-		( next.getParameterClassNames().length ==
-		  timerMethod.getParameterTypes().length) ) {
+                ( next.getParameterClassNames() == null ||
+		    next.getParameterClassNames().length ==
+		        timerMethod.getParameterTypes().length) ) {
                 match = true;
                 break;
             }
