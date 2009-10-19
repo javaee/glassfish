@@ -106,7 +106,7 @@ public class MonitoringHandlers {
                         name = THREAD_POOL;
                     if(oneMonComp.equals("JdbcConnectionPool"))
                         name = JDBC_CONNECTION_POOL;
-                    if(oneMonComp.equals("Connector Connection Pool"))
+                    if(oneMonComp.equals("ConnectorConnectionPool"))
                         name = CONNECTOR_CONNECTION_POOL;
                     if(oneMonComp.equals("EjbContainer"))
                         name = EJB_CONTAINER;
@@ -336,7 +336,7 @@ public class MonitoringHandlers {
             if (name.equals(JDBC_CONNECTION_POOL)) 
                 value = "JdbcConnectionPool";
             if (name.equals(CONNECTOR_CONNECTION_POOL)) 
-                value = "Connector Connection Pool";
+                value = "ConnectorConnectionPool";
             if (name.equals(EJB_CONTAINER)) 
                 value = "EjbContainer";
             if (name.equals(TRANSACTION_SERVICE)) 
