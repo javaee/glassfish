@@ -7,8 +7,8 @@ Use is subject to License Terms  -->
 <a name="indexterm-12"></a><a name="indexterm-13"></a><a name="indexterm-14"></a><p>Use the EJB Timer Service page to configure the EJB timer service.</p><p>The timer service is a persistent and transactional notification service that is provided
 by the enterprise bean container and is used to schedule notifications or events
 used by enterprise beans. All enterprise beans except stateful session beans can receive
-notifications from the timer service. Timers set by the service are not destroyed
-when the server is shut down or restarted.</p><p>The EJB Timer Service page contains the following options.</p><dl><dt>Load Defaults</dt>
+notifications from the timer service. Persistent timers set by the service are not
+destroyed when the server is shut down or restarted.</p><p>The EJB Timer Service page contains the following options.</p><dl><dt>Load Defaults</dt>
 <dd><p>Button to restore the default values of all the settings.</p></dd>
 <dt>Minimum Delivery Interval</dt>
 <dd><p>The minimum number of milliseconds allowed before the next timer expiration for a particular timer can occur. Setting this interval too low can cause server overload. The default value is 1000.</p></dd>
