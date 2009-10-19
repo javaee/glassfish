@@ -52,7 +52,6 @@
         setSessionAttribute(key="noValidation" value="#{null}")
         setPageSessionAttribute(key="step2" value="#{true}" );
         setPageSessionAttribute(key="step1Page" value="jdbcConnectionPoolNew1.jsf" );
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolNew2.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
@@ -78,28 +77,29 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}"
                     helpText="$resource{i18njdbc.jdbcConnection.step2PageHelp}">
-                    
-#include "/common/shared/editPageLoadDefaultButton.inc"
-    <!facet pageButtonsTop>
 #include "jdbcConnectionPoolNew2Buttons.inc"
-    </facet>
                  </sun:title>
+
 #include "/jdbc/poolPropertyNew.inc"
 #include "/common/shared/propertyDescTable.inc"
-                    <sun:title id="propertyContentPage2">
-                    <!facet pageButtonsBottom>
+
+                 <sun:title >
 #include "jdbcConnectionPoolNew2Buttons.inc"
-                    </facet>
-                    </sun:title>
+                 </sun:title>
+
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolNew2}" />
             </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 
 <f:verbatim>
-    <script type="text/javascript">
+<script type="text/javascript">
     function disableTableField() {
         var methodType = document.getElementById("$pageSession{valMethod}");
-        webui.suntheme.field.setDisabled("$pageSession{tableTextField}", methodType.getSelectedValue()  != 'table');
+        if (methodType.getSelectedValue()  != 'table'){
+            disableComponent('$pageSession{tableTextField}', 'select');
+        }else{
+            enableComponent('$pageSession{tableTextField}', 'select');
+        }
     }
     </script>
 </f:verbatim>

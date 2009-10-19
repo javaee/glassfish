@@ -40,7 +40,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgProvider.NewPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgSecProvider.NewPageTitle}" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -60,7 +60,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18nc.msgProvider.NewPageTitle}" helpText="$resource{$resource{i18nc.msgProvider.NewPageTitleHelp}}">
+        <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.NewPageTitle}" helpText="$resource{$resource{i18nc.msgSecProvider.NewPageTitleHelp}}">
 #include "providerButtons.inc"
         </sun:title>
         "<br><br>

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@
         setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
 
         prepareSuccessfulMsg();
-        redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
     />
 </sun:button>
 <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -73,11 +73,11 @@
         listAdd(list="$attribute{newList}", value="$attribute{nameMap}");
 
         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
-        redirect(page="#{parentPage}?configName=#{configName}")
+        redirect(page="#{parentPage}")
     />
 </sun:button>
 <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
     <!command
-        redirect(page="#{parentPage}?configName=#{configName}");
+        redirect(page="#{parentPage}");
     />
 </sun:button>

@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,12 +43,15 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getRequestValue(key="name" value=>$page{name});
-        getRequestValue(key="user" value=>$page{user});
-        getUserInfo(Realm="#{name}", User="#{user}", GroupList=>$attribute{groupList});
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        getRequestValue(key="user" value="#{pageSession.User}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        urlencode(value="#{pageSession.User}" encoding="UTF-8" result="#{pageSession.encodedUser}");
+        getUserInfo(Realm="#{pageSession.Name}}", User="#{pageSession.User}", GroupList=>$attribute{groupList});
         getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
                 attrName="AuthRealmName" value="#{pageSession.authRealm}" )
-        if ("#{pageSession.name}=#{pageSession.authRealm}"){
+        if ("#{pageSession.Name}}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="isAdminRealm", value="true")
             setPageSessionAttribute(key="groupList", value="asadmin")
             setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyAdminPassword}")
@@ -74,8 +77,8 @@
                            <!command
                                 prepareSuccessfulMsg();
                                 saveUser(
-                                    Realm="#{name}"
-                                    UserId="#{user}"
+                                    Realm="#{pageSession.Name}"
+                                    UserId="#{pageSession.User}"
                                     GroupList="#{groupList}"
                                     Password="#{password}"
                                 );
@@ -83,7 +86,7 @@
                         </sun:button>
                         <sun:button id="cancelButton" text="$resource{i18n.button.Back}" immediate="$boolean{true}" primary="#{false}" >
                            <!command
-                            redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}")
+                            redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
                             />                        
                         </sun:button>
                     </sun:panelGroup>
@@ -94,10 +97,10 @@
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
-                                <sun:staticText id="NameStatic" text="#{name}"/> 
+                                <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
                             </sun:property>
                             <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}">
-                                <sun:staticText id="UserId" text="#{user}"/> 
+                                <sun:staticText id="UserId" text="#{pageSession.User}"/>
                             </sun:property>                       
 
                             <sun:property id="groupListProp2"  rendered="#{isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" >

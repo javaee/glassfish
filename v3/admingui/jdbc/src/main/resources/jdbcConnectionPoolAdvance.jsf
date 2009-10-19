@@ -38,7 +38,9 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" guiOnLoad="disableTableField();" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
+        guiOnLoad="disableTableField();"
+        >
 <!define name="content">
     <event>
     <!beforeEncode
@@ -50,7 +52,8 @@
     <event>
     <!beforeCreate
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
@@ -65,19 +68,18 @@
         </event>
 #include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-   #include "/common/shared/treeBreadcrumbs.inc"
+        //#include "/common/shared/treeBreadcrumbs.inc"
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
-                <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
-                    helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
-                                              
+<!-- Page Title -->
+<sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
+    helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
 #include "/common/shared/editPageLoadDefaultButton.inc"
-<sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" > 
-                        <!command
-                            flushConnectionPool(jndiName="#{pageSession.Name}");
-                        />
-                    </sun:button>   
+    <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" >
+        <!command
+            flushConnectionPool(jndiName="#{pageSession.Name}");
+        />
+    </sun:button>
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -93,55 +95,62 @@
                         convertToFalse="#{pageSession.convertToFalseList}"
                     );
                 prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
         </sun:panelGroup>
     </facet>
-                    
-                </sun:title>
+</sun:title>
                 
 #include "/jdbc/advancePool.inc"
-                    <sun:title id="title2" >
-                    <!facet pageButtonsBottom >
-                    <sun:panelGroup id="topButtons">
-                        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                            onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
-                                return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');} 
-                                return false;"  >
-                        <!command
-                            if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
-                                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
-                                } 
-                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                            skipAttrs="#{pageSession.skipAttrsList}"
-                            convertToFalse="#{pageSession.convertToFalseList}"
-                            );
-                            prepareSuccessfulMsg();
-                            redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
-                        />
-                        </sun:button>
-                    </sun:panelGroup>
-                    </facet>                     
-                </sun:title>
+    <sun:title >
+    <!facet pageButtonsBottom >
+    <sun:panelGroup id="topButtons">
+        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+            onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
+                return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');}
+                return false;"  >
+        <!command
+            if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
+                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
+                }
+            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+            skipAttrs="#{pageSession.skipAttrsList}"
+            convertToFalse="#{pageSession.convertToFalseList}"
+            );
+            prepareSuccessfulMsg();
+            redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+        />
+        </sun:button>
+    </sun:panelGroup>
+    </facet>
+</sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolAdvance}" />
-            </sun:form>
-#include "/jdbc/lazyConnectionJS.inc"    
-"<SCRIPT language = "Javascript" > \
-function disableTableField() {  \
-    var methodType = getSelectElement("$pageSession{valMethod}"); \
-    if(methodType.value == 'table') { \
-    	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", false); \
-    } else{ \
-	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled("$pageSession{tableTextField}", true); \
-    } \
-    if(methodType.value == 'custom-validation') { \
-	webui.suntheme.field.setDisabled("$pageSession{validCNTextField}", false); \
-    } else{ \
-	webui.suntheme.field.setDisabled("$pageSession{validCNTextField}", true); \
-    } \
-} \
-</SCRIPT>
+</sun:form>
+
+
+<f:verbatim>
+<script type="text/javascript">
+    function disableTableField() {
+        var val = document.getElementById("$pageSession{valMethod}").value;
+        alert(val);
+        if (val == 'table'){
+            enableComponent('$pageSession{tableTextField}', 'select');
+            disableComponent('$pageSession{validCNTextField}', 'text');
+        }else
+        if (val == 'custom-validation') {
+            disableComponent('$pageSession{tableTextField}', 'select');
+            enableComponent('$pageSession{validCNTextField}', 'text');
+        }else{
+            disableComponent('$pageSession{tableTextField}', 'select');
+            disableComponent('$pageSession{validCNTextField}', 'text');
+        }
+    }
+    </script>
+</f:verbatim>
+
+#include "/jdbc/lazyConnectionJS.inc"
+
 </define>
 </composition>
 

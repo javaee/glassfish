@@ -87,7 +87,7 @@ public class ConnectorsHandlers {
         Boolean fromStep2 = (Boolean) handlerCtx.getInputValue("fromStep2");
         Boolean fromStep1 = (Boolean) handlerCtx.getInputValue("fromStep1");
         if ((fromStep2 != null) && fromStep2) {
-            //valueMap is already in session map, we don't want to change anything.
+            //wizardMap is already in session map, we don't want to change anything.
             Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
             String resAdapter = (String) extra.get("ResourceAdapterName");
             List defs = getConnectionDefinitions(resAdapter);
@@ -116,7 +116,7 @@ public class ConnectorsHandlers {
         } else {
             Map extra = new HashMap();
             Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
-            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("valueMap", attrMap);
+            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardMap", attrMap);
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolExtra", extra);
         }
     }
@@ -158,7 +158,7 @@ public class ConnectorsHandlers {
     @Handler(id = "updateConnectorConnectionPoolWizardStep2")
     public static void updateConnectorConnectionPoolWizardStep2(HandlerContext handlerCtx) {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-        Map attrs = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("valueMap");
+        Map attrs = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardMap");
 
         String resAdapter = (String) extra.get("ResourceAdapterName");
         String definition = (String) extra.get("ConnectionDefinitionName");

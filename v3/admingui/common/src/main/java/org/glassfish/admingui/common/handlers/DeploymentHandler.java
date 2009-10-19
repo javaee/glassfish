@@ -59,6 +59,7 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.io.ByteArrayInputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -100,6 +101,12 @@ public class DeploymentHandler {
             String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
             GuiUtil.handleError(handlerCtx, mesg);
             return;
+        }
+        try{
+            String decodedName = URLDecoder.decode((String)attrMap.get("name"), "UTF-8");
+            attrMap.put("name", decodedName);
+        }catch(Exception ex){
+            //ignore
         }
 
         DFDeploymentProperties deploymentProps = new DFDeploymentProperties();

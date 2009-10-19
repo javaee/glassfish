@@ -78,7 +78,7 @@ public class JdbcTempHandler {
     @Handler(id = "pingJdbcConnectionPool",
         input = {
             @HandlerInput(name = "jndiName", type = String.class, required = true)})
-    public static void pingConnectionPool(HandlerContext handlerCtx) {
+    public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
         try {
@@ -166,7 +166,7 @@ public class JdbcTempHandler {
             } else {
             Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
             Map sessionMap = handlerCtx.getFacesContext().getExternalContext().getSessionMap();
-            sessionMap.put("valueMap", attrMap);
+            sessionMap.put("wizardMap", attrMap);
             sessionMap.put("wizardPoolExtra", new HashMap());
             //sessionMap.put("wizardPoolProperties", new HashMap());
             }
@@ -247,7 +247,7 @@ public class JdbcTempHandler {
     @Handler(id = "updateJdbcConnectionPoolWizardStep2")
     public static void updateJdbcConnectionPoolWizardStep2(HandlerContext handlerCtx) {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
-        Map attrs = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("valueMap");
+        Map attrs = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardMap");
 
         String resType = (String) extra.get("ResType");
         String classname = (String) extra.get("DatasourceClassname");

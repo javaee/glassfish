@@ -44,8 +44,9 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            getRequestValue(key="name" value="#{pageSession.name}");
-            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsConnectionEdit.jsf?name=#{pageSession.name}");
+            getRequestValue(key="name" value="#{pageSession.Name}");
+            urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+            setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsConnectionEdit.jsf?name=#{pageSession.encodedName}");
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsConnections.jsf");
 
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources" );
@@ -54,7 +55,7 @@
 
             setPageSessionAttribute(key="convertToFalseList" value={"FailAllConnections", "IsConnectionValidationRequired"});
 
-            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.name}");
+            setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
 
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});

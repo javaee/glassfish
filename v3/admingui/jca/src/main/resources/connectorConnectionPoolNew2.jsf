@@ -48,7 +48,6 @@
        
         setPageSessionAttribute(key="step2" value="#{true}" );
         setPageSessionAttribute(key="step1Page" value="connectorConnectionPoolNew1.jsf" );
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
@@ -61,6 +60,8 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        println("========== #{sessionScope.wizardMap}")
+
     />
     </event>
 #include "/common/shared/restart.inc"

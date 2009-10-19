@@ -41,17 +41,13 @@
     <sun:tab id="iiopEdit" immediate="$boolean{true}" text="$resource{i18n_corba.iiop.editIiopTab}" >
         <!command
             setSessionAttribute(key="iiopTab" value="iiopEdit");
-            urlencode(value="#{pageSession.Name}" result="#{requestScope.encodedName}");
-            urlencode(value="#{configName}" result="#{pageSession.configName}");
-            redirect(page="#{request.contextPath}/corba/iiopListenerEdit.jsf?configName=#{pageSession.configName}&name=#{requestScope.encodedName}");
+            redirect(page="#{request.contextPath}/corba/iiopListenerEdit.jsf?configName=#{pageSession.encodedConfigName}&name=#{pageSession.encodedName}");
         /> 
     </sun:tab>
     <sun:tab id="sslEdit" immediate="$boolean{true}" text="$resource{i18n_corba.iiop.editSSLTab}" >
         <!command
            setSessionAttribute(key="iiopTab" value="sslEdit");
-           urlencode(value="#{pageSession.Name}" result="#{requestScope.encodedName}");
-           urlencode(value="#{configName}" result="#{pageSession.configName}");
-           redirect(page="#{request.contextPath}/corba/sslEdit.jsf?configName=#{configName}&name=#{requestScope.encodedName}");
+           redirect(page="#{request.contextPath}/corba/sslEdit.jsf?configName=#{pageSession.encodedConfigName}&name=#{pageSession.encodedName}");
         /> 
     </sun:tab>
 </sun:tabSet>

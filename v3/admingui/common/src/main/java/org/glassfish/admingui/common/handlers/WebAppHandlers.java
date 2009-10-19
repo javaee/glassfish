@@ -406,7 +406,7 @@ public class WebAppHandlers {
                 String appName = (String) oneRow.get("Name");
                 V3AMX.getInstance().getApplicationRef("server", appName).setEnabled(status);
                 V3AMX.getInstance().getApplication(appName).setEnabled(status);
-                String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulLifecyce" : "msg.disableSuccessfulLifecycle");
+                String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulLifecycle" : "msg.disableSuccessfulLifecycle");
                 GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
             }
         } catch (Exception ex) {

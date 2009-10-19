@@ -53,11 +53,11 @@
             setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
         prepareSuccessfulMsg();
-        redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
     />
 </sun:button>
 <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-        onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+        onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >s
     <!command
         // Create connector-resource
         // Update the connector-resource with the Name specified on the connector-connection-pool
@@ -78,11 +78,11 @@
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
             setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
-        redirect(page="#{parentPage}?configName=#{configName}")
+        redirect(page="#{parentPage}")
     />
 </sun:button>
 <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
     <!command
-        redirect(page="#{parentPage}?configName=#{configName}");
+        redirect(page="#{parentPage}");
     />
 </sun:button>

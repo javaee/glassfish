@@ -40,13 +40,13 @@
     <sun:tab id="msgSecurityEdit" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.msgSecurityTab}" >
         <!command
             setSessionAttribute(key="msgSecurityTabs" value="msgSecurityEdit");
-            redirect(page="msgSecurityEdit.jsf?configName=#{configName}&name=#{pageSession.Name}");
+            redirect(page="msgSecurityEdit.jsf?configName=#{encodedConfigName}&name=#{pageSession.encodedName}");
         />       
     </sun:tab>
     <sun:tab id="providers" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.providersTab}" >
         <!command
             setSessionAttribute(key="msgSecurityTabs" value="providers");
-            redirect(page="providers.jsf?configName=#{configName}&name=#{pageSession.Name}");
+            redirect(page="providers.jsf?configName=#{encodedConfigName}&name=#{pageSession.encodedName}");
 	/>    
     </sun:tab>    
 </sun:tabSet>

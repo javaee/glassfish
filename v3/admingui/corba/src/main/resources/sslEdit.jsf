@@ -46,7 +46,9 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         setSessionAttribute(key="iiopTab" value="sslEdit");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/sslEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/corba/sslEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/corba/iiopListeners.jsf");
         setPageSessionAttribute(key="parentObjectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/iiop-service,type=iiop-listener,name=#{pageSession.Name}")
         setPageSessionAttribute(key="childType" value="ssl")

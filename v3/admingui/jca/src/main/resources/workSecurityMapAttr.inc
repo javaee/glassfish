@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@
         />
 
         <sun:property id="mapName" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}">
-            <sun:staticText id="mapName" text="#{pageSession.mapName}"/>
+            <sun:staticText id="mapName" text="#{pageSession.Name}"/>
         </sun:property>
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
@@ -101,11 +101,10 @@
                 />
         </sun:property>
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResourceAdapterName']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResourceAdapterName']}" labels="$pageSession{connectorList}"  >
                 <!beforeCreate
-                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.connList}")
-                     listAdd(list="#{requestScope.connList}" value="jmsra")
-                     addEmptyFirstElement(in="$attribute{connList}"  out="#{pageSession.connectorList}")
+                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
+                     listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
            </sun:dropDown>
         </sun:property>

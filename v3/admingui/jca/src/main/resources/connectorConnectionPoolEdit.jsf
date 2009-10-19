@@ -45,7 +45,8 @@
     <!beforeCreate
         setSessionAttribute(key="connectorPoolTabs" value="general");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
@@ -65,7 +66,7 @@
         getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}");
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
 
-        getConnectionDefinitionsForRA(resourceAdapter="#{valueMap.ResourceAdapterName}" result="#{pageSession.cdList}");
+        getConnectionDefinitionsForRA(resourceAdapter="#{pageSession.valueMap.ResourceAdapterName}" result="#{pageSession.cdList}");
     />
 </event>
 #include "/common/shared/restart.inc"
@@ -77,14 +78,14 @@
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.editPageTitle}" helpText="$resource{i18njca.connectorConnectionPool.editPageTitleHelp}" >
 #include "/common/shared/editPageButtons.inc"
         <sun:button id="flush" text="$resource{i18njca.button.Flush}" primary="#{false}" > 
-                        <!command
-                            flushConnectionPool(jndiName="#{pageSession.Name}");
-                        />
+            <!command
+                flushConnectionPool(jndiName="#{pageSession.Name}");
+            />
         </sun:button>     
     </sun:title>
     "<br><br>
     
-#include "/jca/connectorConnectionPoolAttr.inc"
+#include "/jca/connectorConnectionPoolAttrEdit.inc"
     
     <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolEdit}" />
 </sun:form>

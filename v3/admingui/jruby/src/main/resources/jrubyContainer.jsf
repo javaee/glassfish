@@ -49,7 +49,7 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jruby-container");
         proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{pageSession.containerExist}")
 
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jruby/jrubyContainer.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jruby/jrubyContainer.jsf?configName=#{pageSession.configName}");
 
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
         setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jruby-container");

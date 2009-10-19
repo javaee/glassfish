@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -43,14 +43,16 @@
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
-        getRequestValue(key="name" value=>$page{name});
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
                 attrName="AuthRealmName" value="#{pageSession.authRealm}" )
-        if ("#{pageSession.name}=#{pageSession.authRealm}"){
+        if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="isAdminRealm", value="true")
             setPageSessionAttribute(key="groupList", value="asadmin")
         }
-        if ("!(#{pageSession.name}=#{pageSession.authRealm})"){
+        if ("!(#{pageSession.Name}=#{pageSession.authRealm})"){
             setPageSessionAttribute(key="isAdminRealm", value="false")
         }
     />
@@ -69,17 +71,17 @@
                             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) return checkPSW(); return false;" >
                            <!command
                                 addUser(
-                                    Realm="#{name}"
+                                    Realm="#{pageSession.Name}"
                                     UserId="#{userId}"
                                     GroupList="#{pageSession.groupList}"
                                     Password="#{password}"
                                 );
-                                redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}")
+                                redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
                             />                        
                         </sun:button>
                         <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="$boolean{true}" primary="#{false}">
                            <!command
-                                redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{name}&configName=#{configName}")
+                                redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
                             />                        
                         </sun:button>
                     </sun:panelGroup>
@@ -90,7 +92,7 @@
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
-                                <sun:staticText id="NameStatic" text="#{name}"/> 
+                                <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
                             </sun:property>
                             <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}" helpText="$resource{i18nc.manageUsers.UserIDHelp}">
                                 <sun:textField id="UserId" styleClass="required" text="#{requestScope.userId}" columns="$int{55}" required="#{true}"/> 

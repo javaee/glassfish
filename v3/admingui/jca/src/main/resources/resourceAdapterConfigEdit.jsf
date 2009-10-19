@@ -44,7 +44,8 @@
 <event>
     <!beforeCreate
     getRequestValue(key="name" value="#{pageSession.Name}");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/resourceAdapterConfigEdit.jsf?name=#{pageSession.Name}");
+    urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/resourceAdapterConfigEdit.jsf?name=#{pageSession.encodedName}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/resourceAdapterConfigs.jsf");
     setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=resource-adapter-config,name=#{pageSession.Name}");
     setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
@@ -53,16 +54,10 @@
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
-    setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
     setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     setPageSessionAttribute(key="skipAttrsList", value={"ResourceAdapterName"});
-
-    setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
-    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
-    setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
-    setPageSessionAttribute(key="has2Objects" value="#{true}" );
     />
 </event>
 #include "/common/shared/restart.inc"
@@ -71,15 +66,14 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.resourceAdapterConfig.editPageTitle}" helpText="$resource{i18njca.resourceAdapterConfig.editPageTitleHelp}" >
-#include "/common/shared/editPageLoadDefaultButton.inc"
-#include "/jca/resourceAdapterConfigButtons.inc"
+#include "/common/shared/editPageButtons_2.inc"
     </sun:title>
     "<br><br>
     
 #include "/jca/resourceAdapterConfigAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
     
-    <sun:hidden id="helpKey" value="$resource{help_jca.adminObjectEdit}" />
+    <sun:hidden id="helpKey" value="$resource{help_jca.resourceAdapterConfigEdit}" />
 </sun:form>
             "<br/>
 #include "/common/shared/changeButtonsJS.inc" 

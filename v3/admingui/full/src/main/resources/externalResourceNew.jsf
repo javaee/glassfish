@@ -43,7 +43,6 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/full/externalResourceNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/full/externalResources.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");

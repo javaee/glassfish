@@ -35,8 +35,8 @@
  holder.
 -->
 <!-- jdbc/jdbcConnectionPoolNew2Buttons.inc -->
-
-<sun:panelGroup id="topButtons">
+<!facet pageButtonsTop>
+  <sun:panelGroup id="topButtons">
     <sun:button id="previousButton" primary="#{false}"
         text="$resource{i18n.button.Previous}"
         onClick='javascript: document.getElementById("form2:validate").value="false"; ' >
@@ -56,7 +56,7 @@
        <!command
             updateJdbcConnectionPoolWizardStep2();
             createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                    attrs="#{valueMap}"
+                    attrs="#{wizardMap}"
                     convertToFalse="#{pageSession.convertToFalseList}"
                     result => $attribute{objStr});
             if (#{pageSession.hasPropertyTable}){
@@ -64,21 +64,24 @@
                 getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                 setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
             }
-            if ("#{valueMap['Ping']}") {
-                pingJdbcConnectionPool(jndiName="#{valueMap['Name']}");
-                redirect(page="#{parentPage}?configName=#{configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            if ("#{wizardMap['Ping']}") {
+                pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}");
+                setSessionAttribute(key="wizardMap" value="#{null}")
+                redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             }
-            if ("!#{valueMap['Ping']}") {
-                redirect(page="#{parentPage}?configName=#{configName}");
+            if ("!#{wizardMap['Ping']}") {
+                setSessionAttribute(key="wizardMap" value="#{null}")
+                redirect(page="#{parentPage}");
             }
         />    
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
        <!command
-            setSessionAttribute(key="valueMap" value="#{null}")
-                    setSessionAttribute(key="wizardPoolExtra" value="#{null}")
-                    setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                    redirect(page="#{parentPage}?configName=#{configName}");
+            setSessionAttribute(key="wizardMap" value="#{null}")
+            setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+            setSessionAttribute(key="wizardPoolProperties" value="#{null}")
+            redirect(page="#{parentPage}");
         />    
     </sun:button>
-</sun:panelGroup>
+  </sun:panelGroup>
+</facet>

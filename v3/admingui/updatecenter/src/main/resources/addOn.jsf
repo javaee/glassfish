@@ -52,7 +52,7 @@
             setAttribute(key="pageTitle" value="$resource{i18nUC.updateCenter.addOn.pageTitle}");
             setAttribute(key="pageTitleHelp" value="$resource{i18nUC.updateCenter.addOn.pageTitleHelp}");
             setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.addOn.tableTitle}");
-            setPageSessionAttribute(key="fromPage" value="addOn.jsf");
+            setPageSessionAttribute(key="fromPage" value="#{request.contextPath}/updateCenter/addOn.jsf");
             setPageSessionAttribute(key="forInstall" value="true");
             setPageSessionAttribute(key="showNewVersion" value="#{false}");
             setPageSessionAttribute(key="doReloadHeader" value="false");

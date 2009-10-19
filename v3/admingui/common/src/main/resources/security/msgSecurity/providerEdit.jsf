@@ -47,15 +47,18 @@
         getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         getRequestValue(key="msgSecurityName" value="#{pageSession.msgSecurityName}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        urlencode(value="#{pageSession.msgSecurityName}" encoding="UTF-8" result="#{pageSession.encodedMsgSecurityName}");
         getMsgProviderInfo(providerName="#{pageSession.Name}"  msgSecurityName="#{pageSession.msgSecurityName}" configName="#{pageSession.configName}"   attrMap="#{pageSession.valueMap}")
         setPageSessionAttribute(key="objectNameStr",
             value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service/message-security-config[#{pageSession.msgSecurityName}],type=provider-config,name=#{pageSession.Name}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{pageSession.Name}&msgSecurityName=#{pageSession.msgSecurityName}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{pageSession.encodedName}&msgSecurityName=#{pageSession.encodedMsgSecurityName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="cPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}");
         getRequestValue(key="cancelPage" 
                 value="#{pageSession.cancelPage}" 
-                default="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}")
+                default="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.encodedMsgSecurityName}&configName=#{encodedConfigName}")
         setPageSessionAttribute(key="edit" value="#{true}" );
     />
     </event>

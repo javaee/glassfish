@@ -50,7 +50,7 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
         <sun:button id="newButton" text="$resource{i18n.button.New}" >
-            <!command redirect(page="#{pageSession.createLink}?name=#{pageSession.Name}") />
+            <!command redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
@@ -63,7 +63,7 @@
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
             deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
             deleteChildren(objectNameStr="amx:pp=/domain/servers,type=server,name=server", type="resource-ref", selectedRows="${selectedRows}");
-            redirect(page="#{pageSession.listLink}?name=#{pageSession.Name}");
+            redirect(page="#{pageSession.listLink}");
         />
         </sun:button>
      </sun:panelGroup>
@@ -83,7 +83,7 @@
 
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}?name=#{pageSession.Name}&mapName=#{td.value.Name}" />
+            url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
   </sun:tableRowGroup>
 

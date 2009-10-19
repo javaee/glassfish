@@ -85,7 +85,7 @@
                             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                             flushJMSDestination(selectedRows="${selectedRows}");
                             prepareAlertMsg(summary="$resource{i18njms.jmsPhysDestinations.flushed}", type="success");
-                            redirect(page="#{pageSession.selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{configName}");
+                            redirect(page="#{pageSession.selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
                         />
                     </sun:button>
                  </sun:panelGroup>

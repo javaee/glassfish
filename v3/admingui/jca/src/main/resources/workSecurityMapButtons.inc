@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -90,7 +90,7 @@
                     }
                 }
                 prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?name=#{pageSession.Name}&mapName=#{pageSession.mapName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -122,12 +122,12 @@
                                 result => $attribute{objStr2});
                         }
                     }
-                    redirect(page="#{pageSession.parentPage}?name=#{pageSession.Name}")
+                    redirect(page="#{pageSession.parentPage}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}?name=#{pageSession.Name}");
+                    redirect(page="#{parentPage}");
                 />
             </sun:button>
         </sun:panelGroup>

@@ -64,7 +64,7 @@
             <!command
                 prepareSuccessfulMsg();
                 setProxyInfo(connection="#{proxyGroup}", host="#{host}", port="#{port}");
-                redirect(page="/updateCenter/ucConfig.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                redirect(page="#{request.contextPath}/updateCenter/ucConfig.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
         </sun:button>
  </sun:panelGroup> 

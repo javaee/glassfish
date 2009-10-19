@@ -217,6 +217,17 @@ public class V3AMX {
                     //skip any element.
                     continue;
                 }
+                
+                /* If user doesn't fill in anything, we need to pass a NULL to the backend so that the attribute value
+                 * will be removed.  Otherwise, it is written out as "" in domain.xml and user will not be able to get back
+                 * the default value.
+                 * Another reason is for attributes that is optional but is an enum, eg  transactionIsolationLevel in jdbc connection
+                 * pool, (read-uncommitted|read-committed|repeatable-read|serializable)  pass in "" will result in constraints
+                 * violation.
+                 */
+                if ((val != null) && (val instanceof String) && (val.equals(""))){
+                    val=null;
+                }
                 Attribute attr = new Attribute(key, (val==null)?  (String)val  : val.toString());
                 attrList.add(attr);
             }

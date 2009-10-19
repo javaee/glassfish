@@ -44,16 +44,16 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="security-map");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.tmpRows}");
         getResourceRealStatus(rows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}")
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njca.msg.JS.confirmDeleteSM}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorSecurityMapNew.jsf");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/connectorSecurityMapNew.jsf?name=#{pageSession.encodedName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njca.connectorSecurityMaps.tableTitle}");
     />
     </event>

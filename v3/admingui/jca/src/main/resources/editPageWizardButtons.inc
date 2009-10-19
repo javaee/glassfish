@@ -53,7 +53,7 @@
                 <!command
                     updateConnectorConnectionPoolWizardStep2();
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{valueMap}"
+                            attrs="#{wizardMap}"
                             convertToFalse="#{pageSession.convertToFalseList}"
                             result => $attribute{objStr});
                     if (#{pageSession.hasPropertyTable}){
@@ -61,15 +61,18 @@
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                     }
-                    redirect(page="#{parentPage}?configName=#{configName}")
+                    setSessionAttribute(key="wizardMap" value="#{null}")
+                    setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+                    setSessionAttribute(key="wizardPoolProperties" value="#{null}")
+                    redirect(page="#{parentPage}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    setSessionAttribute(key="valueMap" value="#{null}")
+                    setSessionAttribute(key="wizardMap" value="#{null}")
                     setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                     setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                    redirect(page="#{parentPage}?configName=#{configName}");
+                    redirect(page="#{parentPage}");
                 />
             </sun:button>
         </sun:panelGroup>

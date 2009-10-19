@@ -47,8 +47,10 @@
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
         getRequestValue(key="mapName" value="#{pageSession.mapName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.mapName}" encoding="UTF-8" result="#{pageSession.encodedMapName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorSecurityMapEdit.jsf?name=#{pageSession.encodedName}&mapName=#{pageSession.encodedMapName}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources/connector-connection-pool[#{pageSession.Name}],type=security-map,name=#{pageSession.mapName}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="security-map");
@@ -83,14 +85,13 @@
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/jca/connectorConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njca.connectorSecurityMap.editPageTitle}" helpText="$resource{i18njca.connectorSecurityMap.editPageTitleHelp}">
+            <sun:title id="propertyContentPage" title="$resource{i18njca.connectorSecurityMap.editPageTitle}" helpText="$resource{i18njca.connectorSecurityMap.editPageTitleHelp}">
 #include "/jca/securityMapButtons.inc"
-                    </sun:title>
-                    "<br><br>
+            </sun:title>
+"<br><br>
 
 #include "/jca/connectorSecurityMapAttr.inc"
 

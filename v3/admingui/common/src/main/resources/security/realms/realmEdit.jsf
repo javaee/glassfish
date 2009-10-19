@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -47,8 +47,10 @@
         setPageSessionAttribute(key="edit" value="#{true}" )
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/realms/realms.jsf");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=auth-realm,name=#{pageSession.Name}")
         getRealmAttrForEdit(objectNameStr="#{objectNameStr}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{requestScope.tableList}" );
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");

@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -44,18 +44,17 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        getRequestValue(key="mapName" value="#{pageSession.mapName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
-        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.mapName}");
+        setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="work-security-map");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.mapName}");
-        setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/resources/work-security-map[#{pageSession.mapName}],type=group-map");
-        setPageSessionAttribute(key="objectNameStr3", value="amx:pp=/domain/resources/work-security-map[#{pageSession.mapName}],type=principal-map");
+        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/resources,type=work-security-map,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/resources/work-security-map[#{pageSession.Name}],type=group-map");
+        setPageSessionAttribute(key="objectNameStr3", value="amx:pp=/domain/resources/work-security-map[#{pageSession.Name}],type=principal-map");
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
         proxyExist(objectNameStr="#{pageSession.objectNameStr2}" exist="#{pageSession.gexist}")
         proxyExist(objectNameStr="#{pageSession.objectNameStr3}" exist="#{pageSession.pexist}")

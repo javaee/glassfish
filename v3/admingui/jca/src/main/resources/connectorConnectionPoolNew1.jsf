@@ -51,15 +51,15 @@
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/connectorConnectionPools.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.tmpMap}")
         getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}")
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{requestScope.modList}")
         addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
         getConnectorConnectionPoolWizard(
                 fromStep1="$attribute{fromStep1}"
-		fromStep2="$attribute{fromStep2}" 
+                fromStep2="$attribute{fromStep2}"
                 poolName="$attribute{poolName}"
-                attrMap="#{pageSession.valueMap}"
+                attrMap="#{pageSession.tmpMap}"
                 resAdapter="$attribute{resAdapterChoosen}" 
                 connectionDefinitions=>$attribute{connectionDefinitions} )
         
@@ -82,15 +82,15 @@
                             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
                             <!command
                                 updateConnectorConnectionPoolWizard();
-                                navigate(page="/jca/connectorConnectionPoolNew2.jsf")
+                                redirect(page="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf")
                             />
                         </sun:button>
                         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
                             <!command
-                                setSessionAttribute(key="valueMap" value="#{null}")
+                                setSessionAttribute(key="wizardMap" value="#{null}")
                                 setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                                redirect(page="connectorConnectionPools.jsf")
+                                redirect(page="#{request.contextPath}/jca/connectorConnectionPools.jsf")
                             />
                         </sun:button>
                     </sun:panelGroup>

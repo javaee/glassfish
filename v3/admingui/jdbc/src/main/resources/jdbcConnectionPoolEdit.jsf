@@ -43,34 +43,30 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" guiOnLoad="initDisableFields('#{valueMap.ResType}');" >
 <!define name="content">
     <event>
-    <!beforeEncode
-   />
-    </event>
-    <event>
     <!beforeCreate
         setSessionAttribute(key="jdbcPoolTabs" value="general");
         getRequestValue(key="name" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=jdbc-connection-pool,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="type" value="#{valueMap.ResType}"); 
+        setPageSessionAttribute(key="type" value="#{valueMap.ResType}");
         setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AllowNonComponentCallers" "NonTransactionalConnections" "IsIsolationLevelGuaranteed"});
-         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+        setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
- 
         />
         </event>
 #include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
-   #include "/common/shared/treeBreadcrumbs.inc"
+   //#include "/common/shared/treeBreadcrumbs.inc"
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
@@ -86,32 +82,39 @@
                                      
 #include "/common/shared/editPageButtons_2.inc"
                 </sun:title>
-#include "/jdbc/poolPropertyNew.inc"
+#include "/jdbc/poolPropertyEdit.inc"
 
-                
+       <sun:title>
 #include "/common/shared/editPageBottomButtons.inc"
+     </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolEdit}" />
             </sun:form>
+
 #include "/common/shared/changeButtonsJS.inc"
 
-"<SCRIPT language = "Javascript" > \
-function initDisableFields(type) {  \
-    disableEnableFields(type); \
-} \
-function disableFields() {  \
-    var type = getSelectElement("$pageSession{resTypeVal}"); \
-    disableEnableFields(type.value); \
-} \
-function disableEnableFields(type) {  \
-    if(type == 'java.sql.Driver') { \
-	webui.suntheme.field.setDisabled("$pageSession{dsTextField}", true); \
-        webui.suntheme.field.setDisabled("$pageSession{ddsTextField}", false); \
-    } else{ \
-	webui.suntheme.field.setDisabled("$pageSession{dsTextField}", false); \
-        webui.suntheme.field.setDisabled("$pageSession{ddsTextField}", true); \
-    } \
-} \
-</SCRIPT>
+<f:verbatim>
+<script type="text/javascript">
+
+    function initDisableFields(type) {
+        disableEnableFields(type);
+    }
+    function disableFields() {
+        var type = getSelectElement("$pageSession{resTypeVal}");
+        disableEnableFields(type.value);
+    }
+    function disableEnableFields(type) {
+        if(type == 'java.sql.Driver') {
+            disableComponent("$pageSession{dsTextField}", 'text');
+            enableComponent("$pageSession{ddsTextField}", 'text');
+        } else{
+            enableComponent("$pageSession{dsTextField}", 'text');
+            disableComponent("$pageSession{ddsTextField}", 'text');
+        }
+    }
+
+</script>
+</f:verbatim>
+
 </define>
 </composition>
 

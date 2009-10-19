@@ -45,14 +45,16 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setSessionAttribute(key="msgSecurityTabs" value="providers");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="provider-config");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
         addDefaultProviderInfo(providerList="#{requestScope.listOfRows}",  msgSecurityName="#{pageSession.Name}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteMsgProviders}");
-        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/providerNew.jsf?msgSecurityName=#{pageSession.Name}&configName=#{pageSession.configName}");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/providerNew.jsf?msgSecurityName=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecProvider.TableTitle}");
         setPageSessionAttribute(key="additionalDeleteHandler" value="checkMsgSecurityDefaultProvider");

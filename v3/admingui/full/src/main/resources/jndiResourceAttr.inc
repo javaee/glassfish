@@ -61,26 +61,8 @@
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
                     />
-                    <!command
-                        /* This should no longer be needed.
-                                    setAttribute(key="click" value="$this{component}");
-                                    setAttribute(key="resChosen" value="#{click.selected}")
-                                    setAttribute(key="name" value="#{pageSession.Name}")
-                                    getUIComponent(clientId="#{jndiNameId}", component=>$attribute{nameComponent});
-                                    getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{Name});
-                                    getUIComponent(clientId="#{objectTypeId}", component=>$attribute{obTypeComponent});
-                                    getUIComponentProperty(component="$attribute{obTypeComponent}", name="submittedValue", value=>$attribute{objectType});
-                                    getUIComponent(clientId="#{descId}", component=>$attribute{descComponent});
-                                    getUIComponentProperty(component="$attribute{descComponent}", name="submittedValue", value=>$attribute{desc});
-                                    getUIComponent(clientId="#{statusId}", component=>$attribute{statusComponent});
-                                    getUIComponentProperty(component="$attribute{statusComponent}", name="submittedValue", value=>$attribute{status});
-                                    getUIComponent(clientId="#{jndiLookupId}", component=>$attribute{jndiLookupComponent});
-                                    getUIComponentProperty(component="$attribute{jndiLookupComponent}", name="submittedValue", value=>$attribute{jndiLookup});                                  
-                                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});                   
-                                    navigate(page="#{selfPage}");
-                        */
-                    />
+                   
+                />
                 </sun:dropDown>
                 "<br /><br />
 

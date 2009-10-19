@@ -45,8 +45,6 @@
     <event>
     <!beforeCreate
         setAttribute(key="usersOptionG" value="users" );
-        getRequestValue(key="configName" value=>$page{configName} default="server-config");
-        getRequestValue(key="name" value="#{pageSession.Name}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");

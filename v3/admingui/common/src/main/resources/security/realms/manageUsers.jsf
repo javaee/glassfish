@@ -43,14 +43,16 @@
     <event>
     <!beforeCreate
     getRequestValue(key="configName" value=>$page{configName} default="server-config");
-    getRequestValue(key="name" value=>$page{name});
-    getFileUsers(Realm="#{name}" result=>$attribute{listOfRows} );
+    getRequestValue(key="name" value=>$page{Name});
+    urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+    urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+    getFileUsers(Realm="#{Name}" result=>$attribute{listOfRows} );
     getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
                 attrName="AuthRealmName" value="#{pageSession.authRealm}" )
-    if ("#{pageSession.name}=#{pageSession.authRealm}"){
+    if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageAdminUsers.TableTitle}")
         }
-        if ("!(#{pageSession.name}=#{pageSession.authRealm})"){
+        if ("!(#{pageSession.Name}=#{pageSession.authRealm})"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageUsers.TableTitle}")
         }
     />
@@ -61,12 +63,12 @@
    #include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"
                 <sun:title id="propertyContentPage" title="#{pageSession.tableTitle}"
-                helpText="$resource{i18nc.manageUsers.TablePageHelp}">
+                    helpText="$resource{i18nc.manageUsers.TablePageHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{false}">
                             <!command
-                            redirect(page="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{name}&configName=#{configName}");
+                            redirect(page="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
                             />
                         </sun:button>
 
@@ -77,7 +79,7 @@
                  <sun:propertySheet id="propertySheet">             
                 <sun:propertySheetSection id="propertySectionTextField">
                     <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
-                        <sun:staticText id="NameStatic" text="#{name}"/> 
+                        <sun:staticText id="NameStatic" text="#{Name}"/>
                     </sun:property>
                 </sun:propertySheetSection>
                 </sun:propertySheet>
@@ -97,7 +99,9 @@
                                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
                         />
                         <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                            <!command redirect(page="#{request.contextPath}/common/security/realms/manageUserNew.jsf?name=#{name}&configName=#{configName}"); />
+                            <!command
+                                redirect(page="#{request.contextPath}/common/security/realms/manageUserNew.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
+                            />
                         </sun:button>
 
                         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
@@ -108,8 +112,8 @@
                         <!command
                         getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                        removeUser(Realm="#{name}", selectedRows="${selectedRows}");
-                        redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.name}&configName=#{pageSession.configName}");
+                        removeUser(Realm="#{pageSession.Name}", selectedRows="${selectedRows}");
+                        redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                         />
                     </sun:button>
                     </sun:panelGroup>
@@ -129,7 +133,7 @@
 
                     <sun:tableColumn headerText="$resource{i18nc.manageUsers.UserID}" rowHeader="$boolean{true}" id="col1">
                         <sun:hyperlink id="link" text="#{td.value.users}"
-                        url="/common/security/realms/manageUserEdit.jsf?user=#{td.value.users}&name=#{name}&configName=#{configName}" />
+                        url="/common/security/realms/manageUserEdit.jsf?user=#{td.value.users}&name=#{pageSession.Name}&configName=#{configName}" />
                     </sun:tableColumn>
 
                     <sun:tableColumn headerText="$resource{i18nc.manageUsers.GroupList}" rowHeader="$boolean{true}" id="col11">

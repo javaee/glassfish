@@ -39,25 +39,25 @@
         <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
                 <!command
                     setSessionAttribute(key="connectorPoolTabs" value="general");
-                    redirect(page="connectorConnectionPoolEdit.jsf?name=#{pageSession.Name}");
+                    redirect(page="connectorConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
                 />       
         </sun:tab>
         <sun:tab id="advanceTab" immediate="$boolean{true}" text="$resource{i18n.common.Advanced}">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="advanceTab");
-                redirect(page="connectorConnectionPoolAdvance.jsf?name=#{pageSession.Name}");
+                redirect(page="connectorConnectionPoolAdvance.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
         <sun:tab id="propertyTab" immediate="$boolean{true}" text="$resource{i18n.common.AdditonalProperties}">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="propertyTab");
-                redirect(page="connectorConnectionPoolProperty.jsf?name=#{pageSession.Name}");
+                redirect(page="connectorConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
         <sun:tab id="securityMapTab" immediate="$boolean{true}" text="$resource{i18njca.connectorSecurityMaps.tabTitle}">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
-                redirect(page="connectorSecurityMaps.jsf?name=#{pageSession.Name}");
+                redirect(page="connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
 </sun:tabSet>

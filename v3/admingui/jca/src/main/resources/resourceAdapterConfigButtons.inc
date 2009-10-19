@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -38,8 +38,7 @@
 
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" >
                 <!command
 
                 if(#{pageSession.hasPropertySheet}){
@@ -80,14 +79,14 @@
                     }
                     if (#{pageSession.showSuccessfulMsg}){
                         prepareSuccessfulMsg();
-                        redirect(page="#{pageSession.parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                        redirect(page="#{pageSession.parentPage}?name=#{pageSession.encodedName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     }
-                    redirect(page="#{pageSession.parentPage}?configName=#{configName}")
+                    redirect(page="#{pageSession.parentPage}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
+                    redirect(page="#{parentPage}");
                 />
             </sun:button>
         </sun:panelGroup>

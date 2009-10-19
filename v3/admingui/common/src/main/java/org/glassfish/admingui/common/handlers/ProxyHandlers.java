@@ -447,6 +447,8 @@ public class ProxyHandlers {
                     }
                 }
             }
+
+
            V3AMX.setAttributes(objectNameStr, attrs);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
@@ -540,6 +542,23 @@ public class ProxyHandlers {
 //            System.out.println(attrs);
 
             V3AMX.removeElement(attrs);
+
+            /* If user doesn't fill in anything, we need to remove it, otherwise, it is written out as "" in domain.xml and
+             * user will not be able to get the default value.
+             * Another reason is for attributes that is optional but is an enum, eg  transactionIsolationLevel in jdbc connection
+             * pool, (read-uncommitted|read-committed|repeatable-read|serializable)  pass in "" will result in constraints
+             * violation.
+             */
+            Set<Map.Entry <String, Object>> attrSet = attrs.entrySet();
+            Iterator<Map.Entry<String, Object>> iter = attrSet.iterator();
+            while (iter.hasNext()){
+                 Map.Entry<String, Object> oneEntry = iter.next();
+                 Object val = oneEntry.getValue();
+                 if ((val != null) && (val instanceof String) && (val.equals(""))){
+                    iter.remove();
+                }
+            }
+
             AMXConfigProxy child = amx.createChild(childType, attrs);
             handlerCtx.setOutputValue("result", child.objectName().toString());
         } catch (Exception ex) {
