@@ -37,6 +37,8 @@ package com.sun.enterprise.util;
 
 /* WBN Valentine's Day, 2000 -- place for handy String utils.
  */
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.sql.SQLException;
 
@@ -510,4 +512,11 @@ public class StringUtils {
         return strNew;
     }
 
+    public static String getStackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
+        pw.close();
+        return sw.toString();
+    }
 }
