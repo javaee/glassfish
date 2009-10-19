@@ -117,6 +117,15 @@ public class CreateHttp implements AdminCommand {
         List<Config> configList = configs.getConfig();
         Config config = configList.get(0);
         Protocols protocols = config.getNetworkConfig().getProtocols();
+
+        if (config.getNetworkConfig().findProtocol(protocolName) == null) {
+            report.setMessage(localStrings.getLocalString("create.http.fail.protocolnotfound",
+                "The specified protocol {0} is not yet configured. " +
+                "Please create one", protocolName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         Protocol protocol = null;
         for (Protocol p : protocols.getProtocol()) {
             if (p.getName().equalsIgnoreCase(protocolName) && p.getHttp() != null) {
