@@ -86,6 +86,7 @@
             setAttribute(key="hasStatsWSD" value="#{false}");
             setAttribute(key="hasStatsWS" value="#{false}");
             setAttribute(key="hasStatsJG" value="#{false}");
+            setAttribute(key="hasStatsCQ" value="#{false}");
         }
 
     />
@@ -168,6 +169,16 @@
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStatsbyTypeName(type="keep-alive-mon" name="network/#{viewVal}/keep-alive", result=>$attribute{keepAliveStatsList} hasStats=>$attribute{hasStatsKA});
+
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+        <sun:tableRowGroup id="connectionQueueStats" rendered="#{hasStatsCQ}" data={"$attribute{connectionQueueStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ConnectionQueueStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="connection-queue-mon" name="network/#{viewVal}/connection-queue", result=>$attribute{connectionQueueStatsList} hasStats=>$attribute{hasStatsCQ});
 
          />
 
