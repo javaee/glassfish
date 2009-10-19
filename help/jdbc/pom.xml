@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.glassfish.docs</groupId>
 	<artifactId>v3-docs</artifactId>
-        <version>3.0-b04</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-jdbc-plugin-help</artifactId>
