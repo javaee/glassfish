@@ -126,7 +126,9 @@ public class GrizzlyProxy implements NetworkProxy {
      * configuration object.
      */
     private void configureGrizzly() {
-        registerMonitoringStatsProviders();
+        if(!("light-weight-listener".equals(networkListener.getProtocol()))) {
+            registerMonitoringStatsProviders();
+        }
 
         grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(), networkListener.getName());
         grizzlyListener.configure(networkListener, grizzlyService.habitat);
@@ -231,9 +233,8 @@ public class GrizzlyProxy implements NetworkProxy {
         if(!grizzlyListener.isGenericListener()) {
             grizzlyService.getHabitat().removeIndex(Mapper.class.getName(),
                         String.valueOf(portNumber));
+            unregisterMonitoringStatsProviders();
         }
-
-        unregisterMonitoringStatsProviders();
     }
 
     @Override
