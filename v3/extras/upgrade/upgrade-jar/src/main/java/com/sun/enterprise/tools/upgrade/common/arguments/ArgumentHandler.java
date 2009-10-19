@@ -63,7 +63,7 @@ public abstract class ArgumentHandler {
 	boolean _isValidParameter = false;
 	
 	public ArgumentHandler() {
-		sm = StringManager.getManager(CommonInfoModel.class);
+		sm = StringManager.getManager(ArgumentHandler.class);
 		this.commonInfo = CommonInfoModel.getInstance();
         utils = UpgradeUtils.getUpgradeUtils(commonInfo);
 	}
