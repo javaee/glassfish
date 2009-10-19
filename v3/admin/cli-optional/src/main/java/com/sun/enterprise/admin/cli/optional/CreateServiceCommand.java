@@ -105,12 +105,24 @@ public final class CreateServiceCommand extends CLICommand {
      */
     protected void validate()
             throws CommandException, CommandValidationException  {
-        super.validate();
+        try {
+            super.validate();
 
-        // The order that you make these calls matters!!
-        validateDomainDir();
-        validateName();
-        validateAsadmin();
+            // The order that you make these calls matters!!
+            validateDomainDir();
+            validateName();
+            validateAsadmin();
+        }
+        catch(CommandException e) {
+            throw e;
+        }
+        catch(CommandValidationException e) {
+            throw e;
+        }
+        catch(Exception e) {
+            // plenty of RuntimeException possibilities!
+            throw new CommandValidationException(e.getMessage(), e);
+        }
     }
 
     /**
