@@ -105,6 +105,12 @@ public final class AMXValidator
     {
         log(Level.WARNING, msg, t);
     }
+    private static void logInfo(
+        final String    msg,
+        final Throwable t)
+    {
+        log(Level.INFO, msg, t);
+    }
     private static void progress(
         final Object... args)
     {
@@ -634,7 +640,17 @@ public final class AMXValidator
             final Set<String> attrNames = proxy.attributeNames();
             if (!attrNames.equals(attributesMap.keySet()))
             {
-                throw new Exception("Attributes Map differs from attribute names");
+                final Set<String>  keys = new HashSet<String>(attributesMap.keySet());
+                keys.removeAll(attrNames);
+                if ( keys.size() != 0 )
+                {
+                    throw new Exception("Attributes Map contains attributes not found in the MBeanInfo: " + keys);
+                }
+                
+                final Set<String> missing = new HashSet<String>(attrNames);
+                missing.removeAll(attributesMap.keySet());
+                
+                logInfo("Inaccessible attributes: " + missing + " in " + proxy.objectName(), null);
             }
 
             for (final AMXProxy child : childrenSet)
