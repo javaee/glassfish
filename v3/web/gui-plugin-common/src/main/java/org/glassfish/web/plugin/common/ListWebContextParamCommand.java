@@ -77,7 +77,7 @@ public class ListWebContextParamCommand extends WebModuleConfigCommand {
                     param.getParamName(),
                     param.getParamValue(),
                     param.getIgnoreDescriptorItem(),
-                    param.getDescription()));
+                    descriptionValueOrNotSpecified(param.getDescription())));
             reported++;
         }
         succeed(report, "listSummary",

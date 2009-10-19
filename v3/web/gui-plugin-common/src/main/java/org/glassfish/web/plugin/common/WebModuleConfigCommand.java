@@ -44,11 +44,11 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.util.List;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Superclass of all web module config-related commands.
@@ -61,6 +61,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 public abstract class WebModuleConfigCommand implements AdminCommand {
 
     private final static String WEB_SNIFFER_TYPE = "web";
+
+    private final static String LINE_SEP = System.getProperty("line.separator");
 
     @Param(primary=true)
     private String appNameAndOptionalModuleName;
@@ -101,14 +103,56 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
                     appName());
             return null;
         }
-        
-        final Module module = app.getModule(moduleName());
-        if (module == null) {
-            fail(report, "noSuchModule","Application {0} does not contain module {1}",
+
+        /*
+         * Be helpful by announcing if the user specified a submodule but this
+         * is not an EAR or if the user did NOT specify a submodule but this IS
+         * an EAR.
+         */
+        if (app.isStandaloneModule() && appNameAndOptionalModuleName.contains("/")) {
+            fail(report, "standaloneAppNoSubMods",
+                    "Application {0} is a stand-alone application and contains no submodules but submodule {1} was specified",
                     appName(),
                     moduleName());
+            return null;
+        }
+
+        if ( ! app.isStandaloneModule() && ! appNameAndOptionalModuleName.contains("/")) {
+            fail(report, "earNoModuleSelection",
+                    "Application {0} is an enterprise application; please also specify one of the web module names ({1}) as part of the command argument (for example, {0}/{2})",
+                    appName(),
+                    webModuleList(app),
+                    app.getModule().get(0).getName());
+            return null;
+        }
+
+        final Module module = app.getModule(moduleName());
+        if (module == null) {
+            if (app.getModule().isEmpty()) {
+                fail(report, "noWebModules", "Application {0} contains no web modules",
+                        appName());
+            } else {
+                fail(report, "noSuchModule","Application {0} contains web modules {1} but {2} is not one of them",
+                        appName(),
+                        webModuleList(app),
+                        moduleName());
+            }
         }
         return module;
+    }
+
+    private String webModuleList(final Application app) {
+        /*
+         * Build a list of web module names to include in the error message.
+         */
+        final StringBuilder moduleNames = new StringBuilder();
+        for (Module m : app.getModule()) {
+            if (m.getEngine("web") != null) {
+                moduleNames.append((moduleNames.length() > 0 ? ", " : "")).
+                        append(m.getName());
+            }
+        }
+        return moduleNames.toString();
     }
 
     protected Engine engine(final ActionReport report) {
@@ -126,7 +170,7 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
         }
         return e;
     }
-    
+
     /**
      * Returns either the explicit module name (if the command argument
      * specified one) or the app name.  An app can contain a module with the
@@ -138,9 +182,9 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
         final int endOfAppName = endOfAppName();
         return (endOfAppName == appNameAndOptionalModuleName.length()) ?
             appNameAndOptionalModuleName :
-            appNameAndOptionalModuleName.substring(endOfAppName);
+            appNameAndOptionalModuleName.substring(endOfAppName + 1);
     }
-    
+
     protected String appName() {
         return appNameAndOptionalModuleName.substring(0, endOfAppName());
     }
@@ -150,12 +194,24 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
         return (slash == -1 ? appNameAndOptionalModuleName.length() : slash);
     }
 
+    protected String appNameAndOptionalModuleName() {
+        return appNameAndOptionalModuleName;
+    }
+
     protected ActionReport fail(final ActionReport report,
             final Exception e,
             final String msgKey,
             final String defaultFormat, Object... args) {
         report.setFailureCause(e);
-        return fail(report, msgKey, defaultFormat, args);
+        final StringBuilder causeMessages = new StringBuilder();
+        Throwable t = e;
+        while (t != null) {
+            causeMessages.append(causeMessages.length() > 1 ? LINE_SEP : "").
+                    append(t.getLocalizedMessage());
+            t = t.getCause();
+        }
+
+        return fail(report, msgKey, defaultFormat + causeMessages.toString(), args);
 
     }
     protected ActionReport fail(final ActionReport report, final String msgKey,
@@ -170,11 +226,18 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
                 msgKey, defaultFormat, args);
     }
 
+    protected String descriptionValueOrNotSpecified(final String value) {
+        if (value != null) {
+            return value;
+        }
+        return localStrings.getLocalString("notSpecified", value);
+
+    }
     private ActionReport finish(final ActionReport report,
             final ActionReport.ExitCode exitCode,
             final String msgKey, final String defaultFormat, Object... args) {
         String msg = localStrings.getLocalString(msgKey, defaultFormat, args);
-        report.setActionDescription(msg);
+        report.setMessage(msg);
         report.setActionExitCode(exitCode);
         return report;
     }

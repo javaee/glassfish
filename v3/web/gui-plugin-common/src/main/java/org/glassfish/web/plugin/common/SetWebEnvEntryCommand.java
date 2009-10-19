@@ -40,6 +40,7 @@
 package org.glassfish.web.plugin.common;
 
 import com.sun.enterprise.config.serverbeans.Engine;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -81,8 +82,12 @@ import org.jvnet.hk2.config.TransactionFailure;
         ActionReport report = context.getActionReport();
 
         try {
-            setEnvEntry(engine(report),
-                    name, description, ignoreDescriptorItem, value, envEntryType);
+            final Engine engine = engine(report);
+            if (engine != null) {
+                setEnvEntry(engine,
+                    name, description, ignoreDescriptorItem, value, envEntryType,
+                    report);
+            }
         } catch (Exception e) {
             fail(report, e, "errSetEnvEntry", "Error setting env entry");
         }
@@ -94,7 +99,8 @@ import org.jvnet.hk2.config.TransactionFailure;
             final String description,
             final Boolean ignoreDescriptorItem,
             final String value,
-            final String envEntryType) throws PropertyVetoException, TransactionFailure {
+            final String envEntryType,
+            final ActionReport report) throws PropertyVetoException, TransactionFailure {
 
         WebModuleConfig config = WebModuleConfig.Duck.webModuleConfig(owningEngine);
         if (config == null) {
@@ -103,15 +109,31 @@ import org.jvnet.hk2.config.TransactionFailure;
         } else {
             EnvEntry entry = config.getEnvEntry(name);
             if (entry == null) {
-                createEnvEntryOnExistingWMC(config, name,
-                        value, envEntryType, description, ignoreDescriptorItem);
+                if (isTypeOrIgnorePresent(ignoreDescriptorItem, envEntryType, report)) {
+                    createEnvEntryOnExistingWMC(config, name,
+                            value, envEntryType, description, ignoreDescriptorItem);
+                }
             } else {
                 modifyEnvEntry(entry, value, envEntryType, description,
                             ignoreDescriptorItem);
+                succeed(report, "setWebEnvEntryOverride",
+                        "Previous env-entry setting of {0} for application/module {1} was overridden.",
+                        name, appNameAndOptionalModuleName());
             }
         }
     }
 
+    private boolean isTypeOrIgnorePresent(final Boolean ignoreDescriptorItem,
+            final String envEntryType,
+            final ActionReport report) {
+        final boolean result = (ignoreDescriptorItem != null || envEntryType != null);
+        if ( ! result) {
+            fail(report, "valueOrIgnoreReqd",
+                    "The set-web-env-entry command for a new setting requires either the --value option or the --ignoreDescriptorItem option.");
+        }
+        return result;
+    }
+    
     private void createEnvEntryOnNewWMC(final Engine owningEngine,
             final String name,
             final String value,
@@ -173,6 +195,29 @@ import org.jvnet.hk2.config.TransactionFailure;
             final String description,
             final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
 
+        final String candidateFinalValue = (value == null) ? envEntry.getEnvEntryValue() : value;
+        final String candidateFinalType = (envEntryType == null) ? envEntry.getEnvEntryType() : envEntryType;
+
+        if (value != null || envEntryType != null) {
+            if (candidateFinalValue == null || candidateFinalType == null) {
+
+                final String fmt = localStrings.getLocalString("valueAndTypeRequired",
+                        "Both a valid --type and --value are required; one is missing");
+                throw new IllegalArgumentException(fmt);
+            }
+            try {
+                EnvEntry.Util.validateValue(candidateFinalType, candidateFinalValue);
+            } catch (IllegalArgumentException ex) {
+                final String fmt = localStrings.getLocalString("valueTypeMismatch",
+                        "Cannot assign value {0} to an env-entry of type {1}",
+                        candidateFinalValue, candidateFinalType);
+                final String valueOrType = (value != null ? "--value" : "--type");
+                throw new PropertyVetoException(fmt + " - " + ex.getLocalizedMessage(),
+                        new PropertyChangeEvent(envEntry, valueOrType,
+                            envEntry.getEnvEntryType(), envEntryType));
+            }
+        }
+
         envEntry.setEnvEntryName(name);
         if (envEntryType != null) {
             envEntry.setEnvEntryType(envEntryType);
@@ -180,6 +225,11 @@ import org.jvnet.hk2.config.TransactionFailure;
         if (value != null) {
             envEntry.setEnvEntryValue(value);
         }
+        
+        if (envEntryType != null) {
+            envEntry.setEnvEntryType(envEntryType);
+        }
+
         if (description != null) {
             envEntry.setDescription(description);
         }

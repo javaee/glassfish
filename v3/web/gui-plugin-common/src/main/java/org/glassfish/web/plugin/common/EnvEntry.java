@@ -115,12 +115,20 @@ public interface EnvEntry extends ConfigBeanProxy {
          * @throws NumberFormatException if the value cannot be parsed according to the type
          */
         public static void validateValue(final String type, final String value) {
+            if (type == null) {
+                throw new IllegalArgumentException("type");
+            }
+            if (value == null) {
+                throw new IllegalArgumentException("value");
+            }
             if (type.equals("java.lang.Boolean")) {
                 Boolean.parseBoolean(value);
             } else if (type.equals("java.lang.Byte")) {
                 Byte.parseByte(value);
             } else if (type.equals("java.lang.Character")) {
-                // no-op
+                if (value.length() > 1) {
+                    throw new IllegalArgumentException("length(\"" + value + "\") > 1");
+                }
             } else if (type.equals("java.lang.Double")) {
                 Double.parseDouble(value);
             } else if (type.equals("java.lang.Float")) {

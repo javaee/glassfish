@@ -79,7 +79,7 @@ public class ListWebEnvEntryCommand extends WebModuleConfigCommand {
                     entry.getEnvEntryType(),
                     entry.getEnvEntryValue(),
                     entry.getIgnoreDescriptorItem(),
-                    entry.getDescription()));
+                    descriptionValueOrNotSpecified(entry.getDescription())));
             reported++;
         }
         succeed(report, "listSummary",

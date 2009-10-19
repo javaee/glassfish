@@ -78,8 +78,11 @@ public class SetWebContextParamCommand extends WebModuleConfigCommand {
         ActionReport report = context.getActionReport();
 
         try {
-            setContextParam(engine(report),
-                    name, value, description, ignoreDescriptorItem);
+            final Engine engine = engine(report);
+            if (engine != null) {
+                setContextParam(engine,
+                    name, value, description, ignoreDescriptorItem, report);
+            }
         } catch (Exception e) {
             fail(report, e, "errSetContextParam", "Error setting context param");
         }
@@ -89,7 +92,8 @@ public class SetWebContextParamCommand extends WebModuleConfigCommand {
             final String paramName,
             final String paramValue,
             final String description,
-            final Boolean ignoreDescriptorItem) throws PropertyVetoException, TransactionFailure {
+            final Boolean ignoreDescriptorItem,
+            final ActionReport report) throws PropertyVetoException, TransactionFailure {
 
         WebModuleConfig config = WebModuleConfig.Duck.webModuleConfig(owningEngine);
         if (config == null) {
@@ -103,6 +107,9 @@ public class SetWebContextParamCommand extends WebModuleConfigCommand {
             } else {
                 modifyContextParam(cp, paramValue, description,
                             ignoreDescriptorItem);
+                succeed(report, "setWebContextParamOverride",
+                        "Previous context-param setting of {0} for application/module {1} was overridden.",
+                        name, appNameAndOptionalModuleName());
             }
         }
     }
