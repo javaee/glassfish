@@ -223,7 +223,7 @@ public class ToolsImpl extends AMXImplBase // implements Tools
 
         final ObjectName[] allArray = CollectionUtil.toArray(all, ObjectName.class);
 
-        final AMXValidator validator = new AMXValidator(getMBeanServer(), "high", false );
+        final AMXValidator validator = new AMXValidator(getMBeanServer(), "high", false, true );
         final AMXValidator.ValidationResult result = validator.validate(allArray);
 
         return result.toString();

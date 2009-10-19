@@ -79,5 +79,11 @@ public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag, Syste
     @Attribute(defaultValue="false", dataType=Boolean.class)
     public String getEmitRegisrationStatus();
     public void setEmitRegisrationStatus(String emit);
+    
+    
+    /** Whether inaccessible attributes should be logged */
+    @Attribute(defaultValue="true", dataType=Boolean.class)
+    public String getLogInaccessibleAttributes();
+    public void setLogInaccessibleAttributes(String flag);
 
 }

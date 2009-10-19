@@ -152,12 +152,14 @@ public final class AMXValidator
     private MBeanTrackerMBean  mMBeanTracker;
 
     private volatile boolean  mUnregisterNonCompliant;
+    private volatile boolean  mLogInaccessibleAttributes;
     private volatile String   mValidationLevel;
     
     public AMXValidator(
         final MBeanServerConnection conn,
         final String    validationLevel,
-        final boolean   unregisterNonCompliant)
+        final boolean   unregisterNonCompliant,
+        final boolean   logInaccessibleAttributes )
     {
         mMBeanServer = conn;
 
@@ -166,6 +168,7 @@ public final class AMXValidator
         
         mValidationLevel = validationLevel;
         mUnregisterNonCompliant = unregisterNonCompliant;
+        mLogInaccessibleAttributes = logInaccessibleAttributes;
     }
     
     /**
@@ -647,10 +650,13 @@ public final class AMXValidator
                     throw new Exception("Attributes Map contains attributes not found in the MBeanInfo: " + keys);
                 }
                 
-                final Set<String> missing = new HashSet<String>(attrNames);
-                missing.removeAll(attributesMap.keySet());
-                
-                logInfo("Inaccessible attributes: " + missing + " in " + proxy.objectName(), null);
+                if ( mLogInaccessibleAttributes )
+                {
+                    final Set<String> missing = new HashSet<String>(attrNames);
+                    missing.removeAll(attributesMap.keySet());
+                    
+                    logInfo("Inaccessible attributes: " + missing + " in " + proxy.objectName(), null);
+                }
             }
 
             for (final AMXProxy child : childrenSet)

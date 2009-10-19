@@ -74,6 +74,7 @@ public final class ComplianceMonitor implements NotificationListener
     
     private volatile String mValidationLevel;
     private volatile boolean  mUnregisterNonCompliant;
+    private volatile boolean  mLogInaccessibleAttributes;
 
     /** offloads the validation so as not to block during Notifications */
     private final ValidatorThread mValidatorThread;
@@ -85,13 +86,24 @@ public final class ComplianceMonitor implements NotificationListener
         mServer = (MBeanServer) domainRoot.extra().mbeanServerConnection();
         
         final AmxPref amxPrefs = InjectedValues.getInstance().getAMXPrefs();
-        mValidationLevel = amxPrefs == null ? AmxPref.VALIDATION_LEVEL_FULL : amxPrefs.getValidationLevel();
-        mUnregisterNonCompliant = amxPrefs == null ?  false : Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
+        if ( amxPrefs == null )
+        {
+            mValidationLevel           = AmxPref.VALIDATION_LEVEL_FULL;
+            mUnregisterNonCompliant    = false;
+            mLogInaccessibleAttributes = true;
+        }
+        else
+        {
+            mValidationLevel           = amxPrefs.getValidationLevel();
+            mUnregisterNonCompliant    = Boolean.valueOf(amxPrefs.getUnregisterNonCompliant());
+            mLogInaccessibleAttributes = Boolean.valueOf(amxPrefs.getLogInaccessibleAttributes());
+        }
 
-        mValidatorThread = new ValidatorThread(mServer, mValidationLevel, mUnregisterNonCompliant);
+        mValidatorThread = new ValidatorThread(mServer, mValidationLevel, mUnregisterNonCompliant, mLogInaccessibleAttributes);
         
-        ImplUtil.getLogger().info(  "AMX ComplianceMonitor: validation level = " + mValidationLevel +
-                                    ", unregisterNonCompliant = " + mUnregisterNonCompliant );
+        ImplUtil.getLogger().info(  "AMX ComplianceMonitor: ValidationLevel = " + mValidationLevel +
+                                    ", UnregisterNonCompliant = " + mUnregisterNonCompliant +
+                                    ", LogInaccessibleAttributes = " + mLogInaccessibleAttributes );
     }
         
     public Map<ObjectName, AMXValidator.ProblemList> getComplianceFailures() {
@@ -172,16 +184,19 @@ public final class ComplianceMonitor implements NotificationListener
 
         private final boolean mUnregisterNonCompliant;
         private volatile String mValidationLevel;
+        private volatile boolean mLogInaccessibleAttributes;
         
         ValidatorThread(
             final MBeanServer server,
             final String validationLevel,
-            final boolean unregisterNonCompliant)
+            final boolean unregisterNonCompliant,
+            final boolean logInaccessibleAttributes)
         {
             super("ComplianceMonitor.ValidatorThread");
             mServer = server;
             mValidationLevel = validationLevel;
             mUnregisterNonCompliant = unregisterNonCompliant;
+            mLogInaccessibleAttributes = logInaccessibleAttributes;
             
             mFailures = new ConcurrentHashMap<ObjectName,AMXValidator.ProblemList>();
         }
@@ -232,7 +247,7 @@ public final class ComplianceMonitor implements NotificationListener
                 }
 
                 // process available MBeans as a group so we can emit summary information as a group.
-                final AMXValidator validator = new AMXValidator(mServer, mValidationLevel, mUnregisterNonCompliant );
+                final AMXValidator validator = new AMXValidator(mServer, mValidationLevel, mUnregisterNonCompliant, mLogInaccessibleAttributes);
                 try
                 {
                     //debug( "VALIDATING MBeans: " + toValidate.size() );
