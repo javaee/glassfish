@@ -5,7 +5,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>0.4.1</version>
+    <version>0.4.1-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -73,7 +73,7 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-0.4.1</connection>
+      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</connection>
     </scm>
     <distributionManagement>
         <site>
@@ -89,24 +89,7 @@
         <repository>
             <id>glassfish-maven-repository</id>
             <name>Glassfish repository</name>
-            <url>http://download.java.net/maven/glassfish/</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jvnet-maven2-repository</id>
-            <name>Java.net maven2 repository</name>
-            <url>http://download.java.net/maven/2/</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jvnet-maven1-repository</id>
-            <name>Java.net maven1 repository</name>
-            <url>http://download.java.net/maven/1/</url>
-            <layout>legacy</layout>
+            <url>http://maven.glassfish.org/content/groups/glassfish-group/</url>
             <snapshots>
                 <updatePolicy>never</updatePolicy>
             </snapshots>
