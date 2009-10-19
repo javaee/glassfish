@@ -17,7 +17,7 @@
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
-                <version>RELEASE</version>
+                <version>${project.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <generateOSGiHeaders>true</generateOSGiHeaders>
