@@ -31,7 +31,7 @@ mvn -e -P release-phase1 install
 
 # On one occasion I got the next release:prepare to fail, due to missing hk2:<RELEASE VER>:jar
 # so just to be safe, fill the local repository with release versions first.
-mvn -e install
+#mvn -e install
 
 # Now retry release:prepare and this shall run to the completion
 mvn -e -B -P release release:prepare
