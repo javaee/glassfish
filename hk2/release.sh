@@ -8,8 +8,10 @@
 #
 # This script works around this issue, and that's why it's very non-obvious.
 
-# Voodoo to avoid "invalid LOC header (bad signature)" error.
-#export MAVEN_OPTS="-Xmx256m"
+# To protect the release from interference with other builds in this system,
+# use a private copy of the local repository. This avoids a JVM crash and
+# other mysterious zip/jar related errors
+export MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
 uname -a
 
 # First, get to the base line. This is probably not a requirement.
