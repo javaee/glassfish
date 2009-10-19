@@ -16,10 +16,13 @@ uname -a
 
 # don't let the crash logs fail the release
 rm hs_err*.log || true
-mvn release:clean
 
 # First, get to the base line. This is probably not a requirement.
+mvn -P release-phase1 install
 mvn clean install
+
+# clean previous release attempt
+mvn release:clean
 
 # This starts the release preparation, but it eventually fails because
 # it's unable to resolve the maven-hk2-plugin that the release is going to build.
