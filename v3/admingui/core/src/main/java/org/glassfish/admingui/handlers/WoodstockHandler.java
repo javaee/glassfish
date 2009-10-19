@@ -326,14 +326,13 @@ public class WoodstockHandler {
         ArrayList tList = new ArrayList();
         Option[] groupedOptions2 = new Option[0];
         ListIterator tl = threadList.listIterator();
-        tList.add(new Option("thread-system", "thead-system"));
         while (tl.hasNext()) {
             String name = (String) tl.next();
             tList.add(new Option(name, name));
         }
         groupedOptions2 = (Option[])tList.toArray(new Option[tList.size()]);
         OptionGroup jumpGroup2 = new OptionGroup();
-        jumpGroup2.setLabel("thread-system");
+        jumpGroup2.setLabel("thread-system-info");
         jumpGroup2.setOptions(groupedOptions2);
         menuList.add(jumpGroup2);
 
