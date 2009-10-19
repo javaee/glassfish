@@ -56,6 +56,7 @@ public class MultimodeCommand extends CLICommand {
     private Habitat habitat;
 
     private boolean printPrompt;
+    private ValidOption printPromptOption;
     private String encoding;
     private File file;
 
@@ -70,7 +71,8 @@ public class MultimodeCommand extends CLICommand {
     protected void prepare() throws CommandException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "file", 'f', "FILE", false, null);
-        addOption(opts, "printprompt", '\0', "BOOLEAN", false, "true");
+        printPromptOption =
+            addOption(opts, "printprompt", '\0', "BOOLEAN", false, null);
         addOption(opts, "encoding", '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
@@ -98,6 +100,19 @@ public class MultimodeCommand extends CLICommand {
         String fname = getOption("file");
         if (fname != null)
             file = new File(fname);
+    }
+
+    /**
+     * In the usage message modify the --printprompt option to have a
+     * default based on the --interactive option.
+     */
+    protected Set<ValidOption> usageOptions() {
+        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
+        addOption(opts, "printprompt", '\0', "BOOLEAN", false,
+            Boolean.toString(programOpts.isInteractive()));
+        opts.addAll(commandOpts);
+        opts.remove(printPromptOption);
+        return opts;
     }
 
     @Override
