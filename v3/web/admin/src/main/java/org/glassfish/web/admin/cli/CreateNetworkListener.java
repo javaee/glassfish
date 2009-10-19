@@ -114,6 +114,16 @@ public class CreateNetworkListener implements AdminCommand {
                 return;
             }
         }
+
+        if (!verifyUniquePort(networkConfig)) {
+            String def = "Port is already taken by another listener, choose another port.";
+            //String msg = localStrings
+             //   .getLocalString("port.occupied", def, port, listenerName, address);
+            report.setMessage(def);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         try {
             ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
                 public Object run(NetworkListeners param) throws TransactionFailure {
@@ -153,5 +163,17 @@ public class CreateNetworkListener implements AdminCommand {
                 }
             }, habitat.getComponent(VirtualServer.class, prot.getHttp().getDefaultVirtualServer()));
         }
+    }
+
+    private boolean verifyUniquePort(NetworkConfig networkConfig) {
+        //check port uniqueness, only for same address
+        for (NetworkListener listener : networkConfig.getNetworkListeners()
+            .getNetworkListener()) {
+            if (listener.getPort().trim().equals(port) &&
+                listener.getAddress().trim().equals(address)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
