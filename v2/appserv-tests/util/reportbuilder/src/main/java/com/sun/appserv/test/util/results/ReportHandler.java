@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.InputStream;
 
 public class ReportHandler {
     int pass;
@@ -124,10 +126,10 @@ public class ReportHandler {
     }
 
     private String readFile(final String name) {
-        File file = new File(output.getParentFile(), name);
         StringBuilder builder = new StringBuilder();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            final InputStream stream = getClass().getClassLoader().getResourceAsStream(name);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             try {
                 while(reader.ready()) {
                     builder.append(reader.readLine() + "\n");
