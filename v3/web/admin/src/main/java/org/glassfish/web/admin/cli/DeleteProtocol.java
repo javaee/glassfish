@@ -38,6 +38,7 @@ package org.glassfish.web.admin.cli;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.Protocol;
 
@@ -57,6 +58,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -105,6 +107,22 @@ public class DeleteProtocol implements AdminCommand {
                     protocolName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
+            }
+
+            // check if the protocol to be deleted is being used by
+            // any network listener
+
+            List<NetworkListener> nwlsnrList =
+                protocolToBeRemoved.findNetworkListeners();
+            for (NetworkListener nwlsnr : nwlsnrList) {
+                if (protocolToBeRemoved.getName().equals(nwlsnr.getProtocol())) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.protocol.beingused", 
+                        "{0} protocol is being used in the network listener {1}",
+                        protocolName, nwlsnr.getName()));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
             }
 
             ConfigSupport.apply(new SingleConfigCode<Protocols>() {

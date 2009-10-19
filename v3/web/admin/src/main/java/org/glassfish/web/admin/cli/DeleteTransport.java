@@ -55,6 +55,7 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import com.sun.grizzly.config.dom.NetworkListener;
 import java.beans.PropertyVetoException;
 
 import java.util.List;
@@ -106,6 +107,22 @@ public class DeleteTransport implements AdminCommand {
                     transportName));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
+            }
+
+            // check if the transport to be deleted is being used by
+            // any network listener
+
+            List<NetworkListener> nwlsnrList =
+                transportToBeRemoved.findNetworkListeners();
+            for (NetworkListener nwlsnr : nwlsnrList) {
+              if (transportToBeRemoved.getName().equals(nwlsnr.getTransport())) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.transport.beingused",
+                        "{0} transport is being used in the network listener {1}",
+                        transportName, nwlsnr.getName()));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+              }
             }
 
             ConfigSupport.apply(new SingleConfigCode<Transports>() {
