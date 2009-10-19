@@ -29,10 +29,12 @@ import javax.enterprise.inject.spi.BeanManager;
 	me.fooAsync();
 
 	try {
+	    /** TODO uncomment when 10399 is fixed (embedded-static.jar needs to contain 299 api and impl .jars) 
 		BeanManager beanMgr = (BeanManager)
 		    new InitialContext().lookup("java:comp/BeanManager");
 	System.out.println("Successfully retrieved bean manager " +
 			   beanMgr + " for JCDI enabled app");
+	    */
 	} catch(Exception e) {
 	    e.printStackTrace();
 	    throw new EJBException(e);
