@@ -49,6 +49,7 @@
 	getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
         getProxyNamesByType(type="threadinfo-mon", end="#{true}", result="#{pageSession.threadList}" firstItem="#{pageSession.firstThread}");
         populateServerMonitorDropDown(VSList="#{vsList}", ThreadSystemList="#{threadList}", MonitorList=>$attribute{monitorList});
+        if(!#{viewVal}){
         getStatsbyTypeName(type="ejb-security-mon" name="security/ejb", result=>$attribute{ejbStatsList} hasStats=>$attribute{hasStatsEJB});
         getStatsbyTypeName(type="jsp-mon" name="web/jsp", result=>$attribute{jspWebStatsList}  hasStats=>$attribute{hasStatsJsp});
         getStatsbyTypeName(type="web-request-mon" name="web/request", result=>$attribute{requestWebStatsList}  hasStats=>$attribute{hasStatsWRS});
@@ -69,7 +70,7 @@
         getStatsbyTypeName(type="web-service-mon" name="webservices", result=>$attribute{webServicesStatsList}  hasStats=>$attribute{hasStatsWS});
         getStatsbyTypeName(type="GlobalStatsProvider" name="/jersey/global", result=>$attribute{jerseyGlobalStatsList}  hasStats=>$attribute{hasStatsJG});
         getStatsbyTypeName(type="thread-system-mon" name="jvm/thread-system", result=>$attribute{jvmThreadStatsList}  hasStats=>$attribute{hasStatsJVMThread});
-
+        }
         if(#{viewVal}){
             setAttribute(key="hasStatsJVMThread" value="#{false}");
             setAttribute(key="hasStatsTXN" value="#{false}");
@@ -91,7 +92,6 @@
             setAttribute(key="hasStatsJG" value="#{false}");
             setAttribute(key="hasStatsCQ" value="#{false}");
         }
-
     />
 </event>    
 #include "/shared/restart.inc"        
@@ -134,7 +134,7 @@
                 </sun:propertySheet>   
                    
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring}"  >
+<sun:table id="basicTable"  itemsText="$resource{web.monitoring.statistics}" style="padding: 10pt" title="$resource{web.monitoring}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />

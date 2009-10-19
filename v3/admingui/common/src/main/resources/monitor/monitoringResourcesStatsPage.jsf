@@ -95,7 +95,7 @@
                 </sun:propertySheet>   
                    
 <!-- Table .... -->
-<sun:table id="resourcesTable"  style="padding: 10pt" title="$resource{web.monitoring}"  >
+<sun:table id="resourcesTable" itemsText="$resource{web.monitoring.statistics}"   style="padding: 10pt" title="$resource{web.monitoring}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
