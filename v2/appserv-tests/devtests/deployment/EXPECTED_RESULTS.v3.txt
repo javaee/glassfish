@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 134
+PASS: 153 
 FAIL: 0
 UNKNOWN: 0
 
@@ -99,28 +99,47 @@ UNKNOWN: 0
 [PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)  
 [PASSED] libClassPath : libClasspath Test asadmin deploy (server)  
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config [1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [1.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [1.3] (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config plus additive customization [2.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for added env and param customization [3.1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for env-entry in the web app's descr being (correctly) ignored [3.2.1] (server)  
+[PASSED] appmgt : earwithapp/appmgt Check for context-param in the web app's descr being (correctly) ignored [3.2.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for added env and param customization [4.1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for env-entry in the web app's descr being (correctly) ignored [4.2.1] (server)  
+[PASSED] appmgt : earwithapp/appmgt Check for context-param in the web app's descr being (correctly) ignored [4.2.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for added env and param customization [5.1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for env-entry in the web app's descr being (correctly) ignored [5.2.1] (server)  
+[PASSED] appmgt : earwithapp/appmgt Check for context-param in the web app's descr being (correctly) ignored [5.2.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config [6.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [6.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [6.3] (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config [7.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [7.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [7.3] (server)  
 [PASSED] simple : jsr88/war/simple deploy test  
 [PASSED] simple : jsr88/war/simple redeploy test  
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
 [PASSED] session2 : ejb30/session2 Test asadmin redeploy  
-[PASSED] webclient : ejb30/mdb/webClient Test asadmin deploy
-[PASSED] webclient : ejb30/mdb/webClient Test asadmin redeploy
-[PASSED] security : ejb30/security Test asadmin deploy
-[PASSED] security : ejb30/security Test asadmin redeploy
-[PASSED] xmloverride : ejb30/security Test asadmin deploy
-[PASSED] xmloverride : ejb30/security Test asadmin redeploy
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin deploy (server)  
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin redeploy (server)  
+[PASSED] security : ejb30/security Test asadmin deploy  
+[PASSED] security : ejb30/security Test asadmin redeploy  
+[PASSED] xmloverride : ejb30/security Test asadmin deploy  
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy  
 [PASSED] jsp : ejb30/war/jsp Test asadmin deploy  
 [PASSED] jsp : ejb30/war/jsp Test asadmin redeploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin deploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin redeploy  
-[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy
-[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
-[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin deploydir
-[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin re-deploy
-[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy
-[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy  
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy  
+[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin deploydir  
+[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin re-deploy  
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy  
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy  
 [PASSED] ear : directorydeploy/ear Test asadmin deploydir  
 [PASSED] ear : directorydeploy/ear Test asadmin redeploydir  
 [PASSED] ear : directorydeploy/ear Test asadmin undeploydir  
