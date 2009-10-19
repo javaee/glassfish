@@ -176,86 +176,64 @@ public class FlashlightProbeProviderFactory
             throws InstantiationException, IllegalAccessException {
 
         FlashlightProbeProvider provider = null;
-        try {
-            provider = new FlashlightProbeProvider(
-            		moduleProviderName, moduleName, probeProviderName, providerClazz);
-            printd("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
-            		+ "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
-            for (Method m : providerClazz.getDeclaredMethods()) {
-                int sz = m.getParameterTypes().length;
-                Probe pnameAnn = m.getAnnotation(Probe.class);
-                String probeName = (pnameAnn != null)
-                        ? pnameAnn.name() : m.getName();
-                boolean self = (pnameAnn != null) ? pnameAnn.self() : false;
-                boolean hidden = (pnameAnn != null) ? pnameAnn.hidden() : false;
-                String[] probeParamNames = FlashlightUtils.getParamNames(m);
-                FlashlightProbe probe = ProbeFactory.createProbe(
-                        providerClazz, moduleProviderName, moduleName, probeProviderName, probeName,
-                        probeParamNames, m.getParameterTypes(), self, hidden);
-                probe.setProviderJavaMethodName(m.getName());
-                provider.addProbe(probe);
-            }
+        provider = new FlashlightProbeProvider(
+                moduleProviderName, moduleName, probeProviderName, providerClazz);
+        printd("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
+                + "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
 
-            handleDTrace(provider);
+        List<Method> methods = FlashlightUtils.getProbeMethods(providerClazz);
         
-            Class<T> tClazz = providerClazz;
+        for (Method m : methods) {
+            int sz = m.getParameterTypes().length;
+            Probe pnameAnn = m.getAnnotation(Probe.class);
+            //todo throw a fatal error - quit struggling on!!!!
+            String probeName = (pnameAnn != null)
+                    ? pnameAnn.name() : m.getName();
+            boolean self = (pnameAnn != null) ? pnameAnn.self() : false;
+            boolean hidden = (pnameAnn != null) ? pnameAnn.hidden() : false;
+            String[] probeParamNames = FlashlightUtils.getParamNames(m);
+            FlashlightProbe probe = ProbeFactory.createProbe(
+                    providerClazz, moduleProviderName, moduleName, probeProviderName, probeName,
+                    probeParamNames, m.getParameterTypes(), self, hidden);
+            probe.setProviderJavaMethodName(m.getName());
+            provider.addProbe(probe);
+        }
 
-            int mod = providerClazz.getModifiers();
-            if (Modifier.isAbstract(mod)) {
+        handleDTrace(provider);
 
-                String generatedClassName = provider.getModuleProviderName() +
-                        "_Flashlight_" + provider.getModuleName() + "_" + "Probe_" +
-                        ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
-                generatedClassName = providerClazz.getName() + "_" + generatedClassName;
+        Class<T> tClazz = providerClazz;
 
-                try {
-                    tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
-                    //System.out.println ("Reusing the Generated class");
-                    return (T) tClazz.newInstance();
-                } catch (ClassNotFoundException cnfEx) {
-                    //Ignore
-                }
+        int mod = providerClazz.getModifiers();
+        if (Modifier.isAbstract(mod)) {
 
-                ProviderImplGenerator gen = new ProviderImplGenerator();
-                generatedClassName = gen.defineClass(provider, providerClazz);
+            String generatedClassName = provider.getModuleProviderName() +
+                    "_Flashlight_" + provider.getModuleName() + "_" + "Probe_" +
+                    ((provider.getProbeProviderName() == null) ? providerClazz.getName() : provider.getProbeProviderName());
+            generatedClassName = providerClazz.getName() + "_" + generatedClassName;
 
-                try {
-                    tClazz = (Class<T>) providerClazz.getClassLoader().loadClass(generatedClassName);
-                } catch (ClassNotFoundException cnfEx) {
-                    throw new RuntimeException(cnfEx);
-                }
+            try {
+                tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
+                //System.out.println ("Reusing the Generated class");
+                return (T) tClazz.newInstance();
+            } catch (ClassNotFoundException cnfEx) {
+                //Ignore
             }
 
+            ProviderImplGenerator gen = new ProviderImplGenerator();
+            generatedClassName = gen.defineClass(provider, providerClazz);
 
-            ProbeProviderRegistry.getInstance().registerProbeProvider(
-                    provider, tClazz);
-            T inst = (T) tClazz.newInstance();
-            //System.out.println("Created provider successfully....: " + inst.getClass().getName());
-            // Notify listeners that a new provider is registered
-            //System.out.println("Notify listeners that a new provider is registered");
-            
-            //Defensive check so that we can unit test this outside of HK2
-            if (ppem != null) {
-            	//TODO: FIXME: ppem.notifyListenersOnRegister(moduleName, providerName, appName);
+            try {
+                tClazz = (Class<T>) providerClazz.getClassLoader().loadClass(generatedClassName);
+            } catch (ClassNotFoundException cnfEx) {
+                throw new RuntimeException(cnfEx);
             }
+        }
 
+        ProbeProviderRegistry.getInstance().registerProbeProvider(
+                provider, tClazz);
+
+        T inst = (T) tClazz.newInstance();
         return inst;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return (T) Proxy.newProxyInstance(providerClazz.getClassLoader(),
-                new Class[]{providerClazz},
-                new InvocationHandler() {
-                    public Object invoke(Object proxy, Method m, Object[] args) {
-                        return null;
-                    }
-                });
-        }
-
-        finally {
-            //if(provider != null)
-                //allProbeProviders.add(provider);
-        }
     }
 
     public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle) {

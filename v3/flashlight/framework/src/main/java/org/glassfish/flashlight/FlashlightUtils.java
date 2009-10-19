@@ -11,9 +11,11 @@ import com.sun.logging.LogDomains;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.*;
 import java.util.logging.Logger;
 
 import org.glassfish.api.monitoring.DTraceContract;
+import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.jvnet.hk2.component.Habitat;
@@ -110,28 +112,40 @@ public class FlashlightUtils {
     }
 
     /** bnevins -- I see 2 exact copies of this big chunk of code -- so I moved it here!
-     *
+     * bnevins Oct 18, 2009 -- I can't see any reason why we FORCE users to annotate every single
+     * parameter!   We should just make a name up if they don't provide one.  Since such
+     * names  are not saved to the byte code it can't have any runtime effect.
      * @param method
      * @return
      */
     public static String[] getParamNames(Method method) {
-        String[] paramNames = new String[method.getParameterTypes().length];
+        Class<?>[] paramTypes = method.getParameterTypes();
+        String[] paramNames = new String[paramTypes.length];
         Annotation[][] allAnns = method.getParameterAnnotations();
         int index = 0;
 
         for (Annotation[] paramAnns : allAnns) {
-            for (Annotation ann : paramAnns) {
-                if(ann instanceof ProbeParam) {
-                    paramNames[index++] = ((ProbeParam)ann).value();
-                        break;
-                }
-            }
+            paramNames[index] = getParamName(paramAnns, paramTypes, index);
+            ++index;
         }
-
-        if(index != paramNames.length)
-            throw new RuntimeException("All params have to be  named with a ProbeParam Annotation.  This method ("  + method + ") did not have them.");
-
         return paramNames;
+    }
+
+    /**
+     * return the Methods in the clazz that are annotated as Probe.
+     * Note that we use getMethods() not getDeclaredMethods()
+     * This allows a hierarchy of Probe Providers
+     * @param clazz
+     * @return a List of legal Methods null will never be returned.
+     */
+    public static List<Method> getProbeMethods(Class<?> clazz) {
+        List<Method> list = new LinkedList<Method>();
+
+        for (Method m : clazz.getDeclaredMethods())
+            if(m.getAnnotation(Probe.class) != null)
+                list.add(m);
+
+        return list;
     }
 
     public static boolean isLegalDtraceParam(Class clazz) {
@@ -180,6 +194,24 @@ public class FlashlightUtils {
         return false;
     }
 
+    private static String getParamName(Annotation[] annotations, Class<?>[] paramTypes, int index) {
+        String name = null;
+
+        for (Annotation annotation : annotations) {
+            if(annotation instanceof ProbeParam) {
+                ProbeParam pp = (ProbeParam)annotation;
+                name = pp.value();
+            }
+        }
+
+        // If we do not find an annotated parameter -- the we simply make one up.
+        // Just the index would make a unique name, but to make things a bit easier to
+        // follow -- we prepend the number with the type.
+        if(name == null) {
+            name = paramTypes[index].getName().replace('.', '_') + "_arg" + index;
+        }
+        return name;
+    }
 
     private static void ok() {
         if(habitat == null || monConfig == null) {
