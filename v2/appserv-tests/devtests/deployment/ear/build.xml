@@ -41,5 +41,9 @@
 		<ant dir="manifestClassPath" target="private-all">
 			<property name="build" value="${build}/manifestClassPath"/>
 		</ant>
+
+                <ant dir="appmgt" target="private-all">
+                    <property name="build" value="${build}/appmgt"/>
+                </ant>
 	</target>
 </project>
