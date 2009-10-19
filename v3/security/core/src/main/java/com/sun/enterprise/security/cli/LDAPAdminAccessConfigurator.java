@@ -39,6 +39,8 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.ldap.LDAPRealm;
 import com.sun.enterprise.util.i18n.StringManager;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -55,6 +57,7 @@ import javax.naming.InitialContext;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**  A convenience command to configure LDAP for administration. There are several properties and attributes that
  *   user needs to remember and that's rather user unfriendly. That's why this command is being developed.
@@ -70,8 +73,6 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     @Param(name="url", shortName="u", optional=true)
     public volatile String url = "ldap://localhost:389"; // the default port for LDAP on localhost
 
-    @Param(name="ping", shortName="p", optional=true, defaultValue="true")
-    public volatile Boolean ping = Boolean.TRUE;
 
     @Param(name="ldap-group", shortName="g", optional=true)
     public volatile String ldapGroupName;        
@@ -85,6 +86,8 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     private static final String BASEDN_P = "base-dn";
     private static final String JAAS_P   = "jaas-context";
     private static final String JAAS_V   = "ldapRealm";
+    private static final Logger logger = LogDomains.getLogger(LDAPAdminAccessConfigurator.class, LogDomains.SECURITY_LOGGER);
+
 
     /** Field denoting the name of the realm used for administration. This is fixed in entire of v3. Note that
      *  the same name is used in admin GUI's web.xml and sun-web.xml. The name of the realm is the key, the
@@ -239,10 +242,6 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     }
 
     private boolean pingLDAP(StringBuilder sb) {
-        if (!ping) {
-            appendNL(sb,lsm.getString("ldap.noping", url));
-            return true;
-        }
         Properties env = new Properties();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, url);
@@ -252,6 +251,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
             return true;
         } catch(Exception e) {
             appendNL(sb,lsm.getString("ldap.na", url, e.getClass().getName(), e.getMessage()));
+            logger.info(StringUtils.getStackTrace(e));
             return false;
         }
     }
