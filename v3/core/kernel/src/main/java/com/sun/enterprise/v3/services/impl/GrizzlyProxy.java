@@ -144,6 +144,9 @@ public class GrizzlyProxy implements NetworkProxy {
             embeddedHttp.setAdapter(adapter);
 
             final Protocol httpProtocol = networkListener.findHttpProtocol();
+
+            String ct = httpProtocol.getHttp().getDefaultResponseType();
+            adapter.setDefaultContentType(ct);
             if (httpProtocol != null) {
                 final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
                 final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
