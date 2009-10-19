@@ -817,7 +817,7 @@ public class ValidateMBeansCmd extends JMXCmd
         {
             println( "" );
             
-            final AMXValidator validator = new AMXValidator( getConnection(), "FULL", false );
+            final AMXValidator validator = new AMXValidator( getConnection(), "FULL", false, true);
             final Set<ObjectName> amxSet = validator.filterAMX( SetUtil.newSet(objectNames) );
             //final Set<ObjectName> amxSet = validator.findAllAMXCompliant();
             
