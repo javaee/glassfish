@@ -51,7 +51,7 @@ public class J2EEDeployedObjectImplBase extends J2EEManagedObjectImplBase // imp
     }
 
     public String getdeploymentDescriptor() {
-        return "not available";
+        return metadata().getDeploymentDescriptor();
     }
 
     public String getserver() {

@@ -49,6 +49,7 @@ public interface Metadata {
 
     public ObjectName getCorrespondingConfig();
     public ObjectName getCorrespondingRef();
+    public String getDeploymentDescriptor();
 
     public Map<String,Object> getAll();
 
@@ -60,4 +61,8 @@ public interface Metadata {
 
     /** Object reference to parent mbean (the object, not the ObjectName) */
     public static final String PARENT = "Parent";
+
+    /** Object reference to parent mbean (the object, not the ObjectName) */
+    public static final String DEPLOYMENT_DESCRIPTOR = "DeploymentDescriptor";
+
 }

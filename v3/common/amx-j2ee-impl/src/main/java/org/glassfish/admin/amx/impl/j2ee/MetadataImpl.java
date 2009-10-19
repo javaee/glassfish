@@ -95,6 +95,19 @@ public final class MetadataImpl implements Metadata {
         add( CORRESPONDING_REF, config);
     }
     
+    public String getDeploymentDescriptor()
+    {
+        return getMetadata( DEPLOYMENT_DESCRIPTOR, String.class);
+    }
+    public void setDeploymentDescriptor(final String desc)
+    {
+        if ( desc == null )
+        {
+            throw new IllegalArgumentException( "setDeploymentDescriptor: null descriptor" );
+        }
+        add( DEPLOYMENT_DESCRIPTOR, desc);
+    }
+    
     public <T> T getMetadata(final String name, final Class<T> clazz)
     {
         final Object value = mData.get(name);

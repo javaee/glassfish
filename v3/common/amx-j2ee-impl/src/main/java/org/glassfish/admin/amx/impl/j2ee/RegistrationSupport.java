@@ -60,8 +60,6 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 
 
-
-
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.impl.j2ee.loader.J2EEInjectedValues;
@@ -260,6 +258,10 @@ final class RegistrationSupport
             final EjbBundleDescriptor ejbBundleDescriptor )
     {
         final String xmlDesc = getStringForDDxml(getModuleLocation(ejbBundleDescriptor, "EJBModule"));
+        if ( xmlDesc != null )
+        {
+            meta.setDeploymentDescriptor( xmlDesc );
+        }
         final String moduleName = ejbBundleDescriptor.getModuleName();
         final String applicationName = getApplicationName(ejbBundleDescriptor);
         final String appLocation = appConfig.getLocation();
@@ -270,6 +272,7 @@ final class RegistrationSupport
         final ObjectName ejbModuleObjectName = registerJ2EEChild(parentMBean, meta, EJBModule.class, EJBModuleImpl.class, moduleName);
         
         meta.remove( Metadata.CORRESPONDING_CONFIG );   // none for an EJB MBean
+        meta.remove( Metadata.DEPLOYMENT_DESCRIPTOR );   // none for an EJB MBean
         for (final EjbDescriptor desc : ejbBundleDescriptor.getEjbs())
         {
             final ObjectName ejbObjectName = createEJBMBean(ejbModuleObjectName, meta, desc);
@@ -332,8 +335,14 @@ final class RegistrationSupport
             final WebBundleDescriptor webBundleDescriptor )
     {
         final String xmlDesc = getStringForDDxml(getModuleLocation(webBundleDescriptor, "WebModule"));
+        if ( xmlDesc != null )
+        {
+            meta.setDeploymentDescriptor( xmlDesc );
+        }
+        
         final String moduleName = webBundleDescriptor.getModuleName();
         final String appLocation = appConfig.getLocation();
+        //if ( xmlDesc == null ) System.out.println( "null xmlDesc for WebModule " + moduleName );
         
         final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
         meta.setCorrespondingConfig(moduleConfig.objectName());
@@ -341,6 +350,7 @@ final class RegistrationSupport
         final ObjectName webModuleObjectName = registerJ2EEChild(parentMBean, meta, WebModule.class, WebModuleImpl.class, moduleName);
 
         meta.remove( Metadata.CORRESPONDING_CONFIG );   // none for a Servlet
+        meta.remove( Metadata.DEPLOYMENT_DESCRIPTOR );   // none for an Servlet
         for (final WebComponentDescriptor desc : webBundleDescriptor.getWebComponentDescriptors())
         {
             final String servletName = desc.getCanonicalName();
@@ -395,6 +405,11 @@ final class RegistrationSupport
         }
 
         final String xmlDesc = getStringForDDxml(modLocation);
+        //if ( xmlDesc == null ) System.out.println( "null xmlDesc for modLocation " + modLocation );
+        if ( xmlDesc != null )
+        {
+            meta.setDeploymentDescriptor( xmlDesc );
+        }
         final String resAdName = bundleDesc.getModuleName();
 
         final ObjectName objectName = registerJ2EEChild(parentMBean, meta, ResourceAdapterModule.class, ResourceAdapterModuleImpl.class, resAdName);
@@ -411,6 +426,10 @@ final class RegistrationSupport
     {
         final String appLocation = appConfig.getLocation();
         final String xmlDesc = getStringForDDxml(getModuleLocation(bundleDesc, "AppClientModule"));
+        if ( xmlDesc != null )
+        {
+            meta.setDeploymentDescriptor( xmlDesc );
+        }
 
         String applicationName = null;
         if (bundleDesc.getApplication() != null)
@@ -424,6 +443,7 @@ final class RegistrationSupport
         {
             applicationName = bundleDesc.getName();
         }
+        //if ( xmlDesc == null ) System.out.println( "null xmlDesc for AppClientModule " + applicationName );
 
         return registerJ2EEChild(parentMBean, meta, AppClientModule.class, AppClientModuleImpl.class, applicationName);
     }
@@ -433,7 +453,7 @@ final class RegistrationSupport
     {
         if (!(new File(fileName)).exists())
         {
-            ImplUtil.getLogger().fine("Descriptor does not exist " + fileName);
+            //ImplUtil.getLogger().info("Descriptor does not exist " + fileName);
             return null;
         }
 
