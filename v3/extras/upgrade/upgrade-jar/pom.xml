@@ -63,7 +63,7 @@
                             <mainClass>com.sun.enterprise.tools.upgrade.UpgradeToolMain</mainClass>
                         </manifest>
                         <manifestEntries> 
-                        <Class-Path>common-util.jar javahelp.jar</Class-Path>
+                        <Class-Path>common-util.jar javahelp.jar upgrade-tool-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
