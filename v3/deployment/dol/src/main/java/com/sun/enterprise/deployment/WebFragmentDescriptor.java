@@ -113,7 +113,8 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     @Override
     protected void combineEjbReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
-            EjbReferenceDescriptor ejbRefDesc = getEjbReferenceByName(ejbRef.getName());
+            EjbReferenceDescriptor ejbRefDesc =
+                    (EjbReferenceDescriptor)_getEjbReference(ejbRef.getName());
             if (ejbRefDesc != null) {
                 webBundleDescriptor.conflictEjbReference = true;
                 unionInjectionTargets(ejbRefDesc, (EnvironmentProperty)ejbRef);

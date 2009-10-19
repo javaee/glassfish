@@ -794,14 +794,23 @@ public class WebBundleDescriptor extends BundleDescriptor
     }
 
     public EjbReference getEjbReference(String name) {
+        EjbReference er = _getEjbReference(name);
+        if (er != null) {
+            return er;
+        }
+
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptionwebapphasnoejbrefbyname",
+                "This web app [{0}] has no ejb reference by the name of [{1}] ", new Object[]{getName(), name}));
+    }
+
+    protected EjbReference _getEjbReference(String name) {
         for (EjbReference er : getEjbReferenceDescriptors()) {
             if (er.getName().equals(name)) {
                 return er;
             }
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.exceptionwebapphasnoejbrefbyname",
-                "This web app [{0}] has no ejb reference by the name of [{1}] ", new Object[]{getName(), name}));
+        return null;
     }
 
     /**
@@ -1019,7 +1028,8 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineEjbReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
-            EjbReferenceDescriptor ejbRefDesc = getEjbReferenceByName(ejbRef.getName());
+            EjbReferenceDescriptor ejbRefDesc =
+                    (EjbReferenceDescriptor)_getEjbReference(ejbRef.getName());
             if (ejbRefDesc != null) {
                 combineInjectionTargets(ejbRefDesc, (EnvironmentProperty)ejbRef);
             } else {
