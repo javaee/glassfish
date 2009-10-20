@@ -215,14 +215,15 @@ public class SQLTraceRecord implements Serializable {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append(getThreadID() + " | ");
-        sb.append(getThreadName() + " | ");
-        sb.append(getTimeStamp() + " | ");
-        sb.append(getClassName() + " | ");
-        sb.append(getMethodName() + " | ");
+        sb.append("ThreadID=" + getThreadID() + " | ");
+        sb.append("ThreadName=" + getThreadName() + " | ");
+        sb.append("TimeStamp=" + getTimeStamp() + " | ");
+        sb.append("ClassName=" + getClassName() + " | ");
+        sb.append("MethodName=" + getMethodName() + " | ");
         if(params != null && params.length > 0) {
+            int index = 0;
             for(Object param : params) {
-                sb.append(param.toString() + " | ");
+                sb.append("arg[" + index++ + "]=" + param.toString() + " | ");
             }
         }
         //TODO add poolNames and other fields of this record.

@@ -52,9 +52,7 @@ public class SQLTraceLogger implements SQLTraceListener {
     private static Logger _logger = initLogger();
 
     private static Logger initLogger() {
-        //TODO change to SQL_TRACE_LOGGER later
-        //_logger = LogDomains.getLogger(SQLTraceLogger.class, LogDomains.SQL_TRACE_LOGGER);
-        _logger = LogDomains.getLogger(SQLTraceLogger.class, LogDomains.RSR_LOGGER);
+        _logger = LogDomains.getLogger(SQLTraceLogger.class, LogDomains.SQL_TRACE_LOGGER);
         return _logger;
     }
     
@@ -63,7 +61,7 @@ public class SQLTraceLogger implements SQLTraceListener {
     }
     
     public void sqlTrace(SQLTraceRecord record) {
-        _logger.log(Level.FINE, this.getClass().getName(), record);
+        _logger.log(Level.FINE, record.toString());
     }
 
 }
