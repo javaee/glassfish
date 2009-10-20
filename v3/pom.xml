@@ -157,6 +157,7 @@
         <glassfish-management-api.version>3.0.0-b010</glassfish-management-api.version>
         <mimepull.version>1.4</mimepull.version>
         <findbugs.exclude></findbugs.exclude>
+        <btrace.version>1.0.4</btrace.version>
     </properties>
 
 
@@ -1014,6 +1015,16 @@
               <artifactId>javahelp</artifactId>
               <version>2.0.02</version>
             </dependency>
+          <dependency>
+            <groupId>com.sun.tools.btrace</groupId>
+            <artifactId>btrace-agent</artifactId>
+            <version>${btrace.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.tools.btrace</groupId>
+            <artifactId>btrace-boot</artifactId>
+            <version>${btrace.version}</version>
+          </dependency>
         </dependencies>
     </dependencyManagement>
     <!--  End:   Dependency management -->
