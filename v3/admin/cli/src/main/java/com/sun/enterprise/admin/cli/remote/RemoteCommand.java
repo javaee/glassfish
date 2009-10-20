@@ -40,6 +40,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
+import javax.net.ssl.SSLException;
 
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.module.*;
@@ -494,8 +495,31 @@ public class RemoteCommand extends CLICommand {
             try {
                 boolean serverAppearsSecure = NetUtils.isSecurePort(
                                 programOpts.getHost(), programOpts.getPort());
-                if (serverAppearsSecure != programOpts.isSecure()) {
+                if (serverAppearsSecure && !programOpts.isSecure()) {
                     String msg = strings.get("ServerMaybeSecure",
+                            programOpts.getHost(), programOpts.getPort() + "");
+                    logger.printMessage(msg);
+                    // retry using secure connection
+                    programOpts.setSecure(true);
+                    try {
+                        doHttpCommand(uriString, httpMethod, cmd);
+                    } finally {
+                        programOpts.setSecure(false);
+                    }
+                    return;
+                }
+                throw new CommandException(se);
+            } catch(IOException io) {
+                logger.printExceptionStackTrace(io);
+                throw new CommandException(io);
+            }
+        } catch (SSLException se) {
+            logger.printDebugMessage("doHttpCommand: SSL exception " + se);
+            try {
+                boolean serverAppearsSecure = NetUtils.isSecurePort(
+                                programOpts.getHost(), programOpts.getPort());
+                if (!serverAppearsSecure && programOpts.isSecure()) {
+                    String msg = strings.get("ServerIsNotSecure",
                             programOpts.getHost(), programOpts.getPort() + "");
                     logger.printError(msg);
                 }
