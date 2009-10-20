@@ -202,6 +202,10 @@ public class FileUtils {
         if (isLegalFilename(filename))
             return filename;
 
+        // let's use "__" to replace "/" so less chance
+        // to collide with the actual name when reverting
+        filename = filename.replaceAll("/", "__");
+
         for (int i = 0; i < ILLEGAL_FILENAME_CHARS.length; i++)
             filename = filename.replace(ILLEGAL_FILENAME_CHARS[i], REPLACEMENT_CHAR);
 
@@ -294,7 +298,7 @@ public class FileUtils {
         String name = revertFriendlyFilenameExtension(filename);
 
         //then, revert the rest of the string
-        return name.replace(REPLACEMENT_CHAR, '/');
+        return name.replaceAll("__", "/");
     }
 
     /////////////////////////////////////////////////////////
