@@ -354,7 +354,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
                     modulePropertiesMap.put(module.getName(), moduleProps);
                 }
             }
-            return Collections.unmodifiableMap(modulePropertiesMap);
+            return modulePropertiesMap;
         }
 
         public static boolean isStandaloneModule(Application me) {
