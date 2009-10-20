@@ -72,8 +72,7 @@ import java.beans.PropertyVetoException;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.admin.CommandRunnerImpl;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
@@ -181,16 +180,23 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         if (archiveHandler==null) {
                 throw new RuntimeException("Cannot find archive handler for source archive");
         }
-
+                                                            
         if (params.name==null) {
                 params.name = archiveHandler.getDefaultApplicationName(archive, context);
             }
         
         final ClassLoader cl = context.getClassLoader();
-        Collection<Sniffer> sniffers = snifferMgr.getSniffers(archive, cl);
+
+        Collection<Sniffer> sniffers;
+        if (archiveHandler instanceof CompositeHandler) {
+            context.getAppProps().setProperty(ServerTags.IS_COMPOSITE, "true");
+            sniffers = snifferMgr.getCompositeSniffers(context);
+        } else {
+            sniffers = snifferMgr.getSniffers(archive, cl);
+        }
         List<Sniffer> finalSniffers = new ArrayList<Sniffer>();
 
-        // now we intersect with the conficgured sniffers.
+        // now we intersect with the configured sniffers.
         for (EmbeddedContainer container : server.getContainers()) {
             for (Sniffer sniffer : container.getSniffers()) {
                 if (sniffers.contains(sniffer)) {

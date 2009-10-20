@@ -42,7 +42,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Container;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.internal.deployment.Deployment;
@@ -182,15 +182,24 @@ public class EarDeployer implements Deployer, PostConstruct {
     }
 
     protected void generateArtifacts(final DeploymentContext context) throws DeploymentException {
+
         /*
          * For EARs, currently only nested app clients will generate artifacts.
          */
+
+        // In embedded mode, we don't process app clients so far.
+        if (habitat.getComponent(ProcessEnvironment.class).getProcessType().isEmbedded()) {
+            return;
+        }
+
+
         final Application application = context.getModuleMetaData(Application.class);
         final Collection<ModuleDescriptor<BundleDescriptor>> appClients =
                 application.getModuleDescriptorsByType(XModuleType.CAR);
 
         final StringBuilder appClientGroupListSB = new StringBuilder();
 
+        /*
         /*
          * For each app client, get its facade's URI to include in the
          * generated EAR facade's client group listing.
