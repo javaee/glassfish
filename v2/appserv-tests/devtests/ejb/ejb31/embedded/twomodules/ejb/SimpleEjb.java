@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.ejb.Stateless;
+import javax.ejb.EJB;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.DenyAll;
 
@@ -19,9 +20,15 @@ public class SimpleEjb {
 
     @PersistenceContext(unitName="test") EntityManager em;
 
+    @EJB SingletonBean singleton;
+
     @PermitAll
     public String saySomething() {
-        return "boo";
+        return "SingletonBean " + singleton.foo();
+    }
+
+    public String bar() {
+        return "bar";
     }
 
     @PermitAll

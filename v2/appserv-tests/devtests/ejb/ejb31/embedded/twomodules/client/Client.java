@@ -67,7 +67,9 @@ public class Client {
 
         EJBContainer c = null;
         try {
-            c = EJBContainer.createEJBContainer();
+            Map<String, Object> p = new HashMap<String, Object>();
+            p.put(EJBContainer.APP_NAME, "foo");
+            c = EJBContainer.createEJBContainer(p);
             if (c == null) {
                 stat.addStatus("EJB embedded module 1", stat.FAIL);
                 return;
@@ -75,7 +77,7 @@ public class Client {
             // ok now let's look up the EJB...
             Context ic = c.getContext();
             System.out.println("Looking up EJB...");
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/sample/SimpleEjb");
+            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/foo/sample/SimpleEjb");
             if (ejb!=null) {
                 System.out.println("Invoking EJB from module 1...");
                 System.out.println("EJB said: " + ejb.saySomething());
