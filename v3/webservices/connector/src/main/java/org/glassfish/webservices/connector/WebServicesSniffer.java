@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.webservices;
+package org.glassfish.webservices.connector;
 
 import org.glassfish.internal.deployment.GenericSniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;

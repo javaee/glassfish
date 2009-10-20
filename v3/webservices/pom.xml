@@ -50,6 +50,7 @@
     <packaging>pom</packaging>
     <name>GlassFish Web Services related modules</name>  
     <modules>
+    	<module>connector</module>
         <module>jsr109-impl</module>
         <module>soap-tcp</module>
         <module>webservices-scripts</module>

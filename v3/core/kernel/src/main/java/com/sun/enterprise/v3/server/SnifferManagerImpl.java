@@ -39,12 +39,13 @@ package com.sun.enterprise.v3.server;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
+import org.glassfish.internal.api.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.*;

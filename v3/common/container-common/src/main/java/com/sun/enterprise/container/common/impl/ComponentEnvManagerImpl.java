@@ -798,19 +798,16 @@ public class ComponentEnvManagerImpl
     private class FactoryForEntityManagerWrapper
         implements NamingObjectProxy {
 
-        private EntityManagerReferenceDescriptor refDesc;
+        private final EntityManagerReferenceDescriptor refDesc;
+        private final EntityManagerWrapper emWrapper;
 
-        private Habitat habitat;
-        
         FactoryForEntityManagerWrapper(EntityManagerReferenceDescriptor refDesc,
             Habitat habitat) {
             this.refDesc = refDesc;
-            this.habitat = habitat;
+            emWrapper = habitat.getComponent(EntityManagerWrapper.class);
         }
 
         public Object create(Context ctx) {
-            EntityManagerWrapper emWrapper =
-                    habitat.getComponent(EntityManagerWrapper.class);
             emWrapper.initializeEMWrapper(refDesc.getUnitName(),
                     refDesc.getPersistenceContextType(),
                     refDesc.getProperties());

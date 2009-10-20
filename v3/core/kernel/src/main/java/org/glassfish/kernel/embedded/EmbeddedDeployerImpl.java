@@ -154,9 +154,22 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     public String deploy(ReadableArchive archive, DeployCommandParameters params) {
 
         ActionReport report = new PlainTextActionReporter();
+        ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, params, env);
+        ArchiveHandler archiveHandler = null;
+        try {
+            archiveHandler = deployment.getArchiveHandler(archive);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (archiveHandler==null) {
+                throw new RuntimeException("Cannot find archive handler for source archive");
+        }
+        if (params.name==null) {
+                params.name = archiveHandler.getDefaultApplicationName(archive, initialContext);
+            }
         ExtendedDeploymentContext context = null;
         try {
-            context = deployment.getBuilder(logger, params, report).source(archive).build();
+            context = deployment.getBuilder(logger, params, report).source(archive).archiveHandler(archiveHandler).build(initialContext);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -168,22 +181,6 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         if(params.properties != null){
             context.getAppProps().putAll(params.properties);        
         }
-
-        ArchiveHandler archiveHandler = context.getArchiveHandler();
-        if (archiveHandler == null) {
-            try {
-                archiveHandler = deployment.getArchiveHandler(archive);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (archiveHandler==null) {
-                throw new RuntimeException("Cannot find archive handler for source archive");
-        }
-                                                            
-        if (params.name==null) {
-                params.name = archiveHandler.getDefaultApplicationName(archive, context);
-            }
         
         final ClassLoader cl = context.getClassLoader();
 

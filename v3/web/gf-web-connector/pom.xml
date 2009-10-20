@@ -105,16 +105,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
-            <artifactId>web-glue</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>web-core</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
             <artifactId>war-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
