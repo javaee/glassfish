@@ -46,11 +46,16 @@ import static org.osgi.framework.Constants.ACTIVATION_LAZY;
 import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.sun.enterprise.web.WebModuleDecorator;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
  * An extender that listens to web application bundle's lifecycle
@@ -66,6 +71,7 @@ public class WebExtender implements Extender, SynchronousBundleListener
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
     private ServiceRegistration urlHandlerService;
+    private OSGiWebModuleDecorator wmd;
 
     public WebExtender(BundleContext context)
     {
@@ -75,6 +81,7 @@ public class WebExtender implements Extender, SynchronousBundleListener
     public void start() {
         started.set(true);
         wc = new OSGiWebContainer();
+        registerWmd();
         context.addBundleListener(this);
 
         // Web Container bundle can come into existence after
@@ -95,6 +102,7 @@ public class WebExtender implements Extender, SynchronousBundleListener
         if (started.getAndSet(false)) {
             removeURLHandler();
             context.removeBundleListener(this);
+            unregisterWmd();
             if (wc!=null) wc.undeployAll();
         }
     }
@@ -199,4 +207,21 @@ public class WebExtender implements Extender, SynchronousBundleListener
             urlHandlerService.unregister();
         }
     }
+
+    private void registerWmd()
+    {
+        assert(wc != null);
+        wmd = new OSGiWebModuleDecorator(wc);
+        Inhabitant i = new ExistingSingletonInhabitant(wmd);
+        String fqcn = WebModuleDecorator.class.getName();
+        Globals.getDefaultHabitat().addIndex(i, fqcn , wmd.getClass().getSimpleName());
+    }
+
+    private void unregisterWmd() {
+        // Since there is no public API to remove an inhabitant, we
+        // nullify the fields and that ensures that this decorator
+        // is as good as removed.
+        wmd.setWc(null);
+    }
+
 }

@@ -85,6 +85,10 @@ public class OSGiWebContainer
     private ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
     private ServerEnvironmentImpl env = Globals.get(ServerEnvironmentImpl.class);
 
+    // Set the current bundle context in a thread local for use during web module decoration
+    private ThreadLocal<BundleContext> currentBundleContext = new ThreadLocal<BundleContext>();
+
+
     /**
      * Deploys a web application bundle in GlassFish Web container.
      * This method is synchronized because we don't know if GlassFish
@@ -94,6 +98,7 @@ public class OSGiWebContainer
      */
     public synchronized void deploy(final Bundle b) throws Exception
     {
+        currentBundleContext.set(b.getBundleContext());
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
         if (osgiAppInfo != null) {
             logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
@@ -107,7 +112,8 @@ public class OSGiWebContainer
         if (osgiAppInfo != null)
         {
             try {
-                ServletContext sc = setServletContextAttr(osgiAppInfo);
+                ServletContext sc = getServletContext(osgiAppInfo.appInfo);
+                assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.bundle.getBundleContext());
                 registerService(b, sc);
                 applications.put(b, osgiAppInfo);
                 logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
@@ -269,4 +275,7 @@ public class OSGiWebContainer
         }
     }
 
+    /* package */ BundleContext getCurrentBundleContext() {
+        return currentBundleContext.get();
+    }
 }
