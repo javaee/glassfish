@@ -58,7 +58,6 @@
     <modules>
         <module>ant</module>
         <module>javadb</module>    
-        <module>apache-commons</module>
         <module>jmxremote_optional</module>
         <module>sysnet-registration</module>
         <module>commons-codec</module>
