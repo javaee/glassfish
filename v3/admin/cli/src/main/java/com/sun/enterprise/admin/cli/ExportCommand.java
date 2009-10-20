@@ -97,9 +97,11 @@ public class ExportCommand extends CLICommand {
                 }
 
                 // if no value, print it, otherwise set it
-                if (value == null)
-                    logger.printMessage(name + " = " + env.get(name));
-                else
+                if (value == null) {
+                    String v = env.get(name);
+                    if (v != null)
+                        logger.printMessage(name + " = " + v);
+                } else
                     env.put(name, value);
             }
         }
