@@ -416,10 +416,21 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     protected void readAnnotations(ReadableArchive archive, T descriptor,
                                  Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
             throws IOException {
+
+        readAnnotations(archive, descriptor, extensions, null);
+    }
+
+    protected void readAnnotations(ReadableArchive archive, T descriptor,
+                                 Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions,
+                                 ModuleScanner scanner)
+            throws IOException {
         
         if (isProcessAnnotation(descriptor)) {
             try {
-                ProcessingResult result = processAnnotations(descriptor, archive);
+                if (scanner == null) {
+                    scanner = getScanner();
+                }
+                ProcessingResult result = processAnnotations(descriptor, scanner, archive);
 
                 // process extensions annotations if any
                 for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {

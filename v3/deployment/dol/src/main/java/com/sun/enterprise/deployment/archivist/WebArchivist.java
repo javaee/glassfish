@@ -41,6 +41,8 @@ import com.sun.enterprise.deployment.OrderingDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebFragmentDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
+import com.sun.enterprise.deployment.annotation.impl.WarScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
@@ -306,6 +308,13 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
             for (WebFragmentDescriptor wfDesc : wfList) {
                 super.readAnnotations(archive, wfDesc, localExtensions);
             }
+
+            // scan manifest classpath
+            ModuleScanner scanner = getScanner();
+            if (scanner instanceof WarScanner) {
+                ((WarScanner)scanner).setScanOtherLibraries(true);
+            }
+            readAnnotations(archive, descriptor, localExtensions, scanner);
         }
 
         WebFragmentDescriptor mergedWebFragment = null;
