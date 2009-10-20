@@ -14,9 +14,7 @@
     <target name="all">
         <antcall target="basic"/>
         <antcall target="testclose"/>
-<!--
         <antcall target="twomodules"/>
--->
     </target>
 
     <target name="basic">
