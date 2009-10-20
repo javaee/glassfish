@@ -35,29 +35,8 @@
  */
 package org.glassfish.admin.rest;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.logging.Logger;
-import java.util.Properties;
-import java.util.Set;
-
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-
 import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import org.glassfish.admin.rest.provider.MethodMetaData;
-import org.glassfish.admin.rest.provider.ParameterMetaData;
 import org.glassfish.admin.rest.provider.ProviderUtil;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandModel;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.RestRedirects;
-import org.glassfish.api.admin.RestRedirect;
-import org.glassfish.api.Param;
-
 import javax.ws.rs.core.UriInfo;
 
 
