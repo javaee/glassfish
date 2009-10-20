@@ -807,16 +807,6 @@ public class WebModule extends PwcWebModule {
     }
 
     /**
-     * Sets the context attribute with the given name and value.
-     *
-     * @param name The context attribute name
-     * @param value The context attribute value
-     */
-    public void setAttribute(String name, Object value) {
-        context.setAttribute(name, value);
-    }
-
-    /**
      * Configures this web module with the filter mappings specified in the
      * deployment descriptor.
      *
