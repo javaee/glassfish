@@ -13,10 +13,8 @@ to be edited.</b><p>The Edit Thread Pool page opens.</p></li>
 <li><b>On the Edit Thread Pool page, in the Class Name field, type
 the fully qualified name of the class that implements the thread pool.</b><p>The default value is <tt>com.sun.grizzly.http.StatsThreadPool</tt>.</p></li>
 <li><b>In the Max Queue Size field, type the maximum number of messages that
-can be queued until threads are available to process them.</b><p>A value less than or equal to 0 indicates that there is no
-limit to the queue size. The default value is &#8211;1. This is the
-recommended value for a thread pool used by the ORB. A network listener
-thread pool commonly uses a value of 4096.</p></li>
+can be queued until threads are available to process them.</b><p>A value of  &#8211;1 indicates that there is no limit to the
+queue size. The default value is 4096.</p></li>
 <li><b>In the Max Thread Pool Size field, type the largest number of threads
 that can exist in the thread pool.</b><p>The default value is 5. This is the recommended value for network listener
 thread pools.</p></li>
