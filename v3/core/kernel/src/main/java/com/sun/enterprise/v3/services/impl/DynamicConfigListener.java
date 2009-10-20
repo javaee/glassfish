@@ -55,6 +55,7 @@ import org.jvnet.hk2.config.NotProcessed;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.grizzly.config.dom.FileCache;
 import java.util.ArrayList;
 
 /**
@@ -87,6 +88,8 @@ public class DynamicConfigListener implements ConfigListener {
                         return processNetworkListener(type, (NetworkListener) t);
                     } else if (t instanceof Http) {
                         return processProtocol(type, (Protocol) ((Http) t).getParent());
+                    } else if (t instanceof FileCache) {
+                        return processProtocol(type, (Protocol) ((FileCache) t).getParent().getParent());
                     } else if (t instanceof Ssl) {
                         return processProtocol(type, (Protocol) ((Ssl) t).getParent());
                     } else if (t instanceof Protocol) {
