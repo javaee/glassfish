@@ -174,12 +174,23 @@ public class FlashlightProbeProviderFactory
     		String probeProviderName,
     		Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
-
+        
+        ProbeProviderRegistry ppRegistry = ProbeProviderRegistry.getInstance();
         FlashlightProbeProvider provider = null;
         provider = new FlashlightProbeProvider(
                 moduleProviderName, moduleName, probeProviderName, providerClazz);
         printd("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
                 + "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
+
+        // IT 10269 -- silently return a fresh instance if it is already registered
+        // don't waste time -- return right away...
+        
+        FlashlightProbeProvider alreadyExists = ppRegistry.getProbeProvider(provider);
+
+        if(alreadyExists != null) {
+            T inst = (T) alreadyExists.getProviderClass().newInstance();
+            return inst;
+        }
 
         List<Method> methods = FlashlightUtils.getProbeMethods(providerClazz);
         
@@ -229,7 +240,7 @@ public class FlashlightProbeProviderFactory
             }
         }
 
-        ProbeProviderRegistry.getInstance().registerProbeProvider(
+        ppRegistry.getInstance().registerProbeProvider(
                 provider, tClazz);
 
         T inst = (T) tClazz.newInstance();

@@ -38,6 +38,7 @@ package org.glassfish.flashlight.impl.core;
 
 import java.util.*;
 import java.util.concurrent.*;
+import org.glassfish.flashlight.FlashlightUtils;
 
 /**
  * @author Mahesh Kannan
@@ -72,12 +73,16 @@ public class ProbeProviderRegistry {
         if(probeProviderName == null)
             probeProviderName = "";
 
-        return providerMap.get(makeName(moduleProviderName, moduleName, probeProviderName));
+        return providerMap.get(FlashlightUtils.makeName(moduleProviderName, moduleName, probeProviderName));
+    }
+
+    public FlashlightProbeProvider getProbeProvider(FlashlightProbeProvider fpp) {
+        return providerMap.get(FlashlightUtils.makeName(fpp));
     }
 
     public FlashlightProbeProvider registerProbeProvider(FlashlightProbeProvider provider, Class clz) {
 
-        String qname = makeName(provider, clz);
+        String qname = FlashlightUtils.makeName(provider);
 
         // if there is an entry in the map for qname already -- it is an error
         // ConcurrentMap allows us to check and put with thread-safety!
@@ -88,29 +93,6 @@ public class ProbeProviderRegistry {
         }
 
         return provider;
-    }
-
-    private String makeName(FlashlightProbeProvider provider, Class clazz) {
-        String ppName = provider.getProbeProviderName();
-
-        if(ppName == null)
-            ppName = clazz.getName();
-
-        return makeName(provider.getModuleProviderName(),
-                        provider.getModuleName(),
-                        ppName);
-    }
-
-    private String makeName(String a, String b, String c) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(a);
-        sb.append(":");
-        sb.append(b);
-        sb.append(":");
-        sb.append(c);
-
-        return sb.toString();
     }
 
     private static ProbeProviderRegistry _me =

@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.monitoring.DTraceContract;
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
 import org.glassfish.flashlight.provider.FlashlightProbe;
 import org.jvnet.hk2.component.Habitat;
 
@@ -194,6 +195,24 @@ public class FlashlightUtils {
         return false;
     }
 
+    public static String makeName(FlashlightProbeProvider provider) {
+        return makeName(provider.getModuleProviderName(),
+                        provider.getModuleName(),
+                        provider.getProbeProviderName());
+    }
+
+    public static String makeName(String a, String b, String c) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(a);
+        sb.append(":");
+        sb.append(b);
+        sb.append(":");
+        sb.append(c);
+
+        return sb.toString();
+    }
+
     private static String getParamName(Annotation[] annotations, Class<?>[] paramTypes, int index) {
         String name = null;
 
@@ -219,6 +238,8 @@ public class FlashlightUtils {
             throw new RuntimeException(errStr);
         }
     }
+
+
 
     private static              Habitat             habitat;
     private static              MonitoringService   monConfig;

@@ -44,28 +44,40 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Byron Nevins, October 2009
+ * This class implements a very public interface.
+ * I changed it to do some minimal error checking.
+ * It throws RuntimeException because it is too late to change the signature
+ * for the interface.
+ *
+ *
  * @author Mahesh Kannan
+ * @author Byron Nevins
  */
 public class FlashlightProbeProvider implements ProbeProviderInfo{
-    private boolean dtraceIsInstrumented;
-
-    private String moduleProviderName;
-
-    private String moduleName;
-
-    private String probeProviderName;
-
-    private Class providerClazz;
-    
-    private ConcurrentHashMap<String, FlashlightProbe> probes =
-            new ConcurrentHashMap<String, FlashlightProbe>();
-
-    public FlashlightProbeProvider(String moduleProviderName, String moduleName,
+    /**
+     * GUARANTEED to have all 3 names valid -- or at least not null and not empty
+     * @param moduleProviderName
+     * @param moduleName
+     * @param probeProviderName
+     * @param providerClazz
+     * @throws RuntimeException if parameters are null or empty
+     */
+     public FlashlightProbeProvider(String moduleProviderName, String moduleName,
                                     String probeProviderName, Class providerClazz) {
+
+        if(!ok(moduleProviderName) || !ok(moduleName) || !ok(providerClazz))
+            throw new RuntimeException(CTOR_ERROR);
+
         this.moduleProviderName = moduleProviderName;
         this.moduleName = moduleName;
-        this.probeProviderName = probeProviderName;
         this.providerClazz = providerClazz;
+
+        if(probeProviderName == null)
+            this.probeProviderName = providerClazz.getName();
+        else
+            this.probeProviderName = probeProviderName;
+
     }
 
 	public String toString() {
@@ -112,5 +124,39 @@ public class FlashlightProbeProvider implements ProbeProviderInfo{
     public void setDTraceInstrumented(boolean b) {
         dtraceIsInstrumented = b;
     }
+    
+    // note that it is IMPOSSIBLE for an object instance to have null variables --
+    // they are final and checked at instantiation time...
+    // we are NOT checking the probes --
+    public boolean namesEqual(Object o) {
+        if(o == null)
+            return false;
 
+        if( ! (o instanceof FlashlightProbeProvider))
+            return false;
+
+        FlashlightProbeProvider fpp = (FlashlightProbeProvider) o;
+
+        return
+            fpp.moduleName.equals(moduleName) &&
+            fpp.moduleProviderName.equals(moduleProviderName)  &&
+            fpp.probeProviderName.equals(probeProviderName) &&
+            fpp.providerClazz == providerClazz;
+    }
+    
+    private static boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
+    private static boolean ok(Class clazz) {
+        return clazz != null;
+    }
+
+    private boolean dtraceIsInstrumented;
+    private final String moduleProviderName;
+    private final String moduleName;
+    private final String probeProviderName;
+    private final Class providerClazz;
+    private ConcurrentHashMap<String, FlashlightProbe> probes = new ConcurrentHashMap<String, FlashlightProbe>();
+    private static final String CTOR_ERROR = "ProbeProviderInfo constructor -- you must supply valid arguments";
 }
