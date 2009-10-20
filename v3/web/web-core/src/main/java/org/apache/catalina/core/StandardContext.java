@@ -4644,9 +4644,8 @@ public class StandardContext
     }
 
     /**
-     * Configure the set of instantiated application event listeners
-     * for this Context.  Return <code>true</code> if all listeners wre
-     * initialized successfully, or <code>false</code> otherwise.
+     * Notifies any ServletContextListeners at their contextInitialized
+     * method.
      */
     public void listenerStart() {
 
