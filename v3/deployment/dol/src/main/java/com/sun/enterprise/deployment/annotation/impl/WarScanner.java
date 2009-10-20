@@ -41,7 +41,9 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilter;
 import org.glassfish.apf.impl.AnnotationUtils;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -64,8 +66,23 @@ import java.util.logging.Level;
 @Service(name="war")
 @Scoped(PerLookup.class)
 public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
+    protected boolean scanOtherLibraries = false;
 
-    @Inject ClassLoaderHierarchy clh;
+    @Inject protected ClassLoaderHierarchy clh;
+
+    public void setScanOtherLibraries(boolean scanOtherLibraries) {
+        this.scanOtherLibraries = scanOtherLibraries;
+    }
+
+    public boolean isScanOtherLibraries() {
+        return scanOtherLibraries;
+    }
+
+    @Override
+    public void process(File archiveFile, WebBundleDescriptor webBundleDesc,
+            ClassLoader classLoader) throws IOException {
+        throw new UnsupportedOperationException("Not supported.");
+    }
 
     /**
      * This scanner will scan the archiveFile for annotation processing.
@@ -73,18 +90,26 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
      * @param webBundleDesc
      * @param classLoader
      */
-    public void process(File archiveFile, WebBundleDescriptor webBundleDesc,
+    @Override
+    public void process(ReadableArchive readableArchive, WebBundleDescriptor webBundleDesc,
             ClassLoader classLoader) throws IOException {
+
+        this.archiveFile =  new File(readableArchive.getURI()); 
+        this.classLoader = classLoader;
+
         if (AnnotationUtils.getLogger().isLoggable(Level.FINE)) {
             AnnotationUtils.getLogger().fine("archiveFile is " + archiveFile);
             AnnotationUtils.getLogger().fine("webBundle is " + webBundleDesc);
             AnnotationUtils.getLogger().fine("classLoader is " + classLoader);
         }
-        this.archiveFile = archiveFile;
-        this.classLoader = classLoader;
 
         if (!archiveFile.isDirectory()) {
             // on client side
+            return;
+        }
+
+        if (isScanOtherLibraries()) {
+            addLibraryJars(webBundleDesc, readableArchive);
             return;
         }
 
