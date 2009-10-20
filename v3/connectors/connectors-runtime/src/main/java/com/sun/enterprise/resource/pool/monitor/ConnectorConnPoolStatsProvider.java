@@ -75,60 +75,60 @@ public class ConnectorConnPoolStatsProvider {
     
     //Objects that are exposed by this telemetry
     private CountStatisticImpl numConnFailedValidation = new CountStatisticImpl(
-            "numconnfailedvalidation", StatisticImpl.UNIT_COUNT,
+            "numConnFailedValidation", StatisticImpl.UNIT_COUNT,
             "The total number of connections in the connection pool that failed " +
             "validation from the start time until the last sample time.");
     private CountStatisticImpl numConnTimedOut = new CountStatisticImpl(
-            "numconntimedout", StatisticImpl.UNIT_COUNT, "The total number of " +
+            "numConnTimedOut", StatisticImpl.UNIT_COUNT, "The total number of " +
             "connections in the pool that timed out between the start time and the last sample time.");
     private RangeStatisticImpl numConnFree = new RangeStatisticImpl(
             0, 0, 0,
-            "numconnfree", StatisticImpl.UNIT_COUNT, "The total number of free " +
+            "numConnFree", StatisticImpl.UNIT_COUNT, "The total number of free " +
             "connections in the pool as of the last sampling.",
             System.currentTimeMillis(), System.currentTimeMillis());
     private RangeStatisticImpl numConnUsed = new RangeStatisticImpl(
             0, 0, 0, 
-            "numconnused", StatisticImpl.UNIT_COUNT, "Provides connection usage " +
+            "numConnUsed", StatisticImpl.UNIT_COUNT, "Provides connection usage " +
             "statistics. The total number of connections that are currently being " +
             "used, as well as information about the maximum number of connections " +
             "that were used (the high water mark).",
             System.currentTimeMillis(), System.currentTimeMillis());
     private RangeStatisticImpl connRequestWaitTime = new RangeStatisticImpl(
             0, 0, 0, 
-            "connrequestwaittime", StatisticImpl.UNIT_MILLISECOND, 
+            "connRequestWaitTime", StatisticImpl.UNIT_MILLISECOND, 
             "The longest and shortest wait times of connection requests. The " +
             "current value indicates the wait time of the last request that was " +
             "serviced by the pool.", 
             System.currentTimeMillis(), System.currentTimeMillis());
     private CountStatisticImpl numConnDestroyed = new CountStatisticImpl(
-            "numconndestroyed", StatisticImpl.UNIT_COUNT, 
+            "numConnDestroyed", StatisticImpl.UNIT_COUNT, 
             "Number of physical connections that were destroyed since the last reset.");
     private CountStatisticImpl numConnAcquired = new CountStatisticImpl(
-            "numconnacquired", StatisticImpl.UNIT_COUNT, "Number of logical " +
+            "numConnAcquired", StatisticImpl.UNIT_COUNT, "Number of logical " +
             "connections acquired from the pool.");
     private CountStatisticImpl numConnReleased = new CountStatisticImpl(
-            "numconnreleased", StatisticImpl.UNIT_COUNT, "Number of logical " +
+            "numConnReleased", StatisticImpl.UNIT_COUNT, "Number of logical " +
             "connections released to the pool.");
     private CountStatisticImpl numConnCreated = new CountStatisticImpl(
-            "numconncreated", StatisticImpl.UNIT_COUNT, 
+            "numConnCreated", StatisticImpl.UNIT_COUNT, 
             "The number of physical connections that were created since the last reset.");
     private CountStatisticImpl numPotentialConnLeak = new CountStatisticImpl(
-            "numpotentialconnleak", StatisticImpl.UNIT_COUNT, 
+            "numPotentialConnLeak", StatisticImpl.UNIT_COUNT, 
             "Number of potential connection leaks");
     private CountStatisticImpl numConnSuccessfullyMatched = new CountStatisticImpl(
-            "numconnsuccessfullymatched", StatisticImpl.UNIT_COUNT,
+            "numConnSuccessfullyMatched", StatisticImpl.UNIT_COUNT,
             "Number of connections succesfully matched");
     private CountStatisticImpl numConnNotSuccessfullyMatched = new CountStatisticImpl(
-            "numconnnotsuccessfullymatched", StatisticImpl.UNIT_COUNT,
+            "numConnNotSuccessfullyMatched", StatisticImpl.UNIT_COUNT,
             "Number of connections rejected during matching");    
     private CountStatisticImpl totalConnRequestWaitTime = new CountStatisticImpl(
-            "totalconnrequestwaittime", StatisticImpl.UNIT_COUNT,
+            "totalConnRequestWaitTime", StatisticImpl.UNIT_COUNT,
             "Total wait time per successful connection request");
     private CountStatisticImpl averageConnWaitTime = new CountStatisticImpl(
-            "averageconnwaittime", StatisticImpl.UNIT_COUNT,
+            "averageConnWaitTime", StatisticImpl.UNIT_COUNT,
             "Average wait-time-duration per successful connection request");    
     private CountStatisticImpl waitQueueLength = new CountStatisticImpl(
-            "waitqueuelength", StatisticImpl.UNIT_COUNT, 
+            "waitQueueLength", StatisticImpl.UNIT_COUNT, 
             "Number of connection requests in the queue waiting to be serviced.");    
     private final String JCA_PROBE_LISTENER = "glassfish:jca:connection-pool:";
 
