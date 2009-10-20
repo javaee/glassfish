@@ -42,7 +42,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 /**
  * Separate parameters to admin commands into tokens.
  * Mostly used for parameters that take a list of values
- * seprated by colons.
+ * separated by colons.
  *
  * @author Bill Shannon
  */
