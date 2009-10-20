@@ -274,7 +274,8 @@ public class SecurityHandler {
         @HandlerInput(name="Realm", type=String.class, required=true),
         @HandlerInput(name="UserId", type=String.class, required=true),
         @HandlerInput(name="GroupList", type=String.class, required=true),
-        @HandlerInput(name="Password", type=String.class, required=true)})
+        @HandlerInput(name="Password", type=String.class, required=true),
+        @HandlerInput(name="CreateNew", type=Boolean.class)})
 
         public static void saveUser(HandlerContext handlerCtx) {
         try{
@@ -284,40 +285,17 @@ public class SecurityHandler {
             String[] groups = GuiUtil.stringToArray(grouplist, ",");
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
+            Boolean createNew = (Boolean)handlerCtx.getInputValue("CreateNew");
+
             if (password == null){
                 password = "";
             }
-            V3AMX.getInstance().getRealmsMgr().updateUser(realmName, userid, userid, password, groups);
-            if (! ((Boolean) GuiUtil.getSessionValue("showLogoutButton"))){
-                if (V3AMX.getInstance().getRealmsMgr().getAnonymousUser() == null){
-                    GuiUtil.setSessionValue("showLogoutButton", Boolean.TRUE);
-                }
+            if ((createNew != null) && (createNew == Boolean.TRUE)){
+                V3AMX.getInstance().getRealmsMgr().addUser(realmName, userid, password, groups);
+            }else{
+                V3AMX.getInstance().getRealmsMgr().updateUser(realmName, userid, userid, password, groups);
             }
-        }catch(Exception ex){
-            GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
 
-    /**
-     *	<p> This handler adds user to specified Realm
-     *      Page.</p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
-    @Handler(id="addUser",
-    input={
-        @HandlerInput(name="Realm", type=String.class, required=true),
-        @HandlerInput(name="UserId", type=String.class, required=true),
-        @HandlerInput(name="GroupList", type=String.class, required=true),
-        @HandlerInput(name="Password", type=String.class, required=true)})
-
-        public static void addUser(HandlerContext handlerCtx) {
-        try{
-            String realmName = (String)handlerCtx.getInputValue("Realm");
-            String grouplist = (String)handlerCtx.getInputValue("GroupList");
-            String[] groups = GuiUtil.stringToArray(grouplist, ",");
-            String password = (String)handlerCtx.getInputValue("Password");
-            String userid = (String)handlerCtx.getInputValue("UserId");
-            V3AMX.getInstance().getRealmsMgr().addUser(realmName, userid, password, groups);
             if (! ((Boolean) GuiUtil.getSessionValue("showLogoutButton"))){
                 if (V3AMX.getInstance().getRealmsMgr().getAnonymousUser() == null){
                     GuiUtil.setSessionValue("showLogoutButton", Boolean.TRUE);

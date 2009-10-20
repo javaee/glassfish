@@ -51,9 +51,11 @@
         if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="isAdminRealm", value="true")
             setPageSessionAttribute(key="groupList", value="asadmin")
+            setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyAdminPassword}")
         }
         if ("!(#{pageSession.Name}=#{pageSession.authRealm})"){
             setPageSessionAttribute(key="isAdminRealm", value="false")
+            setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyPassword}")
         }
     />
      </event>
@@ -70,11 +72,12 @@
                         <sun:button id="newButton" text="$resource{i18n.button.OK}" 
                             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) return checkPSW(); return false;" >
                            <!command
-                                addUser(
+                                saveUser(
                                     Realm="#{pageSession.Name}"
-                                    UserId="#{userId}"
+                                    UserId="#{pageSession.userId}"
                                     GroupList="#{pageSession.groupList}"
                                     Password="#{password}"
+                                    CreateNew="#{true}"
                                 );
                                 redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
                             />                        
@@ -95,7 +98,7 @@
                                 <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
                             </sun:property>
                             <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.Userid}" helpText="$resource{i18nc.manageUsers.UserIDHelp}">
-                                <sun:textField id="UserId" styleClass="required" text="#{requestScope.userId}" columns="$int{55}" required="#{true}"/> 
+                                <sun:textField id="UserId" styleClass="required" text="#{pageSession.userId}" columns="$int{55}" required="#{true}"/>
                             </sun:property>                       
                             <sun:property id="groupListProp2"  rendered="#{isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.GroupList}" >
                                 <sun:staticText id="GroupList2" text="#{pageSession.groupList}" rendered="#{isAdminRealm}"/>
@@ -125,21 +128,6 @@
                     </sun:propertySheet>    
                         <sun:hidden id="helpKey" value="$resource{help_common.manageUserNew}" />
             </sun:form>
-
-
-<f:verbatim>
-    <script type="text/javascript">
-        
-    function checkPSW() {
-        var ps1 = getTextElement('#{ps1}').value;
-        var ps2 = getTextElement('#{ps2}').value;
-        if (ps1 != ps2){
-            return showAlert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
-            }
-        return true;
-        }
-
-</script>
-</f:verbatim>
+#include "checkpswd.js"
 </define>
 </composition>

@@ -48,7 +48,7 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         urlencode(value="#{pageSession.User}" encoding="UTF-8" result="#{pageSession.encodedUser}");
-        getUserInfo(Realm="#{pageSession.Name}}", User="#{pageSession.User}", GroupList=>$attribute{groupList});
+        getUserInfo(Realm="#{pageSession.Name}", User="#{pageSession.User}", GroupList="#{pageSession.groupList}");
         getProxyAttribute( objectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/admin-service,type=jmx-connector,name=system"
                 attrName="AuthRealmName" value="#{pageSession.authRealm}" )
         if ("#{pageSession.Name}}=#{pageSession.authRealm}"){
@@ -79,8 +79,8 @@
                                 saveUser(
                                     Realm="#{pageSession.Name}"
                                     UserId="#{pageSession.User}"
-                                    GroupList="#{groupList}"
-                                    Password="#{password}"
+                                    GroupList="#{pageSession.groupList}"
+                                    Password="#{pageSession.password}"
                                 );
                             />                        
                         </sun:button>
@@ -112,14 +112,14 @@
                             </sun:property>
 
                             <sun:property id="newPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.NewPassword}">                           
-                                <sun:passwordField id="NewPassword" columns="$int{25}" text="#{requestScope.password}"  >
+                                <sun:passwordField id="NewPassword" columns="$int{25}" text="#{pageSession.password}"  >
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId=>$page{ps1});
                                     />
                                 </sun:passwordField>     
                             </sun:property>  
                             <sun:property id="confirmPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.server.ConfirmNewPassword}">                           
-                                <sun:passwordField id="ConfirmPassword" columns="$int{25}" text="#{requestScope.confirmPassword}"  >
+                                <sun:passwordField id="ConfirmPassword" columns="$int{25}" text="#{pageSession.confirmPassword}"  >
                                     <!afterCreate
                                         getClientId(component="$this{component}" clientId=>$page{ps2});
                                     />
@@ -131,27 +131,6 @@
                     </sun:propertySheet>    
                         <sun:hidden id="helpKey" value="$resource{help_common.manageUserEdit}" />
             </sun:form>
-<f:verbatim>
-    <script type="text/javascript">
-        
-    function checkPSW() {
-        var ps1 = getTextElement('#{ps1}').value;
-        var ps2 = getTextElement('#{ps2}').value;
-        if (ps1 != ps2){
-            return showAlert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
-        }
-        if ( (ps1==null || ps1=='') && (ps2==null || ps2=='')){
-            if ( getConfirm(this,'#{pageSession.emptyPswdMsg}') ){
-                return true;
-            }else{
-                return false;
-            }
-        }
-        return true;
-        }
-
-</script>
-</f:verbatim>
-
+#include "checkpswd.js"
 </define>
 </composition>
