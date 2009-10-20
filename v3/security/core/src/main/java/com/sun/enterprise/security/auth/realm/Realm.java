@@ -173,7 +173,7 @@ public abstract class Realm implements Comparable {
         //Register the realm provider
         if(realmStatsProvier == null) {
             realmStatsProvier = new RealmStatsProvider();
-            StatsProviderManager.register("security", PluginPoint.SERVER, "realm",realmStatsProvier);
+            StatsProviderManager.register("security", PluginPoint.SERVER, "security/realm",realmStatsProvier);
         }
         
         Realm realmClass = _getInstance(name);
