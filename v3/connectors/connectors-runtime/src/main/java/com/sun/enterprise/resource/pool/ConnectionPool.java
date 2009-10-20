@@ -265,7 +265,14 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @throws PoolingException when unable to add a resource
      */
     public void addResource(ResourceAllocator alloc) throws PoolingException {
-        ds.addResource(alloc, 1);
+        int numResCreated = ds.addResource(alloc, 1);
+        if(numResCreated > 0) {
+            for(int i=0; i< numResCreated; i++) {
+                if(poolLifeCycleListener != null) { 
+                    poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
+                }
+            }
+        }
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "Pool: resource added");
         }
@@ -894,15 +901,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                     }
                 } else {
                     //Destroying a free Connection
-                    //if free + used > SPS then decrement
-                    PoolStatus status = getPoolStatus();
-                    if(status.getNumConnFree() + status.getNumConnUsed() > steadyPoolSize) {
-                        if (_logger.isLoggable(Level.FINEST)) {
-                            _logger.log(Level.FINEST, "Free + Used greater than steady pool size." +
-                                " Decrementing numConnFree");                
-                        }
-                        poolLifeCycleListener.decrementNumConnFree();
-                    }
+                    poolLifeCycleListener.decrementNumConnFree();
                 }
             }
         }

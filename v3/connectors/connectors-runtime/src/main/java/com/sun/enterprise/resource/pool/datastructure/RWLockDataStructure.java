@@ -82,13 +82,15 @@ public class RWLockDataStructure implements DataStructure {
     /**
      * {@inheritDoc}
      */
-    public void addResource(ResourceAllocator allocator, int count) throws PoolingException {
+    public int addResource(ResourceAllocator allocator, int count) throws PoolingException {
+        int numResAdded = 0;
         writeLock.lock();
         //for now, coarser lock. finer lock needs "resources.size() < maxSize()" once more.
         try {
             for (int i = 0; i < count && resources.size() < maxSize; i++) {
                 ResourceHandle handle = handler.createResource(allocator);
                 resources.add(handle);
+                numResAdded++;
             }
         } catch (Exception e) {
             PoolingException pe = new PoolingException(e.getMessage());
@@ -97,6 +99,7 @@ public class RWLockDataStructure implements DataStructure {
         } finally {
             writeLock.unlock();
         }
+        return numResAdded;
     }
 
     /**

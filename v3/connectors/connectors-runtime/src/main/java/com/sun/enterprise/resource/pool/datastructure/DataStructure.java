@@ -65,9 +65,10 @@ public interface DataStructure {
      *
      * @param allocator ResourceAllocator
      * @param count     Number (units) of resources to create
+     * @return int number of resources added.
      * @throws PoolingException when unable to create a resource
      */
-    void addResource(ResourceAllocator allocator, int count) throws PoolingException;
+    int addResource(ResourceAllocator allocator, int count) throws PoolingException;
 
     /**
      * get a resource from the datastructure

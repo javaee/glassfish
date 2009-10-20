@@ -110,8 +110,10 @@ public class ListDataStructure implements DataStructure {
      *
      * @param allocator ResourceAllocator
      * @param count     Number (units) of resources to create
+     * @return int number of resources added
      */
-    public void addResource(ResourceAllocator allocator, int count) throws PoolingException {
+    public int addResource(ResourceAllocator allocator, int count) throws PoolingException {
+        int numResAdded = 0;
         for (int i = 0; i < count && resources.size() < maxSize; i++) {
             boolean lockAcquired = dynSemaphore.tryAcquire();
             if(lockAcquired) {
@@ -121,6 +123,7 @@ public class ListDataStructure implements DataStructure {
                         synchronized (free) {
                             free.add(handle);
                             resources.add(handle);
+                            numResAdded++;
                         }
                     }
                 } catch (Exception e) {
@@ -131,6 +134,7 @@ public class ListDataStructure implements DataStructure {
                 }
             }
         }
+        return numResAdded;
     }
 
     /**
