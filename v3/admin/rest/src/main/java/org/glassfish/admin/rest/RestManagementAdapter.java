@@ -38,33 +38,30 @@ package org.glassfish.admin.rest;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.jvnet.hk2.annotations.Service;
-
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
 
 
 /**
  * Adapter for REST management interface
- * @author Rajeshwar Patil
+ * @author Rajeshwar Patil , Ludovic Champenois
  */
 @Service
 public class RestManagementAdapter extends RestAdapter {
 
+    @Override
     public String getContextRoot() {
         return CONTEXT;
     }
 
 
-    public ResourceConfig getResourceConfig() {
-        final Set<Class<?>> r = new HashSet<Class<?>>();
+    @Override
+    protected  Set<Class<?>> getResourcesConfig(){
+         final Set<Class<?>> r = new HashSet<Class<?>>();
 
-        //uncomment if you need to run the generator:
-        //r.add(GeneratorResource.class);
+        // uncomment if you need to run the generator:
+        // r.add(GeneratorResource.class);
         r.add(org.glassfish.admin.rest.resources.DomainResource.class);
-
-        return new DefaultResourceConfig(r);
+        return r;
     }
 
     public static final String CONTEXT = "/management";

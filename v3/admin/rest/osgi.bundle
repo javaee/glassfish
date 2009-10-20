@@ -1,1 +1,8 @@
--exportcontents: org.glassfish.admin.rest; version=${project.osgi.version}
+-exportcontents: 
+DynamicImport-Package: \
+                        com.sun.jersey.api.container;resolution:=optional, \
+                        com.sun.jersey.api.core;resolution:=optional, \
+                        com.sun.jersey.core.header;resolution:=optional, \
+                        com.sun.jersey.multipart;resolution:=optional, \
+                        *
+

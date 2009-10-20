@@ -38,30 +38,29 @@ package org.glassfish.admin.rest;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.jvnet.hk2.annotations.Service;
 
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
+
 
 
 /**
  * Adapter for REST monitoring interface
- * @author Rajeshwar Patil
+ * @author Rajeshwar Patil, Ludovic Champenois
  */
 @Service
 public class RestMonitoringAdapter extends RestAdapter {
 
+    @Override
     public String getContextRoot() {
         return CONTEXT;
     }
 
 
-    public ResourceConfig getResourceConfig() {
+    @Override
+    protected  Set<Class<?>> getResourcesConfig(){
         final Set<Class<?>> r = new HashSet<Class<?>>();
         r.add(org.glassfish.admin.rest.MonitoringResource.class);
-        return new DefaultResourceConfig(r);
+        return r;
     }
-
     public static final String CONTEXT = "/monitoring";
 }

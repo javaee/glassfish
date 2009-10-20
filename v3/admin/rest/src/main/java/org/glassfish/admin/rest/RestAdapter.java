@@ -47,9 +47,9 @@ import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.grizzly.util.http.Cookie;
-import com.sun.jersey.api.container.ContainerFactory;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.logging.LogDomains;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
@@ -57,7 +57,6 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.internal.api.*;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -65,15 +64,18 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.api.ServerContext;
 
 
 /**
  * Adapter for REST interface
- * @author Rajeshwar Patil
+ * @author Rajeshwar Patil, Ludovic Champenois
  */
 public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
 
@@ -255,7 +257,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    protected abstract ResourceConfig getResourceConfig();
+
+    protected abstract Set<Class<?>> getResourcesConfig();
 
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
@@ -306,25 +309,36 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     private void exposeContext()
             throws EndpointRegistrationException {
         String context = getContextRoot();
-        logger.fine("Exposing rest resource context root: " +  context);
+        logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
-            ResourceConfig rc = getResourceConfig();
+            Set<Class<?>> classes = getResourcesConfig();
 
-            //Use common classloader. Jersey artifacts are not visible through
-            //module classloader
-            ClassLoader originalContextClassLoader = Thread.currentThread().getContextClassLoader();
+            // we replace the following code with instrospection code
+            // in order to not load the jersery class until this method is called.
+            // this way, we gain around 90ms at startup time by not loading jersey classes.
+            // they are loaded only when a REST service is called.
+            //// LazyJerseyInit lazyInit = new LazyJerseyInit();
+
             try {
-                ClassLoader apiClassLoader = sc.getCommonClassLoader();
-                Thread.currentThread().setContextClassLoader(apiClassLoader);
-                adapter = ContainerFactory.createContainer(com.sun.grizzly.tcp.Adapter.class, rc);
-            } finally {
-                Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+                Class<?> lazyInitClass = Class.forName("org.glassfish.admin.rest.LazyJerseyInit");
+                Method init = lazyInitClass.getMethod("exposeContext",
+                        new Class[]{
+                            Set.class,
+                            ServerContext.class
+                        });
+                Object o[] = new Object[2];
+                o[0] = classes;
+                o[1] = sc;
+                adapter = (GrizzlyAdapter) init.invoke(null, o);
+                ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE,
+                        "Error trying to call org.glassfish.admin.rest.LazyJerseyInit via instrospection: ", ex);
+
             }
 
-            ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
 
-            logger.info("Listening to REST requests at context: " +
-                    context + "/domain");
+            logger.info("Listening to REST requests at context: " + context + "/domain");
         }
     }
 
