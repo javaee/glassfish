@@ -69,6 +69,7 @@
 	<!--<ant dir="dmmcf" target="all"/>
 	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
 	<ant dir="dmmcf.appclient" target="all"/>-->
+	<ant dir="tracingsql" target="all"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>
@@ -311,6 +312,12 @@
 	<record name="dmmcf.appclient.output" action="start"/>
 	<ant dir="dmmcf.appclient" target="all"/>
 	<record name="dmmcf.appclient.output" action="stop"/>
+    </target>
+
+    <target name="tracingsql">
+	<record name="tracingsql.output" action="start"/>
+	<ant dir="tracingsql" target="all"/>
+	<record name="tracingsql.output" action="stop"/>
     </target>
 
     <target name="usage">
