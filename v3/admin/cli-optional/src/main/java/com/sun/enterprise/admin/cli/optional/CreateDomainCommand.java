@@ -163,15 +163,12 @@ public final class CreateDomainCommand extends CLICommand {
     }
 
     /**
-     * Add --user as a required option in the usage message,
-     * since that's how we handle it below in validate().
-     * Also add --adminport and --instanceport options with
+     * Add --adminport and --instanceport options with
      * proper default values.  (Can't set default values above
      * because it conflicts with --portbase option processing.)
      */
     protected Set<ValidOption> usageOptions() {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "user", '\0', "STRING", true, null);
         addOption(opts, ADMIN_PORT, '\0', "STRING", false,
             Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
         addOption(opts, INSTANCE_PORT, '\0', "STRING", false,
