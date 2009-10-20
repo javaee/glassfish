@@ -46,7 +46,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import org.glassfish.transaction.api.ResourceRecoveryManager;
+import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.spi.RecoveryResourceListener;
 import com.sun.enterprise.transaction.spi.RecoveryResourceHandler;

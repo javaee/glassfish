@@ -33,7 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.transaction.api;
+package com.sun.enterprise.transaction.api;
 
 import org.jvnet.hk2.annotations.Contract;
 
