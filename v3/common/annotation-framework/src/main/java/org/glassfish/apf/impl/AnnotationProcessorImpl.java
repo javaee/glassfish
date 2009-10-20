@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
+import java.util.Collection;
+import java.util.Arrays;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
@@ -124,7 +126,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         ProcessingResultImpl result = new ProcessingResultImpl();
         errorCount=0;
         
-        for (Class c : scanner.getElements()) {
+        Set<Class> filteredClasses = filterSuperClasses(scanner.getElements());
+
+        for (Class c : filteredClasses) {
             
             result.add(process(ctx, c));          
         }
@@ -147,7 +151,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         throws AnnotationProcessorException {
         
         ProcessingResultImpl result = new ProcessingResultImpl();
-        for (Class c : classes) {
+        Set<Class> filteredClasses = filterSuperClasses(
+            Arrays.asList(classes));
+        for (Class c : filteredClasses) {
             result.add(process(ctx, c));
         }
         return result;
@@ -474,5 +480,30 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         } catch(EmptyStackException ex) {
             return null;
         }
+    }
+
+
+    // filter out all the super classes from the list to scan annotations
+    // as we will include the super classes when process the sub class
+    private Set<Class> filterSuperClasses(Collection<Class> allClasses) {
+        Set<String> superClassNames = new HashSet<String>();
+        Set<Class> filteredClasses = new HashSet<Class>();
+        for (Class clazz: allClasses) {
+            Class parent = clazz;
+            while ((parent = parent.getSuperclass()) != null) {
+                if (parent.getPackage() == null ||
+                    !parent.getPackage().getName().startsWith("java.lang")) {
+                    superClassNames.add(parent.getName());
+                }
+            }
+        }
+
+        for (Class clazz: allClasses) {
+            if (!superClassNames.contains(clazz.getName())) {
+                filteredClasses.add(clazz);
+            }
+        }
+
+        return filteredClasses;
     }
 }
