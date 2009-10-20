@@ -87,6 +87,32 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-dependency-plugin</artifactId>
+                   <executions>
+                       <execution>
+                           <id>unpack</id>
+                           <phase>process-classes</phase>
+                           <goals>
+                             <goal>unpack</goal>
+                           </goals>
+                           <configuration>
+                               <artifactItems>
+                                   <artifactItem>
+                                       <groupId>org.glassfish.docs.man</groupId>
+                                       <artifactId>web-admin-manpage</artifactId>
+                                       <version>3.0-b04</version>
+                                       <type>jar</type>
+                                       <overWrite>true</overWrite>
+                                       <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                       <excludes>META-INF/**</excludes>
+                                   </artifactItem>
+                                </artifactItems>
+                           </configuration>
+                      </execution>
+                   </executions>
+            </plugin>
         </plugins>
 
     </build>
