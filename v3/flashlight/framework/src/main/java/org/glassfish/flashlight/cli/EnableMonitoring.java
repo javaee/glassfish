@@ -76,10 +76,10 @@ public class EnableMonitoring implements AdminCommand {
     private String modules;
 
     @Param(optional=true)
-    private String mbean;
+    private Boolean mbean;
 
     @Param(optional=true)
-    private String dtrace;
+    private Boolean dtrace;
 
     final private LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(EnableMonitoring.class);
@@ -133,13 +133,13 @@ public class EnableMonitoring implements AdminCommand {
         }
 
         // mbean-enabled
-        if (isValidString(mbean)) {
-            MonitoringConfig.setMBeanEnabled(ms, mbean, report);
+        if (mbean != null) {
+            MonitoringConfig.setMBeanEnabled(ms, mbean.toString(), report);
         }
 
         // dtrace-enabled
-        if (isValidString(dtrace)) {
-            MonitoringConfig.setDTraceEnabled(ms, dtrace, report);
+        if (dtrace != null) {
+            MonitoringConfig.setDTraceEnabled(ms, dtrace.toString(), report);
         }
 
         // check and set monitoring-enabled to true
