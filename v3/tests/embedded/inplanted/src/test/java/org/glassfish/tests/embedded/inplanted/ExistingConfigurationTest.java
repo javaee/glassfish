@@ -32,7 +32,7 @@ public class ExistingConfigurationTest {
             f = new File(f, "config");
             f = new File(f, "domain.xml");
             Assert.assertTrue(f.exists());
-            efsb.configurationFile(f, false);
+            efsb.configurationFile(f, true);
             server = EmbeddedServerUtils.createServer(efsb.build());
 
             Habitat habitat = server.getHabitat();
