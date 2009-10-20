@@ -809,6 +809,11 @@ public class CommandRunnerImpl implements CommandRunner {
                 continue;
             }
 
+            // help and Xhelp are meta-options that are handled specially
+            if (key.equals("help") || key.equals("Xhelp")) {
+                continue;
+            }
+
             // check if key is a valid Param Field
             boolean validOption = false;
             // loop through the Param field in the command class
@@ -1109,11 +1114,11 @@ public class CommandRunnerImpl implements CommandRunner {
 
         final ActionReport report = inv.report();
 
-        if (parameters.getOne("help") != null || parameters.getOne("Xhelp") != null) {
+        if (isSet(parameters, "help") || isSet(parameters, "Xhelp")) {
             InputStream in = getManPage(model.getCommandName(), command);
             String manPage = encodeManPage(in);
 
-            if (manPage != null && parameters.getOne("help") != null) {
+            if (manPage != null && isSet(parameters, "help")) {
                 inv.report().getTopMessagePart().addProperty("MANPAGE", manPage);
             } else {
                 report.getTopMessagePart().addProperty(
@@ -1320,5 +1325,16 @@ public class CommandRunnerImpl implements CommandRunner {
             //return default value
             return getParamField(component, target);
         }
+    }
+
+    /**
+     * Is the boolean valued parameter specified?
+     * If so, and it has a value, is the value "true"?
+     */
+    private static boolean isSet(ParameterMap params, String name) {
+        String val = params.getOne(name);
+        if (val == null)
+            return false;
+        return val.length() == 0 || Boolean.valueOf(val).booleanValue();
     }
 }
