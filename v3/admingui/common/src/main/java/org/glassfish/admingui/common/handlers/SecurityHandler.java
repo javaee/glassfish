@@ -695,6 +695,14 @@ public class SecurityHandler {
             }
         }
 
+        //if we pass in "", backend will throw bean violation, since it only accepts certain values.
+        String[] attrList= new String[] {"Request-AuthSource","Request-AuthRecipient", "Response-AuthSource", "Response-AuthRecipient"};
+        for(int i=0; i< attrList.length; i++){
+            if ("".equals(attrMap.get(attrList[i]))){
+                attrMap.put( attrList[i], null);
+            }
+        }
+
         if ( provider.getRequestPolicy()== null){
             if (GuiUtil.isEmpty(attrMap.get("Request-AuthSource")) && GuiUtil.isEmpty(attrMap.get("Request-AuthRecipient"))){
                 //no need to create one if all is empty.
