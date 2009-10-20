@@ -35,9 +35,7 @@
  */
 package org.glassfish.admin.rest;
 
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.AnnotatedElement;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -264,7 +262,7 @@ public class ResourceUtil extends Util {
             String key;
             while (iterator.hasNext()) {
                 key = iterator.next();
-                if (commandParams.get(key) == Constants.PARENT_NAME_VARIABLE) {
+                if (commandParams.get(key).equals( Constants.PARENT_NAME_VARIABLE)) {
                     commandParams.put(key, parent);
                     break;
                 }
