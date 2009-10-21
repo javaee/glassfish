@@ -68,7 +68,8 @@ public class MultimodeCommand extends CLICommand {
      * operandType, operandMin, and operandMax fields are set.
      */
     @Override
-    protected void prepare() throws CommandException {
+    protected void prepare()
+            throws CommandException, CommandValidationException {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, "file", 'f', "FILE", false, null);
         printPromptOption =
@@ -79,6 +80,8 @@ public class MultimodeCommand extends CLICommand {
         operandType = "STRING";
         operandMin = 0;
         operandMax = 0;
+
+        processProgramOptions();
     }
 
     /**
