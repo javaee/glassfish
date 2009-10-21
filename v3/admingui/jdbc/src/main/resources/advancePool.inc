@@ -60,7 +60,7 @@
 
             </sun:textField>
         </sun:property>
-        <sun:property id="sqlTLProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.sqlTL}">
+        <sun:property id="sqlTLProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.sqlTL}"  helpText="$resource{i18njdbc.jdbcPool.sqlTLHelp}">
             <sun:textField id="sqlTL" columns="$int{50}" text="#{pageSession.valueMap['SqlTraceListeners']}" >
 
             </sun:textField>
