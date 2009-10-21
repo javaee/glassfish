@@ -116,7 +116,7 @@ public class CreateSsl implements AdminCommand {
     @Param(optional=true)
     String target;
 
-    @Param(name="listener_id",optional=true)
+    @Param(name="listener_id",primary=true,optional=true)
     String listenerId;
 
     @Inject

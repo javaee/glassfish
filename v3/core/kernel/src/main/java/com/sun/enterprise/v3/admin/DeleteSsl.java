@@ -80,7 +80,7 @@ public class DeleteSsl implements AdminCommand {
     @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener, iiop-service")
     String type;
     
-    @Param(name="listener_id", optional=true)
+    @Param(name="listener_id", primary=true, optional=true)
     String listenerId;
 
     @Inject
