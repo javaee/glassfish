@@ -53,6 +53,8 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
     private static final String EJB_CTX_TYPE ="javax.ejb.EJBContext";
     private static final String EJB_TIMER_SERVICE_TYPE
         = "javax.ejb.TimerService";
+    private static final String VALIDATION_VALIDATOR ="javax.validation.Validator";
+    private static final String VALIDATION_VALIDATOR_FACTORY ="javax.validation.ValidatorFactory";
 
     private static final String CDI_BEAN_MANAGER_TYPE = "javax.enterprise.inject.spi.BeanManager";
 
@@ -123,6 +125,14 @@ public class JmsDestinationReferenceDescriptor extends EnvironmentProperty imple
                 getRefType().equals(MDB_CTX_TYPE) ||
                 getRefType().equals(EJB_CTX_TYPE) ||
                 getRefType().equals(EJB_TIMER_SERVICE_TYPE));
+    }
+
+    public boolean isValidator() {
+        return (getRefType().equals(VALIDATION_VALIDATOR));
+    }
+
+    public boolean isValidatorFactory() {
+        return (getRefType().equals(VALIDATION_VALIDATOR_FACTORY));
     }
 
     public boolean isCDIBeanManager() {

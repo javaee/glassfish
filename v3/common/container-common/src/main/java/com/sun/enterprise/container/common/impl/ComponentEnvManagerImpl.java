@@ -67,6 +67,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import javax.validation.Validator;
+import javax.validation.ValidatorContext;
+import javax.validation.ValidatorFactory;
 
 @Service
 public class ComponentEnvManagerImpl
@@ -557,6 +562,10 @@ public class ComponentEnvManagerImpl
             Object value = null;
             if (next.isEJBContext()) {
                 value = new EjbContextProxy(next.getRefType());
+            } else if( next.isValidator() ) {
+                value = new ValidatorProxy();
+            } else if( next.isValidatorFactory() ) {
+                value = new ValidatorFactoryProxy();
             } else if( next.isCDIBeanManager() ) {
                 value = namingUtils.createLazyNamingObjectFactory(name, "java:comp/BeanManager", false);
             } else if( next.isManagedBean() ) {
@@ -844,6 +853,100 @@ public class ComponentEnvManagerImpl
             }
 
             return result;
+        }
+
+    }
+
+    private class ValidatorProxy
+        implements NamingObjectProxy {
+
+        private volatile ValidatorFactory validatorFactory;
+        private volatile Validator validator;
+
+        ValidatorProxy() {
+        }
+
+        @Override
+        public Object create(Context ctx)
+                throws NamingException {
+            final String nameForValidator = "java:comp/Validator";
+            String exceptionMessage = "Can not obtain reference to Validator instance ";
+
+            // Phase 1, obtain a reference to the Validator
+
+            // case 1, try to look in the ctx
+            if (null == validator) {
+                try {
+                    validator = (Validator) ctx.lookup(nameForValidator);
+                } catch (NamingException ne) {
+                    exceptionMessage = "Unable to lookup " +
+                        nameForValidator + ":" + ne.toString();
+                }
+            }
+
+            // case 2, Create a new Validator instance
+            if (null == validator) {
+
+                // case 2a no validatorFactory
+                if (null == validatorFactory) {
+                    ValidatorFactoryProxy factoryProxy = new ValidatorFactoryProxy();
+                    validatorFactory = (ValidatorFactory) factoryProxy.create(ctx);
+                }
+
+                // Use the ValidatorFactory to create a Validator
+                if (null != validatorFactory) {
+                    ValidatorContext validatorContext = validatorFactory.usingContext();
+                    validator = validatorContext.getValidator();
+                }
+            }
+
+            if( validator == null ) {
+                throw new NameNotFoundException(exceptionMessage);
+            }
+
+            return validator;
+        }
+
+    }
+
+    private class ValidatorFactoryProxy
+        implements NamingObjectProxy {
+
+        private volatile ValidatorFactory validatorFactory;
+
+        ValidatorFactoryProxy() {
+        }
+
+        @Override
+        public Object create(Context ctx)
+                throws NamingException {
+            final String nameForValidatorFactory = "java:comp/ValidatorFactory";
+            String exceptionMessage = "Can not obtain reference to ValidatorFactory instance ";
+
+            // Phase 1, obtain a reference to the ValidatorFactory
+
+            // case 1, try to look in the ctx
+            if (null == validatorFactory) {
+                try {
+                    validatorFactory = (ValidatorFactory)
+                            ctx.lookup(nameForValidatorFactory);
+                } catch (NamingException ne) {
+                    exceptionMessage = "Unable to lookup " +
+                            nameForValidatorFactory + ":" + ne.toString();
+                }
+            }
+
+            // case 2, create the ValidatorFactory using the spec.
+            if (null == validatorFactory) {
+                try {
+                    validatorFactory = Validation.buildDefaultValidatorFactory();
+                } catch (ValidationException e) {
+                    exceptionMessage = "Could not build a default Bean Validator factory: " +
+                                e.toString();
+                }
+            }
+
+            return validatorFactory;
         }
 
     }
