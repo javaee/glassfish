@@ -65,9 +65,9 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/java</directory>
+                <directory>src/main/java/org/glassfish/apf</directory>
                 <includes>
-                    <include>com/sun/enterprise/deployment/annotation/skip-annotation-class-list</include>
+                    <include>skip-annotation-class-list</include>
                 </includes>
             </resource>
         </resources>

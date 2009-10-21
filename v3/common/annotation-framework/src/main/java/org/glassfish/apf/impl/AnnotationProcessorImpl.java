@@ -126,10 +126,15 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         ProcessingResultImpl result = new ProcessingResultImpl();
         errorCount=0;
         
-        Set<Class> filteredClasses = filterSuperClasses(scanner.getElements());
+        Set<Class> allClasses = scanner.getElements();
+        Set<String> superClasses = findSuperClasses(allClasses);
 
-        for (Class c : filteredClasses) {
-            
+        for (Class c : allClasses) {
+            // skip super class if it has no class level annotations
+            if (superClasses.contains(c.getName()) &&
+                (c.getAnnotations().length == 0) ) {
+                continue;
+            }
             result.add(process(ctx, c));          
         }
         return result;
@@ -151,10 +156,15 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         throws AnnotationProcessorException {
         
         ProcessingResultImpl result = new ProcessingResultImpl();
-        Set<Class> filteredClasses = filterSuperClasses(
+        Set<String> superClasses = findSuperClasses(
             Arrays.asList(classes));
-        for (Class c : filteredClasses) {
-            result.add(process(ctx, c));
+        for (Class c : classes) {
+            // skip super class if it has no class level annotations
+            if (superClasses.contains(c.getName()) &&
+                (c.getAnnotations().length == 0) ) {
+                continue;
+            }
+            result.add(process(ctx, c));          
         }
         return result;
     }
@@ -483,11 +493,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
     }
 
 
-    // filter out all the super classes from the list to scan annotations
-    // as we will include the super classes when process the sub class
-    private Set<Class> filterSuperClasses(Collection<Class> allClasses) {
+    // find out all the super classes from the list to scan annotations
+    private Set<String> findSuperClasses(Collection<Class> allClasses) {
         Set<String> superClassNames = new HashSet<String>();
-        Set<Class> filteredClasses = new HashSet<Class>();
         for (Class clazz: allClasses) {
             Class parent = clazz;
             while ((parent = parent.getSuperclass()) != null) {
@@ -498,12 +506,6 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
             }
         }
 
-        for (Class clazz: allClasses) {
-            if (!superClassNames.contains(clazz.getName())) {
-                filteredClasses.add(clazz);
-            }
-        }
-
-        return filteredClasses;
+        return superClassNames;
     }
 }
