@@ -150,7 +150,7 @@ public class FileCacheStatsProvider {
     public CountStatistic getMaxMappedMemorySize() {
         final CountStatisticImpl stats = new CountStatisticImpl(
                 "MaxMappedMemorySize", "byte(s)",
-                "Maximum memory map size to be used for caching");
+                "Maximum memory map size used for caching");
         stats.setCount(maxMappedMemorySize.get());
         return stats;
     }
