@@ -67,7 +67,7 @@ update tool    updatetool 800
 
 //<sun:body  onLoad="fixTree(); setTreeWidth('#{treeId}');" >
   <sun:form id="treeForm">
-    <h:commandButton id="update" style1="visibility: hidden">
+    <h:commandButton id="update" style="visibility: hidden">
 
 	<!-- KEEP THIS IN SYNCH WITH clusterProfileTree.jsf -->
 	<!command
