@@ -168,7 +168,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     clh.getConnectorClassLoader(null).addDelegate(ccf);
                 }
 
-                registerBeanValidator(moduleName, context.getSource());
+                registerBeanValidator(moduleName, context.getSource(), classLoader);
 
                 ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
                 runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
@@ -398,12 +398,12 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         _logger.log(Level.FINE, message);
     }
 
-    private void registerBeanValidator(String rarName, ReadableArchive archive) {
+    private void registerBeanValidator(String rarName, ReadableArchive archive, ClassLoader classLoader) {
 
         ClassLoader contextCL = null;
         try {
             contextCL = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(clh.getCommonClassLoader());
+            Thread.currentThread().setContextClassLoader(classLoader);
             Validator beanValidator = null;
             ValidatorFactory validatorFactory = null;
 
