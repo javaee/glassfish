@@ -75,7 +75,7 @@ public class WebTest{
             webTest.doTest(webTest.adminPort, 202);
             // Sleep long enough for the admin console to have been 
             // installed and deployed
-            Thread.currentThread().sleep(40000);
+            Thread.currentThread().sleep(60000);
             webTest.doTest(webTest.adminPort, 404);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
