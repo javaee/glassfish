@@ -39,9 +39,9 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
 
     private GlassFishORBFactory orbFactory;
 
-    private volatile ORB orb;
+    private volatile ORB orb = null ;
 
-    private volatile ProtocolManager protocolManager;
+    private ProtocolManager protocolManager = null ;
 
     private ORBLazyServiceInitializer lazyServiceInitializer;
 
@@ -51,21 +51,23 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
         orbFactory = habitat.getByContract(GlassFishORBFactory.class);
     }
 
+    public synchronized void setORB( ORB orb ) {
+        this.orb = orb ;
+    }
 
     /**
      * Get or create the default orb.  This can be called for any process type.  However,
      * protocol manager and CosNaming initialization only take place for the Server.
      */
     public ORB getORB() {
-
+        // Use a volatile double-checked locking idiom here so that we can publish
+        // a partly-initialized ORB early, so that lazy init can come into getORB() 
+        // and allow an invocation to the transport to complete.
         if (orb == null) {
 
-            synchronized (this) {
-
+            synchronized( this ) {
                 if (orb == null) {
-
                     try {
-
                         Properties props = new Properties();
 
                         // Create orb and make it visible.  This will allow
@@ -79,36 +81,31 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
                         orb = orbFactory.createORB(props);
 
                         if( processEnv.getProcessType().isServer()) {
+                            if (protocolManager == null) {
+                                ProtocolManager tempProtocolManager =
+                                                habitat.getByContract(ProtocolManager.class);
 
-                            ProtocolManager tempProtocolManager =
-			                    habitat.getByContract(ProtocolManager.class);
+                                tempProtocolManager.initialize(orb);
+                                tempProtocolManager.initializeNaming();
+                                tempProtocolManager.initializePOAs();
 
-                            tempProtocolManager.initialize(orb);
-                          
-                            tempProtocolManager.initializeNaming();
+                                // Now make protocol manager visible.
+                                protocolManager = tempProtocolManager;
+                                
+                                GlassfishNamingManager namingManager =
+                                    habitat.getByContract(GlassfishNamingManager.class);
 
-                            tempProtocolManager.initializePOAs();
+                                Remote remoteSerialProvider =
+                                    namingManager.initializeRemoteNamingSupport(orb);
 
-                            // Now make protocol manager visible.
-                            protocolManager = tempProtocolManager;
-                            
-                            GlassfishNamingManager namingManager =
-                                habitat.getByContract(GlassfishNamingManager.class);
-
-
-                            Remote remoteSerialProvider =
-                                namingManager.initializeRemoteNamingSupport(orb);
-
-                            protocolManager.initializeRemoteNaming(remoteSerialProvider);
-
+                                protocolManager.initializeRemoteNaming(remoteSerialProvider);
+                            }
                         }
-
                     } catch(Exception e) {
                         orb = null;
                         protocolManager = null;
                         throw new RuntimeException("Orb initialization erorr", e);    
                     }
-
                 }
             }
         }

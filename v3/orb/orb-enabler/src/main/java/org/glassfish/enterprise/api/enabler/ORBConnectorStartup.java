@@ -40,6 +40,7 @@ import org.jvnet.hk2.component.PostConstruct;
 
 import org.jvnet.hk2.annotations.Service;
 
+import org.omg.CORBA.ORB ;
 
 /**
  */
@@ -100,23 +101,28 @@ public class ORBConnectorStartup implements Startup, PostConstruct {
                 new java.security.PrivilegedAction() {
                     public java.lang.Object run() {
                         if (System.getProperty(OMG_ORB_CLASS_PROPERTY) == null) {
+                            // Assume Sun ee ORB at all times.
                             // set ORB based on JVM vendor
-                            if (System.getProperty("java.vendor").equals("Sun Microsystems Inc.")) {
-                                System.setProperty(OMG_ORB_CLASS_PROPERTY, ORB_SE_CLASS);
-                            } else {
+                            //
+                            // if (System.getProperty("java.vendor").equals("Sun Microsystems Inc.")) {
+                                // System.setProperty(OMG_ORB_CLASS_PROPERTY, ORB_SE_CLASS);
+                            // } else {
                                 // if not Sun, then set to EE class
                                 System.setProperty(OMG_ORB_CLASS_PROPERTY, ORB_CLASS);
-                            }
+                            // }
                         }
 
                         if (System.getProperty(OMG_ORB_SINGLETON_CLASS_PROPERTY) == null) {
+                            // Assume Sun ee ORB at all times.
+                            //
                             // set ORBSingleton based on JVM vendor
-                            if (System.getProperty("java.vendor").equals("Sun Microsystems Inc.")) {
-                                System.setProperty(OMG_ORB_SINGLETON_CLASS_PROPERTY, ORB_SE_SINGLETON_CLASS);
-                            } else {
+                            // if (System.getProperty("java.vendor").equals("Sun Microsystems Inc.")) {
+                                // System.setProperty(OMG_ORB_SINGLETON_CLASS_PROPERTY, ORB_SE_SINGLETON_CLASS);
+                            // } else {
                                 // if not Sun, then set to EE class
                                 System.setProperty(OMG_ORB_SINGLETON_CLASS_PROPERTY, ORB_SINGLETON_CLASS);
-                            }
+                                ORB.init() ; // create and discard singleton ORB to make sure we use the correct singleton
+                            // }
                         }
 
                         System.setProperty(ORB_UTIL_CLASS_PROPERTY,

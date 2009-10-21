@@ -38,24 +38,28 @@ package org.glassfish.enterprise.iiop.impl;
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager;
 import com.sun.corba.ee.spi.osgi.ORBFactory;
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
+import com.sun.corba.ee.spi.orb.ORB ;
+import com.sun.corba.ee.spi.transport.CorbaTransportManager;
+import com.sun.corba.ee.spi.transport.TransportDefault;
+import com.sun.corba.ee.spi.transport.CorbaAcceptor;
+
 import com.sun.logging.LogDomains;
+
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.Orb;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.SslClientConfig;
+
 import com.sun.grizzly.config.dom.Ssl;
+
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.enterprise.iiop.util.IIOPUtils;
-import org.omg.CORBA.ORB;
-
-import com.sun.corba.ee.spi.transport.CorbaTransportManager;
-import com.sun.corba.ee.spi.transport.TransportDefault;
-import com.sun.corba.ee.spi.transport.CorbaAcceptor;
 
 import com.sun.enterprise.util.Utility;
+
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -399,11 +403,10 @@ public final class GlassFishORBManager {
      */
     private void setFOLBProperties(Properties orbInitProperties) {
 
-        // TODO orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
+        orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
 
         orbInitProperties.put(SUN_ORB_SOCKET_FACTORY_CLASS_PROPERTY,
                 IIOP_SSL_SOCKET_FACTORY_CLASS);
-        /** TODO enable this
 
         // ClientGroupManager.
         // Registers itself as
@@ -415,14 +418,13 @@ public final class GlassFishORBManager {
                         + "com.sun.corba.ee.impl.folb.ClientGroupManager",
                 "dummy");
          
-         */
         // This configurator registers the CSIv2SSLTaggedComponentHandler
         orbInitProperties.setProperty(
                 ORBConstants.USER_CONFIGURATOR_PREFIX
                         + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),"dummy");
        
 
-        /** TODO enable this
+        /** TODO enable this (needs clustering support)
         if (ASORBUtilities.isGMSAvailableAndClusterHeartbeatEnabled()) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, "GMS available and enabled - doing EE initialization");
@@ -474,9 +476,6 @@ public final class GlassFishORBManager {
             orbInitProperties.put(SUN_USER_CONFIGURATOR_PREFIX
                     + PEORB_CONFIG_CLASS, "dummy");
 
-            // TODO We'll handle FOLB later but just do RFM_PROPERTY init
-            //
-            orbInitProperties.put(ORBConstants.RFM_PROPERTY, "dummy");
             setFOLBProperties(orbInitProperties);
 
             // Standard OMG Properties.
@@ -554,13 +553,14 @@ public final class GlassFishORBManager {
              * Having an IORInterceptor (TxSecIORInterceptor) get called during ORB init always results in a
              * nested ORB.init call because of the call to getORB in the IORInterceptor.
              */
+                
+            // TODO Right now we need to explicitly set useOSGI flag.  If it's set to
+            // OSGI mode and we're not in OSGI mode, orb initialization fails.  
+            boolean useOSGI = false;
+
             final ClassLoader prevCL = Utility.getClassLoader();
             try {
                 Utility.setContextClassLoader(GlassFishORBManager.class.getClassLoader());
-
-                // TODO Right now we need to explicitly set useOSGI flag.  If it's set to
-                // OSGI mode and we're not in OSGI mode, orb initialization fails.  
-                boolean useOSGI = false;
 
                 if( processType.isServer()) {
 
@@ -581,13 +581,13 @@ public final class GlassFishORBManager {
                         corbaOrbModule.start();
                     }
                 }
-
-                orb = ORBFactory.create(args, orbInitProperties, useOSGI);
-
             } finally {
                 Utility.setContextClassLoader(prevCL);
             }
 
+            // Can't run with GlassFishORBManager.class.getClassLoader() as the context ClassLoader
+            orb = ORBFactory.create() ;
+            ORBFactory.initialize( orb, args, orbInitProperties, useOSGI);
 
             // Done to indicate this is a server and
             // needs to create listen ports.
@@ -620,7 +620,7 @@ public final class GlassFishORBManager {
             // SeeBeyond fix for 6325988: needs testing.
             // Still do not know why this might make any difference.
             // Invoke this for its side-effects: ignore returned IOR.
-            ((com.sun.corba.ee.spi.orb.ORB) orb).getFVDCodeBaseIOR();
+            orb.getFVDCodeBaseIOR();
 
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "enterprise_util.excep_in_createorb", ex);
