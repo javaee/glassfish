@@ -244,7 +244,7 @@ public class ServletContainerInitializerUtil {
                 String path = u.getPath();
                 try {
                     if(path.endsWith(".jar")) {
-                        JarFile jf = new JarFile(path);
+                        JarFile jf = new JarFile(Util.URLDecode(path));
                         try {
                             Enumeration<JarEntry> entries = jf.entries();
                             while(entries.hasMoreElements()) {
