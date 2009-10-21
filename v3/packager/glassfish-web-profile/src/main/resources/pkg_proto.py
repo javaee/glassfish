@@ -67,6 +67,7 @@ pkg = {
 			"pkg:/glassfish-jpa" : {"type" : "require" },
 			"pkg:/glassfish-jta" : {"type" : "require" },
 			"pkg:/glassfish-corba-omgapi" : {"type" : "require" },
+			"pkg:/glassfish-codegen" : {"type" : "require" },
 			"pkg:/glassfish-jts" : {"type" : "require" },
 			"pkg:/glassfish-ejb-lite" : {"type" : "require" },
 			"pkg:/glassfish-jsf" : {"type" : "require" },
