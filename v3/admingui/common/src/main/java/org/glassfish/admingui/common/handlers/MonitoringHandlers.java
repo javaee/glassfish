@@ -239,13 +239,13 @@ public class MonitoringHandlers {
                                     last = df.format(new Date((Long) cds.get("lastSampleTime")));
                                 }
                                 if (cds.containsKey("maxTime")) {
-                                    details = (GuiUtil.getMessage("monitoring.MaxTime") + ": " + cds.get("maxTime") + " " + unit + "<br/>");
+                                    details = (GuiUtil.getMessage("msg.MaxTime") + ": " + cds.get("maxTime") + " " + unit + "<br/>");
                                 }
                                 if (cds.containsKey("minTime")) {
-                                    details = details + (GuiUtil.getMessage("monitoring.MinTime") + ": " + cds.get("minTime") + " " + unit + "<br/>");
+                                    details = details + (GuiUtil.getMessage("msg.MinTime") + ": " + cds.get("minTime") + " " + unit + "<br/>");
                                 }
                                 if (cds.containsKey("totalTime")) {
-                                    details = details + (GuiUtil.getMessage("monitoring.TotalTime") + ": " + cds.get("totalTime") + " " + unit + "<br/>");
+                                    details = details + (GuiUtil.getMessage("msg.TotalTime") + ": " + cds.get("totalTime") + " " + unit + "<br/>");
                                 }
                                 if (cds.containsKey("activeRuntimes")) {
                                     runtimes = (Integer) cds.get("activeRuntimes");

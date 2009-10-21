@@ -292,53 +292,46 @@ public class WoodstockHandler {
   @Handler(id="populateServerMonitorDropDown",
         input={
             @HandlerInput(name="VSList", type=List.class, required=true),
+            @HandlerInput(name="GCList", type=List.class, required=true),
+            @HandlerInput(name="NLList", type=List.class, required=true),
             @HandlerInput(name="ThreadSystemList", type=List.class, required=true)},
         output={
             @HandlerOutput(name="MonitorList", type=Option[].class)})
     public void populateServerMonitorDropDown(HandlerContext handlerCtx) {
         List vsList = (List) handlerCtx.getInputValue("VSList");
         List threadList = (List) handlerCtx.getInputValue("ThreadSystemList");
+        List gcList = (List) handlerCtx.getInputValue("GCList");
+        List nlList = (List) handlerCtx.getInputValue("NLList");
         ArrayList menuList = new ArrayList();
         menuList.add(new Option("", ""));
-        ListIterator vs = vsList.listIterator();
-        // Menu for Instances
-        while (vs.hasNext()) {            
-          Option[] groupedOptions1 = new Option[0];
-          OptionGroup jumpGroup1 =  new OptionGroup();
-          ArrayList optionList = new ArrayList();
-          String name = (String) vs.next();
-          jumpGroup1.setLabel(name);
-          optionList.add(new Option(name, name));
-          String listeners = (String) V3AMX.getAttribute("amx:pp=/domain/configs/config[server-config]/http-service,type=virtual-server,name=" + name, "NetworkListeners");
-          if (listeners != null) {
-             StringTokenizer tokens = new StringTokenizer(listeners, ",");
-              while (tokens.hasMoreTokens()) {
-                  String token = tokens.nextToken().trim();
-                  optionList.add(new Option(token, token));
-              }
-              groupedOptions1 = (Option[]) optionList.toArray(new Option[optionList.size()]);
-          }
-          jumpGroup1.setOptions(groupedOptions1);
-          menuList.add(jumpGroup1);
-      }
+        // Menu for Virtual Servers
+        OptionGroup vsMenuOptions = getMenuOptions(vsList, "virtual-server");
+        if(vsMenuOptions != null){
+            menuList.add(vsMenuOptions);
+        }
+
+        // Menu for Listeners
+        OptionGroup nlMenuOptions = getMenuOptions(nlList, "http-listener");
+        if(nlMenuOptions != null){
+            menuList.add(nlMenuOptions);
+        }
+        
+
+         // Menu for Garbage Collectors
+        OptionGroup gcMenuOptions = getMenuOptions(gcList, "garbage-collector");
+        if(gcMenuOptions != null){
+             menuList.add(gcMenuOptions);
+        }
 
         // Menu for Thread System
-        ArrayList tList = new ArrayList();
-        Option[] groupedOptions2 = new Option[0];
-        ListIterator tl = threadList.listIterator();
-        while (tl.hasNext()) {
-            String name = (String) tl.next();
-            tList.add(new Option(name, name));
-        }
-        groupedOptions2 = (Option[])tList.toArray(new Option[tList.size()]);
-        OptionGroup jumpGroup2 = new OptionGroup();
-        jumpGroup2.setLabel("thread-system-info");
-        jumpGroup2.setOptions(groupedOptions2);
-        menuList.add(jumpGroup2);
+        OptionGroup tsMenuOptions = getMenuOptions(threadList, "thread-system");
+        if (tsMenuOptions != null) {
+          menuList.add(tsMenuOptions);
+      }
 
         // Add Menu Options.
          jumpMenuOptions = (Option[])menuList.toArray(new Option[menuList.size()]);
-         
+
         handlerCtx.setOutputValue("MonitorList", jumpMenuOptions);
     }
 
@@ -455,7 +448,7 @@ public class WoodstockHandler {
         handlerCtx.setOutputValue("FirstItem", firstItem);
     }
 
-    public static OptionGroup setEjbGroupOptions(String type, String label) {
+    private static OptionGroup setEjbGroupOptions(String type, String label) {
         List nameList = V3AMX.getProxyListByType(type);
         if (nameList != null && nameList.size() != 0) {
             ArrayList nList = new ArrayList();
@@ -475,7 +468,26 @@ public class WoodstockHandler {
         }
     }
 
-    public static Boolean doesAppProxyExit(String name, String type) {
+    private static OptionGroup getMenuOptions(List values, String label) {
+        ArrayList nList = new ArrayList();
+        Option[] groupedOptions3 = new Option[0];
+        ListIterator nl = values.listIterator();
+        if (values == null) {
+            return null;
+        } else {
+            while (nl.hasNext()) {
+                String name = (String) nl.next();
+                nList.add(new Option(name, name));
+            }
+            groupedOptions3 = (Option[]) nList.toArray(new Option[nList.size()]);
+            OptionGroup jumpGroup3 = new OptionGroup();
+            jumpGroup3.setLabel(label);
+            jumpGroup3.setOptions(groupedOptions3);
+            return jumpGroup3;
+        }
+    }
+
+    private static Boolean doesAppProxyExit(String name, String type) {
         List proxyList = V3AMX.getProxyListByType(type);
         boolean proxyexist = false;
         if (proxyList != null && proxyList.size() != 0) {

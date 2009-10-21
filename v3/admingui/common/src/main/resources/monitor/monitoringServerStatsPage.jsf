@@ -1,8 +1,8 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
+
  Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -39,7 +39,7 @@
     setResourceBundle(key="web" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help_web" bundle="org.glassfish.common.admingui.Helplinks")
-          
+
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{web.serverMonitor}" >
 <!define name="content">
@@ -47,8 +47,10 @@
     <!beforeCreate
 	getRequestValue(key="configName" value=>$page{configName} default="server-config");
 	getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
+        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners" type="network-listener" result="#{pageSession.nlList}");
         getProxyNamesByType(type="threadinfo-mon", end="#{true}", result="#{pageSession.threadList}" firstItem="#{pageSession.firstThread}");
-        populateServerMonitorDropDown(VSList="#{vsList}", ThreadSystemList="#{threadList}", MonitorList=>$attribute{monitorList});
+        getProxyNamesByType(type="garbage-collector-mon", end="#{true}", result="#{pageSession.gcList}" firstItem="#{pageSession.firstGC}");
+        populateServerMonitorDropDown(VSList="#{vsList}", ThreadSystemList="#{threadList}", GCList="#{gcList}", NLList="#{nlList}", MonitorList=>$attribute{monitorList});
         if(!#{viewVal}){
         getStatsbyTypeName(type="ejb-security-mon" name="security/ejb", result=>$attribute{ejbStatsList} hasStats=>$attribute{hasStatsEJB});
         getStatsbyTypeName(type="jsp-mon" name="web/jsp", result=>$attribute{jspWebStatsList}  hasStats=>$attribute{hasStatsJsp});
@@ -57,10 +59,6 @@
         getStatsbyTypeName(type="servlet-mon" name="web/servlet", result=>$attribute{servletWebList}  hasStats=>$attribute{hasStatsWSS});
         getStatsbyTypeName(type="runtime-mon" name="jvm/runtime", result=>$attribute{runtimeStatsList}  hasStats=>$attribute{hasStatsJVMR});
         getStatsbyTypeName(type="compilation-system-mon" name="jvm/compilation-system",  result=>$attribute{comStatsList}  hasStats=>$attribute{hasStatsJVMCOM});
-        getStatsbyTypeName(type="garbage-collector-mon" name="jvm/garbage-collectors/PS Scavenge", result=>$attribute{gcCopyStatsList}  hasStats=>$attribute{hasStatsGCC});
-        setAttribute(key="gcPSName" value="PS Scavenge");
-        getStatsbyTypeName(type="garbage-collector-mon" name="jvm/garbage-collectors/PS MarkSweep", result=>$attribute{gcMSCStatsList}  hasStats=>$attribute{hasStatsGCM});
-        setAttribute(key="gcMSCName" value="PS MarkSweep");
         getStatsbyTypeName(type="class-loading-system-mon" name="jvm/class-loading-system", result=>$attribute{clStatsList}  hasStats=>$attribute{hasStatsJVMCL});
         getStatsbyTypeName(type="operating-system-mon" name="jvm/operating-system", result=>$attribute{osStatsList}  hasStats=>$attribute{hasStatsOS});
         getStatsbyTypeName(type="memory-mon" name="jvm/memory", result=>$attribute{jvmMemStatsList}  hasStats=>$attribute{hasStatsJVMM});
@@ -82,43 +80,41 @@
             setAttribute(key="hasStatsJVMR" value="#{false}");
             setAttribute(key="hasStatsJVMCOM" value="#{false}");
             setAttribute(key="hasStatsJVMCL" value="#{false}");
-            setAttribute(key="hasStatsGCM" value="#{false}");
             setAttribute(key="hasStatsOS" value="#{false}");
             setAttribute(key="hasStatsJVMM" value="#{false}");
             setAttribute(key="hasStatsRealm" value="#{false}");
-            setAttribute(key="hasStatsGCC" value="#{false}");
             setAttribute(key="hasStatsWSD" value="#{false}");
             setAttribute(key="hasStatsWS" value="#{false}");
             setAttribute(key="hasStatsJG" value="#{false}");
             setAttribute(key="hasStatsCQ" value="#{false}");
         }
     />
-</event>    
-#include "/shared/restart.inc"        
+</event>
+#include "/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/shared/treeBreadcrumbs.inc"
-#include "/appServer/serverInstTabs.inc"   
+#include "/appServer/serverInstTabs.inc"
 #include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{web.serverMonitor}"
                  helpText="$resource{web.monitoring.webContainer.PageHelp}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
-                    <sun:button id="refreshButton" 
+                    <sun:button id="refreshButton"
                                 text="$resource{i18n.button.Refresh}">
                     <!command
                         setAttribute(key="viewVal" value="#{viewVal}");
                         setAttribute(key="monitorList" value="#{monitorList}");
                         navigate(page="#{request.contextPath}/common/monitor/monitoringServerStatsPage.jsf");
-                    />              
+                    />
                     </sun:button>
                 </sun:panelGroup>
-            </facet> 
-            
+            </facet>
+
 		 "<br /><br />
             <sun:propertySheet id="propertySheet">
                     <sun:propertySheetSection id="viewPropertySection">
             <sun:property id="VsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
-               
+
                 <sun:dropDown id="View" label="$resource{web.monitoring.View} : " selected="#{viewVal}" items="$attribute{monitorList}" submitForm="#{true}" immediate="#{true}" >
                                 <!command
                                     setAttribute(key="click" value="$this{component}");
@@ -128,11 +124,11 @@
                                 />
                 </sun:dropDown>
                     "<br /><br />
-                    
+
             </sun:property>
        </sun:propertySheetSection>
-                </sun:propertySheet>   
-                   
+                </sun:propertySheet>
+
 <!-- Table .... -->
 <sun:table id="basicTable"  itemsText="$resource{web.monitoring.statistics}" style="padding: 10pt" title="$resource{web.monitoring}"  >
          <!afterCreate
@@ -152,9 +148,9 @@
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
             getStatsbyTypeName(type="request-mon" name="http-service/#{viewVal}/request", result=>$attribute{httpServiceStatsList} hasStats=>$attribute{hasStatsHTTP});
-        
-         />  
-                        
+
+         />
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
@@ -208,7 +204,7 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
-    
+
     <sun:tableRowGroup id="jvmThreadInfoStats" rendered="#{hasStatsJVMThreadInfo}" data={"$attribute{jvmThreadInfoStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ThreadInfo}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
         <!beforeCreate
@@ -219,59 +215,57 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
+    <sun:tableRowGroup id="gcStats" rendered="#{hasStatsGC}" data={"$attribute{gcStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.garbageCollectorsStats} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
+        <!beforeCreate
+            getStatsbyTypeName(type="garbage-collector-mon" name="jvm/garbage-collectors/#{viewVal}", result=>$attribute{gcStatsList}  hasStats=>$attribute{hasStatsGC});
+
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
         <sun:tableRowGroup id="txnServiceStats" rendered="#{hasStatsTXN}" data={"$attribute{txnServiceStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.transaction}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-            
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>    
+    </sun:tableRowGroup>
         <sun:tableRowGroup id="ejbContainerStats" rendered="#{hasStatsEJB}" data={"$attribute{ejbStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.ejb}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-               
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>        
+    </sun:tableRowGroup>
         <sun:tableRowGroup id="securityRealm" rendered="#{hasStatsRealm}" data={"$attribute{realmStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.realm}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-                        
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
     <sun:tableRowGroup id="jvmMemStats" rendered="#{hasStatsJVMM}" data={"$attribute{jvmMemStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.memoryJvm}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
- 
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>    
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="osStats" rendered="#{hasStatsOS}" data={"$attribute{osStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.operatingSystemJvm}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>    
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="clStats" rendered="#{hasStatsJVMCL}" data={"$attribute{clStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.classLoadingJvm}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>    
-    <sun:tableRowGroup id="gcMSCStats" rendered="#{hasStatsGCM}" data={"$attribute{gcMSCStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.garbageCollectorsJvm} : #{gcMSCName}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
-
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
-    </sun:tableRowGroup>    
-    <sun:tableRowGroup id="gcCopyStats" rendered="#{hasStatsGCC}" data={"$attribute{gcCopyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.garbageCollectorsJvm}: #{gcPSName}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}"  extraHeaderHtml="colspan='6'">
-
-#include "/common/monitor/monitoringTableRows.inc"
-        "<br/>
-    </sun:tableRowGroup>    
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="comStats" rendered="#{hasStatsJVMCOM}" data={"$attribute{comStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.compilationJvm}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
-    </sun:tableRowGroup>    
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="runtimeStats" rendered="#{hasStatsJVMR}" data={"$attribute{runtimeStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jvm.runtimeJvm}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
 
@@ -293,13 +287,13 @@
 
     <sun:tableRowGroup id="sessionWeb" rendered="#{hasStatsWSSP}" data={"$attribute{sessionWebList}"}  sourceVar="td" headerText="$resource{web.monitoring.sessionStatisticsWeb} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
- 
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
     <sun:tableRowGroup id="requestWebStats" rendered="#{hasStatsWRS}" data={"$attribute{requestWebStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.requestStatisticsWeb}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-  
+
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
@@ -328,6 +322,6 @@
 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_web.monitorRuntime}" />
             </sun:form>
-#include "/shared/changeButtonsJS.inc"        
+#include "/shared/changeButtonsJS.inc"
 </define>
 </composition>
