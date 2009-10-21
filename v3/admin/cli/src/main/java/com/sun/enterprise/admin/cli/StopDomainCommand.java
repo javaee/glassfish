@@ -179,6 +179,7 @@ public class StopDomainCommand extends LocalDomainCommand {
         }
         long startWait = System.currentTimeMillis();
         boolean alive = true;
+        int count = 0;
 
         while (!timedOut(startWait)) {
             if (!isRunning()) {
@@ -187,7 +188,7 @@ public class StopDomainCommand extends LocalDomainCommand {
             }
             try {
                 Thread.sleep(100);
-                if (!programOpts.isTerse())
+                if (!programOpts.isTerse() && count++ % 10 == 0)
                     System.err.print(".");
             } catch (InterruptedException ex) {
                 // don't care

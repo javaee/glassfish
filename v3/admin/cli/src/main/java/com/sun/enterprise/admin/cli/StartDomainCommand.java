@@ -331,6 +331,7 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
 
         boolean alive = false;
+        int count = 0;
 
         pinged:
         while (!timedOut(startWait)) {
@@ -374,7 +375,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             // wait before checking again
             try {
                 Thread.sleep(100);
-                if (!programOpts.isTerse())
+                if (!programOpts.isTerse() && count++ % 10 == 0)
                     System.err.print(".");
             } catch (InterruptedException ex) {
                 // don't care
@@ -450,17 +451,19 @@ public class StartDomainCommand extends LocalDomainCommand {
         return null;
     }
 
-    /* this is useful for debugging restart-domain problems.
+    /*
+     * This is useful for debugging restart-domain problems.
      * In that case the Server process will run this class and it is fairly
-     * involved to attach a debugger (though not bad -- see RestartDomain on the server to see how).
-     * Standard output disappears.  This is a generally useful method.  Feel free to copy & paste!
+     * involved to attach a debugger (though not bad -- see RestartDomain on
+     * the server to see how).  Standard output disappears.  This is a
+     * generally useful method.  Feel free to copy & paste!
      */
     private void debug(String s) {
         try {
-            PrintStream ps = new PrintStream(new FileOutputStream("startdomain.txt", true));
+            PrintStream ps = new PrintStream(
+                                new FileOutputStream("startdomain.txt", true));
             ps.println(new Date().toString() + ":  " + s);
-        }
-        catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex) {
             //
         }
     }
@@ -474,8 +477,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
                 while (System.in.read() >= 0)
                     ;
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 // ignore
             }
 
@@ -498,8 +500,9 @@ public class StartDomainCommand extends LocalDomainCommand {
                 // ignore!
             }
 
-            if(!success)
-                throw new CommandException(strings.get("deathwait_timeout", DEATH_TIMEOUT_MS));
+            if (!success)
+                throw new CommandException(
+                    strings.get("deathwait_timeout", DEATH_TIMEOUT_MS));
         }
         boolean success = false;
     }
