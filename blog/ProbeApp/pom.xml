@@ -74,6 +74,7 @@
             <groupId>org.glassfish.flashlight</groupId>
             <artifactId>flashlight-framework</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
