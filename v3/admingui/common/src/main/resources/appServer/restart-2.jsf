@@ -46,13 +46,24 @@
 <sun:html id="html1">
 <sun:head title="$resource{i18n.restart.pageTitle}" parseOnLoad="false">
     <sun:link url="/resource/css/css_ns6up.css" />
-    #<sun:script url="/resource/libs/scriptaculous/version1.6.4/prototype.js" />
-    #<sun:script url="/resource/com_sun_faces_ajax.js" />
-	<jsfExt:scripts />
+    <h:outputScript name="jsf.js" library="javax.faces" target="body" />
+    <sun:script>
+	<f:verbatim>
+	    function triggerRestart() {
+		var button=document.getElementById('form:restartInstance');
+		var options = {
+		    execute:button.id,
+		    render: '@none'
+		};
+		options[button.id] = button.id;
+		jsf.ajax.request(button, null, options);
+	    }
+	</f:verbatim>
+    </sun:script>
 </sun:head>
 
 
-<sun:body id="body3" focus="loginform.j_username" onLoad="var button=document.getElementById('form:restartInstance'); DynaFaces.fireAjaxTransaction(button, {execute:button.id, inputs:button.id, render: 'none'});">
+<sun:body id="body3" focus="loginform.j_username" onLoad="triggerRestart();">
     <sun:form id="form">
     <sun:button id="restartInstance" visible="false">
         <!command
