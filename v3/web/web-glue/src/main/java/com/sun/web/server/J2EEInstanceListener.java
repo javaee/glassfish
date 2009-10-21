@@ -155,8 +155,7 @@ public final class J2EEInstanceListener implements InstanceListener {
         WebModule wm = (WebModule)context;
 
         Object instance;
-        if (eventType==InstanceEvent.EventType.BEFORE_FILTER_EVENT) {
-
+        if (eventType == InstanceEvent.EventType.BEFORE_FILTER_EVENT) {
             instance = event.getFilter();
         } else {
             instance = event.getServlet();
@@ -263,7 +262,7 @@ public final class J2EEInstanceListener implements InstanceListener {
                 tm.enlistComponentResources();
             }
         } catch (Exception ex) {            
-            String message = _logger.getResourceBundle().getString(
+            String message = _rb.getString(
                 "web_server.excep_handle_before_event");
             throw new RuntimeException(message, ex);
         }
@@ -301,11 +300,10 @@ public final class J2EEInstanceListener implements InstanceListener {
         if (!(context instanceof WebModule)) {
             return;
         }
-
         WebModule wm = (WebModule)context;
 
         Object instance;
-        if (eventType==InstanceEvent.EventType.AFTER_FILTER_EVENT) {
+        if (eventType == InstanceEvent.EventType.AFTER_FILTER_EVENT) {
             instance = event.getFilter();
         } else {
             instance = event.getServlet();
@@ -320,32 +318,30 @@ public final class J2EEInstanceListener implements InstanceListener {
             }
         }
 
+        // Must call InjectionManager#destroyManagedObject WITHIN
+        // EE invocation context
+        try {
+            if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT &&
+                    !DefaultServlet.class.equals(instance.getClass()) &&
+                    !JspServlet.class.equals(instance.getClass())) {
+                injectionMgr.destroyManagedObject(instance);
+            }
+        } catch (InjectionException ie) {
+            _logger.log(Level.SEVERE, "web_server.excep_handle_after_event",
+                ie);
+        }
+
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);
         try {
             im.postInvoke(inv);
         } catch (Exception ex) {
             throw new RuntimeException(
-                _logger.getResourceBundle().getString(
-                    "web_server.excep_handle_after_event"),
+                _rb.getString("web_server.excep_handle_after_event"),
                 ex);
-
         } finally {
-
             if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
-
                 tm.componentDestroyed(instance, inv);                
-                if (instance.getClass() != DefaultServlet.class &&
-                        instance.getClass() != JspServlet.class) {
-                    try {
-                        injectionMgr.destroyManagedObject(instance);
-                    } catch (InjectionException ie) {
-                        _logger.log(Level.SEVERE,
-                                    "web_server.excep_handle_after_event",
-                                    ie);
-                    }
-                }
-            }
-            if (eventType == InstanceEvent.EventType.AFTER_FILTER_EVENT ||
+            } else if (eventType == InstanceEvent.EventType.AFTER_FILTER_EVENT ||
                     eventType == InstanceEvent.EventType.AFTER_SERVICE_EVENT) {
                 // Emit monitoring probe event
                 if (eventType == InstanceEvent.EventType.AFTER_SERVICE_EVENT) {
