@@ -58,7 +58,7 @@ import java.net.URISyntaxException;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 
@@ -846,5 +846,8 @@ public class ConnectorsUtil {
         return getReservePrefixedJNDIName(ConnectorConstants.DD_PREFIX, moduleName);
     }
 
+    public static boolean isStandAloneRA(String moduleName){
+        return ConfigBeansUtilities.getModule(moduleName)!= null;
+    }
 
 }

@@ -111,13 +111,16 @@ public class AdministeredObjectFactory implements ObjectFactory {
 
     // all RARs except system RARs should have been available now.
         if(ConnectorsUtil.belongsToSystemRA(moduleName)) {
-            //TODO V3 add system rars to connector descriptor
             //make sure that system rar is started and hence added to connector classloader chain
             if(ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName) == null){
                 String moduleLocation = ConnectorsUtil.getSystemModuleLocation(moduleName);
                 runtime.createActiveResourceAdapter(moduleLocation, moduleName, null);
             }
             loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
+        } else if(runtime.getEnvironment() == ConnectorRuntime.SERVER){
+            if(ConnectorsUtil.isStandAloneRA(moduleName) ){
+                loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
+            }
         }
 
 
