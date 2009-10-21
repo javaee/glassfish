@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="462"/>
+    <property name="TOTAL_EXPECTED" value="463"/>
 
     &commonSetup;
     &commonBuild;
@@ -272,6 +272,7 @@
         <ant dir="servlet-3.0/xmlOverrideAnnotationWithWebFragment" target="all"/>
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
+        <ant dir="servlet-3.0/webFragmentWithEjbLite" target="all"/>
         <ant dir="servlet-3.0/webFragmentWithLoginConfig" target="all"/>
         <ant dir="servlet-3.0/webFragmentWithLoginConfigOverrided" target="all"/>
         <ant dir="servlet-3.0/absoluteOrderingWebFragments" target="all"/>
