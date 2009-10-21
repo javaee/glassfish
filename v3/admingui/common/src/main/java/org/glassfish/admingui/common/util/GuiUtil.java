@@ -94,12 +94,12 @@ public class GuiUtil {
         return Logger.getLogger(LOGGER_NAME);
     }
 
-    @Handler(id = "gui.log",
+    @Handler(id = "guiLog",
         input = {
             @HandlerInput(name = "message", type = String.class, required = true),
             @HandlerInput(name = "level", type = String.class)
         })
-    public static void retrievePluginPageContents(HandlerContext handlerCtx) {
+    public static void guiLog(HandlerContext handlerCtx) {
         String level = (String)handlerCtx.getInputValue("level");
         if (level == null) {
             level = "INFO";

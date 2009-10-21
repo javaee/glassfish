@@ -49,7 +49,7 @@
         getRequestValue(key="type" value=>$page{destType});
 
         getPhysicalDestinationStats(name="#{pageSession.destName}", type="#{pageSession.destType}", statsData="#{statsData}");
-        gui.log(message="***** statsData = #{statsData}");
+        guiLog(message="***** statsData = #{statsData}");
     />
     </event>
 #include "/common/shared/restart.inc"
