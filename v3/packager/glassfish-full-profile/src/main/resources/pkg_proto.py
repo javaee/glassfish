@@ -51,6 +51,7 @@ pkg = {
 	                "pkg:/glassfish-web-profile" : {"type" : "require" },
 			"pkg:/glassfish-common-full" : {"type" : "require" },
 			"pkg:/glassfish-ejb" : {"type" : "require" },
+			"pkg:/glassfish-codegen" : {"type" : "require" },
 			"pkg:/glassfish-corba" : {"type" : "require" },
 			"pkg:/glassfish-cmp" : {"type" : "require" },
 			"pkg:/metro" : {"type" : "require" },

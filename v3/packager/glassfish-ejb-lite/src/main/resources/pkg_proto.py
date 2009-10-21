@@ -49,7 +49,6 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-common" : {"type" : "require" },
-			"pkg:/glassfish-codegen" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
