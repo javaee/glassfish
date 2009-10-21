@@ -132,7 +132,7 @@
                 onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.MonitorCompNameCol}" sort="monitorCompName" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn headerText="$resource{web.monitoring.MonitorCompNameCol}" sort="monCompName" rowHeader="$boolean{false}" id="col2">
             <sun:staticText id="col1St" text="#{td.value.monCompName}" />
         </sun:tableColumn>
         <sun:tableColumn headerText="$resource{web.monitoring.MonitorCompLevelCol}" sort="level" rowHeader="$boolean{false}" id="col3">
