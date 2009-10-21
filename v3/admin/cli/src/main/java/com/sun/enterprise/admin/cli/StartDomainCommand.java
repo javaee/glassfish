@@ -326,8 +326,8 @@ public class StartDomainCommand extends LocalDomainCommand {
 
         long startWait = System.currentTimeMillis();
         if (!programOpts.isTerse()) {
-            // use stderr because logger always appends a newline
-            System.err.print(strings.get("WaitDAS") + " ");
+            // use stdout because logger always appends a newline
+            System.out.print(strings.get("WaitDAS") + " ");
         }
 
         boolean alive = false;
@@ -376,14 +376,14 @@ public class StartDomainCommand extends LocalDomainCommand {
             try {
                 Thread.sleep(100);
                 if (!programOpts.isTerse() && count++ % 10 == 0)
-                    System.err.print(".");
+                    System.out.print(".");
             } catch (InterruptedException ex) {
                 // don't care
             }
         }
 
         if (!programOpts.isTerse())
-            System.err.println();
+            System.out.println();
 
         if (!alive) {
             String msg = strings.get("dasNoStart", 
