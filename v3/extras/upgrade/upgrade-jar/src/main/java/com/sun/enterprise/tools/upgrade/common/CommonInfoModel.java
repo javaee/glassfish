@@ -57,7 +57,6 @@ public class CommonInfoModel{
 
     private TargetAppSrvObj tAppSrvObj = new TargetAppSrvObj();
     private SourceAppSrvObj sAppSrvObj = new SourceAppSrvObj();
-    private boolean nopromptMode = false; //- user required noprompt CLI mode
     private boolean alreadyCloned = false;
     private CommonInfoModel() {}
 
@@ -87,15 +86,6 @@ public class CommonInfoModel{
         }
     }
 	
-    //- Must know when in noprompt mode
-    public boolean isNoprompt() {
-        return nopromptMode;
-    }
-
-    public void setNoprompt(boolean flag) {
-        nopromptMode = flag;
-    }
-
     /*
      * Called when UpgradeUtils has already made a backup
      * before re-upgrading a domain.

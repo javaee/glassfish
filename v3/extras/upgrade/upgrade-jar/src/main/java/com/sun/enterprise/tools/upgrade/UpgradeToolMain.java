@@ -131,9 +131,6 @@ public class UpgradeToolMain {
         ArrayList<ArgumentHandler> aList = ap.parse(args);
 
         InteractiveInput tmpI = new InteractiveInputImpl();
-        if (commonInfo.isNoprompt()) {
-            tmpI = new NopromptInput();
-        }
         tmpI.processArguments(aList);
         
         if (logger.isLoggable(Level.FINE)) {
@@ -151,8 +148,7 @@ public class UpgradeToolMain {
                     tmpAh.getRawParameter().replaceAll(".", "*"));
             } else if (tmpAh instanceof ARG_c || tmpAh instanceof ARG_console ||
                 tmpAh instanceof ARG_h || tmpAh instanceof ARG_help ||
-                tmpAh instanceof ARG_V || tmpAh instanceof ARG_version ||
-                tmpAh instanceof ARG_noprompt) {
+                tmpAh instanceof ARG_V || tmpAh instanceof ARG_version) {
                 sb.append("-" + tmpAh.getCmd());
             } else {
                 sb.append("-" + tmpAh.getCmd() + " " + tmpAh.getRawParameter());
