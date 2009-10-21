@@ -39,7 +39,7 @@
         <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}">
             <!command
                 setSessionAttribute(key="ucTabs" value="addOn");
-                redirect(page="#{request.contextPath}/updateCenter/ucaddOn.jsf");
+                redirect(page="#{request.contextPath}/updateCenter/addOn.jsf");
             />
         </sun:tab>
         <sun:tab id="update" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.UpdateTab}">
