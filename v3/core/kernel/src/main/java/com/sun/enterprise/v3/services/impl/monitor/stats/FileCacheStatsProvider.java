@@ -146,7 +146,7 @@ public class FileCacheStatsProvider {
     }
 
     @ManagedAttribute(id = "maxmappedmemorysize")
-    @Description("Maximum memory map size to be used for caching")
+    @Description("Maximum memory map size used for caching")
     public CountStatistic getMaxMappedMemorySize() {
         final CountStatisticImpl stats = new CountStatisticImpl(
                 "MaxMappedMemorySize", "byte(s)",
