@@ -6,44 +6,28 @@ admingui.gadget = {
     noop: function() {
     },
 
+    setResponse: function(response, rawData) {
+	admingui.gadget.response = response;
+	admingui.gadget.responseRaw = rawData;
+    },
+
     /**
      *	handler - The name of the handler to invoke.
      *	args - An object containing properties / values for the parameters.
      *	callback - A JS function that should be notified.
      */
     invoke: function(handler, args, callback) {
-	if (typeof(callback) == 'undefined') {
-	    callback = admingui.gadget.noop;
+	if ((callback == null) || (typeof(callback) === 'undefined')) {
+	    callback = admingui.gadget.setResponse;
 	}
-	var button = document.getElementById("execHandler");
-	var params = 'h=' + handler + '&a=';
-	for (var param in args) {
-	    // Create a String to represent all the parameters
-	    // Double escape, this will prevent the server-side from fully
-	    // urldecoding it.  Allowing me to first parse the commas, then
-	    // decode the content.
-	    // FIXME: I think 1 escape is all that is needed?? Test this.
-	    params += param + ':' + escape(escape(args[param])) + ',';
-	}
-	DynaFaces.fireAjaxTransaction(
-	    button,
-	    {
-		execute:    button.id,
-		inputs:	    button.id,
-		parameters: params,
-		render:	    'gadgetResponse',
-		onComplete: callback,
-		// Experimental... this doesn't seem to cause problems in the
-		// browser, despite the fact that I expected it to:
-		asynchronous: false
-	    });
+	//return window.top.admingui.ajax.invoke(handler, args, callback, 3, false);
+	//For now pass in true (asynchronous) b/c JSF2 Ajax is broken
+	window.top.admingui.ajax.invoke(handler, args, callback, 3, true);
 	return false;
     },
 
     getResponse: function() {
-	var resp = document.getElementById('gadgetResponse');
-	var obj = eval('(' + resp.innerHTML + ')');
-	return obj;
+	return admingui.gadget.response;
     }
 };
 
@@ -125,7 +109,10 @@ if (typeof(gadgets) == 'undefined') {
 		    // invoke Ajax to get preference
 		    this.prefsHandlerOpts.key = key;
 		    admingui.gadget.invoke("getPreference", this.prefsHandlerOpts);
-		    var resp = admingui.gadget.getResponse().value;
+		    var resp = admingui.gadget.getResponse()
+		    if (typeof(resp) != 'undefined') {
+			resp = resp.value;
+		    }
 		    return resp;
 		};
 	    this.set =

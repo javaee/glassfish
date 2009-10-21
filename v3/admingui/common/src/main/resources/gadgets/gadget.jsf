@@ -7,7 +7,6 @@
 .GlassFishGadget .menu .controls { background-color: #99DDFF; float: right; border: 1px solid #114488;}
     </style>
 </f:verbatim>
-    <jsfExt:scripts />
     <sun:script url="/resource/common/js/gadget.js" />
 </sun:head>
 <sun:body>
@@ -23,15 +22,6 @@ Title: #{pageSession.gadget.gadgetModulePrefs.title}
 
 <div class="content" style="width: 100%">
 </f:verbatim>
-
-<sun:form id="af" prependId="false" visible="false">
-    <h:commandButton id="execHandler" text="none">
-	<!command
-	    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" values="#{requestScope.gadgetResponse}");
-	/>
-    </h:commandButton>
-    <h:outputText id="gadgetResponse" value="#{requestScope.gadgetResponse}" />
-</sun:form>
 
 <!--
     FIXME: When I do <h:outputText value="#{fileContents}" /> it works

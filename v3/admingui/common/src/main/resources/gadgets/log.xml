@@ -11,6 +11,7 @@
 	    <script type="text/javascript">
 		function sendLogMessage(theMsg) {
 
+		    /*
 		    admingui.gadget.invoke(
 			"getChildrenTable",
 			{
@@ -18,24 +19,31 @@
 			    childType: "iiop-listener",
 			    result: "#{requestScope.listOfRows}"
 			});
+		    */
+
+		    admingui.gadget.invoke("println", {value: theMsg});
 
 		    /*
-		    admingui.gadget.invoke("println", {value: 'test string'});
-
 		    admingui.gadget.invoke("dumpSessionAttributes",
 			{
 			    value: "#{requestScope.doesnotmatter}"
 			});
+		    */
 		    admingui.gadget.invoke("roundTo2DecimalPoint",
 			{
 			    input: "33.638377",
 			    output: "#{requestScope.foo}"
 			});
-		    */
 		    var response = admingui.gadget.getResponse();
-		    alert(response.result);
+		    if (response) {
+			alert(response.output);
+		    } else {
+			alert('A JSF2 bug may be causing the response to not yet be set because synchronous requests are not yet supported!');
+		    }
+		    /*
 		    alert(response.result[1].Port);
 		    alert(response.result[1].Name);
+		    */
 		}
 	    </script>
 	]]>

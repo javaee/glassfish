@@ -1911,7 +1911,7 @@ admingui.deploy = {
             }
         }
 
-        if (appName != undefined ){
+        if (typeof(appName) != 'undefined' ) {
             admingui.deploy.setAppName(appNameId, appName, obj, appTypeString);
             //may as well set context root if it exist.
             //component = obj.getTextElement(contextRootId);
@@ -2282,7 +2282,7 @@ admingui.ajax = {
 	var params = '';
 	for (var param in args) {
 	    // Create a String to represent all the parameters
-	    // Double escape, this will prevent the server-side from fully
+	    // escape, this will prevent the server-side from (fully)
 	    // urldecoding it.  Allowing me to first parse the commas, then
 	    // decode the content.
 	    params += param + ':' + escape(args[param]) + ',';
@@ -2294,24 +2294,37 @@ admingui.ajax = {
 	    // Warp user's function to make easier to use
 	    var func = function(data) {
 		if (data.status === 'success') {
-		    var result = '(' + document.getElementById('execResp').value + ')';
-		    callback(eval(result).content, data);
+		    var respElt = document.getElementById('execResp');
+		    if (typeof(respElt) !== 'undefined') {
+			var result = '';
+			if (respElt.value != '') {
+			    result = '(' + respElt.value + ')';
+			    result = eval(result).content;
+			}
+			callback(result, data);
+		    }
 		}
 	    }
 	    if (typeof(depth) === 'undefined') {
 		depth = 3;
 	    }
-	    jsf.ajax.request(document.getElementById('execButton'), null,
-		{
-		    execute: 'execButton',
-		    render: 'execResp',
-		    execButton: 'execButton',
-		    h: handler,
-		    d: depth,
-		    a: params,
-		    onevent: func,
-		    asynchronous: async
-		});
+	    var src = document.getElementById('execButton');
+	    if ((src == null) || (typeof(src) === 'undefined')) {
+		alert("'execButton' not found!  Unable to submit JSF2 Ajax Request!");
+	    } else {
+		jsf.ajax.request(src, null,
+		    {
+			execute: 'execButton',
+			render: 'execResp',
+			execButton: 'execButton',
+			h: handler,
+			d: depth,
+			a: params,
+			onevent: func,
+			// FIXME: async: false does not work in JSF 2 as of 10/21/2009
+			async: async
+		    });
+	    }
 	} else {
 	    alert('JSF2+ Ajax Missing!');
 	}
