@@ -43,7 +43,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Servlet;
+import javax.servlet.*;
 import javax.servlet.jsp.JspFactory;
 import com.sun.appserv.server.util.Version;
 import com.sun.common.util.logging.LoggingConfigImpl;
@@ -668,6 +668,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     <T extends Servlet> T createServletInstance(WebModule module,
                                                 Class<T> clazz)
+            throws Exception {
+        WebComponentInvocation inv = new WebComponentInvocation(module);
+        try {
+            invocationMgr.preInvoke(inv);
+            return (T) injectionMgr.createManagedObject(clazz);
+        } finally {
+            invocationMgr.postInvoke(inv);
+        }
+    }
+
+
+    /**
+     * Instantiates the given Filter class for the given WebModule
+     */
+    <T extends Filter> T createFilterInstance(WebModule module,
+                                              Class<T> clazz)
             throws Exception {
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {

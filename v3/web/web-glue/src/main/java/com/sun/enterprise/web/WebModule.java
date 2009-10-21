@@ -1885,6 +1885,16 @@ public class WebModule extends PwcWebModule {
         }
     }
 
+    /**
+     * Instantiates the given Filter class.
+     *
+     * @return the new Filter instance
+     */
+    protected <T extends Filter> T createFilterInstance(Class<T> clazz)
+            throws Exception {
+        return webContainer.createFilterInstance(this, clazz);
+    }
+
 
     /*
      * Servlet related probe events

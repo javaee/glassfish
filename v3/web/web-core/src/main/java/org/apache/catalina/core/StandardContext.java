@@ -2546,24 +2546,12 @@ public class StandardContext
      */
     public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
-        T filter = null;
-        boolean beforeInitCalled = false;
         try {
-            filter = clazz.newInstance();
-            fireContainerEvent(ContainerEvent.BEFORE_FILTER_INITIALIZED,
-                filter);
-            beforeInitCalled = true;
+            return createFilterInstance(clazz);
         } catch (Throwable t) {
             throw new ServletException("Unable to create Filter from " +
                                        "class " + clazz.getName(), t);
-        } finally {
-            if (beforeInitCalled) {
-                fireContainerEvent(ContainerEvent.AFTER_FILTER_INITIALIZED,
-                                   filter);
-            }
         }
-
-        return filter;
     }
 
     /**
@@ -6756,6 +6744,16 @@ public class StandardContext
      * @return the new Servlet instance
      */
     protected <T extends Servlet> T createServletInstance(Class<T> clazz)
+            throws Exception{
+        return clazz.newInstance();
+    }
+
+    /**
+     * Instantiates the given Filter class.
+     *
+     * @return the new Filter instance
+     */
+    protected <T extends Filter> T createFilterInstance(Class<T> clazz)
             throws Exception{
         return clazz.newInstance();
     }

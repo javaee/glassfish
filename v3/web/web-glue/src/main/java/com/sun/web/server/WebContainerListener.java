@@ -127,8 +127,7 @@ public final class WebContainerListener
         String type = event.getType();
 
         try {
-            if (ContainerEvent.AFTER_LISTENER_INSTANTIATED.equals(type)
-                    || ContainerEvent.BEFORE_FILTER_INITIALIZED.equals(type)) {
+            if (ContainerEvent.AFTER_LISTENER_INSTANTIATED.equals(type)) {
                 preInvoke((Context) event.getContainer());
                 injectInstance(event);
                 postInvoke((Context) event.getContainer());

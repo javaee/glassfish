@@ -219,18 +219,8 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
 
     /**
      * Return the application Filter we are configured for.
-     *
-     * @exception ClassCastException if the specified class does not implement
-     *  the <code>javax.servlet.Filter</code> interface
-     * @exception ClassNotFoundException if the filter class cannot be found
-     * @exception IllegalAccessException if the filter class cannot be
-     *  publicly instantiated
-     * @exception InstantiationException if an exception occurs while
-     *  instantiating the filter object
-     * @exception ServletException if thrown by the filter's init() method
      */
-    Filter getFilter() throws ClassCastException, ClassNotFoundException,
-        IllegalAccessException, InstantiationException, ServletException {
+    Filter getFilter() throws Exception {
 
         // Return the existing filter instance, if any
         if (filter != null && !needInitialize) {
@@ -255,7 +245,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
                 clazz = classLoader.loadClass(filterClassName);
             }
 
-            this.filter = (Filter) clazz.newInstance();
+            this.filter = context.createFilterInstance(clazz);
         }
 
         // START PWC 1.2
