@@ -35,18 +35,19 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import java.beans.PropertyVetoException;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.SslClientConfig;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.Ssl;
+import java.beans.PropertyVetoException;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -82,12 +83,13 @@ import org.jvnet.hk2.config.TransactionFailure;
 @I18n("create.ssl")
 public class CreateSsl implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateSsl.class);
+    final private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(CreateSsl.class);
 
     @Param(name="certname")
     String certName;
 
-    @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener")
+    @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener, iiop-service")
     String type;
 
     @Param(name="ssl2enabled", optional=true, defaultValue="true")
@@ -114,7 +116,7 @@ public class CreateSsl implements AdminCommand {
     @Param(optional=true)
     String target;
 
-    @Param(name="listener_id", primary=true)
+    @Param(name="listener_id",optional=true)
     String listenerId;
 
     @Inject
@@ -129,6 +131,17 @@ public class CreateSsl implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
+        if (!type.equals("iiop-service")) {
+            if (listenerId == null) {
+                report.setMessage(
+                    localStrings.getLocalString(
+                        "create.ssl.listenerid.missing",
+                        "Listener id needs to be specified"));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
+
         List <Config> configList = configs.getConfig();
         Config config = configList.get(0);
 
@@ -136,6 +149,8 @@ public class CreateSsl implements AdminCommand {
             addSslToNetworkListener(config, report);
         else if ("iiop-listener".equals(type))
             addSslToIIOPListener(config, report);
+        else if ("iiop-service".equals(type))
+            addSslToIIOPService(config, report);
     }
 
     private void addSslToIIOPListener(Config config, ActionReport report) {
@@ -149,9 +164,10 @@ public class CreateSsl implements AdminCommand {
         }
 
         if (iiopListener == null) {
-            report.setMessage(localStrings.getLocalString("create.ssl.iiop.notfound",
-                    "IIOP Listener named {0} to which this ssl element is " +
-                    "being added does not exist.", listenerId));
+            report.setMessage(
+                localStrings.getLocalString("create.ssl.iiop.notfound",
+                  "IIOP Listener named {0} to which this ssl element is " +
+                  "being added does not exist.", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -182,6 +198,37 @@ public class CreateSsl implements AdminCommand {
         reportSuccess(report);
     }
 
+    private void addSslToIIOPService(Config config, ActionReport report) {
+        IiopService iiopSvc = config.getIiopService();
+
+        if (iiopSvc.getSslClientConfig() != null) {
+            report.setMessage(
+                localStrings.getLocalString(
+                    "create.ssl.iiopsvc.alreadyExists", "IIOP Service " +
+                    "already has been configured with SSL configuration."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        try {
+            ConfigSupport.apply(new SingleConfigCode<IiopService>() {
+                public Object run(IiopService param) 
+                throws PropertyVetoException, TransactionFailure {
+                    SslClientConfig newSslClientCfg =
+                        param.createChild(SslClientConfig.class);
+                    Ssl newSsl = newSslClientCfg.createChild(Ssl.class);
+                    populateSslElement(newSsl);
+                    newSslClientCfg.setSsl(newSsl);
+                    param.setSslClientConfig(newSslClientCfg);
+                    return newSsl;
+                }
+            }, iiopSvc);
+
+        } catch(TransactionFailure e) {
+            reportError(report, e);
+        }
+    }
+
     private void addSslToNetworkListener(Config config, ActionReport report) {
         NetworkConfig netConfig = config.getNetworkConfig();
 
@@ -189,18 +236,20 @@ public class CreateSsl implements AdminCommand {
         NetworkListener listener = netConfig.getNetworkListener(listenerId);
 
         if (listener == null) {
-            report.setMessage(localStrings.getLocalString("create.ssl.http.notfound",
-                    "Network Listener named {0} to which this ssl element is " +
-                    "being added does not exist.", listenerId));
+            report.setMessage(
+                localStrings.getLocalString("create.ssl.http.notfound",
+                  "Network Listener named {0} to which this ssl element is " +
+                  "being added does not exist.", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
         Ssl ssl = listener.findHttpProtocol().getSsl();
         if (ssl != null) {
-            report.setMessage(localStrings.getLocalString("create.ssl.http.alreadyExists",
-                "Network Listener named {0} to which this ssl element is " +
-                "being added already has an ssl element.", listenerId));
+            report.setMessage(
+                localStrings.getLocalString("create.ssl.http.alreadyExists",
+                  "Network Listener named {0} to which this ssl element is " +
+                  "being added already has an ssl element.", listenerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }

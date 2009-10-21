@@ -77,10 +77,10 @@ public class DeleteSsl implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteSsl.class);
 
-    @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener")
+    @Param(name="type", acceptableValues="network-listener, http-listener, iiop-listener, iiop-service")
     String type;
     
-    @Param(name="listener_id", primary=true)
+    @Param(name="listener_id", optional=true)
     String listenerId;
 
     @Inject
@@ -101,6 +101,17 @@ public class DeleteSsl implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
+        if (!type.equals("iiop-service")) {
+            if (listenerId == null) {
+                report.setMessage(
+                    localStrings.getLocalString(
+                        "create.ssl.listenerid.missing",
+                        "Listener id needs to be specified"));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
+        
         try {
             if ("http-listener".equals(type) || "network-listener".equals(type)) {
                 Config config = configs.getConfig().get(0);
@@ -163,6 +174,24 @@ public class DeleteSsl implements AdminCommand {
                         return null;
                     }
                 }, iiopListener);
+            } else if ("iiop-service".equals(type)) {
+                Config config = configs.getConfig().get(0);
+
+                if (config.getIiopService().getSslClientConfig() == null) {
+                    report.setMessage(localStrings.getLocalString(
+                        "delete.ssl.element.doesnotexistforiiop",
+                        "Ssl element does not exist for IIOP service"));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    return;
+                }
+                
+                ConfigSupport.apply(new SingleConfigCode<IiopService>() {
+                    public Object run(IiopService param)
+                    throws PropertyVetoException {
+                        param.setSslClientConfig(null);
+                        return null;
+                    }
+                }, config.getIiopService());
             }
         } catch(TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.ssl.fail", "Deletion of Ssl in {0} failed", listenerId));
