@@ -47,8 +47,7 @@
                     convertToFalse="#{pageSession.convertToFalseList}"
                 );
                 prepareSuccessfulMsg();
-println("============AAAAAAAA  #{pageSession.objectNameStr}")
-proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+                proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
 
                 redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
