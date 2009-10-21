@@ -81,6 +81,8 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
     private Hashtable<InjectionInfoCacheKey, InjectionInfo> injectionInfos =
             new Hashtable<InjectionInfoCacheKey, InjectionInfo>();
 
+    private boolean policyModified = false;
+
     /**
      * Construct a new BundleDescriptor
      */
@@ -893,4 +895,11 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         return FileUtils.makeFriendlyFilename(getModuleName());
     }
 
+    public boolean isPolicyModified() {
+        return policyModified;
+    }
+
+    public void setPolicyModified(boolean policyModified) {
+        this.policyModified = policyModified;
+    }
 }

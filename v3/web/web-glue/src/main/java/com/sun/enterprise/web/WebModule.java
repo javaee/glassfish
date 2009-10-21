@@ -2130,6 +2130,7 @@ class DynamicWebServletRegistrationImpl
                 "Missing WebBundleDescriptor for " +
                 getContext().getName());
         }
+        wbd.setPolicyModified(true);
         wcd = wbd.getWebComponentByCanonicalName(wrapper.getName());
         if (wcd == null) {
             /*
