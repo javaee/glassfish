@@ -40,20 +40,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Collection;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.Servlet;
 import javax.servlet.jsp.JspFactory;
-
 import com.sun.appserv.server.util.Version;
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -67,6 +58,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.JavaEEObjectStreamFactory;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
@@ -112,6 +104,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -268,7 +261,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private Server _serverBean = null;
 
-
     /**
      * Controls the verbosity of the web container subsystem's debug messages.
      *
@@ -324,17 +316,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     private int _pollInterval = 2;
 
     /**
-     * Adds/removes standalone web modules to the reload monitor thread
-     * (when dynamic reloading is enabled in server.xml).
-     */
-    //private StandaloneWebModulesManager _reloadManager = null;
-
-    /**
-     * The lifecycle event support for this component.
-     */
-    //private LifecycleSupport _lifecycle = new LifecycleSupport(this);
-
-    /**
      * Has this component been started yet?
      */
     protected boolean _started = false;
@@ -343,8 +324,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * The global (at the http-service level) ssoEnabled property.
      */
     protected boolean globalSSOEnabled = true;
-
-    /*private EjbWSRegistryListener ejbWebServiceRegistryListener;*/
 
     protected WebContainerFeatureFactory webContainerFeatureFactory;
 
@@ -374,6 +353,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private WebStatsProviderBootstrap webStatsProviderBootstrap = null;
 
+    private InjectionManager injectionMgr;
+
+    private InvocationManager invocationMgr;
+
     /**
      * Static initialization
      */
@@ -388,6 +371,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         createProbeProviders();
 
         habitat = _serverContext.getDefaultHabitat();
+
+        injectionMgr = habitat.getByContract(InjectionManager.class);
+        invocationMgr = habitat.getByContract(InvocationManager.class);
 
         //createMonitoringConfig();
         createStatsProviders();
@@ -674,6 +660,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public WebModuleProbeProvider getWebModuleProbeProvider() {
         return webModuleProbeProvider;
+    }
+
+
+    /**
+     * Instantiates the given Servlet class for the given WebModule
+     */
+    <T extends Servlet> T createServletInstance(WebModule module,
+                                                Class<T> clazz)
+            throws Exception {
+        WebComponentInvocation inv = new WebComponentInvocation(module);
+        try {
+            invocationMgr.preInvoke(inv);
+            return (T) injectionMgr.createManagedObject(clazz);
+        } finally {
+            invocationMgr.postInvoke(inv);
+        }
     }
 
 

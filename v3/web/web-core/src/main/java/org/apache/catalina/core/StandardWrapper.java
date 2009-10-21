@@ -1249,7 +1249,8 @@ public class StandardWrapper
         // Instantiate the servlet class
         Servlet servlet = null;
         try {
-            servlet = (Servlet) servletClass.newInstance();
+            servlet = ((StandardContext)getParent()).createServletInstance(
+                servletClass);
         } catch (ClassCastException e) {
             unavailable(null);
             // Restore the context ClassLoader

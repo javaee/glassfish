@@ -3460,23 +3460,13 @@ public class StandardContext
     public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
         T servlet = null;
-        boolean beforeInitCalled = false;
-        StandardWrapper wrapper = null;
         try {
-            servlet = clazz.newInstance();
-            wrapper = (StandardWrapper) createWrapper();
+            servlet = createServletInstance(clazz);
+            StandardWrapper wrapper = (StandardWrapper) createWrapper();
             wrapper.setServlet(servlet);
-            wrapper.getInstanceSupport().fireInstanceEvent(
-                InstanceEvent.EventType.BEFORE_INIT_EVENT, servlet);
-            beforeInitCalled = true;
         } catch (Throwable t) {
             throw new ServletException("Unable to create Servlet from " +
                                        "class " + clazz.getName(), t);
-        } finally {
-            if (beforeInitCalled) {
-                wrapper.getInstanceSupport().fireInstanceEvent(
-                    InstanceEvent.EventType.AFTER_INIT_EVENT, servlet);
-            }
         }
 
         return servlet;
@@ -6758,6 +6748,16 @@ public class StandardContext
 
             return result;
         }
+    }
+
+    /**
+     * Instantiates the given Servlet class.
+     *
+     * @return the new Servlet instance
+     */
+    protected <T extends Servlet> T createServletInstance(Class<T> clazz)
+            throws Exception{
+        return clazz.newInstance();
     }
 
     /**

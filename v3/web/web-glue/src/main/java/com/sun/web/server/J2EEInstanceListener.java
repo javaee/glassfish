@@ -261,52 +261,10 @@ public final class J2EEInstanceListener implements InstanceListener {
                     inv.setTransaction(tran);
                 }
                 tm.enlistComponentResources();
-            } else if (eventType==InstanceEvent.EventType.BEFORE_INIT_EVENT) {
-
-                // Perform any required resource injection on the servlet
-                // instance.  This needs to be done after the invocation of
-                // preInvoke, but before any of the servlet's application
-                // code is executed.
-
-                JndiNameEnvironment desc = wm.getWebBundleDescriptor();
-
-                // There won't be a corresponding J2EE naming environment
-                // descriptor for certain internal servlets so just skip
-                // injection for those ones.
-                if( desc != null
-                        && instance.getClass() != DefaultServlet.class
-                        && instance.getClass() != JspServlet.class) {
-                    // Give a chance for other decorators to decorate.
-                    // Ideally we should even do the J2EE injection in a
-                    // decorator
-                    Collection<WebComponentDecorator> decorators =
-                        wm.getServerContext().getDefaultHabitat().
-                            getAllByContract(WebComponentDecorator.class);
-                    if (decorators == null || decorators.isEmpty()) {
-                        // Perform dependency injection and invoke
-                        // PostConstruct-annotated method
-                        injectionMgr.injectInstance(instance, desc);
-                    } else {
-                        // Perform dependency injection only
-                        injectionMgr.injectInstance(instance, desc, false);
-                        for (WebComponentDecorator d : decorators) {
-                            d.decorate(instance, wm);
-                        }
-                        // Invoke post construct method
-                        injectionMgr.invokeInstancePostConstruct(instance,
-                            desc);
-                    }
-                } 
             }
         } catch (Exception ex) {            
-            String message = null;
-            try {
-                message = _logger.getResourceBundle().getString(
-                        "web_server.excep_handle_before_event");
-            } catch (NullPointerException npe) {
-                // ignore and return the original exception
-                throw new RuntimeException(ex);
-            }
+            String message = _logger.getResourceBundle().getString(
+                "web_server.excep_handle_before_event");
             throw new RuntimeException(message, ex);
         }
     }
@@ -376,12 +334,10 @@ public final class J2EEInstanceListener implements InstanceListener {
             if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
 
                 tm.componentDestroyed(instance, inv);                
-                JndiNameEnvironment desc = wm.getWebBundleDescriptor();
-                if (desc != null
-                        && instance.getClass() != DefaultServlet.class
-                        && instance.getClass() != JspServlet.class) {
+                if (instance.getClass() != DefaultServlet.class &&
+                        instance.getClass() != JspServlet.class) {
                     try {
-                        injectionMgr.invokeInstancePreDestroy(instance, desc);
+                        injectionMgr.destroyManagedObject(instance);
                     } catch (InjectionException ie) {
                         _logger.log(Level.SEVERE,
                                     "web_server.excep_handle_after_event",

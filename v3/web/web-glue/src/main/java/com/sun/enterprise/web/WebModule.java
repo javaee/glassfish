@@ -96,6 +96,8 @@ import org.apache.catalina.core.*;
 import org.apache.catalina.deploy.FilterMaps;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.session.StandardManager;
+import org.apache.catalina.servlets.DefaultServlet;
+import org.apache.jasper.servlet.JspServlet;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.internal.api.ServerContext;
@@ -178,7 +180,6 @@ public class WebModule extends PwcWebModule {
 
     private WebModuleConfig wmInfo;
 
-
     /**
      * Constructor.
      */
@@ -226,8 +227,8 @@ public class WebModule extends PwcWebModule {
         this.sessionProbeProvider = webContainer.getSessionProbeProvider();
         this.webModuleProbeProvider =
             webContainer.getWebModuleProbeProvider();
-
-        this.javaEEObjectStreamFactory = webContainer.getJavaEEObjectStreamFactory();
+        this.javaEEObjectStreamFactory =
+            webContainer.getJavaEEObjectStreamFactory();    
     }
 
     public void setWebModuleConfig(WebModuleConfig wmInfo) {
@@ -1865,6 +1866,22 @@ public class WebModule extends PwcWebModule {
                     setSessionCookieConfigFromSunWebXml(cookieConfig);
                 }
             }
+        }
+    }
+
+    /**
+     * Instantiates the given Servlet class.
+     *
+     * @return the new Servlet instance
+     */
+    protected <T extends Servlet> T createServletInstance(Class<T> clazz)
+            throws Exception {
+        if (DefaultServlet.class.equals(clazz) ||
+                JspServlet.class.equals(clazz)) {
+            // Container-provided servlets, skip injection
+            return super.createServletInstance(clazz);
+        } else {
+            return webContainer.createServletInstance(this, clazz);
         }
     }
 
