@@ -36,6 +36,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import java.util.*;
 import org.jvnet.hk2.config.types.Property;
@@ -86,6 +87,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private MonitoringRuntimeDataRegistry mrdr;
 
     private final String DOTTED_NAME = ".dotted-name";
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(GetCommand.class);
     
     public void execute(AdminCommandContext context) {
 
@@ -108,7 +111,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         if(!pattern.equals("*")) {
             if (pattern.lastIndexOf(".") == -1 || pattern.lastIndexOf(".") == (pattern.length() - 1)) {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                report.setMessage("Missing expected dotted name part");
+                //report.setMessage("Missing expected dotted name part");
+                report.setMessage(localStrings.getLocalString("missing.dotted.name", "Missing expected dotted name part"));
                 return;
             }
         }
@@ -137,8 +141,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         //No matches found - report the failure and return
         if (matchingNodes.isEmpty()) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("Attribute \"" + pattern.substring(pattern.lastIndexOf(".") + 1,
-                    pattern.length()) + "\" not found.");
+            //report.setMessage("Dotted name path \"" + prefix + pattern + "\" not found.");
+            report.setMessage(localStrings.getLocalString("admin.get.path.notfound", "Dotted name path {0} not found.", prefix + pattern));
             return;
         }
 
@@ -170,7 +174,9 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
         if (!foundMatch) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage("No object found matching " + pattern);
+            //report.setMessage("No object found matching " + pattern);
+            report.setMessage(localStrings.getLocalString("admin.get.path.notfound", "Dotted name path {0} not found.", prefix + pattern));
+
         }
     }
 
@@ -186,12 +192,14 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         if ((pattern == null) || (pattern.equals(""))) {
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage("match pattern is invalid or null");
+            report.setMessage(localStrings.getLocalString("admin.get.invalid.pattern","Match pattern is invalid or null"));
             return;
         }
 
         if (mrdr==null) {
             report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage("monitoring facility not installed");
+            //report.setMessage("monitoring facility not installed");
+            report.setMessage(localStrings.getLocalString("admin.get.no.monitoring","Monitoring facility not installed"));
             return;
         }
 

@@ -50,6 +50,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 
@@ -78,7 +79,9 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
     @Param(primary = true, multiple = true)
     String[] values;
-
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(SetCommand.class);
+    
     public void execute(AdminCommandContext context) {
         for (String value : values) {
             if (!set(context, value))
@@ -90,7 +93,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
 
         int i = nameval.indexOf('=');
         if (i < 0) {
-            fail(context, "Invalid attribute " + nameval);
+            //ail(context, "Invalid attribute " + nameval);
+            fail(context, localStrings.getLocalString("admin.set.invalid.namevalue", "Invalid name value pair {0}. Missing expected equal sign.", nameval));
             return false;
         }
         String target = nameval.substring(0, i);
@@ -101,13 +105,15 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
         int lastDotIndex = trueLastIndexOf(target, '.');
         if (lastDotIndex==-1) {
             // error.
-            fail(context, "Invalid attribute name " + target);
+            //fail(context, "Invalid attribute name " + target);
+            fail(context, localStrings.getLocalString("admin.set.invalid.attributename", "Invalid attribute name {0}", target));
             return false;
         }
         String attrName = target.substring(lastDotIndex+1);
         String pattern =  target.substring(0, lastDotIndex);
         if (attrName.replace('_', '-').equals("jndi-name")) {
-            fail(context, "Cannot change a primary key\nChange of " + target + " is rejected.");
+            //fail(context, "Cannot change a primary key\nChange of " + target + " is rejected.");
+            fail(context, localStrings.getLocalString("admin.set.reject.keychange", "Cannot change a primary key\nChange of {0}", target));
             return false;
         }
         boolean isProperty = false;
@@ -143,7 +149,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 pattern = parentNodes[0].relativeName;
                 matchingNodes = getMatchingNodes(dottedNames, pattern);
                 if (matchingNodes.isEmpty()) {
-                    fail(context, "No configuration found for " + targetName);
+                    //fail(context, "No configuration found for " + targetName);
+                    fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
                     return false;
                 }
                 // need to find the right parent.
@@ -154,7 +161,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     }
                 }
                 if (parentNode==null) {
-                    fail(context, "No configuration found for " + targetName);
+                    //fail(context, "No configuration found for " + targetName);
+                    fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
                     return false;
                 }
 
@@ -168,8 +176,10 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                     runLegacyChecks(context);
                     return true;
                 } catch (TransactionFailure transactionFailure) {
-                    fail(context, "Could not change the attributes: " +
-                        transactionFailure.getMessage(), transactionFailure);
+                    //fail(context, "Could not change the attributes: " +
+                    //    transactionFailure.getMessage(), transactionFailure);
+                    fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
+                            transactionFailure.getMessage()),transactionFailure);
                     return false;
                 }
             }
@@ -221,15 +231,19 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                                     delPropertySuccess = true;
                                 }
                             } catch (IllegalArgumentException ie) {
-                                fail(context,
-                                    "Could not delete the property: " +
-                                    ie.getMessage(), ie);
+                                //fail(context,
+                                //    "Could not delete the property: " +
+                                //    ie.getMessage(), ie);
+                                fail(context, localStrings.getLocalString("admin.set.delete.property.failure", "Could not delete the property: {0}",
+                                    ie.getMessage()), ie);
                                 return false;
                             } catch (TransactionFailure transactionFailure) {
-                                fail(context,
-                                    "Could not change the attributes: " +
-                                        transactionFailure.getMessage(),
-                                    transactionFailure);
+                                //fail(context,
+                                //    "Could not change the attributes: " +
+                                //        transactionFailure.getMessage(),
+                                //    transactionFailure);
+                                fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
+                                    transactionFailure.getMessage()),transactionFailure);
                                 return false;
                             }
                         } else {
@@ -246,8 +260,10 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
                 success(context, targetName, value);
                 runLegacyChecks(context);
             } catch (TransactionFailure transactionFailure) {
-                fail(context, "Could not change the attributes: " +
-                        transactionFailure.getMessage(), transactionFailure);
+                //fail(context, "Could not change the attributes: " +
+                //        transactionFailure.getMessage(), transactionFailure);
+                fail(context, localStrings.getLocalString("admin.set.attribute.change.failure", "Could not change the attributes: {0}",
+                    transactionFailure.getMessage()),transactionFailure);
                 return false;
             }
 
@@ -255,7 +271,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand {
             if (delPropertySuccess) {
                 success(context, targetName, value);
             } else {
-                fail(context, "No configuration found for " + targetName);
+                //fail(context, "No configuration found for " + targetName);
+                fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
                 return false;
             }
         }
