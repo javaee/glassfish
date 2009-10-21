@@ -118,7 +118,7 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name="associatewiththread", optional=true, defaultValue="false")
     Boolean associatewiththread;
 
-    @Param(name="matchconnections", optional=true, defaultValue="false")
+    @Param(name="matchconnections", optional=true, defaultValue="true")
     Boolean matchconnections;
 
     @Param(name="maxconnectionusagecount", optional=true)
