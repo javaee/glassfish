@@ -38,13 +38,13 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" guiOnLoad="disableTableField();" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" guiOnLoad="alert('here'); disableTableField();" >
 <!define name="content">
     <event>
     <!beforeEncode
         getUIComponent(clientId="$pageSession{tableTextField}" component=>$attribute{tableTextField});
         getUIComponent(clientId="$pageSession{validCNTextField}" component=>$attribute{validCNTextField});
-        setDisableConnectionPoolTableField(tableDD="$attribute{tableTextField}" validationField="$attribute{validCNTextField}" methodValue="$attribute{connectionValidationMethod}");
+        setDisableConnectionPoolTableField(tableDD="$attribute{tableTextField}" validationField="$attribute{validCNTextField}" methodValue="#{pageSession.valueMap['ConnectionValidationMethod']}");
     />
     </event>
     <event>
