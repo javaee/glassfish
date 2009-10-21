@@ -88,6 +88,10 @@ public class JCDIServiceImpl implements JCDIService
 
         ComponentInvocation inv = invocationManager.getCurrentInvocation();
 
+        if( inv == null ) {
+            return false;
+        }
+        
         JndiNameEnvironment componentEnv =
             compEnvManager.getJndiNameEnvironment(inv.getComponentId());
 
