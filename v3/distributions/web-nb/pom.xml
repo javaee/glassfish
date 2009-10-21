@@ -206,6 +206,12 @@
        </dependency>
        <dependency>
             <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-codegen</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+       </dependency>
+       <dependency>
+            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-ejb-lite</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
