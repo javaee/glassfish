@@ -170,13 +170,6 @@
             <type>zip</type>
         </dependency>     
 
-        <!--corba codegen package -->
-        <dependency>
-            <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-codegen</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
-        </dependency>    
 
         <!--corba package -->
         <dependency>
