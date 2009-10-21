@@ -179,9 +179,11 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
                 if (!ignore) {
                     String credentialInterfaceName = ora.getCredentialInterfaceName(auth.credentialInterface());
                     //XXX: Siva: For now use the first provided description
-                    AuthMechanism authM = new AuthMechanism(auth.description()[0], authMechInt,
+                    if(auth.description().length > 0){
+                        AuthMechanism authM = new AuthMechanism(auth.description()[0], authMechInt,
                             credentialInterfaceName);
-                    ora.addAuthMechanism(authM);
+                        ora.addAuthMechanism(authM);
+                    }
                 }
             }
         }
