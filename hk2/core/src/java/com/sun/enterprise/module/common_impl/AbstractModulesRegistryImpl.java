@@ -66,7 +66,7 @@ import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 /**
  * The Modules Registry maintains the registry of all available module.
@@ -260,7 +260,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             }
         }
         if (module!=null && resolve) {
-            module.resolve();
+            try {
+                module.resolve();
+            } catch(Throwable e) {
+                module.uninstall();
+                throw new ResolveError(e);
+            }
         }
         Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " + version + ") returned " + module);
         return module;
