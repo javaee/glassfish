@@ -702,7 +702,27 @@ admingui.nav = {
     /**
      *	<p> This function allows you to provide a clientId of a TreeNode in the
      *	    navigation frame to be "refreshed".  This means that it and its
-     *	    children will be deleted, recreated, and redisplayed.</p> 
+     *	    children will be deleted, recreated, and redisplayed.</p>
+     *	<dl>
+     *      <dt><b>Parameters:</b></dt>
+     *      <dd>
+     *          <code>refreshNodeId</code> - The clientId of the tree node to refresh
+     *      </dd>
+     *      <dd>
+     *          <code>viewId</code> - The ID of the view in which the node is defined. This
+     *          is not the same as the JSF view ID. Rather, it is, more or less, the name of
+     *          the file on disk.  For example, for the applications page, the view Id would be
+     *          '/common/peTree.inc'.  The view ID, then, follows this pattern:
+     *          <code>/pluginId/&lt;path/relative/to/src/main/resources/fileName.ext&gt;</code>
+     *      </dd>
+     *      <dd>
+     *          <code>relId</code> - The quasi-clientId of the component, relative to the root
+     *          of the <code>viewId</code>.  This ID does <strong>not</strong> include <em>any</em>
+     *          <code>NamingContainer</code>s that might be found in the final page.  The ID includes
+     *          <em>only</em> those <code>NamingContainer</code>s defined in the page specified
+     *          by the <code>viewId</code>.
+     *      </dd>
+     *  </dl>
      */
     refreshTree: function(refreshNodeId, viewId, relId) {
         if (!viewId) {
