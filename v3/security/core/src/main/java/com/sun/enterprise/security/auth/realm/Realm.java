@@ -39,7 +39,10 @@ import com.sun.enterprise.security.util.IASSecurityException;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.util.*;
+import com.sun.logging.LogDomains;
 import java.lang.ref.WeakReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
@@ -89,6 +92,8 @@ public abstract class Realm implements Comparable {
     private static RealmStatsProvider realmStatsProvier = null;
 
     private static WeakReference<RealmsManager> realmsManager = new WeakReference<RealmsManager>(null);
+
+    protected static final Logger _logger = LogDomains.getLogger(Realm.class, LogDomains.SECURITY_LOGGER);
     
     /**
      * Returns the name of this realm.
@@ -275,6 +280,7 @@ public abstract class Realm implements Comparable {
                     throw new BadRealmException("Unable to locate RealmsManager Service");
                 }
                 mgr.putIntoLoadedRealms(name, r);
+                _logger.log(Level.INFO, "Realm " + name + " of classtype " + className + " successfully created.");
                 return r;
             } else {
                 throw new BadRealmException("Unable to locate Realm class " + className);
@@ -321,6 +327,7 @@ public abstract class Realm implements Comparable {
         }
         realm.setName(oldRealm.getName());
         mgr.putIntoLoadedRealms(name, realm);
+        _logger.log(Level.INFO, "Realm " + realm.getName() + " was successfully updated.");
     }
 
     
@@ -384,6 +391,7 @@ public abstract class Realm implements Comparable {
         } else {
            throw new RuntimeException("Unable to locate RealmsManager Service");
         }
+        _logger.log(Level.INFO, "Realm " + realmName + " successfully deleted.");
     }
 
 

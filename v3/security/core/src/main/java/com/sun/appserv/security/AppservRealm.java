@@ -41,8 +41,6 @@ import java.util.*;
 import com.sun.enterprise.security.auth.realm.*;
 
 import com.sun.enterprise.security.util.IASSecurityException;
-import java.util.logging.Logger;
-import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 
 
@@ -61,8 +59,6 @@ public abstract class AppservRealm extends Realm
 {
     public static final String JAAS_CONTEXT_PARAM="jaas-context";
     
-    protected static final Logger _logger =
-        LogDomains.getLogger(com.sun.enterprise.security.common.Util.class, LogDomains.SECURITY_LOGGER);
     protected static final StringManager sm =
         StringManager.getManager(IASRealm.class);
 
