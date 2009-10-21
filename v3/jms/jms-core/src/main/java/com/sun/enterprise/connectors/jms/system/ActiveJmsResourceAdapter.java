@@ -1899,22 +1899,20 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                                      descriptor_) throws ConnectorRuntimeException{
 
         //todo: need to enable
-   /* ElementProperty[] ep = null;
+        List <Property> ep = null;
         try {
-            ServerContext sc = ApplicationServer.getServerContext();
-            ConfigContext ctx = sc.getConfigContext();
-            Resources rbeans = ServerBeansFactory.getDomainBean(ctx).getResources();
+            Resources rbeans = getAllResources();//ServerBeansFactory.getDomainBean(ctx).getResources();
             ConnectorResource res = (ConnectorResource)
-                             rbeans.getConnectorResourceByJndiName(cfName);
+                             rbeans.getResourceByName(ConnectorResource.class, cfName);
         if (res == null) {
             String msg = sm.getString("ajra.mdb_cf_not_created", cfName);
         throw new ConnectorRuntimeException(msg);
         }
 
         ConnectorConnectionPool ccp = (ConnectorConnectionPool)
-            rbeans.getConnectorConnectionPoolByName(res.getPoolName());
+            rbeans.getResourceByName(ConnectorConnectionPool.class, res.getPoolName());
 
-        ep = ccp.getElementProperty();
+        ep = ccp.getProperty();
         } catch(Exception ce) {
         String msg = sm.getString("ajra.mdb_cf_not_created", cfName);
         ConnectorRuntimeException cre = new ConnectorRuntimeException( msg );
@@ -1927,8 +1925,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             throw new ConnectorRuntimeException( msg );
         }
 
-    for (int i=0; i < ep.length; i++) {
-        ElementProperty prop = ep[i];
+    for (int i=0; i < ep.size(); i++) {
+        Property prop = ep.get(i);
         String name = prop.getName();
         if (name.equals(MCFADDRESSLIST)) {
             name = ADDRESSLIST;
@@ -1939,7 +1937,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         }
             descriptor_.putRuntimeActivationConfigProperty(
                 new EnvironmentProperty(name, val, null));
-    } */
+    }
 
     }
 
