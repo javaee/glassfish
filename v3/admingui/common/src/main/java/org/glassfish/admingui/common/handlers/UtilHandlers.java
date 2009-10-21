@@ -70,6 +70,7 @@ import java.util.Iterator;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -457,10 +458,14 @@ public class UtilHandlers {
         output = {
             @HandlerOutput(name = "result", type = List.class)
             })
-    public static void convertStringtoList(HandlerContext handlerCtx) {
-        List result = new ArrayList();
-        String str = (String) handlerCtx.getInputValue("str");
-        String delimiter = (String) handlerCtx.getInputValue("delimiter");
+    public static void convertStringtoListHandler(HandlerContext handlerCtx) {
+        List result = convertStringToList((String) handlerCtx.getInputValue("str"),
+                (String) handlerCtx.getInputValue("delimiter"));
+        handlerCtx.setOutputValue("result", result);
+    }
+
+    private static List<String> convertStringToList(String str, String delimiter) {
+        List<String> result = new ArrayList();
         if (str != null) {
             if (delimiter == null) {
                 delimiter = ",";
@@ -471,12 +476,34 @@ public class UtilHandlers {
                 result.add(token);
             }
         }
-        
-        handlerCtx.setOutputValue("result", result);
-
+        return result;
     }
 
+    @Handler(id="convertStringToMap",
+         input={
+            @HandlerInput(name="str", type=String.class),
+            @HandlerInput(name="delimiter", type=String.class)
+            },
+        output = {
+            @HandlerOutput(name = "result", type = Map.class)
+            })
+    public static void convertStringToMap(HandlerContext handlerCtx) {
+        Map<String, String> output = new HashMap<String,String>();
+        List<String> list = convertStringToList((String) handlerCtx.getInputValue("str"),
+                (String) handlerCtx.getInputValue("delimiter"));
 
+        for (String item : list) {
+            String[] parts = item.split("=");
+            String key = parts[0];
+            String value = "";
+            if (parts.length > 1) {
+                value = parts[1];
+            }
+            output.put(key, value);
+        }
+
+        handlerCtx.setOutputValue("result", output);
+    }
 
     
      //This is the reserve of the above method.

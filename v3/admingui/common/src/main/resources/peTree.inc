@@ -66,28 +66,34 @@ update tool    updatetool 800
  
 
 //<sun:body  onLoad="fixTree(); setTreeWidth('#{treeId}');" >
-//    <sun:button id="update" visible="#{false}">
-//	<!-- KEEP THIS IN SYNCH WITH clusterProfileTree.jsf -->
-//	<!command
-//	    // Find the old component
-//	    getUIComponent("$requestParameter{updateTreeNode}" component=>$attribute{oldComp});
-//	    setAttribute(key="parent" value="#{oldComp.parent}");
-//
-//	    // Replace it with something temporary to hold position
-//	    // Needed, or it it will just find the old one vs. create it
-//	    createComponent(type="staticText" component=>$attribute{temp});
-//	    replaceUIComponent(old="${oldComp}" new="$attribute{temp}");
-//
-//	    // Rengenerate it
-//	    getLayoutComponent(
-//		viewId="$requestParameter{viewId}"
-//		clientId="$requestParameter{relId}"
-//		component=>$attribute{desc});
-//	    buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
-//	    replaceUIComponent(old="${temp}" new="$attribute{newComp}");
-//	/>
-//    </sun:button>
   <sun:form id="treeForm">
+    <h:commandButton id="update" style1="visibility: hidden">
+
+	<!-- KEEP THIS IN SYNCH WITH clusterProfileTree.jsf -->
+	<!command
+            setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+
+	    // Find the old component
+            convertStringToMap(str="#{param.params}", delimiter="&", result="params");
+
+	    getUIComponent(clientId="#{params.updateTreeNode}", component="#{oldComp}");
+
+	    setAttribute(key="parent" value="#{oldComp.parent}");
+
+	    // Replace it with something temporary to hold position
+	    // Needed, or it it will just find the old one vs. create it
+	    createComponent(type="staticText" component=>$attribute{temp});
+	    replaceUIComponent(old="${oldComp}" new="$attribute{temp}");
+
+	    // Rengenerate it
+	    getLayoutComponent(
+		viewId="#{params.viewId}"
+		clientId="#{params.relId}"
+		component=>$attribute{desc});
+	    buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
+	    replaceUIComponent(old="${temp}" new="$attribute{newComp}");
+	/>
+    </h:commandButton>
     <sun:tree id="tree" 
 	      text="$resource{i18n.tree.commonTasks}"
 	      url="/common/commonTask.jsf"
@@ -101,93 +107,93 @@ update tool    updatetool 800
 	      getClientId(component="$this{component}" clientId=>$page{treeId});
 	  />
 
-	<!--  ===================================== Registration  ======================  -->
-	<sun:treeNode id="registration"
-	    rendered="#{sessionScope.registrationNodePage == 'registration'}"
-	    text="$resource{i18n.tree.registration}"
-	    url="/common/sysnet/registration.jsf"
-	    >
-	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"  border="0" immediate="true" />
-	    </facet>
-	</sun:treeNode>
+        <!--  ===================================== Registration  ======================  -->
+        <sun:treeNode id="registration"
+            rendered="#{sessionScope.registrationNodePage == 'registration'}"
+            text="$resource{i18n.tree.registration}"
+            url="/common/sysnet/registration.jsf"
+            >
+            <!facet image>
+                <sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"  border="0" immediate="true" />
+            </facet>
+        </sun:treeNode>
 
-    <sun:treeNode id="support"
-	    text="$resource{i18n.tree.support}"
-	    url="/common/sysnet/support.jsf"
-	    >
-	    <!facet image>
-		<sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  border="0" immediate="true" />
-	    </facet>
-	</sun:treeNode>
+        <sun:treeNode id="support"
+                text="$resource{i18n.tree.support}"
+                url="/common/sysnet/support.jsf"
+                >
+                <!facet image>
+                    <sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  border="0" immediate="true" />
+                </facet>
+            </sun:treeNode>
 
-	<!--  ===================================== Application Server  ======================  -->
-	<sun:treeNode id="applicationServer" 
-		      text="$resource{i18n.tree.appServer}"
-		      url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
-		      imageURL="/resource/images/instance.gif"
-		      >
-	    <!facet image>
-		<sun:image id="xyz" url="/resource/images/instance.gif" />
-	    </facet>
-	   
-	</sun:treeNode>
+        <!--  ===================================== Application Server  ======================  -->
+        <sun:treeNode id="applicationServer"
+                      text="$resource{i18n.tree.appServer}"
+                      url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
+                      imageURL="/resource/images/instance.gif"
+                      >
+            <!facet image>
+                <sun:image id="xyz" url="/resource/images/instance.gif" />
+            </facet>
 
-	<!--  ===================================== Applications ======================  -->
-	
-    <dynamicTreeNode id="applications"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain,type=applications"
-        text="$resource{i18n.tree.applications}"
-        url="/common/applications/applications.jsf"
-        expanded="$boolean{false}"
-        attributeName="name"
-        childImageURL="/resource/images/webModule.gif"
-        childExpanded="$boolean{false}"
-        childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
-    >
-    <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
-    </facet>
-    <!filterTree filterOutLifecycle() />
-    </dynamicTreeNode>
+        </sun:treeNode>
+
+        <!--  ===================================== Applications ======================  -->
+
+        <dynamicTreeNode id="applications"
+            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+            objectName="amx:pp=/domain,type=applications"
+            text="$resource{i18n.tree.applications}"
+            url="/common/applications/applications.jsf"
+            expanded="$boolean{false}"
+            attributeName="name"
+            childImageURL="/resource/images/webModule.gif"
+            childExpanded="$boolean{false}"
+            childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
+        >
+            <!facet image>
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            </facet>
+            <!filterTree filterOutLifecycle() />
+        </dynamicTreeNode>
 
 
-<dynamicTreeNode id="lifecycle"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain,type=applications"
-        text="$resource{i18n.tree.lifecycle}"
-        url="/common/applications/lifecycles.jsf"
-        expanded="$boolean{false}"
-        attributeName="name"
-        childImageURL="/resource/images/webModule.gif"
-        childExpanded="$boolean{false}"
-        childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}"
-    >
-    <!facet image>
-        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"  border="$int{0}" immediate="$boolean{true}" />
-    </facet>
-    <!filterTree filterOutNonLifecycle() />
-    </dynamicTreeNode>
+        <dynamicTreeNode id="lifecycle"
+            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+            objectName="amx:pp=/domain,type=applications"
+            text="$resource{i18n.tree.lifecycle}"
+            url="/common/applications/lifecycles.jsf"
+            expanded="$boolean{false}"
+            attributeName="name"
+            childImageURL="/resource/images/webModule.gif"
+            childExpanded="$boolean{false}"
+            childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}"
+        >
+            <!facet image>
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            </facet>
+            <!filterTree filterOutNonLifecycle() />
+        </dynamicTreeNode>
 
-	    
-	<!--  ===================================== Resources ======================  -->
 
-	<sun:treeNode  id="resources"
-	    text="$resource{i18n.tree.resources}"
-	    url="/common/resourceNode/resources.jsf"
-	    imageURL="/resource/images/resources.gif"
-	    expanded="$boolean{true}" 
-	    />
-	    
-	 <!--  ===================================== Configurations ======================  -->
-	 
-	 <sun:treeNode id="configuration" 
-	    text="$resource{i18n.tree.configuration}"
-	    url="/common/configuration/configuration.jsf?configName=server-config"
-	    imageURL="/resource/images/configurations.gif"
-	    expanded="$boolean{true}"
-    />
+        <!--  ===================================== Resources ======================  -->
+
+        <sun:treeNode  id="resources"
+            text="$resource{i18n.tree.resources}"
+            url="/common/resourceNode/resources.jsf"
+            imageURL="/resource/images/resources.gif"
+            expanded="$boolean{true}"
+        />
+
+         <!--  ===================================== Configurations ======================  -->
+
+         <sun:treeNode id="configuration"
+            text="$resource{i18n.tree.configuration}"
+            url="/common/configuration/configuration.jsf?configName=server-config"
+            imageURL="/resource/images/configurations.gif"
+            expanded="$boolean{true}"
+        />
     </sun:tree>
     <event>
 	<!afterCreate

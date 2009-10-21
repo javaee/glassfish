@@ -673,6 +673,9 @@ admingui.util = {
 admingui.nav = {
     TREE_ID: "treeForm:tree",
     lastTreeNodeSelected: null,
+    nodesToProcess: Array(),
+    refreshNodeParams: "treeForm:update=",
+    updatedTreeNodeCurrentState: [], // Holds the state of the node to be updated prior to the ajax update request
     
     refreshCluster: function(hasCluster){
         var node1 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters');
@@ -702,49 +705,88 @@ admingui.nav = {
      *	    children will be deleted, recreated, and redisplayed.</p> 
      */
     refreshTree: function(refreshNodeId, viewId, relId) {
-        if (window.parent && window.parent.frames.index) {
-            if (document != window.parent.frames.index.document) {
-                //ensure we call from index frame
-                window.parent.frames.index.admingui.nav.refreshTree(refreshNodeId, viewId, relId);
-                return;
-            }
-            // Make sure the TreeFrame exists with DF support
-            var df = window.parent.frames.index.DynaFaces;
-            if (df) {
-		if (!viewId) {
-		    // Supply best guess defaults...
-		    viewId = 'peTree.jsf';
-		}
-                var refreshNode = null;
-                //alert('refreshNodeId='+refreshNodeId);
-                if (refreshNodeId) {
-                    refreshNode = admingui.nav.getTreeFrameElementById(refreshNodeId);
-		    if (!refreshNode) {
+        if (!viewId) {
+            // Supply best guess defaults...
+            viewId = '/common/peTree.inc';
+        }
+        var refreshNode = null;
+        //alert('refreshNodeId='+refreshNodeId);
+        if (refreshNodeId) {
+            refreshNode = admingui.nav.getTreeFrameElementById(refreshNodeId);
+            if (!refreshNode) {
 // FIXME: Warn if not found... How do you log a warning in JavaScript?  I don't want an alert().
-			//alert('refreshNode not found:'+refreshNode);
-		    }
-                } else {
-                    refreshNode = admingui.nav.getSelectedTreeNode();
-                    refreshNodeId = refreshNode.id;
-                }
-		if (!relId) {
-		    // Supply best guess defaults...
-		    relId = refreshNodeId;
-		}
-                var updateTreeAction = admingui.nav.getTreeFrameElementById("form:update");
-                if (refreshNode && updateTreeAction) {
-                    df.fireAjaxTransaction(refreshNode,{
-                                           execute: updateTreeAction.id,
-                                           inputs: updateTreeAction.id,
-                                           parameters: "updateTreeNode=" + refreshNodeId
-					       + "&viewId=" + viewId + "&relId=" + relId,
-                                           replaceElement: admingui.nav.updateTreeNodeAjaxCallback,
-                                           immediate: false,
-                                           render: refreshNodeId
-                                           });
-                    return false;
-                }
+                //alert('refreshNode not found:'+refreshNode);
             }
+        } else {
+            refreshNode = admingui.nav.getSelectedTreeNode();
+            refreshNodeId = refreshNode.id;
+        }
+        if (!relId) {
+            // Supply best guess defaults...
+            relId = refreshNodeId;
+        }
+        var updateTreeButton = document.getElementById('treeForm:update');
+        if (refreshNode && updateTreeButton) {
+            admingui.nav.refreshNodeId = refreshNodeId;
+            admingui.nav.refreshNodeParams = "updateTreeNode="+refreshNodeId+
+                "&viewId="+viewId+
+                "&relId="+relId;
+            admingui.nav.nodesToProcess.push(refreshNodeId);
+            admingui.nav.updatedTreeNodeCurrentState = [
+                document.getElementById(refreshNodeId),
+                document.getElementById(refreshNodeId+"_children")
+            ];
+            //updateTreeAction.click();
+            admingui.nav.requestTreeUpdate(updateTreeButton, {type: 'click'})
+            return false;
+        }
+    },
+
+    requestTreeUpdate: function(source, event) {
+            jsf.ajax.request(source, event, {
+                execute: "treeForm treeForm:update",
+                render: admingui.nav.refreshNodeId + " " + admingui.nav.refreshNodeId + "_children",
+                onevent: admingui.nav.processUpdatedTreeNode,
+                params: 'treeForm:update=&' + admingui.nav.refreshNodeParams
+            });
+    },
+
+    processUpdatedTreeNode: function(data) {
+        if (data.status == 'success') {
+            var nodeId = admingui.nav.nodesToProcess.pop();
+            var text = data.responseXML.childNodes[0].childNodes[0].childNodes[0].childNodes[0].data;
+            var parserElement = document.createElement('div');
+            parserElement.innerHTML = text;
+            var mainNode = document.getElementById(nodeId);
+            var childNodes = document.getElementById(nodeId+"_children");
+
+            mainNode.innerHTML = parserElement.childNodes[0].innerHTML;
+
+            try {
+                var oldNode = admingui.nav.updatedTreeNodeCurrentState[0];
+                mainNode.className = oldNode.className;
+                mainNode.style["display"] = oldNode.style["display"];
+                try {
+                    // Copy image src value to correct visual state of the node turner
+                    mainNode.childNodes[0].childNodes[0].childNodes[0].src = oldNode.childNodes[0].childNodes[0].childNodes[0].src;
+                } catch (err1) {
+                    
+                }
+
+                if (childNodes) {
+                    childNodes.innerHTML = parserElement.childNodes[1].innerHTML;
+                    oldNode = admingui.nav.updatedTreeNodeCurrentState[1];
+                    childNodes.className = oldNode.className;
+                    childNodes.style["display"] = oldNode.style["display"];
+                    admingui.nav.copyStyleAndClass(childNodes, oldNode);
+                }
+            } catch (err) {
+
+            }
+            
+            admingui.nav.updatedTreeNodeCurrentState = [];
+            admingui.ajax.processElement(window, document.getElementById(nodeId), true);
+
         }
     },
 
@@ -2028,6 +2070,8 @@ admingui.ajax = {
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         admingui.ajax.processElement(o, contentNode, true);
         admingui.ajax.processScripts(o);
+        admingui.nav.clearTreeSelection();
+        admingui.nav.selectTreeNodeWithURL(o.argument.url);
     },
 
     submitFormAjax : function (form) {
@@ -2067,6 +2111,7 @@ admingui.ajax = {
 
     processElement : function (context, node, queueScripts) {
 	var recurse = true;
+        //console.log("nodeName = " + node.nodeName);
         if (node.nodeName == 'A') {
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
@@ -2344,7 +2389,7 @@ admingui.woodstock = {
 	    globalEvalNextScript(scriptQueue);
 	} else {
 	    // Get via Ajax
-	    admingui.ajax.getResource(node.src, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
+	    admingui.ajax.getResource(node.src, function(result) {globalEval(result);globalEvalNextScript(scriptQueue);} );
 	    // This gets a relative URL vs. a full URL with http://... needed
 	    // when we properly serve resources w/ rlubke's recent fix that
 	    // will be integrated soon.  We need to handle the response

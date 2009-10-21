@@ -93,7 +93,7 @@
 	</sun:head>
 
 	<sun:body styleClass="yui-skin-sam" 
-		  onLoad="#{guiOnLoad}#{guiTemplateOnLoad};admingui.ajax.processElement(window, document.getElementById('leftNav'), false);">
+		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);#{guiOnLoad};#{guiTemplateOnLoad};">
 "	    <div class="yui-skin-sam"><div id="gfLayoutTop"><div class="header_main">
 			<sun:form id="af" prependId="false">
 			    <h:commandButton id="execButton" text="na" style="display:none;">

@@ -108,11 +108,13 @@
 
 		// Center it
 		var popup = document.getElementById('${popupId}');
-		var width = document.getElementById('content').offsetWidth;
-		popup.style.left = ((width - 423) / 2 + "px");
+                if (popup != null) {
+                    var width = document.getElementById('content').offsetWidth;
+                    popup.style.left = ((width - 423) / 2 + "px");
 
-		// Show it
-		popup.style.display = 'block';
+                    // Show it
+                    popup.style.display = 'block';
+                }
 	    }
 	    window.onresize = initReminderBox;
 	    window.oldRegOnload = window.onload;
