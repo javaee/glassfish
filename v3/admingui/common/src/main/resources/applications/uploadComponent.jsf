@@ -61,10 +61,8 @@
 </sun:propertySheet>
 <event>
     <!afterCreate
-        gui.log(message="formId = #{formId}");
         getUIComponent(clientId="#{formId}"  component=>$attribute{component})
         includeIntegrations(type="org.glassfish.admingui:uploadPropertySheet" );
-        gui.log(message="integrations included");
     />
 </event>
 
