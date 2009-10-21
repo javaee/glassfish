@@ -68,6 +68,15 @@ import java.util.logging.Level;
 @Scoped(PerLookup.class)
 public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
 
+    public static final Attributes.Name GLASSFISH_APPCLIENT =
+            new Attributes.Name("GlassFish-AppClient");
+
+    public static final Attributes.Name GLASSFISH_CLIENT_PU_SCAN_TARGETS_NAME =
+            new Attributes.Name("GlassFish-Client-PersistenceUnit-Scan-Targets");
+
+    public static final Attributes.Name GLASSFISH_GROUP_FACADE =
+            new Attributes.Name("GlassFish-Group-Facade");
+    
     private String mainClassNameToRun = null;
 
     DeploymentDescriptorFile standardDD = new AppClientDeploymentDescriptorFile();

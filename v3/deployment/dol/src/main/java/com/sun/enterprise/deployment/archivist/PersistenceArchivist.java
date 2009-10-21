@@ -1,9 +1,12 @@
 package com.sun.enterprise.deployment.archivist;
 
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -16,6 +19,7 @@ import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Enumeration;
+import java.util.Set;
 
 public abstract class PersistenceArchivist extends ExtensionsArchivist {
     protected static final String JAR_EXT = ".jar";
@@ -23,7 +27,8 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
     protected static final String LIB_DIR = "lib";
 
 
-    protected final Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    private static final Logger st_logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
+    protected final Logger logger = st_logger;
 
     public DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor) {
         return new PersistenceDeploymentDescriptorFile();
@@ -93,7 +98,7 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
      * @see com.sun.enterprise.deployment.archivist.EarPersistenceArchivist.SubArchivePURootScanner
      * @return Map of puroot path to probable puroot archive.
      */
-    protected Map<String, ReadableArchive> getProbablePersistenceRoots(ReadableArchive parentArchive, SubArchivePURootScanner subArchivePURootScanner) {
+    protected static Map<String, ReadableArchive> getProbablePersistenceRoots(ReadableArchive parentArchive, SubArchivePURootScanner subArchivePURootScanner) {
         Map<String, ReadableArchive> probablePersitenceArchives = new HashMap<String, ReadableArchive>();
         ReadableArchive  archiveToScan = subArchivePURootScanner.getSubArchiveToScan(parentArchive);
         if(archiveToScan != null) { // The subarchive exists
@@ -114,14 +119,14 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
         return probablePersitenceArchives;
     }
 
-    private ReadableArchive getSubArchive(ReadableArchive parentArchive, String path, boolean expectAbscenceOfSubArchive) {
+    private static ReadableArchive getSubArchive(ReadableArchive parentArchive, String path, boolean expectAbscenceOfSubArchive) {
         ReadableArchive returnedArchive = null;
         try {
             returnedArchive = parentArchive.getSubArchive(path);
         } catch (IOException ioe) {
             // if there is any problem in opening the subarchive, and the subarchive is expected to be present, log the exception
             if(!expectAbscenceOfSubArchive) {
-                logger.log(Level.SEVERE, ioe.getMessage(), ioe);
+                st_logger.log(Level.SEVERE, ioe.getMessage(), ioe);
             }
         }
         return returnedArchive;
@@ -135,7 +140,7 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
         return null;
     }
 
-    protected abstract class SubArchivePURootScanner {
+    protected static abstract class SubArchivePURootScanner {
         abstract String getPathOfSubArchiveToScan();
 
         ReadableArchive getSubArchiveToScan(ReadableArchive parentArchive) {
@@ -158,8 +163,8 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
             boolean inRootOfArchive = true;
             if (path.indexOf('/') != -1) {
                 inRootOfArchive = false;
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.logp(Level.FINE, "PersistenceArchivist",
+                if (st_logger.isLoggable(Level.FINE)) {
+                    st_logger.logp(Level.FINE, "PersistenceArchivist",
                             "readPersistenceDeploymentDescriptors",
                             "skipping {0} as it exists inside a directory in {1}.",
                             new Object[]{path, parentArchivePath});
@@ -174,4 +179,5 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
 
     }
 
+    
 }

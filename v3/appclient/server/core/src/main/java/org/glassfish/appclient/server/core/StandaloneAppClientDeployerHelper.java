@@ -269,4 +269,11 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         originalSource.close();
     }
 
+    @Override
+    protected String PUScanTargets() {
+        return null;
+    }
+
+
+
 }

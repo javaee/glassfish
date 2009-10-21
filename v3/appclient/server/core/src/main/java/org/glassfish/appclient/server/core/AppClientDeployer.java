@@ -149,9 +149,6 @@ public class AppClientDeployer
     public static final Attributes.Name GLASSFISH_APPCLIENT_MAIN_CLASS =
             new Attributes.Name("GlassFish-AppClient-Main-Class");
 
-    public static final Attributes.Name GLASSFISH_APPCLIENT =
-            new Attributes.Name("GlassFish-AppClient");
-
     public static final Attributes.Name SPLASH_SCREEN_IMAGE =
             new Attributes.Name("SplashScreen-Image");
 

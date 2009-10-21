@@ -558,11 +558,12 @@ public class ApplicationArchivist extends Archivist<Application>
                 
                 if (extensionsArchivists!=null) {
                     for (ExtensionsArchivist extension : extensionsArchivists) {
-                        Object rdd = extension.open(newArchivist, embeddedArchive, descriptor);
-                        if (rdd instanceof RootDeploymentDescriptor) {
-                            extensions.put(extension, (RootDeploymentDescriptor) rdd);
+                        if (extension.supportsModuleType(aModule.getModuleType())) {
+                            Object rdd = extension.open(newArchivist, embeddedArchive, descriptor);
+                            if (rdd instanceof RootDeploymentDescriptor) {
+                                extensions.put(extension, (RootDeploymentDescriptor) rdd);
+                            }
                         }
-
                     }
                 }
                 newArchivist.postStandardDDsRead(descriptor, embeddedArchive);

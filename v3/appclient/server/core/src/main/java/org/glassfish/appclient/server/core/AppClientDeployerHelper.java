@@ -223,6 +223,8 @@ public abstract class AppClientDeployerHelper {
      */
     protected abstract String facadeClassPath();
 
+    protected abstract String PUScanTargets();
+
     public final DeploymentContext dc() {
         return dc;
     }
@@ -296,6 +298,7 @@ public abstract class AppClientDeployerHelper {
             final Manifest sourceManifest,
             final Manifest generatedManifest,
             final String classPath,
+            final String PUScanTargets,
             final Application application) {
         Attributes sourceMainAttrs = sourceManifest.getMainAttributes();
         Attributes facadeMainAttrs = generatedManifest.getMainAttributes();
@@ -304,14 +307,38 @@ public abstract class AppClientDeployerHelper {
                 AppClientDeployer.APPCLIENT_COMMAND_CLASS_NAME);
         facadeMainAttrs.put(AppClientDeployer.GLASSFISH_APPCLIENT_MAIN_CLASS,
                 sourceMainAttrs.getValue(Attributes.Name.MAIN_CLASS));
-        facadeMainAttrs.put(AppClientDeployer.GLASSFISH_APPCLIENT,
+        facadeMainAttrs.put(AppClientArchivist.GLASSFISH_APPCLIENT,
                 appClientUserURIForFacade(dc).toASCIIString());
         String splash = sourceMainAttrs.getValue(AppClientDeployer.SPLASH_SCREEN_IMAGE);
         if (splash != null) {
             facadeMainAttrs.put(AppClientDeployer.SPLASH_SCREEN_IMAGE, splash);
         }
         facadeMainAttrs.put(Attributes.Name.CLASS_PATH, classPath);
+        if (PUScanTargets != null) {
+            facadeMainAttrs.put(AppClientArchivist.GLASSFISH_CLIENT_PU_SCAN_TARGETS_NAME,
+                    PUScanTargets);
+        }
         facadeMainAttrs.put(AppClientDeployer.GLASSFISH_APP_NAME, application.getAppName());
+
+        if ( ! appClientDesc.isStandalone()) {
+            final DownloadableArtifacts.FullAndPartURIs earFacadeDownload =
+                dc().getTransientAppMetaData("earFacadeDownload", DownloadableArtifacts.FullAndPartURIs.class);
+
+            facadeMainAttrs.put(AppClientArchivist.GLASSFISH_GROUP_FACADE,
+                    relativePathToGroupFacade());
+        }
+    }
+
+    private String relativePathToGroupFacade() {
+        final String pathToClient = pathToAppclientWithinApp(dc);
+        final StringBuilder sb = new StringBuilder();
+        for (char c : pathToClient.toCharArray()) {
+            if (c == '/') {
+                sb.append("../");
+            }
+        }
+        sb.append(appName() + "Client.jar");
+        return sb.toString();
     }
 
     private void writeUpdatedDescriptors(final OutputJarArchive facadeArchive, final ApplicationClientDescriptor acd) throws IOException {
@@ -341,7 +368,7 @@ public abstract class AppClientDeployerHelper {
         Manifest sourceManifest = source.getManifest();
         Manifest facadeManifest = facadeArchive.getManifest();
         initGeneratedManifest(sourceManifest, facadeManifest, 
-                facadeClassPath(), application);
+                facadeClassPath(), PUScanTargets(), application);
         /*
          * If the developer's app client JAR contains a splash screen, copy
          * it from the original JAR to the facade so the Java launcher can

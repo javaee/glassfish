@@ -73,6 +73,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private Set<FullAndPartURIs> libraryAndClassPathJARs = new HashSet<FullAndPartURIs>();
 
     private StringBuilder classPathForFacade = new StringBuilder();
+    private StringBuilder PUScanTargetsForFacade = new StringBuilder();
 
     private final URI earURI;
 
@@ -157,11 +158,13 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * Now incorporate the library JARs and, if v2 compatibility is chosen,
          * EJB JARs and top level JARs.
          */
-        addLibraryJARs(classPathForFacade, dependencyURIsProcessed);
+        addLibraryJARs(classPathForFacade, PUScanTargetsForFacade,
+                dependencyURIsProcessed);
 
         if (useV2Compatibility() && ! appClientDesc().getApplication().isVirtual()) {
             addEJBJARs(classPathForFacade, dependencyURIsProcessed);
-            addTopLevelJARs(classPathForFacade, dependencyURIsProcessed);
+            addTopLevelJARs(classPathForFacade, PUScanTargetsForFacade,
+                    dependencyURIsProcessed);
         }
     }
 
@@ -180,7 +183,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private void addEJBJARs(final StringBuilder cpForFacade, final Set<URI> dependencyURIsProcessed) throws IOException {
         final Application app = appClientDesc().getApplication();
         for (ModuleDescriptor md : app.getModuleDescriptorsByType(XModuleType.EJB)) {
-            addJar(cpForFacade,
+            addJar(cpForFacade, null,
                    new File(new File(earURI), md.getArchiveUri()).toURI(),
                    dependencyURIsProcessed);
         }
@@ -195,6 +198,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      * @throws IOException
      */
     private void addTopLevelJARs(final StringBuilder cpForFacade,
+            final StringBuilder puScanTargets,
             final Set<URI> dependencyURIsProcessed) throws IOException {
         /*
          * Add top-level JARs only if they are not submodules.
@@ -204,7 +208,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             submoduleURIs.add(URI.create(md.getArchiveUri()));
         }
 
-        addJARsFromDir(cpForFacade, dependencyURIsProcessed,
+        addJARsFromDir(cpForFacade, puScanTargets, dependencyURIsProcessed,
                 new File(earURI),
                 new FileFilter() {
                     public boolean accept(final File pathname) {
@@ -225,22 +229,24 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      * @throws IOException
      */
     private void addJARsFromDir(final StringBuilder cpForFacade,
+            final StringBuilder puScanTargets,
             final Set<URI> dependencyURIsProcessed,
             final File dirContainingJARs,
             final FileFilter filter) throws IOException {
         if (dirContainingJARs.exists() && dirContainingJARs.isDirectory()) {
             for (File jar : dirContainingJARs.listFiles(filter)) {
-                addJar(cpForFacade, jar.toURI(), dependencyURIsProcessed);
+                addJar(cpForFacade, puScanTargets, jar.toURI(), dependencyURIsProcessed);
             }
         }
 
     }
 
     private void addLibraryJARs(final StringBuilder cpForFacade,
+            final StringBuilder puScanTargets,
             final Set<URI> dependencyURIsProcessed) throws IOException {
         final String libDir = appClientDesc().getApplication().getLibraryDirectory();
         if (libDir != null) {
-            addJARsFromDir(cpForFacade, dependencyURIsProcessed,
+            addJARsFromDir(cpForFacade, puScanTargets, dependencyURIsProcessed,
                 new File(new File(earURI), libDir),
                 new FileFilter() {
                     public boolean accept(File pathname) {
@@ -261,6 +267,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      */
     private void addJar(
             final StringBuilder cpForFacade,
+            final StringBuilder puScanTargets,
             final URI jarURI,
             final Set<URI> dependencyURIsProcessed) throws IOException {
         final URI jarURIForFacade = earURI.relativize(jarURI);
@@ -274,7 +281,16 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * this library JAR will be, once they are both downloaded,
          * to the class path for the facade.
          */
-        cpForFacade.append(' ').append(jarURIForFacade.toASCIIString());
+        if (cpForFacade.length() > 0) {
+            cpForFacade.append(' ');
+        }
+        cpForFacade.append(jarURIForFacade.toASCIIString());
+        if (puScanTargets != null) {
+            if (puScanTargets.length() > 0) {
+                puScanTargets.append(' ');
+            }
+            puScanTargets.append(jarURIForFacade.toASCIIString());
+        }
 
         /*
          * Process this library JAR to record the need to download it
@@ -557,6 +573,13 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     protected String facadeClassPath() {
         return classPathForFacade.toString();
     }
+
+    @Override
+    protected String PUScanTargets() {
+        return PUScanTargetsForFacade.toString();
+    }
+
+
 
     @Override
     protected void addGroupFacadeToEARDownloads() {
