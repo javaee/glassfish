@@ -106,9 +106,17 @@ public class ConfigPropertyHandler extends AbstractHandler {
                 } else {
                     //check compatibility between annotation type and property-type
                     if (!propertyType.isAssignableFrom(type)) {
-                        return getFailureResult(element, "annotation type [" + type + "] and property-type" +
-                                " [" + propertyType + "] " +
-                                "are not assignment compatible", true);
+                        if(type.isPrimitive()){
+                            type = getWrapperClass(type.getName());
+                        }else if(propertyType.isPrimitive()){
+                            propertyType = getWrapperClass(propertyType.getName());
+                        }
+
+                        if(!propertyType.isAssignableFrom(type)){
+                            return getFailureResult(element, "annotation type [" + type + "] and property-type" +
+                                    " [" + propertyType + "] " +
+                                    "are not assignment compatible", true);
+                        }
                     }
                 }
 
@@ -156,6 +164,28 @@ public class ConfigPropertyHandler extends AbstractHandler {
             return getFailureResult(element, "not a rar bundle context", true);
         }
         return getDefaultProcessedResult();
+    }
+
+    private static Class getWrapperClass(String primitive){
+        if(primitive.equalsIgnoreCase("int")){
+            return java.lang.Integer.class;
+        }else if(primitive.equalsIgnoreCase("long")){
+            return java.lang.Long.class;
+        }else if(primitive.equalsIgnoreCase("short")){
+            return java.lang.Short.class;
+        }else if(primitive.equalsIgnoreCase("char")){
+            return Character.class;
+        }else if(primitive.equalsIgnoreCase("byte")){
+            return java.lang.Byte.class;
+        }else if(primitive.equalsIgnoreCase("boolean")){
+            return java.lang.Boolean.class;
+        }else if(primitive.equalsIgnoreCase("float")){
+            return java.lang.Float.class;
+        }else if(primitive.equalsIgnoreCase("double")){
+            return java.lang.Double.class;
+        }else{
+            throw new IllegalArgumentException("Could not determine Wrapper class for primitive type ["+primitive+"]");
+        }
     }
 
     private String deriveDefaultValueOfField(Field f){
