@@ -92,8 +92,9 @@ public class ActiveRAFactory {
                     ra = (ResourceAdapter)
                             loader.loadClass(raClass).newInstance();
                 } else {
-                    ra = (ResourceAdapter) Class.forName(raClass).newInstance();
-                    //ra = (ResourceAdapter) Thread.currentThread().getContextClassLoader().loadClass(raClass).newInstance();
+                    //ra = (ResourceAdapter) Class.forName(raClass).newInstance();
+                    ra = (ResourceAdapter)
+                            Thread.currentThread().getContextClassLoader().loadClass(raClass).newInstance();
                 }
             }
 

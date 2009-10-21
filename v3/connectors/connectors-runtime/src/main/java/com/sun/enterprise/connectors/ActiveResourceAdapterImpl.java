@@ -395,7 +395,8 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         } else if (loader != null) {
             mcf = (ManagedConnectionFactory) loader.loadClass(mcfClass).newInstance();
         } else {
-            mcf = (ManagedConnectionFactory) Class.forName(mcfClass).newInstance();
+            //mcf = (ManagedConnectionFactory) Class.forName(mcfClass).newInstance();
+            mcf = (ManagedConnectionFactory)Thread.currentThread().getContextClassLoader().loadClass(mcfClass).newInstance();
         }
         setLogWriter(mcf);
         return mcf;
@@ -418,7 +419,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             connectorRuntime_.createConnectorResource(resourceName, poolName, null);
             desc_.addDefaultResourceName(resourceName);
 
-            _logger.log(Level.FINE, "Created default connector resource : ", resourceName);
+            _logger.log(Level.FINE, "Created default connector resource [ " + resourceName + " ] " );
         }
     }
 
@@ -452,7 +453,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
 
             connectorPoolObj.setConnectorDescriptorInfo(connectorDescriptorInfo);
             connectorRuntime_.createConnectorConnectionPool(connectorPoolObj);
-            _logger.log(Level.FINE, "Created default connection pool : ", poolName);
+            _logger.log(Level.FINE, "Created default connection pool [ "+ poolName + " ] ");
         }
     }
 
