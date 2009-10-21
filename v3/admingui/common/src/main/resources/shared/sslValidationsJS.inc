@@ -36,7 +36,6 @@
 
 " <script type="text/javascript">
     " function checkSSLRequiredElements() { \
-alert('here'); \
         if (document.getElementById('#{sheetId}:ClientAuthProp:ClientAuth').getProps().checked) {   \
             var result = checkForValue(getTextElement('#{sheetId}:CertNicknameProp:CertNickname'));  \
             if(result != true){ \
