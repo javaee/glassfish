@@ -1,5 +1,4 @@
 -exportcontents: \
-    org.glassfish.enterprise.iiop.util; \
     org.glassfish.enterprise.iiop.impl; version=${project.osgi.version} 
 
 ORB-Class-Provider: org.glassfish.enterprise.iiop.impl.PEORBConfigurator \

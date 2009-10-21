@@ -37,7 +37,7 @@ package org.glassfish.enterprise.iiop.impl;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.enterprise.iiop.api.IIOPInterceptorFactory;
-import org.glassfish.enterprise.iiop.impl.IIOPUtils;
+import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import org.omg.IOP.Codec;
 import org.omg.IOP.CodecFactory;
 import org.omg.IOP.ENCODING_CDR_ENCAPS;

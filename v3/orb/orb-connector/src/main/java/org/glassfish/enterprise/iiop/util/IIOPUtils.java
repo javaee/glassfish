@@ -1,4 +1,4 @@
-package org.glassfish.enterprise.iiop.impl;
+package org.glassfish.enterprise.iiop.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +53,7 @@ public class IIOPUtils implements PostConstruct {
     // Set during init
     private ORB defaultORB;
 
-    private GlassFishORBManager gfORBMgr;
+    //private GlassFishORBManager gfORBMgr;
 
     public void postConstruct() {
 
@@ -91,6 +91,7 @@ public class IIOPUtils implements PostConstruct {
         _me = utils;
     }
 
+    /*
     void setGlassFishORBManager(GlassFishORBManager orbMgr) {
         gfORBMgr = orbMgr;
     }
@@ -98,6 +99,7 @@ public class IIOPUtils implements PostConstruct {
     GlassFishORBManager getGlassFishORBManager() {
         return gfORBMgr;
     }
+    */
 
     public ClassLoader getCommonClassLoader() {
         return clHierarchy.getCommonClassLoader();

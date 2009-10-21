@@ -41,14 +41,12 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.corba.ee.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPool;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolChooser;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolFactory;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.logging.LogDomains;
-import org.glassfish.enterprise.iiop.impl.IIOPUtils;
 
 public class S1ASThreadPoolManager implements ThreadPoolManager {
 

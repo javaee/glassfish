@@ -1,6 +1,7 @@
 package org.glassfish.enterprise.iiop.impl;
 
 import org.glassfish.enterprise.iiop.api.GlassFishORBFactory;
+import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
@@ -29,7 +30,7 @@ public class GlassFishORBFactoryImpl
     public void postConstruct() {
         gfORBManager = new GlassFishORBManager(habitat);
         IIOPUtils.setInstance(iiopUtils);
-        iiopUtils.setGlassFishORBManager(gfORBManager);
+        //iiopUtils.setGlassFishORBManager(gfORBManager);
     }
 
     public int getOTSPolicyType() {

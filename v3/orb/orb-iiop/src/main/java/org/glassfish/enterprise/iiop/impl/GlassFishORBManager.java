@@ -48,6 +48,7 @@ import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.enterprise.iiop.api.GlassFishORBLifeCycleListener;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import org.omg.CORBA.ORB;
 
 import com.sun.corba.ee.spi.transport.CorbaTransportManager;

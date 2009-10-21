@@ -40,7 +40,7 @@ import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.logging.LogDomains;
-import org.glassfish.enterprise.iiop.impl.IIOPUtils;
+import org.glassfish.enterprise.iiop.util.IIOPUtils;
 
 import java.util.List;
 import java.util.Collection;
