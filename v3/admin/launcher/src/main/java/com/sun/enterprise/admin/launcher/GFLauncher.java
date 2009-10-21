@@ -667,7 +667,7 @@ public abstract class GFLauncher {
         if(!jarFile.isFile())
             throw new GFLauncherException("no_btrace_jar", jarPath);
         
-        return "javaagent:" + jarPath + "=unsafe=true";
+        return "javaagent:" + jarPath + "=unsafe=true,noServer=true";
     }
     private List<String> getSpecialSystemProperties() throws GFLauncherException {
         Map<String, String> props = new HashMap<String, String>();

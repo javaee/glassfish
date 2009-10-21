@@ -223,8 +223,9 @@ public class FlashlightProbeClientMediator
             throw new RuntimeException(errStr);
         }
 
-        if(isAgentAttached())
-            submit2BTrace(bArr);
+        // this check is unneccessary as the server socket may not exist
+        // if(isAgentAttached())
+        submit2BTrace(bArr);
     }
 
     /**
