@@ -144,7 +144,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
-    @Pattern(regexp="(javax.sql.DataSource|javax.sql.XADataSource|javax.sql.ConnectionPoolDataSource)")
+    @Pattern(regexp="(java.sql.Driver|javax.sql.DataSource|javax.sql.XADataSource|javax.sql.ConnectionPoolDataSource)")
     String getResType();
 
     /**
