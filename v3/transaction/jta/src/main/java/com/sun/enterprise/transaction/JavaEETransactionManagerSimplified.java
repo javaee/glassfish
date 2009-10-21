@@ -822,19 +822,15 @@ public class JavaEETransactionManagerSimplified
                     Object obj = tx;
                     getDelegate().getReadLock().lock(); // XXX acquireReadLock();
 
+                    boolean success = false;
                     try{
                         tx.commit(); // commit local tx
-                        monitorTxCompleted(obj, true);
-                    }catch(RollbackException e){
-                        monitorTxCompleted(obj, false);
-                        throw e;
-                    }catch(HeuristicRollbackException e){
-                        monitorTxCompleted(obj, false);
-                        throw e;
+                        success = true;
                     }catch(HeuristicMixedException e){
-                        monitorTxCompleted(obj, true);
+                        success = true;
                         throw e;
-                    }finally{
+                    } finally {
+                        monitorTxCompleted(obj, success);
                         getDelegate().getReadLock().unlock(); // XXX releaseReadLock();
                     }
                 } else {
@@ -870,8 +866,11 @@ public class JavaEETransactionManagerSimplified
                     getDelegate().getReadLock().lock(); // XXX acquireReadLock();
                     acquiredlock = true;
 
-                    tx.rollback(); // rollback local tx
-                    monitorTxCompleted(obj, false);
+                    try {
+                        tx.rollback(); // rollback local tx
+                    } finally {
+                        monitorTxCompleted(obj, false);
+                    }
                 } else {
                     tx.rollback(); // rollback local tx
                 }

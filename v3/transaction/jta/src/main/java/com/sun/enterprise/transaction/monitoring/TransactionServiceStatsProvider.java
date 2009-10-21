@@ -173,7 +173,6 @@ public class TransactionServiceStatsProvider {
         _logger.fine("Prepared inflightTransactions text: \n" + strBuf);
 
         inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
-        _logger.info("inflightTransactions.getCurrent: " + inflightTransactions.getCurrent());
         return inflightTransactions.getStatistic();
     }
     

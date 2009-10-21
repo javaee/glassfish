@@ -147,39 +147,31 @@ public class JavaEETransactionManagerJTSDelegate
         JavaEETransactionManagerSimplified javaEETMS = 
                 (JavaEETransactionManagerSimplified)javaEETM;
         
+        boolean success = false;
         if (javaEETMS.isInvocationStackEmpty()) {
             try{
                 tm.commit();
-                javaEETMS.monitorTxCompleted0(obj, true);
-            }catch(RollbackException e){
-                javaEETMS.monitorTxCompleted0(obj, false);
-                throw e;
-            }catch(HeuristicRollbackException e){
-                javaEETMS.monitorTxCompleted0(obj, false);
-                throw e;
+                success = true;
             }catch(HeuristicMixedException e){
-                javaEETMS.monitorTxCompleted0(obj, true);
+                success = true;
                 throw e;
+            } finally {
+                javaEETMS.monitorTxCompleted0(obj, success);
             }
         } else {
             try {
                 javaEETMS.setTransactionCompeting(true);
                 tm.commit();
-                javaEETMS.monitorTxCompleted0(obj, true);
+                success = true;
 /**
             } catch (InvocationException ex) {
                 assert false;
 **/
-            }catch(RollbackException e){
-                javaEETMS.monitorTxCompleted0(obj, false);
-                throw e;
-            }catch(HeuristicRollbackException e){
-                javaEETMS.monitorTxCompleted0(obj, false);
-                throw e;
             }catch(HeuristicMixedException e){
-                javaEETMS.monitorTxCompleted0(obj, true);
+                success = true;
                 throw e;
             } finally {
+                javaEETMS.monitorTxCompleted0(obj, success);
                 javaEETMS.setTransactionCompeting(false);
             }
         }
@@ -200,22 +192,24 @@ public class JavaEETransactionManagerJTSDelegate
         JavaEETransactionManagerSimplified javaEETMS = 
                 (JavaEETransactionManagerSimplified)javaEETM;
         
-        if (javaEETMS.isInvocationStackEmpty()) {
-            tm.rollback();
-        } else {
-            try {
-                javaEETMS.setTransactionCompeting(true);
+        try {
+            if (javaEETMS.isInvocationStackEmpty()) {
                 tm.rollback();
+            } else {
+                try {
+                    javaEETMS.setTransactionCompeting(true);
+                    tm.rollback();
 /**
-            } catch (InvocationException ex) {
-                assert false;
+                } catch (InvocationException ex) {
+                    assert false;
 **/
-            } finally {
-                javaEETMS.setTransactionCompeting(false);
+                } finally {
+                    javaEETMS.setTransactionCompeting(false);
+                }
             }
+        } finally {
+            javaEETMS.monitorTxCompleted0(obj, false);
         }
-
-        javaEETMS.monitorTxCompleted0(obj, false);
     }
 
     public int getStatus() throws SystemException {
