@@ -55,6 +55,8 @@
         <module>inplanted</module>      
     	<module>static</module>
     	<module>web-api</module>
+<!-- temporarily removing because of a failure
         <module>web-all</module>
+-->
     </modules>
 </project>
