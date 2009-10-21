@@ -54,9 +54,9 @@
             setPageSessionAttribute(key="convertToFalseList" value={"ReconnectEnabled"});
 
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
-            guiLog(message="***** objectNameStr = #{pageSession.objectNameStr}");
+            //guiLog(message="***** objectNameStr = #{pageSession.objectNameStr}");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-            guiLog(message="***** valueMap = #{pageSession.valueMap}");
+            //guiLog(message="***** valueMap = #{pageSession.valueMap}");
 
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
 
@@ -116,7 +116,7 @@
                                             availableList="#{pageSession.jmsHosts}",
                                             selectedCommaString="name",
                                             availableListResult="#{pageSession.jmsHostList}");
-                                        guiLog(message="***** jmsHostList = #{pageSession.jmsHostList}");
+                                        //guiLog(message="***** jmsHostList = #{pageSession.jmsHostList}");
                                     />
                                 </sun:dropDown>
                             </sun:property>

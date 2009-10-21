@@ -56,7 +56,7 @@
 
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
             getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"  valueMap="#{pageSession.valueMap2}")
-            guiLog(message="***** valueMap2 = #{pageSession.valueMap2}");
+            //guiLog(message="***** valueMap2 = #{pageSession.valueMap2}");
 
             mapPut(map="#{pageSession.valueMap}", key="ResAdapter", value="jmsra");
 
