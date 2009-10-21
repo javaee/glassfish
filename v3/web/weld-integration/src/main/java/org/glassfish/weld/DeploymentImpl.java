@@ -41,10 +41,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Collection;
+import java.util.ListIterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -97,7 +100,25 @@ public class DeploymentImpl implements Deployment {
     }
 
     public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass) {
-        return null;
+        List<BeanDeploymentArchive> beanDeploymentArchives = getBeanDeploymentArchives();
+        ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator(); 
+        while (lIter.hasNext()) {
+            BeanDeploymentArchive bda = lIter.next();
+            if (bda.getBeanClasses().contains(beanClass)) {
+                return bda;
+            }
+        }
+
+        // If the BDA was not found for the Class, create one and add it
+
+        String archiveId = archive.getURI().getPath();
+        List<Class<?>> wClasses = new ArrayList<Class<?>>();
+        List<URL> wUrls = new ArrayList<URL>();
+        Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
+        wClasses.add(beanClass);
+        BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(archiveId, wbClasses, wbUrls, ejbs);
+        beanDeploymentArchives.add(beanDeploymentArchive);
+        return beanDeploymentArchive;
     }
 
     public ServiceRegistry getServices() {
