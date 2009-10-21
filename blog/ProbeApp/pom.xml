@@ -6,7 +6,7 @@
     <artifactId>probe-app</artifactId>
     <packaging>war</packaging>
     <name>ProbeApp</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
 
     <build>
         <finalName>prober</finalName>
@@ -70,5 +70,11 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.flashlight</groupId>
+            <artifactId>flashlight-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 </project>
