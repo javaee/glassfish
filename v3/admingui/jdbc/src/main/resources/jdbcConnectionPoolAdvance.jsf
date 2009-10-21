@@ -38,9 +38,7 @@
     setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
 	setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
-        guiOnLoad="disableTableField();"
-        >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" guiOnLoad="disableTableField();" >
 <!define name="content">
     <event>
     <!beforeEncode
@@ -128,12 +126,11 @@
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolAdvance}" />
 </sun:form>
 
-
 <f:verbatim>
 <script type="text/javascript">
+    
     function disableTableField() {
         var val = document.getElementById("$pageSession{valMethod}").value;
-        alert(val);
         if (val == 'table'){
             enableComponent('$pageSession{tableTextField}', 'select');
             disableComponent('$pageSession{validCNTextField}', 'text');
