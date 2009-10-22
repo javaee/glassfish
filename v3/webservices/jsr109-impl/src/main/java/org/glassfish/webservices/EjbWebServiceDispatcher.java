@@ -74,6 +74,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.ejb.api.EJBInvocation;
 
 /**
  * Handles dispatching of ejb web service http invocations.
@@ -183,6 +184,10 @@ public class EjbWebServiceDispatcher implements EjbMessageDispatcher {
                     // Do ejb container pre-invocation and pre-handler
                     // logic
                     aInfo = endpointInfo2.getHandlerImplementor();
+
+                    // Set message context in invocation
+                    ((EJBInvocation) aInfo.getInv()).setMessageContext(msgContext);
+
 
                     // Set http response object so one-way operations will
                     // response before actual business method invocation.

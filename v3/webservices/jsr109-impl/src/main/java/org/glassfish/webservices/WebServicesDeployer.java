@@ -704,9 +704,11 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     public void clean(DeploymentContext dc) {
         super.clean(dc);
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
-        String name = params.name()  ;
-        if (downloadableArtifacts.getArtifacts(name).size()>0) {
-            downloadableArtifacts.clearArtifacts(name) ;
+        if (params != null)  {
+            String name = params.name()  ;
+            if (downloadableArtifacts.getArtifacts(name).size()>0) {
+                downloadableArtifacts.clearArtifacts(name) ;
+            }
         }
 
     }
