@@ -99,6 +99,7 @@ public class LoginCommand extends CLICommand {
         do {
             switch (DASUtils.pingDASWithAuth(programOpts, env)) {
             case NONE:
+                tryAgain = false;
                 break;
             case AUTHENTICATION:
                 if (tryAgain)   // already tried once
