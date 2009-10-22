@@ -72,7 +72,7 @@
 	<sun:hidden id="helpKey" value="uploadDev" />
         "<br/>
         <sun:title id="title2">
-            <!facet pageButtonsTop>
+            <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">
 #include "/common/applications/uploadButtons.inc"
                 </sun:panelGroup>
