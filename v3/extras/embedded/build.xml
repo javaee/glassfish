@@ -27,10 +27,20 @@ own identifying information: Portions Copyright [yyyy]
     <property name="modulesdir" value="${jardir}/glassfishv3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
 <!--    <property name="finaljar" value="${rootdir}/glassfish-embedded-all.jar"/> -->
+ 
 
     <target name="create.distribution">
 
-        <!-- E.g. the GFE Embedded API will be a jar file -->
+        <antcall target="makeJarDir"/>
+        <antcall target="removeJarsNotNeeded"/>
+        <antcall target="rejar"/>
+        <antcall target="addRars"/>
+
+        <attachArtifact file="${finaljar}"/>
+     </target>
+
+     <target name="makeJarDir">
+        <echo message="creating jar directory..."/>
         <copy todir="${jardir}">
             <fileset dir="${zipdir}">
                 <include name="*.jar"/>
@@ -43,7 +53,9 @@ own identifying information: Portions Copyright [yyyy]
                 <include name="*.zip"/>
             </fileset>
         </unzip>
+     </target>
 
+     <target name="removeJarsNotNeeded">
 	<delete file="${modulesdir}/javahelp.jar"/>
 	<delete file="${modulesdir}/upgrade-tool.jar"/>
 	<delete file="${modulesdir}/console-common-full-plugin.jar"/>
@@ -57,18 +69,26 @@ own identifying information: Portions Copyright [yyyy]
 	<delete file="${modulesdir}/console-jts-plugin.jar"/>
 	<delete file="${modulesdir}/console-web-plugin.jar"/>
 	<delete file="${modulesdir}/web-gui-plugin-common.jar"/>
+     </target>
 
-        <echo message="rejarring and processing metadata..."/>
+    <target name="rejar">
+       <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
-         <rejar destfile="${finaljar}" duplicate="preserve">
+
+        <rejar destfile="${finaljar}" duplicate="preserve">
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
-	    <!-- for connector support -->
-            <fileset dir="${jardir}/glassfishv3/glassfish"  includes="lib/install/applications/**/*" excludes="**/*.war"/>
             <manifest>
-                 <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
-             </manifest>
+                <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+            </manifest>
         </rejar>
-        
-        <attachArtifact file="${finaljar}"/>
-   </target>
+    </target>
+    <target name="addRars" if="includeRars">
+        <echo message="adding rars"/>
+        <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
+        <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>
+    </target>
+
 </project>
