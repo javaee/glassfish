@@ -181,7 +181,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "on")
-    @Pattern(regexp="(on|off)")
+    @Pattern(regexp="(on|off|disabled)")
     String getState();
 
     /**
