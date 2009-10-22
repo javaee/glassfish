@@ -81,6 +81,10 @@ public class Main implements BundleActivator
 {
     public static final String BUNDLES_DIR =
             "org.jvnet.hk2.osgimain.bundlesDir";
+
+    // a comma separated list of dir names relative to bundles dir
+    // that need to be excluded. e.g., autostart
+    public static final String EXCLUDED_SUBDIRS = "org.jvnet.hk2.osgimain.excludedSubDirs";
     public final static String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
     public final static String INHABITANTS_CACHE = "inhabitants";
     public static final String AUTO_START_BUNDLES_PROP =
@@ -93,11 +97,14 @@ public class Main implements BundleActivator
 
     private File bundlesDir;
 
+    // files under bundles dir structure that are excluded from processing
+    // if any of the excluded file is a directory, then entire content
+    // of the directiry is excluded.
+    private Collection<File> excludedSubDirs = new HashSet<File>();
+
     private List<URI> autoStartBundleLocations = new ArrayList<URI>();
     private Map<URI, Jar> currentManagedBundles = new HashMap<URI, Jar>();
     private static final String THIS_JAR_NAME = "osgi-main.jar";
-    private static final String FELIX_FILEINSTALL_DIR = "felix.fileinstall.dir";
-    private File felixWatchedDir;
 
     public void start(BundleContext context) throws Exception
     {
@@ -109,7 +116,16 @@ public class Main implements BundleActivator
             URI bundleURI = new File(bundlesDir, bundleRelPath).toURI().normalize();
             autoStartBundleLocations.add(bundleURI);
         }
+
+        String excludedFilesProp = context.getProperty(EXCLUDED_SUBDIRS);
+        if (excludedFilesProp != null) {
+            for (String s : excludedFilesProp.split(",")) {
+                excludedSubDirs.add(new File(bundlesDir, s.trim()));
+            }
+        }
+
         traverse();
+
         for (URI location : autoStartBundleLocations) {
             long id = currentManagedBundles.get(location).getBundleId();
             if (id < 0) {
@@ -156,20 +172,16 @@ public class Main implements BundleActivator
 
     private Set<Jar> discoverJars() {
         final Set<Jar> jars = new HashSet<Jar>();
-        String felixWatchedDirName = context.getProperty(FELIX_FILEINSTALL_DIR);
-        felixWatchedDir = felixWatchedDirName != null ?
-         new File(felixWatchedDirName) : null;
         bundlesDir.listFiles(new FileFilter(){
             final String JAR_EXT = ".jar";
-            public boolean accept(File pathname)
+            public boolean accept(File file)
             {
-                // We exclude files belonging to felix fileinstall watched dir
-                if (pathname.isDirectory() && !pathname.equals(felixWatchedDir)) {
-                    pathname.listFiles(this);
-                } else if (pathname.isFile()
-                        && pathname.getName().endsWith(JAR_EXT)
-                        && !pathname.getName().equals(THIS_JAR_NAME)) {
-                    jars.add(new Jar(pathname));
+                if (file.isDirectory() && !excludedSubDirs.contains(file)) {
+                    file.listFiles(this);
+                } else if (file.isFile()
+                        && file.getName().endsWith(JAR_EXT)
+                        && !file.getName().equals(THIS_JAR_NAME)) {
+                    jars.add(new Jar(file));
                     return true;
                 }
                 return false;
@@ -266,8 +278,8 @@ public class Main implements BundleActivator
                 // this is highly unlikely, but can't be ruled out.
                 continue;
             }
-            if (felixWatchedDir.equals(new File(jar.getPath()).getParentFile())) {
-                // This is a bundle which is managed by Felix FileInstall.
+            if (isExcludedFile(new File(jar.getPath()))) {
+                // This is a bundle which is excluded from our processing.
                 // The reason we have not discovered this jar is because
                 // we have exclueded them in discoverJars(). So, don't uninstall
                 // them.
@@ -354,5 +366,16 @@ public class Main implements BundleActivator
             File inhabitantsCache = new File(cacheDir, INHABITANTS_CACHE);
             if (inhabitantsCache.exists()) inhabitantsCache.delete();
         }
+    }
+
+    private boolean isExcludedFile(File f) {
+        String path = f.getPath();
+        for (File excludedSubDir : excludedSubDirs) {
+            String excludedSubDirPath = excludedSubDir.getPath();
+            if (path.regionMatches(0, excludedSubDirPath, 0, excludedSubDirPath.length())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
