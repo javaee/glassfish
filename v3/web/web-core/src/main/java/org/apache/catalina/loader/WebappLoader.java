@@ -693,8 +693,10 @@ public class WebappLoader
                             "Error registering jndi stream handler", e);
                 } catch (Throwable t) {
                     // This is likely a dual registration
-                    log.info("Dual registration of jndi stream handler: "
-                            + t.getMessage());
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Dual registration of jndi stream handler: " +
+                            t.getMessage());
+                    }
                 }
             }
         }
