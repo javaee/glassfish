@@ -40,8 +40,14 @@ import com.sun.ejte.ccl.reporter.*;
 /**
  * Unit test for:
  *
- *   https://glassfish.dev.java.net/issues/show_bug.cgi?id=3710
- *   ("Restore Virtual Server's Root Context Behavior from GlassFish v1")
+ *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=3710
+ *  ("Restore Virtual Server's Root Context Behavior from GlassFish v1")
+ *
+ * and
+ *
+ *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=10395
+ *  ("contextPath for default-web-app is correct in servlet, wrong when
+ *  forwarded to jsp")
  */
 public class WebTest {
 
@@ -81,12 +87,22 @@ public class WebTest {
     private void invokeAtRootContext() throws Exception {
         
         URL url = new URL("http://" + host  + ":" + port +
-                          "/CheckRequestPath?run=first");
+            "/checkRequestPath?run=first");
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
-
         int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Wrong response code. Expected: 200"
+                                + ", received: " + responseCode);
+        }
+
+        url = new URL("http://" + host  + ":" + port +
+            "/dispatchFrom?run=first");
+        System.out.println("Connecting to: " + url.toString());
+        conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             throw new Exception("Wrong response code. Expected: 200"
                                 + ", received: " + responseCode);
@@ -96,12 +112,22 @@ public class WebTest {
     private void invokeAtContextRoot() throws Exception {
         
         URL url = new URL("http://" + host  + ":" + port + contextRoot +
-                          "/CheckRequestPath?run=second");
+            "/checkRequestPath?run=second");
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
-
         int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Wrong response code. Expected: 200"
+                                + ", received: " + responseCode);
+        }
+
+        url = new URL("http://" + host  + ":" + port + contextRoot +
+            "/dispatchFrom?run=second");
+        System.out.println("Connecting to: " + url.toString());
+        conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             throw new Exception("Wrong response code. Expected: 200"
                                 + ", received: " + responseCode);

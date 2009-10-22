@@ -44,9 +44,29 @@
         <servlet-class>CheckRequestPath</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>DispatchFrom</servlet-name>
+        <servlet-class>DispatchFrom</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>DispatchTo</servlet-name>
+        <servlet-class>DispatchTo</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>CheckRequestPath</servlet-name>
-        <url-pattern>/CheckRequestPath</url-pattern>
+        <url-pattern>/checkRequestPath</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>DispatchFrom</servlet-name>
+        <url-pattern>/dispatchFrom</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>DispatchTo</servlet-name>
+        <url-pattern>/dispatchTo</url-pattern>
     </servlet-mapping>
 
 </web-app>
