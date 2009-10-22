@@ -243,16 +243,21 @@ public class ManagedBeanHandler extends AbstractHandler {
 
         managedBeanCtx.unsetInterceptorMode();
 
+        Class nextIntClass = interceptorClass;
+        while(nextIntClass != Object.class) {
+            Method interceptorAroundInvoke =
+                getMethodForMethodAnnotation(nextIntClass, "javax.interceptor.AroundInvoke");
+            if( interceptorAroundInvoke != null ) {
 
-        Method interceptorAroundInvoke =
-            getMethodForMethodAnnotation(interceptorClass, "javax.interceptor.AroundInvoke");
-        if( interceptorAroundInvoke != null ) {
-            // TODO process superclasses for AroundInvoke
-            LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-            desc.setLifecycleCallbackClass(interceptorClass.getName());
-            desc.setLifecycleCallbackMethod(interceptorAroundInvoke.getName());
-            interceptorDesc.addAroundInvokeDescriptor(desc);
+                LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+                desc.setLifecycleCallbackClass(nextIntClass.getName());
+                desc.setLifecycleCallbackMethod(interceptorAroundInvoke.getName());
+                interceptorDesc.addAroundInvokeDescriptor(desc);
+            }
+
+            nextIntClass = nextIntClass.getSuperclass();
         }
+
 
         return interceptorDesc;
     }

@@ -119,13 +119,27 @@ public class OSGiObjectInputOutputStreamFactoryImpl
         }
     }
 
-    public Class<?> resolveClass(ObjectInputStream in, ObjectStreamClass desc)
+    public Class<?> resolveClass(ObjectInputStream in, final ObjectStreamClass desc)
             throws IOException, ClassNotFoundException
     {
         long bundleId = in.readLong();
         if (bundleId != NOT_A_BUNDLE_ID) {
-            Bundle b = ctx.getBundle(bundleId);
-            return b.loadClass(desc.getName());
+            final Bundle b = ctx.getBundle(bundleId);
+
+            if (System.getSecurityManager() == null) {
+                return b.loadClass(desc.getName());
+            } else {
+                try {
+                    return (Class) java.security.AccessController.doPrivileged(
+                        new java.security.PrivilegedExceptionAction()  {
+                            public java.lang.Object run() throws ClassNotFoundException {
+                               return b.loadClass(desc.getName());
+                            }
+                        });
+                } catch(java.security.PrivilegedActionException pae) {
+                    throw (ClassNotFoundException) pae.getException();    
+                }
+            }
         } else {
             return null;
         }

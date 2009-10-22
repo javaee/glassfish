@@ -184,7 +184,13 @@ public class AsmSerializableBeanGenerator
 
         classData = cw.toByteArray();
 
-        loadedClass = makeClass(subclassName, classData, baseClass.getProtectionDomain(), loader);
+        loadedClass = (Class) java.security.AccessController.doPrivileged(
+                        new java.security.PrivilegedAction() {
+                            public java.lang.Object run() {
+                                return makeClass(subclassName, classData, baseClass.getProtectionDomain(), loader);
+                            }
+                        }
+                );
 
         return loadedClass;
 

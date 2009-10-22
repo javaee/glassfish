@@ -83,7 +83,7 @@ public class EjbOptionalIntfGenerator
         this.loader = loader;
     }
 
-    public Class loadClass(String name)
+    public Class loadClass(final String name)
         throws ClassNotFoundException
     {
         Class clz = null;
@@ -92,11 +92,19 @@ public class EjbOptionalIntfGenerator
             clz = loader.loadClass(name);
         } catch(ClassNotFoundException cnfe) {
 
-            byte[] classData = (byte []) classMap.get(name);
+            final byte[] classData = (byte []) classMap.get(name);
 
             if (classData != null) {
 
-                clz = makeClass(name, classData, protectionDomain, loader);
+                clz = (Class) java.security.AccessController.doPrivileged(
+                        new java.security.PrivilegedAction() {
+                            public java.lang.Object run() {
+                                return makeClass(name, classData, protectionDomain, loader);
+                            }
+                        }
+                );
+
+
             }
         }
 

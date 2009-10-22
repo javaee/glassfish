@@ -452,7 +452,7 @@ public class ResourceHandler extends AbstractResourceHandler {
 
             desc.setType(resourceType.getName());
             desc.setMappedName(annotation.mappedName());
-            desc.setLookupName(annotation.lookup());
+            desc.setLookupName(getResourceLookupValue(annotation));
 
         } else if( dependencyType == DependencyType.MESSAGE_DESTINATION_REF ) {
 
@@ -460,14 +460,14 @@ public class ResourceHandler extends AbstractResourceHandler {
                 (MessageDestinationReferenceDescriptor) desc;
             msgDestRef.setDestinationType(resourceType.getName());
             msgDestRef.setMappedName(annotation.mappedName());
-            msgDestRef.setLookupName(annotation.lookup());
+            msgDestRef.setLookupName(getResourceLookupValue(annotation));
         } else if( dependencyType == DependencyType.RESOURCE_ENV_REF ) {
 
             JmsDestinationReferenceDescriptor jmsDestRef =
                 (JmsDestinationReferenceDescriptor) desc;
             jmsDestRef.setRefType(resourceType.getName());
             jmsDestRef.setMappedName(annotation.mappedName());
-            jmsDestRef.setLookupName(annotation.lookup());
+            jmsDestRef.setLookupName(getResourceLookupValue(annotation));
         } else if( dependencyType == DependencyType.RESOURCE_REF ) {
             
             desc.setType(resourceType.getName());
@@ -489,9 +489,24 @@ public class ResourceHandler extends AbstractResourceHandler {
             
             resRef.setSharingScope(sharable);
             resRef.setMappedName(annotation.mappedName());
-            resRef.setLookupName(annotation.lookup());
+            resRef.setLookupName(getResourceLookupValue(annotation));
         }
         
         return;
     }
+
+    private String getResourceLookupValue(Resource annotation) {
+
+        String lookupValue = "";
+        try {
+            lookupValue = annotation.lookup();
+        } catch(NoSuchMethodError nsme) {
+           // Probably means lib endorsed dir is not set and an older version of Resource
+           // is being picked up from JDK.  Don't treat this as a fatal error.
+        }
+
+        return lookupValue;
+
+    }
+
 }
