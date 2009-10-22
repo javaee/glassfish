@@ -46,6 +46,12 @@ public class ConfigResource extends TemplateResource<Config> {
 		resource.setEntity(getEntity().getJavaConfig() );
 		return resource;
 	}
+	@Path("container/")
+	public ListContainerResource getContainerResource() {
+		ListContainerResource resource = resourceContext.getResource(ListContainerResource.class);
+		resource.setEntity(getEntity().getContainers() );
+		return resource;
+	}
 	@Path("monitoring-service/")
 	public MonitoringServiceResource getMonitoringServiceResource() {
 		MonitoringServiceResource resource = resourceContext.getResource(MonitoringServiceResource.class);

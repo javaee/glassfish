@@ -16,6 +16,12 @@ import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Module;
 public class ModuleResource extends TemplateResource<Module> {
 
+	@Path("engine/")
+	public ListEngineResource getEngineResource() {
+		ListEngineResource resource = resourceContext.getResource(ListEngineResource.class);
+		resource.setEntity(getEntity().getEngines() );
+		return resource;
+	}
 	@Path("property/")
 	public ListPropertyResource getPropertyResource() {
 		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);

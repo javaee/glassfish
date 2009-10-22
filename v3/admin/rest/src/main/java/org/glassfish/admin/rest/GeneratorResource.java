@@ -345,8 +345,6 @@ public class GeneratorResource {
                 //String childbeanName = getBeanName(a);
 
                 ConfigModel childModel = node.getModel();
-                String childbeanName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1,
-                        childModel.targetTypeName.length());
 
                 String getterName = getBeanName(a);
 
@@ -357,7 +355,6 @@ public class GeneratorResource {
                 System.out.println("ConfigModel.Node node xlmname=" + prop.xmlName());
                 if (childModel.targetTypeName.endsWith("Named")) {
                     a = "application";
-                    childbeanName = "Application";
                     getterName = "Applications";
                     try {
                         Class<?> subType = childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName); ///  a shoulf be the typename
@@ -378,21 +375,26 @@ public class GeneratorResource {
 
                 }
 
+                String childbeanName = childModel.targetTypeName.substring(childModel.targetTypeName.lastIndexOf(".") + 1,
+                        childModel.targetTypeName.length());
+
                 if (!childModel.targetTypeName.endsWith("Resource")) {
                     String prefix = "";
                     if (prop.isCollection()) {
                         prefix = "List";
                     }
 
-                    if (!a.equals("*")) {
-                        out.write("\t@Path(\"" + a + "/\")\n");
-                        out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
-
-                        out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
-                        out.write("\t\tresource.setEntity(getEntity().get" + getterName + "() );\n");
-                        out.write("\t\treturn resource;\n");
-                        out.write("\t}\n");
+                    if (a.equals("*")) {
+                        getterName = childbeanName + "s";
                     }
+
+                    out.write("\t@Path(\"" + childModel.getTagName() + "/\")\n");
+                    out.write("\tpublic " + prefix + childbeanName + "Resource get" + childbeanName + "Resource() {\n");
+
+                    out.write("\t\t" + prefix + childbeanName + "Resource resource = resourceContext.getResource(" + prefix + childbeanName + "Resource.class);\n");
+                    out.write("\t\tresource.setEntity(getEntity().get" + getterName + "() );\n");
+                    out.write("\t\treturn resource;\n");
+                    out.write("\t}\n");
 
                     if (prop.isCollection()) {
                         generateList(childModel);
