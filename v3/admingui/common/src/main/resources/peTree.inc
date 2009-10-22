@@ -67,7 +67,7 @@ update tool    updatetool 800
 
 //<sun:body  onLoad="fixTree(); setTreeWidth('#{treeId}');" >
   <sun:form id="treeForm">
-    <h:commandButton id="update" style="visibility: hidden">
+    <h:commandButton id="update" style="display: none;">
 
 	<!-- KEEP THIS IN SYNCH WITH clusterProfileTree.jsf -->
 	<!command
@@ -205,10 +205,9 @@ update tool    updatetool 800
 
 //</sun:body>
 
-<f:verbatim>
 <!-- We only want to set the width for IE browser only. -->
+<f:verbatim>
 <script type="text/javascript">
-
 function setTreeWidth(treeId) {
     var version = navigator.appVersion;
     var ix = version.indexOf('MSIE');
