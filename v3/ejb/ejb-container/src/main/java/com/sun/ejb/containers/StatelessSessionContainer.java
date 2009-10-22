@@ -463,8 +463,6 @@ public class StatelessSessionContainer
 
             // create SessionContext and set it in the EJB
             context = new SessionContextImpl(ejb, this);
-            context.setInterceptorInstances(
-                    interceptorManager.createInterceptorInstances());
             
             // this allows JNDI lookups from setSessionContext, ejbCreate
             ejbInv = super.createEjbInvocation();
@@ -484,11 +482,6 @@ public class StatelessSessionContainer
             // have the same "operations allowed" permissions as
             // setSessionContext.
             injectEjbInstance(ejb, context);
-
-            for (Object interceptorInstance : context.getInterceptorInstances()) {
-                injectionManager.injectInstance(interceptorInstance,
-                        ejbDescriptor, false);
-            }
 
             if ( isRemote ) {
 

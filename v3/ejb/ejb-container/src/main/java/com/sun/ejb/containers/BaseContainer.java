@@ -763,7 +763,7 @@ public abstract class BaseContainer
                 addSystemInterceptorProxy();
             }
 
-            initializeInterceptorManager();
+            // NOTE : InterceptorManager initialization delayed until transition to START state.
             
             initializeInvocationInfo();
 
@@ -827,8 +827,7 @@ public abstract class BaseContainer
     }
 
     protected final void createCallFlowAgent(ComponentType compType) {
-        /*TODO this.callFlowAgent = theSwitch.getCallFlowAgent();
-         */
+        
         this.callFlowInfo = new CallFlowInfoImpl(
                 this, ejbDescriptor, compType);
     }
@@ -838,7 +837,50 @@ public abstract class BaseContainer
     }
 
     public final void setStartedState() {
+
+        if( containerState == CONTAINER_STARTED ) {
+            return;
+        }
+
+         // NOTE : we used to initialize interceptor manager in the ctor but we need to delay
+         // the initialization to account for the possiblity of a 299-enabled app.  In
+         // that case, the 299-defined ejb interceptors are not added until the
+         // deployment load() phase.   That's ok, as long as everything is initialized
+         // before any bean instances are created or any ejb invocations take place.
+         // Therefore, moving the initialization to the point that we transition into the
+         // ejb container START state.
+
+        try {
+
+            initializeInterceptorManager();
+
+            for(Object o : invocationInfoMap.values()) {
+                InvocationInfo next = (InvocationInfo) o;
+                setInterceptorChain(next);
+            }
+            for(Object o : this.webServiceInvocationInfoMap.values()) {
+                InvocationInfo next = (InvocationInfo) o;
+                setInterceptorChain(next);
+            }
+
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
+
         containerState = CONTAINER_STARTED;
+    }
+
+    private void setInterceptorChain(InvocationInfo info) {
+        if( info.aroundMethod != null ) {
+            MethodDescriptor md = new MethodDescriptor(info.aroundMethod, MethodDescriptor.EJB_BEAN);
+            if (info.isEjbTimeout) {
+                info.interceptorChain =
+                        interceptorManager.getAroundTimeoutChain(md, info.aroundMethod);
+            } else {
+                info.interceptorChain =
+                        interceptorManager.getAroundInvokeChain(md, info.aroundMethod);
+            }
+        }
     }
     
     public final void setStoppedState() {
@@ -1546,18 +1588,42 @@ public abstract class BaseContainer
 
         JCDIService jcdiService = h.getByContract(JCDIService.class);
 
-        // TODO handle interceptors
+        EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
 
-        if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbDescriptor.getEjbBundleDescriptor())) {
+        Object[] interceptorInstances = null;
+
+        if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
 
             JCDIService.JCDIInjectionContext jcdiCtx =
                     jcdiService.injectEJBInstance(ejbDescriptor, instance);
 
             context.setJCDIInjectionContext(jcdiCtx);
 
+            Class[] interceptorClasses = interceptorManager.getInterceptorClasses();
+
+            interceptorInstances = new Object[interceptorClasses.length];
+
+            for(int i = 0; i < interceptorClasses.length; i++) {
+                // 299 impl will instantiate and inject the instance, but PostConstruct
+                // is still our responsibility
+                interceptorInstances[i] = jcdiService.createManagedObject(interceptorClasses[i],
+                        ejbBundle, false).getInstance();
+            }
+
+            interceptorManager.initializeInterceptorInstances(interceptorInstances);
+
         } else {
-             injectionManager.injectInstance(instance, ejbDescriptor, false);
+            injectionManager.injectInstance(instance, ejbDescriptor, false);
+
+            interceptorInstances = interceptorManager.createInterceptorInstances();
+
+            for (Object interceptorInstance : interceptorInstances) {
+				injectionManager.injectInstance(interceptorInstance,
+						ejbDescriptor, false);
+			}
         }
+
+        context.setInterceptorInstances(interceptorInstances);
 
     }
 
@@ -2729,15 +2795,12 @@ public abstract class BaseContainer
                 beanMethod = method;
             }
 
-            if (beanMethod != null) {
-                MethodDescriptor md = new MethodDescriptor(beanMethod, MethodDescriptor.EJB_BEAN);
-                if (isEjbTimeout) {
-                    info.interceptorChain = 
-                            interceptorManager.getAroundTimeoutChain(md, beanMethod);
-                } else {
-                    info.interceptorChain = 
-                            interceptorManager.getAroundInvokeChain(md, beanMethod);
-                }
+            if( beanMethod != null ) {
+                // Can't set AroundInvoke/AroundTimeout chains here, but set up some
+                // state on info object so it can be done right after InterceptorManager
+                // is initialized. 
+                info.aroundMethod = beanMethod;
+                info.isEjbTimeout = isEjbTimeout;
             }
 
 
@@ -3311,6 +3374,14 @@ public abstract class BaseContainer
                         addInvocationInfo(method,
                                           MethodDescriptor.EJB_LOCALHOME,
                                           ejbOptionalLocalBusinessHomeIntf);
+                    }
+
+                    if( !hasLocalBusinessView ) {
+                        // Add dummy local business interface remove method so that internal
+                        // container remove operations will work.
+                        addInvocationInfo(this.ejbIntfMethods[EJBLocalObject_remove],
+                                MethodDescriptor.EJB_LOCAL,
+                                javax.ejb.EJBLocalObject.class);                 
                     }
                 }
             }

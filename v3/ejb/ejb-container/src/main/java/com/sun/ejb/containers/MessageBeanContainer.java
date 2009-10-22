@@ -676,8 +676,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 
 			// create MessageDrivenContext and set it in the EJB
 			context = new MessageBeanContextImpl(ejb, this);
-			context.setInterceptorInstances(interceptorManager
-					.createInterceptorInstances());
+			
 
 			// java:comp/env lookups are allowed from here on...
 			inv = invFactory.create(ejb, context);
@@ -696,10 +695,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 			// have the same "operations allowed" permissions as
 			// setMessageDrivenContext.
 			injectEjbInstance(ejb, context);
-			for (Object interceptorInstance : context.getInterceptorInstances()) {
-				injectionManager.injectInstance(interceptorInstance,
-						ejbDescriptor, false);
-			}
+			
 
 			// Set flag in context so UserTransaction can
 			// be used from ejbCreate. Didn't want to add

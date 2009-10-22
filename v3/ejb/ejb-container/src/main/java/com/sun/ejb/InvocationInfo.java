@@ -87,6 +87,11 @@ public class InvocationInfo {
 
     public InterceptorManager.InterceptorChain interceptorChain;
 
+    // method associated with @AroundInvoke or @AroundTimeout
+    public Method aroundMethod;
+    public boolean isEjbTimeout;
+
+
     // Only applies to EJB 3.0 SFSBs
     public EjbRemovalInfo     removalInfo;
 
@@ -95,6 +100,8 @@ public class InvocationInfo {
     public MethodLockInfo methodLockInfo;
 
     private boolean asyncMethodFlag;
+
+
 
     public InvocationInfo() {}
     

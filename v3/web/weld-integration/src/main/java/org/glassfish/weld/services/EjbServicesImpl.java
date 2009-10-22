@@ -39,8 +39,12 @@ package org.glassfish.weld.services;
 
 import com.sun.enterprise.deployment.*;
 
+import java.lang.reflect.Method;
+
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.LinkedList;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -53,6 +57,19 @@ import org.jboss.weld.ejb.api.SessionObjectReference;
 import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
 import org.jboss.weld.ejb.spi.InterceptorBindings;
+
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.enterprise.inject.spi.InterceptionType;
+import static javax.enterprise.inject.spi.InterceptionType.*;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.PrePassivate;
+import javax.ejb.PostActivate;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -129,9 +146,202 @@ public class EjbServicesImpl implements EjbServices
 
     }
 
-    // TODO  ****  Implement
-    public void registerInterceptors(EjbDescriptor<?> ejbDescriptor, InterceptorBindings interceptorBindings) {
+    public void registerInterceptors(EjbDescriptor<?> ejbDesc, InterceptorBindings interceptorBindings) {
 
+        // Work around bug that ejbDesc might be internal 299 descriptor.
+        if( ejbDesc instanceof org.jboss.weld.ejb.InternalEjbDescriptor ) {
+            ejbDesc = ((org.jboss.weld.ejb.InternalEjbDescriptor)ejbDesc).delegate();
+        }
+
+         com.sun.enterprise.deployment.EjbDescriptor glassfishEjbDesc = (com.sun.enterprise.deployment.EjbDescriptor)
+                ((EjbDescriptorImpl) ejbDesc).getEjbDescriptor();
+
+        // Convert to EjbInterceptor
+
+        // First create master list of EjbInterceptor descriptors
+        for(Interceptor next : interceptorBindings.getAllInterceptors()) {
+
+            // Add interceptor to list all interceptors in ejb descriptor
+            if( glassfishEjbDesc.hasInterceptorClass(next.getBeanClass().getName())) {
+                // TODO temporarily work around bug that registerInterceptors() is called more than once for
+                // each bean.   If we encounter an interceptor that has already been registered just
+                // return.
+                return;
+            }
+
+            EjbInterceptor ejbInt = makeEjbInterceptor(next, glassfishEjbDesc.getEjbBundleDescriptor());
+            glassfishEjbDesc.addInterceptorClass(ejbInt);
+
+        }
+
+        // Create ordered list of EjbInterceptor for each lifecycle interception type and append to
+        // EjbDescriptor.   299 interceptors are always added after any interceptors defined via
+        // EJB-defined metadata, so the ordering will be correct since all the ejb interceptors
+        // have already been processed.
+        List<EjbInterceptor> postConstructChain =
+                makeInterceptorChain(InterceptionType.POST_CONSTRUCT,
+                        interceptorBindings.getLifecycleInterceptors(InterceptionType.POST_CONSTRUCT),
+                                glassfishEjbDesc);
+        glassfishEjbDesc.appendToInterceptorChain(postConstructChain);
+
+        List<EjbInterceptor> preDestroyChain =
+                makeInterceptorChain(InterceptionType.PRE_DESTROY,
+                        interceptorBindings.getLifecycleInterceptors(InterceptionType.PRE_DESTROY),
+                                glassfishEjbDesc);
+        glassfishEjbDesc.appendToInterceptorChain(preDestroyChain);
+
+        List<EjbInterceptor> prePassivateChain =
+                makeInterceptorChain(InterceptionType.PRE_PASSIVATE,
+                        interceptorBindings.getLifecycleInterceptors(InterceptionType.PRE_PASSIVATE),
+                                glassfishEjbDesc);
+        glassfishEjbDesc.appendToInterceptorChain(prePassivateChain);
+
+        List<EjbInterceptor> postActivateChain =
+                makeInterceptorChain(InterceptionType.POST_ACTIVATE,
+                        interceptorBindings.getLifecycleInterceptors(InterceptionType.POST_ACTIVATE),
+                                glassfishEjbDesc);
+        glassfishEjbDesc.appendToInterceptorChain(postActivateChain);
+
+
+        // 299-provided list is organized as per-method.  Append each method chain to EjbDescriptor.
+        
+        Class ejbBeanClass = null;
+
+        try {
+            ClassLoader cl = glassfishEjbDesc.getEjbBundleDescriptor().getClassLoader();
+            ejbBeanClass = cl.loadClass(glassfishEjbDesc.getEjbClassName());
+
+        } catch(ClassNotFoundException cnfe) {
+            throw new IllegalStateException("Cannot load bean class " + glassfishEjbDesc.getEjbClassName(),
+                    cnfe);
+        }
+
+        for(Method m : ejbBeanClass.getMethods()) {
+            List<EjbInterceptor> aroundInvokeChain =
+                makeInterceptorChain(InterceptionType.AROUND_INVOKE,
+                        interceptorBindings.getMethodInterceptors(InterceptionType.AROUND_INVOKE, m),
+                                glassfishEjbDesc);
+            glassfishEjbDesc.addMethodLevelChain(aroundInvokeChain, m, true);
+
+            /** TODO comment out until 299 impl issue with not recognizing AROUND_TIMEOUT enum is resolved
+            List<EjbInterceptor> aroundTimeoutChain =
+                makeInterceptorChain(InterceptionType.AROUND_TIMEOUT,
+                        interceptorBindings.getMethodInterceptors(InterceptionType.AROUND_TIMEOUT, m),
+                                glassfishEjbDesc);
+            glassfishEjbDesc.addMethodLevelChain(aroundTimeoutChain, m, false);
+             **/
+        }                                     
+
+        return;
+
+    }
+
+    private List<EjbInterceptor> makeInterceptorChain(InterceptionType interceptionType,
+                                         List<Interceptor<?>> lifecycleList,
+                                         com.sun.enterprise.deployment.EjbDescriptor ejbDesc ) {
+
+        List<EjbInterceptor> ejbInterceptorList = new LinkedList<EjbInterceptor>();
+
+        if( lifecycleList == null ) {
+            return ejbInterceptorList;
+        }
+
+        for(Interceptor next : lifecycleList ) {
+
+            EjbInterceptor ejbInt = makeEjbInterceptor(next, ejbDesc.getEjbBundleDescriptor());
+            LifecycleCallbackDescriptor lifecycleDesc = new LifecycleCallbackDescriptor();
+
+            lifecycleDesc.setLifecycleCallbackClass(next.getBeanClass().getName());
+            lifecycleDesc.setLifecycleCallbackMethod(getInterceptorMethod(next.getBeanClass(),
+                    getInterceptorAnnotationType(interceptionType)));
+
+            switch(interceptionType) {
+                case POST_CONSTRUCT :
+                    ejbInt.addPostConstructDescriptor(lifecycleDesc);
+                    break;
+                case PRE_DESTROY :
+                    ejbInt.addPreDestroyDescriptor(lifecycleDesc);
+                    break;
+                case PRE_PASSIVATE :
+                    ejbInt.addPrePassivateDescriptor(lifecycleDesc);
+                    break;
+                case POST_ACTIVATE :
+                    ejbInt.addPostActivateDescriptor(lifecycleDesc);
+                    break;
+                case AROUND_INVOKE :
+                    ejbInt.addAroundInvokeDescriptor(lifecycleDesc);
+                    break;
+                case AROUND_TIMEOUT :
+                    ejbInt.addAroundTimeoutDescriptor(lifecycleDesc);
+                    break;
+                default :
+                      throw new IllegalArgumentException("Invalid lifecycle interception type " +
+                        interceptionType);
+            }
+
+            ejbInterceptorList.add(ejbInt);
+
+        }
+
+        return ejbInterceptorList;
+
+    }
+
+    private Class getInterceptorAnnotationType(InterceptionType interceptionType) {
+
+        switch(interceptionType) {
+            case POST_CONSTRUCT :
+                return PostConstruct.class;
+            case PRE_DESTROY :
+                return PreDestroy.class;
+            case PRE_PASSIVATE :
+                return PrePassivate.class;
+            case POST_ACTIVATE :
+                return PostActivate.class;
+            case AROUND_INVOKE :
+                return AroundInvoke.class;
+            case AROUND_TIMEOUT :
+                return AroundTimeout.class;
+        }
+
+        throw new IllegalArgumentException("Invalid interception type " +
+                        interceptionType);
+    }
+
+    private String getInterceptorMethod(Class interceptorClass, Class annotation) {
+
+        for(Method next : interceptorClass.getDeclaredMethods()) {
+            if( next.getAnnotation(annotation) != null ) {
+                return next.getName();
+            }
+        }
+
+        throw new IllegalStateException("Interceptor Class " + interceptorClass + " has no method annotated with " +
+            annotation);
+
+    }
+
+    private EjbInterceptor makeEjbInterceptor(Interceptor interceptor, EjbBundleDescriptor bundle) {
+
+        EjbInterceptor ejbInt = new EjbInterceptor();
+        ejbInt.setBundleDescriptor(bundle);
+        ejbInt.setInterceptorClassName(interceptor.getBeanClass().getName());
+
+        return ejbInt;
+    }
+
+    private EjbInterceptor getEjbInterceptorByClassName(Set<EjbInterceptor> allInterceptors, String name) {
+
+
+
+        for(EjbInterceptor next : allInterceptors) {
+
+            if( next.getInterceptorClassName().equals(name) ) {
+                return next;
+            }
+        }
+
+        throw new IllegalArgumentException("No interceptor with class name " + name);
     }
 
     public void cleanup() {

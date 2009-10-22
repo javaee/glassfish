@@ -473,8 +473,6 @@ public abstract class AbstractSingletonContainer
 
             // create SessionContext and set it in the EJB
             context = new SingletonContextImpl(ejb, this);
-            context.setInterceptorInstances(
-                    interceptorManager.createInterceptorInstances());
             
             // this allows JNDI lookups from setSessionContext, ejbCreate
             ejbInv = createEjbInvocation();
@@ -488,10 +486,6 @@ public abstract class AbstractSingletonContainer
             // have the same "operations allowed" permissions as
             // setSessionContext.
             injectEjbInstance(ejb, context);
-            for (Object interceptorInstance : context.getInterceptorInstances()) {
-                injectionManager.injectInstance(interceptorInstance,
-                        ejbDescriptor, false);
-            }
 
             if ( isRemote ) {
 

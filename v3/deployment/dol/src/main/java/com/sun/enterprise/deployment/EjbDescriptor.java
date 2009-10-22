@@ -649,6 +649,25 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         }
     }
 
+    public boolean hasInterceptorClass(String interceptorClassName) {
+
+       for(String next : getInterceptorClassNames() ) {
+           if( next.equals(interceptorClassName) ) {
+               return true;
+           }
+       }
+
+       return false;
+    }
+
+    public void addInterceptorClass(EjbInterceptor interceptor) {
+        allInterceptorClasses.add(interceptor);    
+    }
+
+    public void appendToInterceptorChain(List<EjbInterceptor> chain) {
+        interceptorChain.addAll(chain);
+    }
+
     /**
      * Return an unordered set of interceptor descriptors for this bean.
      * This list does not include interceptor info for the bean
@@ -753,6 +772,40 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         }
 
         return aroundTimeoutInterceptors;
+    }
+
+    public void addMethodLevelChain(List<EjbInterceptor> chain, Method m, boolean aroundInvoke) {
+
+        if( chain.size() == 0 ) {
+            return;
+        }
+
+        MethodDescriptor methodDesc = new MethodDescriptor(m);
+
+        List<EjbInterceptor> existingChain = null;
+
+        for (MethodDescriptor next : methodInterceptorsMap.keySet()) {
+            if (next.implies(methodDesc)) {
+                existingChain = methodInterceptorsMap.get(methodDesc);
+                break;
+            }
+        }
+
+        if( existingChain != null ) {
+            existingChain.addAll(chain);
+        } else {
+            List<EjbInterceptor> newChain = new LinkedList<EjbInterceptor>();
+            for(EjbInterceptor interceptor : interceptorChain) {
+                boolean include = aroundInvoke ?
+                        interceptor.hasAroundInvokeDescriptor() :
+                        interceptor.hasAroundTimeoutDescriptor();
+                if( include ) {
+                    newChain.add(interceptor);
+                }
+            }
+            newChain.addAll(chain);
+            methodInterceptorsMap.put(methodDesc, newChain);
+        }
     }
 
     private List<EjbInterceptor> getClassOrMethodInterceptors

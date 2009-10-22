@@ -151,6 +151,9 @@ public class InterceptorManager {
 
     }
 
+    // Used when InterceptorManager should instantiate interceptor instances
+    // Alternatively, if the caller needs to instantiate the instances, call
+    // getInterceptorClasses() and then initializeInterceptorInstances(Object[])
     public Object[] createInterceptorInstances() {
         int size = serializableInterceptorClasses.length;
         Object[] interceptors = new Object[size];
@@ -162,9 +165,6 @@ public class InterceptorManager {
             Class clazz = serializableInterceptorClasses[index];
             try {
                 interceptors[index] = clazz.newInstance();
-                if( SystemInterceptorProxy.class.isAssignableFrom(clazz) && (runtimeInterceptor != null) ) {
-                    ((SystemInterceptorProxy)interceptors[index]).setDelegate(runtimeInterceptor);
-                }
             } catch (IllegalAccessException illEx) {
                 throw new RuntimeException(illEx);
             } catch (InstantiationException instEx) {
@@ -173,8 +173,26 @@ public class InterceptorManager {
 
         }
 
+        initializeInterceptorInstances(interceptors);
+
         return interceptors;
     }
+
+    public Class[] getInterceptorClasses() {
+        return serializableInterceptorClasses;
+    }
+
+    public void initializeInterceptorInstances(Object[] interceptorInstances) {
+
+        for (int index = 0; index < interceptorInstances.length; index++) {
+            Class clazz = serializableInterceptorClasses[index];
+
+            if( SystemInterceptorProxy.class.isAssignableFrom(clazz) && (runtimeInterceptor != null) ) {
+                ((SystemInterceptorProxy)interceptorInstances[index]).setDelegate(runtimeInterceptor);
+            }
+        }
+    }
+
 
     /**
      * Called sometime after original interceptor initialization.

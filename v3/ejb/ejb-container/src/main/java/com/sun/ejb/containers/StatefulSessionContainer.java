@@ -552,8 +552,6 @@ public final class StatefulSessionContainer
 
             // create SessionContext and set it in the EJB
             SessionContextImpl context = new SessionContextImpl(ejb, this);
-            context.setInterceptorInstances(
-                    interceptorManager.createInterceptorInstances());
 
             Object sessionKey = uuidGenerator.createSessionKey();
             createExtendedEMs(context, sessionKey);
@@ -576,10 +574,7 @@ public final class StatefulSessionContainer
             // have the same "operations allowed" permissions as
             // setSessionContext.
             injectEjbInstance(ejb, context);
-            for (Object interceptorInstance : context.getInterceptorInstances()) {
-                injectionManager.injectInstance(interceptorInstance,
-                        ejbDescriptor, false);
-            }
+            
             // Set the timestamp before inserting into bean store, else
             // Recycler might go crazy and remove this bean!
             context.touch();

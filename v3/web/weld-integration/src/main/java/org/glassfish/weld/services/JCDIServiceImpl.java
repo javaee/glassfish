@@ -151,6 +151,12 @@ public class JCDIServiceImpl implements JCDIService
     }
 
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle) {
+        return createManagedObject(managedClass, bundle, true);
+    }
+
+
+    public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle,
+                                                    boolean invokePostConstruct) {
 
         Object managedObject = null;
 
@@ -173,7 +179,9 @@ public class JCDIServiceImpl implements JCDIService
 
         it.inject(managedObject, cc);
 
-        it.postConstruct(managedObject);
+        if( invokePostConstruct ) {
+            it.postConstruct(managedObject);
+        }
 
         return new JCDIInjectionContextImpl(it, cc, managedObject);
 

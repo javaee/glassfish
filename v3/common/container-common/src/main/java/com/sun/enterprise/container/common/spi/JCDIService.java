@@ -50,6 +50,8 @@ public interface JCDIService {
     public boolean isJCDIEnabled(BundleDescriptor bundle);
 
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle);
+    public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle,
+                                                    boolean invokePostConstruct);
 
     public JCDIInjectionContext injectEJBInstance(EjbDescriptor ejb, Object instance);
 

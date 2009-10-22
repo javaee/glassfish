@@ -44,7 +44,7 @@ public class EmbeddedEjbContainer implements EmbeddedContainer {
         addSniffer(sniffers, "jpa");
         addSniffer(sniffers, "jpaCompositeSniffer");
         addSniffer(sniffers, "ear");
-        addSniffer(sniffers, "webbeans");
+        addSniffer(sniffers, "weld");
         return sniffers;
 
     }
