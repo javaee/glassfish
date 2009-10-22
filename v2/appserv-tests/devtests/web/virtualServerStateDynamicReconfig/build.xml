@@ -54,7 +54,7 @@
 
     <target name="build-publish-war" depends="build, publish-war-common" />
 
-    <target name="all" depends="setup,build,deploy,run-on,disable,turn-off,run-off,turn-on,run-on-again,undeploy,restore"/>
+    <target name="all" depends="setup,build,deploy,run-on,disable,run-disabled,turn-off,run-off,turn-on,run-on-again,undeploy,restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -128,7 +128,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.myvs.state=off"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.myvs.state=disable"/>
         </antcall>
     </target>
 
