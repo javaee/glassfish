@@ -800,12 +800,19 @@ public class RequestFacade
 
 
     public String getContextPath() {
-
         if (request == null) {
             throw new IllegalStateException(
                             sm.getString("requestFacade.nullRequest"));
         }
+        return request.getContextPath(maskDefaultContextMapping);
+    }
 
+
+    public String getContextPath(boolean maskDefaultContextMapping) {
+        if (request == null) {
+            throw new IllegalStateException(
+                            sm.getString("requestFacade.nullRequest"));
+        }
         return request.getContextPath(maskDefaultContextMapping);
     }
 
