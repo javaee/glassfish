@@ -166,7 +166,10 @@ public class PolicyLoader{
                     }
                     java.security.Policy policy = (java.security.Policy)obj;
                     java.security.Policy.setPolicy(policy);
-                    policy.refresh();
+                    //TODO: causing ClassCircularity error when SM ON.
+                    if (System.getSecurityManager() == null) {
+                        policy.refresh();
+                    }
                 }
 
             } catch (Exception e) {

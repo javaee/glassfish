@@ -273,30 +273,30 @@ public class BasePolicyWrapper extends java.security.Policy {
 	// (see FORCE_APP_REFRESH_PROP_NAME).
 
 	boolean force = defaultContextChanged();
-
-	PolicyConfigurationImpl pciArray[] = null;
+        PolicyConfigurationImpl pciArray[] = null;
         PolicyConfigurationFactoryImpl pcf = getPolicyFactory();
         if (pcf != null) {
-	    pciArray = pcf.getPolicyConfigurationImpls();
+            pciArray = pcf.getPolicyConfigurationImpls();
         }
-	if (pciArray != null) {
+        if (pciArray != null) {
 
-	    for (PolicyConfigurationImpl pci : pciArray) {
+            for (PolicyConfigurationImpl pci : pciArray) {
 
-		if (pci != null) {
-		    // false means don't force refresh if no update since
-		    // last refresh.
-		    pci.refresh(force);
-		}
-	    }
-	}
+                if (pci != null) {
+                    // false means don't force refresh if no update since
+                    // last refresh.
+                    pci.refresh(force);
+                }
+            }
+        }
         try {
             if (PolicyContext.getHandlerKeys().contains(REUSE)) {
                 PolicyContext.getContext(REUSE);
             }
-        } catch(PolicyContextException pe) {
+        } catch (PolicyContextException pe) {
             throw new IllegalStateException(pe.toString());
         }
+        
     }
 
     private  PolicyConfigurationImpl getPolicyConfigForContext(String contextId) {
