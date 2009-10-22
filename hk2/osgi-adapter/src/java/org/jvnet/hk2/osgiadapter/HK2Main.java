@@ -55,6 +55,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Filter;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -84,6 +85,8 @@ public class HK2Main extends Main implements
      * e.g., GlassFish Kernel's AppServerStartup instance
      */
     private ModuleStartup moduleStartup;
+    private ServiceRegistration habitatRegistration;
+    private ServiceRegistration moduleStartupRegistration;
 
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
@@ -119,6 +122,10 @@ public class HK2Main extends Main implements
         createServiceTracker(habitat);
         String mainModuleName = startupContext.getStartupModuleName();
         moduleStartup = launch(mr, habitat, mainModuleName, startupContext);
+
+        // register essential services in service registry
+        habitatRegistration = context.registerService(Habitat.class.getName(), habitat, null);
+        moduleStartupRegistration = context.registerService(ModuleStartup.class.getName(), moduleStartup, null);
     }
 
     protected ModulesRegistry createModulesRegistry() {
@@ -138,9 +145,17 @@ public class HK2Main extends Main implements
 
     public void stop(BundleContext context) throws Exception {
         // Execute code in reverse order w.r.t. start()
-        moduleStartup.stop();
+        if (moduleStartup != null) {
+            moduleStartup.stop();
+        }
+        if (moduleStartupRegistration != null) {
+            moduleStartupRegistration.unregister();
+        }
         if (mr != null) {
             mr.shutdown();
+        }
+        if (habitatRegistration != null) {
+            habitatRegistration.unregister();
         }
     }
 
