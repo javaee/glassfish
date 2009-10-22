@@ -110,7 +110,7 @@
                                    <artifactItem>
                                        <groupId>org.glassfish.docs.man</groupId>
                                        <artifactId>deployment-admin-manpage</artifactId>
-                                       <version>3.0-b04</version>
+                                       <version>${v3-docs.version}</version>
                                        <type>jar</type>
                                        <overWrite>true</overWrite>
                                        <outputDirectory>${project.build.outputDirectory}</outputDirectory>

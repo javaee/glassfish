@@ -158,6 +158,7 @@
         <mimepull.version>1.4</mimepull.version>
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.4</btrace.version>
+        <v3-docs.version>3.0-b04</v3-docs.version>
     </properties>
 
 
