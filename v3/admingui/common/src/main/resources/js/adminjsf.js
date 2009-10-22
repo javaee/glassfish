@@ -645,18 +645,10 @@ admingui.util = {
      *	This function sets the <code>key</code> / <code>value</code> pair as
      *	a persistent preference in the <code>root</code> path.  The root path
      *	will automatically prefix "glassfish/" to the given String.
-     *
-     *	Optionally, a sessionKey can be provided which represents the session
-     *	key which will cache this preference value.
      */
-    setPreference: function(root, key, value, sessionKey) {
-	sessionKey = (sessionKey == null) ? "" : ("&sessionKey=" + sessionKey);
-	DynaFaces.fireAjaxTransaction(null, {
-		execute: admingui.setPrefButton.id,
-		inputs:  admingui.setPrefButton.id,
-		parameters: "root=" + root + "&key=" + key + "&value=" + value + sessionKey,
-		render: "none"
-	    } );
+    setPreference: function(root, key, value) {
+	root = 'glassfish/' + root;
+	admingui.ajax.invoke("setPreference", {root:root, key:key, value:value});
     },
 
     log : function(msg) {
@@ -803,60 +795,6 @@ admingui.nav = {
             admingui.ajax.processElement(window, document.getElementById(nodeId), true);
         }
     },
-
-    /**
-     *	<p> This function is called in response to a DynamicFaces request.  It
-     *	    takes the return value and replaces the old content with the
-     *	    content from the Ajax response.  It currently only replaces the
-     *	    children of the updated node.  It does this b/c the updated node
-     *	    itself does not change in our current use cases, and because it
-     *	    makes maintaining highlighting easier.  In the future this may
-     *	    change.</p>
-     */
-    updateTreeNodeAjaxCallback: function(id, data, closure, xjson) {
-	// Get the html node to replace for the TreeNode...
-	var treeNode = admingui.nav.getTreeFrameElementById(id);
-	if (!treeNode) {
-	    return;
-	}
-
-	// Get the parent node (can be used for TreeNode children also)
-	var parent = treeNode.parentNode;
-
-	// Create a temporary <div> so we can extract the 2 nodes we need...
-	var tmpDiv = document.createElement("div");
-	tmpDiv.innerHTML = data;
-
-	// Replace it!
-	var newNode = tmpDiv.childNodes[0];
-	newNode.className = treeNode.className;
-	newNode.style["display"] = treeNode.style["display"];
-	parent.replaceChild(newNode, treeNode); 
-
-	// Get the html node to replace for the TreeNode children...
-	treeNode = admingui.nav.getTreeFrameElementById(id + "_children");
-	if (treeNode) {
-	    // Get the new children...
-	    newNode = tmpDiv.childNodes[0];
-
-// FIXME: Provide some logging:
-//if (!newNode) {
-            //log a warning!
-//}
-
-            newNode.style["display"] = treeNode.style["display"];
-            newNode.className = treeNode.className;
-            admingui.nav.copyStyleAndClass(treeNode, newNode);
-
-            // replace it...
-            parent.replaceChild(newNode, treeNode);
-        }
-        else {
-            // I think it's always there...
-            alert('child tree nodes not found.');
-        }
-    },
-
 
     /**
      *
