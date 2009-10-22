@@ -19,6 +19,7 @@ import javax.management.ObjectName;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
+import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.ManagedObject;
 import org.glassfish.gmbal.ManagedObjectManager;
 import org.glassfish.gmbal.ManagedObjectManagerFactory;
@@ -605,19 +606,26 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private ManagedObjectManager registerGmbal(Object statsProvider, String mbeanName) {
         ManagedObjectManager mom = null;
-        if (isManagedObject(statsProvider)) {
             try {
                 // 1 mom per statsProvider
                 mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
+                mom.setJMXRegistrationDebug(false);
                 if (mom != null) {
-                    mom.stripPackagePrefix();
-                    if (mbeanName != null && !mbeanName.isEmpty()) {
-                        if (mbeanName.indexOf('\\') > 0) {
-                            mbeanName = StringUtils.removeChar(mbeanName, '\\');
+                    if (mom.isManagedObject(statsProvider)) {
+                        mom.stripPackagePrefix();
+                        if (mbeanName != null && !mbeanName.isEmpty()) {
+                            if (mbeanName.indexOf('\\') > 0) {
+                                mbeanName = StringUtils.removeChar(mbeanName, '\\');
+                            }
+                            mom.createRoot(statsProvider, mbeanName);
+                        } else {
+                            mom.createRoot(statsProvider);
                         }
-                        mom.createRoot(statsProvider, mbeanName);
                     } else {
-                        mom.createRoot(statsProvider);
+                        String spName = statsProvider.getClass().getName();
+                        Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.INFO,
+                                localStrings.getLocalString("notaManagedObject", spName +
+                                " is not a ManagedObject and will not be registered with Gmbal to create an MBean", spName));
                     }
                 }
             //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
@@ -627,22 +635,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                 mom = null;
                 Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "Gmbal registration failed", e);
             }
-        } else {
-            String spName = statsProvider.getClass().getName();
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.INFO, 
-                    localStrings.getLocalString("notaManagedObject", spName +
-                    " is not a ManagedObject and will not be registered with Gmbal to create an MBean", spName));
-        }
         return mom;
-    }
-
-    private boolean isManagedObject(Object statsProvider) {
-        boolean isManagedObject = true;
-        ManagedObject mo = statsProvider.getClass().getAnnotation(ManagedObject.class);
-        if (mo == null) {
-            isManagedObject = false;
-        }
-        return isManagedObject;
     }
 
     private void unregisterGmbal(StatsProviderRegistryElement spre) {
@@ -717,7 +710,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         boolean isStatsProviderRegistered = false;
         Collection<StatsProviderRegistry.StatsProviderRegistryElement> spreList = statsProviderRegistry.getSpreList();
         for (StatsProviderRegistry.StatsProviderRegistryElement spre : spreList) {
-            if (spre.getStatsProvider().equals(statsProvider) && spre.getMBeanName().equals(statsProvider)) {
+            if (spre.getStatsProvider().equals(statsProvider) && spre.getMBeanName().equals(subTreePath)) {
                 isStatsProviderRegistered = true;
             }
         }
@@ -731,7 +724,15 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     public String getTypeValue(Object statsProvider) {
-        return statsProvider.getClass().getSimpleName();
+        String type = null;
+        AMXMetadata am = statsProvider.getClass().getAnnotation(AMXMetadata.class);
+        if (am != null) {
+            type = am.type();
+        }
+        if (type == null) {
+            type = statsProvider.getClass().getSimpleName();
+        }
+        return type;
     }
 
     public String getNameValue(String subTreePath) {
