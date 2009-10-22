@@ -69,7 +69,6 @@ public final class AMXCoreTests extends AMXTestBase
     {
     }
 
-    //@Test(timeOut=15000)
     public void bootAMX() throws Exception
     {
         final DomainRoot domainRoot = getDomainRootProxy();
@@ -81,58 +80,42 @@ public final class AMXCoreTests extends AMXTestBase
     @Test(dependsOnMethods = "bootAMX")
     public void iterateAllSanityCheck() throws Exception
     {
-        //try
-        //{
-            final Set<AMXProxy> all = getAllAMX();
-            assert all.size() > 20 : "Expected at least 20 AMX MBeans, got: " + all.size();
-            for (final AMXProxy amx : all)
+        final Set<AMXProxy> all = getAllAMX();
+        assert all.size() > 20 : "Expected at least 20 AMX MBeans, got: " + all.size();
+        for (final AMXProxy amx : all)
+        {
+            try
             {
-                try
+                if ( ! amx.valid() )
                 {
-                    if ( ! amx.valid() )
-                    {
-                        continue;   // could have been unregistered
-                    }
-                    final Set<AMXProxy> children = amx.childrenSet();
-                    assert children != null;
+                    continue;   // could have been unregistered
                 }
-                catch( final Exception e )
-                {
-                    if ( ExceptionUtil.getRootCause(e) instanceof InstanceNotFoundException )
-                    {
-                        continue;
-                    }
-                    if ( ! amx.valid() )
-                    {
-                        warning( "MBean valid()=false during testing, ignoring: " + amx.objectName() );
-                    }
-                    
-                    throw e;
-                }
+                final Set<AMXProxy> children = amx.childrenSet();
+                assert children != null;
             }
-        //}
-        //catch( final Throwable t )
-        //{
-        //    System.out.println( "Test iterateAllSanityCheck() IGNORED, see issue #9355" );
-        //    t.printStackTrace();
-        //}
+            catch( final Exception e )
+            {
+                if ( ExceptionUtil.getRootCause(e) instanceof InstanceNotFoundException )
+                {
+                    continue;
+                }
+                if ( ! amx.valid() )
+                {
+                    warning( "MBean valid()=false during testing, ignoring: " + amx.objectName() );
+                }
+                
+                throw e;
+            }
+        }
     }
     
     @Test
     public void testAMXComplianceMonitorFailureCount()
     {
-        try
-        {
         final Map<ObjectName, List<String>> failures = getDomainRootProxy().getComplianceFailures();
         
         assert failures.size() == 0 :
             "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failures.size() + "\n" + failures;
-        }
-        catch( final Throwable t )
-        {
-            System.out.println( "\n******* Test testAMXComplianceMonitorFailureCount() IGNORED, see issue #10096 ******* \n" );
-            t.printStackTrace();
-        }
      }
 
 }
