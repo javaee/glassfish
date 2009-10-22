@@ -24,6 +24,8 @@ public class HelloServlet extends HttpServlet {
 
     @EJB(name="java:app/env/slref") private SimpleStateless simpleStateless;
 
+    @EJB private SimpleStateful simpleStateful;
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -31,6 +33,7 @@ public class HelloServlet extends HttpServlet {
 	System.out.println("In HelloServlet::init");
 	simpleSingleton.hello();
 	simpleStateless.hello();
+	simpleStateful.hello();
     }
 
     @Override
