@@ -98,7 +98,7 @@
 
 <target name="deploy-jruby-app" depends="setOSConditions,asenv-unix,asenv-windows">
     <exec executable="${ASADMIN}" outputproperty="message1">
-        <arg line="deploy --property jruby.home=${JRUBY_HOME} ${appName}"/>
+        <arg line="deploy --property jruby.home=&quot;${JRUBY_HOME}&quot; ${appName}"/>
     </exec>
     <echo message="${message1}"/>
 </target>
