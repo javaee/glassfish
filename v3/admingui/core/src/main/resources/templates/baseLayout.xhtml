@@ -31,12 +31,8 @@
 	    }
 
 	    // Set expand / collapse preferences...
-	    if ("#{sessionScope.hideLeft}=#{null}") {
-		getPreference(default="#{false}", root="glassfish/layout", key="hideLeft", value="#{sessionScope.hideLeft}");
-	    }
-	    if ("#{sessionScope.hideRight}=#{null}") {
-		getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
-	    }
+	    getPreference(default="#{false}", root="glassfish/layout", key="hideLeft", value="#{sessionScope.hideLeft}");
+	    getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
 
 	    setPageSessionAttribute(key="iframeUrl", value="#{request.requestURL}?#{request.queryString}&amp;bare=true");
 	</ui:event>
@@ -103,19 +99,6 @@
 			    </h:commandButton>
 			    <h:inputText id="execResp" value="#{requestScope.execResp}" style="display:none;" />
 
-			    <!-- The following button is used in a couple places, should be replaced by the above button... -->
-			    <h:commandButton id="setPref" style="display:none;">
-				<ui:event type="afterCreate">
-				    setPageSessionAttribute(key="setPrefId" value="$this{clientId}");
-				</ui:event>
-				<ui:event type="command">
-				    // FIXME: may want to escape param values here
-				    setPreference(root="glassfish/#{param.root}", key="#{param.key}", value="#{param.value}");
-				    if ("#{param.sessionKey}") {
-					setSessionAttribute(key="#{param.sessionKey}", value="#{param.value}");
-				    }
-				</ui:event>
-			    </h:commandButton>
 			    <!-- Masthead Integration Point -->
 			    <ui:event type="afterCreate">
 				includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="$this{component}");
@@ -251,12 +234,6 @@
 */
 
 <f:verbatim>
-	// Save the prefs button so it is accessible via our JS
-	if (typeof(admingui) === "undefined") {
-	    admingui = {};
-	}
-	admingui.setPrefButton = document.getElementById("#{pageSession.setPrefId}");
-
 	var layout = new YAHOO.widget.Layout({
 	   units: [
 	       { position : 'top', body : 'gfLayoutTop', height : 115, scroll : false, gutter1 : '5px', resize : false, collapse : false},
@@ -265,18 +242,15 @@
 	   ]
 	});
 	layout.render();
-</f:verbatim>
 
-/*
 	// Collapse panels if necessary
 	YAHOO.util.Event.onDOMReady(function (ev) {
-	    var layout = scales.getLayout('gfLayout');
 	    var lu = layout.getUnitByPosition('left');
 	    lu.on('collapse', function(ev) {
-		admingui.util.setPreference("layout", "hideLeft", "true", "hideLeft");
+		admingui.util.setPreference("layout", "hideLeft", "true");
 	    });
 	    lu.on('expand', function(ev) {
-		admingui.util.setPreference("layout", "hideLeft", "false", "hideLeft");
+		admingui.util.setPreference("layout", "hideLeft", "false");
 	    });
 	    if (#{sessionScope.hideLeft}) {
 		lu.collapse();
@@ -285,15 +259,15 @@
 	    // Deal w/ the right frame
 	    lu = layout.getUnitByPosition('right');
 	    lu.on('collapse', function(ev) {
-		admingui.util.setPreference("layout", "hideRight", "true", "hideRight");
+		admingui.util.setPreference("layout", "hideRight", "true");
 	    });
 	    lu.on('expand', function(ev) {
-		admingui.util.setPreference("layout", "hideRight", "false", "hideRight");
+		admingui.util.setPreference("layout", "hideRight", "false");
 	    });
 	    if (#{sessionScope.hideRight}) {
 		lu.collapse();
 	    }
 	});
-*/
-"    </script>
+    </script>
+</f:verbatim>
 </sun:page>
