@@ -205,17 +205,18 @@ update tool    updatetool 800
 
 //</sun:body>
 
+<f:verbatim>
 <!-- We only want to set the width for IE browser only. -->
-"<SCRIPT language = "Javascript" >
+<script type="text/javascript">
 
-" function setTreeWidth(treeId) {\
-var version = navigator.appVersion;  \
-var ix = version.indexOf('MSIE');  \
-if (ix == -1){  \
-    return;  \
-}  \
-var foo = document.getElementById(treeId);  \
-foo.style.width="40em";  \
+function setTreeWidth(treeId) {
+    var version = navigator.appVersion;
+    var ix = version.indexOf('MSIE');
+    if (ix == -1){
+        return;
+    }
+    var foo = document.getElementById(treeId);
+    foo.style.width="40em";
 }
-
-"</SCRIPT>
+</script>
+</f:verbatim>

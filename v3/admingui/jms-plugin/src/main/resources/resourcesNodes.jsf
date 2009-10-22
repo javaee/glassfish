@@ -16,6 +16,7 @@
         <!facet image>
             <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsConnections.jsf"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
+        <!filterTree filterOutNonJms(); />
     </dynamicTreeNode>
 
     <dynamicTreeNode id="jmsDestinationResources"

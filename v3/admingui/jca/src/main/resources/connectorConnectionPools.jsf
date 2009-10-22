@@ -42,7 +42,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.connectorConnectionPools.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorConnectionPools','/jca/jcaTreeNode.jsf','Connectors:connectorConnectionPools');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorConnectionPools','/jca/jcaTreeNode.jsf','Connectors:connectorConnectionPools');
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories','/jms/resourcesNodes.jsf','jmsResources:jmsConnectionFactories');"
 >
 <!define name="content">
     <event>

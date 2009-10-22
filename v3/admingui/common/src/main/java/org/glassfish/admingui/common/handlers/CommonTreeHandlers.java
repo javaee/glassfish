@@ -36,16 +36,15 @@
 package org.glassfish.admingui.common.handlers;
         
 import com.sun.jsftemplating.annotation.Handler;
-import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import java.util.Map;
 import javax.management.ObjectName;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.tree.FilterTreeEvent;
 import org.glassfish.admingui.common.util.AppUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 
 
 /**
@@ -98,4 +97,22 @@ public class CommonTreeHandlers {
         return result;
     }
 
+    @Handler( id="filterOutNonJms")
+    public static Object filterOutNonJms(HandlerContext context) {
+        FilterTreeEvent event = (FilterTreeEvent) context.getEventObject();
+        List<ObjectName> connectors = (List<ObjectName>)event.getChildObjects();
+        List result = new ArrayList();
+        if (connectors != null){
+            for(ObjectName connector : connectors){
+//                AMXProxy amx = V3AMX.objectNameToProxy(connector.toString());
+//                Map props = V3AMX.getAttrsMap(connector);
+                String raName = (String) V3AMX.getAttrsMap(connector).get("ResourceAdapterName");
+
+                if ("jmsra".equals(raName)) {
+                    result.add(connector);
+                }
+            }
+        }
+        return result;
+    }
 }
