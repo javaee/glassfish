@@ -91,6 +91,11 @@ public abstract class ASMainOSGi extends AbstractMain {
         // bundles and install them
         System.setProperty("org.jvnet.hk2.osgimain.bundlesDir",
                 new File(glassfishDir, "modules/").getAbsolutePath());
+
+        // Set the excluded dir list property so that osgi-main does not
+        // install bundles from modules/autostart.
+        System.setProperty("org.jvnet.hk2.osgimain.excludedSubDirs", "autostart/");
+
         // Set the autostart bundle list. This is used by bootstrap bundle to
         // locate the bundles and start them. The path is relative to bundles dir
         // Please note the following about the order of bundles:
