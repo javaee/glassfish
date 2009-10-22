@@ -44,6 +44,10 @@ import javax.xml.rpc.handler.MessageContext;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.ResourceBundle;
+import java.lang.reflect.Method;
+import java.text.MessageFormat;
+
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.ejb.api.EJBInvocation;
@@ -58,7 +62,8 @@ import org.glassfish.ejb.api.EJBInvocation;
  */
 public class EjbContainerPreHandler extends GenericHandler {
 
-    private static Logger logger = LogDomains.getLogger(EjbContainerPreHandler.class, LogDomains.EJB_LOGGER);
+    private Logger logger = LogDomains.getLogger(EjbContainerPreHandler.class, LogDomains.EJB_LOGGER);
+    private ResourceBundle rb = logger.getResourceBundle();
     private WsUtil wsUtil = new WsUtil();
 
     public EjbContainerPreHandler() {}
@@ -74,11 +79,21 @@ public class EjbContainerPreHandler extends GenericHandler {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
             inv = (EJBInvocation) invManager.getCurrentInvocation();
-            inv.setWebServiceMethod(wsUtil.getInvMethod(
-                    (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context));
+            Method method = wsUtil.getInvMethod(
+                    (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
+            inv.setWebServiceMethod(method);
+            if ( !inv.authorizeWebService(method)  ) {
+                throw new Exception(  format( rb.getString ("client.unauthorized ")
+                        , method.toString()));
+            }
+
         } catch(Exception e) {
             wsUtil.throwSOAPFaultException(e.getMessage(), context);
         }
         return true;
+    }
+
+    private String format(String key, String ... values){
+        return MessageFormat.format(key, (Object [])values);
     }
 }
