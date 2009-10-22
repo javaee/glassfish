@@ -57,7 +57,12 @@
         if(!#{hasStatsServletsTemp}) {
             setAttribute(key="webStatsMbeanName" value="#{viewVal}/#{viewVal}.war/server");
         }
-        
+        getStatsbyTypeName(type="jruby-runtime-pool-mon" name="containers/jruby/runtime-pool/#{viewVal}", result=>$attribute{jRubyRuntimeStatsList}  hasStats=>$attribute{hasStatsJRT});
+        getStatsbyTypeName(type="jruby-http-mon" name="containers/jruby/http/#{viewVal}", result=>$attribute{jRubyHttpStatsList}  hasStats=>$attribute{hasStatsJHTTP});
+        setAttribute(key="hasStatsJPS" value="#{false}");
+        if(#{hasStatsJRT}){
+            getStatsbyTypeName(type="jruby-container-mon" name="containers/jruby/applications", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
+        }
     />
 </event>    
 #include "/common/shared/restart.inc"        
@@ -152,29 +157,18 @@
     </sun:tableRowGroup>
     <sun:tableRowGroup id="jRubyRuntimeStats" rendered="#{hasStatsJRT}" data={"$attribute{jRubyRuntimeStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatisticsRuntime} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="jruby-runtime-pool-mon" name="containers/jruby/runtime-pool/#{viewVal}", result=>$attribute{jRubyRuntimeStatsList}  hasStats=>$attribute{hasStatsJRT});
-         />
-
+        
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
     <sun:tableRowGroup id="jRubyHttpStats" rendered="#{hasStatsJHTTP}" data={"$attribute{jRubyHttpStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyStatisticsHttp} : #{viewVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="jruby-http-mon" name="containers/jruby/http/#{viewVal}", result=>$attribute{jRubyHttpStatsList}  hasStats=>$attribute{hasStatsJHTTP});
-
-         />
-
+       
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
     <sun:tableRowGroup id="jRubyStats" rendered="#{hasStatsJPS}" data={"$attribute{jRubyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyProbeStatistics}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
-        <!beforeCreate
-            getStatsbyTypeName(type="jruby-container-mon" name="containers/jruby/applications", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
-
-         />
 
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
