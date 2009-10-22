@@ -40,6 +40,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
+
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerNotification;
@@ -49,6 +52,8 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.archivist.Archivist;
+import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -58,6 +63,7 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
+import com.sun.enterprise.deployment.util.XModuleType;
 
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -99,6 +105,7 @@ import org.glassfish.admin.amx.j2ee.ResourceAdapter;
 import org.glassfish.admin.amx.j2ee.ResourceAdapterModule;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
+import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 
 /**
     Handles registrations of resources and applications associated with a J2EEServer.
@@ -180,8 +187,41 @@ final class RegistrationSupport
     {
         return new AMXConfigGetters(mJ2EEServer).domainConfig();
     }
+    
+    
 
-
+    private String getDeploymentDescriptor(
+        final BundleDescriptor bundleDesc )
+    {
+        final ArchivistFactory archivistFactory = J2EEInjectedValues.getInstance().getArchivistFactory();
+        
+        String dd = "unavailable";
+        ByteArrayOutputStream out = null;
+        try
+        {
+            final Archivist moduleArchivist = archivistFactory.getArchivist(bundleDesc.getModuleDescriptor().getModuleType());
+            final DeploymentDescriptorFile ddFile =  moduleArchivist.getStandardDDFile();
+            
+            out = new ByteArrayOutputStream();
+            ddFile.write(bundleDesc, out);
+            final String charsetName = "UTF-8";
+            dd = out.toString(charsetName);
+        }
+        catch( final Exception e )
+        {
+            dd = null;
+        }
+        finally
+        {
+            if ( out != null )
+            {
+                try { out.close(); } catch( Exception ee) {}
+            }
+        }
+                
+        return dd;
+    }
+  
     private ObjectName createAppMBeans(
         org.glassfish.admin.amx.intf.config.Application appConfig,
         final Application application,
@@ -198,6 +238,11 @@ final class RegistrationSupport
         }
         else
         {
+            final String xmlDesc = getDeploymentDescriptor(application);
+            if ( xmlDesc != null )
+            {
+                meta.setDeploymentDescriptor(xmlDesc);
+            }
             parentMBean = registerJ2EEChild(mJ2EEServer.objectName(), meta, J2EEApplication.class, J2EEApplicationImpl.class, application.getName());
             top = parentMBean;
         }
@@ -257,7 +302,7 @@ final class RegistrationSupport
             final org.glassfish.admin.amx.intf.config.Application appConfig,
             final EjbBundleDescriptor ejbBundleDescriptor )
     {
-        final String xmlDesc = getStringForDDxml(getModuleLocation(ejbBundleDescriptor, "EJBModule"));
+        final String xmlDesc = getDeploymentDescriptor(ejbBundleDescriptor);
         if ( xmlDesc != null )
         {
             meta.setDeploymentDescriptor( xmlDesc );
@@ -334,7 +379,7 @@ final class RegistrationSupport
             final org.glassfish.admin.amx.intf.config.Application appConfig,
             final WebBundleDescriptor webBundleDescriptor )
     {
-        final String xmlDesc = getStringForDDxml(getModuleLocation(webBundleDescriptor, "WebModule"));
+        final String xmlDesc = getDeploymentDescriptor(webBundleDescriptor);
         if ( xmlDesc != null )
         {
             meta.setDeploymentDescriptor( xmlDesc );
@@ -342,7 +387,6 @@ final class RegistrationSupport
         
         final String moduleName = webBundleDescriptor.getModuleName();
         final String appLocation = appConfig.getLocation();
-        //if ( xmlDesc == null ) System.out.println( "null xmlDesc for WebModule " + moduleName );
         
         final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
         meta.setCorrespondingConfig(moduleConfig.objectName());
@@ -404,8 +448,7 @@ final class RegistrationSupport
             modLocation = appLocation + File.separator + moduleName + File.separator + DescriptorConstants.RAR_DD_ENTRY;
         }
 
-        final String xmlDesc = getStringForDDxml(modLocation);
-        //if ( xmlDesc == null ) System.out.println( "null xmlDesc for modLocation " + modLocation );
+        final String xmlDesc = getDeploymentDescriptor(bundleDesc);
         if ( xmlDesc != null )
         {
             meta.setDeploymentDescriptor( xmlDesc );
@@ -425,7 +468,7 @@ final class RegistrationSupport
             final ApplicationClientDescriptor bundleDesc)
     {
         final String appLocation = appConfig.getLocation();
-        final String xmlDesc = getStringForDDxml(getModuleLocation(bundleDesc, "AppClientModule"));
+        final String xmlDesc = getDeploymentDescriptor(bundleDesc);
         if ( xmlDesc != null )
         {
             meta.setDeploymentDescriptor( xmlDesc );
@@ -443,85 +486,9 @@ final class RegistrationSupport
         {
             applicationName = bundleDesc.getName();
         }
-        //if ( xmlDesc == null ) System.out.println( "null xmlDesc for AppClientModule " + applicationName );
 
         return registerJ2EEChild(parentMBean, meta, AppClientModule.class, AppClientModuleImpl.class, applicationName);
     }
-
-    /** Utility routine somewhere? */
-    private String getStringForDDxml(String fileName)
-    {
-        if (!(new File(fileName)).exists())
-        {
-            //ImplUtil.getLogger().info("Descriptor does not exist " + fileName);
-            return null;
-        }
-
-        FileReader fr = null;
-        try
-        {
-            fr = new FileReader(fileName);
-            StringWriter sr = new StringWriter();
-
-            char[] buf = new char[8192];
-            int len = 0;
-            while (len != -1)
-            {
-                try
-                {
-                    len = fr.read(buf, 0, buf.length);
-                }
-                catch (EOFException eof)
-                {
-                    break;
-                }
-                if (len != -1)
-                {
-                    sr.write(buf, 0, len);
-                }
-            }
-
-            fr.close();
-            sr.close();
-            return sr.toString();
-
-        }
-        catch (final IOException ioe)
-        {
-            throw new RuntimeException(ioe);
-        }
-        finally
-        {
-            if (fr != null)
-            {
-                try
-                {
-                    fr.close();
-                }
-                catch (IOException ioe)
-                {
-                }
-            }
-        }
-    }
-
-/*
-    private String getModuleName(final BundleDescriptor bd)
-    {
-        String moduleName = null;
-
-        if (bd.getModuleDescriptor().isStandalone())
-        {
-            moduleName = bd.getApplication().getRegistrationName();
-        }
-        else
-        {
-            moduleName = bd.getModuleDescriptor().getArchiveUri();
-        }
-
-        return moduleName;
-    }
-*/
 
     private String getApplicationName(final BundleDescriptor bd)
     {

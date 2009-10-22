@@ -27,6 +27,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import org.glassfish.internal.data.ApplicationRegistry;
+import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 
 /**
    Supplies the needed values for other classes such as MBeans that do not have access to
@@ -39,6 +40,10 @@ public final class J2EEInjectedValues extends InjectedValues
     private ApplicationRegistry mAppsRegistry;
     public ApplicationRegistry getApplicationRegistry() { return mAppsRegistry; }
     
+    @Inject
+    ArchivistFactory mArchivistFactory;
+    public ArchivistFactory getArchivistFactory() { return mArchivistFactory; }
+
     public static synchronized J2EEInjectedValues getInstance()
     {
         return getDefaultHabitat().getByType(J2EEInjectedValues.class);
