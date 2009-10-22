@@ -241,10 +241,10 @@ public class ServletContainerInitializerUtil {
             ((interestList.keySet().size() == 1) &&
                     (!interestList.containsKey(ServletContainerInitializerUtil.class)))) {
             for(URL u : ((URLClassLoader)cl).getURLs()) {
-                String path = u.getPath();
+                String path = Util.URLDecode(u.getPath());
                 try {
                     if(path.endsWith(".jar")) {
-                        JarFile jf = new JarFile(Util.URLDecode(path));
+                        JarFile jf = new JarFile(path);
                         try {
                             Enumeration<JarEntry> entries = jf.entries();
                             while(entries.hasMoreElements()) {
@@ -274,12 +274,12 @@ public class ServletContainerInitializerUtil {
                         }
                     } else {
                         File file = new File(path);
-                        if(file.isDirectory()) {
+                        if (file.isDirectory()) {
                             initializerList = scanDirectory(file, path, cl,
                                 interestList, initializerList);
                         } else {
                             log.log(Level.WARNING,
-                                "servletContainerInitializerUtil.unkownFileWarning",
+                                "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
                                 path);
                         }
                     }
