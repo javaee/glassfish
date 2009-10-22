@@ -40,7 +40,10 @@
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.workSecurityMaps.pageTitle}" >
+<!composition template="/templates/default.layout"
+    guiTitle="$resource{i18njca.workSecurityMaps.pageTitle}"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:workSecurityMaps','/jca/jcaTreeNode.jsf','Connectors:workSecurityMaps');"
+>
 <!define name="content">
     <event>
     <!beforeCreate

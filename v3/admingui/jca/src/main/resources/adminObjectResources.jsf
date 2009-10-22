@@ -41,7 +41,10 @@
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.adminObjectResources.pageTitle}" >
+<!composition template="/templates/default.layout"
+    guiTitle="$resource{i18njca.adminObjectResources.pageTitle}"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources','/jca/jcaTreeNode.jsf','Connectors:adminObjectResources');"
+>
 <!define name="content">
     <event>
     <!beforeCreate
