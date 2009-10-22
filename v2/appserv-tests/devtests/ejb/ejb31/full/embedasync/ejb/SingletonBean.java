@@ -16,9 +16,7 @@ import javax.enterprise.inject.spi.BeanManager;
 
     @EJB StatefulBean sf;
 
-    // TODO look into implications of using @Resource
-    // given endorsed dir and location within JDK
-    // @Resource SessionContext sesCtx;
+    @Resource SessionContext sesCtx;
 
     private boolean gotAsyncCall = false;
 
