@@ -70,6 +70,8 @@
                                 <if test="${test.gd}">
                                   <ant dir="." antfile="build.xml" target="all">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
+                                    <property name="jruby-all.version" value="${jruby-all.version}"/>
+                                    <property name="jruby-all.classifier" value="${jruby-all.classifier}"/>
                                   </ant>
                                 </if>
                          	<if test="${test.wd}">
