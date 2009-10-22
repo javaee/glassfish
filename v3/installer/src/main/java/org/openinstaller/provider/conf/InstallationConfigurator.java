@@ -1,7 +1,7 @@
 /**
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -246,7 +246,8 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 	    File.separator + "modules";
     
     success = unpackJars(modulesDir) 
-	    && unpackJars(modulesDir + File.separator + "endorsed");
+	    && unpackJars(modulesDir + File.separator + "endorsed")
+	    && unpackJars(modulesDir + File.separator + "autostart");
     
     // if jar extraction failed there is no point in continuing...
 
