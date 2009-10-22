@@ -119,6 +119,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+             <groupId>org.glassfish.orb</groupId>
+             <artifactId>orb-connector</artifactId>
+             <version>${project.version}</version>
+        </dependency> 
+        <dependency>
             <groupId>org.glassfish.admin</groupId>
             <artifactId>cli-optional</artifactId>
             <version>${project.version}</version>
