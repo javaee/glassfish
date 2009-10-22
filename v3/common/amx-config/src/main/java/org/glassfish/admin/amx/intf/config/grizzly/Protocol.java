@@ -35,6 +35,7 @@
  */
 package org.glassfish.admin.amx.intf.config.grizzly;
 
+import java.util.List;
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
 /**
@@ -49,4 +50,6 @@ public interface Protocol extends NamedConfigElement
     public Ssl getSsl();
 
     public ProtocolChainInstanceHandler getProtocolChainInstanceHandler();
+
+    public List<NetworkListener> findNetworkListeners();
 }
