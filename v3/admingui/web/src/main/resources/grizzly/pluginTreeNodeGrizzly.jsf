@@ -57,6 +57,9 @@
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
+        <!beforeCreate
+            setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+        />
     </dynamicTreeNode>
 
     <dynamicTreeNode id="protocols"
@@ -73,6 +76,9 @@
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
+        <!beforeCreate
+            setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+        />
     </dynamicTreeNode>
 
     <dynamicTreeNode id="transports"
@@ -89,6 +95,9 @@
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
         </facet>
+        <!beforeCreate
+            setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+        />
     </dynamicTreeNode>
     <!beforeCreate
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");

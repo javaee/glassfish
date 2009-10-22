@@ -43,7 +43,9 @@
 />
 <!composition template="/templates/default.layout"  
     guiTitle="$resource{i18n_web.grizzly.protocolsPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:protocols','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:protocols');"
+    guiTemplateOnLoad="
+        admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:networkListeners');
+        admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:protocols','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:protocols');"
 >
 <!define name="content">
     <event>

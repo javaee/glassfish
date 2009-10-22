@@ -43,7 +43,9 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18n_web.grizzly.networkListenersPageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:networkListeners');"
+    guiTemplateOnLoad="
+        admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:protocols','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:protocols');
+        admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:networkListeners');"
 >
 <!define name="deleteButton">
     <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
