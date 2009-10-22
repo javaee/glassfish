@@ -1,55 +1,34 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<ui:composition
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:sc="http://java.sun.com/mojarra/scales"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:sun="http://www.sun.com/webui/webuijsf"
-    template="/templates/baseLayout.xhtml">
-
-    <ui:param name="guiTemplateOnLoad" value="fixTree('#{treeId}');" />
-
-    <!--
-    Previously:
-
-    // The following Style is required to avoid the tree nodes from
-    // moving around when selected.
-    <f:verbatim>
-    <style type="text/css">
-        .TreeSelRow_sun4 {clear:both}
-    </style>
-    </f:verbatim>
-    -->
-
+<!composition template="/templates/baseLayout.xhtml">
     // Extra Head Content
-    <ui:define name="guiTemplateExtraHead">
+    <!define name="guiTemplateExtraHead">
         <!-- Temporarily define this here, move to a gui.css file -->
+        <f:verbatim>
         <style type="text/css">
             .guiPageContent {padding: 5px;}
             .guiNavTree {float: left; width: 250px;}
             .TreeSelRow_sun4 {clear:both}
         </style>
+        </f:verbatim>
         <sun:script url="/resource/templates/tree.js" />
-    </ui:define>
+    </define>
 
-    <ui:define name="guiLeftNav">
-        <div class="guiNavTree">
-            <ui:include src="/common/peTree.inc" />
+    <!define name="guiLeftNav">
+        "<div class="guiNavTree">
+            <!include src="/common/peTree.inc" />
+        <f:verbatim>
         </div>
         <script type="text/javascript">
             YAHOO.util.Event.onContentReady("treeForm:tree:updateCenterPlugIN:updateCenterPlugIN_link", function(ev) {
                 admingui.nav.selectTreeNodeWithURL(window.location);
             });
         </script>
-    </ui:define>
-    <ui:define name="guiTemplateContent">
-        <div class="guiPageContent">
-            <ui:insert name="content">
-                Content Missing!
-            </ui:insert>
-        </div>
-    </ui:define>
-</ui:composition>
+        </f:verbatim>
+    </define>
+    <!define name="guiTemplateContent">
+        "<div class="guiPageContent">
+            <!insert name="content">
+                "Content Missing!
+            </insert>
+        "</div>
+    </define>
+</composition>
