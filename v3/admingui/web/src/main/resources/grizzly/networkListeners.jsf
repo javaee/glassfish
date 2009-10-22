@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,10 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.networkListenersPageTitle}" >
+<!composition template="/templates/default.layout"
+    guiTitle="$resource{i18n_web.grizzly.networkListenersPageTitle}"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:networkListeners');"
+>
 <!define name="deleteButton">
     <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
         onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )

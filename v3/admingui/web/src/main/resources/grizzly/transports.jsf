@@ -40,7 +40,10 @@
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.transport.listPageTitle}" >
+<!composition template="/templates/default.layout"  
+    guiTitle="$resource{i18n_web.transport.listPageTitle}"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:transports','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:transports');"
+>
 <!define name="content">
     <event>
     <!beforeCreate

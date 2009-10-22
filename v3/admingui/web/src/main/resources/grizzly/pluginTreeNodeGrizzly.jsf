@@ -75,7 +75,7 @@
         </facet>
     </dynamicTreeNode>
 
-    <dynamicTreeNode id="transport"
+    <dynamicTreeNode id="transports"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:pp=/domain/configs/config[$pageSession{configName}]/network-config,type=transports"
         useV3AMX="true"
