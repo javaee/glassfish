@@ -145,7 +145,7 @@ public class HK2Main extends Main implements
     }
 
     public void bundleChanged(BundleEvent event) {
-        logger.logp(Level.FINE, "BundleListenerImpl", "bundleChanged",
+        logger.logp(Level.FINE, "HK2Main", "bundleChanged",
                 "source= {0}, type= {1}", new Object[]{event.getSource(),
                 valueOf(event.getType())});
     }
