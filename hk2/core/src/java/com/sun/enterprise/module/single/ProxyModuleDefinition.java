@@ -53,6 +53,7 @@ import java.io.DataInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URI;
+import java.io.File;
 
 /**
  * Creates a ModuleDefinition backed up by a a single classloader
@@ -127,7 +128,7 @@ public class ProxyModuleDefinition implements ModuleDefinition {
         }
 
         public URI[] getLocations() {
-            return EMPTY_URI_ARRAY;
+            return uris;
         }
 
         public String getVersion() {
@@ -150,7 +151,34 @@ public class ProxyModuleDefinition implements ModuleDefinition {
             return metadata;
         }
 
+        private static boolean ok(String s) {
+            return s != null && s.length() > 0;
+        }
+
+        private static boolean ok(String[] ss) {
+            return ss != null && ss.length > 0;
+        }
         private static final String[] EMPTY_STRING_ARRAY = new String[0];
         private static final ModuleDependency[] EMPTY_MODULE_DEFINITIONS_ARRAY = new ModuleDependency[0];
-        private static final URI[] EMPTY_URI_ARRAY = new URI[0];
+        private static URI[] uris = new URI[0];
+
+    static {
+        // It is impossible to change java.class.path after the JVM starts --
+        // so cache away a copy...
+
+        String cp = System.getProperty("java.class.path");
+        if(ok(cp)) {
+            String[] paths = cp.split(System.getProperty("path.separator"));
+
+            if(ok(paths)) {
+                uris = new URI[paths.length];
+
+                for(int i = 0; i < paths.length; i++) {
+                    uris[i] = new File(paths[i]).toURI();
+                }
+            }
+        }
+    }
+
+
     }
