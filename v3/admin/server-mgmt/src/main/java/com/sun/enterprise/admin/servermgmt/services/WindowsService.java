@@ -77,7 +77,7 @@ public class WindowsService extends ServiceAdapter{
             init();
             trace("**********   Object Dump  **********\n" + this.toString());
             
-            if(uninstall() == 0)
+            if(uninstall() == 0 && !isDryRun())
                 System.out.println(Strings.get("windows.services.uninstall.good"));
             else
                 trace("No preexisting Service with that id and/or name was found");
@@ -94,6 +94,9 @@ public class WindowsService extends ServiceAdapter{
     }
 
     public String getSuccessMessage() {
+        if(isDryRun())
+            return Strings.get("dryrun");
+
         return Strings.get("WindowsServiceCreated", getName(),
             serverName + " GlassFish Server", serverDir, targetXml, targetWin32Exe);
     }
@@ -224,6 +227,8 @@ public class WindowsService extends ServiceAdapter{
     }
 
     private int uninstall() throws ProcessManagerException {
+        if(isDryRun() || !targetWin32Exe.canExecute())
+            return 0;
         // it is NOT an error to not be able to uninstall
         ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "uninstall");
         mgr.execute();
@@ -234,17 +239,24 @@ public class WindowsService extends ServiceAdapter{
 
     private void install() throws ProcessManagerException {
         // it IS an error to not be able to install
-        ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "install");
-        mgr.execute();
 
-        int ret = mgr.getExitValue();
+        if(isDryRun()) {
+            // dry-run not so useful on Windows.  Very useful on UNIX...
+            targetXml.delete();
+            targetWin32Exe.delete();
+        }
+        else {
+            ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "install");
+            mgr.execute();
+            int ret = mgr.getExitValue();
 
-        if(ret != 0)
-            throw new RuntimeException(Strings.get("windows.services.install.bad",
-                    "" + ret, mgr.getStdout(), mgr.getStderr()));
+            if(ret != 0)
+                throw new RuntimeException(Strings.get("windows.services.install.bad",
+                        "" + ret, mgr.getStdout(), mgr.getStderr()));
 
-        trace("Install STDERR: " + mgr.getStderr());
-        trace("Install STDOUT: " + mgr.getStdout());
+            trace("Install STDERR: " + mgr.getStderr());
+            trace("Install STDOUT: " + mgr.getStdout());
+        }
     }
 
     @Override

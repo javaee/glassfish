@@ -661,7 +661,9 @@ public final class SMFService implements Service {
         final String[] cmda = new String[]{SMFService.SVCCFG, "import", smf.getManifestFilePath()};
         final ProcessExecutor pe = new ProcessExecutor(cmda);
     
-        if(!dryRun)
+        if(dryRun)
+            cleanupManifest(smf);
+        else
             pe.execute(); //throws ExecException in case of an error
 
         if (trace)
