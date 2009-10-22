@@ -673,9 +673,6 @@ admingui.util = {
 admingui.nav = {
     TREE_ID: "treeForm:tree",
     lastTreeNodeSelected: null,
-    nodesToProcess: Array(),
-    refreshNodeParams: "treeForm:update=",
-    updatedTreeNodeCurrentState: [], // Holds the state of the node to be updated prior to the ajax update request
     
     refreshCluster: function(hasCluster){
         var node1 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters');
@@ -725,17 +722,16 @@ admingui.nav = {
      *  </dl>
      */
     refreshTree: function(refreshNodeId, viewId, relId) {
+        admingui.util.log("Updating tree node " + refreshNodeId);
         if (!viewId) {
             // Supply best guess defaults...
             viewId = '/common/peTree.inc';
         }
         var refreshNode = null;
-        //alert('refreshNodeId='+refreshNodeId);
         if (refreshNodeId) {
             refreshNode = admingui.nav.getTreeFrameElementById(refreshNodeId);
             if (!refreshNode) {
-// FIXME: Warn if not found... How do you log a warning in JavaScript?  I don't want an alert().
-                //alert('refreshNode not found:'+refreshNode);
+                admingui.util.log('refreshNode not found:'+refreshNode);
             }
         } else {
             refreshNode = admingui.nav.getSelectedTreeNode();
@@ -747,33 +743,33 @@ admingui.nav = {
         }
         var updateTreeButton = document.getElementById('treeForm:update');
         if (refreshNode && updateTreeButton) {
-            admingui.nav.refreshNodeId = refreshNodeId;
-            admingui.nav.refreshNodeParams = "updateTreeNode="+refreshNodeId+
-                "&viewId="+viewId+
-                "&relId="+relId;
-            admingui.nav.nodesToProcess.push(refreshNodeId);
-            admingui.nav.updatedTreeNodeCurrentState = [
-                document.getElementById(refreshNodeId),
-                document.getElementById(refreshNodeId+"_children")
-            ];
-            //updateTreeAction.click();
-            admingui.nav.requestTreeUpdate(updateTreeButton, {type: 'click'})
-            return false;
+            admingui.nav.requestTreeUpdate(
+                updateTreeButton,
+                {type: 'click'},
+                refreshNodeId,
+                "updateTreeNode="+refreshNodeId+"&viewId="+viewId+"&relId="+relId,
+                {
+                    mainNode: document.getElementById(refreshNodeId),
+                    childNodes: document.getElementById(refreshNodeId+"_children")
+                }
+            );
         }
+        return false;
     },
 
-    requestTreeUpdate: function(source, event) {
+    requestTreeUpdate: function(source, event, nodeId, params, previousState) {
             jsf.ajax.request(source, event, {
                 execute: "treeForm treeForm:update",
-                render: admingui.nav.refreshNodeId + " " + admingui.nav.refreshNodeId + "_children",
-                onevent: admingui.nav.processUpdatedTreeNode,
-                params: 'treeForm:update=&' + admingui.nav.refreshNodeParams
+                render: nodeId + " " + nodeId + "_children",
+                onevent: function(data) {
+                    admingui.nav.processUpdatedTreeNode(data, nodeId, previousState);
+                },
+                params: 'treeForm:update=&' + params
             });
     },
 
-    processUpdatedTreeNode: function(data) {
+    processUpdatedTreeNode: function(data, nodeId, previousState) {
         if (data.status == 'success') {
-            var nodeId = admingui.nav.nodesToProcess.pop();
             var text = data.responseXML.childNodes[0].childNodes[0].childNodes[0].childNodes[0].data;
             var parserElement = document.createElement('div');
             parserElement.innerHTML = text;
@@ -783,19 +779,19 @@ admingui.nav = {
             mainNode.innerHTML = parserElement.childNodes[0].innerHTML;
 
             try {
-                var oldNode = admingui.nav.updatedTreeNodeCurrentState[0];
+                var oldNode = previousState.mainNode;
                 mainNode.className = oldNode.className;
                 mainNode.style["display"] = oldNode.style["display"];
                 try {
                     // Copy image src value to correct visual state of the node turner
                     mainNode.childNodes[0].childNodes[0].childNodes[0].src = oldNode.childNodes[0].childNodes[0].childNodes[0].src;
-                } catch (err1) {
+                }catch (err1) {
                     
                 }
 
                 if (childNodes) {
                     childNodes.innerHTML = parserElement.childNodes[1].innerHTML;
-                    oldNode = admingui.nav.updatedTreeNodeCurrentState[1];
+                    oldNode = previouesState.childNodes;
                     childNodes.className = oldNode.className;
                     childNodes.style["display"] = oldNode.style["display"];
                     admingui.nav.copyStyleAndClass(childNodes, oldNode);
@@ -804,9 +800,7 @@ admingui.nav = {
 
             }
             
-            admingui.nav.updatedTreeNodeCurrentState = [];
             admingui.ajax.processElement(window, document.getElementById(nodeId), true);
-
         }
     },
 
