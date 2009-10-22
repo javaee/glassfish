@@ -2,10 +2,13 @@ package numberguess;
 
 import javax.ejb.*;
 import javax.annotation.*;
+import javax.interceptor.Interceptors;
 
 import javax.inject.Inject;
 
 @Stateful
+@SomeBindingType
+@Interceptors(InterceptorB.class)
 public class StatefulBean {
 
     @Resource
