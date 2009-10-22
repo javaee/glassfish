@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,11 @@
     setResourceBundle(key="i18njmail" bundle="org.glassfish.full.admingui.Strings");
     setResourceBundle(key="help_jmail" bundle="org.glassfish.full.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.customResources.pageTitle}" >
+<!composition template="/templates/default.layout"
+    guiTitle="$resource{i18njmail.customResources.pageTitle}"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Jmail:customResources','/full/jmailTreeNode.jsf','Jmail:customResources');"
+>
+
 <!define name="content">
     <event>
     <!beforeCreate
