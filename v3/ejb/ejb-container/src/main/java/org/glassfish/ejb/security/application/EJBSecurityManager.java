@@ -768,6 +768,14 @@ public final class EJBSecurityManager
      * This method is called for EJB/MDB Containers
      */
     public void preInvoke(ComponentInvocation inv) {
+
+        //Optimization to avoid the expensive call
+
+        if(runAs == null) {
+            inv.setPreInvokeDone(true);
+            return;
+        }
+
         boolean isWebService = false;
         if (inv instanceof EjbInvocation) {
             isWebService = ((EjbInvocation) inv).isWebService;

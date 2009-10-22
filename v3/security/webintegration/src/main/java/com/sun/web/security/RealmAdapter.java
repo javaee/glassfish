@@ -504,6 +504,14 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     public void preSetRunAsIdentity(ComponentInvocation inv) {
 
+
+        //Optimization to avoid the expensivce call to getServletName
+        //for cases with no run-as descriptors
+
+        if(runAsPrincipals != null && runAsPrincipals.isEmpty()) {
+            return;
+        }
+
         String servletName = this.getServletName(inv);
         if (servletName == null) {
             return;
@@ -580,6 +588,13 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      *
      */
     public void postSetRunAsIdentity(ComponentInvocation inv) {
+
+       //Optimization to avoid the expensivce call to getServletName
+        //for cases with no run-as descriptors
+
+        if(runAsPrincipals != null && runAsPrincipals.isEmpty()) {
+            return;
+        }
 
         String servletName = this.getServletName(inv);
         if (servletName == null) {
