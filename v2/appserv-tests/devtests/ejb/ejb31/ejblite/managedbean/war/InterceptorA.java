@@ -13,7 +13,7 @@ import javax.interceptor.InvocationContext;
 import javax.interceptor.AroundInvoke;
 
 
-public class InterceptorA {
+public class InterceptorA extends InterceptorSuper {
 
 
     @PostConstruct
