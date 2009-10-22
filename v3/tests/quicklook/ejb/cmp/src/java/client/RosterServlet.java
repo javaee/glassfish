@@ -76,21 +76,21 @@ public class RosterServlet extends HttpServlet{
                (RosterHome)PortableRemoteObject.narrow(objref,
                                             RosterHome.class);
 
-System.err.println("XXXX-1");
+//System.err.println("XXXX-1");
            Roster myRoster = home.create();
-System.err.println("XXXX-2");
+//System.err.println("XXXX-2");
             
            // deleting all exisiting DB-entries
            myRoster.cleanUp();
-System.err.println("XXXX-3");
+//System.err.println("XXXX-3");
 
            insertInfo(myRoster);
-System.err.println("XXXX-4");
+//System.err.println("XXXX-4");
            getSomeInfo(myRoster);
-System.err.println("XXXX-5");
+//System.err.println("XXXX-5");
 
            getMoreInfo(myRoster);
-System.err.println("XXXX-6");
+//System.err.println("XXXX-6");
            out.println("<BR>ROSTER-FINISHED-OK");
 
        } catch (Exception ex) {

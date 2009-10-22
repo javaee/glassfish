@@ -17,7 +17,7 @@ package util;
 
 public final class Debug {
 
-    public static final boolean debuggingOn = true;
+    public static final boolean debuggingOn = false;
 
     public static final void print(String msg) {
 
