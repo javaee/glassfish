@@ -36,15 +36,8 @@
 
 package com.sun.enterprise.security.auth.login;
 
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import com.sun.logging.LogDomains;
 
-import javax.security.auth.*;
-import javax.security.auth.callback.*;
 import javax.security.auth.login.*;
-import javax.security.auth.spi.*;
 
 import com.sun.enterprise.security.auth.realm.ldap.LDAPRealm;
 
@@ -98,12 +91,12 @@ public class LDAPLoginModule extends PasswordLoginModule
         }
         _ldapRealm = (LDAPRealm)_currentRealm;
         
-                                // enforce that password cannot be empty.
-                                // ldap may grant login on empty password!
-        if (_password == null || _password.length() == 0) {
-            String msg = sm.getString("ldaplm.emptypassword", _username);
-            throw new LoginException(msg);
-        }
+                       // enforce that password cannot be empty.
+                       // ldap may grant login on empty password!
+//        if (_password == null || _password.length() == 0) {
+//            String msg = sm.getString("ldaplm.emptypassword", _username);
+//            throw new LoginException(msg);
+//        }
         
         String mode = _currentRealm.getProperty(LDAPRealm.PARAM_MODE);
 

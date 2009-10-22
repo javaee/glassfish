@@ -58,6 +58,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import javax.naming.OperationNotSupportedException;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -447,13 +448,15 @@ public final class LDAPRealm extends IASRealm
             grpList = new String[groupsList.size()];
             groupsList.toArray(grpList);
         } catch (Exception e) {
-            _logger.log(Level.SEVERE, "ldaprealm.exception", e);
-            throw new LoginException(e.toString());
+            LoginException le=new LoginException(e.toString());
+            le.initCause(e);
+            _logger.log(Level.SEVERE, "ldaprealm.exception", le);
+            throw le;
         } finally {
             if (ctx != null) {
                 try {
                     ctx.close();
-                } catch (NamingException e) {};
+                } catch (NamingException e) {}
             }
         }
 
@@ -542,6 +545,7 @@ public final class LDAPRealm extends IASRealm
      *
      */
     private boolean bindAsUser(String bindDN, String password)
+            throws OperationNotSupportedException
     {
         boolean bindSuccessful=false;
 
@@ -554,6 +558,8 @@ public final class LDAPRealm extends IASRealm
         try {
             ctx = new InitialDirContext(p);
             bindSuccessful = true;
+        } catch (OperationNotSupportedException e) {
+            throw e;
         } catch (Exception e) {
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.finest("Error binding to directory as: " + bindDN);
@@ -563,7 +569,7 @@ public final class LDAPRealm extends IASRealm
             if (ctx != null) {
                 try {
                     ctx.close();
-                } catch (NamingException e) {};
+                } catch (NamingException e) {}
             }
         }
         return bindSuccessful;
