@@ -68,10 +68,6 @@
     </event>
 
 #include "/common/shared/restart.inc"
-    <sun:head id="propertyhead" title="$resource{i18njms.destinationResources.pageTitle}"  >
-        <sun:script url="/resource/common/js/adminjsf.js" />
-    </sun:head>
-
     <sun:form id="propertyForm">
    //#include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"
