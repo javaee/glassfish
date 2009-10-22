@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Stack;
-import java.util.Collection;
-import java.util.Arrays;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.AnnotatedElement;
@@ -126,15 +124,8 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         ProcessingResultImpl result = new ProcessingResultImpl();
         errorCount=0;
         
-        Set<Class> allClasses = scanner.getElements();
-        Set<String> superClasses = findSuperClasses(allClasses);
-
-        for (Class c : allClasses) {
-            // skip super class if it has no class level annotations
-            if (superClasses.contains(c.getName()) &&
-                (c.getAnnotations().length == 0) ) {
-                continue;
-            }
+        for (Class c : scanner.getElements()) {
+            
             result.add(process(ctx, c));          
         }
         return result;
@@ -156,15 +147,8 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         throws AnnotationProcessorException {
         
         ProcessingResultImpl result = new ProcessingResultImpl();
-        Set<String> superClasses = findSuperClasses(
-            Arrays.asList(classes));
         for (Class c : classes) {
-            // skip super class if it has no class level annotations
-            if (superClasses.contains(c.getName()) &&
-                (c.getAnnotations().length == 0) ) {
-                continue;
-            }
-            result.add(process(ctx, c));          
+            result.add(process(ctx, c));
         }
         return result;
     }
@@ -490,22 +474,5 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
         } catch(EmptyStackException ex) {
             return null;
         }
-    }
-
-
-    // find out all the super classes from the list to scan annotations
-    private Set<String> findSuperClasses(Collection<Class> allClasses) {
-        Set<String> superClassNames = new HashSet<String>();
-        for (Class clazz: allClasses) {
-            Class parent = clazz;
-            while ((parent = parent.getSuperclass()) != null) {
-                if (parent.getPackage() == null ||
-                    !parent.getPackage().getName().startsWith("java.lang")) {
-                    superClassNames.add(parent.getName());
-                }
-            }
-        }
-
-        return superClassNames;
     }
 }
