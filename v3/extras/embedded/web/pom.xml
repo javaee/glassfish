@@ -84,6 +84,7 @@
               <tasks>
                <property name="bundlename" value="org.glassfish.embedded.web"/>
  		<property name="finaljar" value="${project.build.directory}/glassfish-embedded-web.jar"/>
+ 		<property name="includeRars" value="true"/>
                 <ant dir="." antfile="../build.xml" target="create.distribution"/>
               </tasks>
             </configuration>
