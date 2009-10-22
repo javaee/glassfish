@@ -50,7 +50,7 @@
         </sun:property>
 
         <sun:property id="threadPoolsIdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.threadPoolId}"
-                helpText="$resource{i18njca.resourceAdapterConfig.ThreadPoolIdsHelp}>
+                helpText="$resource{i18njca.resourceAdapterConfig.ThreadPoolIdsHelp}" >
             <sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['ThreadPoolIds']}" />
         </sun:property>
         "<br /><br />

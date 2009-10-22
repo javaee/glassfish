@@ -73,7 +73,6 @@
                 <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.step2PageTitle}" helpText="$resource{i18njca.connectorConnectionPool.step2PageTitleHelp}">
 #include "/jca/editPageWizardButtons.inc"
                     </sun:title>
-                    "<br><br>
 
 #include "/jca/connectorConnectionPoolAttr.inc"
 #include "/common/shared/propertyDescTable.inc"

@@ -83,15 +83,13 @@
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njca.workSecurityMap.editPageTitle}" helpText="$resource{i18njca.workSecurityMap.editPageTitleHelp}">
+    <sun:title id="propertyContentPage" title="$resource{i18njca.workSecurityMap.editPageTitle}" helpText="$resource{i18njca.workSecurityMap.editPageTitleHelp}">
 #include "/jca/workSecurityMapButtons.inc"
-                    </sun:title>
-                    "<br><br>
+    </sun:title>
 #include "/jca/workSecurityMapAttr.inc"
-
 	<sun:hidden id="helpKey" value="$resource{help_jca.workSecurityMapEdit}" />
-            </sun:form>
-                        "<br/>
+</sun:form>
+            "<br/><br/>
 #include "/jca/securityMapjs.inc"
 </define>
 </composition>

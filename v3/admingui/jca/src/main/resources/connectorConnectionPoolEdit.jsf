@@ -83,7 +83,6 @@
             />
         </sun:button>     
     </sun:title>
-    "<br><br>
     
 #include "/jca/connectorConnectionPoolAttrEdit.inc"
     

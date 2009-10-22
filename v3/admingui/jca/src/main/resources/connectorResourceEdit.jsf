@@ -76,7 +76,6 @@
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorResource.editPageTitle}" helpText="$resource{i18njca.connectorResource.editPageTitleHelp}" >
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
-    "<br><br>
     
 #include "/jca/connectorResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"

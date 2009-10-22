@@ -64,7 +64,6 @@
     <sun:title id="propertyContentPage" title="$resource{i18njca.resourceAdapterConfig.newPageTitle}" helpText="$resource{i18njca.resourceAdapterConfig.newPageTitleHelp}">
 #include "/common/shared/editPageButtons_2.inc"
     </sun:title>
-    "<br><br>
 #include "/jca/resourceAdapterConfigAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
 
