@@ -162,9 +162,6 @@ public final class ContainerEvent extends EventObject {
     public static final String AFTER_FILTER_DESTROYED
         = "afterFilterDestroyed";
 
-    public static final String AFTER_LISTENER_INSTANTIATED
-        = "afterListenerInstantiated";
-
 
     /**
      * The Container on which this event occurred.
