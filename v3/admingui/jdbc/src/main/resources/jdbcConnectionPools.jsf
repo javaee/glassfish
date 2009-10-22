@@ -39,7 +39,10 @@
 	setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPools.pageTitle}" >
+<!composition template="/templates/default.layout"
+    guiTitle="$resource{i18njdbc.jdbcConnectionPools.pageTitle}"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:connectionPoolResources','/jdbc/jdbcTreeNode.jsf','JDBC:connectionPoolResources');"
+>
 <!define name="content">
     <event>
     <!beforeCreate
