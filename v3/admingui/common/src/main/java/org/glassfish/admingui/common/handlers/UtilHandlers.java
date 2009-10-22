@@ -60,6 +60,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerDefinition;
 import com.sun.jsftemplating.util.FileUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.GregorianCalendar;
 import java.util.Map;
 import java.net.MalformedURLException;
@@ -178,7 +179,11 @@ public class UtilHandlers {
 	}
 	String content = "";
 	if (url != null) {
-	    content = new String(FileUtil.readFromURL(url));
+            try{
+                content = new String(FileUtil.readFromURL(url));
+            } catch (FileNotFoundException fnfe) {
+                //
+            }
 	}
 
 	// Set the output
