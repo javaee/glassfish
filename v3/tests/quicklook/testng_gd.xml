@@ -138,6 +138,11 @@
       <class name="test.mdb.MDBTests"/>
     </classes>
   </test>
+  <test name="JRuby_tests">
+    <classes>
+      <class name="test.web.jruby.helloworld.JRubyTestNG"/>
+    </classes>
+  </test>
   <test name="bv_servlet_simple">
     <classes>
         <class name="test.bv.servlet.simple.SimpleBVServletTestNG" />
