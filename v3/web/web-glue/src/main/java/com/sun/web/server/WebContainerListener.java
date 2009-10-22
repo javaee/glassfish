@@ -127,12 +127,6 @@ public final class WebContainerListener
         String type = event.getType();
 
         try {
-            if (ContainerEvent.AFTER_LISTENER_INSTANTIATED.equals(type)) {
-                preInvoke((Context) event.getContainer());
-                injectInstance(event);
-                postInvoke((Context) event.getContainer());
-            }
-
             if (beforeEvents.contains(type)) {
                 preInvoke((Context) event.getContainer());
             } else if (afterEvents.contains(type)) {
@@ -171,24 +165,6 @@ public final class WebContainerListener
             WebModule wm = (WebModule)ctx;
             ComponentInvocation inv = new WebComponentInvocation(wm);
             invocationMgr.postInvoke(inv);
-        }
-    }
-
-    /*
-     * Injects all injectable resources into the servlet context listener
-     * or filter instance associated with the given ContainerEvent.
-     *
-     * @param event The ContainerEvent to process
-     */
-    private void injectInstance(ContainerEvent event)
-            throws InjectionException {
-
-        if (event.getContainer() instanceof WebModule) {
-            WebModule wm = (WebModule)event.getContainer();
-            JndiNameEnvironment desc = wm.getWebBundleDescriptor();
-            if (desc != null) {
-                injectionMgr.injectInstance(event.getData(), desc);
-            }
         }
     }
 

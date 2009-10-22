@@ -1895,6 +1895,16 @@ public class WebModule extends PwcWebModule {
         return webContainer.createFilterInstance(this, clazz);
     }
 
+    /**
+     * Instantiates the given EventListener class.
+     *
+     * @return the new EventListener instance
+     */
+    public <T extends EventListener> T createListenerInstance(
+                Class<T> clazz) throws Exception {
+        return webContainer.createListenerInstance(this, clazz);
+    }
+
 
     /*
      * Servlet related probe events

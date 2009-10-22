@@ -270,15 +270,13 @@ public class AsyncContextImpl implements AsyncContext {
     public <T extends AsyncListener> T createListener(Class<T> clazz)
             throws ServletException {
         T listener = null;
-        try {
-            listener = clazz.newInstance();
-        } catch (Throwable t) {
-            throw new ServletException(t);
-        }
         StandardContext ctx = (StandardContext) origRequest.getContext();
         if (ctx != null) {
-            ctx.fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
-                                   listener);
+            try {
+                listener = ctx.createListenerInstance(clazz);
+            } catch (Throwable t) {
+                throw new ServletException(t);
+            }
         }
         return listener;
     }

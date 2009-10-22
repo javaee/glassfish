@@ -2782,7 +2782,7 @@ public class StandardContext
      */
     public void addListener(Class <? extends EventListener> listenerClass) {
         try {
-            addListener(listenerClass.newInstance());
+            addListener(createListenerInstance(listenerClass));
         } catch (Throwable t) {
             throw new IllegalArgumentException(t); 
         }
@@ -2805,20 +2805,11 @@ public class StandardContext
                     "standardContext.invalidListenerType", clazz.getName()));
         }
 
-        T listener = null;
         try {
-            listener = clazz.newInstance();
+            return createListenerInstance(clazz);
         } catch (Throwable t) {
             throw new ServletException(t);
         }
-
-        // START PWC 1.2 6310695
-        // Inject the instantiated listener
-        fireContainerEvent(ContainerEvent.AFTER_LISTENER_INSTANTIATED,
-                           listener);
-        // END PWC 1.2 6310695
-
-        return listener;
     }
 
     public void setJspConfigDescriptor(JspConfigDescriptor jspConfigDesc) {
@@ -6755,6 +6746,16 @@ public class StandardContext
      */
     protected <T extends Filter> T createFilterInstance(Class<T> clazz)
             throws Exception{
+        return clazz.newInstance();
+    }
+
+    /**
+     * Instantiates the given EventListener class.
+     *
+     * @return the new EventListener instance
+     */
+    public <T extends EventListener> T createListenerInstance(
+                Class<T> clazz) throws Exception{
         return clazz.newInstance();
     }
 

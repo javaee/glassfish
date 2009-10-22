@@ -663,12 +663,26 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
 
+    public String getName() {
+        return "Web";
+    }
+
+
+    public Class<? extends WebDeployer> getDeployer() {
+        return WebDeployer.class;
+    }
+
+
+    public WebConnector getJkConnector() {
+        return jkConnector;
+    }
+
+
     /**
      * Instantiates the given Servlet class for the given WebModule
      */
     <T extends Servlet> T createServletInstance(WebModule module,
-                                                Class<T> clazz)
-            throws Exception {
+                Class<T> clazz) throws Exception {
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
@@ -683,8 +697,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * Instantiates the given Filter class for the given WebModule
      */
     <T extends Filter> T createFilterInstance(WebModule module,
-                                              Class<T> clazz)
-            throws Exception {
+                Class<T> clazz) throws Exception {
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
@@ -695,18 +708,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
 
-    public String getName() {
-        return "Web";
-    }
-
-
-    public Class<? extends WebDeployer> getDeployer() {
-        return WebDeployer.class;
-    }
-
-
-    public WebConnector getJkConnector() {
-        return jkConnector;
+    /**
+     * Instantiates the given EventListener class for the given WebModule
+     */
+    <T extends java.util.EventListener> T createListenerInstance(
+                WebModule module, Class<T> clazz) throws Exception {
+        WebComponentInvocation inv = new WebComponentInvocation(module);
+        try {
+            invocationMgr.preInvoke(inv);
+            return (T) injectionMgr.createManagedObject(clazz);
+        } finally {
+            invocationMgr.postInvoke(inv);
+        }
     }
 
 
