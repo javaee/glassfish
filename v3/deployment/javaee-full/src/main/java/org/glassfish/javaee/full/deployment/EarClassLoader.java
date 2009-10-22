@@ -75,19 +75,28 @@ public class EarClassLoader extends EJBClassLoader {
             return;
         }
 
-        // destroy all the module classloaders
         try {
             for (ClassLoaderHolder clh : delegates) {
-                if (!clh.loader.equals(this)) {
-                    PreDestroy.class.cast(clh.loader).preDestroy();
+                // destroy all the module classloaders
+                if ( !(clh.loader instanceof EarLibClassLoader) &&  
+                     !(clh.loader instanceof EarClassLoader)) {
+                    try {
+                        PreDestroy.class.cast(clh.loader).preDestroy();
+                    } catch (Exception e) {
+                        // ignore, the class loader does not need to be 
+                        // explicitely stopped.
+                    }
                 }
             }
+
+            // destroy itself
+            super.preDestroy();
+ 
+            // now destroy the EarLibClassLoader
+            PreDestroy.class.cast(this.getParent().getParent()).preDestroy();
         } catch (Exception e) {
             // ignore, the class loader does not need to be explicitely stopped.
         }
-
-        // destroy itself
-        super.preDestroy();
 
         isPreDestroyCalled = true;
     }
