@@ -77,7 +77,7 @@
            align="top"
            height="$int{18}"
            width="$int{18}"
-           url="#{request.contextPath}/theme/woodstock4_3/suntheme/images/table/actions_separator.gif"
+           url="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/actions_separator.gif"
         />
 
        <sun:dropDown id="filter"  selected="#{filterValue}" label="$resource{i18n.common.filterDropDown}" submitForm="#{true}" immediate="#{true}"
