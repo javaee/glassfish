@@ -35,24 +35,23 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
+
 import java.util.Map;
 
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.annotation.ChildGetter;
-
 /**
-    All MBeans that have Property should extend this interface.
+Configuration for the &lt;configs&gt; element; it is an internal "node" which
+groups all config elements under itself.
+@since Glassfish V3
  */
-public interface PropertiesAccess extends AMXConfigProxy
+@AMXMBeanMetadata(globalSingleton=true)
+public interface LoadBalancers
+        extends ConfigElement, ConfigCollectionElement, Singleton
 {
-    /**
-    Return all Property MBeans, keyed by property name.
-    @since Glassfish V3
-     */
-    @ChildGetter
-    public Map<String, Property> getProperty();
+    public Map<String, LoadBalancer> getLoadBalancer();
 }
+
 
 
 

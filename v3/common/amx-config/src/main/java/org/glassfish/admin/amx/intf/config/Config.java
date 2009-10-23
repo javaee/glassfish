@@ -95,12 +95,15 @@ public interface Config
     /**
     Return the EJBContainer.
      */
-    public EJBContainer getEJBContainer();
+    public EJBContainer getEjbContainer();
 
     /**
     Return the MDBContainer.
      */
-    public MDBContainer getMDBContainer();
+    public MDBContainer getMdbContainer();
+    
+    
+    public AlertService getAlertService();
 
     /**
     Return the JavaConfig.
@@ -110,7 +113,7 @@ public interface Config
     /**
     Return the JMSService.
      */
-    public JMSService getJMSService();
+    public JMSService getJmsService();
 
     /**
     Return the LogService.

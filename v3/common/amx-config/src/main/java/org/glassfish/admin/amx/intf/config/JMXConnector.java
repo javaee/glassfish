@@ -35,12 +35,16 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
+
 /**
 Configuration for the &lt;jmx-connector&gt; element.
  */
 public interface JMXConnector
         extends Enabled, NamedConfigElement, PropertiesAccess, SSLContainer
 {
+    public Ssl getSsl();
+    
     public String getProtocol();
 
     public void setProtocol(String value);
@@ -59,6 +63,5 @@ public interface JMXConnector
 
     
     public String getSecurityEnabled();
-
     public void setSecurityEnabled(final String value);
 }

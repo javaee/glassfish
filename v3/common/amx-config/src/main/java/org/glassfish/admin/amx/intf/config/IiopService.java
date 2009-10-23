@@ -52,19 +52,20 @@ public interface IiopService
     Get the SslConfig MBean that corresponds to ssl-client-config
     element of this iiop service.
      */
-    public Ssl getIIOPSSLClient();
+    public Ssl getIiopSslClient();
+    
+    public Ssl getSslClientConfig();
 
     public String getClientAuthenticationRequired();
 
     public void setClientAuthenticationRequired(final String value);
 
-    @ChildGetter
-    public Map<String, IiopListener> getIIOPListener();
-
+    public Map<String, IiopListener> getIiopListener();
+    
     /**
     Get a proxy to an ORB
      */
-    ORB getORB();
+    ORB getOrb();
 }
 
 

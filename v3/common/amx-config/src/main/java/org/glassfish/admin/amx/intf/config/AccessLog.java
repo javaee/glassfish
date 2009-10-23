@@ -41,12 +41,18 @@ import org.glassfish.admin.amx.base.Singleton;
 Represents the &lt;access-log&gt; element.
 <p>
  */
-public interface AccessLog extends ConfigElement, Singleton
+public interface AccessLog extends ConfigElement, Singleton, PropertiesAccess
 {
     public String getFormat();
 
     public void setFormat(final String value);
 
+
+    public String getBufferSizeBytes();
+    public void setBufferSizeBytes(String val);
+    
+    public String getWriteIntervalSeconds();
+    public void setWriteIntervalSeconds(String val);
     
     public String getRotationEnabled();
 

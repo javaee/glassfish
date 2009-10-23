@@ -36,13 +36,100 @@
 package org.glassfish.admin.amx.intf.config.grizzly;
 
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.intf.config.ConfigElement;
+import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
 Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Http extends Singleton, ConfigElement
+public interface Http extends Singleton, PropertiesAccess
 {
+    public FileCache getFileCache();
+    
+    public String getRestrictedUserAgents();
+    public void   setRestrictedUserAgents(String val);
+
+    public String getRcmSupportEnabled();
+    public void   setRcmSupportEnabled(String val);
+
+    public String getRedirectPort();
+    public void   setRedirectPort(String val);
+
+    public String getMaxPostSizeBytes();
+    public void   setMaxPostSizeBytes(String val);
+
+    public String getDefaultResponseType();
+    public void   setDefaultResponseType(String val);
+
+    public String getSendBufferSizeBytes();
+    public void   setSendBufferSizeBytes(String val);
+
+    public String getServerName();
+    public void   setServerName(String val);
+
+    public String getConnectionUploadTimeoutMillis();
+    public void   setConnectionUploadTimeoutMillis(String val);
+
+
+    public String getCompressableMimeType();
+    public void   setCompressableMimeType(String val);
+
+    public String getXpoweredBy();
+    public void   setXpoweredBy(String val);
+
+    public String getCometSupportEnabled();
+    public void   setCometSupportEnabled(String val);
+
+    public String getMaxConnections();
+    public void   setMaxConnections(String val);
+
+    public String getCompressionMinSizeBytes();
+    public void   setCompressionMinSizeBytes(String val);
+
+    public String getUriEncoding();
+    public void   setUriEncoding(String val);
+
+    public String getForcedResponseType();
+    public void   setForcedResponseType(String val);
+
+    public String getVersion();
+    public void   setVersion(String val);
+
+    public String getUploadTimeoutEnabled();
+    public void   setUploadTimeoutEnabled(String val);
+
+    public String getNoCompressionUserAgents();
+    public void   setNoCompressionUserAgents(String val);
+
+    public String getTimeoutSeconds();
+    public void   setTimeoutSeconds(String val);
+
+    public String getDefaultVirtualServer();
+    public void   setDefaultVirtualServer(String val);
+
+    public String getCompression();
+    public void   setCompression(String val);
+
+    public String getRequestTimeoutSeconds();
+    public void   setRequestTimeoutSeconds(String val);
+
+    public String getChunkingEnabled();
+    public void   setChunkingEnabled(String val);
+
+    public String getAuthPassThroughEnabled();
+    public void   setAuthPassThroughEnabled(String val);
+
+    public String getDnsLookupEnabled();
+    public void   setDnsLookupEnabled(String val);
+
+    public String getHeaderBufferLengthBytes();
+    public void   setHeaderBufferLengthBytes(String val);
+
+    public String getAdapter();
+    public void   setAdapter(String val);
+
+    public String getTraceEnabled();
+    public void   setTraceEnabled(String val);
+
 }
 
 

@@ -41,7 +41,8 @@ Configuration for the &lt;jdbc-resource&gt; element.
 public interface JDBCResource
         extends Resource
 {
+    public String getJndiName();
+    
     public String getPoolName();
-
     public void setPoolName(String value);
 }

@@ -43,5 +43,7 @@ Configuration for the &lt;web-container&gt; element.
 public interface WebContainer
         extends PropertiesAccess, ConfigElement, Singleton
 {
-    public SessionConfig getSession();
+    public SessionConfig getSessionConfig();
+    
+    public String getJspCachingEnabled();
 }

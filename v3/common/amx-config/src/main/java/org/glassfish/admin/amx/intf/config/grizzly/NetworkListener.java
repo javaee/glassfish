@@ -36,17 +36,40 @@
 package org.glassfish.admin.amx.intf.config.grizzly;
 
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
+import org.glassfish.admin.amx.intf.config.PropertiesAccess;
+import org.glassfish.admin.amx.intf.config.ThreadPool;
+
+import java.util.Map;
 
 /**
 Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkListener extends NamedConfigElement
+public interface NetworkListener extends NamedConfigElement, PropertiesAccess
 {
     public Protocol findProtocol();
 
     public Protocol findHttpProtocol();
 
     public Transport findTransport();
+    
+    public String getPort();
+    public String getEnabled();
+    
+    public String getThreadPool();
+    public void setThreadPool(String val);
+    
+    public String getTransport();
+    void setTransport(String val);
+    
+    public String getProtocol();
+    public void setProtocol(String val);
+    
+    public String getAddress();
+    public void setAddress(String val);
+    
+    public String getJkEnabled();
+    public void setJkEnabled(String val);
+
 }
 
 

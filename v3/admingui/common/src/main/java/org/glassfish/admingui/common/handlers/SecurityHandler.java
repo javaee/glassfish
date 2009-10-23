@@ -380,7 +380,7 @@ public class SecurityHandler {
             List<Map> selectedRows = (List) obj;
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("users");
-                AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getAdminService().getJMXConnector().get("system");
+                AMXProxy amx = V3AMX.getInstance().getConfig("server-config").getAdminService().getJmxConnector().get("system");
                 String authRealm = (String) amx.attributesMap().get("AuthRealmName");
                 if (realmName.equals(authRealm) && user.equals(GuiUtil.getSessionValue("userName"))){
                     error = GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.cannotDeleteCurrent");

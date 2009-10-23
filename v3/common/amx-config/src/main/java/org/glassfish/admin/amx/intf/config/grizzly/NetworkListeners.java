@@ -37,12 +37,15 @@ package org.glassfish.admin.amx.intf.config.grizzly;
 
 import java.util.Map;
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.intf.config.ConfigElement;
+import org.glassfish.admin.amx.intf.config.PropertiesAccess;
+import org.glassfish.admin.amx.intf.config.ThreadPool;
 
 /**
 Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkListeners extends Singleton, ConfigElement
+public interface NetworkListeners extends Singleton, PropertiesAccess
 {
     public Map<String, NetworkListener> getNetworkListener();
+    
+    public Map<String,ThreadPool> getThreadPool();
 }

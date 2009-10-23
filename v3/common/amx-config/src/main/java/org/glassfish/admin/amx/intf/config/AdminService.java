@@ -49,7 +49,7 @@ public interface AdminService
         extends AMXConfigProxy, PropertiesAccess, Singleton
 {
     @ChildGetter
-    public Map<String, JMXConnector> getJMXConnector();
+    public Map<String, JMXConnector> getJmxConnector();
 
     public String getSystemJmxConnectorName();
 
@@ -75,7 +75,11 @@ public interface AdminService
     public void setType(String value);
 
     /** may return null if not present */
-    public DasConfig getDAS();
+    public DasConfig getDasConfig();
+    
+    
+    public String getAuthRealmName();
+    public void setAuthRealmName(String val);
 }
 
 

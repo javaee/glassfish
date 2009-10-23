@@ -105,4 +105,19 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
     public String getWebContainer();
 
     public void setWebContainer(final String value);
+    
+    public String getSecurity();
+    public void setSecurity(final String value);
+    
+    public String getWebServicesContainer();
+    public void setWebServicesContainer(final String value);
+    
+    public String getJpa();
+    public void setJpa(final String value);
+    
+    public String getJersey();
+    public void setJersey(final String value);
 }
+
+
+

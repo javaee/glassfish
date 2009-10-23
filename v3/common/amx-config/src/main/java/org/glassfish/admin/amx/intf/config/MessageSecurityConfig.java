@@ -62,5 +62,5 @@ public interface MessageSecurityConfig
     /**
     @return A map of Provider MBean proxies keyed on provider-id.
      */
-    //public Map<String, Provider> getProvider();
+    public Map<String, ProviderConfig> getProviderConfig();
 }

@@ -56,6 +56,8 @@ public interface JMSService
 
     public void setAddresslistIterations(final String value);
 
+    public Map<String,JMSHost> getJmsHost();
+    
     public String getDefaultJmsHost();
 
     public void setDefaultJmsHost(final String value);

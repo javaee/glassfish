@@ -43,6 +43,7 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 
 
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
 
 /**
@@ -52,14 +53,19 @@ import org.glassfish.admin.amx.base.Singleton;
 public interface IiopListener
 	extends PropertiesAccess, NamedConfigElement, Enabled, SSLContainer
 {
+    public String getId();
+    
+    public String getLazyInit();
+	public void	setLazyInit( String value );
+    
 	public String	getAddress();
 	public void	setAddress( String value );
-
+    
+    public Ssl getSsl();
     
 	public String	getPort();
 	public void	setPort( String value );
 
-    
 	public String	getSecurityEnabled();
 	public void	setSecurityEnabled( String value );
 

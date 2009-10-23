@@ -397,4 +397,31 @@ public interface JDBCConnectionPool
     @since AppServer 9.1
      */
     void setStatementTimeoutInSeconds(final String value);
+    
+    
+    public String getStatementCacheSize();
+    public void   setStatementCacheSize(String val);
+    
+    public String getSqlTraceListeners();
+    public void   setSqlTraceListeners(String val);
+    
+    public String getValidationClassname();
+    public void   setValidationClassname(String val);
+    
+    public String getPing();
+    public void   setPing(String val);
+    
+    public String getPooling();
+    public void   setPooling(String val);
+    
+    public String getInitSql();
+    public void   setInitSql(String val);
+    
+    public String getDriverClassname();
+    public void setDriverClassname(String val);
 }
+
+
+
+
+

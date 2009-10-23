@@ -52,6 +52,8 @@ public interface JMSHost extends NamedConfigElement, PropertiesAccess
 
     public void setHost(String value);
 
+    public String getLazyInit();
+    public void setLazyInit(String value);
     
     public String getPort();
 

@@ -36,10 +36,51 @@
 package org.glassfish.admin.amx.intf.config.grizzly;
 
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
+import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
 Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Transport extends NamedConfigElement
+public interface Transport extends NamedConfigElement, PropertiesAccess
 {
+    public String getTcpNoDelay();
+    public void   set(String val);
+    
+    public String getReadTimeoutMillis();
+    public void   setReadTimeoutMillis(String val);
+    
+    public String getDisplayConfiguration();
+    public void   setDisplayConfiguration(String val);
+    
+    public String getEnableSnoop();
+    public void   setEnableSnoop(String val);
+    
+    public String getClassname();
+    public void   setClassname(String val);
+    
+    public String getAcceptorThreads();
+    public void   setAcceptorThreads(String val);
+    
+    public String getBufferSizeBytes();
+    public void   setBufferSizeBytes(String val);
+    
+    public String getWriteTimeoutMillis();
+    public void   setWriteTimeoutMillis(String val);
+    
+    public String getMaxConnectionsCount();
+    public void   setMaxConnectionsCount(String val);
+    
+    public String getSelectionKeyHandler();
+    public void   setSelectionKeyHandler(String val);
+    
+    public String getSelectorPollTimeoutMillis();
+    public void   setSelectorPollTimeoutMillis(String val);
+    
+    public String getByteBufferType();
+    public void   setByteBufferType(String val);
+    
+    public String getIdleKeyTimeoutSeconds();
+    public void   setIdleKeyTimeoutSeconds(String val);
+    
+    
 }

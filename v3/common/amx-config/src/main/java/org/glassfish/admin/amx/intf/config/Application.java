@@ -96,6 +96,10 @@ public interface Application
     
     @ChildGetter
     public Map<String,Module> getModule();
+    
+    public Map<String,Engine> getEngine();
+    
+    public Map<String,WebServiceEndpoint> getWebServiceEndpoint();
 }
 
 

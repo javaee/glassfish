@@ -47,7 +47,6 @@ All configuration resides in a tree rooted at this .
 public interface Domain
         extends PropertiesAccess, SystemPropertiesAccess, ConfigElement, Singleton
 {
-
     /** @since Glassfish V3 */
     public Resources getResources();
 
@@ -69,7 +68,13 @@ public interface Domain
     /** @since Glassfish V3 */
     public NodeAgents getNodeAgents();
     
-    public AMXPref getAMXPref();
+    public AMXPref getAmxPref();
+    
+    public String getVersion();
+    
+    public LbConfigs getLbConfigs();
+    
+    public LoadBalancers getLoadBalancers();
 
 
     //---------------------------------------------------------------------------------------

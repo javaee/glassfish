@@ -53,6 +53,7 @@ public interface EJBContainer extends
 
     void setCacheIdleTimeoutInSeconds(final String value);
 
+    public EJBTimerService  getEjbTimerService();
     
     String getCacheResizeQuantity();
 

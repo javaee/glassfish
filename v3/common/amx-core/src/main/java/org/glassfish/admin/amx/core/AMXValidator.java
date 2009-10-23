@@ -693,7 +693,10 @@ public final class AMXValidator
         }
         catch (final Exception t)
         {
-            problems.add( "General test failure in validateAMXConfig: ", t);
+            if ( proxy.valid() )
+            {
+                problems.add( "General test failure in validateAMXConfig: ", t);
+            }
         }
     }
     

@@ -56,6 +56,7 @@ import org.glassfish.admin.amx.config.*;
 import org.glassfish.admin.amx.monitoring.*;
 import org.glassfish.admin.amx.util.CollectionUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.logging.Logging;
 import org.glassfish.admin.amx.annotation.*;
 
@@ -77,10 +78,12 @@ public final class AMXProxyTests extends AMXTestBase
     public AMXProxyTests()
     {
     }
-
-    private boolean isGetter( final Method m )
+    
+    private String attrName( final Method m )
     {
-        return m.getName().startsWith("get") && m.getParameterTypes().length == 0;
+        if ( ! JMXUtil.isIsOrGetter(m) ) return null;
+        
+        return JMXUtil.getAttributeName(m);
     }
     
     
@@ -131,18 +134,31 @@ public final class AMXProxyTests extends AMXTestBase
         }
         
         final Method[] methods = clazz.getMethods();
+        final Set<String> attrNamesFromMethods = new HashSet<String>();
         for( final Method m : methods )
         {
-            if ( isGetter(m) )
+            if ( JMXUtil.isIsOrGetter(m) )
             {
                 try
                 {
                     final Object result = m.invoke( amx, (Object[])null);
+                    
+                    attrNamesFromMethods.add( attrName(m) );
                 }
                 catch( final Exception e )
                 {
                     problems.add( "Error invoking " + m.getName() + "() on " + amx.objectName() + " = " + e );
                 }
+            }
+        }
+        if ( clazz != AMXProxy.class && clazz != AMXConfigProxy.class )
+        {
+            // see whether the interface is missing any getters
+            final Set<String> attrNames = amx.attributeNames();
+            attrNames.removeAll(attrNamesFromMethods);
+            if ( attrNames.size() != 0 )
+            {
+                println( clazz.getName() + " missing getters attributes: " + attrNames );
             }
         }
         return problems;

@@ -47,4 +47,16 @@ public interface MonitoringService
         extends PropertiesAccess, ConfigElement, Singleton
 {
     public ModuleMonitoringLevels getModuleMonitoringLevels();
+    
+    public String getDtraceEnabled();
+    public void setDtraceEnabled(String val);
+    
+    public String getMonitoringEnabled();
+    public void setMonitoringEnabled(String val);
+    
+    public String getMbeanEnabled();
+    public void setMbeanEnabled(String val);
+    
+    public Map<String,ContainerMonitoring> getContainerMonitoring();
+    
 }

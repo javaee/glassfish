@@ -37,12 +37,12 @@ package org.glassfish.admin.amx.intf.config.grizzly;
 
 import java.util.Map;
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.intf.config.ConfigElement;
+import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
 Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Protocols extends Singleton, ConfigElement
+public interface Protocols extends Singleton, PropertiesAccess
 {
     public Map<String, Protocol> getProtocol();
 }

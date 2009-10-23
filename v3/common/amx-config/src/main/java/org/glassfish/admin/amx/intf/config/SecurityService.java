@@ -47,6 +47,11 @@ Configuration for the &lt;security-service&gt; element.
 public interface SecurityService extends
         PropertiesAccess, ConfigElement, Singleton
 {
+    public String getAnonymousRole();
+    public void setAnonymousRole(String val);
+    
+    public Map<String,JACCProvider> getJaccProvider();
+    
     public String getAuditEnabled();
 
     public void setAuditEnabled(String value);

@@ -42,6 +42,8 @@ Configuration for the &lt;virtual-server&gt; element.
 public interface VirtualServer
         extends NamedConfigElement, PropertiesAccess
 {
+    public String getId();
+    
     public String getDefaultWebModule();
 
     public void setDefaultWebModule(String value);
@@ -87,4 +89,9 @@ public interface VirtualServer
     /** @since GlassFish V3 */
     public String getNetworkListeners();
     public void setNetworkListeners(String value);
+    
+    public String getSsoCookieSecure();
+    public void setSsoCookieSecure(String val);
+    
+    public HTTPAccessLog getHttpAccessLog();
 }

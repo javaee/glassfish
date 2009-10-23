@@ -48,12 +48,7 @@ groups all resources under itself.
 public interface ThreadPools
         extends ConfigElement, ConfigCollectionElement, Singleton
 {
-    /**
-    Calls Container.getContaineeMap( XTypes.THREAD_POOL_CONFIG ).
-    @return Map of ThreadPool proxies, keyed by name.
-
-     */
-    //public Map<String, ThreadPool> getThreadPool();
+    public Map<String, ThreadPool> getThreadPool();
 
 }
 

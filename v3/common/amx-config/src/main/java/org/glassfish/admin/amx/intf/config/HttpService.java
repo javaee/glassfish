@@ -61,4 +61,16 @@ public interface HttpService
 		Get the AccessLog.
 	 */
 	public AccessLog	getAccessLog();
+    
+    public String getKeepAlive();
+    
+    public String getHttpProtocol();
+    public String getSsoEnabled();
+    public String getAccessLoggingEnabled();
+    
+    public ConnectionPool getConnectionPool();
+    
+    public HttpFileCache  getHttpFileCache();
+    public Map<String,HttpListener>  getHttpListener();
+    public RequestProcessing  getRequestProcessing();
 }

@@ -35,13 +35,13 @@
  */
 package org.glassfish.admin.amx.intf.config.grizzly;
 
-import java.util.List;
+import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
 /**
 Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Protocol extends NamedConfigElement
+public interface Protocol extends NamedConfigElement, PropertiesAccess
 {
     public Http getHttp();
 
@@ -50,6 +50,7 @@ public interface Protocol extends NamedConfigElement
     public Ssl getSsl();
 
     public ProtocolChainInstanceHandler getProtocolChainInstanceHandler();
-
-    public List<NetworkListener> findNetworkListeners();
+    
+    public String getSecurityEnabled();
+    public void setSecurityEnabled(String value);
 }
