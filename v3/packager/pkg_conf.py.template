@@ -26,7 +26,7 @@ javadb_version="10.5.3.0,0-0"
 corba_version="3.0.0,0-30"
 jsf_version="2.0.1,0-2"
 grizzly_version="1.9.18,0-4"
-metro_version="2.0,0-21"
+metro_version="2.0,0-24"
 
 #description
 glassfish_description="GlassFish v3 Application Server"

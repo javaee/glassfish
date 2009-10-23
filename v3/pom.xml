@@ -134,9 +134,9 @@
         <glassfish-corba.version>3.0.0-b031</glassfish-corba.version>
         <uc-pkg-client.version>1.122-38.2471</uc-pkg-client.version>
 	<uc-pkg-bootstrap.version>1.122-38.2471</uc-pkg-bootstrap.version>
-        <webservices.version>2.0-b23</webservices.version>
+        <webservices.version>2.0-b24</webservices.version>
         <woodstox.version>3.2.1-RC1</woodstox.version>
-        <jaxb.version>2.2-promoted-b55</jaxb.version>
+        <jaxb.version>2.2-promoted-b59</jaxb.version>
         <javax-persistence-api.version>2.0.0-M10</javax-persistence-api.version>
         <eclipselink.version>2.0.0-M10</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
