@@ -40,9 +40,9 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.ee.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider;
 import com.sun.enterprise.connectors.work.monitor.WorkManagementStatsProvider;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
@@ -55,6 +55,7 @@ import java.util.logging.Logger;
 
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
 
 
 /**
@@ -94,26 +95,34 @@ public final class CommonWorkManager implements WorkManager {
             throws ConnectorRuntimeException {
 
         if (runtime.isServer()) {
-            try {
-                //TODO V3 need to be in sync with v2 ? (default thread-pool trial)
-                this.runtime = runtime;
-                this.raName = raName;
-                tp = runtime.getThreadPool(threadPoolId);
-            } catch (NoSuchThreadPoolException e) {
-                String msg = localStrings.getString("workmanager.threadpool_not_found");
-                logger.log(Level.SEVERE, msg, threadPoolId);
-                ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
-                cre.initCause(e);
-                throw cre;
-            }
+            this.runtime = runtime;
+            this.raName = raName;
+            tpm = S1ASThreadPoolManager.getThreadPoolManager();
 
-            if (tp == null) {
-                String msg = localStrings.getString("workmanager.threadpool_not_found");
-                logger.log(Level.SEVERE, msg, threadPoolId);
-                throw new ConnectorRuntimeException(msg);
+            if (threadPoolId == null) {
+                tp = tpm.getDefaultThreadPool();
+            } else {
+                try {
+                    tp = tpm.getThreadPool(threadPoolId);
+                    if(logger.isLoggable(Level.FINEST)){
+                        logger.finest("Got the thread pool [ "+threadPoolId+" ] for WorkManager of RAR [ "+raName+" ]");
+                    }
+                } catch (NoSuchThreadPoolException e) {
+                    String msg = localStrings.getString("workmanager.threadpool_not_found");
+                    logger.log(Level.SEVERE,msg, threadPoolId);
+                    ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
+                    cre.initCause(e);
+                    throw cre;
+                }
             }
-            registerWithMonitoringService();
         }
+
+        if (tp == null) {
+            String msg = localStrings.getString("workmanager.threadpool_not_found");
+            logger.log(Level.SEVERE, msg, threadPoolId);
+            throw new ConnectorRuntimeException(msg);
+        }
+        registerWithMonitoringService();
     }
 
     private void registerWithMonitoringService() {
@@ -163,15 +172,6 @@ public final class CommonWorkManager implements WorkManager {
             deregisterFromMonitoringService();
         }
     }
-
-    /**
-     * Using the default thread pool.
-     *
-     * @throws ConnectorRuntimeException if thread pool is not accessible
-     */
-    /**public CommonWorkManager() throws ConnectorRuntimeException {
-        this(null);
-    } */
 
     /**
      * Executes the work instance.

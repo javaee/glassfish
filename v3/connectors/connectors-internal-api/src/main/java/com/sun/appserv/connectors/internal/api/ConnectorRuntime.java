@@ -38,6 +38,7 @@ package com.sun.appserv.connectors.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.admin.*;
 
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
@@ -49,8 +50,6 @@ import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
 
 
@@ -190,7 +189,6 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public void unregisterConnectorNamingEventListener(ConnectorNamingEventListener listener);
 
-
     /**
      * Provide the configuration of the pool
      * @param poolName connection pool name
@@ -205,16 +203,6 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @throws ResourceException when unable to ping
      */
     public boolean pingConnectionPool(String poolName) throws ResourceException;
-
-
-    /**
-     * Provides specified ThreadPool or default ThreadPool from server
-     * @param threadPoolId Thread-pool-id
-     * @return ThreadPool
-     * @throws NoSuchThreadPoolException when unable to get a ThreadPool
-     */
-    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException, ConnectorRuntimeException;
-
 
     /**
      * provides the transactionManager
@@ -235,7 +223,6 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return set of resource-refs
      */
     public Set getResourceReferenceDescriptor();
-
 
     /**
      * provide the MCF of the pool (either retrieve or create)
@@ -297,7 +284,8 @@ public interface ConnectorRuntime extends ConnectorConstants{
       * @param connectionDefinitionClassName
       *                     The Connection Definition Java bean class for which
       *                     overrideable properties are required.
-      * @return Map<String, Object> String represents property name
+      * @param resType resource-type
+     * @return Map<String, Object> String represents property name
       * and Object is the defaultValue that is a primitive type or String
       */
     public Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, 
@@ -556,7 +544,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
     /**
      * Get Validation class names list for the database vendor that the jdbc 
      * connection pool refers to. This is used for custom connection validation.
-     * @param dbVendor
+     * @param dbVendor database vendor
      * @return all validation class names.
      */        
     public Set<String> getValidationClassNames(String dbVendor);
@@ -565,11 +553,19 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * Check if Ping attribute is on during pool creation. This is used for
      * pinging the pool for erroneous values during pool creation.
      * 
-     * @param poolName
+     * @param poolName connection-pool-name
      * @return true if ping is on
      */
     public boolean getPingDuringPoolCreation(String poolName);
 
+    /**
+     * given a resource-adapter name, retrieves the connector-descriptor
+     * either from runtime's registry or by reading the descriptor from
+     * deployment location.
+     * @param rarName resource-adapter-name
+     * @return ConnectorDescriptor of the .rar
+     * @throws ConnectorRuntimeException when unable to provide the descriptor
+     */
     public ConnectorDescriptor getConnectorDescriptor(String rarName)
             throws ConnectorRuntimeException ;
 

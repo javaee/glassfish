@@ -37,7 +37,7 @@
 package com.sun.enterprise.connectors.work;
 
 
-import com.sun.corba.se.spi.orbutil.threadpool.WorkQueue;
+import com.sun.corba.ee.spi.orbutil.threadpool.WorkQueue;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.connectors.work.context.WorkContextHandler;
 import com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider;

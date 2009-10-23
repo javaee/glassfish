@@ -45,6 +45,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
+import org.glassfish.enterprise.iiop.api.GlassFishORBFactory;
 
 import javax.resource.spi.work.WorkManager;
 import java.lang.reflect.Method;
@@ -91,6 +92,8 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
 
     private ConnectorRuntime runtime;
 
+    @Inject
+    private GlassFishORBFactory orbFactory;
 
     static {
         workManagers = Collections.synchronizedMap(new HashMap<String, WorkManager>());
