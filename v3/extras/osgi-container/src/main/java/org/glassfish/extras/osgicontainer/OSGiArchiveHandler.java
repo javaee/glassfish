@@ -35,8 +35,7 @@
  */
 package org.glassfish.extras.osgicontainer;
 
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.api.deployment.archive.*;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.internal.deployment.GenericHandler;
 import org.glassfish.internal.api.DelegatingClassLoader;
@@ -67,7 +66,7 @@ import com.sun.enterprise.util.io.FileUtils;
  */
 @Service(name="osgi")
 @Scoped(Singleton.class)
-public class OSGiArchiveHandler extends GenericHandler {
+public class OSGiArchiveHandler extends GenericHandler implements CompositeHandler {
     
     @Inject
     ModulesRegistry mr;
@@ -76,28 +75,15 @@ public class OSGiArchiveHandler extends GenericHandler {
         return "osgi";
     }
 
-/*    @Override
-    public void expand(ReadableArchive source, WritableArchive target, DeploymentContext context) throws IOException {
-        // for OSGi bundles, we do not expand, we just copy the jar file in the target environment.
-        File sourceFile;
-        if (source.getURI().getScheme().equals("jar")) {
-            sourceFile = new File(source.getURI().getSchemeSpecificPart());
-        } else {
-            sourceFile = new File(source.getURI());
-        }
-        File targetDir = new File(target.getURI());
-        if (sourceFile.exists() && targetDir.exists()) {
-            File outFile = new File(new File(target.getURI()), sourceFile.getName());
-            FileUtils.copy(sourceFile, outFile);
-        } else {
-            // anything else rely on normal expansion
-            super.expand(source, target, context);
-        }
+    public boolean accept(ReadableArchive source, String entryName) {
+        // we hide everything so far.
+        return false;
     }
-   */
+
     public boolean handles(ReadableArchive archive) throws IOException {
         Manifest manifest = getManifest(archive);
-        return manifest!=null && (manifest.getMainAttributes().getValue("Bundle-Name")!=null);
+        return manifest!=null && ((manifest.getMainAttributes().getValue("Bundle-Name")!=null)
+            || manifest.getMainAttributes().getValue("Bundle-SymbolicName")!=null);
     }
 
     private Map<Module, WeakReference<RefCountingClassLoader>> loaders = new HashMap<Module, WeakReference<RefCountingClassLoader>>();
@@ -106,6 +92,7 @@ public class OSGiArchiveHandler extends GenericHandler {
     // would clash with deploy/undeploy/redeploy cycles that need a complete clean up of the system.
     public synchronized RefCountingClassLoader getClassLoader(ClassLoader parent, Module m) {
 
+        assert(m!=null);
         WeakReference<RefCountingClassLoader> ref = loaders.get(m);
         if (ref!=null) {
             if (ref.get()!=null) {

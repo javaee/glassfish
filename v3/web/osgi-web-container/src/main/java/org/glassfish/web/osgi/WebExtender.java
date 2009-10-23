@@ -47,6 +47,7 @@ import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.logging.Logger;

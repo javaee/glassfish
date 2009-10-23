@@ -7,8 +7,7 @@ import org.glassfish.api.deployment.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PreDestroy;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.*;
 
 import java.util.Collection;
 
@@ -30,6 +29,9 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
 
         Collection<Module> modules = registry.getModules(context.getAppProps().getProperty("module-name"));
         final Module module = (modules.size()>0?modules.iterator().next():null);
+        if (module==null) {
+            throw new RuntimeException("Cannot install OSGi bundle in repository, is this an OSGi bundle ?"); 
+        }
         // I am ensure I have a RefCountingClassLoader...
         final RefCountingClassLoader loader = archiveHandler.getClassLoader(null, module);
         // and release the one I got from the context.
@@ -52,7 +54,9 @@ public class OSGiDeployer implements Deployer<OSGiContainer, OSGiDeployedBundle>
         if (params!=null) {
             if (params.origin== OpsParams.Origin.undeploy) {
                 Module m = context.getModuleMetaData(Module.class);
-                m.uninstall();
+                if (m!=null && m.getState()!= ModuleState.NEW) {
+                    m.uninstall();
+                }
             }
         }
 

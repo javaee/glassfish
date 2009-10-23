@@ -159,7 +159,8 @@ public class OSGiWebContainer
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
         if (osgiAppInfo == null)
         {
-            throw new RuntimeException("No applications for bundle " + b);
+            logger.fine("No applications for bundle " + b);
+            return;
         }
         ActionReport report = getReport();
         undeployJavaEEArtifacts(osgiAppInfo, report);
