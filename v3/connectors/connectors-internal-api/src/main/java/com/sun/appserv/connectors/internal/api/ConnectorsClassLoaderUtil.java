@@ -184,13 +184,14 @@ public class ConnectorsClassLoaderUtil {
 
                 String location = ConnectorsUtil.getSystemModuleLocation(rarName);
 
-                List<URI> libraries;
-                // Embedded mode does not have installed libraries directory.
+                List<URI> libraries = new ArrayList<URI>();
+/*
                 if (processEnv.getProcessType().isEmbedded()) {
                     libraries = new ArrayList<URI>();
                 } else {
                     libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
                 }
+*/
 
                 ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName, libraries);
                 classLoaders.add(ccf);
