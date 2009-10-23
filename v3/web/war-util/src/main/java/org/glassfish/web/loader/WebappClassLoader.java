@@ -564,7 +564,7 @@ public class WebappClassLoader
      * Change the work directory.
      */
     public void setWorkDir(File workDir) {
-        this.loaderDir = new File(workDir, "loader");
+        this.loaderDir = new File(workDir, "loader_" + this.hashCode());
     }
 
 
