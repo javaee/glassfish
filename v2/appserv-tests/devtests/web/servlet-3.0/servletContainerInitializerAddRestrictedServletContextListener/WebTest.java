@@ -52,7 +52,7 @@ import com.sun.ejte.ccl.reporter.*;
  * This unit test also makes sure that the ServletContextListener registered
  * by the ServletContainerInitializer is restricted by checking that any
  * attempt by it to register a Servlet will fail and result in an
- * IllegalStateException.
+ * UnsupportedOperationException.
  */
 public class WebTest {
 
