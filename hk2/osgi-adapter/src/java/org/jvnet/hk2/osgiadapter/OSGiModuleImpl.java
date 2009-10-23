@@ -42,7 +42,6 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.framework.BundleEvent;
 import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
@@ -232,7 +231,12 @@ public final class OSGiModuleImpl implements Module {
     }
 
     public void detach() {
-        if ((bundle.getState() & BundleEvent.STARTED) != 0) {
+        if (bundle.getState() != Bundle.ACTIVE) {
+            if (logger.isLoggable(Level.FINER)) {
+                logger.logp(Level.FINER, "OSGiModuleImpl", "detach",
+                        "Ignoring stop of bundle {0} as it is in {1} state",
+                        new Object[]{bundle, toString(bundle.getState())} );
+            }
             return;
         }
 
