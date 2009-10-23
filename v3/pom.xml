@@ -112,8 +112,8 @@
         <commons.collections.version>2.1</commons.collections.version>
         <commons.digester.version>1.5</commons.digester.version>
         <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>0.4.4</hk2.version>
-        <hk2.plugin.version>0.4.4</hk2.plugin.version>
+        <hk2.version>0.4.5</hk2.version>
+        <hk2.plugin.version>0.4.5</hk2.plugin.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
         <product.name>GlassFish</product.name>
