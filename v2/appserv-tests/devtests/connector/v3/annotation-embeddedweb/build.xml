@@ -54,6 +54,7 @@
                 <antcall target="create-connector-connpool-common">
                 <param name="ra.name" value="${appname}App#jdbcra"/>
                 <param name="connection.defname" value="javax.sql.DataSource"/>
+		    <param name="extra-params" value="--matchconnections=false"/>
                 <param name="connector.conpool.name" value="embedded-ra-pool"/>
                 </antcall>
                 <antcall target="set-oracle-props">
@@ -189,13 +190,13 @@
     
     <target name="run-war" depends="init-common">
         <antcall target="runwebclient-common">
-	<param name="testsuite.id" value="embeddedweb (stand-alone war based)"/>
+	<param name="testsuite.id" value="annotation-embeddedweb (stand-alone war based)"/>
 	</antcall>
     </target>
 
     <target name="run-ear" depends="init-common">
         <antcall target="runwebclient-common">
-	<param name="testsuite.id" value="embeddedweb (ear based)"/>
+	<param name="testsuite.id" value="annotation-embeddedweb (ear based)"/>
 	</antcall>
     </target>
  

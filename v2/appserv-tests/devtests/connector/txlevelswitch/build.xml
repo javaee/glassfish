@@ -54,6 +54,7 @@
       <antcall target="create-connector-connpool-common">
         <param name="ra.name" value="jdbc-ra-xa"/>
 	<param name="connection.defname" value="javax.sql.XADataSource"/>
+	<param name="extra-params" value="--matchconnections=false"/>
 	<param name="connector.conpool.name" value="txlevelswitch-pool-1"/>
       </antcall>
       <antcall target="set-oracle-props">
@@ -64,6 +65,7 @@
       <antcall target="create-connector-connpool-common">
         <param name="ra.name" value="jdbc-ra-xa"/>
 	<param name="connection.defname" value="javax.sql.XADataSource"/>
+	<param name="extra-params" value="--matchconnections=false"/>
 	<param name="connector.conpool.name" value="txlevelswitch-pool-2"/>
       </antcall>
       <antcall target="set-oracle-props">
@@ -196,6 +198,7 @@
       <antcall target="create-connector-connpool-common">
         <param name="ra.name" value="jdbc-ra-xa"/>
 	<param name="connection.defname" value="javax.sql.XADataSource"/>
+	<param name="extra-params" value="--matchconnections=false"/>
 	<param name="connector.conpool.name" value="txlevelswitch-pool-3"/>
       </antcall>
       <antcall target="create-connector-resource-common">
@@ -210,6 +213,7 @@
       <antcall target="create-connector-connpool-common">
         <param name="ra.name" value="jmsra"/>
 	<param name="connection.defname" value="javax.jms.QueueConnectionFactory"/>
+	<param name="extra-params" value="--matchconnections=false"/>
 	<param name="connector.conpool.name" value="jms-jdbc-res-1"/>
 	<param name="operand.props" value="--transactionsupport LocalTransaction"/>
       </antcall>

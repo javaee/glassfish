@@ -53,6 +53,7 @@
     <target name="create-pool">
                 <antcall target="create-connector-connpool-common">
                 <param name="ra.name" value="${appname}App#jdbcra"/>
+                <param name="extra-params" value="--matchconnections=false"/>
                 <param name="connection.defname" value="javax.sql.DataSource"/>
                 <param name="connector.conpool.name" value="embedded-ra-pool"/>
                 </antcall>

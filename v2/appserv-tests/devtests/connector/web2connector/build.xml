@@ -44,6 +44,7 @@
          <param name="ra.name" value="jdbcra"/>
          <param name="connection.defname" value="javax.sql.DataSource"/>
          <param name="connector.conpool.name" value="standalone-ra-pool"/>
+         <param name="extra-params" value="--matchconnections=false"/>
       </antcall>
       <antcall target="set-oracle-props">
          <param name="pool.type" value="connector"/>
