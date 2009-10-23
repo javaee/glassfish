@@ -121,7 +121,6 @@ public class ORBConnectorStartup implements Startup, PostConstruct {
                             // } else {
                                 // if not Sun, then set to EE class
                                 System.setProperty(OMG_ORB_SINGLETON_CLASS_PROPERTY, ORB_SINGLETON_CLASS);
-                                ORB.init() ; // create and discard singleton ORB to make sure we use the correct singleton
                             // }
                         }
 

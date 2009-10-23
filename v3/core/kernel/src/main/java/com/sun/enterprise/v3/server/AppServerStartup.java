@@ -183,6 +183,7 @@ public class AppServerStartup implements ModuleStartup {
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Startup class : " + this.getClass().getName());
         }
+        final Level level = Level.FINE;
 
         // prepare the global variables
         habitat.addComponent(null, this);
@@ -210,10 +211,10 @@ public class AppServerStartup implements ModuleStartup {
         for (Inhabitant<? extends Init> init : habitat.getInhabitants(Init.class)) {
             long start = System.currentTimeMillis();
             init.get();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine(init.type() + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
+            if (logger.isLoggable(level)) {
+                logger.log(level, init.type() + " Init done in " + (System.currentTimeMillis() - context.getCreationTime()) + " ms");
             }
-            if (logger.isLoggable(Level.FINE)) {
+            if (logger.isLoggable(level)) {
                 servicesTiming.put(init.type(), (System.currentTimeMillis() - start));
             }
         }
@@ -244,6 +245,9 @@ public class AppServerStartup implements ModuleStartup {
                 long start = System.currentTimeMillis();
                 try {
                     Startup startup = i.get();
+                    if (logger.isLoggable(level)) {
+                        logger.log(level, "Startup services finished" + startup);
+                    }
                     // the synchronous service was started successfully, let's check that it's not in fact a FutureProvider
                     if (startup instanceof FutureProvider) {
                         futures.addAll(((FutureProvider) startup).getFutures());
@@ -252,7 +256,7 @@ public class AppServerStartup implements ModuleStartup {
                         e.printStackTrace();
                         logger.info("Startup service failed to start : " + e.getMessage());
                 }
-                if (logger.isLoggable(Level.FINE)) {
+                if (logger.isLoggable(level)) {
                     servicesTiming.put(i.type(), (System.currentTimeMillis() - start));
                 }
             }
@@ -269,7 +273,7 @@ public class AppServerStartup implements ModuleStartup {
                 " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
                 " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
 
-        printModuleStatus(Level.FINE);
+        printModuleStatus(level);
 
         try {
 			// it will only be set when called from AsadminMain and the env. variable AS_DEBUG is set to true
@@ -284,7 +288,7 @@ public class AppServerStartup implements ModuleStartup {
         } catch (Exception e) {
             // do nothing, we are probably shutting down
         }
-        if (logger.isLoggable(Level.FINE)) {
+        if (logger.isLoggable(level)) {
             for (Map.Entry<Class, Long> service : servicesTiming.entrySet()) {
                 logger.info("Service : " + service.getKey() + " took " + service.getValue() + " ms");
             }
@@ -324,6 +328,8 @@ public class AppServerStartup implements ModuleStartup {
         for (Inhabitant<? extends PostStartup> postStartup : habitat.getInhabitants(PostStartup.class)) {
             postStartup.get();
         }
+        printModuleStatus(level);
+
      }
 
     private void printModuleStatus(Level level)
