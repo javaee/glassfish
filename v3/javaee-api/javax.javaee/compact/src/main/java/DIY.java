@@ -141,12 +141,14 @@ public class DIY extends AbstractProcessor {
     	    // ADD EXTRA DEPENDENCIES HERE:
     	    bootClassPath.add(new File("mail.jar"));
     	    bootClassPath.add(new File("activation.jar"));
+    	    bootClassPath.add(new File("../../../target/javax.javaee.jar"));
                 for (File path : fm.getLocation(StandardLocation.PLATFORM_CLASS_PATH)) {
                     // if (!new File(path.getName()).equals(new File("rt.jar")))
                         bootClassPath.add(path);
                 }
                 System.err.println("Using boot class path = " + bootClassPath);
                 fm.setLocation(StandardLocation.PLATFORM_CLASS_PATH, bootClassPath);
+                fm.setLocation(StandardLocation.CLASS_PATH, bootClassPath);
             }
             // System.out.println(fm.getLocation(StandardLocation.PLATFORM_CLASS_PATH));
             File destDir = new File(destName);
@@ -155,8 +157,8 @@ public class DIY extends AbstractProcessor {
                     throw new RuntimeException("Could not create " + destDir);
             fm.setLocation(StandardLocation.CLASS_OUTPUT, List.of(destDir));
             List<String> options = List.of("-XDdev");
-            // options = options.prepend("-doe");
-            // options = options.prepend("-verbose");
+             options = options.prepend("-doe");
+             options = options.prepend("-verbose");
             JavacTaskImpl task = (JavacTaskImpl)
                 tool.getTask(null, fm, null, options, null, null);
             JavaCompiler compiler = JavaCompiler.instance(task.getContext());
