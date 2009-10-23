@@ -605,6 +605,11 @@ final class RegistrationSupport
             return null;
         }
         final Application app = appInfo.getMetaData(Application.class);
+        if ( app == null )
+        {
+            ImplUtil.getLogger().warning("Null from ApplicationInfo.getMetadata(Application.class) for application " + appName + ", isJavaEEApp() = " + appInfo.isJavaEEApp());
+            return null;
+        }
         
         final org.glassfish.admin.amx.intf.config.Application appConfig = new AMXConfigGetters(ref).getApplication(appName);
         if ( appConfig == null )
