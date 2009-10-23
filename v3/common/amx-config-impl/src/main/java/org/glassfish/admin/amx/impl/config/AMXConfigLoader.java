@@ -355,25 +355,25 @@ public final class AMXConfigLoader extends MBeanImplBase
 
      /**
      */
-        private ConfigBean
-    getActualParent( final ConfigBean configBean )
+    private ConfigBean
+getActualParent( final ConfigBean configBean )
+{
+    ConfigBean parent = asConfigBean( configBean.parent() );
+    if ( parent != null )
     {
-        ConfigBean parent = asConfigBean( configBean.parent() );
-        if ( parent != null )
-        {
-            //debug( "config bean  " + configBean.getProxyType().getNameProp() + " has parent " + configBean.parent().getProxyType().getNameProp() );
-            final ObjectName parentObjectName    = mRegistry.getObjectName(parent);
-        }
-        else
-        {
-            if ( ! configBean.getProxyType().getName().endsWith( "Domain" ) )
-            {
-                debug( "WARNING: parent is null for " + configBean.getProxyType().getName() + " (bug in ConfigBeans)");
-            }
-        }
-        
-        return parent;
+        //debug( "config bean  " + configBean.getProxyType().getNameProp() + " has parent " + configBean.parent().getProxyType().getNameProp() );
+        final ObjectName parentObjectName    = mRegistry.getObjectName(parent);
     }
+    else
+    {
+        if ( ! configBean.getProxyType().getName().endsWith( "Domain" ) )
+        {
+            throw new IllegalStateException("WARNING: parent is null for " + configBean.getProxyType().getName() + " (bug in ConfigBeans)");
+        }
+    }
+    
+    return parent;
+}
     
         private ObjectName
     getActualParentObjectName( final ConfigBean configBean )

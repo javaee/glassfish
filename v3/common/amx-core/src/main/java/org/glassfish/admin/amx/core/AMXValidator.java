@@ -729,7 +729,7 @@ public final class AMXValidator
             // then they all have DomainConfig as a parent.
             if ( ! AMXConfigProxy.class.isAssignableFrom(config.parent().extra().genericInterface() ) )
             {
-                problems.add("AMXConfig MBean is not a descendant of Domain: " + config.objectName() );
+                problems.add("AMXConfig MBean is not a descendant of Domain: " + config.objectName() + ", it has parent " + config.getParent() );
             }
         }
         
