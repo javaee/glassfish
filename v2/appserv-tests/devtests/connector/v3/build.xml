@@ -200,8 +200,8 @@
         <echo message="@@## txlevelswitch ##@@"/>
         <ant dir="../txlevelswitch" target="${connector-target}" />
 
-        <!--<echo message="@@## threadpool ##@@"/>
-        <ant dir="threadpool" target="${connector-target}" />-->
+        <echo message="@@## threadpool ##@@"/>
+        <ant dir="../threadpool" target="${connector-target}" />
 
         <echo message="@@## connector1.6 ##@@"/>
         <ant dir="connector1.6" target="${connector-target}"/>
