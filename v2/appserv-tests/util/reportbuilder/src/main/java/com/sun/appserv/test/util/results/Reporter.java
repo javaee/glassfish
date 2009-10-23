@@ -1,32 +1,21 @@
 package com.sun.appserv.test.util.results;
-/**
- @Class : Reporter
- @Description : Main class used for Uniform reporting of results
- @Author : Ramesh Mandava
- @Last Modified : Initial Creation by Ramesh Mandava after taking input from
- Jeanfrancois and other Team members
- @Last Modified : By Ramesh on 1/20/2002 , Added code to use new testIdVector and
- testCaseIdVector for  preserving order of entry of them and now <tests>
- element is added around multiple tests
- @Last Modified : By Ramesh on 4/5/2002, Taken care of machine name unavailability
- under J2EE. And allowed having . in the path of result file
- @Last Modified : By Justin Lee on 10/05/2009
- */
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
-import java.nio.channels.FileChannel;
+import java.util.List;
 
+/**
+ * Main class used for Uniform reporting of results
+ *
+ * @author Ramesh.Mandava
+ * @author Justin.Lee@sun.com
+ */
 @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed", "StaticNonFinalField"})
 public class Reporter extends Thread implements Serializable {
     private static Reporter reporterInstance = null;
@@ -34,6 +23,14 @@ public class Reporter extends Thread implements Serializable {
     private static final String ws_home = "sqe-pe";
     transient public PrintWriter out = new PrintWriter(System.out);
     private List<TestSuite> suites = new ArrayList<TestSuite>();
+
+    public String getResultFile() {
+        return resultFile;
+    }
+
+    public void setResultFile(final String resultFile) {
+        this.resultFile = resultFile;
+    }
 
     /**
      * This method is used for setting the TestSuite Info
@@ -320,7 +317,7 @@ public class Reporter extends Thread implements Serializable {
 
     public static Reporter getInstance(String wshome) {
         if (reporterInstance == null) {
-            String rootpath = (new File(".")).getAbsolutePath();
+            String rootpath = new File(".").getAbsolutePath();
             String ejte_home = rootpath.substring(0, rootpath.indexOf(wshome));
             String outputDir = ejte_home + wshome;
             reporterInstance = new Reporter(outputDir + File.separatorChar + "test_results.xml");
@@ -336,7 +333,6 @@ public class Reporter extends Thread implements Serializable {
             System.out.println(ex.getMessage());
         }
     }
-
 
     public void flushAll() {
         try {

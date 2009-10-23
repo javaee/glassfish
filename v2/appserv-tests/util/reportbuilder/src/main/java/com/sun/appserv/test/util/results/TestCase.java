@@ -91,7 +91,7 @@ public class TestCase {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testcase>\n");
-        buffer.append("<id> " + id + "</id>\n");
+        buffer.append("<id>" + id + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
             buffer.append("<name>" + name.trim() + "</name>\n");
         }

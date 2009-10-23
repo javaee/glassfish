@@ -503,15 +503,7 @@
         <ant dir="cometEcho" target="all"/>
     </target>
 
-    <target name="all">
-        <delete>
-           <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-        </delete>
-        <delete>
-           <fileset dir="." includes="*.output"/>
-           <fileset dir="." includes="*.txt"/>
-        </delete>
-        
+    <target name="all" depends="init">
         <record name="web.output" action="start" />
         <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
@@ -532,6 +524,16 @@
         <echo message="#################################################"/>
         <echo message="javaxServletErrorRequestUriDynamicResource and javaxServletErrorRequestUriStaticResource will fail on Linux if you don't change appserv-tests/config.properties localhost to localhost.localdomain"/>
         <echo message="#################################################"/>
+    </target>
+
+    <target name="init">
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+            <fileset dir="." includes="*.txt"/>
+        </delete>
     </target>
 
     <target name="dev-report" depends="init-common">

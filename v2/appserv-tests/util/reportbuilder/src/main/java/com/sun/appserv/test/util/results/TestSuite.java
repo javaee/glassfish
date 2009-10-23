@@ -75,7 +75,7 @@ public class TestSuite {
     public String toXml() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("<testsuite>\n");
-        buffer.append("  <id> " + id.trim() + " </id>\n");
+        buffer.append("<id>" + id.trim() + "</id>\n");
         if (!name.equals(ReporterConstants.NA)) {
             buffer.append("<name>" + name.trim() + "</name>\n");
         }
