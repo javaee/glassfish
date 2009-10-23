@@ -50,7 +50,6 @@
     <sun:html>
 	<sun:head id="propertyhead" parseOnLoad="false">
             <sun:script url="/resource/common/js/adminjsf.js" />
-            <jsfExt:scripts/>
 	</sun:head>
          <sun:body style="background-color: #5B87A5" onLoad="hasOptions(null);">
 	    <sun:form id="propertyForm">
@@ -60,7 +59,6 @@
                         getUIComponent(clientId="#{formId}"  component=>$attribute{component})
                         includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="#{component}");
                   /> 
-                
 	     </sun:form>
 	 </sun:body>
      </sun:html>
