@@ -74,6 +74,7 @@ import sun.security.x509.X500Name;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
 import com.sun.enterprise.security.auth.login.common.LoginException;
+import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 import com.sun.enterprise.security.common.SecurityConstants;
 import com.sun.enterprise.security.ssl.SSLUtils;
@@ -840,7 +841,12 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                  */
                 AS_ContextSec asContext = mechanism.as_context_mech;
                 final byte[] target_name = asContext.target_name;
-                byte[] _realm = GSSUtils.importName(GSSUtils.GSSUP_MECH_OID, target_name);
+                byte[] _realm = null;
+                if (target_name == null || target_name.length == 0) {
+                    _realm = Realm.getDefaultRealm().getBytes();
+                } else {
+                    _realm = GSSUtils.importName(GSSUtils.GSSUP_MECH_OID, target_name);
+                }
                 final String realm_name = new String(_realm);
                 final Iterator it = privateCredSet.iterator();
                 for(;it.hasNext();){

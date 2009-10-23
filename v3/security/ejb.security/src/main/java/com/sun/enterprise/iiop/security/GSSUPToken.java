@@ -334,7 +334,7 @@ public class GSSUPToken {
 	}
         String targetNameRealm = null;
         try {
-            if (target_name != null) {
+            if (target_name != null && target_name.length != 0) {
                 targetNameRealm = new String(GSSUtils.importName(GSSUtils.GSSUP_MECH_OID, target_name));
             }
         } catch (IOException ex) {

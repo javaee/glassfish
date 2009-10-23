@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.iiop.security;
 
+import com.sun.enterprise.config.serverbeans.IiopListener;
 import java.util.logging.*;
 
 import org.omg.IOP.Codec;
@@ -48,6 +49,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 //import com.sun.enterprise.util.ORBManager;
 //import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 //import com.sun.enterprise.iiop.ASORBUtilities;
+import org.glassfish.enterprise.iiop.util.IIOPUtils;
 import org.jvnet.hk2.component.Habitat;
 import org.omg.CORBA.ORB;
 
@@ -126,14 +128,14 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
         
         
 	//ORB orb = helper.getORB();
-	int sslMutualAuthPort = -1;
-	try {
-	    sslMutualAuthPort = ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).
-								getServerPort("SSL_MUTUALAUTH");
-	} catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
-            _logger.log(Level.FINE,"UnknownType exception", ute);
-	}
-
+	int sslMutualAuthPort = getServerPort("SSL_MUTUALAUTH");
+//	try {
+//	    sslMutualAuthPort = ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).
+//								getServerPort("SSL_MUTUALAUTH");
+//	} catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
+//            _logger.log(Level.FINE,"UnknownType exception", ute);
+//	}
+       
 	if(_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, 
 			".addCSIv2Components: sslMutualAuthPort: " 
@@ -145,15 +147,14 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
         desc = ctc.getEjbDescriptor(iorInfo);
 
 	// Create CSIv2 tagged component
-	int sslport = -1;
-	try {
-	    sslport = ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).
-								getServerPort("SSL");
-	} catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
-            _logger.log(Level.FINE,"UnknownType exception", ute);
-	}
-
-	if(_logger.isLoggable(Level.FINE)) {
+	int sslport = getServerPort("SSL");
+//	try {
+//	    sslport = ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).
+//								getServerPort("SSL");
+//	} catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
+//            _logger.log(Level.FINE,"UnknownType exception", ute);
+//	}
+       if(_logger.isLoggable(Level.FINE)) {
 	    _logger.log(Level.FINE, 
 			".addCSIv2Components: sslport: " 
 			+ sslport);
@@ -176,6 +177,25 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
 			  + " " + iorInfo + " " + desc );
 	  }
       }
+    }
+
+    private int getServerPort(String mech) {
+        IiopListener[] iiopListenerBeans = (IiopListener[]) IIOPUtils.getInstance().
+                getIiopService().getIiopListener().toArray(new IiopListener[0]);
+        for (IiopListener ilisten : iiopListenerBeans) {
+            if (mech.equalsIgnoreCase("SSL")) {
+                if (ilisten.getSecurityEnabled().equalsIgnoreCase("true")) {
+                    return Integer.parseInt(ilisten.getPort());
+                }
+            } else if (mech.equalsIgnoreCase("SSL_MUTUALAUTH")) {
+                if (ilisten.getSecurityEnabled().equalsIgnoreCase("true") && ilisten.getSsl().getClientAuthEnabled().equalsIgnoreCase("true")) {
+                    return Integer.parseInt(ilisten.getPort());
+                }
+            } else if (!ilisten.getSecurityEnabled().equalsIgnoreCase("true")) {
+                return Integer.parseInt(ilisten.getPort());
+            }
+        }
+        return -1;
     }
 }
 
