@@ -469,11 +469,13 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
 <target name="create-connector-connpool" depends="init-common">
   <property name="failonerror" value="false"/>
+  <property name="extra-params" value=""/>
   <echo message="asadmin create-connector-connection-pool ${as.props} --raname ${ra.name} --connectiondefinition ${connection.defname} --target ${appserver.instance.name} ${connector.conpool.name}"/>
   <exec executable="${ASADMIN}" failonerror="${failonerror}">
     <arg line="create-connector-connection-pool"/>
     <arg line="${as.props}"/>
     <arg line="--raname ${ra.name}"/>
+    <arg line="${extra-params}"/>
     <arg line="--connectiondefinition ${connection.defname}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="${connector.conpool.name}"/>
@@ -562,10 +564,12 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 <target name="create-jdbc-driver-connpool-common" depends="init-common">
 <echo message="created jdbc connection pool ${jdbc.conpool.name}" 
     level="verbose"/>
+    <property name="extra-params" value=""/>
     <exec executable="${ASADMIN}" failonerror="false">
         <arg line="create-jdbc-connection-pool"/>
         <arg line="--datasourceclassname ${db.class}"/>
         <arg line="--restype ${jdbc.resource.type}"/>
+        <arg line="${extra-params}"/>
         <arg line="--target ${appserver.instance.name}"/>
         <arg line="${as.props}"/>
         <arg line="${jdbc.conpool.name}"/>
