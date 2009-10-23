@@ -298,6 +298,7 @@ public class ApplicationLifecycle implements Deployment {
                 // remove the temp application info from the registry
                 // first, then register the real one
                 appRegistry.remove(appName);
+                appInfo.setIsJavaEEApp(sortedEngineInfos);
                 appRegistry.add(appName, appInfo);
 
                 events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
