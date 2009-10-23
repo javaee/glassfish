@@ -7,8 +7,10 @@ package org.glassfish.admin.monitor;
 
 import java.beans.PropertyChangeEvent;
 import java.net.URISyntaxException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.external.probe.provider.StatsProviderInfo;
 import org.jvnet.hk2.component.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import com.sun.enterprise.config.serverbeans.*;
@@ -233,6 +235,34 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                     }
                 }
             }
+        }
+        handleFutureStatsProviders();
+    }
+
+    public void handleFutureStatsProviders() {
+        // we just registered a Probe Provider
+        // If there are any future items -- let's try to register them again.
+
+        if(FutureStatsProviders.isEmpty())
+            return; // Performance note -- this should be the case almost always
+
+        List<StatsProviderInfo> removeList = new ArrayList<StatsProviderInfo>();
+        Iterator<StatsProviderInfo> it = FutureStatsProviders.iterator();
+
+        // the iterator does not allow the remove operation - thus the complexity!
+        while(it.hasNext()) {
+            StatsProviderInfo spInfo = it.next();
+            try {
+                spmd.tryToRegister(spInfo);
+                removeList.add(spInfo);
+            }
+            catch(RuntimeException re) {
+                // no probe registered yet...
+            }
+        }
+
+        for(StatsProviderInfo spInfo : removeList) {
+            FutureStatsProviders.remove(spInfo);
         }
     }
 

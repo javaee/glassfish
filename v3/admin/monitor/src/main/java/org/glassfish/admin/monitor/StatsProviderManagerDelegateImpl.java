@@ -7,12 +7,11 @@ package org.glassfish.admin.monitor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.StringTokenizer;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import javax.management.ObjectName;
 
 
@@ -27,7 +26,6 @@ import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManagerDelegate;
 import org.glassfish.external.statistics.Statistic;
-import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.probe.provider.StatsProviderInfo;
 import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.StatisticImpl;
@@ -37,7 +35,6 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.StringUtils;
-import java.lang.management.ManagementFactory;
 import java.io.IOException;
 
 import org.glassfish.flashlight.client.ProbeClientMediator;
@@ -78,7 +75,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private static final Logger logger =
         LogDomains.getLogger(StatsProviderManagerDelegateImpl.class, LogDomains.MONITORING_LOGGER);
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StatsProviderManagerDelegateImpl.class);
-
     boolean ddebug = false;
 
     StatsProviderManagerDelegateImpl(ProbeClientMediator pcm, ProbeRegistry probeRegistry,
@@ -100,6 +96,22 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
     
     public void register(StatsProviderInfo spInfo) {
+        try {
+            tryToRegister(spInfo);
+        }
+        catch(RuntimeException rte) {
+            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.WARNING,
+                    "Flashlight listener registration failed for this listener class: "
+                        + spInfo.getStatsProvider().getClass().getName());
+            FutureStatsProviders.add(spInfo);
+        }
+    }
+
+
+    /* throws RuntimeException maybe
+     * note the default visibility so that MonitoringBootstrap can call it.
+     */
+    void tryToRegister(StatsProviderInfo spInfo) {
         String configElement = spInfo.getConfigElement();
         Object statsProvider = spInfo.getStatsProvider();
         // register the statsProvider
@@ -533,17 +545,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private Collection<ProbeClientMethodHandle> registerStatsProviderToFlashlight(Object statsProvider) {
         //register the statsProvider with Flashlight
         Collection<ProbeClientMethodHandle> handles = null;
-        try {
             //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
             handles = pcm.registerListener(statsProvider);
         //System.out.println("********* handles = " + handles);
         // save the handles against config so you can enable/disable the handles
         // save the handles also against statsProvider so you can unregister when statsProvider is unregistered
-        } catch (Exception e) {
-            //e.printStackTrace();
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE,
-                                "Flashlight listener registration failed", e);
-        }
         return handles;
     }
 
