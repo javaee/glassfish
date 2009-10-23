@@ -1991,10 +1991,13 @@ admingui.ajax = {
             var callback = {
                 success : admingui.ajax.processPageAjax,
                 failure : function(o) {
+		    document.body.style.cursor = 'auto';
                     alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
                 },
                 argument : args
             };
+	    // Make cursor spin...
+	    document.body.style.cursor = 'wait';
             YAHOO.util.Connect.resetDefaultHeaders();
             YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
             if (typeof oldOnClick == 'function') {
@@ -2022,6 +2025,8 @@ admingui.ajax = {
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         admingui.ajax.processElement(o, contentNode, true);
         admingui.ajax.processScripts(o);
+	// Restore cursor
+	document.body.style.cursor = 'auto';
         admingui.nav.clearTreeSelection();
         admingui.nav.selectTreeNodeWithURL(o.argument.url);
     },
@@ -2180,21 +2185,6 @@ admingui.ajax = {
                 node[prop] = source[prop];
             }
         }
-    },
-
-    submitForm : function (node) {
-        var form = node;
-        if (typeof(el) == 'string') {
-            form = document.getElementById(form);
-        } else if (node instanceof HTMLSelectElement) {
-            form = node.form;
-            var sep = (form.action.indexOf("?") > -1) ? "&" : "?";
-            form.action += sep + node.name + "=" + encodeURI(node.value); //bug# 6294035
-        }
-        form.target = "buffer";
-        form.action = admingui.ajax.modifyUrl(form.action);
-        form.submit();
-        return false;
     },
 
     /**
