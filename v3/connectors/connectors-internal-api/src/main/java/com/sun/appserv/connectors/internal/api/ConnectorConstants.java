@@ -85,6 +85,17 @@ public interface ConnectorConstants {
      */
     public static final String DEFAULT_JMS_ADAPTER = "jmsra";
 
+    /**
+     * List of jdbc system resource adapter names
+     */
+    public static final List<String> jdbcSystemRarNames = Collections.unmodifiableList(
+            Arrays.asList(
+                JDBCDATASOURCE_RA_NAME,
+                JDBCCONNECTIONPOOLDATASOURCE_RA_NAME,
+                JDBCXA_RA_NAME,
+                JDBCDRIVER_RA_NAME
+            ));
+
 
     /**
      * List of system resource adapter names 
@@ -170,6 +181,11 @@ public interface ConnectorConstants {
      * This name should be used to lookup connector resource.
      */
     public static String RESOURCENAME_APPENDER="#";
+
+    /**
+     * resource-adapter archive extension name
+     */
+    public static String RAR_EXTENSION=".rar";
 
 
     /**

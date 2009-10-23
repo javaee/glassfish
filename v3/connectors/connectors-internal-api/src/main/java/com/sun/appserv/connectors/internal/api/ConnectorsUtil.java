@@ -39,18 +39,13 @@ import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
-import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.net.URI;
 import java.net.URL;
@@ -601,59 +596,6 @@ public class ConnectorsUtil {
     }
 
     /**
-     * get the thread pool, given the thread pool id, if availalbe.
-     * @param threadPoolId thread pool id
-     * @return thread pool
-     * @throws NoSuchThreadPoolException when no such thread pool is present
-     * @throws ConnectorRuntimeException when unable to get the thread pool
-     */
-    public static ThreadPool getThreadPool(String threadPoolId)
-            throws NoSuchThreadPoolException, ConnectorRuntimeException {
-
-        ThreadPoolManager tpm = getThreadPoolManager();
-
-        if (threadPoolId != null) {
-            return tpm.getThreadPool(threadPoolId);
-        } else {
-            return tpm.getDefaultThreadPool();
-        }
-    }
-
-    /**
-     * JDK 1.6.0_12 & JDK 1.6.0_14 has changes in SE thread pool api.
-     * Later we will be using appserver's thread pool.
-     * Using the workaround to check the constructor availability and act accordingly.
-     * @return thread pool manager
-     * @throws ConnectorRuntimeException when unable to provide thread pool manager
-     */
-    private static ThreadPoolManager getThreadPoolManager() throws ConnectorRuntimeException {
-        Constructor defaultConstructor;
-        Constructor threadGroupParamConstructor;
-        try {
-            defaultConstructor = ThreadPoolManagerImpl.class.getConstructor();
-            defaultConstructor.setAccessible(true);
-
-            return (ThreadPoolManager)defaultConstructor.newInstance();
-
-        } catch(NoSuchMethodException e) {
-            //do nothing. Second trial with a ThreadGroup parameter constructor will be done.
-        } catch(Exception e){
-            //do nothing.  Second trial with a ThreadGroup parameter constructor will be done.
-        }
-
-        try {
-            threadGroupParamConstructor = ThreadPoolManagerImpl.class.getConstructor(ThreadGroup.class);
-            threadGroupParamConstructor.setAccessible(true);
-
-            ThreadGroup tg = null;
-            return (ThreadPoolManager)threadGroupParamConstructor.newInstance(tg);
-
-        } catch(Exception e){
-            throw new ConnectorRuntimeException("unable to provide thread pool manager");
-        }
-    }
-
-    /**
      * Gets the shutdown-timeout attribute from domain.xml
      * via the connector server config bean.
      * @param connectorService connector-service configuration
@@ -850,4 +792,106 @@ public class ConnectorsUtil {
         return ConfigBeansUtilities.getModule(moduleName)!= null;
     }
 
+    /**
+     * GlassFish (Embedded) Uber jar will have .rar bundled in it.
+     * This method will extract the .rar fromt he uber jar into specified directory.
+     * As of now, this method is only used in EMBEDDED mode
+     * @param fileName rar-directory-name
+     * @param rarName resource-adapter name
+     * @param destDir destination directory
+     * @return status indicating whether .rar is exploded successfully or not
+     */
+    public static boolean extractRar(String fileName, String rarName, String destDir) {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(rarName);
+        if (is != null) {
+            FileArchive fa = new FileArchive();
+            OutputStream os = null;
+            try {
+                os = fa.putNextEntry(fileName);
+
+                FileUtils.copy(is, os, 0);
+            } catch (IOException e) {
+                _logger.log(Level.WARNING, "Exception while extracting RAR [ " + rarName + " ] from archive", e);
+                return false;
+            } finally {
+                try {
+                    if (os != null) {
+                        fa.closeEntry();
+                    }
+
+                } catch (IOException ioe) {
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST, "Exception while closing archive [ " + fileName + " ]", ioe);
+                    }
+                }
+
+                try {
+                    is.close();
+                } catch (IOException ioe) {
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST, "Exception while closing archive [ " + rarName + " ]", ioe);
+                    }
+                }
+            }
+
+            File file = new File(fileName);
+            if (file.exists()) {
+                try {
+                    extractJar(file, destDir);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            } else {
+                _logger.log(Level.INFO, "could not find RAR [ " + rarName + " ] location [ " + fileName + " ] " +
+                        "after extraction");
+                return false;
+            }
+        } else {
+            _logger.log(Level.INFO, "could not find RAR [ " + rarName + " ] in the archive, skipping .rar extraction");
+            return false;
+        }
+    }
+
+    private static void extractJar(File jarFile, String destDir) throws IOException {
+        java.util.jar.JarFile jar = new java.util.jar.JarFile(jarFile);
+        java.util.Enumeration enum1 = jar.entries();
+        while (enum1.hasMoreElements()) {
+            java.util.jar.JarEntry file = (java.util.jar.JarEntry) enum1.nextElement();
+            java.io.File f = new java.io.File(destDir + java.io.File.separator + file.getName());
+            if (file.isDirectory()) {
+                f.mkdir();
+                continue;
+            }
+            InputStream is = null;
+            FileOutputStream fos = null;
+            try {
+                is = jar.getInputStream(file);
+                fos = new FileOutputStream(f);
+                while (is.available() > 0) {
+                    fos.write(is.read());
+                }
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (Exception e) {
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST, "exception while closing archive [ " + f.getName() + " ]", e);
+                    }
+                }
+
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (Exception e) {
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.log(Level.FINEST, "exception while closing archive [ " + file.getName() + " ]", e);
+                    }
+                }
+            }
+        }
+    }
 }

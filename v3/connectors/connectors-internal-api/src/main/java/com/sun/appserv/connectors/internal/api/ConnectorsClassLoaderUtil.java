@@ -39,13 +39,13 @@ package com.sun.appserv.connectors.internal.api;
 import org.glassfish.internal.api.ConnectorClassFinder;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.DelegatingClassLoader;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.security.AccessController;
@@ -73,12 +73,17 @@ public class ConnectorsClassLoaderUtil {
     @Inject
     private ClassLoaderHierarchy clh;
 
-    private static List<ConnectorClassFinder> systemRARClassLoaders;
+    //private static List<ConnectorClassFinder> systemRARClassLoaders;
 
     private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
 
     @Inject
     private ServerEnvironment env;
+
+    @Inject
+    private ProcessEnvironment processEnv;
+
+    private boolean rarsInitializedInEmbeddedServerMode;
 
     public ConnectorClassFinder createRARClassLoader(String moduleDir, ClassLoader deploymentParent,
                                                      String moduleName, List<URI> appLibs)
@@ -146,14 +151,47 @@ public class ConnectorsClassLoaderUtil {
         return cl;
     }
 
+    private boolean extractRar(String rarName, String destination){
+        String rarFileName = rarName + ConnectorConstants.RAR_EXTENSION;
+        File rarDir = new File(destination + rarName);
+        if(!rarDir.exists()){
+            return ConnectorsUtil.extractRar(destination+rarFileName, rarFileName, destination);
+        }else{
+            return false;
+        }
+    }
+
     public Collection<ConnectorClassFinder> getSystemRARClassLoaders() throws ConnectorRuntimeException {
-        //if(systemRARClassLoaders == null){
+            //if (systemRARClassLoaders == null) {
+
+            if (processEnv.getProcessType().isEmbedded() && !rarsInitializedInEmbeddedServerMode) {
+                synchronized (ConnectorsClassLoaderUtil.class){
+                    if(!rarsInitializedInEmbeddedServerMode){
+                        String installDir = System.getProperty(ConnectorConstants.INSTALL_ROOT) + File.separator;
+                        File file = new File(installDir);
+                        file.mkdirs();
+
+                        for (String jdbcRarName : ConnectorConstants.jdbcSystemRarNames) {
+                            extractRar(jdbcRarName, installDir);
+                        }
+                        rarsInitializedInEmbeddedServerMode = true;
+                    }
+                }
+            }
+
             List<ConnectorClassFinder> classLoaders = new ArrayList<ConnectorClassFinder>();
-            for(String rarName : ConnectorConstants.systemRarNames){
+            for (String rarName : ConnectorConstants.systemRarNames) {
+
                 String location = ConnectorsUtil.getSystemModuleLocation(rarName);
-                // Embedded Server does not seem to have installed libraries path ?
-                // List<URI> libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
-                List<URI> libraries = new ArrayList<URI>();
+
+                List<URI> libraries;
+                // Embedded mode does not have installed libraries directory.
+                if (processEnv.getProcessType().isEmbedded()) {
+                    libraries = new ArrayList<URI>();
+                } else {
+                    libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
+                }
+
                 ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName, libraries);
                 classLoaders.add(ccf);
             }
