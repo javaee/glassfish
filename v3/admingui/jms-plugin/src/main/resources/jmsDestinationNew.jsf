@@ -73,7 +73,6 @@
         />
     </event>
     <sun:form id="propertyForm">
-   //#include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">

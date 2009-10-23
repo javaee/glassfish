@@ -56,7 +56,6 @@
 </event>
 
         <sun:form id="form1">
-    #include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"
         <!-- there seems to be a bug with the radio button component where if we switch from 'input' to 'predefine',
              the selected value will not get updated.  It will always stay as 'input'.

@@ -43,7 +43,6 @@
 <!define name="content">
 #include "/common/shared/restart.inc"    
    <sun:form id="resourcesForm"> 
-#include "/common/shared/treeBreadcrumbs.inc"
                 <sun:title 
                 id="resourcesPageTitle" 
                 title="$resource{i18n.resourcesPageTitle}" 

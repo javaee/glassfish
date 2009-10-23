@@ -65,7 +65,6 @@
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-        //#include treeBreadcrumbs.inc
 #include "/common/shared/alertMsg.inc"
 
                 <!-- Page Title #include "/jca/buttons.inc" -->

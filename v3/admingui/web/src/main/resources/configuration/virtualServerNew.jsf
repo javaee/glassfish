@@ -57,7 +57,6 @@
     </event>
 #include "/common/shared/restart.inc"
     <sun:form id="propertyForm">
-        //#include treeBreadcrumbs.inc
 #include "/common/shared/alertMsg.inc"
 
     <sun:title id="propertyContentPage" title="$resource{i18n_web.vs.NewTitle}" helpText="$resource{i18n_web.vs.NewPageHelp}">

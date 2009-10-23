@@ -45,7 +45,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.licensePg.Title}">>
 <!define name="content">
 
-#include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"      
         <sun:form id="form">
              <sun:title id="topTitle" title="$resource{i18nUC.licensePg.Title}" />

@@ -92,7 +92,6 @@
 </event>
 #include "/shared/restart.inc"
             <sun:form id="propertyForm">
-#include "/shared/treeBreadcrumbs.inc"
 #include "/appServer/serverInstTabs.inc"
 #include "/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{web.serverMonitor}"

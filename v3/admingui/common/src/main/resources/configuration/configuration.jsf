@@ -47,7 +47,6 @@
     </event>
 #include "/common/shared/restart.inc"    
             <sun:form id="configForm"> 
-  //#include "/common/shared/treeBreadcrumbs.inc"
                 <sun:title 
                     id="configPageTitle" 
                     title="$resource{i18n.configuration.pageTitle}" 

@@ -72,7 +72,6 @@
     </event>
 #include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
-        //#include treeBreadcrumbs.inc
 
 <!insert name="protocolTabs" />
 

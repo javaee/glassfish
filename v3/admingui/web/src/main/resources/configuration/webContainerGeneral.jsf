@@ -63,7 +63,6 @@
 #include "/common/shared/restart.inc"    
     
             <sun:form id="form1">
-    //#include "/common/shared/treeBreadcrumbs.inc"
 #include "webContainerTabs.inc"
 #include "/common/shared/alertMsg.inc"
 <sun:title id="propertyContentPage" title="$resource{i18n_web.headings.webGeneral}">

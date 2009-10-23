@@ -83,7 +83,6 @@
 #include "/common/shared/restart.inc"    
 
             <sun:form id="form1" >
-#include "/common/shared/treeBreadcrumbs.inc"
 #include "/common/shared/alertMsg.inc"                
             <sun:title id="title1" title="$resource{i18nc.reg.PageTitle}" helpText="${PageTitleHelp}" />
             <!-- PropertySheet .... -->

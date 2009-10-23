@@ -43,7 +43,6 @@
         admingui.nav.selectTreeNodeById('form:tree:updateCenter');
     </script>
 </f:verbatim>
-   //#include "/common/shared/treeBreadcrumbs.inc"
 #include "/updateCenter/ucTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <!-- Page Title -->
