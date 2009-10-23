@@ -125,16 +125,6 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                             container.updateHost((VirtualServer)t);
                         }
                         return null;
-                    } else if (t instanceof NetworkListener) {
-                        if (type==TYPE.ADD) {
-                            container.addConnector((NetworkListener) t,
-                                                   httpService, true);
-                        } else if (type==TYPE.REMOVE) {
-                            container.deleteConnector((NetworkListener) t);
-                        } else if (type==TYPE.CHANGE) {
-                            container.updateConnector((NetworkListener) t, httpService);
-                        }
-                        return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof ManagerProperties) {
