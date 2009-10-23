@@ -1,5 +1,5 @@
 <assembly>
-    <id>api</id>
+    <id>endorsed-api</id>
     <formats>
         <format>jar</format>
     </formats>
@@ -20,6 +20,7 @@
                     <exclude>META-INF/*.providers</exclude>
                     <exclude>META-INF/mailcap*</exclude>
                     <exclude>META-INF/*.default</exclude>
+                    <exclude>META-INF/tld</exclude>
                     <exclude>com/googlecode/**</exclude>
                     <exclude>com/google/**</exclude>
                     <exclude>ee/**</exclude>
@@ -38,35 +39,14 @@
                 </excludes>
             </unpackOptions>
             <includes>
-                <include>org.glassfish:javax.servlet</include>
                 <include>org.glassfish:javax.annotation</include>
-                <include>org.glassfish:javax.ejb</include>
-                <include>org.glassfish:javax.enterprise.deploy</include>
-                <include>org.glassfish:javax.management.j2ee</include>
-                <include>org.glassfish:javax.resource</include>
-                <include>org.glassfish:javax.security.auth.message</include>
-                <include>org.glassfish:javax.security.jacc</include>
-                <include>org.glassfish:javax.transaction</include>
                 <include>org.glassfish:javax.xml.stream</include>
-                <include>org.glassfish:javax.mail</include>
                 <include>org.glassfish:javax.xml.rpc</include>
-                <include>org.glassfish:javax.activation</include>
                 <include>org.glassfish:javax.xml.bind</include>
                 <include>org.glassfish:javax.xml.ws</include>
-                <include>com.sun.faces:jsf-api</include>
-                <include>com.sun.faces:jsf-impl</include>
-                <include>org.glassfish:javax.servlet.jsp</include>
                 <include>org.glassfish:javax.jws</include>
                 <include>javax.ws.rs:jsr311-api</include>
-                <include>org.glassfish:javax.servlet.jsp.jstl</include>
-                <include>org.eclipse.persistence:javax.persistence</include>
                 <include>org.glassfish:javax.xml.soap</include>
-                <include>org.glassfish:javax.jms</include>
-                <include>org.glassfish:bean-validator</include>
-                <include>org.jboss.weld:weld-osgi-bundle</include>
-                <include>com.sun.messaging.mq:jaxm-api</include>
-                <include>org.glassfish.web:jstl-impl</include>
-                <include>javax.xml:webservices-api-osgi</include>
             </includes>
         </dependencySet>
     </dependencySets>

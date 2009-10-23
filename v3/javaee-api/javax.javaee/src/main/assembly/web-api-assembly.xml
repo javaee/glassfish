@@ -62,7 +62,7 @@
                 <include>org.eclipse.persistence:javax.persistence</include>
                 <include>org.glassfish:javax.xml.soap</include>
                 <include>org.glassfish:bean-validator</include>
-                <include>org.jboss.webbeans:webbeans-osgi-bundle</include>
+                <include>org.jboss.weld:weld-osgi-bundle</include>
                 <include>org.glassfish.web:jstl-impl</include>
             </includes>
         </dependencySet>
