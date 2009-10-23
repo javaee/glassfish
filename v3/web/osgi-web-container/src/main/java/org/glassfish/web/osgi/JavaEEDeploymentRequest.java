@@ -271,7 +271,7 @@ public class JavaEEDeploymentRequest
         // Set the contextroot explicitly, else it defaults to name.
         try
         {
-            // We expect WEB_CONTEXT_ROOT to be always present.
+            // We expect WEB_CONTEXT_PATH to be always present.
             // This is mandated in the spec.
             parameters.contextroot = archive.getManifest().
                     getMainAttributes().getValue(Constants.WEB_CONTEXT_PATH);
@@ -287,7 +287,7 @@ public class JavaEEDeploymentRequest
         }
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
-        parameters.force = true;
+        parameters.force = false;
         parameters.virtualservers = getDefaultVirtualServer();
         return parameters;
     }
