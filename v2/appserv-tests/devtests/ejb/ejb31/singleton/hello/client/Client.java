@@ -36,33 +36,13 @@ public class Client {
 
 	    // Ensure that MEJB is registered under all three of its JNDI names
 	    System.out.println("Looking up MEJB Homes");
-	    Object mh1Obj = new InitialContext().lookup("ejb/mgmt/MEJB");
-	    Object mh2Obj = new InitialContext().lookup("java:global/mejb/MEJBBean");
-	    Object mh3Obj = new InitialContext().lookup("java:global/mejb/MEJBBean!javax.management.j2ee.ManagementHome");
+	    ManagementHome mh1Obj = (ManagementHome) new InitialContext().lookup("ejb/mgmt/MEJB");
+	    ManagementHome mh2Obj = (ManagementHome) new InitialContext().lookup("java:global/mejb/MEJBBean");
+	    ManagementHome mh3Obj = (ManagementHome) new InitialContext().lookup("java:global/mejb/MEJBBean!javax.management.j2ee.ManagementHome");
 
 	    System.out.println("mejb home obj 1 = " + mh1Obj);
 	    System.out.println("mejb home obj 2 = " + mh2Obj);
 	    System.out.println("mejb home obj 3 = " + mh3Obj);
-
-	    /**  Commenting out MEJB access now that the EJB is protected. 
-	    ManagementHome mh = (ManagementHome) PortableRemoteObject.narrow(mh1Obj, ManagementHome.class);
-	    System.out.println("mejb home 1 = " + mh);
-	    Management m1 = mh.create();
-	    System.out.println("mejb obj 1 = " + m1);
-
-	    ManagementHome mh2 = (ManagementHome) PortableRemoteObject.narrow(mh2Obj, ManagementHome.class);
-	    System.out.println("mejb home 2 = " + mh2);
-	    Management m2 = mh2.create();
-	    System.out.println("mejb obj 2 = " + m2);
-
-
-	    System.out.println("mejb home obj 3 = " + mh3Obj);
-	    ManagementHome mh3 = (ManagementHome) PortableRemoteObject.narrow(mh3Obj, ManagementHome.class);
-
-	    Management m3 = mh3.create();
-	    System.out.println("mejb obj 3 = " + m3);
-
-	    **/
 
 	    Hello hello = (Hello) new InitialContext().lookup("java:global/" + appName + "/SingletonBean");
 
