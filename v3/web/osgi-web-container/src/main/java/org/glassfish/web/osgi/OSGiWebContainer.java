@@ -159,8 +159,7 @@ public class OSGiWebContainer
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
         if (osgiAppInfo == null)
         {
-            logger.fine("No applications for bundle " + b);
-            return;
+            throw new RuntimeException("No applications for bundle " + b);
         }
         ActionReport report = getReport();
         undeployJavaEEArtifacts(osgiAppInfo, report);
@@ -279,4 +278,10 @@ public class OSGiWebContainer
     /* package */ BundleContext getCurrentBundleContext() {
         return currentBundleContext.get();
     }
+
+    public boolean isDeployed(Bundle bundle)
+    {
+        return applications.containsKey(bundle);
+    }
+
 }
