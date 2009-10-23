@@ -72,14 +72,14 @@ public class WebTest2 {
                int responseCode=  urlConnection.getResponseCode();
                System.out.println("Response code: " + responseCode + " Expected code: 200"); 
                if (urlConnection.getResponseCode() == 200){
-                    stat.addStatus("networkListenerDynamicCongif-afterReconf", stat.PASS);
+                    stat.addStatus("networkListenerDynamicConfig-afterReconf", stat.PASS);
                } else {
-                    stat.addStatus("networkListenerDynamicCongif-afterReconf", stat.FAIL);
+                    stat.addStatus("networkListenerDynamicConfig-afterReconf", stat.FAIL);
                }
             }
         }catch(Exception ex){
-            stat.addStatus("networkListenerDynamicCongif-afterReconf", stat.FAIL);
+            stat.addStatus("networkListenerDynamicConfig-afterReconf", stat.FAIL);
         }
-        stat.printSummary("web/networkListenerDynamicCongif-afterReconf");
+        stat.printSummary("web/networkListenerDynamicConfig-afterReconf");
     }
 }
