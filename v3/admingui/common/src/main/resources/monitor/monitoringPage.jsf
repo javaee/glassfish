@@ -50,7 +50,7 @@
         setPageSessionAttribute(key="childType" value="monitoring-service");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=monitoring-service");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled", "MonitoringEnabled", "MbeanEnabled"});
         getMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels" monitorCompList="#{requestScope.tableList}")
         getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
@@ -83,6 +83,12 @@
 </sun:title>
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
+        <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monService}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MonitoringEnabled']}" selectedValue="true" />
+        </sun:property>
+        <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monMbeans}">
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MbeanEnabled']}" selectedValue="true" />
+        </sun:property>
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.DTrace}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DtraceEnabled']}" selectedValue="true" />
         </sun:property>
@@ -105,6 +111,12 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
 
+
+        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{web.monitoring.Level}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
+            <!beforeCreate
+                addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
+            />
+        </sun:dropDown>
         <sun:button id="button1" text="$resource{i18n.button.changeLevel}" disabled="#{true}" primary="#{true}" >
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
@@ -113,12 +125,6 @@
             setAttribute(key="tableList" value="#{requestScope.tmpList}")
         />
         </sun:button>
-
-        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{web.monitoring.Level}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
-            <!beforeCreate
-                addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
-            />
-        </sun:dropDown>
     </sun:panelGroup>
     </facet>
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}"}  sourceVar="td">

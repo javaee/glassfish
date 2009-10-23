@@ -210,6 +210,40 @@ public class MonitoringHandlers {
                                         if (cd.containsKey("startTime")) {
                                             start = df.format(new Date((Long) cd.get("startTime")));
                                         }
+                                        if (cd.containsKey("appName")) {
+                                            details = (GuiUtil.getMessage("msg.AppName") + ": " + cd.get("appName") + "<br/>");
+                                        }
+                                        if (cd.containsKey("address")) {
+                                            details = details + (GuiUtil.getMessage("msg.Address") + ": " + cd.get("address") + "<br/>");
+                                        }
+                                        if (cd.containsKey("deploymentType")) {
+                                            details = details + (GuiUtil.getMessage("msg.DepType") + ": " + cd.get("deploymentType") + "<br/>");
+                                        }
+                                        if (cd.containsKey("endpointName")) {
+                                            details = details + (GuiUtil.getMessage("msg.EndPointName") + ": " + cd.get("endpointName") + "<br/>");
+                                        }
+                                        if (cd.containsKey("implType")) {
+                                            details = details + (GuiUtil.getMessage("msg.ImplClass") + ": " + cd.get("implClass") + "<br/>");
+                                        }
+                                        if (cd.containsKey("implClass") && cd.containsKey("implType")) {
+                                            details = details + (GuiUtil.getMessage("msg.ImplType") + ": " + cd.get("implType") + "<br/>");
+                                        }
+                                        
+                                        if (cd.containsKey("namespace")) {
+                                            details = details + (GuiUtil.getMessage("msg.NameSpace") + ": " + cd.get("namespace") +  "<br/>");
+                                        }
+                                        if (cd.containsKey("portName")) {
+                                            details = details + (GuiUtil.getMessage("msg.PortName") + ": " + cd.get("portName") +  "<br/>");
+                                        }
+                                        if (cd.containsKey("serviceName")) {
+                                            details = details + (GuiUtil.getMessage("msg.ServiceName") + ": " + cd.get("serviceName") +  "<br/>");
+                                        }
+                                        if (cd.containsKey("tester")) {
+                                            details = details + (GuiUtil.getMessage("msg.Tester") + ": " + cd.get("tester") +  "<br/>");
+                                        }
+                                        if (cd.containsKey("wsdl")) {
+                                            details = details + (GuiUtil.getMessage("msg.WSDL") + ": " + cd.get("wsdl") +  "<br/>");
+                                        }
                                         statsMap.put("Name", monName);
                                         statsMap.put("StartTime", start);
                                         statsMap.put("LastTime", last);
