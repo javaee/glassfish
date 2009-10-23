@@ -128,7 +128,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.myvs.state=disable"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.myvs.state=disabled"/>
         </antcall>
     </target>
 
