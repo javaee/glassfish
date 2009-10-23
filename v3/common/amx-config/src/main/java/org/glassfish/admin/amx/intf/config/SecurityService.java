@@ -50,8 +50,6 @@ public interface SecurityService extends
     public String getAnonymousRole();
     public void setAnonymousRole(String val);
     
-    public Map<String,JACCProvider> getJaccProvider();
-    
     public String getAuditEnabled();
 
     public void setAuditEnabled(String value);
@@ -114,7 +112,7 @@ public interface SecurityService extends
     public void setActivateDefaultPrincipalToRoleMapping(String enabled);
 
     @ChildGetter
-    public Map<String, JACCProvider> getJACCProvider();
+    public Map<String, JaccProvider> getJaccProvider();
 
     @ChildGetter
     public Map<String, AuthRealm> getAuthRealm();

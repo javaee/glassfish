@@ -46,7 +46,7 @@ public interface AvailabilityService
     /**
     Get the EJBContainerAvailability MBean.
      */
-    EJBContainerAvailability getEJBContainerAvailability();
+    EjbContainerAvailability getEJBContainerAvailability();
 
     /**
     Get the WebContainerAvailability MBean.
@@ -214,7 +214,7 @@ public interface AvailabilityService
 
     void setHAStoreHealthcheckEnabled(String value);
 
-    public JMSAvailability getJMSAvailability();
+    public JmsAvailability getJmsAvailability();
 }
 
 

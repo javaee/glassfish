@@ -48,7 +48,7 @@ the &lt;http-listener> element, which looks like this:<br/>
 The 'port' attribute above is set to the value "${HTTP_LISTENER_PORT}", which is a system
 property.  Obviously no method that uses 'String' could get or set a String.
  */
-public interface JDBCConnectionPool
+public interface JdbcConnectionPool
         extends NamedConfigElement, Description, PropertiesAccess, ResourceRefReferent
 {
     /**

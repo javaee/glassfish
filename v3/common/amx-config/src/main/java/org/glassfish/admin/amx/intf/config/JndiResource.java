@@ -35,31 +35,19 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.base.Singleton;
-
 /**
-Configuration for the &lt;mdb-container&gt; element.
+Configuration for the &lt;jndi-resource&gt; element.
  */
-public interface MDBContainer extends AMXConfigProxy, PropertiesAccess, Singleton
+public interface JndiResource extends Resource
 {
-    
-    public String getIdleTimeoutInSeconds();
+    String getJndiLookupName();
+    void setJndiLookupName(final String jndiLookupName);
 
-    public void setIdleTimeoutInSeconds(final String value);
+    String getResType();
 
-    
-    public String getMaxPoolSize();
+    void setResType(final String resType);
 
-    public void setMaxPoolSize(final String value);
+    String getFactoryClass();
 
-    
-    public String getPoolResizeQuantity();
-
-    public void setPoolResizeQuantity(final String value);
-
-    
-    public String getSteadyPoolSize();
-
-    public void setSteadyPoolSize(final String value);
+    void setFactoryClass(final String factoryClass);
 }

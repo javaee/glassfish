@@ -56,13 +56,13 @@ public interface Resources
     public Map<String, CustomResource> getCustomResource();
 
     @ChildGetter
-    public Map<String, JNDIResource> getJNDIResource();
+    public Map<String, JndiResource> getJndiResource();
 
     @ChildGetter
-    public Map<String, JDBCResource> getJDBCResource();
+    public Map<String, JdbcResource> getJdbcResource();
 
     @ChildGetter
-    public Map<String, JDBCConnectionPool> getJDBCConnectionPool();
+    public Map<String, JdbcConnectionPool> getJdbcConnectionPool();
 
     @ChildGetter
     public Map<String, ConnectorResource> getConnectorResource();

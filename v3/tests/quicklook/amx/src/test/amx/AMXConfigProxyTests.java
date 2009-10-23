@@ -372,9 +372,9 @@ public final class AMXConfigProxyTests extends AMXTestBase
         
         if ( domain.getAmxPref() == null )
         {
-            domain.createChild( Util.deduceType(AMXPref.class), null );
+            domain.createChild( Util.deduceType(AmxPref.class), null );
         }
-        final AMXPref prefs = domain.getAmxPref();
+        final AmxPref prefs = domain.getAmxPref();
         assert prefs != null;
         final String validationLevel = prefs.getValidationLevel();
         assert validationLevel.equalsIgnoreCase("full") || validationLevel.equalsIgnoreCase("off");

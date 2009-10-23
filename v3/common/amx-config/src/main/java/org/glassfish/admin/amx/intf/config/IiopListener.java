@@ -51,7 +51,7 @@ import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 */
 
 public interface IiopListener
-	extends PropertiesAccess, NamedConfigElement, Enabled, SSLContainer
+	extends PropertiesAccess, NamedConfigElement, Enabled, SslContainer
 {
     public String getId();
     

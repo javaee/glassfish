@@ -35,25 +35,13 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
-public interface AMXPref extends PropertiesAccess, ConfigElement, Singleton
+/**
+An MBean implementing this interface can optionally contain an {@link Ssl}.
+ */
+public interface SslContainer extends AMXConfigProxy
 {
-    /**
-        Validation level for AMX MBeans (validated when an MBean is registered).
-      */
-    public String getValidationLevel();
-    public void setValidationLevel(String level);
-    
-    /** Whether to unregister AMX MBeans not compliant to the AMX specification */
-    public String getUnregisterNonCompliant();
-    public void setUnregisterNonCompliant(String unregister);
+    public Ssl getSSL();
 }
-
-
-
-
-
-
-

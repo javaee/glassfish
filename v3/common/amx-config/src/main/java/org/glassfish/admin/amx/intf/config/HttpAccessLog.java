@@ -36,26 +36,17 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;jms-host&gt; element.
+Configuration for the &lt;http-access-log&gt; element.
+@deprecated  Grizzly variants now exist
  */
-public interface JMSHost extends NamedConfigElement, PropertiesAccess
+public interface HttpAccessLog extends ConfigElement
 {
-    public String getAdminPassword();
-
-    public void setAdminPassword(String value);
-
-    public String getAdminUserName();
-
-    public void setAdminUserName(String value);
-
-    public String getHost();
-
-    public void setHost(String value);
-
-    public String getLazyInit();
-    public void setLazyInit(String value);
     
-    public String getPort();
+    public String getIPOnly();
 
-    public void setPort(String value);
+    public void setIPOnly(final String value);
+
+    public String getLogDirectory();
+
+    public void setLogDirectory(final String value);
 }

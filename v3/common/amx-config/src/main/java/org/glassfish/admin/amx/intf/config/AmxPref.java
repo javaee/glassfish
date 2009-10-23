@@ -35,30 +35,34 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-/**
-Configuration for the &lt;ejb-timer-service&gt; element.
- */
-public interface EJBTimerService extends AMXConfigProxy, PropertiesAccess, Singleton
+public interface AmxPref extends PropertiesAccess, ConfigElement, Singleton
 {
-
-    String getMaxRedeliveries();
-
-    void setMaxRedeliveries(final String value);
-
+    /**
+        Validation level for AMX MBeans (validated when an MBean is registered).
+      */
+    public String getValidationLevel();
+    public void setValidationLevel(String level);
     
-    String getMinimumDeliveryIntervalInMillis();
-
-    void setMinimumDeliveryIntervalInMillis(final String value);
-
+    /** Whether to unregister AMX MBeans not compliant to the AMX specification */
+    public String getUnregisterNonCompliant();
+    public void setUnregisterNonCompliant(String unregister);
     
-    String getRedeliveryIntervalInternalInMillis();
-
-    void setRedeliveryIntervalInternalInMillis(final String value);
-
-    String getTimerDatasource();
-
-    void setTimerDatasource(final String value);
+    public String getAutoStart();
+    public void setAutoStart(String autoStart);
+    
+    public String getEmitRegisrationStatus();
+    public void setEmitRegisrationStatus(String emit);
+    
+    public String getLogInaccessibleAttributes();
+    public void setLogInaccessibleAttributes(String flag);
 }
+
+
+
+
+
+
+

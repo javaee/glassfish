@@ -38,6 +38,8 @@ package org.glassfish.admin.amx.intf.config;
 import java.util.Map;
 import org.glassfish.admin.amx.core.AMXProxy;
 
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
+
 /**
 Configuration for the &lt;config&gt; element.
  */
@@ -61,7 +63,7 @@ public interface Config
     /**
     Return the NetworkConfig.
      */
-    public AMXProxy getNetworkConfig();
+    public NetworkConfig getNetworkConfig();
 
     /**
     Return the SecurityService.
@@ -95,12 +97,12 @@ public interface Config
     /**
     Return the EJBContainer.
      */
-    public EJBContainer getEjbContainer();
+    public EjbContainer getEjbContainer();
 
     /**
     Return the MDBContainer.
      */
-    public MDBContainer getMdbContainer();
+    public MdbContainer getMdbContainer();
     
     
     public AlertService getAlertService();
@@ -113,7 +115,7 @@ public interface Config
     /**
     Return the JMSService.
      */
-    public JMSService getJmsService();
+    public JmsService getJmsService();
 
     /**
     Return the LogService.

@@ -43,13 +43,13 @@ Configuration for the &lt;node-agent&gt; element.
 public interface NodeAgent
         extends AMXConfigProxy, PropertiesAccess
 {
-    public JMXConnector getJMXConnector();
+    public JmxConnector getJmxConnector();
 
     public String getStartServersInStartup();
 
     public void setStartServersInStartup(String start);
 
-    public String getSystemJMXConnectorName();
+    public String getSystemJmxConnectorName();
 
-    public void setSystemJMXConnectorName(String name);
+    public void setSystemJmxConnectorName(String name);
 }

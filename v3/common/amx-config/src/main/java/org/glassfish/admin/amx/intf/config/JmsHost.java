@@ -36,36 +36,26 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;ejb-container-availability&gt; element.
+Configuration for the &lt;jms-host&gt; element.
  */
-public interface EJBContainerAvailability extends ConfigElement, PropertiesAccess
+public interface JmsHost extends NamedConfigElement, PropertiesAccess
 {
+    public String getAdminPassword();
+
+    public void setAdminPassword(String value);
+
+    public String getAdminUserName();
+
+    public void setAdminUserName(String value);
+
+    public String getHost();
+
+    public void setHost(String value);
+
+    public String getLazyInit();
+    public void setLazyInit(String value);
     
-    public String getAvailabilityEnabled();
+    public String getPort();
 
-    public void setAvailabilityEnabled(final String value);
-
-    public String getSFSBHAPersistenceType();
-
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public void setSFSBHAPersistenceType(final String value);
-
-    public String getSFSBPersistenceType();
-
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public void setSFSBPersistenceType(final String value);
-
-    public String getSFSBStorePoolName();
-
-    public void setSFSBStorePoolName(final String value);
-
-    /** @deprecated do not use */
-    public String getSFSBQuickCheckpointEnabled();
-
-    /** @deprecated do not use */
-    public String getSFSBCheckpointEnabled();
+    public void setPort(String value);
 }

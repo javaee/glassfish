@@ -49,7 +49,7 @@ import org.jvnet.hk2.config.Configured;
  *  Preferences for AMX MBean behavior.
  */
 @Configured
-public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
+public interface AmxPref extends ConfigBeanProxy, Injectable, PropertyBag  {
     /** Possible value for {@link #getValidationLevel} */
     public static final String VALIDATION_LEVEL_OFF    = "off";
     /** Possible value for {@link #getValidationLevel} */

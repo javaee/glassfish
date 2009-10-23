@@ -35,75 +35,37 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-
-
-import java.util.Map;
-import org.glassfish.admin.amx.annotation.ChildGetter;
-
 /**
-Configuration for the &lt;jms-service&gt; element.
+Configuration for the &lt;ejb-container-availability&gt; element.
  */
-public interface JMSService
-        extends ConfigElement, PropertiesAccess, Singleton
+public interface EjbContainerAvailability extends ConfigElement, PropertiesAccess
 {
-
-    public String getAddresslistBehavior();
-
-    public void setAddresslistBehavior(final String value);
-
-    public String getAddresslistIterations();
-
-    public void setAddresslistIterations(final String value);
-
-    public Map<String,JMSHost> getJmsHost();
     
-    public String getDefaultJmsHost();
+    public String getAvailabilityEnabled();
 
-    public void setDefaultJmsHost(final String value);
+    public void setAvailabilityEnabled(final String value);
 
-    
-    public String getInitTimeoutInSeconds();
+    public String getSFSBHAPersistenceType();
 
-    public void setInitTimeoutInSeconds(final String value);
+    /**
+    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
+     */
+    public void setSFSBHAPersistenceType(final String value);
 
-    public String getMqScheme();
+    public String getSFSBPersistenceType();
 
-    public void setMqScheme(final String value);
+    /**
+    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
+     */
+    public void setSFSBPersistenceType(final String value);
 
-    public String getMqService();
+    public String getSFSBStorePoolName();
 
-    public void setMqService(final String value);
+    public void setSFSBStorePoolName(final String value);
 
-    
-    public String getReconnectAttempts();
+    /** @deprecated do not use */
+    public String getSFSBQuickCheckpointEnabled();
 
-    public void setReconnectAttempts(final String value);
-
-    
-    public String getReconnectEnabled();
-
-    public void setReconnectEnabled(final String value);
-
-    public String getReconnectIntervalInSeconds();
-
-    public void setReconnectIntervalInSeconds(final String value);
-
-    public String getStartArgs();
-
-    public void setStartArgs(final String value);
-
-    public String getType();
-
-    public void setType(final String value);
-
-
-    @ChildGetter
-    public Map<String, JMSHost> getJMSHost();
+    /** @deprecated do not use */
+    public String getSFSBCheckpointEnabled();
 }
-
-
-
-
-
-

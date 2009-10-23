@@ -36,17 +36,20 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;http-access-log&gt; element.
-@deprecated  Grizzly variants now exist
+Configuration for the &lt;jacc-provider&gt; element.
+
  */
-public interface HTTPAccessLog extends ConfigElement
+public interface JaccProvider
+        extends PropertiesAccess, ConfigElement
 {
-    
-    public String getIPOnly();
 
-    public void setIPOnly(final String value);
+    public String getName();
 
-    public String getLogDirectory();
+    public String getPolicyConfigurationFactoryProvider();
 
-    public void setLogDirectory(final String value);
+    public void setPolicyConfigurationFactoryProvider(String value);
+
+    public String getPolicyProvider();
+
+    public void setPolicyProvider(String value);
 }

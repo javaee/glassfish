@@ -36,7 +36,7 @@
 package org.glassfish.admin.amx.impl.ext;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import org.glassfish.admin.amx.intf.config.JDBCConnectionPool;
+import org.glassfish.admin.amx.intf.config.JdbcConnectionPool;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -76,7 +76,7 @@ public final class SystemStatusImpl extends AMXImplBase
         return org.glassfish.internal.api.Globals.getDefaultHabitat();
     }
 
-    public Map<String, Object> pingJDBCConnectionPool(final String poolName)
+    public Map<String, Object> pingJdbcConnectionPool(final String poolName)
     {
         final Map<String, Object> result = new HashMap<String, Object>();
         final Habitat habitat = getHabitat();
@@ -92,11 +92,11 @@ public final class SystemStatusImpl extends AMXImplBase
         // check pool name
         final Resources resources = getDomainRootProxy().child(Domain.class).getResources();
 
-        final Map<String, JDBCConnectionPool> pools = resources.childrenMap(JDBCConnectionPool.class);
-        final JDBCConnectionPool cfg = pools.get(poolName);
+        final Map<String, JdbcConnectionPool> pools = resources.childrenMap(JdbcConnectionPool.class);
+        final JdbcConnectionPool cfg = pools.get(poolName);
         if (cfg == null)
         {
-            result.put(REASON_FAILED_KEY, "The JDBCConnectionPool \"" + poolName + "\" does not exist");
+            result.put(REASON_FAILED_KEY, "The JdbcConnectionPool \"" + poolName + "\" does not exist");
             return result;
         }
 

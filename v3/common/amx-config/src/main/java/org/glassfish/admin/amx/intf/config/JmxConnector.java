@@ -35,14 +35,33 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
+
 /**
-Configuration for the &lt;jdbc-resource&gt; element.
+Configuration for the &lt;jmx-connector&gt; element.
  */
-public interface JDBCResource
-        extends Resource
+public interface JmxConnector
+        extends Enabled, NamedConfigElement, PropertiesAccess, SslContainer
 {
-    public String getJndiName();
+    public Ssl getSsl();
     
-    public String getPoolName();
-    public void setPoolName(String value);
+    public String getProtocol();
+
+    public void setProtocol(String value);
+
+    public String getAddress();
+
+    
+    public String getPort();
+
+    
+    public String getAcceptAll();
+
+    public void setAcceptAll(final String value);
+
+    public String getAuthRealmName();
+
+    
+    public String getSecurityEnabled();
+    public void setSecurityEnabled(final String value);
 }

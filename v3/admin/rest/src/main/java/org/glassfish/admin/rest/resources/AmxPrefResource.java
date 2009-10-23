@@ -22,10 +22,4 @@ public class AmxPrefResource extends TemplateResource<AmxPref> {
 		resource.setEntity(getEntity().getProperty() );
 		return resource;
 	}
-	@Path("system-property/")
-	public ListSystemPropertyResource getSystemPropertyResource() {
-		ListSystemPropertyResource resource = resourceContext.getResource(ListSystemPropertyResource.class);
-		resource.setEntity(getEntity().getSystemProperty() );
-		return resource;
-	}
 }

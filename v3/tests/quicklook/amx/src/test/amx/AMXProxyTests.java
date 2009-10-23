@@ -272,9 +272,9 @@ public final class AMXProxyTests extends AMXTestBase
         testProxyInterface( resources, Resources.class );
         
         resources.getCustomResource();
-        resources.getJNDIResource();
-        resources.getJDBCResource();
-        resources.getJDBCConnectionPool();
+        resources.getJndiResource();
+        resources.getJdbcResource();
+        resources.getJdbcConnectionPool();
         resources.getConnectorResource();
         resources.getConnectorConnectionPool();
         resources.getAdminObjectResource();
@@ -377,11 +377,11 @@ public final class AMXProxyTests extends AMXTestBase
 
         final List<UnprocessedConfigChange> changes = SystemStatus.Helper.toUnprocessedConfigChange( ss.getRestartRequiredChanges() );
 
-        final Set<AMXProxy> pools = getQueryMgr().queryType( Util.deduceType(JDBCConnectionPool.class) );
+        final Set<AMXProxy> pools = getQueryMgr().queryType( Util.deduceType(JdbcConnectionPool.class) );
 
         for (final AMXProxy pool : pools)
         {
-            final Map<String, Object> result = ss.pingJDBCConnectionPool(pool.getName());
+            final Map<String, Object> result = ss.pingJdbcConnectionPool(pool.getName());
             assert result != null;
         }
     }

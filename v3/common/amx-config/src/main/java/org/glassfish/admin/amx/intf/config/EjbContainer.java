@@ -35,33 +35,71 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+
+import org.glassfish.admin.amx.base.Singleton;
+
+
+import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
-Configuration for the &lt;jmx-connector&gt; element.
+Configuration for the &lt;ejb-container&gt; element.
  */
-public interface JMXConnector
-        extends Enabled, NamedConfigElement, PropertiesAccess, SSLContainer
+public interface EjbContainer extends
+        AMXConfigProxy, PropertiesAccess, Singleton
 {
-    public Ssl getSsl();
     
-    public String getProtocol();
+    String getCacheIdleTimeoutInSeconds();
 
-    public void setProtocol(String value);
+    void setCacheIdleTimeoutInSeconds(final String value);
 
-    public String getAddress();
-
+    public EjbTimerService  getEjbTimerService();
     
-    public String getPort();
+    String getCacheResizeQuantity();
 
-    
-    public String getAcceptAll();
+    void setCacheResizeQuantity(final String value);
 
-    public void setAcceptAll(final String value);
+    String getCommitOption();
 
-    public String getAuthRealmName();
+    void setCommitOption(final String value);
 
     
-    public String getSecurityEnabled();
-    public void setSecurityEnabled(final String value);
+    String getMaxCacheSize();
+
+    void setMaxCacheSize(final String value);
+
+    
+    String getMaxPoolSize();
+
+    void setMaxPoolSize(final String value);
+
+    
+    String getPoolIdleTimeoutInSeconds();
+
+    void setPoolIdleTimeoutInSeconds(final String value);
+
+    
+    String getPoolResizeQuantity();
+
+    void setPoolResizeQuantity(final String value);
+
+    
+    String getRemovalTimeoutInSeconds();
+
+    void setRemovalTimeoutInSeconds(final String value);
+
+    String getSessionStore();
+
+    void setSessionStore(final String value);
+
+    
+    String getSteadyPoolSize();
+
+    void setSteadyPoolSize(final String value);
+
+    String getVictimSelectionPolicy();
+
+    void setVictimSelectionPolicy(final String value);
 }
+
+

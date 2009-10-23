@@ -57,7 +57,7 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     /**Value of type Map from {@link #getConnectionDefinitionPropertiesAndDefaults} */
     public static final String CONN_DEFINITION_PROPS_KEY = "ConnDefinitionPropsKey";
 
-    /**Value of type boolean for Map from {@link #pingJDBCConnectionPool} */
+    /**Value of type boolean for Map from {@link #pingJdbcConnectionPool} */
     public static final String PING_CONNECTION_POOL_KEY = "PingConnectionPoolKey";
     
     /**Value of type boolean for Map from {@link #flushConnectionPool} */

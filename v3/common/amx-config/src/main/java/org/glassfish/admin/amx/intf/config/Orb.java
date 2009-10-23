@@ -36,72 +36,23 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-
 import org.glassfish.admin.amx.base.Singleton;
 
-
-import org.glassfish.admin.amx.annotation.ChildGetter;
-
 /**
-Configuration for the &lt;ejb-container&gt; element.
+Configuration for the &lt;orb&gt; config element.
  */
-public interface EJBContainer extends
-        AMXConfigProxy, PropertiesAccess, Singleton
-{
-    
-    String getCacheIdleTimeoutInSeconds();
+public interface Orb extends AMXConfigProxy, PropertiesAccess, Singleton
+{    
+    public String getMaxConnections();
 
-    void setCacheIdleTimeoutInSeconds(final String value);
-
-    public EJBTimerService  getEjbTimerService();
-    
-    String getCacheResizeQuantity();
-
-    void setCacheResizeQuantity(final String value);
-
-    String getCommitOption();
-
-    void setCommitOption(final String value);
+    public void setMaxConnections(String value);
 
     
-    String getMaxCacheSize();
+    public String getMessageFragmentSize();
 
-    void setMaxCacheSize(final String value);
+    public void setMessageFragmentSize(String value);
 
-    
-    String getMaxPoolSize();
+    public String getUseThreadPoolIds();
 
-    void setMaxPoolSize(final String value);
-
-    
-    String getPoolIdleTimeoutInSeconds();
-
-    void setPoolIdleTimeoutInSeconds(final String value);
-
-    
-    String getPoolResizeQuantity();
-
-    void setPoolResizeQuantity(final String value);
-
-    
-    String getRemovalTimeoutInSeconds();
-
-    void setRemovalTimeoutInSeconds(final String value);
-
-    String getSessionStore();
-
-    void setSessionStore(final String value);
-
-    
-    String getSteadyPoolSize();
-
-    void setSteadyPoolSize(final String value);
-
-    String getVictimSelectionPolicy();
-
-    void setVictimSelectionPolicy(final String value);
-
-    EJBTimerService getEJBTimerService();
+    public void setUseThreadPoolIds(String value);
 }
-
-

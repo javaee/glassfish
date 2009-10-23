@@ -68,11 +68,6 @@ public interface VirtualServer
     public String getDocroot();
 
     public void setDocroot(String value);
-
-    /**
-    Get the HTTPAccessLog MBean.
-     */
-    public HTTPAccessLog getHTTPAccessLog();
     
     /** @since GlassFish V3 */
     public String getSsoEnabled();
@@ -93,5 +88,5 @@ public interface VirtualServer
     public String getSsoCookieSecure();
     public void setSsoCookieSecure(String val);
     
-    public HTTPAccessLog getHttpAccessLog();
+    public HttpAccessLog getHttpAccessLog();
 }

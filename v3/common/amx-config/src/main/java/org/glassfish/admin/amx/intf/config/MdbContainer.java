@@ -35,21 +35,31 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.base.Singleton;
+
 /**
-Configuration for the &lt;jacc-provider&gt; element.
-
+Configuration for the &lt;mdb-container&gt; element.
  */
-public interface JACCProvider
-        extends PropertiesAccess, ConfigElement
+public interface MdbContainer extends AMXConfigProxy, PropertiesAccess, Singleton
 {
+    
+    public String getIdleTimeoutInSeconds();
 
-    public String getName();
+    public void setIdleTimeoutInSeconds(final String value);
 
-    public String getPolicyConfigurationFactoryProvider();
+    
+    public String getMaxPoolSize();
 
-    public void setPolicyConfigurationFactoryProvider(String value);
+    public void setMaxPoolSize(final String value);
 
-    public String getPolicyProvider();
+    
+    public String getPoolResizeQuantity();
 
-    public void setPolicyProvider(String value);
+    public void setPoolResizeQuantity(final String value);
+
+    
+    public String getSteadyPoolSize();
+
+    public void setSteadyPoolSize(final String value);
 }

@@ -83,10 +83,10 @@ public final class AMXOtherTests extends AMXTestBase
         final ConnectorRuntimeAPIProvider api = getDomainRootProxy().getExt().getConnectorRuntimeAPIProvider();
         assert api != null;
         
-        final Map<String,JDBCConnectionPool> pools = getDomainConfig().getResources().getJDBCConnectionPool();
+        final Map<String,JdbcConnectionPool> pools = getDomainConfig().getResources().getJdbcConnectionPool();
         for ( final String poolName :  pools.keySet() )
         {
-            final JDBCConnectionPool pool = pools.get(poolName);
+            final JdbcConnectionPool pool = pools.get(poolName);
             final String datasourceClassname = pool.getDatasourceClassname();
             final Map<String,Object> props = api.getConnectionDefinitionPropertiesAndDefaults( datasourceClassname, pool.getResType());
             //System.out.println( "Props for " + poolName +": " + props );

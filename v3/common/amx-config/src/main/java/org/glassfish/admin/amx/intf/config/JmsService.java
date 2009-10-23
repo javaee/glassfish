@@ -35,24 +35,73 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;orb&gt; config element.
- */
-public interface ORB extends AMXConfigProxy, PropertiesAccess, Singleton
-{    
-    public String getMaxConnections();
 
-    public void setMaxConnections(String value);
+import java.util.Map;
+import org.glassfish.admin.amx.annotation.ChildGetter;
+
+/**
+Configuration for the &lt;jms-service&gt; element.
+ */
+public interface JmsService
+        extends ConfigElement, PropertiesAccess, Singleton
+{
+
+    public String getAddresslistBehavior();
+
+    public void setAddresslistBehavior(final String value);
+
+    public String getAddresslistIterations();
+
+    public void setAddresslistIterations(final String value);
+    
+    public String getDefaultJmsHost();
+
+    public void setDefaultJmsHost(final String value);
 
     
-    public String getMessageFragmentSize();
+    public String getInitTimeoutInSeconds();
 
-    public void setMessageFragmentSize(String value);
+    public void setInitTimeoutInSeconds(final String value);
 
-    public String getUseThreadPoolIds();
+    public String getMqScheme();
 
-    public void setUseThreadPoolIds(String value);
+    public void setMqScheme(final String value);
+
+    public String getMqService();
+
+    public void setMqService(final String value);
+
+    
+    public String getReconnectAttempts();
+
+    public void setReconnectAttempts(final String value);
+
+    
+    public String getReconnectEnabled();
+
+    public void setReconnectEnabled(final String value);
+
+    public String getReconnectIntervalInSeconds();
+
+    public void setReconnectIntervalInSeconds(final String value);
+
+    public String getStartArgs();
+
+    public void setStartArgs(final String value);
+
+    public String getType();
+
+    public void setType(final String value);
+
+
+    @ChildGetter
+    public Map<String, JmsHost> getJmsHost();
 }
+
+
+
+
+
+

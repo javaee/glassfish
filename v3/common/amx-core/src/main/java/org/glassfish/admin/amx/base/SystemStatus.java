@@ -71,7 +71,7 @@ public interface SystemStatus extends AMXProxy, Utility, Singleton
     @see org.glassfish.admin.amx.util.ExceptionUtil#toMap
      */
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
-    public Map<String, Object> pingJDBCConnectionPool(final String poolName);
+    public Map<String, Object> pingJdbcConnectionPool(final String poolName);
 
     /**
     <em>Note: this API is highly volatile and subject to change<em>.

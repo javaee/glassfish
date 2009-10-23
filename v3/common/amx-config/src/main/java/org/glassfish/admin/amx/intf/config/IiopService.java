@@ -65,7 +65,7 @@ public interface IiopService
     /**
     Get a proxy to an ORB
      */
-    ORB getOrb();
+    Orb getOrb();
 }
 
 

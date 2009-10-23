@@ -36,12 +36,29 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
+import org.glassfish.admin.amx.base.Singleton;
 
 /**
-An MBean implementing this interface can optionally contain an {@link Ssl}.
+Configuration for the &lt;ejb-timer-service&gt; element.
  */
-public interface SSLContainer extends AMXConfigProxy
+public interface EjbTimerService extends AMXConfigProxy, PropertiesAccess, Singleton
 {
-    public Ssl getSSL();
+
+    String getMaxRedeliveries();
+
+    void setMaxRedeliveries(final String value);
+
+    
+    String getMinimumDeliveryIntervalInMillis();
+
+    void setMinimumDeliveryIntervalInMillis(final String value);
+
+    
+    String getRedeliveryIntervalInternalInMillis();
+
+    void setRedeliveryIntervalInternalInMillis(final String value);
+
+    String getTimerDatasource();
+
+    void setTimerDatasource(final String value);
 }

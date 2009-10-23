@@ -68,7 +68,7 @@ public interface Domain
     /** @since Glassfish V3 */
     public NodeAgents getNodeAgents();
     
-    public AMXPref getAmxPref();
+    public AmxPref getAmxPref();
     
     public String getVersion();
     

@@ -607,7 +607,10 @@ final class RegistrationSupport
         final Application app = appInfo.getMetaData(Application.class);
         if ( app == null )
         {
-            ImplUtil.getLogger().warning("Null from ApplicationInfo.getMetadata(Application.class) for application " + appName + ", isJavaEEApp() = " + appInfo.isJavaEEApp());
+            if ( appInfo.isJavaEEApp() )
+            {
+                ImplUtil.getLogger().warning("Null from ApplicationInfo.getMetadata(Application.class) for application " + appName );
+            }
             return null;
         }
         
