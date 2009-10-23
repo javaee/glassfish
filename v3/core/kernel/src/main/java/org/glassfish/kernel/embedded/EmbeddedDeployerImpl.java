@@ -189,7 +189,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
             context.getAppProps().setProperty(ServerTags.IS_COMPOSITE, "true");
             sniffers = snifferMgr.getCompositeSniffers(context);
         } else {
-            sniffers = snifferMgr.getSniffers(archive, cl);
+            sniffers = snifferMgr.getSniffers(context.getSource(), cl);
         }
         List<Sniffer> finalSniffers = new ArrayList<Sniffer>();
 
