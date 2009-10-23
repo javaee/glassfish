@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="463"/>
+    <property name="TOTAL_EXPECTED" value="464"/>
 
     &commonSetup;
     &commonBuild;
@@ -456,6 +456,7 @@
         <ant dir="defaultKeepAlive" target="all"/>
         <ant dir="multiServletRequests" target="all"/>
 -->
+        <ant dir="networkListenerDynamicConfig" target="all"/>
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
 <!-- XXX temporarily commented out, see IT 8282
         <ant dir="caseSensitiveHostMapping" target="all"/>
