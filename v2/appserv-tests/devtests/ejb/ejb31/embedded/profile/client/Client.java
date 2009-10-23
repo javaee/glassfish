@@ -67,7 +67,8 @@ public class Client {
 
     private void test(String module) {
 
-        long startTime = now();
+        long startTime0 = now();
+        long startTime = startTime0;
         EJBContainer c = EJBContainer.createEJBContainer();
         System.err.println("\n==> Spent on CREATE: " + (now() - startTime) + " msec");
         // ok now let's look up the EJB...
@@ -95,6 +96,7 @@ public class Client {
             e.printStackTrace();
         }
         System.out.println("Done calling EJB");
+        System.err.println("\n==> Spent on TEST: " + (now() - startTime0) + " msec");
     }
 
     private long now() {
