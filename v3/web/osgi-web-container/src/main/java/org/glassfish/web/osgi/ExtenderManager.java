@@ -37,24 +37,29 @@
 
 package org.glassfish.web.osgi;
 
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import org.glassfish.internal.api.Globals;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.jvnet.hk2.component.Habitat;
 
-import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 
 /**
  * It is responsible for starting any registered {@link Extender} service
  * after GlassFish server is started and stopping them when server is shutdown.
- * It does so by listening to GlassFish STARTED and SHUTDOWN event.
+ * As much as we would like to use GlassFish STARTED event to be notified
+ * of server startup, we can't, because the order in which bundles are started
+ * is undefined. Fortunately, HK2 OSGi bundle registers Habitat in service
+ * registry after ModuleStartup has been called. That's a sufficient
+ * indication that server has been started.
+ * For shutdown, we don't have any such issue. We use SHUTDOWN event.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -63,10 +68,11 @@ public class ExtenderManager
     private static final Logger logger =
             Logger.getLogger(ExtenderManager.class.getPackage().getName());
     private BundleContext context;
-    private Events events = Globals.get(Events.class);
+    private Habitat habitat; // handle to HK2 service registry
+    private Events events;
     private EventListener listener;
-    private Semaphore serverReady = new Semaphore(0);
     private ServiceTracker extenderTracker;
+    private GlassFishServerTracker glassFishServerTracker; // used to track starting of GlassFish
 
     public ExtenderManager(BundleContext context)
     {
@@ -75,13 +81,17 @@ public class ExtenderManager
 
     public void start() throws Exception
     {
-        // spawn a thread and wait for server to start before proceeding
-        waitForServerToStart();
+        glassFishServerTracker = new GlassFishServerTracker(context);
+        glassFishServerTracker.open();
     }
 
     public void stop() throws Exception
     {
         unregisterGlassFishShutdownHook();
+        if (glassFishServerTracker != null) {
+            glassFishServerTracker.close();
+            glassFishServerTracker = null;
+        }
         if (extenderTracker != null) {
             extenderTracker.close();
             extenderTracker = null;
@@ -90,53 +100,10 @@ public class ExtenderManager
     }
 
     public void doActualWork() {
+        events = habitat.getComponent(Events.class);
         registerGlassFishShutdownHook();
         extenderTracker = new ExtenderTracker(context);
         extenderTracker.open();
-    }
-
-    /**
-     * This method spawns a new thread, waits for server to start.
-     * After being notified of server start, it proceeds by calling
-     * {@link #doActualWork()}
-     */
-    private void waitForServerToStart()
-    {
-        final EventListener serverStartedListener = new EventListener()
-        {
-            public void event(Event event)
-            {
-                if (EventTypes.SERVER_READY.equals(event.type()))
-                {
-                    logger.logp(Level.INFO, "WebExtender", "event", "Received Server Started Event");
-                    serverReady.release();
-                    events.unregister(this);
-                }
-            }
-        };
-        events.register(serverStartedListener);
-
-        new Thread(new Runnable(){
-            public void run()
-            {
-                // Check again to ensure that we did not miss the event
-                // after we checked the status and before we registered
-                // the listener. If we don't check and we have indeed
-                // missed the event, we will end up waiting for ever.
-                if (!isServerStarted()) {
-                    logger.logp(Level.INFO, "WebExtender", "run", "Waiting for Server to start");
-                    try
-                    {
-                        serverReady.acquire();
-                    }
-                    catch (InterruptedException e)
-                    {
-                        throw new RuntimeException(e);
-                    }
-                }
-                doActualWork();
-            }
-        }).start();
     }
 
     private void stopExtenders()
@@ -159,11 +126,6 @@ public class ExtenderManager
                     "Not able to stop all extenders", e);
         }
 
-    }
-
-    private boolean isServerStarted() {
-        ServerEnvironment serverEnv = Globals.get(ServerEnvironment.class);
-        return serverEnv.getStatus() == ServerEnvironment.Status.started;
     }
 
     private void registerGlassFishShutdownHook() {
@@ -198,5 +160,26 @@ public class ExtenderManager
             return e;
         }
 
+    }
+
+    /**
+     * HK2 OSGi bundle registers ModuleStartup in service
+     * registry after ModuleStartup has been called.
+     */
+    private class GlassFishServerTracker extends ServiceTracker {
+        public GlassFishServerTracker(BundleContext context)
+        {
+            super(context, ModuleStartup.class.getName(), null);
+        }
+
+        @Override
+        public Object addingService(ServiceReference reference)
+        {
+            logger.logp(Level.FINE, "ExtenderManager$GlassFishServerTracker", "addingService", "GlassFish has been started");
+            ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
+            habitat = Habitat.class.cast(context.getService(habitatServiceRef));
+            doActualWork();
+            return super.addingService(reference);
+        }
     }
 }
