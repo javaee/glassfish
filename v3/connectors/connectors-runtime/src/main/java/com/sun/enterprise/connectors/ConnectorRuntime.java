@@ -61,6 +61,8 @@ import com.sun.appserv.connectors.internal.api.WorkContextHandler;
 import com.sun.appserv.connectors.internal.api.WorkManagerFactory;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.connectors.module.ConnectorApplication;
@@ -617,6 +619,23 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return configParserAdmService.getRABeanProperties(pathToDeployableUnit);
     }
 */
+
+
+    /**
+     * Provides specified ThreadPool or default ThreadPool from server
+     *
+     * @param threadPoolId Thread-pool-id
+     * @return ThreadPool
+     * @throws NoSuchThreadPoolException when unable to get a ThreadPool
+     */
+    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException, ConnectorRuntimeException {
+        int env = getEnvironment();
+        if (env == ConnectorRuntime.SERVER) {
+            return ConnectorsUtil.getThreadPool(threadPoolId);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Causes pool to switch on the matching of connections.

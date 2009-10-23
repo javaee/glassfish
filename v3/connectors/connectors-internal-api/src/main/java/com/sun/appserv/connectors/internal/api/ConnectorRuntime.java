@@ -50,6 +50,8 @@ import com.sun.enterprise.config.serverbeans.ResourcePool;
 import com.sun.enterprise.config.serverbeans.WorkSecurityMap;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
 import com.sun.appserv.connectors.internal.spi.ConnectorNamingEventListener;
 
 
@@ -203,6 +205,16 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @throws ResourceException when unable to ping
      */
     public boolean pingConnectionPool(String poolName) throws ResourceException;
+
+
+    /**
+     * Provides specified ThreadPool or default ThreadPool from server
+     * @param threadPoolId Thread-pool-id
+     * @return ThreadPool
+     * @throws NoSuchThreadPoolException when unable to get a ThreadPool
+     */
+    public ThreadPool getThreadPool(String threadPoolId) throws NoSuchThreadPoolException, ConnectorRuntimeException;
+
 
     /**
      * provides the transactionManager

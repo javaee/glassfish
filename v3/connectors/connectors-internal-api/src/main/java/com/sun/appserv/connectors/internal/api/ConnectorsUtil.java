@@ -41,11 +41,17 @@ import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPoolManager;
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import com.sun.corba.se.spi.orbutil.threadpool.NoSuchThreadPoolException;
+import com.sun.corba.se.impl.orbutil.threadpool.ThreadPoolManagerImpl;
+
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.net.URI;
 import java.net.URL;
@@ -593,6 +599,59 @@ public class ConnectorsUtil {
                     + " : security map name : " +  wsm.getName());
         }
         return null;
+    }
+
+    /**
+     * get the thread pool, given the thread pool id, if availalbe.
+     * @param threadPoolId thread pool id
+     * @return thread pool
+     * @throws NoSuchThreadPoolException when no such thread pool is present
+     * @throws ConnectorRuntimeException when unable to get the thread pool
+     */
+    public static ThreadPool getThreadPool(String threadPoolId)
+            throws NoSuchThreadPoolException, ConnectorRuntimeException {
+
+        ThreadPoolManager tpm = getThreadPoolManager();
+
+        if (threadPoolId != null) {
+            return tpm.getThreadPool(threadPoolId);
+        } else {
+            return tpm.getDefaultThreadPool();
+        }
+    }
+
+    /**
+     * JDK 1.6.0_12 & JDK 1.6.0_14 has changes in SE thread pool api.
+     * Later we will be using appserver's thread pool.
+     * Using the workaround to check the constructor availability and act accordingly.
+     * @return thread pool manager
+     * @throws ConnectorRuntimeException when unable to provide thread pool manager
+     */
+    private static ThreadPoolManager getThreadPoolManager() throws ConnectorRuntimeException {
+        Constructor defaultConstructor;
+        Constructor threadGroupParamConstructor;
+        try {
+            defaultConstructor = ThreadPoolManagerImpl.class.getConstructor();
+            defaultConstructor.setAccessible(true);
+
+            return (ThreadPoolManager)defaultConstructor.newInstance();
+
+        } catch(NoSuchMethodException e) {
+            //do nothing. Second trial with a ThreadGroup parameter constructor will be done.
+        } catch(Exception e){
+            //do nothing.  Second trial with a ThreadGroup parameter constructor will be done.
+        }
+
+        try {
+            threadGroupParamConstructor = ThreadPoolManagerImpl.class.getConstructor(ThreadGroup.class);
+            threadGroupParamConstructor.setAccessible(true);
+
+            ThreadGroup tg = null;
+            return (ThreadPoolManager)threadGroupParamConstructor.newInstance(tg);
+
+        } catch(Exception e){
+            throw new ConnectorRuntimeException("unable to provide thread pool manager");
+        }
     }
 
     /**
