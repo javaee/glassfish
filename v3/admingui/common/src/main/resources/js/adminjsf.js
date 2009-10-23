@@ -2053,6 +2053,14 @@ admingui.ajax = {
     },
 
     modifyUrl : function (url) {
+        // If the url does not start with 'http' (or 'https' by extension), calculate
+        // the "base" URL based off of window.location
+        if (url.substr(0,4) != 'http') {
+            //http://localhost:4848/common/applications/applications.jsf
+            //http://admin.foo.com/common/applications/applications.jsf
+            var location = window.location;
+            url = location.protocol + "//" + location.host + url
+        }
         if (url.indexOf('bare') > -1) {
             return url;
         }

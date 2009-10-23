@@ -72,9 +72,10 @@
     />
 </sun:button>
 
-
-<sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
-    <!command
-        redirect(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");
-    />
+<sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
+    onClick="admingui.ajax.loadPage({url:'#{request.contextPath}/#{cancelPage}?name=$pageSession{target}'}); return false;">
+//    <!command
+//        println("cancel");
+//        navigate(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");
+//    />
 </sun:button>
