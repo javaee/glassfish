@@ -77,10 +77,13 @@ public class DomainXmlTransformer {
 
     private static final String NETWORK_LISTENERS = "network-listeners";
     private static final String IIOP_LISTENER = "iiop-listener";
-    private static final String LAZY_INIT_ATTR = "lazy-init";
     private static final String PROTOCOLS = "protocols";
     private static final String APPLICATIONS = "applications";
     private static final String JMS_HOST = "jms-host";
+    private static final String JMX_CONNECTOR = "jmx-connector";
+    private static final String LAZY_INIT_ATTR = "lazy-init";
+    private static final String ENABLED = "enabled";
+    private static final String FALSE = "false";
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -123,6 +126,7 @@ public class DomainXmlTransformer {
                     String name = event.asStartElement().getName().getLocalPart();
                     if (name.equals(NETWORK_LISTENERS) 
                             || name.equals(JMS_HOST)
+                            || name.equals(JMX_CONNECTOR)
                             || name.equals(PROTOCOLS)
                             || name.equals(IIOP_LISTENER)
                             || name.equals(APPLICATIONS)) {
@@ -131,6 +135,11 @@ public class DomainXmlTransformer {
                             // Make sure lazy init is not enabled by creating a new start element
                             // based on the original but that never includes the lazy init attribute
                             StartElement newStartEvent = getAdjustedStartEvent(event, LAZY_INIT_ATTR);
+                            writer.add(newStartEvent);
+
+                        } else if( name.equals(JMX_CONNECTOR) ) {
+                            // Disable this element
+                            StartElement newStartEvent = getDisabledStartEvent(event);
                             writer.add(newStartEvent);
 
                         } else {
@@ -221,6 +230,26 @@ public class DomainXmlTransformer {
                 attributes.add(a);
             }
         }
+
+        StartElement oldStartEvent = event.asStartElement();
+        return xmlEventFactory.createStartElement(oldStartEvent.getName(), 
+                attributes.iterator(), oldStartEvent.getNamespaces());
+    }
+
+    /** Create a new start element based on the original but that marks it as disabled
+     */
+    private StartElement getDisabledStartEvent(XMLEvent event) {
+        Set attributes = new HashSet();
+
+        for(java.util.Iterator i = event.asStartElement().getAttributes(); i.hasNext();) {
+            Attribute a = (Attribute) i.next();
+            if( !a.getName().getLocalPart().equals(ENABLED) ) {
+                attributes.add(a);
+            }
+        }
+
+        Attribute newAttribute = xmlEventFactory.createAttribute(ENABLED, FALSE);
+        attributes.add(newAttribute);
 
         StartElement oldStartEvent = event.asStartElement();
         return xmlEventFactory.createStartElement(oldStartEvent.getName(), 
