@@ -51,6 +51,10 @@
     <target name="create-network-listener" depends="init-common">
         <exec executable="${ASADMIN}">
             <arg line="create-network-listener"/>
+            <arg line="-u ${admin.user}"/>
+            <arg line="--passwordfile ${admin.password.file}"/>
+            <arg line="--host ${admin.host}"/>
+            <arg line="--port ${admin.port}"/>
             <arg line="--listenerport ${test.port}"/>
             <arg line="--protocol http-listener-1"/>
             <arg line="network-listener-1" />
@@ -60,6 +64,10 @@
     <target name="delete-network-listener" depends="init-common">
         <exec executable="${ASADMIN}">
             <arg line="delete-network-listener"/>
+            <arg line="-u ${admin.user}"/>
+            <arg line="--passwordfile ${admin.password.file}"/>
+            <arg line="--host ${admin.host}"/>
+            <arg line="--port ${admin.port}"/>
             <arg line="network-listener-1" />
         </exec>
     </target>
