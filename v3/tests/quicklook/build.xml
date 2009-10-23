@@ -51,7 +51,7 @@
         <antcall target="start-server-felix"/>
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
-        <param name="testng.xml" value="testng.xml"/> </antcall>
+        <param name="testng.xml" value="testng/testng_wd.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="quicklook-summary"/>
         <antcall target="stop-server"/>
@@ -70,7 +70,7 @@
 
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
-            <param name="testng.xml" value="testng.xml"/> </antcall>
+            <param name="testng.xml" value="testng/testng_wd.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="quicklook-summary"/>
 
@@ -109,7 +109,7 @@
         <antcall target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
         <antcall target="runtest">
-        <param name="testng.xml" value="testng_gd.xml"/> </antcall>
+        <param name="testng.xml" value="testng/testng_gd.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="undeploy-gd"/>
         <antcall target="quicklook-summary"/>
@@ -133,7 +133,7 @@
         <antcall target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
         <antcall target="runtest">
-        <param name="testng.xml" value="testng_gd.xml"/> </antcall>
+        <param name="testng.xml" value="testng/testng_gd_security.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="undeploy-gd"/>
         <antcall target="quicklook-summary"/>
@@ -152,7 +152,7 @@
         <antcall target="start-derby"/>
         <antcall target="build-deploy"/>
         <antcall target="runtest">
-        <param name="testng.xml" value="testng_debug.xml"/> </antcall>
+        <param name="testng.xml" value="testng/testng_debug.xml"/> </antcall>
         <antcall target="undeploy"/>
         <antcall target="stop-derby"/>
         <antcall target="testng-summary"/>
@@ -237,10 +237,6 @@
         <loadfile property="startserver.log" srcFile="${glassfish.home}/domains/domain1/logs/server.log"/>
         <echo message="${startserver.log}"/>
     </target>
-    
-    <path id="path2testng">
-        <pathelement location="./lib/testng-5.0-jdk15.jar"/>
-    </path>
     
     <taskdef name="testng" classname="org.testng.TestNGAntTask">
         <classpath>
