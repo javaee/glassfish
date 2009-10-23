@@ -660,7 +660,7 @@ admingui.util = {
 
 
 /*
- *  The following functions provide breadcrumbs and tree functionality.
+ *  The following functions provide tree functionality.
  */
 admingui.nav = {
     TREE_ID: "treeForm:tree",
@@ -971,55 +971,6 @@ admingui.nav = {
             return getElementById(admingui.nav.TREE_ID).getTree(treeNode);
         }
         return null;
-    },
-
-    /**
-     *	This function is responsible for extracting the information
-     *	needed to setup the Breadcrumbs.
-     */
-    getBreadCrumbData: function(treeNode) {
-        var href = null;
-        var id = null;
-        var tmp = null;
-        var text = '';
-        var urls = '';
-        while (true) {
-            // Find the link associated with this TreeNode
-            id = treeNode.id;
-
-            // Get the next TreeNode
-            treeNode = admingui.nav.getParentTreeNode(treeNode);
-            if (!treeNode) {
-                // No parent, we're processing the root TreeNode, skip it.
-                break;
-            }
-
-            href = admingui.nav.getTreeFrameElementById(id + ':link');
-            if (!href) {
-                tmp = id.substring(id.lastIndexOf(':'));
-                href = admingui.nav.getTreeFrameElementById(id + tmp + '_link');
-            }
-            if (href) {
-                // Extract the link information
-                // IE doesn't have the text attribute. Need to use innerText
-                var tmp1 = href.text;
-                if (!tmp1) {
-                    tmp1 = href.innerText;
-                }
-                text = "text=" + encodeURIComponent(tmp1) + '&' + text;
-
-                //IE doesn't start with a '/', we have to test and add it 
-                var tmp2 = escape(href.pathname + href.search);
-                if (tmp2.charAt(0) == '/')
-                    urls = "urls=" + tmp2 + '&' + urls;
-                else
-                    urls = "urls=/" + tmp2 + '&' + urls;
-            }
-        }
-        if (urls != '') {
-            urls = urls.substring(0, urls.lastIndexOf('&'));
-        }
-        return text + urls;
     }
 };
 
