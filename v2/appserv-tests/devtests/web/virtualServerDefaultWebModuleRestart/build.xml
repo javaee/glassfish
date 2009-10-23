@@ -48,7 +48,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="create-vs,build,deploy,create-listener,run,unsetDefaultWebModule,undeploy,delete-listener,delete-vs"/>
+    <target name="all" depends="create-vs,build,deploy,setDefaultWebModule,create-listener,run,unsetDefaultWebModule,undeploy,delete-listener,delete-vs"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -71,6 +71,14 @@
                includes="WebTest.java"/>
     </target> 
     
+    <target name="setDefaultWebModule" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.${new-virtual-server}.default-web-module=${appname}-web"/>
+        </antcall>
+    </target>
+
     <target name="create-vs" depends="init-common">
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-virtual-server" />
@@ -107,7 +115,7 @@
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-common"/>
     </target>
-    
+
     <target name="run" depends="init-common">
         <java classname="WebTest">
           <arg value="${http.host}"/>
