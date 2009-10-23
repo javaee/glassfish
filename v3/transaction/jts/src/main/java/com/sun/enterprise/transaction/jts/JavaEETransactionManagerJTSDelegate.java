@@ -95,7 +95,7 @@ public class JavaEETransactionManagerJTSDelegate
     private JavaEETransactionManager javaEETM;
 
     // an implementation of the JTA TransactionManager provided by JTS.
-    private TransactionManager tm;
+    private ThreadLocal<TransactionManager> tmLocal = new ThreadLocal();
 
     private Hashtable globalTransactions;
     private Hashtable<String, XAResourceWrapper> xaresourcewrappers =
@@ -109,9 +109,11 @@ public class JavaEETransactionManagerJTSDelegate
 
     private boolean lao = true;
     private final static ReadWriteLock lock = new ReadWriteLock();
+    private static JavaEETransactionManagerJTSDelegate instance = null;
 
     public JavaEETransactionManagerJTSDelegate() {
         globalTransactions = new Hashtable();
+        instance = this;
     }
 
     public void postConstruct() {
@@ -142,6 +144,7 @@ public class JavaEETransactionManagerJTSDelegate
         if (_logger.isLoggable(Level.FINE))
                 _logger.log(Level.FINE,"TM: commit");
         validateTransactionManager();
+        TransactionManager tm = tmLocal.get();
         Object obj = tm.getTransaction(); // monitoring object
 
         JavaEETransactionManagerSimplified javaEETMS = 
@@ -187,6 +190,7 @@ public class JavaEETransactionManagerJTSDelegate
                 _logger.log(Level.FINE,"TM: rollback");
         validateTransactionManager();
 
+        TransactionManager tm = tmLocal.get();
         Object obj = tm.getTransaction(); // monitoring object
         
         JavaEETransactionManagerSimplified javaEETMS = 
@@ -214,26 +218,33 @@ public class JavaEETransactionManagerJTSDelegate
 
     public int getStatus() throws SystemException {
 
-        // This is the 1st method called by BaseContainer.preInvokeTx
-        initTransactionManager();
-
         JavaEETransaction tx = javaEETM.getCurrentTransaction();
+        int status = javax.transaction.Status.STATUS_NO_TRANSACTION;
+
+        TransactionManager tm = tmLocal.get();
         if ( tx != null && tx.isLocalTx())
-            return tx.getStatus();
+            status = tx.getStatus();
         else if (tm != null) 
-            return tm.getStatus();
-        else
-            return javax.transaction.Status.STATUS_NO_TRANSACTION;
+            status = tm.getStatus();
+
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"TM: status: " + JavaEETransactionManagerSimplified.getStatusAsString(status));
+
+        return status;
     }
 
     public Transaction getTransaction() 
             throws SystemException {
         JavaEETransaction tx = javaEETM.getCurrentTransaction();
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"TM: getTransaction: tx=" + tx + ", tm=" + tmLocal.get());
+
         if ( tx != null )
             return tx;
 
         // Check for a JTS imported tx
         TransactionInternal jtsTx = null;
+        TransactionManager tm = tmLocal.get();
         if (tm != null) {
             jtsTx = (TransactionInternal)tm.getTransaction();
         }
@@ -244,6 +255,9 @@ public class JavaEETransactionManagerJTSDelegate
             // check if this JTS Transaction was previously active
             // in this JVM (possible for distributed loopbacks).
             tx = (JavaEETransaction)globalTransactions.get(jtsTx);
+            if (_logger.isLoggable(Level.FINE))
+                _logger.log(Level.FINE,"TM: getTransaction: tx=" + tx + ", jtsTx=" + jtsTx);
+
             if ( tx == null ) {
                 tx = ((JavaEETransactionManagerSimplified)javaEETM).createImportedTransaction(jtsTx);
                 globalTransactions.put(jtsTx, tx);
@@ -298,7 +312,7 @@ public class JavaEETransactionManagerJTSDelegate
                 _logger.log(Level.FINE,"TM: setRollbackOnly");
 
         validateTransactionManager();
-        tm.setRollbackOnly();
+        tmLocal.get().setRollbackOnly();
     }
 
     public Transaction suspend(JavaEETransaction tx) throws SystemException {
@@ -320,7 +334,7 @@ public class JavaEETransactionManagerJTSDelegate
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: resume");
 
-        tm.resume(tx);
+        tmLocal.get().resume(tx);
     }
 
     public void removeTransaction(Transaction tx) {
@@ -356,7 +370,7 @@ public class JavaEETransactionManagerJTSDelegate
             throw new RuntimeException(sm.getString("enterprise_distributedtx.lazy_transaction_notstarted"),ex);
         }
 
-        TransactionInternal jtsTx = (TransactionInternal)tm.getTransaction();
+        TransactionInternal jtsTx = (TransactionInternal)tmLocal.get().getTransaction();
         globalTransactions.put(jtsTx, tx);
 
         return jtsTx;
@@ -387,19 +401,22 @@ public class JavaEETransactionManagerJTSDelegate
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: suspend");
         validateTransactionManager();
-        return tm.suspend();
+        return tmLocal.get().suspend();
     }
 
     private void validateTransactionManager() throws IllegalStateException {
-        if (tm == null) {
+        if (tmLocal.get() == null) {
             throw new IllegalStateException
             (sm.getString("enterprise_distributedtx.transaction_notactive"));
         }
     }
 
     private void initTransactionManager() {
-        if (tm == null)
-            tm = TransactionManagerImpl.getTransactionManagerImpl();
+        if (_logger.isLoggable(Level.FINE))
+            _logger.log(Level.FINE,"TM: initTransactionManager: tm=" + tmLocal.get());
+
+        if (tmLocal.get() == null)
+            tmLocal.set(TransactionManagerImpl.getTransactionManagerImpl());
     }
 
     public XAResourceWrapper getXAResourceWrapper(String clName) {
@@ -435,7 +452,8 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public void beginJTS(int timeout) throws NotSupportedException, SystemException {
-        ((TransactionManagerImpl)tm).begin(timeout);
+        TransactionManagerImpl tm = (TransactionManagerImpl)tmLocal.get();
+        tm.begin(timeout);
         ((JavaEETransactionManagerSimplified)javaEETM).monitorTxBegin(tm.getTransaction());
     }
 
@@ -543,6 +561,14 @@ public class JavaEETransactionManagerJTSDelegate
 
     public boolean isWriteLocked() {
         return com.sun.jts.CosTransactions.AdminUtil.isFrozenAll();
+    }
+
+    public static JavaEETransactionManagerJTSDelegate getInstance() {
+        return instance;
+    }
+
+    public void initXA() {
+        initTransactionManager();
     }
 
     private static class ReadWriteLock implements Lock {

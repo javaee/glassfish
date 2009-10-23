@@ -76,6 +76,8 @@ import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import com.sun.jts.utils.LogFormatter;
 
+import com.sun.enterprise.transaction.jts.JavaEETransactionManagerJTSDelegate;
+
 /**This class manages association of transactions with threads in a process,
  * and associated state/operations.
  *
@@ -972,6 +974,10 @@ public class CurrentTransaction {
             context.current.otid.formatID == -1 ) {
             return;
         }
+
+        // Init TransactionManagerImpl in the JTS delegate, so that all calls from
+        // this point forward use it correctly.
+        JavaEETransactionManagerJTSDelegate.getInstance().initXA();
 
         // Use a local factory to recreate the transaction locally.
 

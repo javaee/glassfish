@@ -222,7 +222,7 @@ public class DefaultTransactionService implements TransactionService,
                     String newString = Integer.toString(hc);
 
                     if (hc < 0) {
-                         newString.replace("-", "R");
+                         newString = newString.replace("-", "R");
                     }
 
                     int hcLength = (56 - newString.length());
