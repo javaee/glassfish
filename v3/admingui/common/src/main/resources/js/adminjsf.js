@@ -912,42 +912,6 @@ admingui.nav = {
     },
 
     /**
-     *  This f() is still used in: updatecenter/src/main/resources/updatesAvailable.inc
-     *
-     *	This function submits an Ajax request using Dynamic Faces.  It also
-     *	allows QUERY_STRING information to be sent.
-     *
-     *	command     - The button or href that is responsible for this event.
-     *  targetId    - The id of the field(s) to be updated by this request.
-     *  queryString - NVP information to send to the server.
-     */
-    submitAjaxRequest: function(command, targetId, queryString) {
-        var form = null;
-        if (queryString) {
-            form = command;
-            while (form && (form.nodeName != "FORM")) {
-                form = form.parentNode;
-            }
-        }
-        var oldAction = null;
-        if (form) {
-            oldAction = form.action;
-            if (form.action.indexOf('?') == -1) {
-                form.action += '?';
-            }
-            else {
-                form.action += '&';
-            }
-            form.action += queryString;
-        }
-        DynaFaces.fireAjaxTransaction(command,{execute: command.id, inputs: command.id, immediate: false, render: targetId});
-        if (oldAction) {
-            form.action = oldAction;
-        }
-        return false;
-    },
-
-    /**
      *	This function provides access to DOM objects in the tree window.
      */
     getTreeFrameElementById: function(id) {
