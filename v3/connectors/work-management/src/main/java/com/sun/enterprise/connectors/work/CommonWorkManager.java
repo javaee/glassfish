@@ -115,14 +115,13 @@ public final class CommonWorkManager implements WorkManager {
                     throw cre;
                 }
             }
+            if (tp == null) {
+                String msg = localStrings.getString("workmanager.threadpool_not_found");
+                logger.log(Level.SEVERE, msg, threadPoolId);
+                throw new ConnectorRuntimeException(msg);
+            }
+            registerWithMonitoringService();
         }
-
-        if (tp == null) {
-            String msg = localStrings.getString("workmanager.threadpool_not_found");
-            logger.log(Level.SEVERE, msg, threadPoolId);
-            throw new ConnectorRuntimeException(msg);
-        }
-        registerWithMonitoringService();
     }
 
     private void registerWithMonitoringService() {
