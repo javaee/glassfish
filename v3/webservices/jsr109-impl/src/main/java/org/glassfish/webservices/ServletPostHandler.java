@@ -50,7 +50,11 @@ import com.sun.enterprise.InvocationManager;*/
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.ResourceBundle;
+import java.text.MessageFormat;
+
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.web.WebComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.ejb.api.EJBInvocation;
 
@@ -65,6 +69,8 @@ public class ServletPostHandler extends GenericHandler {
     private static Logger logger = 
         LogDomains.getLogger(ServletPostHandler.class, LogDomains.WEBSERVICES_LOGGER);
     private WsUtil wsUtil = new WsUtil();
+    private ResourceBundle rb = logger.getResourceBundle();
+
 
     public ServletPostHandler() {}
 
@@ -73,31 +79,35 @@ public class ServletPostHandler extends GenericHandler {
     }
 
     public boolean handleRequest(MessageContext context) {
-        EJBInvocation inv = null;
+        WebComponentInvocation inv = null;
 
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            if(inv instanceof EJBInvocation) {
-                inv = (EJBInvocation) invManager.getCurrentInvocation();
-                Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
-                if( webServiceMethodInPreHandler != null ) {
-                    Method postHandlerMethod =
-                        wsUtil.getInvMethod(
-                                (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
-
-                    if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
-                        throw new UnmarshalException
-                            ("Original method " + webServiceMethodInPreHandler
-                             + " does not match post-handler method " +
-                             postHandlerMethod);
-                    }
+            inv = (WebComponentInvocation) invManager.getCurrentInvocation();
+            Method webServiceMethodInPreHandler = inv.getWebServiceMethod();
+            if( webServiceMethodInPreHandler != null ) {
+                // Now that application handlers have run, do another method
+                // lookup and compare the results with the original one.  This
+                // ensures that the application handlers have not changed
+                // the message context in any way that would impact which
+                // method is invoked.
+                Method postHandlerMethod = wsUtil.getInvMethod(
+                        (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(), context);
+                if( !webServiceMethodInPreHandler.equals(postHandlerMethod) ) {
+                    throw new UnmarshalException("Original method " + webServiceMethodInPreHandler +
+                            " does not match post-handler method ");
                 }
             }
         } catch(Exception e) {
-            logger.log(Level.WARNING, "postWebHandlerError", e);
+            logger.log(Level.WARNING, format(rb.getString("postWebHandlerError"), e.toString()));
             wsUtil.throwSOAPFaultException(e.getMessage(), context);
         }
         return true;
+    }
+
+
+    private String format(String key, String ... values){
+        return MessageFormat.format(key, (Object [])values);
     }
 }

@@ -295,6 +295,14 @@ public class WebServiceRefHandler extends AbstractHandler  {
                 }
             }
 
+            String wsrefAnLookup = annotation.lookup();
+            // Store lookup name that is specified
+            if(!aRef.hasLookupName()) {
+                aRef.setLookupName(wsrefAnLookup);
+            }
+
+
+
             aRef.setInjectResourceType("javax.jws.WebServiceRef");
             
             if (!annInfo.getElementType().equals(ElementType.TYPE)) {

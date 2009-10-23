@@ -43,10 +43,16 @@ import javax.xml.rpc.handler.MessageContext;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.ResourceBundle;
+import java.text.MessageFormat;
+
 import com.sun.logging.LogDomains;
 import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.ejb.api.EJBInvocation;
+
+import com.sun.enterprise.web.WebComponentInvocation;
+
+import com.sun.xml.rpc.server.http.Implementor;
+import com.sun.xml.rpc.server.http.MessageContextProperties;
 
 /**
  * This handler is inserted first in the handler chain for an
@@ -59,6 +65,7 @@ public class ServletPreHandler extends GenericHandler {
     private static Logger logger = 
         LogDomains.getLogger(ServletPreHandler.class, LogDomains.WEBSERVICES_LOGGER);
     private WsUtil wsUtil = new WsUtil();
+    private ResourceBundle rb = logger.getResourceBundle();
 
     public ServletPreHandler() {}
 
@@ -67,28 +74,30 @@ public class ServletPreHandler extends GenericHandler {
     }
 
     public boolean handleRequest(MessageContext context) {
-        EJBInvocation inv = null;
+        WebComponentInvocation inv = null;
 
         try {
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
             InvocationManager invManager = wscImpl.getInvocationManager();
-            if(inv instanceof EJBInvocation) {
-                inv = (EJBInvocation) invManager.getCurrentInvocation();
-                Method method = wsUtil.getInvMethod(
-                    (com.sun.xml.rpc.spi.runtime.Tie)inv.getWebServiceTie(),
-                                                context);
-                // Result can be null for some error cases.  This will be
-                // handled by jaxrpc runtime so we don't treat it as an exception.
-                if( method != null ) {
-                    inv.setWebServiceMethod(method);
-                } else {
-                    inv.setWebServiceMethod(null);
-                }
+            inv = (WebComponentInvocation) invManager.getCurrentInvocation();
+            com.sun.xml.rpc.spi.runtime.Tie tie =
+                    (com.sun.xml.rpc.spi.runtime.Tie) inv.getWebServiceTie();
+            if (tie == null) {
+                Implementor implementor = (Implementor)
+                        context.getProperty(MessageContextProperties.IMPLEMENTOR);
+                tie = implementor.getTie();
+                inv.setWebServiceTie(tie);
             }
+            inv.setWebServiceMethod(wsUtil.getInvMethod(tie, context));
+
         } catch(Exception e) {
-            logger.log(Level.WARNING, "preWebHandlerError", e);
+            logger.log(Level.WARNING, format(rb.getString("preWebHandlerError"), e.toString()));
             wsUtil.throwSOAPFaultException(e.getMessage(), context);
         }
         return true;
+    }
+
+    private String format(String key, String ... values){
+        return MessageFormat.format(key, (Object [])values);
     }
 }

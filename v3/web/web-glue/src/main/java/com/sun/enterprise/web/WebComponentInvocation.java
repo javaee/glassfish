@@ -29,7 +29,17 @@ import javax.servlet.SingleThreadModel;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 
+import java.lang.reflect.Method;
+
 public class WebComponentInvocation extends ComponentInvocation {
+
+
+    /**
+     * Used by container within JAXRPC handler processing code.
+     */
+    private Object webServiceTie;
+    private Method webServiceMethod;
+
     public WebComponentInvocation(WebModule wm) {
         this(wm, null);
     }
@@ -59,6 +69,22 @@ public class WebComponentInvocation extends ComponentInvocation {
         }
 
         return resourceTableKey;
+    }
+
+    public void setWebServiceTie(Object tie) {
+        webServiceTie = tie;
+    }
+
+    public Object getWebServiceTie() {
+        return webServiceTie;
+    }
+
+    public void setWebServiceMethod(Method method) {
+        webServiceMethod = method;
+    }
+
+    public Method getWebServiceMethod() {
+        return webServiceMethod;
     }
 
     class PairKey {
