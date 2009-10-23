@@ -72,93 +72,18 @@
       <artifactId>console-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!--
-    <dependency>
-	<groupId>com.sun.mojarra</groupId>
-	<artifactId>mojarra-scales</artifactId>
-	<version>${scales.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.jsftemplating</groupId>
-                    <artifactId>jsftemplating-base</artifactId>
-                </exclusion>
-            </exclusions>
-	</dependency>
-    -->
+    <!-- Ed: The following dependency is no longer needed after you switch to the new help!  -->
     <dependency>
 	<groupId>org.glassfish.docs</groupId>
 	<artifactId>console-common-help</artifactId>
 	<version>3.0-b01</version>
 	<scope>runtime</scope>
-	</dependency>
+    </dependency>
     <dependency>
 	<groupId>commons-fileupload</groupId>
 	<artifactId>commons-fileupload</artifactId>
 	<version>1.1.1</version>
 	<scope>runtime</scope>
 	</dependency>
-        <dependency>
-            <groupId>com.sun.faces.extensions</groupId>
-            <artifactId>jsf-extensions-dynamic-faces</artifactId>
-            <classifier>jsftemplating</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.faces</groupId>
-                    <artifactId>shale-remoting</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.faces.extensions</groupId>
-            <artifactId>jsf-extensions-common</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.faces</groupId>
-                    <artifactId>shale-remoting</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <!--
-        during development, place all .jsf files directly under target/admingui
-        so that they can be updated without reloading app.
-
-        Activate this mode with "mvn -P dev"
-       -->
-      <id>dev</id>
-      <build>
-        <defaultGoal>install</defaultGoal>
-        <plugins>
-          <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <configuration>
-	      <archive>
-		  <manifestEntries>
-		      <Glassfish-require-services>org.glassfish.api.admingui.ConsoleProvider</Glassfish-require-services>
-		      <Glassfish-require-repository>console-plugins=${com.sun.aas.installRoot}/lib/console-plugins</Glassfish-require-repository>
-		      <HK2-Import-Bundles>org.glassfish.admingui.console-common,com.sun.enterprise.hk2,org.glassfish.admingui.console-plugin-service, org.glassfish.deployment.deployment-client,org.glassfish.registration.registration-api,org.glassfish.registration.registration-impl, org.glassfish.javax.servlet, org.glassfish.javax.servlet.jsp, com.sun.jsftemplating, org.glassfish.admingui.dataprovider,com.sun.pkg.client</HK2-Import-Bundles>
-		  </manifestEntries>
-	      </archive>
-              <webResources>
-                <webResource>
-                  <directory>../core/src/main/resources</directory>
-                </webResource>
-              </webResources>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
