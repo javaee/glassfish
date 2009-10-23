@@ -75,18 +75,6 @@
         getSupportImages(count="5", imageList=>$page{imageList});
         getIssueQueryString(query=>$page{IssueQuery});
     />
-    <!-- Bread Crumbs -->
-    <!--
-    <sun:markup tag="div" id="breadcrumbs" style="border: 1px solid #E5E9ED; background-color: #E5E9ED;">
-        <sun:breadcrumbs id="boom" style="background-color: #E5E9ED;">
-            <sun:hyperlink text="$resource{i18n.tree.support}">
-                <!command
-                    redirect("#{request.contextPath}/common/sysnet/support.jsf");
-                />
-            </sun:hyperlink>
-        </sun:breadcrumbs>
-    </sun:markup>
-    -->
     <!-- Page Title -->
     //<sun:title id="propertyContentPage" title="$resource{i18nc.support.PageTitle}" helpText="$resource{i18nc.support.PageTitleHelp}">
     //</sun:title>
