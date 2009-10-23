@@ -51,8 +51,8 @@
 	</manifest>
       </jar>
       <delete dir="${temp}"/>
-      <antcall target="autodeploy-service-assembly"/>
-    <!--  <antcall target="deploy-service-assembly"/> -->
+      <antcall target="autodeploy-service-assembly"/> 
+   <!--   <antcall target="deploy-service-assembly"/> --> 
     </target>
 
     <target name="autodeploy-service-assembly">
@@ -61,24 +61,19 @@
     </target>
 
     <target name="deploy-service-assembly">
-      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target=
-"deploy-service-assembly">
-          <property name="jbi.deploy.file" value="${assemble.dir}/${jbi-su-assembly}.zip"/>
-          <property name="jbi.port" value="${jmx.port}"/>
-      </ant>
-      <antcall target="start-service-assembly"/>
-    </target>
-
-    <target name="start-service-assembly">
-      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target=
-"start-service-assembly">
-          <property name="jbi.service.assembly.name" value="${jbi-su-assembly}"/>
-          <property name="jbi.port" value="${jmx.port}"/>
-      </ant>
+      <echo message="Deploying ${jbi-su-assembly}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="deploy"/>
+        <arg line="${assemble.dir}/${jbi-su-assembly}.jar"/>
+      </exec>
     </target>
 
     <target name="undeploy-jbi-component-su">
-        <antcall target="autoundeploy-service-assembly"/>
+        <antcall target="autoundeploy-service-assembly"/> 
+  <!--      <antcall target="undeploy-service-assembly"/> -->
     </target>
 
     <target name="autoundeploy-service-assembly">
@@ -87,13 +82,13 @@
     </target>
 
     <target name="undeploy-service-assembly">
-<!--      See v2 devtests for similar functionality, not in v3 yet.
-	  <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target=
-"undeploy-service-assembly">
-          <property name="jbi.service.assembly.name" value="${jbi-su-assembly}"/>
-          <property name="jbi.port" value="${jmx.port}"/>
-      </ant>
--->
+      <exec executable="${ASADMIN}">
+        <arg line="undeploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${jbi-su-assembly}"/>
+      </exec>
     </target>
 
 <!--    <target name="stop-binding">
