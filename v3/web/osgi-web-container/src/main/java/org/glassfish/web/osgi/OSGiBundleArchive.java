@@ -121,9 +121,11 @@ public class OSGiBundleArchive implements ReadableArchive
             }
         }
 
-        if (uri != null) {
-            name = Util.getURIName(uri);
-        } else {
+        // See issue #10536. We can't use the same policy for obtaining
+        // the name as OSGi container does.
+//        if (uri != null) {
+//            name = Util.getURIName(uri);
+//        } else {
             // See if there is a symbolic name & version. Use them,
             // else use location. Either symbolic name or location must exist
             // in a bundle.
@@ -135,7 +137,7 @@ public class OSGiBundleArchive implements ReadableArchive
             } else {
                 name = location;
             }
-        }
+//        }
     }
 
     public void close() throws IOException
