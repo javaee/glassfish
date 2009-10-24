@@ -313,8 +313,8 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
             ModuleScanner scanner = getScanner();
             if (scanner instanceof WarScanner) {
                 ((WarScanner)scanner).setScanOtherLibraries(true);
+                readAnnotations(archive, descriptor, localExtensions, scanner);
             }
-            readAnnotations(archive, descriptor, localExtensions, scanner);
         }
 
         WebFragmentDescriptor mergedWebFragment = null;
