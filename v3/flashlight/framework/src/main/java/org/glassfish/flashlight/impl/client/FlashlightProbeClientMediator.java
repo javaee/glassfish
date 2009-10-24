@@ -125,16 +125,12 @@ public class FlashlightProbeClientMediator
             if (agentInitialized.get()) {
                 return btraceAgentAttached;
             }
-            String btp = System.getProperty("btrace.port");
-            if ((btp == null) || (btp.length() <= 0)) {
+            try {
+                ClassLoader scl = agentInitialized.getClass().getClassLoader().getSystemClassLoader();
+                Class agentMainClass = scl.loadClass("com.sun.btrace.agent.Main");
+                btraceAgentAttached = true;
+            } catch(Exception e) {
                 btraceAgentAttached = false;
-            } else {
-                try {
-                    Integer.parseInt(btp);
-                    btraceAgentAttached = true;
-                } catch (NumberFormatException nfe) {
-                    btraceAgentAttached = false;
-                }
             }
             agentInitialized.set(true);
         }
@@ -223,9 +219,8 @@ public class FlashlightProbeClientMediator
             throw new RuntimeException(errStr);
         }
 
-        // this check is unneccessary as the server socket may not exist
-        // if(isAgentAttached())
-        submit2BTrace(bArr);
+        if(isAgentAttached())
+            submit2BTrace(bArr);
     }
 
     /**

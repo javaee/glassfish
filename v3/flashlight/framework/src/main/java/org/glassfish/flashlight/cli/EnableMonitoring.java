@@ -53,6 +53,7 @@ import java.io.File;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
 import com.sun.enterprise.universal.process.ProcessUtils;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 /**
  * @author Sreenivas Munnangi
@@ -88,6 +89,7 @@ public class EnableMonitoring implements AdminCommand {
 
         // attach agent using given options
         // TODO: allow for user defined port
+        if (!FlashlightProbeClientMediator.isAgentAttached()) {
             if (! isValidString(pid)) {
                 int i = ProcessUtils.getPid();
                 if (i == -1) {
@@ -100,8 +102,10 @@ public class EnableMonitoring implements AdminCommand {
                 }
             }
             if (isValidString(pid)) {
+                FlashlightProbeClientMediator.setAgentInitialized(false);
                 attachAgent(report);
             }
+        }
 
         // following ordering is deliberate to facilitate config change
         // event handling by monitoring infrastructure
