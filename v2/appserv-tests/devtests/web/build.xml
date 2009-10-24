@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="464"/>
+    <property name="TOTAL_EXPECTED" value="465"/>
 
     &commonSetup;
     &commonBuild;
@@ -358,9 +358,7 @@
         <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDefaultWebModuleRequestDispatcher" target="all"/>
         <ant dir="virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess" target="all"/>
-<!-- XXX temporarily commented out, see IT 8728
-        <ant dir="virtualServerDefaultWebModuleRestart" target="all"/>
--->
+        <ant dir="virtualServerDefaultWebModuleReconfig" target="all"/>
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
         <ant dir="virtualServerRedirectPropertyNoSubstringMatch" target="all"/>
