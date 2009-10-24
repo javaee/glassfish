@@ -49,7 +49,7 @@ public class MyServletContextListener
         try {
             ctx.addServlet("abc", "def");
             throw new RuntimeException(
-                "Required IllegalStateException not thrown");
+                "Required UnsupportedOperationException not thrown");
         } catch (UnsupportedOperationException e) {
             // Do nothing
         }
