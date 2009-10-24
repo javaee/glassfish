@@ -22,7 +22,7 @@
 <h1 style="margin-left: 80px;"><big><font style="font-size: 16pt;"
  size="4"><big><b><font face="Trebuchet MS, sans-serif">Instructions
 for QuickLook tests</font></b></big></font></big></h1>
-Last updated at: July 29, 2009<br>
+Last updated at: Oct 23, 2009<br>
 By: Ming.Zhang@sun.com<br>
 <p style="margin-bottom: 0in;" align="left"><big><font size="4"><big><b>I.
 Running QuickLook tests:</b></big></font></big></p>
@@ -43,6 +43,9 @@ QL will clean up all war files under quicklook directory. Change
 directory to <span style="font-weight: bold;">v3/tests/quicklook</span>.
 All italic text below indicate a
 command. <br>
+<br>
+QL will work with the default admin password "NULL" (empty). Please
+clean up the previous ~/.asadminpass if it contains other password.<br>
 <br>
 <span style="font-weight: bold;">1. To Run QL in Glassfish Profile:</span><br>
 <br>
@@ -144,16 +147,14 @@ Installation Dir} all</span><br>
   </ul>
 </ul>
 <span style="font-weight: bold;">7. To Run JRuby Tests</span><span
- style="font-weight: bold;"> in QL (This test is required to run
-separately if you are making any JRuby related change):</span><br>
+ style="font-weight: bold;"> in QL separately:</span><br>
 <br>
 The JRuby tests need JRuby/Rails gems environment and JRuby/Rails will
-be downloaded form maven repository. Due to the size of JRuby/Rails,
-this test suite was not integrated with other QL tests and needs to be
-run separately. For the first time of running JRuby tests, the
+be downloaded form maven repository. For the first time of running
+JRuby tests, the
 JRuby/Rails env will be
-setup and this will take a little time depend on network connection
-(two minutes on my machine). The
+setup and this will take a little time depend on network connection.
+The
 JRuby setup will be done in local maven repository and this step will
 be skipped for the future runs if the same local maven repro is
 used.&nbsp; To run the JRuby tests in QL<br>
@@ -295,9 +296,10 @@ passed <br>
 Please add "all" target to include "build deploy runtest"<br>
 </p>
 <p style="margin-bottom: 0in;">Since QL runs in multiple profiles, the
-test cases need to be defined in the 3 test lists for the profiles:
-testng.xml for the Web profile, testng_gd.xml for Glassfish profile,
-testng_debug.xml for the debug profile. The local testng.xml is
+test cases need to be defined in the 3 test lists (under
+quicklook/testng dir) for the profiles:
+testng_wd.xml for the Web profile, testng_gd.xml for Glassfish profile,
+testng_debug.xml for the debug profile. The module level testng.xml is
 optional but it
 provides the conveniences of running the module test locally. User can
 also choose to define the class name in the local build.xml. In this
