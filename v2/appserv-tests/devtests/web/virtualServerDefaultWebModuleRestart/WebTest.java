@@ -43,20 +43,13 @@ import com.sun.ejte.ccl.reporter.*;
  *
  * This test:
  *
+ * - creates a new virtual server
  * - deploys a webapp;
- * - creates a new virtual server and has its default-web-module attribute
- *   point to the deployed webapp;
+ * - set the virtual server's default-web-module with the deployed webapp
  * - creates a new http-listener, and has its default-virtual-server attribute
  *   point to the newly created virtual server;
- * - restarts the domain;
  * - accesses the new virtual server, and ensures that its default-web-module
  *   is honored
- *
- * This test requires a restart, because when the webapp designated as the
- * default-web-module of the new virtual server is first deployed, it
- * is only deployed to the virtual servers available at the time (i.e., to the
- * virtual server with id "server"). It will be deployed to the newly
- * created virtual server only during a restart.
  */
 public class WebTest {
 

@@ -83,7 +83,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-virtual-server" />
             <param name="operand.props"
-                   value="--hosts 127.0.0.1 --defaultwebmodule ${appname}-web ${new-virtual-server}"/>
+                   value="--hosts 127.0.0.1 ${new-virtual-server}"/>
         </antcall>
     </target>
 
