@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -40,25 +40,25 @@
     <sun:tab id="generalTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.networkListener.listenerTab}" >
         <!command
         setSessionAttribute(key="listenerTabs" value="generalTab");
-        redirect(page="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}&name=#{pageSession.listenerName}");
+        redirect(page="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}&name=#{pageSession.listenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
     <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" >
         <!command
         setSessionAttribute(key="listenerTabs" value="sslTab");
-        redirect(page="#{request.contextPath}/web/grizzly/listenerSSLEdit.jsf?configName=#{configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}");
+        redirect(page="#{request.contextPath}/web/grizzly/listenerSSLEdit.jsf?configName=#{configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
     <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" >
         <!command
         setSessionAttribute(key="listenerTabs" value="httpTab");
-        redirect(page="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?configName=#{pageSession.configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}");
+        redirect(page="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?configName=#{pageSession.configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
     <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" >
         <!command
         setSessionAttribute(key="listenerTabs" value="fileCacheTab");
-        redirect(page="#{request.contextPath}/web/grizzly/listenerFileCache.jsf?configName=#{configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}");
+        redirect(page="#{request.contextPath}/web/grizzly/listenerFileCache.jsf?configName=#{configName}&name=#{pageSession.protocolName}&listenerName=#{pageSession.listenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
 

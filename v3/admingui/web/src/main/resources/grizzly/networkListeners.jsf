@@ -47,20 +47,18 @@
         admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:protocols','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:protocols');
         admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:networkListeners');"
 >
-<!define name="deleteButton">
+<!define name="listTableDeleteButton">
     <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
         onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
-        { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-        else {return false;} "
+            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+            else {return false;} "
     >
-        <!command
-            getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-            deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
-            setAttribute(key="selectedRows" value="${selectedRows}");
-            deleteChildren(objectNameStr="#{pageSession.protocolStrEl}", type="protocol", key="Protocol", selectedRows="${selectedRows}");
-            redirect(page="#{pageSession.listLink}");
-        />
+    <!command
+        getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+        getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+        deleteNetworkListeners(selectedRows="${selectedRows}");
+        redirect(page="#{pageSession.listLink}");
+    />
     </sun:button>
 </define>
 <!define name="content">
@@ -82,12 +80,11 @@
     </event>
 #include "/common/shared/restart.inc"    
 
-            <sun:form id="propertyForm">
+    <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenersPageTitle}"
-                 helpText="$resource{i18n_web.grizzly.networkListenersPageTitleHelp}" />
-		 "<br /> <br />
-
+     <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenersPageTitle}"
+     helpText="$resource{i18n_web.grizzly.networkListenersPageTitleHelp}" />
+    "<br /> <br />
 
 <sun:table id="configs" title="#{tableTitle}"
             deselectMultipleButton="$boolean{true}"
@@ -114,7 +111,7 @@
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.nameCol}"  sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}&name=#{td.value.Name}" />
+            url="#{pageSession.editLink}&name=#{td.value.Name}&cancelTo=networkListeners.jsf" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.portCol}"  sort="Port" rowHeader="$boolean{true}" id="col3">
@@ -122,11 +119,11 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.protocolCol}"  sort="Protocol" rowHeader="$boolean{true}" id="pro">
-        <sun:hyperlink id="link" text="#{td.value.Protocol}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{td.value.Protocol}" />
+        <sun:hyperlink id="link" text="#{td.value.Protocol}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{td.value.Protocol}&cancelTo=networkListeners.jsf" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.table.threadPoolCol}" sort="ThreadPool" rowHeader="$boolean{true}" id="threadPool">
-        <sun:hyperlink id="link" text="#{td.value.ThreadPool}" url="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?name=#{td.value.ThreadPool}" />
+        <sun:hyperlink id="link" text="#{td.value.ThreadPool}" url="#{request.contextPath}/web/configuration/threadPoolEdit.jsf?name=#{td.value.ThreadPool}&cancelTo=grizzly/networkListeners.jsf" />
     </sun:tableColumn>
 
     <sun:tableColumn  headerText="$resource{i18n_web.grizzly.table.enabledCol}" sort="Enabled" rowHeader="$boolean{true}" id="col22">

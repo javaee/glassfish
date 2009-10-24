@@ -47,13 +47,30 @@
         admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:networkListeners','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:networkListeners');
         admingui.nav.refreshTree('treeForm:tree:configuration:networkConfig:protocols','/web/grizzly/pluginTreeNodeGrizzly.jsf','networkConfig:protocols');"
 >
+
+<!define name="listTableDeleteButton">
+    <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
+        onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
+            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+            else {return false;} "
+    >
+    <!command
+        getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
+        getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
+        deleteProtocol(selectedRows="${selectedRows}");
+        redirect(page="#{pageSession.listLink}");
+    />
+    </sun:button>
+</define>
+
 <!define name="content">
     <event>
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
         setPageSessionAttribute(key="childType" value="protocol");
-        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.tmpRows}");
+        addNetworkListenerInfo(protocolListOfRows="#{requestScope.tmpRows}" result="#{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteProtocol}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/protocolNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/protocols.jsf?configName=#{configName}");
@@ -65,8 +82,8 @@
 
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
-                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
-                 helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
+     <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
+     helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
 		 "<br /> <br />
 <sun:table id="configs" title="#{tableTitle}"
             deselectMultipleButton="$boolean{true}"
@@ -93,8 +110,16 @@
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}&name=#{td.value.Name}" />
+            url="#{pageSession.editLink}&name=#{td.value.Name}&cancelTo=protocols.jsf" />
     </sun:tableColumn>
+
+
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.listenerNameCol}"  rowHeader="$boolean{true}" id="colnet">
+        <foreach key="listenerName" list="#{td.value.listenerList}" >
+            <sun:hyperlink  text="#{listenerName}" url="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{listenerName}&cancelTo=protocols.jsf" />"<br>
+       </foreach>
+    </sun:tableColumn>
+
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
         <staticText id="ss" value="#{td.value.SecurityEnabled}" />

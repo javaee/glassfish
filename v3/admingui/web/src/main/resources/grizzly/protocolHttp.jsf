@@ -39,8 +39,7 @@
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolHttp.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
-    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/protocolHttp.jsf?name=#{pageSession.Name}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
         setSessionAttribute(key="protocolTabs" value="httpTab");
 />
 

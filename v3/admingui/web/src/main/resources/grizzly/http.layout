@@ -43,6 +43,8 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}");
+        setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}")
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="http");

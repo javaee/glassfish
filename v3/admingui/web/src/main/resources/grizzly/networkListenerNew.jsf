@@ -68,7 +68,7 @@
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return checkRequired();  " >
+                onClick="if ( checkRequired()) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} ">
                 <!command
                     createNetworkListener(attrMap="#{pageSession.valueMap}")
                     redirect(page="#{pageSession.parentPage}?configName=#{configName}")

@@ -44,7 +44,9 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
@@ -52,6 +54,7 @@ import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.grizzly.Http;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
+import org.glassfish.admin.amx.intf.config.grizzly.Protocol;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -142,7 +145,97 @@ public class WebHandlers {
         handlerCtx.setOutputValue("sameAsProtocol", http.equals(listener.findProtocol().getName()));
      }
 
-    
+     @Handler(id="addNetworkListenerInfo",
+        input={
+            @HandlerInput(name="protocolListOfRows", type=List.class)},
+        output={
+            @HandlerOutput(name="result", type=List.class)}
+     )
+    public static void addNetworkListenerInfo(HandlerContext handlerCtx){
+         List<Map> listOfMap = (List<Map>)handlerCtx.getInputValue("protocolListOfRows");
+         for(Map oneRow : listOfMap){
+             String pName = (String) oneRow.get("Name");
+             Protocol protocol = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().getProtocols().getProtocol().get(pName);
+             List<NetworkListener> listenerList = findNetworkListeners(protocol);
+             List nameList = new ArrayList();
+             for(NetworkListener one: listenerList){
+                 nameList.add(one.getName());
+             }
+             oneRow.put("listenerList", nameList);
+         }
+         handlerCtx.setOutputValue("result", listOfMap);
+     }
+
+
+     /*
+      * delete selected Network Listener.  If the protocol of this network listener is not used by any other listener,
+      * and its name ends in "-protocol"  which is created by GUI, we will delete this protocol as well.
+      */
+    @Handler(id="deleteNetworkListeners",
+        input={
+            @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+    public static void deleteNetworkListeners(HandlerContext handlerCtx){
+
+        NetworkConfig nConfig = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().as(NetworkConfig.class);
+        Map<String, NetworkListener> nls = nConfig.getNetworkListeners().getNetworkListener();
+        List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+        try {
+            for (Map oneRow : selectedRows) {
+                String listenerName = (String) oneRow.get("Name");
+                NetworkListener listener = nls.get(listenerName);
+                Protocol protocol = listener.findProtocol();
+                List listenerList = findNetworkListeners(protocol);
+                nConfig.getNetworkListeners().removeChild("network-listener", listenerName);
+                if (listenerList.size() == 1){
+                    //this protocol is used only by this listener, test if this is also created by GUI.
+                    if (protocol.getName().equals(listenerName+GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "grizzly.protocolExtension"))){
+                        nConfig.getProtocols().removeChild("protocol", protocol.getName());
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    /*
+     * Delete selected protocol.  Any listener that is using this protocol will also be deleted.
+     */
+    @Handler(id="deleteProtocol",
+        input={
+            @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+    public static void deleteProtocol(HandlerContext handlerCtx){
+
+        NetworkConfig nConfig = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().as(NetworkConfig.class);
+        Map<String, Protocol> ps = nConfig.getProtocols().getProtocol();
+        List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
+        try {
+            for (Map oneRow : selectedRows) {
+                String protocolName = (String) oneRow.get("Name");
+                Protocol protocol = ps.get(protocolName);
+                List<NetworkListener> listenerList = findNetworkListeners(protocol);
+                for(NetworkListener one: listenerList){
+                    nConfig.getNetworkListeners().removeChild("network-listener", one.getName());
+                }
+                nConfig.getProtocols().removeChild("protocol", protocolName);
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    private static List<NetworkListener> findNetworkListeners(Protocol protocol){
+        List result = new ArrayList();
+        Map<String, NetworkListener> nMap = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().getNetworkListeners().getNetworkListener();
+        String nm = protocol.getName();
+        for(NetworkListener one : nMap.values()){
+            if (one.findProtocol().getName().equals(nm)){
+                result.add(one);
+            }
+        }
+        return result;
+    }
+
     private static void putA(Map nMap, Map attrMap, String key){
         String val = (String) attrMap.get(key);
         if (! GuiUtil.isEmpty(val)){
