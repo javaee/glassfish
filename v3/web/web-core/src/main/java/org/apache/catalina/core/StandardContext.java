@@ -176,10 +176,16 @@ public class StandardContext
         new ArrayList<EventListener>();
 
     /**
-     * The list of instantiated application lifecycle listeners
+     * The list of ServletContextListeners
      */
-    private transient List<EventListener> lifecycleListeners =
-        new ArrayList<EventListener>();
+    private transient List<ServletContextListener> contextListeners =
+        new ArrayList<ServletContextListener>();
+
+    /**
+     * The list of HttpSessionListeners
+     */
+    private transient List<HttpSessionListener> sessionListeners =
+        new ArrayList<HttpSessionListener>();
 
     /**
      * The set of application parameters defined for this application.
@@ -690,17 +696,6 @@ public class StandardContext
      */
     protected transient ServletContext restrictedContext = null;
 
-    /**
-     * List of restricted ServletContextListeners, that is,
-     * ServletContextListeners that are neither declared in web.xml or
-     * web-fragment.xml, nor annotated with WebListener (see IT 8565). 
-     *
-     * In GlassFish, this means that any programmtically registered
-     * ServletContextListeners will be considered restricted.
-     */
-    private List<ServletContextListener> restrictedServletContextListeners = 
-        new ArrayList<ServletContextListener>();
-
     // <jsp-config> related info aggregated from web.xml and web-fragment.xml
     private JspConfigDescriptor jspConfigDesc;
 
@@ -874,21 +869,8 @@ public class StandardContext
         return eventListeners;
     }
     
-    public void setApplicationEventListeners(List<EventListener> eventListeners) {
-        this.eventListeners = eventListeners;
-    }
-    
-    /**
-     * @return the list of initialized application lifecycle listeners
-     * of this application, in the order in which they have been specified
-     * in the deployment descriptor
-     */
-    public List<EventListener> getApplicationLifecycleListeners() {
-        return lifecycleListeners;
-    }
-    
-    public void setApplicationLifecycleListeners(List<EventListener> lifecycleListeners) {
-        this.lifecycleListeners = lifecycleListeners;
+    public List<HttpSessionListener> getSessionListeners() {
+        return sessionListeners;
     }
     
     /**
@@ -2733,6 +2715,7 @@ public class StandardContext
         }
 
         boolean added = false;
+
         if (t instanceof ServletContextAttributeListener ||
                 t instanceof ServletRequestAttributeListener ||
                 t instanceof ServletRequestListener ||
@@ -2740,31 +2723,29 @@ public class StandardContext
             eventListeners.add(t);
             added = true;
         }
+
         if (t instanceof HttpSessionListener) {
-            lifecycleListeners.add(t);
+            sessionListeners.add((HttpSessionListener) t);
             if (!added) {
                 added = true;
             }
         }
+
         if (t instanceof ServletContextListener) {
+            ServletContextListener proxy = (ServletContextListener) t;
+            if (isProgrammatic) {
+                proxy = new RestrictedServletContextListener(
+                    (ServletContextListener) t);
+            }
             // Always add the JSF listener as the first element,
             // see GlassFish Issue 2563 for details
-            boolean isFirst = "com.sun.faces.config.ConfigureListener".equals(
+            boolean isFirst =
+                "com.sun.faces.config.ConfigureListener".equals(
                     t.getClass().getName());
-            if (isProgrammatic) {
-                if (isFirst) {
-                    restrictedServletContextListeners.add(0,
-                        (ServletContextListener) t);
-                } else {
-                    restrictedServletContextListeners.add(
-                        (ServletContextListener) t);
-                }
+            if (isFirst) {
+                contextListeners.add(0, proxy);
             } else {
-                if (isFirst) {
-                    lifecycleListeners.add(0, t);
-                } else {
-                    lifecycleListeners.add(t);
-                }
+                contextListeners.add(proxy);
             }
             if (!added) {
                 added = true;
@@ -4613,42 +4594,32 @@ public class StandardContext
     }
 
     /**
-     * Notifies any ServletContextListeners at their contextInitialized
+     * Notifies all ServletContextListeners at their contextInitialized
      * method.
      */
-    public void listenerStart() {
-
+    private void contextListenerStart() {
         ServletContextEvent event =
             new ServletContextEvent(getServletContext());
-        for (EventListener eventListener : lifecycleListeners) {
-            if (!(eventListener instanceof ServletContextListener)) {
-                continue;
+        ServletContextEvent restrictedEvent =
+            new ServletContextEvent(getRestrictedServletContext());
+        for (ServletContextListener listener : contextListeners) {
+            boolean isRestricted = false;
+            if (listener instanceof RestrictedServletContextListener) {
+                listener = ((RestrictedServletContextListener) listener).
+                    getNestedListener();
+                isRestricted = true;
             }
-            ServletContextListener listener = (ServletContextListener)
-                eventListener;
             try {
                 fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_INITIALIZED,
                                    listener);
-                listener.contextInitialized(event);
+                if (isRestricted) {
+                    listener.contextInitialized(restrictedEvent);
+                } else {
+                    listener.contextInitialized(event);
+                }
             } finally {
                 fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZED,
                                    listener);
-            }
-        }
-
-        if (!restrictedServletContextListeners.isEmpty()) {
-            ServletContextEvent restrictedEvent =
-                new ServletContextEvent(getRestrictedServletContext());
-            for (ServletContextListener listener :
-                    restrictedServletContextListeners) {
-                try {
-                    fireContainerEvent(
-                        ContainerEvent.BEFORE_CONTEXT_INITIALIZED, listener);
-                    listener.contextInitialized(restrictedEvent);
-                } finally {
-                    fireContainerEvent(
-                        ContainerEvent.AFTER_CONTEXT_INITIALIZED, listener);
-                }
             }
         }
 
@@ -4704,77 +4675,68 @@ public class StandardContext
     }
 
     /**
-     * Send an application stop event to all interested lifecycle listeners.
-     * Return <code>true</code> if all events were sent successfully,
-     * or <code>false</code> otherwise.
+     * Notifies all ServletContextListeners at their contextDestroyed
+     * method.
+     *
+     * @return <code>true</code> if the event was processed successfully,
+     * <code>false</code> otherwise.
      */
-    private boolean lifecycleListenerStop() {
-
-        if (log.isLoggable(Level.FINE))
-            log.fine("Sending application stop events");
+    private boolean contextListenerStop() {
 
         boolean ok = true;
 
-        if (!restrictedServletContextListeners.isEmpty()) {
-            ServletContextEvent restrictedEvent =
-                new ServletContextEvent(getRestrictedServletContext());
-            int len = restrictedServletContextListeners.size();
-            for (int i = 0; i < len; i++) {
-                // Invoke in reverse order of programmatic registration
-                ServletContextListener listener =
-                    restrictedServletContextListeners.get((len - 1) - i);
-                try {
-                    fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_DESTROYED,
-                                       listener);
+        if (contextListeners.isEmpty()) {
+            return ok;
+        }
+
+        ServletContextEvent event =
+            new ServletContextEvent(getServletContext());
+        ServletContextEvent restrictedEvent =
+            new ServletContextEvent(getRestrictedServletContext());
+        int len = contextListeners.size();
+        for (int i = 0; i < len; i++) {
+            boolean isRestricted = false;
+            // Invoke in reverse order of declaration 
+            ServletContextListener listener =
+                contextListeners.get((len - 1) - i);
+            if (listener instanceof RestrictedServletContextListener) {
+                listener = ((RestrictedServletContextListener) listener).
+                    getNestedListener();
+                isRestricted = true;
+            }
+            try {
+                fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_DESTROYED,
+                                   listener);
+                if (isRestricted) {
                     listener.contextDestroyed(restrictedEvent);
-                    fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
-                                       listener);
-                } catch (Throwable t) {
-                    fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
-                                       listener);
-                    getServletContext().log(sm.getString(
+                } else {
+                    listener.contextDestroyed(event);
+                }
+                fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
+                                   listener);
+            } catch (Throwable t) {
+                fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
+                                   listener);
+                getServletContext().log(sm.getString(
                         "standardContext.listenerStop",
                         listener.getClass().getName()), t);
-                    ok = false;
-                }
+                ok = false;
             }
-            restrictedServletContextListeners.clear();
         }
 
-        if (!lifecycleListeners.isEmpty()) {
-            ServletContextEvent event =
-                new ServletContextEvent(getServletContext());
-            int len = lifecycleListeners.size();
-            for (int i = 0; i < len; i++) {
-                // Invoke in reverse order of declaration 
-                EventListener eventListener =
-                    lifecycleListeners.get((len - 1) - i);
-                if (!(eventListener instanceof ServletContextListener)) {
-                    fireContainerEvent(ContainerEvent.PRE_DESTROY,
-                                       eventListener);
-                    continue;
-                }
-                ServletContextListener listener = (ServletContextListener)
-                        eventListener;
-                try {
-                    fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_DESTROYED,
-                                       listener);
-                    listener.contextDestroyed(event);
-                    fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
-                                       listener);
-                } catch (Throwable t) {
-                    fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
-                                       listener);
-                    getServletContext().log
-                        (sm.getString("standardContext.listenerStop",
-                                      listener.getClass().getName()), t);
-                    ok = false;
-                }
-            }
-            lifecycleListeners.clear();
-        }
+        contextListeners.clear();
 
         return ok;
+    }
+
+    private void sessionListenerStop() {
+        for (HttpSessionListener listener : sessionListeners) {
+            // ServletContextListeners already had their PreDestroy called
+            if (!(listener instanceof ServletContextListener)) {
+                fireContainerEvent(ContainerEvent.PRE_DESTROY, listener);
+            }
+        }
+        sessionListeners.clear();
     }
 
     private boolean eventListenerStop() {
@@ -4784,7 +4746,14 @@ public class StandardContext
 
         Iterator<EventListener> iter = eventListeners.iterator(); 
         while (iter.hasNext()) {
-            fireContainerEvent(ContainerEvent.PRE_DESTROY, iter.next());
+            EventListener listener = iter.next();
+            // ServletContextListeners and HttpSessionListeners
+            // already had their PreDestroy called
+            if (listener instanceof ServletContextListener ||
+                    listener instanceof HttpSessionListener) {
+                continue;
+            }
+            fireContainerEvent(ContainerEvent.PRE_DESTROY, listener);
         }
         
         eventListeners.clear();
@@ -5254,7 +5223,7 @@ public class StandardContext
             callServletContainerInitializers();
 
             // Configure and call application event listeners
-            listenerStart();
+            contextListenerStart();
 
             // Start manager
             if ((manager != null) && (manager instanceof Lifecycle)) {
@@ -5451,33 +5420,20 @@ public class StandardContext
             }
 
             /*
-             * Stop all lifecycle listeners, including those of type
-             * ServletContextListener. For the latter, it is important
-             * that they are passed a ServletContext to their
-             * contextDestroyed() method that still has all its attributes
-             * set. In other words, it is important that we invoke these
-             * listeners before calling context.clearAt tributes()
+             * Stop all ServletContextListeners. It is important that they
+             * are passed a ServletContext to their contextDestroyed() method
+             * that still has all its attributes set. In other words, it is
+             * important that we invoke these listeners before calling
+             * context.clearAttributes()
              */
-            lifecycleListenerStop();
+            contextListenerStop();
 
-            // Finalize our character set mapper
-            setCharsetMapper(null);
-
-            // Normal container shutdown processing
-            if (log.isLoggable(Level.FINE))
-                log.fine("Processing standard container shutdown");
-            // Notify our interested LifecycleListeners
-            lifecycle.fireLifecycleEvent(STOP_EVENT, null);
-            started = false;
-
-            // Stop the Valves in our pipeline (including the basic), if any
-            if (pipeline instanceof Lifecycle) {
-                ((Lifecycle) pipeline).stop();
-            }
+            sessionListenerStop();
 
             // Clear all application-originated servlet context attributes
-            if (context != null)
+            if (context != null) {
                 context.clearAttributes();
+            }
 
             /*
              * Stop all event listeners, including those of type
@@ -5487,6 +5443,18 @@ public class StandardContext
              * attribute removal events
              */
             eventListenerStop();
+
+            // Notify our interested LifecycleListeners
+            lifecycle.fireLifecycleEvent(STOP_EVENT, null);
+            started = false;
+
+            // Stop the Valves in our pipeline (including the basic), if any
+            if (pipeline instanceof Lifecycle) {
+                ((Lifecycle) pipeline).stop();
+            }
+
+            // Finalize our character set mapper
+            setCharsetMapper(null);
 
             // Stop resources
             resourcesStop();
@@ -5597,8 +5565,8 @@ public class StandardContext
         distributable = false;
 
         eventListeners.clear();
-        lifecycleListeners.clear();
-        restrictedServletContextListeners.clear();
+        contextListeners.clear();
+        sessionListeners.clear();
 
         if (log.isLoggable(Level.FINE)) {
             log.fine("resetContext " + oname + " " + mserver);
@@ -6726,6 +6694,35 @@ public class StandardContext
             }
 
             return result;
+        }
+    }
+
+    private static class RestrictedServletContextListener
+            implements ServletContextListener {
+
+        /*
+         * The ServletContextListener to which to delegate
+         */
+        private ServletContextListener delegate;
+
+        /**
+         * Constructor
+         */
+        public RestrictedServletContextListener(
+                ServletContextListener delegate) {
+            this.delegate = delegate;
+        }
+        
+        public void contextInitialized(ServletContextEvent sce) {
+            delegate.contextInitialized(sce);
+        }
+
+        public void contextDestroyed(ServletContextEvent sce) {
+            delegate.contextDestroyed(sce);
+        }
+
+        public ServletContextListener getNestedListener() {
+            return delegate;
         }
     }
 

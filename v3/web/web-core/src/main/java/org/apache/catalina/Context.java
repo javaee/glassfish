@@ -105,14 +105,6 @@ public interface Context extends Container {
 
 
     /**
-     * @return the list of initialized application lifecycle listeners
-     * of this application, in the order in which they have been specified
-     * in the deployment descriptor
-     */
-    List<EventListener> getApplicationLifecycleListeners();
-
-
-    /**
      * Return the application available flag for this Context.
      */
     boolean getAvailable();

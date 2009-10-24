@@ -401,40 +401,26 @@ public class StandardSession
         // Notify interested session event listeners
         fireSessionEvent(Session.SESSION_CREATED_EVENT, null);
 
+        HttpSessionEvent event = new HttpSessionEvent(getSession());
+
         // Notify interested application event listeners
-        List<EventListener> listeners = context.getApplicationLifecycleListeners();
-        if (!listeners.isEmpty()) {
-            HttpSessionEvent event =
-                new HttpSessionEvent(getSession());
-            Iterator<EventListener> iter = listeners.iterator();
-            while (iter.hasNext()) {
-                EventListener eventListener = iter.next();
-                if (!(eventListener instanceof HttpSessionListener)) {
-                    continue;
-                }
-                HttpSessionListener listener = (HttpSessionListener)
-                        eventListener;
+        for (HttpSessionListener listener : context.getSessionListeners()) {
+            try {
+                fireContainerEvent(context, "beforeSessionCreated",
+                                   listener);
+                listener.sessionCreated(event);
+                fireContainerEvent(context, "afterSessionCreated",
+                                   listener);
+            } catch (Throwable t) {
                 try {
-                    fireContainerEvent(context,
-                                       "beforeSessionCreated",
+                    fireContainerEvent(context, "afterSessionCreated",
                                        listener);
-                    listener.sessionCreated(event);
-                    fireContainerEvent(context,
-                                       "afterSessionCreated",
-                                       listener);
-                } catch (Throwable t) {
-                    try {
-                        fireContainerEvent(context,
-                                           "afterSessionCreated",
-                                           listener);
-                    } catch (Exception e) {
-                        // Ignore
-                    }
-                    log(sm.getString("standardSession.sessionEvent"), t);
+                } catch (Exception e) {
+                    // Ignore
                 }
+                log(sm.getString("standardSession.sessionEvent"), t);
             }
         }
-
     }
 
 
@@ -743,19 +729,13 @@ public class StandardSession
         
             // Notify interested application event listeners
             // FIXME - Assumes we call listeners in reverse order
-            List<EventListener> listeners = context.getApplicationLifecycleListeners();
+            List<HttpSessionListener> listeners = context.getSessionListeners();
             if (notify && !listeners.isEmpty()) {
-                HttpSessionEvent event =
-                    new HttpSessionEvent(getSession());
+                HttpSessionEvent event = new HttpSessionEvent(getSession());
                 int len = listeners.size();
                 for (int i = 0; i < len; i++) {
                     // Invoke in reverse order of declaration
-                    EventListener eventListener = listeners.get((len - 1) - i);
-                    if (!(eventListener instanceof HttpSessionListener)) {
-                        continue;
-                    }
-                    HttpSessionListener listener = (HttpSessionListener)
-                            eventListener;
+                    HttpSessionListener listener = listeners.get((len - 1) - i);
                     try {
                         fireContainerEvent(context,
                                            "beforeSessionDestroyed",

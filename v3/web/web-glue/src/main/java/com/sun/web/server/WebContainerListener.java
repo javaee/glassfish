@@ -65,8 +65,11 @@ public final class WebContainerListener
     implements ContainerListener {
 
     // START OF IASRI 4660742
-    static Logger _logger=LogDomains.getLogger(WebContainerListener.class, LogDomains.WEB_LOGGER);
+    private static final Logger _logger=LogDomains.getLogger(
+        WebContainerListener.class, LogDomains.WEB_LOGGER);
     // END OF IASRI 4660742
+
+    private static final ResourceBundle rb = _logger.getResourceBundle();
 
     static private HashSet beforeEvents = new HashSet();
     static private HashSet afterEvents = new HashSet();
@@ -127,45 +130,39 @@ public final class WebContainerListener
         String type = event.getType();
 
         try {
+            WebModule wm = (WebModule) event.getContainer();
             if (beforeEvents.contains(type)) {
-                preInvoke((Context) event.getContainer());
+                preInvoke(wm);
             } else if (afterEvents.contains(type)) {
-                postInvoke((Context) event.getContainer());
+                if (type.equals(ContainerEvent.AFTER_FILTER_DESTROYED) ||
+                        type.equals(ContainerEvent.AFTER_CONTEXT_DESTROYED)) {
+                    preDestroy(event);
+                }
+                postInvoke(wm);
             } else if (ContainerEvent.PRE_DESTROY.equals(type)) {
+                preInvoke(wm);
                 preDestroy(event);
+                postInvoke(wm);
             }
-        } catch (Exception ex) {
-            String msg = null;
-            ResourceBundle rb = _logger.getResourceBundle();
-            if (rb != null) {
-                msg = rb.getString("web_server.excep_handle_event");
-                msg = MessageFormat.format(msg, new Object[] { type });
-            } else {
-                msg = "Exception during handling of " + type + " event";
-            }
-            throw new RuntimeException(msg, ex);
-        } finally {
-            if (type.equals(ContainerEvent.AFTER_FILTER_DESTROYED) ||
-                    type.equals(ContainerEvent.AFTER_CONTEXT_DESTROYED)) {
-                preDestroy(event);
-            }
-        } 
-    }
-
-    private void preInvoke(Context ctx) {
-        if (ctx instanceof WebModule) {
-            WebModule wm = (WebModule)ctx;
-            ComponentInvocation inv = new WebComponentInvocation(wm);
-            invocationMgr.preInvoke(inv);
+        } catch (Throwable t) {
+            String msg = rb.getString(
+                "containerListener.exceptionDuringHandleEvent");
+            msg = MessageFormat.format(msg,
+                new Object[] { type, event.getContainer() });
+            _logger.log(Level.SEVERE, msg, t);
         }
     }
 
-    private void postInvoke(Context ctx) {
-        if (ctx instanceof WebModule) {
-            WebModule wm = (WebModule)ctx;
-            ComponentInvocation inv = new WebComponentInvocation(wm);
-            invocationMgr.postInvoke(inv);
-        }
+    private void preInvoke(WebModule ctx) {
+        WebModule wm = (WebModule)ctx;
+        ComponentInvocation inv = new WebComponentInvocation(wm);
+        invocationMgr.preInvoke(inv);
+    }
+
+    private void postInvoke(WebModule ctx) {
+        WebModule wm = (WebModule)ctx;
+        ComponentInvocation inv = new WebComponentInvocation(wm);
+        invocationMgr.postInvoke(inv);
     }
 
     /**
@@ -175,17 +172,13 @@ public final class WebContainerListener
      */
     private void preDestroy(ContainerEvent event) {
         try {
-            if (event.getContainer() instanceof WebModule) {
-                WebModule wm = (WebModule)event.getContainer();
-                JndiNameEnvironment desc = wm.getWebBundleDescriptor();
-                if (desc != null) {
-                    injectionMgr.invokeInstancePreDestroy(event.getData(), desc);
-                }
-            }
-        } catch (InjectionException ie) {
-            _logger.log(Level.SEVERE,
-                        "web_server.excep_handle_after_event",
-                        ie);
+            injectionMgr.destroyManagedObject(event.getData());
+        } catch (Throwable t) {
+            String msg = rb.getString(
+                "containerListener.exceptionDuringDestroyManagedObject");
+            msg = MessageFormat.format(msg,
+                new Object[] { event.getData(), event.getContainer() });
+            _logger.log(Level.SEVERE, msg, t);
         }
     }
 }

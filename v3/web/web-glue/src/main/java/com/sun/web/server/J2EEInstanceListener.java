@@ -251,7 +251,7 @@ public final class J2EEInstanceListener implements InstanceListener {
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);
         try {
             im.preInvoke(inv);
-            if (eventType==InstanceEvent.EventType.BEFORE_SERVICE_EVENT) {
+            if (eventType == InstanceEvent.EventType.BEFORE_SERVICE_EVENT) {
                 // Emit monitoring probe event
                 wm.beforeServiceEvent(event.getWrapper().getName());
                 // enlist resources with TM for service method
@@ -262,9 +262,10 @@ public final class J2EEInstanceListener implements InstanceListener {
                 tm.enlistComponentResources();
             }
         } catch (Exception ex) {            
-            String message = _rb.getString(
-                "web_server.excep_handle_before_event");
-            throw new RuntimeException(message, ex);
+            String msg = _rb.getString(
+                "containerListener.exceptionDuringHandleEvent");
+            msg = MessageFormat.format(msg, new Object[] { eventType, wm });
+            throw new RuntimeException(msg, ex);
         }
     }
 
@@ -327,17 +328,20 @@ public final class J2EEInstanceListener implements InstanceListener {
                 injectionMgr.destroyManagedObject(instance);
             }
         } catch (InjectionException ie) {
-            _logger.log(Level.SEVERE, "web_server.excep_handle_after_event",
-                ie);
+            String msg = _rb.getString(
+                "containerListener.exceptionDuringHandleEvent");
+            msg = MessageFormat.format(msg, new Object[] { eventType, wm });
+            _logger.log(Level.SEVERE, msg, ie);
         }
 
         ComponentInvocation inv = new WebComponentInvocation(wm, instance);
         try {
             im.postInvoke(inv);
         } catch (Exception ex) {
-            throw new RuntimeException(
-                _rb.getString("web_server.excep_handle_after_event"),
-                ex);
+            String msg = _rb.getString(
+                "containerListener.exceptionDuringHandleEvent");
+            msg = MessageFormat.format(msg, new Object[] { eventType, wm });
+            throw new RuntimeException(msg, ex);
         } finally {
             if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT) {
                 tm.componentDestroyed(instance, inv);                
@@ -366,9 +370,11 @@ public final class J2EEInstanceListener implements InstanceListener {
                             securityContext.setCurrentSecurityContext(null);
                         }
                     } catch (Exception ex) {
-                        _logger.log(Level.SEVERE,
-                                    "web_server.excep_handle_after_event",
-                                    ex);
+                        String msg = _rb.getString(
+                            "containerListener.exceptionDuringHandleEvent");
+                        msg = MessageFormat.format(msg,
+                            new Object[] { eventType, wm });
+                        _logger.log(Level.SEVERE, msg,  ex);
                     }
                     try {
                         if (tm.getTransaction() != null) {
