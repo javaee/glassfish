@@ -46,14 +46,14 @@ import org.jvnet.hk2.annotations.Service;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.component.PostConstruct;
-import org.glassfish.api.Startup;
+import org.glassfish.internal.api.*;
 
 /**
  *
  * @author PRASHANTH ABBAGANI
  */
 @Service
-public class JVMStatsProviderBootstrap implements Startup, PostConstruct {
+public class JVMStatsProviderBootstrap implements PostStartup, PostConstruct {
 
     private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
     private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
@@ -84,9 +84,5 @@ public class JVMStatsProviderBootstrap implements Startup, PostConstruct {
             StatsProviderManager.register("jvm", PluginPoint.SERVER, 
                     "jvm/thread-system/thread-"+t.getThreadId(), threadInfoStatsProvider);
         }
-    }
-
-    public Lifecycle getLifecycle() {
-        return Startup.Lifecycle.SERVER;
-    }   
+    } 
 }
