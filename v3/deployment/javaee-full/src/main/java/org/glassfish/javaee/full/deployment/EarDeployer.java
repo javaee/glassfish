@@ -163,6 +163,14 @@ public class EarDeployer implements Deployer, PostConstruct {
             doOnAllBundles(application, new BundleBlock<ModuleInfo>() {
                 public ModuleInfo doBundle(ModuleDescriptor bundle) throws Exception {
                     ModuleInfo info = prepareBundle(bundle, application, subContext(application, context, bundle.getArchiveUri()));
+                    info.addMetaData(application);
+                    BundleDescriptor bundleDesc = application.getModuleByUri(
+                        bundle.getArchiveUri());
+                    info.addMetaData(bundleDesc);
+                    for (RootDeploymentDescriptor ext : 
+                        bundleDesc.getExtensionsDescriptors()) {
+                        info.addMetaData(ext);
+                    }
                     appInfo.addModule(info);
                     return info;
                 }

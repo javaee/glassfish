@@ -45,6 +45,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URLClassLoader;
@@ -80,6 +82,8 @@ public class ModuleInfo {
     final static private Logger logger = LogDomains.getLogger(ApplicationInfo.class, LogDomains.CORE_LOGGER);
     
     protected Set<EngineRef> engines = new LinkedHashSet<EngineRef>();
+    final protected Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
+
     protected final String name;
     protected final Events events;
     private Properties moduleProps;
@@ -104,6 +108,14 @@ public class ModuleInfo {
 
     protected Set<EngineRef> _getEngineRefs() {
         return engines;
+    }
+
+    public void addMetaData(Object o) {
+        metaData.put(o.getClass(), o);
+    }
+
+    public <T> T getMetaData(Class<T> c) {
+        return c.cast(metaData.get(c));
     }
 
     public String getName() {

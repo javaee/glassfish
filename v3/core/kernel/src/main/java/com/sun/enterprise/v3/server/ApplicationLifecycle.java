@@ -287,6 +287,7 @@ public class ApplicationLifecycle implements Deployment {
                         appInfo.addModule(moduleInfo);
 
                         for (Object m : context.getModuleMetadata()) {
+                            moduleInfo.addMetaData(m);
                             appInfo.addMetaData(m);
                         }
                     } else {

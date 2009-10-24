@@ -53,7 +53,6 @@ public class ApplicationInfo extends ModuleInfo {
 
     final private Collection<ModuleInfo> modules = new ArrayList<ModuleInfo>();
     final private ReadableArchive source;
-    final private Map<Class<? extends Object>, Object> metaData = new HashMap<Class<? extends Object>, Object>();
     final private Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
 
     private String libraries;
@@ -77,14 +76,6 @@ public class ApplicationInfo extends ModuleInfo {
         engines.add(ref);
     }
     
-    public void addMetaData(Object o) {
-        metaData.put(o.getClass(), o);
-    }
-
-    public <T> T getMetaData(Class<T> c) {
-        return c.cast(metaData.get(c));
-    }
-
     public void addTransientAppMetaData(String metaDataKey, 
         Object metaDataValue) {
         if (metaDataValue != null) {
