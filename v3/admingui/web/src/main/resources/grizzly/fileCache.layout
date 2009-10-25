@@ -46,6 +46,11 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        getRequestValue(key="listenerName" value="#{pageSession.listenerName}"  default="");
+        setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setPageSessionAttribute(key="encodedProtocolName" value="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.listenerName}" encoding="UTF-8" result="#{pageSession.encodedListenerName}");
         getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}");
         setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}")
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[#{pageSession.Name}]/http,type=file-cache");
@@ -58,14 +63,12 @@
         }
         if (! #{requestScope.exist}){
             setPageSessionAttribute(key="edit" value="#{false}" )
+            setPageSessionAttribute(key="showSuccessfulMsg" value="#{true}" )
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.fileMap}")
         }
         setPageSessionAttribute(key="valueMap" value="#{pageSession.fileMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
-        getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
-        setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
         //set the following for including buttons.inc
-        setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );

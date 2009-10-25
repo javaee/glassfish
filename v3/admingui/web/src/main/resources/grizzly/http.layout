@@ -43,7 +43,13 @@
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        getRequestValue(key="listenerName" value="#{pageSession.listenerName}"   default="");
+        setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
         getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        setPageSessionAttribute(key="encodedProtocolName" value="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.listenerName}" encoding="UTF-8" result="#{pageSession.encodedListenerName}");
+
         setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}")
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols/protocol[#{pageSession.Name}],type=http");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
@@ -61,10 +67,6 @@
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
         setPageSessionAttribute(key="convertToFalseList" 
             value={"UploadTimeutEnabled", "CometSupportEnabled", "DnsLookupEnabled", "RcmSupportEnabled", "TraceEnabled", "AuthPassThroughEnabled", "ChunkingEnabled", "XpoweredBy" });
-        
-        getRequestValue(key="listenerName" value="#{pageSession.listenerName}");
-        setPageSessionAttribute(key="protocolName" value="#{pageSession.Name}");
-
 
         //set the following for including buttons.inc
         

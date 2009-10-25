@@ -68,7 +68,6 @@
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
         setPageSessionAttribute(key="childType" value="network-listener");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-        //println(value="AAANETWORK LISTENERS: #{requestScope.listOfRows}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteNL}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/networkListenerNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/networkListeners.jsf?configName=#{configName}");

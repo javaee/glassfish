@@ -47,10 +47,11 @@
         setSessionAttribute(key="listenerTabs" value="generalTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         getRequestValue(key="name" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         getRequestValue(key="cancelTo" value="#{pageSession.cancelTo}" default="networkListeners.jsf");
-
         setPageSessionAttribute(key="listenerName" value="#{pageSession.Name}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{pageSession.Name}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
+        urlencode(value="#{pageSession.listenerName}" encoding="UTF-8" result="#{pageSession.encodedListenerName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/#{pageSession.cancelTo}");
         setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/network-listeners,type=network-listener,name=#{pageSession.Name}");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=network-listeners");
@@ -59,7 +60,7 @@
 
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled", "JkEnabled"});
         setPageSessionAttribute(key="protocolName" value="#{pageSession.valueMap['Protocol']}")
-
+        urlencode(value="#{pageSession.protocolName}" encoding="UTF-8" result="#{pageSession.encodedProtocolName}");
         setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
         setPageSessionAttribute(key="childType2" value="protocol");
         setPageSessionAttribute(key="objectNameStr2" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.valueMap['Protocol']}")

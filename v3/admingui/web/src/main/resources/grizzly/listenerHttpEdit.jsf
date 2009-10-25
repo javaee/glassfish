@@ -39,7 +39,7 @@
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
 	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
-    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?name=#{pageSession.Name}&listenerName=#{pageSession.listenerName}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?name=#{pageSession.encodedName}&listenerName=#{pageSession.encodedListenerName}&cancelTo=#{pageSession.cancelTo}&configName=#{pageSession.configName}");
     setSessionAttribute(key="listenerTabs" value="httpTab");
 />
 <!composition template="/web/grizzly/http.layout"   >
