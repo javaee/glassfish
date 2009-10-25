@@ -123,7 +123,7 @@
                     }
                     if (#{pageSession.showSuccessfulMsg}){
                         prepareSuccessfulMsg();
-                        redirect(page="#{pageSession.parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.encodedName}&configName=#{pageSession.configName}");
+                        redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     }
                     redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
