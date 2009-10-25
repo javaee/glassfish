@@ -4,6 +4,9 @@
                         com.sun.ejb.spi.io; \
                         com.sun.ejb.spi.container; \
                         com.sun.appserv.ejb; version=${project.osgi.version}
+
+# See issue #10545 to know why we have explicitly added org.glassfish.apf.context
+# in Import-Package
 Import-Package: \
                         javax.xml.soap;resolution:=optional, \
                         javax.xml.ws;resolution:=optional, \
@@ -15,6 +18,7 @@ Import-Package: \
                         com.sun.corba.ee.impl.orbutil.copyobject;resolution:=optional, \
                         com.sun.corba.ee.spi.presentation.rmi;resolution:=optional, \
                         org.omg.CORBA.portable;resolution:=optional, \
+                        org.glassfish.apf.context, \
                         *
 
 Bundle-SymbolicName: \
