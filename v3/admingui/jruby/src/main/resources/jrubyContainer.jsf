@@ -68,8 +68,6 @@
             setPageSessionAttribute(key="showSuccessfulMsg" value="#{true}" )
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.valueMap2}")
-            setPageSessionAttribute(key="showSuccessfulMsg" value="#{true}" )
-            setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jruby/jrubyContainer.jsf");
         }
 
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
