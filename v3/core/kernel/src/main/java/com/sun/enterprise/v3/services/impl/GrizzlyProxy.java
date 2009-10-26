@@ -49,6 +49,7 @@ import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.StaticResourcesAdapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.grizzly.util.Grizzly;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -128,7 +129,9 @@ public class GrizzlyProxy implements NetworkProxy {
             registerMonitoringStatsProviders();
         }
 
-        grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(), networkListener.getName());
+        grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(){
+            public void logVersion(){}   
+        }, networkListener.getName());
         grizzlyListener.configure(networkListener, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
@@ -291,9 +294,11 @@ public class GrizzlyProxy implements NetworkProxy {
 
                         @Override
                         public void onReady() {
-                            logger.info("Grizzly Framework started in: "
-                                    + (System.currentTimeMillis() - t1)
-                                    + "ms listening on port " + grizzlyListener.getPort());
+                            if (logger.isLoggable(Level.INFO)){
+                                logger.info("Grizzly Framework " + Grizzly.getRawVersion() + " started in: "
+                                        + (System.currentTimeMillis() - t1)
+                                        + "ms listening on port " + grizzlyListener.getPort());
+                            }
 
                             future.setResult(new Result<Thread>(t));
                         }
