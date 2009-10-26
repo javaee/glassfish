@@ -377,7 +377,8 @@ public class RelativePathResolver {
             return (at);
         }
         final String          an = RelativePathResolver.getAlias(at);
-        final String          sp = IdentityManager.getMasterPassword();
+        String          sp = IdentityManager.getMasterPassword();
+        if (sp == null) { sp = "changeit";}
         final PasswordAdapter pa = new PasswordAdapter(sp.toCharArray()); // use default password store
         final boolean     exists = pa.aliasExists(an);
         if (!exists) {
@@ -386,6 +387,8 @@ public class RelativePathResolver {
             throw new IllegalArgumentException(msg);
         }
         final String real = pa.getPasswordForAlias(an);
+        System.out.println(
+            "#################### Password for the alias: " + an + " is "+real);
         return ( real );
     }    
 }
