@@ -40,20 +40,38 @@
            <info>
              <desc xml:lang="en-US">Proxy Host value</desc>
            </info>
+      <actions>
+        </actions>
         </prop>  
+
            <prop oor:name="PROXY_PORT" oor:type="xs:string">
            <value></value>
            <info>
              <desc xml:lang="en-US">Proxy Host value</desc>
            </info>
+      <actions>
+        <onSet><![CDATA[
+                import org.openinstaller.provider.conf.ConfigHelper;
+                import org.openinstaller.bus.*;
+                import org.openinstaller.core.*;
+                BusRequest modeReq = new BusRequest("ConfigRequest",
+                new EngineConfigCommand(EngineConfigCommand.COMMAND.GET_CONFIG, EngineConfigItem.DISPLAY_MODE));
+                BusResponse modeResp = bus.publishRequest(modeReq, "svc://general/EngineConfig");
+                String mode = (String)modeResp.getResult();
+                if ("SILENT".equals(mode))
+                   System.out.println("");
+                else
+                   validateProxyPort(thisProperty);
+        ]]></onSet>
+        </actions>
         </prop>           
+
+       <prop oor:name="STATUS" oor:type="xs:string" oor:transient="true">
+          <value></value>
+          <info>
+            <desc xml:lang="en-US">Status</desc>
+          </info>
+        </prop>
      </group>
  </component>
- <if:desktop>
-    <if:shortcut name="Start Update Tool" type="APPLICATION" runInTerminal="false">
-	    <if:target path="updatetool/lib/updatetool-start" relative="INSTALL_HOME"/>
-         <if:location path="GlassFish v3 Web Profile Preview" relative="USER_START_MENU"/>
-	 <if:icon path="updatetool/vendor-packages/updatetool/images/application-update-tool.ico" relative="INSTALL_HOME"/>
-    </if:shortcut>    
-  </if:desktop>
 </oor:component-schema>
