@@ -1930,7 +1930,7 @@ admingui.ajax = {
 
     updateCurrentPageLink : function (url) {
         admingui.ajax.lastPageLoaded = url;
-        document.getElementById("currentPageLink").href = url;
+        //document.getElementById("currentPageLink").href = url;
     },
 
     uploadingFiles : function(form) {
