@@ -274,7 +274,6 @@
                     <plugin>
                         <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                         <artifactId>maven-antrun-extended-plugin</artifactId>
-                        <version> 1.36 </version>
                         <dependencies>
                             <dependency>
                                 <groupId>sun.jdk</groupId>
@@ -450,7 +449,7 @@
                 <plugin>
                     <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
                     <artifactId>maven-antrun-extended-plugin</artifactId>
-                    <version> 1.36 </version>
+                    <version> 1.40 </version>
                 </plugin>
 
                  <plugin>
