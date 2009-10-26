@@ -143,7 +143,9 @@ public class DeploymentHandler {
                 continue;
             }
             if (key.startsWith(prefix)) {
-                props.setProperty(key.substring(prefix.length()), value);
+                if (! value.equals("")){
+                    props.setProperty(key.substring(prefix.length()), value);
+                }
 
             } else {
                 deploymentProps.setProperty(key, value);

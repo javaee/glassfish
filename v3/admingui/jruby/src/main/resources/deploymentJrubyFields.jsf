@@ -83,9 +83,9 @@
 
 <sun:property id="applicationType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.appType}" helpText="$resource{i18n_jruby.appTypeHelp}">
     <sun:dropDown id="applicationType" selected="#{pageSession.jruby['PROPERTY-jruby.applicationType']}"
-            labels={"auto-detection" , "rails", "merb", "sinatra"} values={"", "rails", "merb", "sinatra"} >
+            labels={"$resource{i18n_jruby.appType.auto-detect}" , "rails", "merb", "sinatra"} values={"", "rails", "merb", "sinatra"} >
         <!beforeCreate
-            mapPut(map="#{pageSession.jruby}", key="PROPERTY-runtime.applicationType", value="rails" );
+            mapPut(map="#{pageSession.jruby}", key="PROPERTY-jruby.applicationType", value="rails" );
         />
     </sun:dropDown>
 </sun:property>
