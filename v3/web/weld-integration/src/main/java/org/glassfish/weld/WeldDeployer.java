@@ -217,26 +217,31 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             ejbServices = new EjbServicesImpl(habitat);
         }
 
-        DeploymentImpl deploymentImpl = new DeploymentImpl(archive, ejbs);
+        DeploymentImpl deploymentImpl = (DeploymentImpl)context.getTransientAppMetaData(
+            WELD_DEPLOYMENT, DeploymentImpl.class);
+        if (null == deploymentImpl) {
+            deploymentImpl = new DeploymentImpl(archive, ejbs);
+            // Add services
 
-        if( ejbBundle != null ) {
-            // EJB Services is registered as a top-level service
-            deploymentImpl.getServices().add(EjbServices.class, ejbServices);
+            ServletServices servletServices = new ServletServicesImpl(context);
+            deploymentImpl.getServices().add(ServletServices.class, servletServices);
+
+            TransactionServices transactionServices = new TransactionServicesImpl(habitat);
+            deploymentImpl.getServices().add(TransactionServices.class, transactionServices);
+
+            ValidationServices validationServices = new ValidationServicesImpl();
+            deploymentImpl.getServices().add(ValidationServices.class, validationServices);
+
+            SecurityServices securityServices = new SecurityServicesImpl();
+            deploymentImpl.getServices().add(SecurityServices.class, securityServices);
+
+            if( ejbBundle != null ) {
+                // EJB Services is registered as a top-level service
+                deploymentImpl.getServices().add(EjbServices.class, ejbServices);
+            }
+        } else {
+            deploymentImpl.scanArchive(archive, ejbs);
         }
-
-        // Add services
-
-        ServletServices servletServices = new ServletServicesImpl(context);
-        deploymentImpl.getServices().add(ServletServices.class, servletServices);
-
-        TransactionServices transactionServices = new TransactionServicesImpl(habitat);
-        deploymentImpl.getServices().add(TransactionServices.class, transactionServices);
-
-        ValidationServices validationServices = new ValidationServicesImpl();
-        deploymentImpl.getServices().add(ValidationServices.class, validationServices);
-
-        SecurityServices securityServices = new SecurityServicesImpl();
-        deploymentImpl.getServices().add(SecurityServices.class, securityServices);
 
         // Register EE injection manager at the bean deployment archive level.
         // We use the generic InjectionService service to handle all EE-style

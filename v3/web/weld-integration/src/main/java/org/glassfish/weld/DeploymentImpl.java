@@ -74,11 +74,11 @@ public class DeploymentImpl implements Deployment {
     private static final String JAR_SUFFIX = ".jar";
     private static final char SEPARATOR_CHAR = '/';
 
-    private final List<Class<?>> wbClasses;
-    private final List<URL> wbUrls;
-    private final ReadableArchive archive;
+    private List<Class<?>> wbClasses;
+    private List<URL> wbUrls;
+    private ReadableArchive archive;
     private final List<BeanDeploymentArchive> beanDeploymentArchives;
-    private final Collection<EjbDescriptor> ejbs;
+    private Collection<EjbDescriptor> ejbs;
 
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
@@ -126,6 +126,14 @@ public class DeploymentImpl implements Deployment {
             simpleServiceRegistry = new SimpleServiceRegistry();
         }
         return simpleServiceRegistry;
+    }
+
+    public void scanArchive(ReadableArchive archive, Collection<EjbDescriptor> ejbs) {
+        this.wbClasses = new ArrayList<Class<?>>();
+        this.wbUrls = new ArrayList<URL>();
+        this.ejbs = ejbs;
+        this.archive = archive;
+        scan();
     }
 
     private void scan() {
