@@ -43,6 +43,11 @@
     <event>
     <!beforeCreate
         getRequestValue(key="appName" value=>$page{appName});
+        //test the app still exists.
+        proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
+        if (! #{requestScope.exist}){
+            redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+        }
         getRequestValue(key="nextPage" value=>$page{nextPage});
         createMap(result="#{pageSession.deployMap}")
         mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");

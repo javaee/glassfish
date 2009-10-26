@@ -274,7 +274,6 @@ public class DeploymentHandler {
 //            }
 
             progressObject = df.undeploy(df.createTargets(targetNames), appName, dProps);
-
             progressObject.waitFor();
             DFDeploymentStatus status = progressObject.getCompletedStatus();
             //we DO want it to continue and call the rest handlers, ie navigate(). This will
@@ -332,30 +331,17 @@ public class DeploymentHandler {
 
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
-        String[] targetNames = new String[]{"server"};
         List selectedRows = (List) obj;
-        try {
-            for (int i = 0; i < selectedRows.size(); i++) {
-                Map oneRow = (Map) selectedRows.get(i);
-                String appName = (String) oneRow.get("name");
-
-                // In V3, use DF to do disable or enable
-                if (enabled) {
-                    df.enable(df.createTargets(targetNames), appName);
-                } else {
-                    df.disable(df.createTargets(targetNames), appName);
-                }
-
-                if (V3AMX.getInstance().isEE()) {
-                    String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessful" : "msg.disableSuccessful");
-                    GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
-                } else {
-                    String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
-                    GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
-                }
+        for (int i = 0; i < selectedRows.size(); i++) {
+            Map oneRow = (Map) selectedRows.get(i);
+            String appName = (String) oneRow.get("name");
+            if (DeployUtil.enableApp(appName, handlerCtx, enabled)){
+                String msg = GuiUtil.getMessage((enabled) ? "msg.enableSuccessfulPE" : "msg.disableSuccessfulPE");
+                GuiUtil.prepareAlert(handlerCtx, "success", msg, null);
+            }else{
+                //stop changing other app status.
+                break;
             }
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
         }
     }
 

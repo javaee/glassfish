@@ -43,8 +43,12 @@
         getRequestValue(key="appName" value="#{pageSession.appName}");
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
+        //test is the app is still available.
+        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+        if (! #{requestScope.exist}){
+            redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+        }
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        
         setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
         getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
         getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap2['Enabled']}")

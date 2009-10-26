@@ -451,17 +451,9 @@ public class WebAppHandlers {
         })
     public static void restartApplication(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        try{
-            DeployUtil.restartApplication(appName);
-            if (V3AMX.getInstance().isEE()) {
-                GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.success"), null);
-            } else {
-                GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
-            }
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
+        if (DeployUtil.restartApplication(appName, handlerCtx)){
+            GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
         }
-
     }
 
    //This is called when user change the default web module of a VS.
@@ -492,11 +484,7 @@ public class WebAppHandlers {
         //Add to the vs list of this application-ref, then restart the app.
         vsStr=vsStr+","+vsName;
         appRef.setVirtualServers(vsStr);
-        try{
-            DeployUtil.restartApplication(appName);
-        } catch (Exception ex) {
-            GuiUtil.handleException(handlerCtx, ex);
-        }
+        DeployUtil.restartApplication(appName, handlerCtx);
    }
 
    //getVsForDeployment(result="#{pageSession.vsList}");

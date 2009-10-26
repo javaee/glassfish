@@ -138,17 +138,24 @@ public class DeployUtil {
         }
     }
 
-    static public void restartApplication(String appName){
-        String[] targetNames = new String[]{"server"};
-        try {
-            DeploymentFacility df = GuiUtil.getDeploymentFacility();
-            Target[] targets = df.createTargets(targetNames);
-            df.disable(targets, appName);
-            df.enable(targets, appName);
-        } catch (Exception ex) {
-            throw new RuntimeException("Cannot Restart Application : "+ appName, ex);
-            
+    static public boolean restartApplication(String appName, HandlerContext handlerCtx){
+        //disable application and then enable it.
+        if (enableApp(appName, handlerCtx, false)){
+            return enableApp(appName, handlerCtx, true);
         }
+        return false;
+    }
+
+
+    static public boolean enableApp(String appName, HandlerContext handlerCtx, boolean enable ){
+        String[] targetNames = new String[]{"server"};
+        DeploymentFacility df = GuiUtil.getDeploymentFacility();
+        Target[] targets = df.createTargets(targetNames);
+        DFProgressObject  progressObject  = (enable) ? df.enable(targets,appName) : df.disable(targets, appName);
+        progressObject.waitFor();
+        DFDeploymentStatus status = progressObject.getCompletedStatus();
+        boolean ret = checkDeployStatus(status, handlerCtx, false);
+        return ret;
     }
  
 }
