@@ -43,7 +43,7 @@
       <include name="external/saaj-api/**" />
       <include name="external/uel/**"/>
       <include name="external/validation-api/src/main/java/**"/>
-      <include name="external/webbeans-api/**"/>
+      <include name="external/weld-api/**"/>
     </dirset>
   </path>
 
@@ -89,7 +89,7 @@
       <antcall target="saaj-api.download" />
       <antcall target="uel.download" />
       <antcall target="bean-validator.checkout" />
-      <antcall target="webbeans-api.download" />
+      <antcall target="weld-api.download" />
   </target>
 
   <target name="init">
@@ -395,19 +395,19 @@ fileset refid of artifact:dependencies does not work in unjar
   </target>
 
 
-  <target name="webbeans-api.download" description="Download WebBeans API" depends="initialize.maven" >
-      <artifact:dependencies sourcesFilesetId="sources.dependency.webbeans-api" >
-          <dependency groupId="org.jboss.webbeans" artifactId="jsr299-api" version="1.0.0.PREVIEW3" classifier="sources" />
+  <target name="weld-api.download" description="Download Weld API" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.weld-api" >
+          <dependency groupId="org.jboss.weld" artifactId="weld-api" version="1.0-CR1" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
-      <mkdir dir="${external.dir}/webbeans-api" />
-      <copy todir="${external.dir}/webbeans-api" verbose="true">
-          <fileset refid="sources.dependency.webbeans-api" />
+      <mkdir dir="${external.dir}/weld-api" />
+      <copy todir="${external.dir}/weld-api" verbose="true">
+          <fileset refid="sources.dependency.weld-api" />
           <mapper type="flatten" />
       </copy>
-      <unjar dest="${external.dir}/webbeans-api"  >
-          <fileset dir="${external.dir}/webbeans-api">
+      <unjar dest="${external.dir}/weld-api"  >
+          <fileset dir="${external.dir}/weld-api">
               <include name="**/*.jar"/>
           </fileset>
       </unjar>
