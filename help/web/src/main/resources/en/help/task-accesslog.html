@@ -20,7 +20,7 @@ disabled by default.</p></li>
 <li><b>From the Rotation Policy drop-down list, select a rotation policy.</b><p>The only available rotation policy is <tt>time</tt>.</p></li>
 <li><b>In the Rotation Interval field, type the number of minutes between rotations of
 the access log. </b><p>This field is valid only if the Rotation Policy is <tt>time</tt>. The default
-value is 15 minutes.</p></li>
+value is 1,440 minutes (24 hours).</p></li>
 <li><b>In the Rotation Suffix field, type the string value to be added to
 the end of the log file name after rotation.</b><p>The default value is <tt>yyyy-MM-dd</tt>.</p><p>Ensure that the rotation suffix contains enough values to create a unique suffix
 for every log rotation. For example, if the access log is rotated
@@ -29,6 +29,9 @@ rotation suffix.</p><p>A unique suffix is required to ensure that the access log
 is rotated every time that the rotation interval has elapsed. If the rotation
 suffix of the new access log file is the same as the rotation
 suffix of the existing access log file, the file is not rotated.</p></li>
+<li><b>In the Max File Count field, type the maximum number of rotated access
+log files that are to be kept.</b><p>A negative value indicates that there is no limit to the file count.
+The default value is &#8211;1.</p></li>
 <li><b>In the Buffer Size field, type the size, in bytes, of the
 access log buffer.</b><p>A value of less than or equal to 0 disables access log buffering.
 The default value is 4096.</p></li>

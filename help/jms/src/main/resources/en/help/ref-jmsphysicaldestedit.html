@@ -16,13 +16,13 @@ JMS physical destination.</p><p>The Edit JMS Physical Destination page contains 
 <dt>Maximum Total Memory</dt>
 <dd><p>The maximum total memory, in bytes, for unconsumed messages. A value of &#8211;1 indicates that there is no limit to the memory size for unconsumed messages. The default value is &#8211;1.</p></dd>
 <dt>Threshold Limit Behavior</dt>
-<dd><p>The behavior the broker is to follow when the memory-limit threshold is reached. Available choices are:</p><dl><dt>Reject Newest Messages</dt>
+<dd><p>The behavior the broker is to follow when the memory-limit threshold is reached. Available choices are:</p><dl><dt><tt>Reject newest messages</tt></dt>
 <dd><p>Reject the newest messages and notify the producing client with an exception only if the message is persistent. This is the default value.</p></dd>
-<dt>Slow Down Producers</dt>
+<dt><tt>Slow down producers</tt></dt>
 <dd><p>Slow the rate at which message producers send messages.</p></dd>
-<dt>Throw Out Oldest</dt>
+<dt><tt>Throw out oldest</tt></dt>
 <dd><p>Discard the oldest messages.</p></dd>
-<dt>Throw Out Lowest-priority Messages</dt>
+<dt><tt>Throw out lowest-priority messages</tt></dt>
 <dd><p>Discard the messages with the lowest priority.</p></dd>
 </dl>
 <p>If the value is Throw Out Oldest or Throw Out Lowest-priority Messages and Use Dead Message Queue is set to true, excess messages are moved to the dead message queue.</p></dd>

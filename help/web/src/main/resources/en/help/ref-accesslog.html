@@ -20,9 +20,11 @@ located in the <tt><i>domain-dir</i>/logs/access</tt> directory and are named as
 <dt>Rotation Policy</dt>
 <dd><p>The only available rotation policy is <tt>time</tt>.</p></dd>
 <dt>Rotation Interval</dt>
-<dd><p>The number of minutes between rotations of the access log. This field is valid only if the Rotation Policy is <tt>time</tt>. The default value is 15 minutes.</p></dd>
+<dd><p>The number of minutes between rotations of the access log. This field is valid only if the Rotation Policy is <tt>time</tt>. The default value is 1,440 minutes (24 hours).</p></dd>
 <dt>Rotation Suffix</dt>
 <dd><p>String value to be added to the end of the log file name after rotation. The default value is <tt>yyyy-MM-dd</tt>.</p><p>Ensure that the rotation suffix contains enough values to create a unique suffix for every log rotation. For example, if the access log is rotated more frequently than once every day, include the time of day in the rotation suffix.</p><p>A unique suffix is required to ensure that the access log file is rotated every time that the rotation interval has elapsed. If the rotation suffix of the new access log file is the same as the rotation suffix of the existing access log file, the file is not rotated.</p></dd>
+<dt>Max File Count</dt>
+<dd><p>The maximum number of rotated access log files that are to be kept. A negative value indicates that there is no limit to the file count. The default value is &#8211;1.</p></dd>
 <dt>Buffer Size</dt>
 <dd><p>The size, in bytes, of the access log buffer, or a value less than or equal to 0 for unbuffered access logs. The default value is 4096.</p></dd>
 <dt>Access Log Write Interval</dt>
