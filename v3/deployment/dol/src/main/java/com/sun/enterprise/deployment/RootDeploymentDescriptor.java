@@ -303,12 +303,13 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
      */
     public <T extends RootDeploymentDescriptor>  T getExtensionsDescriptors(Class<? extends RootDeploymentDescriptor> type, String index) {
         for (T extension : (Collection<T>) getExtensionsDescriptors(type)) {
+            String extensionIndex = ((RootDeploymentDescriptor)extension).index;
             if (index==null) {
-                if (extension.index==null) {
+                if (extensionIndex==null) {
                     return extension;
                 }
             } else {
-                if (index.equals(extension.index)) {
+                if (index.equals(extensionIndex)) {
                     return extension;
                 }
             }
