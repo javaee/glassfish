@@ -122,7 +122,6 @@ public class AddressingNode extends DisplayableComponentNode{
         appendTextChild(wshNode,
                 WebServicesTagNames.ADDRESSING_ENABLED,
                 new Boolean(addressing.isEnabled()).toString());
-
         appendTextChild(wshNode,
                 WebServicesTagNames.ADDRESSING_REQUIRED,
                 new Boolean(addressing.isRequired()).toString());

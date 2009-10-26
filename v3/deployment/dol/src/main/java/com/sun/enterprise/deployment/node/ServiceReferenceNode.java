@@ -42,7 +42,6 @@
 
 package com.sun.enterprise.deployment.node;
 
-import com.sun.enterprise.deployment.Addressing;
 import com.sun.enterprise.deployment.InjectionTarget;
 import com.sun.enterprise.deployment.ServiceRefPortInfo;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
@@ -94,6 +93,7 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
      *  
      * @return map with the element name as a key, the setter method as a value
      */
+    @Override
     protected Map getDispatchTable() {
         Map table = super.getDispatchTable();
         table.put(WebServicesTagNames.SERVICE_REF_NAME, "setName");
@@ -116,6 +116,7 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
      * @param element the xml element
      * @param value it's associated value
      */
+    @Override
     public void setElementValue(XMLElement element, String value) {    
         String qname = element.getQName();
         if (WebServicesTagNames.SERVICE_ENDPOINT_INTERFACE.equals(qname)) {
@@ -187,21 +188,24 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
         for(Iterator iter = descriptor.getPortsInfo().iterator(); 
             iter.hasNext();) {
             ServiceRefPortInfo next = (ServiceRefPortInfo) iter.next();
-            if( next.isContainerManaged() ) {
-                String serviceEndpointInterface = 
-                    next.getServiceEndpointInterface();
-                Node portComponentRefNode = appendChild
-                    (serviceRefNode, WebServicesTagNames.PORT_COMPONENT_REF);
-                appendTextChild(portComponentRefNode, 
-                                WebServicesTagNames.SERVICE_ENDPOINT_INTERFACE,
-                                serviceEndpointInterface);
-                appendTextChild(portComponentRefNode,
-                                WebServicesTagNames.ENABLE_MTOM,
-                                next.getMtomEnabled());
-                appendTextChild(portComponentRefNode,
-                                WebServicesTagNames.PORT_COMPONENT_LINK,
-                                next.getPortComponentLinkName());
+            String sei = next.getServiceEndpointInterface();
+            Node portComponentRefNode = appendChild(
+                serviceRefNode, WebServicesTagNames.PORT_COMPONENT_REF);
+            appendTextChild(portComponentRefNode,
+                WebServicesTagNames.SERVICE_ENDPOINT_INTERFACE,
+                sei);
+            appendTextChild(portComponentRefNode,
+                WebServicesTagNames.ENABLE_MTOM,
+                next.getMtomEnabled());
+            if (descriptor.getAddressing() != null) {
+                AddressingNode adNode = new AddressingNode();
+                adNode.writeDescriptor(portComponentRefNode,
+                    WebServicesTagNames.ADDRESSING,
+                    descriptor.getAddressing());
             }
+            appendTextChild(portComponentRefNode,
+                WebServicesTagNames.PORT_COMPONENT_LINK,
+                next.getPortComponentLinkName());
         }
 
         WebServiceHandlerNode handlerNode = new WebServiceHandlerNode();
@@ -215,13 +219,6 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
                 
         appendTextChild(serviceRefNode, WebServicesTagNames.MAPPED_NAME,
                 descriptor.getMappedName());
-
-        if (descriptor.getAddressing() != null) {
-            AddressingNode adNode = new AddressingNode();
-            adNode.writeDescriptor(serviceRefNode,
-                WebServicesTagNames.ADDRESSING,
-                descriptor.getAddressing());
-        }
 
         if (descriptor.isInjectable()) {
             InjectionTargetNode ijNode = new InjectionTargetNode();

@@ -82,9 +82,6 @@ public class ServiceRefPortInfo extends Descriptor {
 
     private String mtomEnabled = null;
 
-
-    private Addressing addressing  ;
-    
     public ServiceRefPortInfo(ServiceRefPortInfo other) {
 	super(other);
 	serviceEndpointInterface = other.serviceEndpointInterface;
