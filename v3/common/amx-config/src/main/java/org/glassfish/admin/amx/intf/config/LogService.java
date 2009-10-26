@@ -47,7 +47,7 @@ import java.util.Map;
 	@see ModuleLogLevelsConfigKeys
  */
 public interface LogService
-	extends PropertiesAccess, ConfigElement, Singleton
+	extends ConfigElement, Singleton
 {
 	public String	getAlarms();
 	public void	setAlarms( String value );

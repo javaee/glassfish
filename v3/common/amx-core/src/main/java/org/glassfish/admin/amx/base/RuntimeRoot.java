@@ -121,7 +121,7 @@ public interface RuntimeRoot extends AMXProxy, Utility, Singleton
     @Description("Return a summary report of the specified type")
     public String getJVMReport( @Param(name = "which")String which);
     
-    @ChildGetter
+    @ManagedAttribute
     public Map<String,ServerRuntime>   getServerRuntime();
     
     @ManagedAttribute

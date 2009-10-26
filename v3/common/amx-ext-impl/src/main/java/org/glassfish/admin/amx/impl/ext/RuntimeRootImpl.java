@@ -107,6 +107,11 @@ public final class RuntimeRootImpl extends AMXImplBase
 
     }
 
+    public ObjectName[] getServerRuntime()
+    {
+        return getChildren( ServerRuntime.class );
+    }
+
     @Override
         protected final void
     registerChildren()

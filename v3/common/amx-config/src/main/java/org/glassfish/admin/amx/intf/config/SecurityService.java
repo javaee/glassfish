@@ -39,8 +39,6 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
-import org.glassfish.admin.amx.annotation.ChildGetter;
-
 /**
 Configuration for the &lt;security-service&gt; element.
  */
@@ -111,16 +109,12 @@ public interface SecurityService extends
      */
     public void setActivateDefaultPrincipalToRoleMapping(String enabled);
 
-    @ChildGetter
     public Map<String, JaccProvider> getJaccProvider();
 
-    @ChildGetter
     public Map<String, AuthRealm> getAuthRealm();
 
-    @ChildGetter
     public Map<String, AuditModule> getAuditModule();
 
-    @ChildGetter
     public Map<String, MessageSecurityConfig> getMessageSecurityConfig();
 }
 

@@ -37,7 +37,6 @@ package org.glassfish.admin.amx.monitoring;
 
 import java.util.Map;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
-import org.glassfish.admin.amx.annotation.ChildGetter;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
@@ -51,6 +50,6 @@ import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 @AMXMBeanMetadata(type="mon", singleton=true, globalSingleton=true)
 public interface MonitoringRoot extends AMXProxy, Singleton
 {
-    @ChildGetter
+    @ManagedAttribute
     public Map<String,ServerMon> getServerMon();
 }

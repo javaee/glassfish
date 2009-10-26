@@ -70,6 +70,11 @@ public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
         mbean	= new ServerMonitoringImpl(self);
         registerChild( mbean, childObjectName );
     }
+    
+    public ObjectName[] getServerMon()
+    {
+        return getChildren( ServerMon.class );
+    }
 }
 
 

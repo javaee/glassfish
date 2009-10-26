@@ -48,8 +48,12 @@ import org.glassfish.external.arc.Stability;
 
 /**
     Used on an AMXProxy sub-interface only.  Indicates that the method
-    is a proxy-based method for getting a child or List/Set/Map of children; it doesn’t actually
-    exist as an MBean attribute or method.
+    is a proxy-based method for getting a child or List/Set/Map of children;
+    <em>it doesn’t actually exist as an MBean attribute or method</em>.  This annotation
+    should not be applied when the method or Attribute actually does exist. This
+    annotation is generally needed only when there are arbitrary types of children that
+    are not known in advance and/or methods do not exist for them (eg because of derivation
+    such as with config MBeans).
     <p>
     The proxy method to which the annotation is applied must be of one of the following forms,
     where the interface FooBar is a sub-interface of {@link org.glassfish.admin.amx.core.AMXProxy}.

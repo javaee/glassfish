@@ -36,7 +36,6 @@
 package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
-import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
 Configuration for the &lt;connector-connection-pool&gt; element.                                                  
@@ -198,7 +197,6 @@ public interface ConnectorConnectionPool
     /**
     @return Map of all SecurityMap contained in this item.
      */
-    @ChildGetter
     public Map<String, SecurityMap> getSecurityMap();
 
 // 	/**

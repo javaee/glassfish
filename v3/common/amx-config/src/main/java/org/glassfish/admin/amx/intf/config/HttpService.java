@@ -35,13 +35,9 @@
  */
 package org.glassfish.admin.amx.intf.config;
 
-
-
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
-import org.glassfish.admin.amx.annotation.ChildGetter;
 
 
 /**
@@ -54,7 +50,6 @@ public interface HttpService
 		@return Map of all VirtualServer proxies, keyed by the name of the virtual server.
 
 	 */
-    @ChildGetter
 	public Map<String,VirtualServer>		getVirtualServer();
 
 	/**

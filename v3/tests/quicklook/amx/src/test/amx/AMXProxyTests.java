@@ -111,8 +111,10 @@ public final class AMXProxyTests extends AMXTestBase
         assert amx.childrenSet() != null;
         assert amx.childrenMaps() != null;
         assert amx.attributesMap() != null;
-        assert amx.attributeNames() != null;
-        assert amx.objectName() != null;
+        final Set<String> attrNames = amx.attributeNames();
+        assert attrNames != null;
+        final ObjectName objectName = amx.objectName();
+        assert objectName != null;
         assert amx.extra() != null;
         
         final Extra extra = amx.extra();
@@ -132,6 +134,7 @@ public final class AMXProxyTests extends AMXTestBase
         {
             assert extra.singleton();
         }
+            
         
         final Method[] methods = clazz.getMethods();
         final Set<String> attrNamesFromMethods = new HashSet<String>();
@@ -139,6 +142,14 @@ public final class AMXProxyTests extends AMXTestBase
         {
             if ( JMXUtil.isIsOrGetter(m) )
             {
+                final String attrName = attrName(m);
+                final ChildGetter childGetter = m.getAnnotation(ChildGetter.class);
+                if ( attrNames.contains(attrName) && childGetter != null )
+                {
+                    println( "Warning: Attribute " + attrName +
+                        " exists in " + objectName + ", but has superfluous @ChildGetter annotation" );
+                }
+                
                 try
                 {
                     final Object result = m.invoke( amx, (Object[])null);
@@ -147,18 +158,18 @@ public final class AMXProxyTests extends AMXTestBase
                 }
                 catch( final Exception e )
                 {
-                    problems.add( "Error invoking " + m.getName() + "() on " + amx.objectName() + " = " + e );
+                    problems.add( "Error invoking " + m.getName() + "() on " + objectName + " = " + e );
                 }
             }
         }
         if ( clazz != AMXProxy.class && clazz != AMXConfigProxy.class )
         {
             // see whether the interface is missing any getters
-            final Set<String> attrNames = amx.attributeNames();
-            attrNames.removeAll(attrNamesFromMethods);
-            if ( attrNames.size() != 0 )
+            final Set<String> missing = new HashSet<String>(attrNames);
+            missing.removeAll(attrNamesFromMethods);
+            if ( missing.size() != 0 )
             {
-                println( clazz.getName() + " missing getters attributes: " + attrNames );
+                println( clazz.getName() + " missing getters attributes: " + missing );
             }
         }
         return problems;
@@ -271,15 +282,32 @@ public final class AMXProxyTests extends AMXTestBase
         final Resources resources = getDomainConfig().getResources();
         testProxyInterface( resources, Resources.class );
         
-        resources.getCustomResource();
-        resources.getJndiResource();
-        resources.getJdbcResource();
-        resources.getJdbcConnectionPool();
-        resources.getConnectorResource();
-        resources.getConnectorConnectionPool();
-        resources.getAdminObjectResource();
-        resources.getResourceAdapter();
-        resources.getMailResource();
+        final Map<String,CustomResource> cr = resources.getCustomResource();
+        assert cr != null;
+        
+        final Map<String,JndiResource> jndi = resources.getJndiResource();
+        assert jndi != null;
+        
+        final Map<String,JdbcResource> jdbc = resources.getJdbcResource();
+        assert jdbc != null;
+        
+        final Map<String,JdbcConnectionPool> jdbcCP = resources.getJdbcConnectionPool();
+        assert jdbcCP != null;
+        
+        final Map<String,ConnectorResource> connR = resources.getConnectorResource();
+        assert connR != null;
+        
+        final Map<String,ConnectorConnectionPool> ccp = resources.getConnectorConnectionPool();
+        assert ccp != null;
+        
+        final Map<String,AdminObjectResource> ao = resources.getAdminObjectResource();
+        assert ao != null;
+        
+        final Map<String,ResourceAdapter> ra = resources.getResourceAdapter();
+        assert ra != null;
+        
+        final Map<String,MailResource> mr = resources.getMailResource();
+        assert mr != null;
     }
 
     @Test

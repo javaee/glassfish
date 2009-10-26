@@ -57,6 +57,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -671,6 +672,96 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         
         return result;
     }
+    
+        private List<ObjectName> 
+    tentativeObjectNameList(final Collection<?> items)
+    {
+        final List<ObjectName> objectNames = new ArrayList<ObjectName>();
+        // verify that all items are of type ObjectName
+        // do NOT throw an exception, we just want to check, not require it.
+        for( final Object item : items )
+        {
+            if ( ! (item instanceof ObjectName) )
+            {
+                return null;
+            }
+            objectNames.add((ObjectName)item);
+        }
+        return objectNames;
+    }
+    
+    /**
+        Convert an Map/Set/List to the proxy-based Map/Set/List/[] result type
+     */
+        Object
+    autoConvertCollection(final Method method, final Object itemsIn)
+    {
+        Object result = itemsIn;  // fallback is to return the original result
+        
+        //System.out.println( "autoConvertCollection() for " + method.getName() );
+        final Class<?> returnType = method.getReturnType();
+        Class<? extends AMXProxy> proxyClass = AMXProxy.class;
+        if (method.getGenericReturnType() instanceof ParameterizedType)
+        {
+            proxyClass = getProxyClass((ParameterizedType) method.getGenericReturnType());
+        }
+        
+        // definitely do not want to auto convert to proxy if it's List<ObjectName> (for example)
+        if ( proxyClass == null || ! AMXProxy.class.isAssignableFrom(proxyClass) )
+        {
+            return itemsIn;
+        }
+        
+        if ( Collection.class.isAssignableFrom(returnType) && (itemsIn instanceof Collection) )
+        {
+            final List<ObjectName> objectNames = tentativeObjectNameList((Collection)itemsIn);
+            if ( objectNames != null )
+            {
+                final ObjectName[] objectNamesA     = new ObjectName[objectNames.size()];
+                objectNames.toArray(objectNamesA);
+                if ( objectNames != null )
+                {
+                    if (Set.class.isAssignableFrom(returnType))
+                    {
+                        result = proxyFactory().toProxySet(objectNamesA, proxyClass);
+                    }
+                    else if (List.class.isAssignableFrom(returnType))
+                    {
+                        result = proxyFactory().toProxyList(objectNamesA, proxyClass);
+                    }
+                }
+            }
+        }
+        else if ( Map.class.isAssignableFrom(returnType) && (itemsIn instanceof Map) )
+        {
+            final Map m = (Map)itemsIn;
+            final Map<String,AMXProxy> proxies = new HashMap<String,AMXProxy>();
+            boolean ok = true;
+            for( final Object key : m.keySet() )
+            {
+                if ( ! (key instanceof String) )
+                {
+                    ok = false;
+                    break;
+                }
+                final Object value = m.get(key);
+                if ( ! (value instanceof ObjectName) )
+                {
+                    ok = false;
+                    break;
+                }
+                proxies.put( (String)key, proxyFactory().getProxy((ObjectName)value, proxyClass ));
+            }
+            
+            if ( ok )
+            {
+                result = proxies;
+            }
+        }
+    
+        return result;
+    }
+
 
     protected Object _invoke(
             final Object myProxy,
@@ -745,6 +836,10 @@ public final class AMXProxyHandler extends MBeanProxyHandler
                  result instanceof ObjectName[])
         {
             result = autoConvert( method, (ObjectName[]) result );
+        }
+        else if ( result != null && ( (result instanceof Collection) || (result instanceof Map) ) )
+        {
+            result = autoConvertCollection( method, result );
         }
 
         //System.out.println( "_invoke: done:  result class is " + result.getClass().getName() );

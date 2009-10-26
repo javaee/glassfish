@@ -37,9 +37,7 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
-import org.glassfish.admin.amx.annotation.ChildGetter;
 
 /**
 Configuration for the &lt;jms-service&gt; element.
@@ -95,8 +93,6 @@ public interface JmsService
 
     public void setType(final String value);
 
-
-    @ChildGetter
     public Map<String, JmsHost> getJmsHost();
 }
 

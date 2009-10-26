@@ -1431,6 +1431,9 @@ class ConfigBeanJMXSupport
      */
     public MBeanAttributeInfo elementToMBeanAttributeInfo(final Method m)
     {
+        // we assume that all getters are writeable for now, not true for sub-elements (ObjectName)
+        boolean isWriteable = true;
+        
         final ElementMethodInfo info = ElementMethodInfo.get(m);
         if (info == null || info.anonymous())
         {
@@ -1448,6 +1451,7 @@ class ConfigBeanJMXSupport
         {
             // some sub-type, which we must represent as an ObjectName
             returnType = ObjectName.class;
+            isWriteable = false;
         }
         else if (Collection.class.isAssignableFrom(methodReturnType))
         {
@@ -1466,6 +1470,7 @@ class ConfigBeanJMXSupport
                     else
                     {
                         returnType = ObjectName[].class;
+                        isWriteable = false;
                     }
                 }
             }
@@ -1502,8 +1507,6 @@ class ConfigBeanJMXSupport
 
             String description = "@Element " + name + " of interface " + mIntf.getName();
             final boolean isReadable = true;
-            // we assume that all getters are writeable for now
-            final boolean isWriteable = true;
             final boolean isIs = false;
             attrInfo = new MBeanAttributeInfo(name, returnType.getName(), description, isReadable, isWriteable, isIs, descriptor);
         }

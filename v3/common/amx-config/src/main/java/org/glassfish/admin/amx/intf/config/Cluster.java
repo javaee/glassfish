@@ -51,13 +51,10 @@ public interface Cluster
 	 */
 	public String	getConfigRef();
 
-    @ChildGetter
 	public Map<String,ServerRef>	getServerRef();
 	
-    @ChildGetter
 	public Map<String,ResourceRef>	getResourceRef();
 	
-    @ChildGetter
 	public Map<String,ApplicationRef>	getDeployedItemRef();
 
 	
