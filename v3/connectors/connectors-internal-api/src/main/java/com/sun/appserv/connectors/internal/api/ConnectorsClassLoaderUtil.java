@@ -153,12 +153,7 @@ public class ConnectorsClassLoaderUtil {
 
     private boolean extractRar(String rarName, String destination){
         String rarFileName = rarName + ConnectorConstants.RAR_EXTENSION;
-        File rarDir = new File(destination + rarName);
-        if(!rarDir.exists()){
-            return ConnectorsUtil.extractRar(destination+rarFileName, rarFileName, destination);
-        }else{
-            return false;
-        }
+        return ConnectorsUtil.extractRar(destination+rarFileName, rarFileName, destination);
     }
 
     public Collection<ConnectorClassFinder> getSystemRARClassLoaders() throws ConnectorRuntimeException {
@@ -168,11 +163,12 @@ public class ConnectorsClassLoaderUtil {
                 synchronized (ConnectorsClassLoaderUtil.class){
                     if(!rarsInitializedInEmbeddedServerMode){
                         String installDir = System.getProperty(ConnectorConstants.INSTALL_ROOT) + File.separator;
-                        File file = new File(installDir);
-                        file.mkdirs();
-
                         for (String jdbcRarName : ConnectorConstants.jdbcSystemRarNames) {
-                            extractRar(jdbcRarName, installDir);
+                            String rarPath = ConnectorsUtil.getSystemModuleLocation(jdbcRarName);
+                            File rarDir = new File(rarPath);
+                            if(!rarDir.exists()){
+                                extractRar(jdbcRarName, installDir);
+                            }
                         }
                         rarsInitializedInEmbeddedServerMode = true;
                     }
