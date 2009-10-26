@@ -325,7 +325,7 @@ public abstract class RootDeploymentDescriptor extends Descriptor {
             values = new ArrayList<RootDeploymentDescriptor>();
             extensions.put(type, values);
         }
-        instance.index = index;
+        ((RootDeploymentDescriptor)instance).index = index;
         values.add(instance);
 
     }
