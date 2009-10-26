@@ -233,6 +233,16 @@ public class JdbcTempHandler {
                     ex.printStackTrace();
 
                 }
+            } else {
+                // Allow user to provide DataSource ClassName when resourceType is not of type Driver
+                // or is not selected.
+                if (!GuiUtil.isEmpty(resType) && resType.equals(DRIVER)) {
+                    extra.put("DatasourceClassnameField", "");
+                    extra.put("dsClassname", Boolean.FALSE);
+                } else {
+                    extra.put("DatasourceClassnameField", "");
+                    extra.put("dsClassname", Boolean.TRUE);
+                }
             }
 
             extra.put("PreviousResType", resType);
