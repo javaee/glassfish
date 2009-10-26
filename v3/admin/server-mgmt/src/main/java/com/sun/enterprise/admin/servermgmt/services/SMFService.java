@@ -638,12 +638,10 @@ public final class SMFService implements Service {
 
     private void validateManifest(final String manifestPath) throws Exception {
         final File manifest = new File(manifestPath);
-        if (manifest.exists()) {
-            final String msg = sm.getString("smfManifestExists", manifest.getAbsolutePath());
-            throw new IllegalArgumentException(msg);
-        }
-        if (manifest.getParentFile().exists()) {
-            final String msg = sm.getString("smfManifestFolderExists", manifest.getParentFile().getAbsolutePath());
+        final File manifestParent = manifest.getParentFile();
+        
+        if (manifestParent != null ) {
+            final String msg = sm.getString("smfLeftoverFiles", manifest.getParentFile().getAbsolutePath());
             throw new IllegalArgumentException(msg);
         }
         manifest.getParentFile().mkdirs();
