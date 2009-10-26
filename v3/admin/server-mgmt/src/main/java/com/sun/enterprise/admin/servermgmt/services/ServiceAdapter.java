@@ -39,6 +39,7 @@ package com.sun.enterprise.admin.servermgmt.services;
 import com.sun.enterprise.universal.PropertiesDecoder;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.*;
 import java.util.*;
 import java.util.Map;
@@ -191,11 +192,18 @@ public abstract class ServiceAdapter implements Service{
             throw new IllegalArgumentException(Strings.get("windows.services.passwordFileNotReadable", f));
 
         Properties p = getProperties(f);
-        validateProperty(f, p, "AS_ADMIN_PASSWORD");
-        validateProperty(f, p, "AS_ADMIN_MASTERPASSWORD");
 
-        // order counts - we put this last in case of an Exception in the 2 earlier calls.
-        appserverUser = validateProperty(f, p, "AS_ADMIN_USER");
+        // IT 10255
+        // the password file may just have master password or just user or just user password
+        //
+
+        appserverUser = p.getProperty("AS_ADMIN_USER");
+
+        // we need a user for "--user" arg to start-domain
+
+        if(!ok(appserverUser))
+           appserverUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
+
         passwordFilePath = f.getPath().replace('\\', '/'); // already sanitized
     }
 
