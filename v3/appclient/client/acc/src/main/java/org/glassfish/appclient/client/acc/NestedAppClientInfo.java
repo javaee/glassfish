@@ -322,7 +322,7 @@ public class NestedAppClientInfo extends AppClientInfo {
                 // Because the app client submodule - like any submodule - is
                 // expanded into a directory, the normal manifest processing
                 // done for JARs will not be applied to it when this directory is added to
-                // the class path of the EJBClassLoader.  So we need to explicitly
+                // the class path of the ASURLClassLoader.  So we need to explicitly
                 // add the Class-Path elements from the manifest to the class path now.
                 File manifestFile = new File(moduleRoot, JarFile.MANIFEST_NAME);
                 if ( ! manifestFile.exists()) {

@@ -35,10 +35,9 @@
  */
 package org.glassfish.javaee.full.deployment;
 
-import java.net.URL;
 import java.util.*;
-import java.io.IOException;
-import com.sun.enterprise.loader.EJBClassLoader;
+
+import com.sun.enterprise.loader.ASURLClassLoader;
 import org.jvnet.hk2.component.PreDestroy;
 
 /**
@@ -47,7 +46,8 @@ import org.jvnet.hk2.component.PreDestroy;
  *
  * @author Jerome Dochez
  */
-public class EarClassLoader extends EJBClassLoader {
+public class EarClassLoader extends ASURLClassLoader
+{
 
     private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
     boolean isPreDestroyCalled = false;

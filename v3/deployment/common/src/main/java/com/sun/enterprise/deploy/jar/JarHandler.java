@@ -44,7 +44,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentUtils;
 import java.net.MalformedURLException;
 
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
 import java.net.URL;
@@ -73,7 +73,7 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
-        EJBClassLoader cloader = new EJBClassLoader(parent);
+        ASURLClassLoader cloader = new ASURLClassLoader(parent);
         try {              
             cloader.addURL(context.getSource().getURI().toURL());
             cloader.addURL(context.getScratchDir("ejb").toURI().toURL());

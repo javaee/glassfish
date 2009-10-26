@@ -45,7 +45,7 @@ import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.annotation.introspection.AppClientPersistenceDependencyAnnotationScanner;
 import com.sun.enterprise.deployment.util.AnnotationDetector;
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -361,7 +361,7 @@ public abstract class AppClientInfo {
         throws IOException {
         List<String> paths = getClassPaths(archive);
         ClassLoader parent = Thread.currentThread().getContextClassLoader();
-        EJBClassLoader loader = new EJBClassLoader(parent);
+        ASURLClassLoader loader = new ASURLClassLoader(parent);
 
         final int LIST_SZ = paths.size();
         for (int i=0; i<LIST_SZ; i++) {
@@ -443,7 +443,7 @@ public abstract class AppClientInfo {
 //     *Granting the appropriate level of permissions to user code, emulating
 //     *the Java Web Start behavior as required in the JNLP spec.
 //     *<p>
-//     *Classes from the user's app client jar are loaded using the EJBClassLoader
+//     *Classes from the user's app client jar are loaded using the ASURLClassLoader
 //     *rather than the Java Web Start class loader.  As a result, Java Web Start
 //     *cannot grant the appropriate level of permissions to the user code since
 //     *it is the JWS class loader that does that.  So we need to grant the user
@@ -488,11 +488,11 @@ public abstract class AppClientInfo {
 //            Properties p = new Properties();
 //
 //            /*
-//             *Use the list of class paths already set up on the EJBClassLoader.
+//             *Use the list of class paths already set up on the ASURLClassLoader.
 //             *Then for each element in the class path, write a part of the policy
 //             *file granting the privs specified in the selected template to the code path.
 //             */
-//            EJBClassLoader loader = (EJBClassLoader) getClassLoader();
+//            ASURLClassLoader loader = (ASURLClassLoader) getClassLoader();
 //            for (URL classPathElement : loader.getURLs()) {
 //                /*
 //                 *Convert the URL into a proper codebase expression suitable for

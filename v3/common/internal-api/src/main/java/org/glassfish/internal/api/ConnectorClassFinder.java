@@ -35,14 +35,14 @@
  */
 package org.glassfish.internal.api;
 
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 
 /**
  * connector-class-finder to provide a class from its .rar
  *
  * @author Jagadish Ramu
  */
-public class ConnectorClassFinder extends EJBClassLoader implements DelegatingClassLoader.ClassFinder {
+public class ConnectorClassFinder extends ASURLClassLoader implements DelegatingClassLoader.ClassFinder {
 
         private DelegatingClassLoader.ClassFinder librariesClassFinder;
         private String raName;

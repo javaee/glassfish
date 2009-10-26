@@ -44,7 +44,7 @@ import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFactory;
 import com.sun.enterprise.deployment.util.AnnotationDetector;
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -294,8 +294,8 @@ public class StandAloneAppClientInfo extends AppClientInfo implements PostConstr
             }
             ClassLoader classLoader = getClassLoader();
             if (classLoader != null &&
-                    classLoader instanceof EJBClassLoader) {
-                ((EJBClassLoader) classLoader).done();
+                    classLoader instanceof ASURLClassLoader) {
+                ((ASURLClassLoader) classLoader).done();
             }
         } finally {
             if (deleteAppClientDir()) {

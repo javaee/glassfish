@@ -66,7 +66,7 @@ import com.sun.enterprise.deployment.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.jvnet.hk2.component.Habitat;
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 
 // TODO : Neds quivalent
 //import com.sun.enterprise.deployment.backend.Deployer;
@@ -547,11 +547,11 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         String serviceInterfaceName = serviceRef.getServiceInterface();
 
         ClassLoader cl = context.getModuleMetaData(Application.class).getClassLoader();
-        if (cl instanceof EJBClassLoader) {
+        if (cl instanceof ASURLClassLoader) {
             String modClassPath = ASClassLoaderUtil.getModuleClassPath(habitat, context);
             List<URL> moduleList = ASClassLoaderUtil.getURLsFromClasspath(modClassPath, File.pathSeparator, null);
             for (Iterator<URL> itr=moduleList.iterator();itr.hasNext();) {
-                ((EJBClassLoader) cl).appendURL(itr.next());
+                ((ASURLClassLoader) cl).appendURL(itr.next());
             }
         }
 

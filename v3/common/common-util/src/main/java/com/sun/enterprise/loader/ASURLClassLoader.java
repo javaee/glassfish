@@ -91,12 +91,12 @@ import org.jvnet.hk2.component.PreDestroy;
  * @author Sivakumar Thyagarajan
  * @since  JDK 1.4
  */
-public class EJBClassLoader
+public class ASURLClassLoader
         extends URLClassLoader
         implements JasperAdapter, InstrumentableClassLoader, PreDestroy {
 
     /** logger for this class */
-    static Logger _logger=LogDomains.getLogger(EJBClassLoader.class, LogDomains.LOADER_LOGGER);
+    static Logger _logger=LogDomains.getLogger(ASURLClassLoader.class, LogDomains.LOADER_LOGGER);
 
     /** list of url entries of this class loader */
     private List<URLEntry> urlSet = Collections.synchronizedList(new ArrayList());
@@ -119,12 +119,12 @@ public class EJBClassLoader
             new ArrayList<ClassFileTransformer>(1);
 
     private static StringManager sm = 
-        StringManager.getManager(EJBClassLoader.class);
+        StringManager.getManager(ASURLClassLoader.class);
 
     /**
      * Constructor.
      */
-    public EJBClassLoader() {
+    public ASURLClassLoader() {
         super(new URL[0]);
 
         if (_logger.isLoggable(Level.FINE)) {
@@ -138,7 +138,7 @@ public class EJBClassLoader
      *
      * @param    parent    parent class loader
      */
-    public EJBClassLoader(ClassLoader parent) {
+    public ASURLClassLoader(ClassLoader parent) {
         super(new URL[0], parent);
     }
 
@@ -166,7 +166,7 @@ public class EJBClassLoader
         // Capture the fact that the classloader is now effectively disabled.
         // First create a snapshot of our state.  This should be called
         // before setting doneCalled = true.
-        doneSnapshot = "EJBClassLoader.done() called ON " + this.toString()
+        doneSnapshot = "ASURLClassLoader.done() called ON " + this.toString()
             + "\n AT " + new Date() +
             " \n BY :" + Print.printStackTraceToString();
         doneCalled = true;
@@ -179,7 +179,7 @@ public class EJBClassLoader
                 try {
                     u.zip.reallyClose();
                 } catch (IOException ioe) {
-                    _logger.log(Level.INFO, formatMsg("loader.ejbclassloader_exc_closing_URLEntry", u.source),
+                    _logger.log(Level.INFO, formatMsg("loader.asurlclassloader_exc_closing_URLEntry", u.source),
                                 ioe);
                 }
             }
@@ -218,10 +218,10 @@ public class EJBClassLoader
             appendURL(file.toURI().toURL());
         } catch (MalformedURLException mue) {
             _logger.log(Level.SEVERE,
-                "loader.ejbclassloader_bad_url_entry", file.toURI());
+                "loader.asurlclassloader_bad_url_entry", file.toURI());
 
             _logger.log(Level.SEVERE,
-                "loader.ejbclassloader_malformed_url", mue);
+                "loader.asurlclassloader_malformed_url", mue);
             IOException ioe = new IOException();
             ioe.initCause(mue);
             throw ioe;
@@ -250,7 +250,7 @@ public class EJBClassLoader
         try {
             if (url == null) {
                 _logger.log(Level.INFO,
-                    "loader.ejbclassloader_bad_url_entry", url);
+                    "loader.asurlclassloader_bad_url_entry", url);
                 return;
             }
 
@@ -267,7 +267,7 @@ public class EJBClassLoader
                 }
             } else {
                 _logger.log(Level.FINE,
-                    "[EJB-CL] Ignoring duplicate URL: " + url);
+                    "[ASURLClassLoader] Ignoring duplicate URL: " + url);
                 /*
                  *Clean up the unused entry or it could hold open a jar file.
                  */
@@ -275,7 +275,7 @@ public class EJBClassLoader
                     try {
                         entry.zip.reallyClose();
                     } catch (IOException ioe) {
-                    _logger.log(Level.INFO, formatMsg("loader.ejbclassloader_exc_closing_dup_URLEntry", url),
+                    _logger.log(Level.INFO, formatMsg("loader.asurlclassloader_exc_closing_dup_URLEntry", url),
                                 ioe);
                     }
                 }
@@ -287,10 +287,10 @@ public class EJBClassLoader
         } catch (IOException ioe) {
 
             _logger.log(Level.SEVERE,
-                "loader.ejbclassloader_bad_url_entry", url);
+                "loader.asurlclassloader_bad_url_entry", url);
 
             _logger.log(Level.SEVERE,
-                "loader.ejbclassloader_malformed_url", ioe);
+                "loader.asurlclassloader_malformed_url", ioe);
         }
     }
 
@@ -317,15 +317,15 @@ public class EJBClassLoader
     }
 
     /**
-     * Returns all the "file" protocol resources of this EJBClassLoader,
+     * Returns all the "file" protocol resources of this ASURLClassLoader,
      * concatenated to a classpath string.
      *
      * Notice that this method is called by the setClassPath() method of
-     * org.apache.catalina.loader.WebappLoader, since this EJBClassLoader does
+     * org.apache.catalina.loader.WebappLoader, since this ASURLClassLoader does
      * not extend off of URLClassLoader.
      *
      * @return Classpath string containing all the "file" protocol resources
-     * of this EJBClassLoader
+     * of this ASURLClassLoader
      */
     public String getClasspath() {
 
@@ -354,7 +354,7 @@ public class EJBClassLoader
      *not-found cahces and recreating the hash tables for the URLEntries that
      *record the files accessible for each.
      *<p>
-     *Code that creates an EJBClassLoader and then adds files to a directory
+     *Code that creates an ASURLClassLoader and then adds files to a directory
      *that is in the loader's classpath should invoke this method after the new
      *file(s) have been added in order to update the class loader's data
      *structures which optimize class and resource searches.
@@ -421,7 +421,7 @@ public class EJBClassLoader
 
                     } catch (Throwable thr) {
                         _logger.log(Level.INFO,
-                                    "loader.excep_in_ejbclassloader",thr);
+                                    "loader.excep_in_asurlclassloader",thr);
                     }
                 } else { // directory
                     try {
@@ -437,7 +437,7 @@ public class EJBClassLoader
 
                     } catch (IOException e) {
                         _logger.log(Level.INFO,
-                                    "loader.excep_in_ejbclassloader",e);
+                                    "loader.excep_in_asurlclassloader",e);
                     }
                 }
 
@@ -453,7 +453,7 @@ public class EJBClassLoader
 
         if( doneCalled ) {
             _logger.log(Level.WARNING,
-                    formatMsg("loader.ejbclassloader_find_resource_after_done", name, this.toString()),
+                    formatMsg("loader.asurlclassloader_find_resource_after_done", name, this.toString()),
                     new Throwable());
             return null;
         }
@@ -492,7 +492,7 @@ public class EJBClassLoader
     public Enumeration<URL> findResources(String name) throws IOException {
         if( doneCalled ) {
             _logger.log(Level.WARNING,
-                        "loader.ejbclassloader_done_already_called",
+                        "loader.asurlclassloader_done_already_called",
                         new Object[] { name, doneSnapshot });
             return null;
         }
@@ -556,7 +556,7 @@ public class EJBClassLoader
                     appendURL(newFile);
                 } catch (MalformedURLException ex) {
                     _logger.log(Level.SEVERE,
-                        "loader.ejbclassloader_malformed_url",ex);
+                        "loader.asurlclassloader_malformed_url",ex);
                 }
             }
         }
@@ -582,7 +582,7 @@ public class EJBClassLoader
                         if (entry != null) {
                             classStream = zip.getInputStream(entry);
                             byte[] classData = getClassData(classStream);
-                            res.setProtectionDomain(EJBClassLoader.this, entry.getCertificates());
+                            res.setProtectionDomain(ASURLClassLoader.this, entry.getCertificates());
                             return classData;
                         }
                     } else { // Its a directory....
@@ -593,7 +593,7 @@ public class EJBClassLoader
                             try {
                                 classStream = new FileInputStream(classFile);
                                 byte[] classData = getClassData(classStream);
-                                res.setProtectionDomain(EJBClassLoader.this, null);
+                                res.setProtectionDomain(ASURLClassLoader.this, null);
                                 return classData;
                             } finally {
                                 /*
@@ -605,7 +605,7 @@ public class EJBClassLoader
                                     try {
                                         classStream.close();
                                     } catch (IOException closeIOE) {
-                                        _logger.log(Level.INFO, "loader.excep_in_ejbclassloader", closeIOE);
+                                        _logger.log(Level.INFO, "loader.excep_in_asurlclassloader", closeIOE);
                                     }
                                 }
                             }
@@ -613,7 +613,7 @@ public class EJBClassLoader
                     }
                 } catch (IOException ioe) {
                     _logger.log(Level.INFO,
-                                "loader.excep_in_ejbclassloader", ioe);
+                                "loader.excep_in_asurlclassloader", ioe);
                 }
                 return null;
             }
@@ -671,7 +671,7 @@ public class EJBClassLoader
                 byte[] transformedBytes = transformer.transform(this, internalClassName, null,
                         classData.pd, classData.classBytes);
                 if(transformedBytes!=null){ // null indicates no transformation
-                    _logger.logp(Level.INFO, "EJBClassLoader",
+                    _logger.logp(Level.INFO, "ASURLClassLoader",
                             "findClass", "{0} actually got transformed",
                             name);
                     classData.classBytes = transformedBytes;
@@ -703,7 +703,7 @@ public class EJBClassLoader
 
         if( doneCalled ) {
             _logger.log(Level.WARNING,
-                        formatMsg("loader.ejbclassloader_find_class_after_done", name, this.toString()), new Throwable());
+                        formatMsg("loader.asurlclassloader_find_class_after_done", name, this.toString()), new Throwable());
             throw new ClassNotFoundException(name);
         }
 
@@ -757,7 +757,7 @@ public class EJBClassLoader
                 try {
                     bstream.close();
                 } catch (IOException closeIOE) {
-                    EJBClassLoader._logger.log(Level.INFO, "loader.excep_in_ejbclassloader", closeIOE);
+                    ASURLClassLoader._logger.log(Level.INFO, "loader.excep_in_asurlclassloader", closeIOE);
                 }
             }
         }
@@ -774,7 +774,7 @@ public class EJBClassLoader
 
         StringBuffer buffer = new StringBuffer();
 
-        buffer.append("EJBClassLoader : \n");
+        buffer.append("ASURLClassLoader : \n");
         if( doneCalled ) {
             buffer.append("doneCalled = true" + "\n");
             if( doneSnapshot != null ) {
@@ -954,7 +954,7 @@ public class EJBClassLoader
 
 
         boolean hasItem(String item) {
-            // in the case of ejbc stub compilation, ejbclassloader is created before stubs
+            // in the case of ejbc stub compilation, asurlclassloader is created before stubs
             // gets generated, thus we need to return true for this case.
             if (table.size() == 0) {
                 return true;
@@ -988,7 +988,7 @@ public class EJBClassLoader
                         processFile(targetFile, table, "");
                         result = true;
                     } catch (IOException ioe) {
-                        _logger.log(Level.SEVERE, formatMsg("loader.ejbclassloader_error_processing_file", target, file.getAbsolutePath()), ioe);
+                        _logger.log(Level.SEVERE, formatMsg("loader.asurlclassloader_error_processing_file", target, file.getAbsolutePath()), ioe);
                         return false;
                     }
                 }
@@ -1029,7 +1029,7 @@ public class EJBClassLoader
                 /*
                  *Log any exception and return false.
                  */
-                _logger.log(Level.SEVERE, formatMsg("loader.ejbclassloader_error_checking_existence", targetPath, file.getAbsolutePath()), pae.getCause());
+                _logger.log(Level.SEVERE, formatMsg("loader.asurlclassloader_error_checking_existence", targetPath, file.getAbsolutePath()), pae.getCause());
                 return null;
             }
         }
@@ -1103,7 +1103,7 @@ public class EJBClassLoader
                 try {
                     s.closeWithWarning();
                 } catch (IOException ioe) {
-                    _logger.log(Level.WARNING, "loader.ejbclassloader_error_closing_stream", ioe);
+                    _logger.log(Level.WARNING, "loader.asurlclassloader_error_closing_stream", ioe);
                 }
             }
             streams.clear();
@@ -1306,7 +1306,7 @@ public class EJBClassLoader
         /**
          * The application class loader which is used to read class data.
          */
-        private EJBClassLoader delegate = null;
+        private ASURLClassLoader delegate = null;
 
         /**
          * Create a new instance.
@@ -1315,7 +1315,7 @@ public class EJBClassLoader
          * stream handling operations. The new class loader also uses
          * applicationCL's parent as its own parent.
          */
-        DelegatingClassLoader(EJBClassLoader applicationCL) {
+        DelegatingClassLoader(ASURLClassLoader applicationCL) {
             super(applicationCL.getParent()); // normal class loading delegation
             this.delegate = applicationCL;
         }

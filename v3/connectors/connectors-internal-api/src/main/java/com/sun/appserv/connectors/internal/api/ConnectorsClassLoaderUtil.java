@@ -57,7 +57,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 import com.sun.logging.LogDomains;
 
 
@@ -210,7 +210,7 @@ public class ConnectorsClassLoaderUtil {
 
 
     //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
-    private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {
+    private void appendJars(File moduleDir, ASURLClassLoader cl) throws MalformedURLException {
         //TODO V3 for embedded rars - manifest classpath
         if (moduleDir.isDirectory()) {
             for (File file : moduleDir.listFiles()) {

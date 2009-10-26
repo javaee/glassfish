@@ -49,7 +49,7 @@ import com.sun.enterprise.tools.verifier.apiscan.classfile.ClassFileLoaderFactor
 import com.sun.enterprise.tools.verifier.apiscan.packaging.ClassPathBuilder;
 import com.sun.enterprise.tools.verifier.apiscan.stdapis.WebClosureCompiler;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 
 /**
  * Responsible for verfying the j2ee war archive.
@@ -113,9 +113,9 @@ public class WebVerifier extends BaseVerifier {
      */
     protected ClassLoader createClassLoader()
             throws IOException {
-        EJBClassLoader ejbClassLoader = new EJBClassLoader(webd.getClassLoader());
-        ejbClassLoader.appendURL(jspOutDir);
-        return ejbClassLoader;
+        ASURLClassLoader ASURLClassLoader = new ASURLClassLoader(webd.getClassLoader());
+        ASURLClassLoader.appendURL(jspOutDir);
+        return ASURLClassLoader;
     }
 
     /**

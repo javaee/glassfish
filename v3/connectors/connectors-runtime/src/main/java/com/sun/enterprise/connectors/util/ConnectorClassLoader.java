@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.connectors.util;
 
-import com.sun.enterprise.loader.EJBClassLoader;
+import com.sun.enterprise.loader.ASURLClassLoader;
 import com.sun.logging.LogDomains;
 
 import java.io.File;
@@ -53,7 +53,8 @@ import java.util.logging.Logger;
  *
  * @author Tony Ng, Sivakumar Thyagarajan
  */
-public class ConnectorClassLoader extends EJBClassLoader {
+public class ConnectorClassLoader extends ASURLClassLoader
+{
 
     private static final Logger _logger = LogDomains.getLogger(ConnectorClassLoader.class, LogDomains.CORE_LOGGER);
 
@@ -121,7 +122,7 @@ public class ConnectorClassLoader extends EJBClassLoader {
 
         try {
             File file = new File(moduleDir);
-            EJBClassLoader cl = new EJBClassLoader(parent);
+            ASURLClassLoader cl = new ASURLClassLoader(parent);
             cl.appendURL(file.toURI().toURL());
             appendJars(file, cl);
             classLoaderChain.add(cl);
@@ -132,7 +133,7 @@ public class ConnectorClassLoader extends EJBClassLoader {
     }
 
     //TODO V3 handling "unexploded jars" for now, V2 deployment module used to explode the jars also
-    private void appendJars(File moduleDir, EJBClassLoader cl) throws MalformedURLException {
+    private void appendJars(File moduleDir, ASURLClassLoader cl) throws MalformedURLException {
         if (moduleDir.isDirectory()) {
             for (File file : moduleDir.listFiles()) {
                 if (file.getName().toUpperCase().endsWith(".JAR")) {
@@ -151,8 +152,8 @@ public class ConnectorClassLoader extends EJBClassLoader {
      * @param moduleName the connector module that needs to be removed.
      */
     public void removeResourceAdapter(String moduleName) {
-        EJBClassLoader classLoaderToRemove =
-                (EJBClassLoader) rarModuleClassLoaders.get(moduleName);
+        ASURLClassLoader classLoaderToRemove =
+                (ASURLClassLoader) rarModuleClassLoaders.get(moduleName);
         if (classLoaderToRemove != null) {
             classLoaderChain.remove(classLoaderToRemove);
             rarModuleClassLoaders.remove(moduleName);
@@ -198,7 +199,7 @@ public class ConnectorClassLoader extends EJBClassLoader {
         //Going through the connector module classloader chain to find
         // class and return the first match.
         for (Iterator iter = classLoaderChain.iterator(); iter.hasNext();) {
-            EJBClassLoader ccl = (EJBClassLoader) iter.next();
+            ASURLClassLoader ccl = (ASURLClassLoader) iter.next();
             try {
                 clz = ccl.loadClass(name);
                 if (clz != null) {
@@ -233,7 +234,7 @@ public class ConnectorClassLoader extends EJBClassLoader {
     public String getClasspath() {
         StringBuffer strBuf = new StringBuffer();
         for (int i = 0; i < classLoaderChain.size(); i++) {
-            EJBClassLoader ecl = (EJBClassLoader) classLoaderChain.get(i);
+            ASURLClassLoader ecl = (ASURLClassLoader) classLoaderChain.get(i);
             String eclClasspath = ecl.getClasspath();
             if (eclClasspath != null) {
                 if (i > 0) strBuf.append(File.pathSeparator);

@@ -71,7 +71,7 @@ package org.glassfish.appclient.client.acc;
 //import com.sun.enterprise.webservice.ClientPipeCloser;
 //import com.sun.enterprise.InjectionManager;
 //import com.sun.enterprise.J2EESecurityManager;
-//import com.sun.enterprise.loader.EJBClassLoader;
+//import com.sun.enterprise.loader.ASURLClassLoader;
 //import com.sun.enterprise.loader.InstrumentableClassLoader;
 //import com.sun.enterprise.naming.ProviderManager;
 //import com.sun.enterprise.security.GUIErrorDialog;
