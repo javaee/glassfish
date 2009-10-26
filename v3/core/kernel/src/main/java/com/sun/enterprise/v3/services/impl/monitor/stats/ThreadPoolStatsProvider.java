@@ -98,60 +98,66 @@ public class ThreadPoolStatsProvider {
 
     @ProbeListener("glassfish:kernel:thread-pool:setMaxThreadsEvent")
     public void setMaxThreadsEvent(
+            @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {
 
-        if (name.equals(threadPoolName)) {
+        if (name.equals(monitoringId)) {
             maxThreadsCount.setCount(maxNumberOfThreads);
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:setCoreThreadsEvent")
     public void setCoreThreadsEvent(
+            @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("coreNumberOfThreads") int coreNumberOfThreads) {
 
-        if (name.equals(threadPoolName)) {
+        if (name.equals(monitoringId)) {
             coreThreadsCount.setCount(coreNumberOfThreads);
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadAllocatedEvent")
     public void threadAllocatedEvent(
+            @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(threadPoolName)) {
+        if (name.equals(monitoringId)) {
             currentThreadCount.increment();
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadReleasedEvent")
     public void threadReleasedEvent(
+            @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(threadPoolName)) {
+        if (name.equals(monitoringId)) {
             currentThreadCount.decrement();
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadDispatchedFromPoolEvent")
     public void threadDispatchedFromPoolEvent(
+            @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(threadPoolName)) {
+        if (name.equals(monitoringId)) {
             currentThreadsBusy.increment();
         }
     }
 
     @ProbeListener("glassfish:kernel:thread-pool:threadReturnedToPoolEvent")
     public void threadReturnedToPoolEvent(
+            @ProbeParam("monitoringId") String monitoringId,
             @ProbeParam("threadPoolName") String threadPoolName,
             @ProbeParam("threadId") String threadId) {
 
-        if (name.equals(threadPoolName)) {
+        if (name.equals(monitoringId)) {
             totalExecutedTasksCount.increment();
             currentThreadsBusy.decrement();
         }

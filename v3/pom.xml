@@ -101,8 +101,8 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.3</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.9.18d</grizzly.version>
-        <grizzly-config.version>1.9.18d</grizzly-config.version>
+        <grizzly.version>1.9.18-e</grizzly.version>
+        <grizzly-config.version>1.9.18-e</grizzly-config.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>

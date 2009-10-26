@@ -48,11 +48,11 @@ public class MonitorableFileCache extends FileCache {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
 
     private final GrizzlyMonitoring grizzlyMonitoring;
-    private final String fileCacheName;
+    private final String monitoringId;
 
-    public MonitorableFileCache(GrizzlyMonitoring grizzlyMonitoring, String fileCacheName) {
+    public MonitorableFileCache(GrizzlyMonitoring grizzlyMonitoring, String monitoringId) {
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.fileCacheName = fileCacheName;
+        this.monitoringId = monitoringId;
     }
 
     @Override
@@ -63,78 +63,78 @@ public class MonitorableFileCache extends FileCache {
     @Override
     protected void countHit() {
         super.countHit();
-        grizzlyMonitoring.getFileCacheProbeProvider().countHitEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countHitEvent(monitoringId);
     }
 
     @Override
     protected void countMiss() {
         super.countMiss();
-        grizzlyMonitoring.getFileCacheProbeProvider().countMissEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countMissEvent(monitoringId);
     }
 
     @Override
     protected void countInfoHit() {
         super.countInfoHit();
-        grizzlyMonitoring.getFileCacheProbeProvider().countInfoHitEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countInfoHitEvent(monitoringId);
     }
 
     @Override
     protected void countInfoMiss() {
         super.countInfoMiss();
-        grizzlyMonitoring.getFileCacheProbeProvider().countInfoMissEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countInfoMissEvent(monitoringId);
     }
 
     @Override
     protected void countContentHit() {
         super.countContentHit();
-        grizzlyMonitoring.getFileCacheProbeProvider().countContentHitEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countContentHitEvent(monitoringId);
     }
 
     @Override
     protected void countContentMiss() {
         super.countContentMiss();
-        grizzlyMonitoring.getFileCacheProbeProvider().countContentMissEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countContentMissEvent(monitoringId);
     }
 
     @Override
     protected void incOpenCacheEntries() {
         super.incOpenCacheEntries();
         grizzlyMonitoring.getFileCacheProbeProvider().incOpenCacheEntriesEvent(
-                fileCacheName);
+                monitoringId);
     }
 
     @Override
     protected void decOpenCacheEntries() {
         super.decOpenCacheEntries();
         grizzlyMonitoring.getFileCacheProbeProvider().decOpenCacheEntriesEvent(
-                fileCacheName);
+                monitoringId);
     }
 
     @Override
     protected void addHeapSize(long size) {
         super.addHeapSize(size);
         grizzlyMonitoring.getFileCacheProbeProvider().addHeapSizeEvent(
-                fileCacheName, size);
+                monitoringId, size);
     }
 
     @Override
     protected void subHeapSize(long size) {
         super.subHeapSize(size);
         grizzlyMonitoring.getFileCacheProbeProvider().subHeapSizeEvent(
-                fileCacheName, size);
+                monitoringId, size);
     }
 
     @Override
     protected void addMappedMemorySize(long size) {
         super.addMappedMemorySize(size);
         grizzlyMonitoring.getFileCacheProbeProvider().addMappedMemorySizeEvent(
-                fileCacheName, size);
+                monitoringId, size);
     }
 
     @Override
     protected void subMappedMemorySize(long size) {
         super.subMappedMemorySize(size);
         grizzlyMonitoring.getFileCacheProbeProvider().subMappedMemorySizeEvent(
-                fileCacheName, size);
+                monitoringId, size);
     }
 }

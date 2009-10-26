@@ -210,7 +210,7 @@ public class ConnectionQueueStatsProvider {
             @ProbeParam("listenerName") String listenerName,
             @ProbeParam("task") Runnable task) {
         if (name.equals(listenerName)) {
-            int queued = countQueuedAtomic.incrementAndGet();
+            final int queued = countQueuedAtomic.incrementAndGet();
             countQueued.setCount(queued);
 
             do {

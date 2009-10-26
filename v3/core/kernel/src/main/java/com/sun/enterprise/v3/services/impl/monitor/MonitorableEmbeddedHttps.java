@@ -42,7 +42,7 @@ import com.sun.grizzly.config.GrizzlyServiceListener;
 import com.sun.grizzly.http.FileCacheFactory;
 import com.sun.grizzly.http.KeepAliveStats;
 import com.sun.grizzly.http.SelectorThreadKeyHandler;
-import com.sun.grizzly.util.DefaultThreadPool;
+import com.sun.grizzly.util.ExtendedThreadPool;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,43 +53,43 @@ import java.util.concurrent.TimeUnit;
 public class MonitorableEmbeddedHttps extends GrizzlyEmbeddedHttps {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private final GrizzlyMonitoring monitoring;
-    private final String listenerName;
+    private final String monitoringId;
 
     public MonitorableEmbeddedHttps(
             GrizzlyMonitoring monitoring,
-            GrizzlyServiceListener grizzlyServiceListener, String listenerName) {
+            GrizzlyServiceListener grizzlyServiceListener, String monitoringId) {
         super(grizzlyServiceListener);
         this.monitoring = monitoring;
-        this.listenerName = listenerName;
+        this.monitoringId = monitoringId;
 
         keepAliveStats = createKeepAliveStats();
     }
 
     @Override
-    protected DefaultThreadPool newThreadPool(String name, int minThreads,
+    protected ExtendedThreadPool newThreadPool(String name, int minThreads,
             int maxThreads, int maxQueueSize, long keepAlive, TimeUnit timeunit) {
 
-        return new MonitorableThreadPool(monitoring, listenerName, name,
+        return new MonitorableThreadPool(monitoring, monitoringId, name,
                 minThreads, maxThreads, maxQueueSize, keepAlive, timeunit);
     }
 
     @Override
     protected TCPSelectorHandler createSelectorHandler() {
-        return new MonitorableSSLSelectorHandler(monitoring, listenerName, this);
+        return new MonitorableSSLSelectorHandler(monitoring, monitoringId, this);
     }
 
     @Override
     protected SelectorThreadKeyHandler createSelectionKeyHandler() {
-        return new MonitorableSelectionKeyHandler(monitoring, listenerName, this);
+        return new MonitorableSelectionKeyHandler(monitoring, monitoringId, this);
     }
 
     @Override
     protected FileCacheFactory createFileCacheFactory() {
-        return new MonitorableSSLFileCacheFactory(monitoring, listenerName);
+        return new MonitorableSSLFileCacheFactory(monitoring, monitoringId);
     }
 
     @Override
     protected KeepAliveStats createKeepAliveStats() {
-        return new MonitorableKeepAliveStats(monitoring, listenerName);
+        return new MonitorableKeepAliveStats(monitoring, monitoringId);
     }
 }

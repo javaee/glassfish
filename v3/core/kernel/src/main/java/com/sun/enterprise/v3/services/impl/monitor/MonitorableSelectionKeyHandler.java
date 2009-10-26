@@ -49,18 +49,18 @@ import java.nio.channels.SelectionKey;
 public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private GrizzlyMonitoring grizzlyMonitoring;
-    private String listenerName;
+    private String monitoringId;
 
     public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String listenerName) {
-        this(grizzlyMonitoring, listenerName, null);
+            String monitoringId) {
+        this(grizzlyMonitoring, monitoringId, null);
     }
 
     public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String listenerName, SelectorThread selectorThread) {
+            String monitoringId, SelectorThread selectorThread) {
         super(selectorThread);
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.listenerName = listenerName;
+        this.monitoringId = monitoringId;
     }
 
     @Override
@@ -69,13 +69,13 @@ public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
 
         MonitorableSelectionKeyHandler copyHandler = (MonitorableSelectionKeyHandler) copy;
         copyHandler.grizzlyMonitoring = grizzlyMonitoring;
-        copyHandler.listenerName = listenerName;
+        copyHandler.monitoringId = monitoringId;
     }
 
     @Override
     public void cancel(SelectionKey key) {
         grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
-                listenerName, key.channel().hashCode());
+                monitoringId, key.channel().hashCode());
 
         super.cancel(key);
     }

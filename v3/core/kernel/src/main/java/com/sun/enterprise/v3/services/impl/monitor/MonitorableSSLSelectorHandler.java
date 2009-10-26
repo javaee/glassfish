@@ -52,18 +52,18 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
 
     private GrizzlyMonitoring grizzlyMonitoring;
-    private String listenerName;
+    private String monitoringId;
 
     public MonitorableSSLSelectorHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String listenerName) {
-        this(grizzlyMonitoring, listenerName, null);
+            String monitoringId) {
+        this(grizzlyMonitoring, monitoringId, null);
     }
 
     public MonitorableSSLSelectorHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String listenerName, SelectorThread selectorThread) {
+            String monitoringId, SelectorThread selectorThread) {
         super(selectorThread);
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.listenerName = listenerName;
+        this.monitoringId = monitoringId;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
         super.copyTo(copy);
         MonitorableSSLSelectorHandler copyHandler = (MonitorableSSLSelectorHandler) copy;
         copyHandler.grizzlyMonitoring = grizzlyMonitoring;
-        copyHandler.listenerName = listenerName;
+        copyHandler.monitoringId = monitoringId;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
             throws IOException {
         final SelectableChannel channel = super.acceptWithoutRegistration(key);
         grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
-                listenerName, channel.hashCode());
+                monitoringId, channel.hashCode());
 
         return channel;
     }
@@ -88,7 +88,7 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     public boolean onConnectInterest(SelectionKey key, Context ctx)
             throws IOException {
         grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(
-                listenerName, key.channel().hashCode());
+                monitoringId, key.channel().hashCode());
 
         return super.onConnectInterest(key, ctx);
     }

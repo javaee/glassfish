@@ -46,11 +46,11 @@ public class MonitorableKeepAliveStats extends KeepAliveStats {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
 
     private final GrizzlyMonitoring grizzlyMonitoring;
-    private final String listenerName;
+    private final String monitoringId;
 
-    public MonitorableKeepAliveStats(GrizzlyMonitoring grizzlyMonitoring, String listenerName) {
+    public MonitorableKeepAliveStats(GrizzlyMonitoring grizzlyMonitoring, String monitoringId) {
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.listenerName = listenerName;
+        this.monitoringId = monitoringId;
 
         if (grizzlyMonitoring != null) {
             // Set initial monitoring values
@@ -67,25 +67,25 @@ public class MonitorableKeepAliveStats extends KeepAliveStats {
     @Override
     public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
         super.setMaxKeepAliveRequests(maxKeepAliveRequests);
-        grizzlyMonitoring.getKeepAliveProbeProvider().setMaxCountRequestsEvent(listenerName, maxKeepAliveRequests);
+        grizzlyMonitoring.getKeepAliveProbeProvider().setMaxCountRequestsEvent(monitoringId, maxKeepAliveRequests);
     }
 
     @Override
     public void setKeepAliveTimeoutInSeconds(int timeout) {
         super.setKeepAliveTimeoutInSeconds(timeout);
-        grizzlyMonitoring.getKeepAliveProbeProvider().setTimeoutInSecondsEvent(listenerName, timeout);
+        grizzlyMonitoring.getKeepAliveProbeProvider().setTimeoutInSecondsEvent(monitoringId, timeout);
     }
 
     @Override
     public void incrementCountConnections() {
 //        super.incrementCountConnections();
-        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountConnectionsEvent(listenerName);
+        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountConnectionsEvent(monitoringId);
     }
 
     @Override
     protected void decrementCountConnections() {
 //        super.decrementCountConnections();
-        grizzlyMonitoring.getKeepAliveProbeProvider().decrementCountConnectionsEvent(listenerName);
+        grizzlyMonitoring.getKeepAliveProbeProvider().decrementCountConnectionsEvent(monitoringId);
     }
 
 
@@ -93,24 +93,24 @@ public class MonitorableKeepAliveStats extends KeepAliveStats {
     @Override
     public void incrementCountFlushes() {
 //        super.incrementCountFlushes();
-        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountFlushesEvent(listenerName);
+        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountFlushesEvent(monitoringId);
     }
 
     @Override
     public void incrementCountHits() {
 //        super.incrementCountHits();
-        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountHitsEvent(listenerName);
+        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountHitsEvent(monitoringId);
     }
 
     @Override
     public void incrementCountRefusals() {
 //        super.incrementCountRefusals();
-        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountRefusalsEvent(listenerName);
+        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountRefusalsEvent(monitoringId);
     }
 
     @Override
     public void incrementCountTimeouts() {
 //        super.incrementCountTimeouts();
-        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountTimeoutsEvent(listenerName);
+        grizzlyMonitoring.getKeepAliveProbeProvider().incrementCountTimeoutsEvent(monitoringId);
     }
 }

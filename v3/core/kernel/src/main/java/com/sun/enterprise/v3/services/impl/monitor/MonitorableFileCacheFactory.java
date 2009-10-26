@@ -51,19 +51,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class MonitorableFileCacheFactory extends FileCacheFactory {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private final GrizzlyMonitoring grizzlyMonitoring;
-    private final String fileCacheName;
+    private final String monitoringId;
 
     public MonitorableFileCacheFactory(GrizzlyMonitoring grizzlyMonitoring,
-            String fileCacheName) {
+            String monitoringId) {
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.fileCacheName = fileCacheName;
+        this.monitoringId = monitoringId;
         cacheManager = new ConcurrentLinkedQueue<FileCacheEntry>();
         isMonitoringEnabled = true;
     }
     
     @Override
     protected FileCache createFileCache() {
-        return new MonitorableFileCache(grizzlyMonitoring, fileCacheName);
+        return new MonitorableFileCache(grizzlyMonitoring, monitoringId);
     }
 
     @Override

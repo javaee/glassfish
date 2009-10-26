@@ -52,19 +52,19 @@ import java.nio.channels.SelectionKey;
 public class MonitorableSelectorHandler extends SelectorThreadHandler {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private GrizzlyMonitoring grizzlyMonitoring;
-    private String listenerName;
+    private String monitoringId;
 
     public MonitorableSelectorHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String listenerName) {
-        this(grizzlyMonitoring, listenerName, null);
+            String monitoringId) {
+        this(grizzlyMonitoring, monitoringId, null);
     }
 
 
     public MonitorableSelectorHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String listenerName, SelectorThread selectorThread) {
+            String monitoringId, SelectorThread selectorThread) {
         super(selectorThread);
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.listenerName = listenerName;
+        this.monitoringId = monitoringId;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
         super.copyTo(copy);
         MonitorableSelectorHandler copyHandler = (MonitorableSelectorHandler) copy;
         copyHandler.grizzlyMonitoring = grizzlyMonitoring;
-        copyHandler.listenerName = listenerName;
+        copyHandler.monitoringId = monitoringId;
     }
 
 
@@ -80,7 +80,7 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
         final SelectableChannel channel = super.acceptWithoutRegistration(key);
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(listenerName, channel.hashCode());
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(monitoringId, channel.hashCode());
         
         return channel;
     }
@@ -88,7 +88,7 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
     @Override
     public boolean onConnectInterest(SelectionKey key, Context ctx)
             throws IOException {
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(listenerName, key.channel().hashCode());
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(monitoringId, key.channel().hashCode());
         
         return super.onConnectInterest(key, ctx);
     }

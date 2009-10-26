@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider;
 import com.sun.grizzly.http.StatsThreadPool;
+import com.sun.grizzly.util.AbstractThreadPool.Worker;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -52,46 +53,28 @@ public class MonitorableThreadPool extends StatsThreadPool {
 
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private final GrizzlyMonitoring monitoring;
-    private final String monitoringName;
-
-    public MonitorableThreadPool(GrizzlyMonitoring monitoring,
-            String monitoringName) {
-        this.monitoring = monitoring;
-        this.monitoringName = monitoringName;
-        setThreadFactory(new ProbeWorkerThreadFactory());
-
-        final ThreadPoolProbeProvider threadPoolProbeProvider =
-                monitoring.getThreadPoolProbeProvider();
-
-        threadPoolProbeProvider.setCoreThreadsEvent(
-                monitoringName, corePoolSize);
-        threadPoolProbeProvider.setMaxThreadsEvent(
-                monitoringName, maxPoolSize);
-
-        monitoring.getConnectionQueueProbeProvider().setMaxTaskQueueSizeEvent(
-                monitoringName, workQueue.remainingCapacity());
-    }
+    private final String monitoringId;
 
     public MonitorableThreadPool(
-            GrizzlyMonitoring monitoring, String threadPoolMonitoringName,
+            GrizzlyMonitoring monitoring, String monitoringId,
             String threadPoolName, int corePoolSize, int maximumPoolSize,
             int maxTasksCount, long keepAliveTime, TimeUnit unit) {
         super(threadPoolName, corePoolSize, maximumPoolSize, maxTasksCount,
                 keepAliveTime, unit);
         this.monitoring = monitoring;
-        this.monitoringName = threadPoolMonitoringName;
+        this.monitoringId = monitoringId;
         setThreadFactory(new ProbeWorkerThreadFactory());
 
         final ThreadPoolProbeProvider threadPoolProbeProvider =
                 monitoring.getThreadPoolProbeProvider();
         
         threadPoolProbeProvider.setCoreThreadsEvent(
-                threadPoolMonitoringName, super.corePoolSize);
+                monitoringId, threadPoolName, super.corePoolSize);
         threadPoolProbeProvider.setMaxThreadsEvent(
-                threadPoolMonitoringName, super.maxPoolSize);
+                monitoringId, threadPoolName, super.maxPoolSize);
 
         monitoring.getConnectionQueueProbeProvider().setMaxTaskQueueSizeEvent(
-                monitoringName, workQueue.remainingCapacity());
+                monitoringId, getMaxQueuedTasksCount());
     }
 
     @Override
@@ -102,7 +85,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
             if (monitoring == null) return;
 
             monitoring.getThreadPoolProbeProvider().setCoreThreadsEvent(
-                    monitoringName, corePoolSize);
+                    monitoringId, getName(), corePoolSize);
         }
     }
 
@@ -114,7 +97,7 @@ public class MonitorableThreadPool extends StatsThreadPool {
             if (monitoring == null) return;
 
             monitoring.getThreadPoolProbeProvider().setMaxThreadsEvent(
-                    monitoringName, maxPoolSize);
+                    monitoringId, getName(), maxPoolSize);
         }
     }
 
@@ -129,9 +112,9 @@ public class MonitorableThreadPool extends StatsThreadPool {
                     monitoring.getThreadPoolProbeProvider();
 
             threadPoolProbeProvider.setCoreThreadsEvent(
-                    monitoringName, corePoolSize);
+                    monitoringId, getName(), corePoolSize);
             threadPoolProbeProvider.setMaxThreadsEvent(
-                    monitoringName, maxPoolSize);
+                    monitoringId, getName(), maxPoolSize);
         }
     }
 
@@ -140,41 +123,55 @@ public class MonitorableThreadPool extends StatsThreadPool {
     protected void beforeExecute(Thread thread, Runnable runnable) {
         super.beforeExecute(thread, runnable);
         monitoring.getThreadPoolProbeProvider().threadDispatchedFromPoolEvent(
-                monitoringName, thread.getName());
+                monitoringId, getName(), thread.getName());
     }
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         monitoring.getThreadPoolProbeProvider().threadReturnedToPoolEvent(
-                monitoringName, Thread.currentThread().getName());
+                monitoringId, getName(), Thread.currentThread().getName());
         super.afterExecute(r, t);
     }
 
     @Override
-    protected void onWorkerExit(BasicWorker worker) {
+    protected void onWorkerStarted(Worker worker) {
+        super.onWorkerStarted(worker);
+        monitoring.getThreadPoolProbeProvider().threadAllocatedEvent(
+                monitoringId, getName(), Thread.currentThread().getName());
+    }
+
+    @Override
+    protected void onWorkerExit(Worker worker) {
         monitoring.getThreadPoolProbeProvider().threadReleasedEvent(
-                monitoringName, Thread.currentThread().getName());
+                monitoringId, getName(), Thread.currentThread().getName());
         super.onWorkerExit(worker);
+    }
+
+    @Override
+    protected void onMaxNumberOfThreadsReached() {
+        monitoring.getThreadPoolProbeProvider().maxNumberOfThreadsReachedEvent(
+                monitoringId, getName(), getMaximumPoolSize());
+        super.onMaxNumberOfThreadsReached();
     }
 
     @Override
     protected void onTaskQueued(Runnable task) {
         monitoring.getConnectionQueueProbeProvider().onTaskQueuedEvent(
-                monitoringName, task);
+                monitoringId, task);
         super.onTaskQueued(task);
     }
 
     @Override
     protected void onTaskDequeued(Runnable task) {
         monitoring.getConnectionQueueProbeProvider().onTaskDequeuedEvent(
-                monitoringName, task);
+                monitoringId, task);
         super.onTaskDequeued(task);
     }
 
     @Override
     protected void onTaskQueueOverflow() {
         monitoring.getConnectionQueueProbeProvider().onTaskQueueOverflowEvent(
-                monitoringName);
+                monitoringId);
         super.onTaskQueueOverflow();
     }
 
@@ -184,10 +181,8 @@ public class MonitorableThreadPool extends StatsThreadPool {
         public Thread newThread(Runnable r) {
             Thread thread = new MonitorableWorkerThread(
                     MonitorableThreadPool.this, r, name +
-                    "-(" + workerThreadCounter.getAndIncrement() + ")",
+                    "-(" + nextThreadId() + ")",
                     initialByteBufferSize, monitoring);
-            monitoring.getThreadPoolProbeProvider().threadAllocatedEvent(
-                    monitoringName, thread.getName());
             return thread;
         }
     }

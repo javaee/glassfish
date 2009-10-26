@@ -48,46 +48,46 @@ public class MonitorableSSLFileCache extends SSLFileCache {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
 
     private final GrizzlyMonitoring grizzlyMonitoring;
-    private final String fileCacheName;
+    private final String monitoringId;
 
-    public MonitorableSSLFileCache(GrizzlyMonitoring grizzlyMonitoring, String fileCacheName) {
+    public MonitorableSSLFileCache(GrizzlyMonitoring grizzlyMonitoring, String monitoringId) {
         this.grizzlyMonitoring = grizzlyMonitoring;
-        this.fileCacheName = fileCacheName;
+        this.monitoringId = monitoringId;
     }
 
     @Override
     protected void countHit() {
         super.countHit();
-        grizzlyMonitoring.getFileCacheProbeProvider().countHitEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countHitEvent(monitoringId);
     }
 
     @Override
     protected void countMiss() {
         super.countMiss();
-        grizzlyMonitoring.getFileCacheProbeProvider().countMissEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countMissEvent(monitoringId);
     }
 
     @Override
     protected void countInfoHit() {
         super.countInfoHit();
-        grizzlyMonitoring.getFileCacheProbeProvider().countInfoHitEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countInfoHitEvent(monitoringId);
     }
 
     @Override
     protected void countInfoMiss() {
         super.countInfoMiss();
-        grizzlyMonitoring.getFileCacheProbeProvider().countInfoMissEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countInfoMissEvent(monitoringId);
     }
 
     @Override
     protected void countContentHit() {
         super.countContentHit();
-        grizzlyMonitoring.getFileCacheProbeProvider().countContentHitEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countContentHitEvent(monitoringId);
     }
 
     @Override
     protected void countContentMiss() {
         super.countContentMiss();
-        grizzlyMonitoring.getFileCacheProbeProvider().countContentMissEvent(fileCacheName);
+        grizzlyMonitoring.getFileCacheProbeProvider().countContentMissEvent(monitoringId);
     }
 }

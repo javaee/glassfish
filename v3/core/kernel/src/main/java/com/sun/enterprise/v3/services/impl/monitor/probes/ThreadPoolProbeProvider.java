@@ -48,12 +48,14 @@ public class ThreadPoolProbeProvider {
 
     @Probe(name="setMaxThreadsEvent")
     public void setMaxThreadsEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {}
     
 
     @Probe(name="setCoreThreadsEvent")
     public void setCoreThreadsEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("coreNumberOfThreads") int coreNumberOfThreads) {}
 
@@ -63,30 +65,35 @@ public class ThreadPoolProbeProvider {
      */
     @Probe(name="threadAllocatedEvent")
     public void threadAllocatedEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId) {}
 
 
     @Probe(name="threadReleasedEvent")
     public void threadReleasedEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId) {}
 
 
     @Probe(name="maxNumberOfThreadsReachedEvent")
     public void maxNumberOfThreadsReachedEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("maxNumberOfThreads") int maxNumberOfThreads) {}
 
 
     @Probe(name="threadDispatchedFromPoolEvent")
     public void threadDispatchedFromPoolEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId) {}
 
 
     @Probe(name="threadReturnedToPoolEvent")
     public void threadReturnedToPoolEvent(
+        @ProbeParam("monitoringId") String monitoringId,
         @ProbeParam("threadPoolName") String threadPoolName,
         @ProbeParam("threadId") String threadId) {}
 }

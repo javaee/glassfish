@@ -48,23 +48,23 @@ import com.sun.grizzly.config.GrizzlyServiceListener;
 public class MonitorableServiceListener extends GrizzlyServiceListener {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private final GrizzlyMonitoring monitoring;
-    private final String listenerName;
+    private final String monitoringId;
 
     public MonitorableServiceListener(
             GrizzlyMonitoring monitoring,
             Controller controller,
-            String listenerName) {
+            String monitoringId) {
         super(controller);
         this.monitoring = monitoring;
-        this.listenerName = listenerName;
+        this.monitoringId = monitoringId;
     }
 
     @Override
     protected GrizzlyEmbeddedHttp createEmbeddedHttp(boolean isSecured) {
         if (isSecured) {
-            return new MonitorableEmbeddedHttps(monitoring, this, listenerName);
+            return new MonitorableEmbeddedHttps(monitoring, this, monitoringId);
         } else {
-            return new MonitorableEmbeddedHttp(monitoring, this, listenerName);
+            return new MonitorableEmbeddedHttp(monitoring, this, monitoringId);
         }
     }
 }
