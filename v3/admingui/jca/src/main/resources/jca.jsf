@@ -45,9 +45,6 @@
 <!define name="content">
 
 #include "/common/shared/restart.inc"    
-        <sun:head id="connectorsHead" title="$resource{i18njca.connectors.pageTitle}">
-            <sun:script url="/resource/common/js/adminjsf.js" />
-        </sun:head>
             <sun:form id="resourcesForm"> 
                 <sun:title 
                 id="resourcesPageTitle" 
