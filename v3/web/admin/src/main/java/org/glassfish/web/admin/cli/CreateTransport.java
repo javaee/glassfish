@@ -91,9 +91,9 @@ public class CreateTransport implements AdminCommand {
         defaultValue = "com.sun.grizzly.TCPSelectorHandler")
     String className;
     @Param(name = "displayconfiguration", optional = true, defaultValue = "false")
-    String displayConfiguration;
+    Boolean displayConfiguration;
     @Param(name = "enablesnoop", optional = true, defaultValue = "false")
-    String enableSnoop;
+    Boolean enableSnoop;
     @Param(name = "idlekeytimeoutseconds", optional = true, defaultValue = "30")
     String idleKeyTimeoutSeconds;
     @Param(name = "maxconnectionscount", optional = true, defaultValue = "4096")
@@ -107,7 +107,7 @@ public class CreateTransport implements AdminCommand {
     @Param(name = "selectorpolltimeoutmillis", optional = true, defaultValue = "1000")
     String selectorPollTimeoutMillis;
     @Param(name = "tcpnodelay", optional = true)
-    String tcpNoDelay;
+    Boolean tcpNoDelay;
     @Inject
     Configs configs;
 
@@ -147,8 +147,8 @@ public class CreateTransport implements AdminCommand {
                     newTransport.setBufferSizeBytes(bufferSizeBytes);
                     newTransport.setByteBufferType(byteBufferType);
                     newTransport.setClassname(className);
-                    newTransport.setDisplayConfiguration(displayConfiguration);
-                    newTransport.setEnableSnoop(enableSnoop);
+                    newTransport.setDisplayConfiguration(displayConfiguration.toString());
+                    newTransport.setEnableSnoop(enableSnoop.toString());
                     newTransport.setIdleKeyTimeoutSeconds(idleKeyTimeoutSeconds);
                     newTransport.setMaxConnectionsCount(maxConnectionsCount);
                     newTransport.setName(transportName);
@@ -157,7 +157,7 @@ public class CreateTransport implements AdminCommand {
                     newTransport.setSelectorPollTimeoutMillis(
                         selectorPollTimeoutMillis);
                     newTransport.setWriteTimeoutMillis(writeTimeoutMillis);
-                    newTransport.setTcpNoDelay(tcpNoDelay);
+                    newTransport.setTcpNoDelay(tcpNoDelay.toString());
                     param.getTransport().add(newTransport);
                     return newTransport;
                 }
