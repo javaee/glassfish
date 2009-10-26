@@ -1958,7 +1958,7 @@ admingui.ajax = {
                 }
                 if (shouldReplace) {
                     var url = node.href;
-                    node.href = "#";
+                    //node.href = "#";
                     var oldOnClick = node.onclick;
                     node.onclick = function() {
                         admingui.ajax.loadPage({
