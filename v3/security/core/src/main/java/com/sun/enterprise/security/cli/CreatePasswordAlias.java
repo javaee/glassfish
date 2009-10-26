@@ -121,7 +121,7 @@ public class CreatePasswordAlias implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(localStrings.getLocalString(
             "create.password.alias.success",
-            "Encrypted password stored for the alias {0} store successfully", 
+            "Encrypted password for the alias name {0} stored successfully",
             aliasName));        
     }       
 }
