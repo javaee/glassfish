@@ -96,7 +96,7 @@
     </sun:propertySheetSection>
 </sun:propertySheet>
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring.MonitorLevelTableTitle}"
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring.MonitorLevelTableTitle}"  sortPanelToggleButton="#{false}"
              deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
