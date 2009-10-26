@@ -107,7 +107,18 @@ public class CreatePasswordAlias implements AdminCommand {
                 mp = "changeit";
             
             PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
+            if (pa.getPasswordForAlias(aliasName) != null) {
+                report.setMessage(localStrings.getLocalString(
+                    "create.password.alias.alreadyexists",
+                    "Password alias with the specified name already exists. " +
+                    "Please use the update-password-alias command to change it",
+                    aliasName));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
             pa.setPasswordForAlias(aliasName,aliasPassword.getBytes());
+
         } catch (Exception ex) {
             ex.printStackTrace();
             report.setMessage(localStrings.getLocalString(
