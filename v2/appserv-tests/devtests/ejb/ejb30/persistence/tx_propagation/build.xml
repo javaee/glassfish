@@ -28,15 +28,38 @@
     </target>
 
     <target name="setup" depends="init-common">
-      <antcall target="execute-ejb-sql-common">
+      <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
+            <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
+            <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
+            <param name="jdbc.resource.name" value="jdbc/xa"/>
+        </antcall>
+       <antcall target="asadmin-common"> 
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.property.connectionAttributes=;create=true"/>
+       </antcall>
+
+
+      <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
       </antcall>
     </target>
 
     <target name="unsetup" depends="init-common">
-      <antcall target="execute-ejb-sql-common">
+      <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/drop.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
       </antcall>
+        <antcall target="delete-jdbc-resource-common">
+            <param name="jdbc.resource.name" value="jdbc/xa"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
+        </antcall>
+
     </target>
 
     <target name="build" depends="compile">
