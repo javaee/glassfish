@@ -497,7 +497,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 				try {
 					// NOTE : Context class-loader is already set by Pool
 
-					inv = invFactory.create(ejb, beanContext);
+					inv = createEjbInvocation(ejb, beanContext);
 
 					inv.isMessageDriven = true;
 					invocationManager.preInvoke(inv);
@@ -679,7 +679,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 			
 
 			// java:comp/env lookups are allowed from here on...
-			inv = invFactory.create(ejb, context);
+			inv = createEjbInvocation(ejb, context);
 
 			inv.isMessageDriven = true;
 			invocationManager.preInvoke(inv);
@@ -972,7 +972,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 			throw new EJBException(errorMsg);
 		}
 
-		EjbInvocation invocation = invFactory.create();
+		EjbInvocation invocation = createEjbInvocation();
 
 		try {
 

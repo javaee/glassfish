@@ -58,6 +58,7 @@ public class EjbInvocationFactory {
     public <C extends ComponentContext> EjbInvocation create(Object ejb, C ctx) {
         EjbInvocation ejbInv = new EjbInvocation(compEnvId, container);
         ejbInv.ejb = ejb;
+        ejbInv.instance = ejb;
         ejbInv.context = ctx;
 
         return ejbInv;

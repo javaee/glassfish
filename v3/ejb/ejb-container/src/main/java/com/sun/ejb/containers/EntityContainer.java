@@ -1447,9 +1447,7 @@ public class EntityContainer
         // the context is available.  It is needed in case ejbStore/ejbLoad
         // makes use of EJB timer service in order to perform operations allowed
         // checks
-        EjbInvocation inv = super.createEjbInvocation();
-        inv.ejb = e;
-        inv.context = context;
+        EjbInvocation inv = super.createEjbInvocation(e, context);
         invocationManager.preInvoke(inv);
         
         try {
@@ -1698,9 +1696,7 @@ public class EntityContainer
         }
         EntityBean ejb = (EntityBean)context.getEJB();
         
-        EjbInvocation inv = super.createEjbInvocation();
-        inv.ejb = ejb;
-        inv.context = context;
+        EjbInvocation inv = super.createEjbInvocation(ejb, context);
         inv.method = ejbPassivateMethod;
         
         Object pkey = context.getPrimaryKey();
@@ -1948,9 +1944,7 @@ public class EntityContainer
         // }
         EntityBean ejb = (EntityBean) context.getEJB();
         synchronized ( context ) {
-            EjbInvocation inv = super.createEjbInvocation();
-            inv.ejb = ejb;
-            inv.context = context;
+            EjbInvocation inv = super.createEjbInvocation(ejb, context);
             inv.method = ejbPassivateMethod;
             invocationManager.preInvoke(inv);
             
@@ -2024,9 +2018,7 @@ public class EntityContainer
         
         EntityBean ejb = (EntityBean)context.getEJB();
         
-        EjbInvocation inv2 = super.createEjbInvocation();
-        inv.ejb = ejb;
-        inv.context = context;
+        EjbInvocation inv2 = super.createEjbInvocation(ejb, context);
         inv2.method = ejbActivateMethod;
         invocationManager.preInvoke(inv2);
         
@@ -2508,9 +2500,7 @@ public class EntityContainer
                 // create EntityContext
                 entityCtx = createEntityContextInstance(ejb, entityContainer);
 
-                ejbInv = entityContainer.createEjbInvocation();
-                ejbInv.ejb = ejb;
-                ejbInv.context = entityCtx;
+                ejbInv = entityContainer.createEjbInvocation(ejb, entityCtx);
                 invocationManager.preInvoke(ejbInv);
                 
                 // setEntityContext may be called with or without a Tx
@@ -2543,9 +2533,7 @@ public class EntityContainer
             EntityContextImpl context = (EntityContextImpl) object;
             EntityBean ejb = (EntityBean)context.getEJB();
             if (context.getState() != BeanState.DESTROYED) {
-                EjbInvocation ci = entityContainer.createEjbInvocation();
-                ci.ejb = ejb;
-                ci.context = context;
+                EjbInvocation ci = entityContainer.createEjbInvocation(ejb, context);
                 invocationManager.preInvoke(ci);
                 
                 // kill the bean and let it be GC'ed

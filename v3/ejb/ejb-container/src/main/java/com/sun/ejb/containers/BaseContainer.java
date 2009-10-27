@@ -412,7 +412,7 @@ public abstract class BaseContainer
 
     protected JavaEETransactionManager transactionManager;
 
-    protected EjbInvocationFactory invFactory;
+    private EjbInvocationFactory invFactory;
 
     private ProtocolManager protocolMgr;
 
@@ -3576,6 +3576,10 @@ public abstract class BaseContainer
 
     EjbInvocation createEjbInvocation() {
         return invFactory.create();
+    }
+
+    EjbInvocation createEjbInvocation(Object ejb, ComponentContext context) {
+        return invFactory.create(ejb, context);
     }
 
     private EJBLocalHomeImpl instantiateEJBLocalHomeImpl()

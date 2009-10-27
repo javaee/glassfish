@@ -465,9 +465,7 @@ public class StatelessSessionContainer
             context = new SessionContextImpl(ejb, this);
             
             // this allows JNDI lookups from setSessionContext, ejbCreate
-            ejbInv = super.createEjbInvocation();
-            ejbInv.ejb = ejb;
-            ejbInv.context = context;
+            ejbInv = super.createEjbInvocation(ejb, context);
             invocationManager.preInvoke(ejbInv);
 
             // setSessionContext will be called without a Tx as required
@@ -732,9 +730,7 @@ public class StatelessSessionContainer
                 EjbInvocation ejbInv = null;
                 try {
                     // NOTE : Context class-loader is already set by Pool
-                    ejbInv = createEjbInvocation();
-                    ejbInv.ejb = sb;
-                    ejbInv.context = sessionCtx;
+                    ejbInv = createEjbInvocation(sb, sessionCtx);
                     invocationManager.preInvoke(ejbInv);
                     sessionCtx.setInEjbRemove(true);        
    

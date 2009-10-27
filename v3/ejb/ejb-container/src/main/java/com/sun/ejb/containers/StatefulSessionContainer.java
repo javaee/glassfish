@@ -557,7 +557,7 @@ public final class StatefulSessionContainer
             createExtendedEMs(context, sessionKey);
 
             // Need to do preInvoke because setSessionContext can access JNDI
-            ejbInv = super.invFactory.create(ejb, context);
+            ejbInv = super.createEjbInvocation(ejb, context);
             invocationManager.preInvoke(ejbInv);
 
             // setSessionContext will be called without a Tx as required
@@ -705,7 +705,7 @@ public final class StatefulSessionContainer
         EjbInvocation ejbInv = null;
         try {
             // Need to do preInvoke because setSessionContext can access JNDI
-            ejbInv = super.invFactory.create(context.getEJB(), context);
+            ejbInv = super.createEjbInvocation(context.getEJB(), context);
             invocationManager.preInvoke(ejbInv);
             // PostConstruct must be called after state set to something
                 // other than CREATED
@@ -1804,7 +1804,7 @@ public final class StatefulSessionContainer
         // because beforeCompletion can only be called after
         // all business methods are completed.
 
-        EjbInvocation inv = super.invFactory.create(ejb, context);
+        EjbInvocation inv = super.createEjbInvocation(ejb, context);
         invocationManager.preInvoke(inv);
         try {
             transactionManager.enlistComponentResources();
@@ -1902,7 +1902,7 @@ public final class StatefulSessionContainer
 
             Object ejb = sc.getEJB();
 
-            EjbInvocation ejbInv = invFactory.create(ejb, sc);
+            EjbInvocation ejbInv = createEjbInvocation(ejb, sc);
             invocationManager.preInvoke(ejbInv);
 
             synchronized (sc) {
@@ -1967,7 +1967,7 @@ public final class StatefulSessionContainer
                                         boolean status) {
 	if( afterCompletionMethod != null ) {
 	    Object ejb = context.getEJB();
-	    EjbInvocation ejbInv = invFactory.create(ejb, context);
+	    EjbInvocation ejbInv = createEjbInvocation(ejb, context);
 	    invocationManager.preInvoke(ejbInv);
 	    try {
 		context.setInAfterCompletion(true);
@@ -2041,7 +2041,7 @@ public final class StatefulSessionContainer
             }
             */
 
-            EjbInvocation ejbInv = invFactory.create(ejb, sc);
+            EjbInvocation ejbInv = createEjbInvocation(ejb, sc);
             invocationManager.preInvoke(ejbInv);
 
             boolean failed = false;
@@ -2220,7 +2220,7 @@ public final class StatefulSessionContainer
         EJBLocalRemoteObject ejbObject = (EJBLocalRemoteObject) cookie;
         Object ejb = context.getEJB();
 
-        EjbInvocation ejbInv = invFactory.create(ejb, context);
+        EjbInvocation ejbInv = createEjbInvocation(ejb, context);
         invocationManager.preInvoke(ejbInv);
         try {
             // we're sure that no concurrent thread can be using this bean
@@ -2918,7 +2918,7 @@ public final class StatefulSessionContainer
                 checkpointStartTime = System.currentTimeMillis();
             }
 
-            EjbInvocation ejbInv = invFactory.create(ejb, sc);
+            EjbInvocation ejbInv = createEjbInvocation(ejb, sc);
             invocationManager.preInvoke(ejbInv);
 
             synchronized (sc) {

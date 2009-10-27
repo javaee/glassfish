@@ -214,8 +214,8 @@ public abstract class AbstractSingletonContainer
     }
 
     @Override
-    EjbInvocation createEjbInvocation() {
-        EjbInvocation inv = super.createEjbInvocation();
+    EjbInvocation createEjbInvocation(Object ejb, ComponentContext ctx) {
+        EjbInvocation inv = super.createEjbInvocation(ejb, ctx);
 
         // Singletons can not store the underlying resource list
         // in the context impl since that is shared across many
@@ -475,9 +475,7 @@ public abstract class AbstractSingletonContainer
             context = new SingletonContextImpl(ejb, this);
             
             // this allows JNDI lookups from setSessionContext, ejbCreate
-            ejbInv = createEjbInvocation();
-            ejbInv.ejb = ejb;
-            ejbInv.context = context;
+            ejbInv = createEjbInvocation(ejb, context);
             invocationManager.preInvoke(ejbInv);
 
 
@@ -716,9 +714,7 @@ public abstract class AbstractSingletonContainer
                 EjbInvocation ejbInv = null;
                 try {
                     // NOTE : Context class-loader is already set by Pool
-                    ejbInv = createEjbInvocation();
-                    ejbInv.ejb = sb;
-                    ejbInv.context = singletonCtx;
+                    ejbInv = createEjbInvocation(sb, singletonCtx);
                     invocationManager.preInvoke(ejbInv);
                     singletonCtx.setInEjbRemove(true);
 
