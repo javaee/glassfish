@@ -640,7 +640,7 @@ public final class SMFService implements Service {
         final File manifest = new File(manifestPath);
         final File manifestParent = manifest.getParentFile();
         
-        if (manifestParent != null ) {
+        if (manifestParent != null && manifestParent.isDirectory()) {
             final String msg = sm.getString("smfLeftoverFiles", manifest.getParentFile().getAbsolutePath());
             throw new IllegalArgumentException(msg);
         }
