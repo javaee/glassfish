@@ -42,17 +42,18 @@
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
 <!define name="content">
-      <sun:script>
+    <sun:script>
         <f:verbatim>
-          function showWindow() {
-          var popup = document.getElementById("#{popupId}");
-          if (popup) {
-          popup.style.visibility='visible';
-          }
-          }
+            setCookie('admingui.nav.lastTreeNodeSelected', '');
+            function showWindow() {
+                var popup = document.getElementById("#{popupId}");
+                if (popup) {
+                    popup.style.visibility='visible';
+                }
+            }
         </f:verbatim>
-      </sun:script>
-      "<div style="min-height: 500px; overflow: auto;">
+    </sun:script>
+    "<div style="min-height: 500px; overflow: auto;">
 
       <sun:form id="form"> 
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">

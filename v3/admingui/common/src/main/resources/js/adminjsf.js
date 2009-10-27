@@ -855,6 +855,7 @@ admingui.nav = {
         var tree = document.getElementById(admingui.nav.TREE_ID);// admingui.nav.getTree(treeNode);
         if (tree) {
             try {
+                admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
                 tree.clearAllHighlight(tree.id);
                 tree.highlight(treeNode);
                 this.expandNode(treeNode);
@@ -879,7 +880,8 @@ admingui.nav = {
      *	This function selects the given treeNode.
      */
     selectTreeNodeById: function(treeNodeId) {
-        var tree = admingui.nav.getTree(admingui.nav.getTreeFrameElementById(treeNodeId));
+        var tree = document.getElementById(admingui.nav.TREE_ID);
+        //admingui.nav.getTreeFrameElementById(treeNodeId));
         if (tree) {
             tree.selectTreeNode(treeNodeId);
         }
@@ -932,7 +934,8 @@ admingui.nav = {
 
     getTree: function(treeNode) {
         if (treeNode) {
-            return getElementById(admingui.nav.TREE_ID).getTree(treeNode);
+            var node = document.getElementById(admingui.nav.TREE_ID);
+            return node.getTree(treeNode);
         }
         return null;
     }
@@ -1895,9 +1898,7 @@ admingui.ajax = {
         if (contentNode == null) {
             contentNode = document.getElementById("content");
         }
-        var oldFunc = o.argument.oldOnClickHandler;
         contentNode.innerHTML = o.responseText;
-//        admingui.util.log(o.responseText);
         if (typeof(oldFunc) == 'function') {
         //    oldFunc();
         }
@@ -1908,8 +1909,10 @@ admingui.ajax = {
         admingui.ajax.processScripts(o);
 	// Restore cursor
 	document.body.style.cursor = 'auto';
-        admingui.nav.clearTreeSelection();
-        admingui.nav.selectTreeNodeWithURL(o.argument.url);
+        var node = o.argument.sourceNode;
+        if (typeof node != 'undefined') {
+            admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
+        }
     },
 
     submitFormAjax : function (form) {
