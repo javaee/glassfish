@@ -77,8 +77,8 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected String poolName;
 
-    protected Logger _logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
-    protected StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
+    private static Logger logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
+    private static StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
 
     //The RAR name
     //This is pushed into the object in the connector runtime during
@@ -159,7 +159,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
         //TODO V3 refactor all the 3 cases viz, no res-ref, app-auth, cont-auth.
         if (ref == null) {
-            _logger.log(Level.FINE, "poolmgr.no_resource_reference", jndiNameToUse);
+            getLogger().log(Level.FINE, "poolmgr.no_resource_reference", jndiNameToUse);
             return internalGetConnection(mcf, defaultPrin, cxRequestInfo,
                     resourceShareable, jndiNameToUse, conn, true);
         }
@@ -168,7 +168,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         if (auth.equals(ResourceReferenceDescriptor.APPLICATION_AUTHORIZATION)) {
             if (cxRequestInfo == null) {
 
-                String msg = localStrings.getString("con_mgr.null_userpass");
+                String msg = getLocalStrings().getString("con_mgr.null_userpass");
                 throw new ResourceException(msg);
             }
             ConnectorRuntime.getRuntime().switchOnMatching(rarName, poolName);
@@ -196,7 +196,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             if (prin == null) {
                 prin = ref.getResourcePrincipal();
                 if (prin == null) {
-                    _logger.log(Level.FINE, "default-resource-principal not" +
+                    getLogger().log(Level.FINE, "default-resource-principal not" +
                             "specified for " + jndiNameToUse + ". Defaulting to" +
                             " user/password specified in the pool");
 
@@ -224,9 +224,9 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             spec.setConnectionPoolName(this.poolName);
             ManagedConnectionFactory freshMCF = pmd.getMCF();
 
-            if (_logger.isLoggable(Level.INFO)) {
+            if (getLogger().isLoggable(Level.INFO)) {
                 if (!freshMCF.equals(mcf)) {
-                    _logger.info("conmgr.mcf_not_equal");
+                    getLogger().info("conmgr.mcf_not_equal");
                 }
             }
             ConnectorDescriptor desc = registry.getDescriptor(rarName);
@@ -263,7 +263,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
             }
 
             int txLevel = pmd.getTransactionSupport();
-            if (_logger.isLoggable(Level.FINE)) {
+            if (getLogger().isLoggable(Level.FINE)) {
                 logFine("ConnectionMgr: poolName " + poolName +
                         "  txLevel : " + txLevel);
             }
@@ -272,8 +272,8 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
         } catch (PoolingException ex) {
             Object[] params = new Object[]{poolName, ex};
-            _logger.log(Level.WARNING, "poolmgr.get_connection_failure", params);
-            String i18nMsg = localStrings.getString("con_mgr.error_creating_connection", ex.getMessage());
+            getLogger().log(Level.WARNING, "poolmgr.get_connection_failure", params);
+            String i18nMsg = getLocalStrings().getString("con_mgr.error_creating_connection", ex.getMessage());
             ResourceAllocationException rae = new ResourceAllocationException(i18nMsg);
             rae.initCause(ex);
             throw rae;
@@ -292,7 +292,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                 break;
             case ConnectorConstants.LOCAL_TRANSACTION_INT:
                 if (!shareable) {
-                    String i18nMsg = localStrings.getString("con_mgr.resource_not_shareable");
+                    String i18nMsg = getLocalStrings().getString("con_mgr.resource_not_shareable");
                     throw new ResourceAllocationException(i18nMsg);
                 }
                 alloc = new LocalTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
@@ -306,7 +306,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                 return poolmgr.getResource(spec, alloc, info);
             
             default:
-                String i18nMsg = localStrings.getString("con_mgr.illegal_tx_level", txLevel + " ");
+                String i18nMsg = getLocalStrings().getString("con_mgr.illegal_tx_level", txLevel + " ");
                 throw new IllegalStateException(i18nMsg);
         }
         return poolmgr.getResource(spec, alloc, info);
@@ -340,14 +340,28 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     private void validatePool() throws ResourceException {
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         if (registry.getPoolMetaData(poolName) == null) {
-            String msg = localStrings.getString("con_mgr.no_pool_meta_data", poolName);
+            String msg = getLocalStrings().getString("con_mgr.no_pool_meta_data", poolName);
             throw new ResourceException(poolName + ": " + msg);
         }
     }
 
     public void logFine(String message) {
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine(message);
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().fine(message);
         }
+    }
+
+    private static StringManager getLocalStrings() {
+        if(localStrings == null){
+            localStrings = StringManager.getManager(ConnectionManagerImpl.class);
+        }
+        return localStrings;
+    }
+
+    protected static Logger getLogger() {
+        if (logger == null){
+            logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
+        }
+        return logger;
     }
 }
