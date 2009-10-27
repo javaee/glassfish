@@ -47,11 +47,15 @@ import org.glassfish.flashlight.client.ProbeHandle;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.glassfish.api.monitoring.ProbeInfo;
 import org.glassfish.flashlight.FlashlightUtils;
 import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 public class FlashlightProbe
         implements ProbeHandle, ProbeInfo{
@@ -104,12 +108,15 @@ public class FlashlightProbe
     	boolean isFirst = (invokers.isEmpty() && firstTransform);
 
         if(invokers.putIfAbsent(invoker.getId(), invoker) != null) {
-            printd("&&&&&&&&&&&&&&     Adding an invoker that already exists: " + invoker.getId() +  "  &&&&&&&&&&");
+            if (logger.isLoggable(Level.FINEST))
+                printd("Adding an invoker that already exists: " + invoker.getId() +  "  &&&&&&&&&&");
         }
-        else
-            printd("$$$$$$$$$$$$   Adding an Invoker that does not exist: " + invoker.getId() +   " $$$$$$$$$$$$$");
-        //if (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider"))
-            printd("********************** Total invokers = " + invokers.size());
+        else {
+            if (logger.isLoggable(Level.FINEST))
+                printd("Adding an Invoker that does not exist: " + invoker.getId() +   " $$$$$$$$$$$$$");
+        }
+        if (logger.isLoggable(Level.FINEST))
+            printd("Total invokers = " + invokers.size());
         listenerEnabled.set(true);
         firstTransform = false;
         return isFirst;
@@ -119,12 +126,15 @@ public class FlashlightProbe
         ProbeClientInvoker pci = invokers.remove(invoker.getId());
 
         if(pci != null) {
-            printd("##########     Removing an invoker that already exists: " + pci.getId() +  "  ##########");
+            if (logger.isLoggable(Level.FINEST))
+                printd("Removing an invoker that already exists: " + pci.getId() +  "  ##########");
         }
-        else
-            printd("%%%%%%%%%     Failed to remove an invoker that does not exist: " + invoker.getId() +  "  %%%%%%%%%");
-        //if (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider"))
-            printd("********************** Total invokers = " + invokers.size());
+        else {
+            if (logger.isLoggable(Level.FINEST))
+                printd("Failed to remove an invoker that does not exist: " + invoker.getId() +  "  %%%%%%%%%");
+        }
+        if (logger.isLoggable(Level.FINEST))
+            printd("Total invokers = " + invokers.size());
 
         listenerEnabled.set(!invokers.isEmpty());
         
@@ -139,7 +149,6 @@ public class FlashlightProbe
         
         for (Map.Entry<Integer, ProbeClientInvoker> entry : entries) {
             ProbeClientInvoker invoker = entry.getValue();
-            printd ("+++++++++++++++++  Invoking probe: " + entry.getKey());
             if(invoker != null)
                 invoker.invoke(params);
         }
@@ -233,11 +242,8 @@ public class FlashlightProbe
         return hidden;
     }
 
-    private void printd(String str) {
-        if (ddebug && (this.providerClazz.getName().equals("org.glassfish.web.admin.monitor.JspProbeProvider")))  {
-            System.out.println(this.providerClazz.getName() + " : " + str);
-            //printStackTrace();
-        }
+    private void printd(String pstring) {
+        logger.log(Level.FINEST, pstring);
     }
 
     private void printStackTrace() {
@@ -265,4 +271,9 @@ public class FlashlightProbe
     private boolean hidden;
     private boolean firstTransform = true;
     private ConcurrentMap<Integer, ProbeClientInvoker> invokers = new ConcurrentHashMap<Integer, ProbeClientInvoker>();
+    private static final Logger logger =
+        LogDomains.getLogger(FlashlightProbe.class, LogDomains.MONITORING_LOGGER);
+    public final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(FlashlightProbe.class);
 }
+

@@ -84,10 +84,11 @@ public class ProviderImplGenerator {
 
 
         Type classType = Type.getType(providerClazz);
-        printd("** classType: " + classType);
-        printd("** classDesc: " + Type.getDescriptor(providerClazz));
-
-        printd("Generating for: " + generatedClassName);
+        if (logger.isLoggable(Level.FINEST)) {
+            printd("** classType: " + classType);
+            printd("** classDesc: " + Type.getDescriptor(providerClazz));
+            printd("Generating for: " + generatedClassName);
+        }
 
         generatedClassName = generatedClassName.replace('.', '/');
 
@@ -156,7 +157,8 @@ public class ProviderImplGenerator {
 
 
         if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
-			printd("**** Generated ClassDATA " + clsName);
+			if (logger.isLoggable(Level.FINEST))
+                printd("Generated ClassDATA " + clsName);
 
             // the path is horribly long.  Let's just write t directly into the
             // lib dir.  It is not for loading as a class but just for us humans
@@ -173,7 +175,8 @@ public class ProviderImplGenerator {
 									File.separator + "lib" + File.separator;
 
 				String fileName = rootPath + clsName + ".class";
-				printd("***ClassFile: " + fileName);
+				if (logger.isLoggable(Level.FINEST))
+                    printd("ClassFile: " + fileName);
 				File file = new File(fileName);
 				file.getParentFile().mkdirs();
 				FileOutputStream fos = new FileOutputStream(file);
@@ -225,8 +228,7 @@ public class ProviderImplGenerator {
     }
 
     private void printd(String pstring) {
-        if (logger.isLoggable(Level.FINEST))
-            logger.log(Level.FINEST, pstring);
+        logger.log(Level.FINEST, pstring);
     }
 }
 /*************

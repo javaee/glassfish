@@ -179,7 +179,8 @@ public class FlashlightProbeProviderFactory
         FlashlightProbeProvider provider = null;
         provider = new FlashlightProbeProvider(
                 moduleProviderName, moduleName, probeProviderName, providerClazz);
-        printd("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
+        if (logger.isLoggable(Level.FINEST))
+            printd("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
                 + "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
 
         // IT 10269 -- silently return a fresh instance if it is already registered
@@ -248,7 +249,8 @@ public class FlashlightProbeProviderFactory
     }
 
     public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle) {
-        printd("processProbeProviderXML for " + xml);
+        if (logger.isLoggable(Level.FINEST))
+            printd("processProbeProviderXML for " + xml);
         try {
             InputStream is = cl.getResourceAsStream(xml);
             if (inBundle) {
@@ -256,11 +258,13 @@ public class FlashlightProbeProviderFactory
             } else {
                 is = new FileInputStream(xml);
             }
-            printd("InputStream = " + is);
+            if (logger.isLoggable(Level.FINEST))
+                printd("InputStream = " + is);
             ProbeProviderStaxParser providerXMLParser = new ProbeProviderStaxParser(is);
             List<org.glassfish.flashlight.xml.Provider> providers = providerXMLParser.getProviders();
             for (org.glassfish.flashlight.xml.Provider provider : providers) {
-                printd(provider.toString());
+                if (logger.isLoggable(Level.FINEST))
+                    printd(provider.toString());
                 registerProvider(cl, provider);
             }
         } catch (Exception e) {
@@ -331,17 +335,20 @@ public class FlashlightProbeProviderFactory
 
         try {
             providerClazz = cl.loadClass(providerClass);
-            printd("providerClazz = " + providerClazz);
+            if (logger.isLoggable(Level.FINEST))
+                printd("providerClazz = " + providerClazz);
         } catch (Exception e) {
-            printd( " Could not load the class ( " + providerClazz +
+            if (logger.isLoggable(Level.FINEST))
+                printd( " Could not load the class ( " + providerClazz +
                         " ) for the provider " + providerClass);
             e.printStackTrace();
         }
-        printd("moduleProviderName = " + moduleProviderName);
-        printd("moduleName = " + moduleName);
-        printd("probeProviderName = " + probeProviderName);
-        printd("probeProviderClass = " + providerClass);
-
+        if (logger.isLoggable(Level.FINEST)) {
+            printd("moduleProviderName = " + moduleProviderName);
+            printd("moduleName = " + moduleName);
+            printd("probeProviderName = " + probeProviderName);
+            printd("probeProviderClass = " + providerClass);
+        }
         FlashlightProbeProvider flProvider = new FlashlightProbeProvider(
             		moduleProviderName, moduleName, probeProviderName, providerClazz);
 
@@ -358,7 +365,8 @@ public class FlashlightProbeProviderFactory
             int i = 0;
             for (org.glassfish.flashlight.xml.ProbeParam param : probe.getProbeParams()) {
                 probeParams[i] = param.getName();
-                printd("          probeParam[" + i + "] = " + probeParams[i]);
+                if (logger.isLoggable(Level.FINEST))
+                    printd("          probeParam[" + i + "] = " + probeParams[i]);
                 paramTypes[i] = getParamType(cl, param.getType());
 
                 if (paramTypes[i] == null) {
@@ -384,7 +392,8 @@ public class FlashlightProbeProviderFactory
                     moduleProviderName, moduleName, probeProviderName, probeName,
                     probeParams, paramTypes, hasSelf, isHidden);
             flProbe.setProviderJavaMethodName(probeMethod);
-            printd(" Constructed probe === " + flProbe.toString());
+            if (logger.isLoggable(Level.FINEST))
+                printd(" Constructed probe = " + flProbe.toString());
             flProvider.addProbe(flProbe);
         }
         if (flProvider.getProbes().size() == 0)
@@ -394,7 +403,8 @@ public class FlashlightProbeProviderFactory
         allProbeProviders.add(flProvider);
         ProbeProviderRegistry.getInstance().registerProbeProvider(
                 flProvider, providerClazz);
-        printd (" Provider registered successfully - " + probeProviderName);
+        if (logger.isLoggable(Level.FINEST))
+            printd (" Provider registered successfully - " + probeProviderName);
    }
 
 
@@ -423,15 +433,15 @@ public class FlashlightProbeProviderFactory
             }
         }
 
-        printd("          paramType = " + paramType);
+        if (logger.isLoggable(Level.FINEST))
+            printd("          paramType = " + paramType);
 
         return paramType;
 
     }
 
     private void printd(String pstring) {
-        if (logger.isLoggable(Level.FINEST))
-            logger.log(Level.FINEST, pstring);
+        logger.log(Level.FINEST, pstring);
     }
 
     private boolean isValidString(String str) {

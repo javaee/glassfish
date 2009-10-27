@@ -115,11 +115,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         String configElement = spInfo.getConfigElement();
         Object statsProvider = spInfo.getStatsProvider();
         // register the statsProvider
-        printd("registering a statsProvider ");
+        if (logger.isLoggable(Level.FINEST))
+            printd("registering a statsProvider ");
         StatsProviderRegistryElement spre;
         // First check if the configElement associated for statsProvider is 'ON'
         if (getMonitoringEnabled() && getEnabledValue(configElement)) {
-            printd(" enabled is true ");
+            if (logger.isLoggable(Level.FINEST))
+                printd(" enabled is true ");
             spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
 
             if (spre == null) {
@@ -132,14 +134,17 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
 
         } else {
-            printd(" enabled is false ");
+            if (logger.isLoggable(Level.FINEST))
+                printd(" enabled is false ");
             // Register with null values so to know that we need to register them individually and config is on
             statsProviderRegistry.registerStatsProvider(spInfo);
             spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
         }
 
-        printd(spre.toString());
-        printd("=========================================================");
+        if (logger.isLoggable(Level.FINEST)) {
+            printd(spre.toString());
+            printd("=========================================================");
+        }
     }
 
     public void unregister(Object statsProvider) {
@@ -249,7 +254,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             return;
         String configLevel = getMonitoringLevel(configElement);
         //Enable all the StatsProviders for a given configElement
-        printd("Enabling all the statsProviders for - " + configElement);
+        if (logger.isLoggable(Level.FINEST))
+            printd("Enabling all the statsProviders for - " + configElement);
         List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
         if (spreList == null)
             return;
@@ -281,7 +287,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             return;
         */
         //Disable all the StatsProviders for a given configElement
-        printd("Disabling all the statsProviders for - " + configElement);
+        if (logger.isLoggable(Level.FINEST))
+            printd("Disabling all the statsProviders for - " + configElement);
         List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
         if (spreList == null)
             return;
@@ -297,7 +304,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private void enableStatsProvider(StatsProviderRegistryElement spre) {
         Object statsProvider = spre.getStatsProvider();
-        printd("Enabling the statsProvider - " + statsProvider.getClass().getName());
+        if (logger.isLoggable(Level.FINEST))
+            printd("Enabling the statsProvider - " + statsProvider.getClass().getName());
 
          /* Step 1. Create the tree for the statsProvider */
         // Check if we already have TreeNodes created
@@ -344,7 +352,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private void disableStatsProvider(StatsProviderRegistryElement spre) {
-        printd("Disabling the statsProvider - " + spre.getStatsProvider().getClass().getName());
+        if (logger.isLoggable(Level.FINEST))
+            printd("Disabling the statsProvider - " + spre.getStatsProvider().getClass().getName());
         /* Step 1. Disable the tree nodes for StatsProvider */
         updateTreeNodes(spre, false);
 
@@ -363,7 +372,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     public void registerAllGmbal() {
         /* We do this when the mbean-enabled is turned on from off */
 
-        printd("Registering all the statsProviders whose enabled flag is 'on' with Gmbal");
+        if (logger.isLoggable(Level.FINEST))
+            printd("Registering all the statsProviders whose enabled flag is 'on' with Gmbal");
         for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
             if (spre.isEnabled()) {
                 ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
@@ -375,7 +385,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     public void unregisterAllGmbal() {
         /* We do this when the mbean-enabled is turned off from on */
 
-        printd("Unregistering all the statsProviders whose enabled flag is 'off' with Gmbal");
+        if (logger.isLoggable(Level.FINEST))
+            printd("Unregistering all the statsProviders whose enabled flag is 'off' with Gmbal");
         for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
             if (spre.isEnabled()) {
                 unregisterGmbal(spre);
@@ -746,8 +757,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private void printd(String pstring) {
-        if (logger.isLoggable(Level.FINEST))
-            logger.log(Level.FINEST, pstring);
+        logger.log(Level.FINEST, pstring);
     }
 
 }

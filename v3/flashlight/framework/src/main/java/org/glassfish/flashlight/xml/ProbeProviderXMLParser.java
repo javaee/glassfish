@@ -67,7 +67,6 @@ public class ProbeProviderXMLParser
     private List<Provider> providers = new ArrayList();
     private Document document;
     
-    private boolean debug = false;
     private static final Logger logger =
         LogDomains.getLogger(ProbeProviderXMLParser.class, LogDomains.MONITORING_LOGGER);
     public final static LocalStringManagerImpl localStrings =
@@ -99,7 +98,6 @@ public class ProbeProviderXMLParser
             parser.parse(isource);
             document = parser.getDocument();
             //document = builder.parse(is);
-            printDebug(" ** parsed document ***");
         } catch (SAXException sxe) {
             Exception  x = sxe;
             if (sxe.getException() != null)
@@ -231,10 +229,5 @@ public class ProbeProviderXMLParser
         String name = paramEl.getAttribute(PROBE_PARAM_NAME);
         String type = paramEl.getAttribute(PROBE_PARAM_TYPE);
         return (new ProbeParam(name, type));
-    }
-
-    private void printDebug(String pstring) {
-        if (logger.isLoggable(Level.FINEST))
-            logger.log(Level.FINEST, pstring);
     }
 }
