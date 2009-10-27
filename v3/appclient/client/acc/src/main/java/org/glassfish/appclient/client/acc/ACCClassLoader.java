@@ -45,6 +45,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
@@ -52,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -106,11 +110,16 @@ public class ACCClassLoader extends URLClassLoader {
     }
 
     private static URL[] userClassPath() {
+        final URI GFSystemURI = GFSystemURI();
         final List<URL> result = classPathToURLs(System.getProperty("java.class.path"));
         for (ListIterator<URL> it = result.listIterator(); it.hasNext();) {
             final URL url = it.next();
-            if (url.equals(GFSystemURL())) {
-                it.remove();
+            try {
+                if (url.toURI().equals(GFSystemURI)) {
+                    it.remove();
+                }
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
             }
         }
 
@@ -121,16 +130,16 @@ public class ACCClassLoader extends URLClassLoader {
 
     private static URL[] GFSystemClassPath() {
         try {
-            return new URL[] {GFSystemURL().toURI().normalize().toURL()};
+            return new URL[] {GFSystemURI().normalize().toURL()};
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private static URL GFSystemURL() {
+    private static URI GFSystemURI() {
         try {
             Class agentClass = Class.forName("org.glassfish.appclient.client.acc.agent.AppClientContainerAgent");
-            return agentClass.getProtectionDomain().getCodeSource().getLocation().toURI().normalize().toURL();
+            return agentClass.getProtectionDomain().getCodeSource().getLocation().toURI().normalize();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

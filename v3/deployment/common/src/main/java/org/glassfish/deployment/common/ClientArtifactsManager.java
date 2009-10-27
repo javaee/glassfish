@@ -172,7 +172,6 @@ public class ClientArtifactsManager {
     }
 
     public boolean contains(final URI baseURI, final URI artifactURI) {
-        final URIPair uris = new URIPair(baseURI, artifactURI);
         return artifacts.containsKey(artifactURI);
     }
 
