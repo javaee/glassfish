@@ -87,7 +87,7 @@ public class WebTest {
         conn.setReadTimeout(10000);
         conn.connect();
         if (conn.getResponseCode() != 200) {
-            throw new Exception("Unexpected return code: " +
+            throw new Exception("Unexpected response code: " +
                                 conn.getResponseCode());
         }
 

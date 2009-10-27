@@ -67,6 +67,7 @@ public class WebTest {
     public void doTest(String root) {
         try { 
             invoke(root);
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             System.out.println(TEST_NAME + " test failed");
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -83,40 +84,36 @@ public class WebTest {
 
         int code = conn.getResponseCode();
         if (code != 200) {
-            System.out.println("Unexpected return code: " + code);
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        } else {
-            InputStream is = null;
-            BufferedReader input = null;
-            String line = null;
+            throw new Exception("Unexpected response code: " + code);
+        }
+
+        InputStream is = null;
+        BufferedReader input = null;
+        String line = null;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            line = input.readLine();
+        } finally {
             try {
-                is = conn.getInputStream();
-                input = new BufferedReader(new InputStreamReader(is));
-                line = input.readLine();
-            } finally {
-                try {
-                    if (is != null) {
-                        is.close();
-                    }
-                } catch(IOException ex) {
-                    // ignore
+                if (is != null) {
+                    is.close();
                 }
-                try {
-                    if (input != null) {
-                        input.close();
-                    }
-                } catch(IOException ex) {
-                    // ignore
+            } catch(IOException ex) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
                 }
+            } catch(IOException ex) {
+                // ignore
             }
-            if (EXPECTED_RESPONSE.equals(line)) {
-                System.out.println("RESPONSE : " + line);
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.out.println("Wrong response. Expected: " + 
-                        EXPECTED_RESPONSE + ", received: " + line);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
-        }    
+        }
+
+        if (!EXPECTED_RESPONSE.equals(line)) {
+            throw new Exception("Wrong response. Expected: " + 
+                EXPECTED_RESPONSE + ", received: " + line);
+        }
     }
 }

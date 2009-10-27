@@ -97,7 +97,7 @@ public class WebTest {
 
             int responseCode = conn.getResponseCode();
             if (responseCode != EXPECTED_RESPONSE_CODE) {
-                throw new Exception("Unexpected return code. Expected: " +
+                throw new Exception("Unexpected response code. Expected: " +
                     EXPECTED_RESPONSE_CODE + ", received: " + responseCode);
             }
 
