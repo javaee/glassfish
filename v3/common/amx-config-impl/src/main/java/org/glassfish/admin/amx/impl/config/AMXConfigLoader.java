@@ -368,7 +368,7 @@ getActualParent( final ConfigBean configBean )
     {
         if ( ! configBean.getProxyType().getName().endsWith( "Domain" ) )
         {
-            throw new IllegalStateException("WARNING: parent is null for " + configBean.getProxyType().getName() + " (bug in ConfigBeans)");
+            throw new IllegalStateException("WARNING: parent is null for " + configBean.getProxyType().getName() + ",  see issue #10528");
         }
     }
     
@@ -394,7 +394,14 @@ getActualParent( final ConfigBean configBean )
     @SuppressWarnings("unchecked")
     static ConfigBean asConfigBean( final Object o )
     {
-        return (o instanceof ConfigBean) ? (ConfigBean)o : null;
+        if ( o == null ) return null;
+        
+        if ( ! (o instanceof ConfigBean) )
+        {
+            throw new IllegalArgumentException( "Not a ConfigBean: " + o.getClass().getName() );
+        }
+        
+        return (ConfigBean)o;
     }
 
 
