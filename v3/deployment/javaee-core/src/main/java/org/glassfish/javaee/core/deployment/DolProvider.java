@@ -134,7 +134,7 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             saveAppDescriptor(application, dc);
         }
 
-        System.out.println("DOL Loading time" + (System.currentTimeMillis() - start));
+        Logger.getAnonymousLogger().log(Level.FINE, "DOL Loading time" + (System.currentTimeMillis() - start));
 
         if (application.isVirtual()) {
             dc.addModuleMetaData(application.getStandaloneBundleDescriptor());
