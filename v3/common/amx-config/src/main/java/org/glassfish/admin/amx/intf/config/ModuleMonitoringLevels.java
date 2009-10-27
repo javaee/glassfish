@@ -40,6 +40,12 @@ import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.util.SetUtil;
 
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+
+import static org.glassfish.external.amx.AMX.*;
 
 /**
 Configuration for the &lt;module-monitoring-levels&gt; element.
@@ -117,6 +123,52 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
     
     public String getJersey();
     public void setJersey(final String value);
+    
+    public static final class Helper {
+        private Helper() {}
+        
+        /** set all monitoring levels to the specified one.
+          Return a Map keyed by attribute name of the previous values that changed
+          */
+        public static AttributeList setAllMonitoringLevel(
+            final ModuleMonitoringLevels levels,
+            final String newLevel)
+        {
+            final Set<String> excluded =
+                SetUtil.newUnmodifiableStringSet(ATTR_NAME, ATTR_PARENT, ATTR_CHILDREN);
+            
+            final Map<String,String>  changedValues = new HashMap<String,String>();
+            final Map<String,Object>  attrs = levels.attributesMap();
+            final AttributeList attributeList = new AttributeList();
+            final AttributeList originalValues = new AttributeList();
+            for( final String attrName : attrs.keySet() )
+            {
+                if ( excluded.contains(attrName) )
+                {
+                    continue;
+                }
+                
+                final String value = "" + attrs.get(attrName);
+                if ( ! value.equals(newLevel) )
+                {
+                    attributeList.add( new Attribute(attrName, newLevel) );
+                    originalValues.add( new Attribute(attrName, attrs.get(attrName)) );
+                }
+            }
+            if ( attributeList.size() != 0 )
+            {
+                try
+                {
+                    levels.extra().setAttributes( attributeList );
+                }
+                catch( final Exception e )
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            return originalValues;
+        }
+    }
 }
 
 

@@ -235,27 +235,8 @@ public class AMXTestBase
                     continue;
                 }
                 
-                final ModuleMonitoringLevels levels = mon.getModuleMonitoringLevels();
-                final Map<String,Object>  attrs = levels.attributesMap();
-                final AttributeList attributeList = new AttributeList();
-                for( final String attrName : attrs.keySet() )
-                {
-                    final String value = "" + attrs.get(attrName);
-                    if ( ModuleMonitoringLevels.OFF.equalsIgnoreCase(value) ||
-                        ModuleMonitoringLevels.LOW.equalsIgnoreCase(value))
-                    {
-                        debug( "Setting monitoring to HIGH for " + attrName );
-                        attributeList.add( new Attribute(attrName, ModuleMonitoringLevels.HIGH) );
-                    }
-                    else if ( ModuleMonitoringLevels.HIGH.equalsIgnoreCase(value) )
-                    {
-                        debug( "Monitoring at " + value + " for " + attrName );
-                    }
-                }
-                if ( attributeList.size() != 0 )
-                {
-                    levels.extra().setAttributes( attributeList );
-                }
+                final AttributeList  prevLevels =
+                    ModuleMonitoringLevels.Helper.setAllMonitoringLevel( mon.getModuleMonitoringLevels(), ModuleMonitoringLevels.HIGH );
             }
         }
     }
