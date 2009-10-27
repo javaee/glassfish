@@ -159,6 +159,7 @@
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.4</btrace.version>
         <v3-docs.version>3.0-b04</v3-docs.version>
+        <l10n.version>3.0-b69</l10n.version>
     </properties>
 
 
@@ -1025,6 +1026,7 @@
             <artifactId>btrace-boot</artifactId>
             <version>${btrace.version}</version>
           </dependency>
+          
         </dependencies>
     </dependencyManagement>
     <!--  End:   Dependency management -->
