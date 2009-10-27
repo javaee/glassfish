@@ -43,7 +43,9 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.adminObjectResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources','/jca/jcaTreeNode.jsf','Connectors:adminObjectResources');"
+    guiTemplateOnLoad="
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources','/jms/resourcesNodes.jsf','jmsResources:jmsDestinationResources');
+        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources','/jca/jcaTreeNode.jsf','Connectors:adminObjectResources');"
 >
 <!define name="content">
     <event>
