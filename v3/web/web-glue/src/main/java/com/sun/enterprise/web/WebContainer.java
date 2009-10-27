@@ -97,6 +97,7 @@ import org.apache.catalina.Realm;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
+import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.xmlparser.ParserUtils;
@@ -1603,6 +1604,18 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         String wmName = wmInfo.getName();
         String wmContextPath = wmInfo.getContextPath();
+
+        if (wmContextPath.indexOf('%') != -1) {
+            try {
+                RequestUtil.URLDecode(wmContextPath, "UTF-8");
+            } catch (Exception e) {
+                String msg = rb.getString(
+                    "webcontainer.invalidEncodedContextRoot");
+                msg = MessageFormat.format(msg,
+                    new Object[] { wmName, wmContextPath });
+                throw new Exception(msg);            
+            }
+        }
 
         if (wmContextPath.length() == 0 &&
                 vs.getDefaultWebModuleID() != null) {
