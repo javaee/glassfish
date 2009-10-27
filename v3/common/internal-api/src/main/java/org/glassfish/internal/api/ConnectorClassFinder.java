@@ -53,7 +53,7 @@ public class ConnectorClassFinder extends ASURLClassLoader implements Delegating
             this.raName = raName;
             // There should be better approach to skip libraries Classloader when none specified.
             // casting to DelegatingClassLoader is not a clean approach
-            if(librariesClassFinder!= null){
+            if(librariesClassFinder!= null && (librariesClassFinder instanceof DelegatingClassLoader)){
                 if(((DelegatingClassLoader)librariesClassFinder).getDelegates().size() > 0){
                     this.librariesClassFinder = librariesClassFinder;
                 }
