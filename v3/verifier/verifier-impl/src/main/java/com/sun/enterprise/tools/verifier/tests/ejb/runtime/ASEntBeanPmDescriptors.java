@@ -229,7 +229,7 @@ public class ASEntBeanPmDescriptors extends EjbTest implements EjbCheck {
                     "PASSED [AS-EJB pm-descriptor] : pm-identifier is {0}",
                     new Object[]{pmIdentifier}));
             }
-            
+
             //pm-version
             String pmVersion = getXPathValue("sun-ejb-jar/enterprise-beans/pm-descriptors/pm-descriptor[\""+i+"\"]/pm-version");
             if(pmVersion==null || pmVersion.length()==0){
@@ -252,7 +252,7 @@ public class ASEntBeanPmDescriptors extends EjbTest implements EjbCheck {
 
             if (pmIdentifier!=null && pmVersion!=null)
                 idVerMap.put(pmIdentifier,pmVersion);
-        
+
             //pm-config
             value = getXPathValue("sun-ejb-jar/enterprise-beans/pm-descriptors/pm-descriptor[\""+i+"\"]/pm-config");
             if(value!=null){
@@ -383,7 +383,7 @@ public class ASEntBeanPmDescriptors extends EjbTest implements EjbCheck {
                     }
                 }
             }
-        }catch(Exception ex){
+        }catch(RuntimeException ex){
             oneFailed = true;
             result.failed(smh.getLocalString(getClass().getName()+".notRun",
                 "NOT RUN [AS-EJB] Could not create descriptor Object."));

@@ -402,7 +402,6 @@ public class APIRepository {
         if (args.length < 1) {
             usage();
         }
-        Logger logger = Logger.getLogger("apiscan.stdapis"); // NOI18N
         try {
             APIRepository.Initialize(args[0]);
             APIRepository apiRep = APIRepository.Instance();

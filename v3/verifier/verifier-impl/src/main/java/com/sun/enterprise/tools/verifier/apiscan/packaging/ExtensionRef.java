@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  */
 public class ExtensionRef {
     private static String resourceBundleName = "com.sun.enterprise.tools.verifier.apiscan.LocalStrings";
-    public static Logger logger = Logger.getLogger("apiscan.packaging", resourceBundleName); // NOI18N
+    public static final Logger logger = Logger.getLogger("apiscan.packaging", resourceBundleName); // NOI18N
     private static final String myClassName = "ExtensionRef"; // NOI18N
     // a client can specify dependency using atleast the name or name and any other attr
     private String name, implVendorId = "";

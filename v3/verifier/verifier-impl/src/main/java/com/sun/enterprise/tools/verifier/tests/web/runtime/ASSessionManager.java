@@ -85,7 +85,7 @@ public Result check(WebBundleDescriptor descriptor) {
             if((SPwebProps ==null|| SPwebProps.length==0) && (MPwebProps ==null || MPwebProps.length==0)){
                 notApp = true;
             } else {
-                  if (SPwebProps !=null|| SPwebProps.length>0)
+                  if (SPwebProps !=null && SPwebProps.length>0)
                        if(ASWebProperty.checkWebProperties(SPwebProps,result ,descriptor, this )){
                            oneFailed=true;
                            addErrorDetails(result, compName);
@@ -95,7 +95,7 @@ public Result check(WebBundleDescriptor descriptor) {
 					    new Object[] {descriptor.getName()}));
                          }
 
-                  if (MPwebProps !=null || MPwebProps.length>0)
+                  if (MPwebProps !=null && MPwebProps.length>0)
                         if(ASWebProperty.checkWebProperties(MPwebProps,result ,descriptor, this )){
                             oneFailed=true;
                             addErrorDetails(result, compName);

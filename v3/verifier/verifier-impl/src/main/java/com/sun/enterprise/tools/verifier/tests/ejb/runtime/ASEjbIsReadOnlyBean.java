@@ -133,7 +133,7 @@ public class ASEjbIsReadOnlyBean extends EjbTest implements EjbCheck {
                               ("tests.componentNameConstructor",
                                "For [ {0} ]",
                                new Object[] {compName.toString()}));
-                result.passed(smh.getLocalString(getClass().getName()+".passed1", 
+                result.passed(smh.getLocalString(getClass().getName()+".passed1",
                     "PASSED [AS-EJB ejb] : Read Only Beans can only be Entity Beans"));
             }else if(descriptor instanceof EjbSessionDescriptor){
                 oneFailed = true;
@@ -162,7 +162,7 @@ public class ASEjbIsReadOnlyBean extends EjbTest implements EjbCheck {
                               ("tests.componentNameConstructor",
                                "For [ {0} ]",
                                new Object[] {compName.toString()}));
-                result.passed(smh.getLocalString(getClass().getName()+".passed2", 
+                result.passed(smh.getLocalString(getClass().getName()+".passed2",
                     "PASSED [AS-EJB ejb] : Read Only Beans can only have Container Managed Transactions"));
             }else{
                 oneFailed = true;
@@ -219,7 +219,7 @@ public class ASEjbIsReadOnlyBean extends EjbTest implements EjbCheck {
                                "For [ {0} ]",
                                new Object[] {compName.toString()}));
                 result.addWarningDetails(smh.getLocalString(getClass().getName()+".warning1",
-                    "WARNING [AS-EJB ejb] : Home interface [ {0} ] should have zero remove Methods for Read Only Beans.", 
+                    "WARNING [AS-EJB ejb] : Home interface [ {0} ] should have zero remove Methods for Read Only Beans.",
                     new Object[] {homeName}));
             }else{
                 result.addGoodDetails(smh.getLocalString
@@ -257,12 +257,16 @@ public class ASEjbIsReadOnlyBean extends EjbTest implements EjbCheck {
                 result.notApplicable(smh.getLocalString(getClass().getName()+".notApplicable1",
                     "NOT APPLICABLE [AS-EJB ejb] refresh-period-in-seconds Element not defined"));
             }
-            
+
             if(oneFailed)
                 result.setStatus(Result.FAILED);
-            
-        }catch(Exception ex){
+
+        } catch(ClassNotFoundException cnfe) {
             oneFailed = true;
+        } catch(RuntimeException ex){
+            oneFailed = true;
+        }
+        if (oneFailed) {
             result.addErrorDetails(smh.getLocalString
                             ("tests.componentNameConstructor",
                             "For [ {0} ]",
@@ -271,5 +275,6 @@ public class ASEjbIsReadOnlyBean extends EjbTest implements EjbCheck {
                  (getClass().getName() + ".notRun",
                   "NOT RUN [AS-EJB] : Could not create a descriptor object"));
         }
+
     }
 }

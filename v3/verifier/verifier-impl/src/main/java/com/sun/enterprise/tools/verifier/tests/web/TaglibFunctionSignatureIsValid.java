@@ -131,7 +131,7 @@ public class TaglibFunctionSignatureIsValid extends TagLibTest implements WebChe
         try {
             Class.forName(retType);
         } catch (ClassNotFoundException e) {
-             return valid=false;
+             valid=false;
         }
         return valid;
     }

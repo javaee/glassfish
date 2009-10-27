@@ -52,6 +52,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.deploy.shared.FileArchive;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.jar.JarInputStream;
@@ -146,7 +147,7 @@ public abstract class ConnectorTest extends VerifierTest implements VerifierChec
                         try {
                             if(jis != null)
                                 jis.close();
-                        } catch(Exception e) {}
+                        } catch(IOException e) {}
                     }
                 }
             }

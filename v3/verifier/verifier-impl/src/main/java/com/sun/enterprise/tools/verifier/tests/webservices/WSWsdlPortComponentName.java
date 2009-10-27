@@ -73,9 +73,7 @@ public class WSWsdlPortComponentName extends WSTest implements WSCheck {
         try {
 
            portcomponentname = descriptor.getEndpointName();
-           if ( portcomponentname == null ) 
-              pass = false;
-           if ( portcomponentname.equals("") ) 
+           if ( portcomponentname == null || portcomponentname.equals("") ) 
               pass = false;
 
            if (pass) {

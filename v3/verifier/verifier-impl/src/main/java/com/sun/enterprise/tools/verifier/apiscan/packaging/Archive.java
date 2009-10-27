@@ -75,9 +75,9 @@ public class Archive {
     //even if new pkg is installed in JVM lib ext dir. This is in line with JVM operations.
     public static Archive[] getAllOptPkgsInstalledInJRE() {
         if (allOptPkgsInstalledInJRE != null) return allOptPkgsInstalledInJRE;
-        final ArrayList<Archive> allPkgs = new ArrayList<Archive>();
         synchronized (Archive.class) {
             if (allOptPkgsInstalledInJRE == null) {//double if check to avoid race condition
+                final ArrayList<Archive> allPkgs = new ArrayList<Archive>();
                 List ext_dirs = listAllExtDirs();
                 for (Iterator iter = ext_dirs.iterator(); iter.hasNext();) {
                     File ext_dir = new File((String) iter.next());
@@ -102,9 +102,11 @@ public class Archive {
                         }//accept()
                     });
                 }
+                // Store in a tmp and update allOptPkgsInstalledInJre in a single instruction.
+                final Archive[] tmp = new Archive[allPkgs.size()];
+                allPkgs.toArray(tmp);
+                allOptPkgsInstalledInJRE = tmp;
             }//if null
-            allOptPkgsInstalledInJRE = new Archive[allPkgs.size()];
-            allPkgs.toArray(allOptPkgsInstalledInJRE);
         }//synchronized
         return allOptPkgsInstalledInJRE;
     }

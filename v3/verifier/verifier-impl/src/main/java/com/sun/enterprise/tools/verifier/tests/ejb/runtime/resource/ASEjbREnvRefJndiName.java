@@ -53,9 +53,6 @@ import com.sun.enterprise.tools.verifier.Result;
  */
 
 public class ASEjbREnvRefJndiName extends ASEjbResEnvRef {
-    public Result result;
-    public ComponentNameConstructor compName;
-
     public Result check(EjbDescriptor descriptor)
     {
         result = getInitializedResult();

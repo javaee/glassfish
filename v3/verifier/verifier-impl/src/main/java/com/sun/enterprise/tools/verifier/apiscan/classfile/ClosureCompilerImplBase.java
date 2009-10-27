@@ -65,7 +65,7 @@ public abstract class ClosureCompilerImplBase implements ClosureCompiler {
     protected HashSet<String> visitedClasses = new HashSet<String>();
 
     private static String resourceBundleName = "com.sun.enterprise.tools.verifier.apiscan.LocalStrings";
-    protected static Logger logger = Logger.getLogger("apiscan.classfile", resourceBundleName); // NOI18N
+    protected static final Logger logger = Logger.getLogger("apiscan.classfile", resourceBundleName); // NOI18N
 
     // used for logging
     private static final String myClassName = "ClosureCompilerImplBase"; // NOI18N

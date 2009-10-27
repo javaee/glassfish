@@ -90,10 +90,7 @@ public class EjbMethodIntfElement extends EjbTest implements EjbCheck {
                 for (Enumeration ee = descriptor.getMethodContainerTransactions().keys(); ee.hasMoreElements();) {
   
 		    MethodDescriptor methodDescriptor = (MethodDescriptor) ee.nextElement();
-                    String methodIntf = null;
-                    try {
-                        methodIntf = methodDescriptor.getEjbClassSymbol();
-                    } catch ( Exception ex ) {}
+                    String methodIntf = methodDescriptor.getEjbClassSymbol();
                     if ( methodIntf == null ) { //|| methodIntf.equals("") 
                         continue;
                     }

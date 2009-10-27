@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  */
 public class ClassPathBuilder {
     private static String resourceBundleName = "com.sun.enterprise.tools.verifier.apiscan.LocalStrings";
-    public static Logger logger = Logger.getLogger("apiscan.packaging", resourceBundleName); // NOI18N
+    public static final Logger logger = Logger.getLogger("apiscan.packaging", resourceBundleName); // NOI18N
     private static final String myClassName = "ClassPathBuilder"; // NOI18N
     
     private static final String thisClassName = "com.sun.enterprise.tools.verifier.apiscan.packaging.ClassPathBuilder"; // NOI18N

@@ -72,15 +72,15 @@ public class ResultsPanel extends JPanel implements VerifierEventsListener {
     JScrollPane textScrollPane;
     JTextArea detailText;
     Vector<String> details = new Vector<String>();
-    private static Vector<Result> passResults = new Vector<Result>();
-    private static Vector<Result> failResults = new Vector<Result>();
-    private static Vector<LogRecord> errorResults = new Vector<LogRecord>();
-    private static Vector<Result> warnResults = new Vector<Result>();
-    private static Vector<Result> naResults = new Vector<Result>();
-    private static Vector<Result> notImplementedResults = new Vector<Result>();
-    private static Vector<Result> notRunResults = new Vector<Result>();
-    private static Vector<Result> defaultResults = new Vector<Result>();
-    static com.sun.enterprise.util.LocalStringManagerImpl smh =
+    private Vector<Result> passResults = new Vector<Result>();
+    private Vector<Result> failResults = new Vector<Result>();
+    private Vector<LogRecord> errorResults = new Vector<LogRecord>();
+    private Vector<Result> warnResults = new Vector<Result>();
+    private Vector<Result> naResults = new Vector<Result>();
+    private Vector<Result> notImplementedResults = new Vector<Result>();
+    private Vector<Result> notRunResults = new Vector<Result>();
+    private Vector<Result> defaultResults = new Vector<Result>();
+    private static final com.sun.enterprise.util.LocalStringManagerImpl smh =
             StringManagerHelper.getLocalStringsManager();
 
     //final String[] columnNames = {"Item", "Test Name", "Result"};

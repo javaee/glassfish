@@ -97,7 +97,7 @@ public class TransactionDemarcationType extends EjbTest implements EjbCheck {
 				    containerTransaction =
                                                 (ContainerTransaction) descriptor.getMethodContainerTransactions().get(methodDescriptor);
     		        
-                    if (containerTransaction != null || 
+                    if (containerTransaction != null && 
                             containerTransaction.getTransactionAttribute()!=null) {
 					    String transactionAttribute  = 
 					        containerTransaction.getTransactionAttribute();
