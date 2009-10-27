@@ -66,7 +66,6 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
-import org.glassfish.admingui.common.util.HtmlAdaptor;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMXUtil;
 
@@ -113,9 +112,6 @@ public class CommonHandlers {
         Object initialized = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("_SESSION_INITIALIZED");
         if (initialized == null){
             GuiUtil.initSessionAttributes();
-            if (System.getProperty("html.adaptor.port") != null){
-                HtmlAdaptor.registerHTMLAdaptor(V3AMX.getInstance().getMbeanServerConnection());
-            }
         }
         return;
     }
