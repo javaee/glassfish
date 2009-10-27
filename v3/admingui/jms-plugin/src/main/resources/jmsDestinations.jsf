@@ -41,7 +41,9 @@
 
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njms.destinationResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources','/jms/resourcesNodes.jsf','jmsResources:jmsDestinationResources');"
+    guiTemplateOnLoad="
+        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources','/jca/jcaTreeNode.jsf','Connectors:adminObjectResources');
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources','/jms/resourcesNodes.jsf','jmsResources:jmsDestinationResources');"
 >
 <!define name="content">
     <event>

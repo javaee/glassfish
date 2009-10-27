@@ -40,7 +40,10 @@
 
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njms.connectionFactories.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories','/jms/resourcesNodes.jsf','jmsResources:jmsConnectionFactories');"
+    guiTemplateOnLoad="
+        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorResources','/jca/jcaTreeNode.jsf','Connectors:connectorResources');
+        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorConnectionPools','/jca/jcaTreeNode.jsf','Connectors:connectorConnectionPools');
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories','/jms/resourcesNodes.jsf','jmsResources:jmsConnectionFactories');"
 >
 <!define name="content">
     <event>
