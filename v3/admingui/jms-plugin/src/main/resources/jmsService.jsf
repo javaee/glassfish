@@ -66,7 +66,7 @@
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
 
-            />
+        />
     </event>   
 <!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   
 <!-- TO DO: NEED TO ADD HANDLER FOR PING BUTTON ONCE MESSAGES ARE WORKING  -->  
@@ -76,6 +76,20 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njms.jms.Title}" helpText="$resource{i18njms.jms.PageHelp}">
 #include "/common/shared/editPageButtons.inc"
+                    <sun:button id="pingButton" text="$resource{i18njms.jms.Ping}" >
+                        <!command
+                            prepareSuccessfulMsg();
+                            createMap(result="#{attrs}");
+                            mapPut(map="#{attrs}", key="Name", value="tempConnectionPool");
+                            mapPut(map="#{attrs}", key="ConnectionDefinitionName", value="javax.jms.QueueConnectionFactory");
+                            mapPut(map="#{attrs}", key="ResourceAdapterName", value="jmsra");
+                            createProxy(parentObjectNameStr="amx:pp=/domain,type=resources",
+                                childType="connector-connection-pool", attrs="#{attrs}");
+                            pingJms(poolName="tempConnectionPool");
+                            deleteChild(objectNameStr="amx:pp=/domain,type=resources",type="connector-connection-pool",name="tempConnectionPool");
+                        />
+                    </sun:button>
+
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
                         <!-- Text Field section -->               
