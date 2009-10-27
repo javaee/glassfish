@@ -90,8 +90,18 @@ public class AsyncContextImpl implements AsyncContext {
 
     private long asyncTimeoutMillis = DEFAULT_ASYNC_TIMEOUT_MILLIS;
 
-    private LinkedList<AsyncListenerHolder> asyncListenerHolders =
-        new LinkedList<AsyncListenerHolder>();
+    private LinkedList<AsyncListenerContext> asyncListenerContexts =
+        new LinkedList<AsyncListenerContext>();
+
+    private AtomicInteger startAsyncCounter = new AtomicInteger(0);
+
+    private ThreadLocal<Boolean> isStartAsyncInScope =
+    new ThreadLocal<Boolean>() {
+        @Override  
+        protected Boolean initialValue() {  
+            return Boolean.FALSE;  
+        }  
+    };  
 
     /**
      * Constructor
@@ -151,11 +161,7 @@ public class AsyncContextImpl implements AsyncContext {
             servletRequest.getRequestDispatcher(zeroArgDispatchTarget);
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
-                origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                         DispatcherType.ASYNC);
-                origRequest.setOkToReinitializeAsync(true);
-                origRequest.setAsyncStarted(false);
-                pool.execute(new Handler(this, dispatcher));
+                pool.execute(new Handler(this, dispatcher, origRequest));
             } else {
                 throw new IllegalStateException(
                     STRING_MANAGER.getString("async.dispatchInProgress"));
@@ -177,11 +183,7 @@ public class AsyncContextImpl implements AsyncContext {
             servletRequest.getRequestDispatcher(path);
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
-                origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                         DispatcherType.ASYNC);
-                origRequest.setOkToReinitializeAsync(true);
-                origRequest.setAsyncStarted(false);
-                pool.execute(new Handler(this, dispatcher));
+                pool.execute(new Handler(this, dispatcher, origRequest));
             } else {
                 throw new IllegalStateException(
                     STRING_MANAGER.getString("async.dispatchInProgress"));
@@ -203,11 +205,7 @@ public class AsyncContextImpl implements AsyncContext {
             context.getRequestDispatcher(path);
         if (dispatcher != null) {
             if (isDispatchInProgress.compareAndSet(false, true)) {
-                origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
-                                         DispatcherType.ASYNC);
-                origRequest.setOkToReinitializeAsync(true);
-                origRequest.setAsyncStarted(false);
-                pool.execute(new Handler(this, dispatcher));
+                pool.execute(new Handler(this, dispatcher, origRequest));
             } else {
                 throw new IllegalStateException(
                     STRING_MANAGER.getString("async.dispatchInProgress"));
@@ -241,8 +239,8 @@ public class AsyncContextImpl implements AsyncContext {
                 STRING_MANAGER.getString("async.addListenerIllegalState"));
         }
 
-        synchronized(asyncListenerHolders) {
-            asyncListenerHolders.add(new AsyncListenerHolder(listener));
+        synchronized(asyncListenerContexts) {
+            asyncListenerContexts.add(new AsyncListenerContext(listener));
         }
     }
 
@@ -261,8 +259,8 @@ public class AsyncContextImpl implements AsyncContext {
                 STRING_MANAGER.getString("async.addListenerIllegalState"));
         }
 
-        synchronized(asyncListenerHolders) {
-            asyncListenerHolders.add(new AsyncListenerHolder(
+        synchronized(asyncListenerContexts) {
+            asyncListenerContexts.add(new AsyncListenerContext(
                 listener, servletRequest, servletResponse));
         }
     }
@@ -314,6 +312,7 @@ public class AsyncContextImpl implements AsyncContext {
         this.isOriginalRequestAndResponse = isOriginalRequestAndResponse;
         isDispatchInProgress.set(false);
         setOkToConfigure(true);
+        startAsyncCounter.incrementAndGet();
         notifyAsyncListeners(AsyncEventType.START_ASYNC, null);
         if (isOriginalRequestAndResponse) {
             zeroArgDispatchTarget = getZeroArgDispatchTarget(origRequest);
@@ -356,14 +355,22 @@ public class AsyncContextImpl implements AsyncContext {
 
         private final AsyncContextImpl asyncContext;
         private final ApplicationDispatcher dispatcher;
+        private final Request origRequest;
 
         Handler(AsyncContextImpl asyncContext,
-                ApplicationDispatcher dispatcher) {
+                ApplicationDispatcher dispatcher,
+                Request origRequest) {
             this.asyncContext = asyncContext;
             this.dispatcher = dispatcher;
+            this.origRequest = origRequest;
         }
        
         public void run() {
+            asyncContext.isStartAsyncInScope.set(Boolean.TRUE);
+            origRequest.setAttribute(Globals.DISPATCHER_TYPE_ATTR,
+                                     DispatcherType.ASYNC);
+            origRequest.setAsyncStarted(false);
+            int startAsyncCurrent = asyncContext.startAsyncCounter.get();
             try {
                 dispatcher.dispatch(asyncContext.getRequest(),
                     asyncContext.getResponse(), DispatcherType.ASYNC);
@@ -371,36 +378,43 @@ public class AsyncContextImpl implements AsyncContext {
                  * Close the response after the dispatch target has
                  * completed execution, unless startAsync was called.
                  */
-                if (!asyncContext.getRequest().isAsyncStarted()) {
+                if (asyncContext.startAsyncCounter.compareAndSet(
+                        startAsyncCurrent, startAsyncCurrent)) {
                     asyncContext.complete();
                 }
             } catch (Throwable t) {
                 asyncContext.notifyAsyncListeners(AsyncEventType.ERROR, t);
                 asyncContext.getOriginalRequest().errorDispatchAndComplete(t);
+            } finally {
+                asyncContext.isStartAsyncInScope.set(Boolean.FALSE);
             }
         }
+    }
+
+    boolean isStartAsyncInScope() {
+        return isStartAsyncInScope.get().booleanValue();
     }
 
     /*
      * Notifies all AsyncListeners of the given async event type
      */
     void notifyAsyncListeners(AsyncEventType asyncEventType, Throwable t) {
-        synchronized(asyncListenerHolders) {
-            if (asyncListenerHolders.isEmpty()) {
+        synchronized(asyncListenerContexts) {
+            if (asyncListenerContexts.isEmpty()) {
                 return;
             }
-            LinkedList<AsyncListenerHolder> clone =
-                (LinkedList<AsyncListenerHolder>)
-                    asyncListenerHolders.clone();
+            LinkedList<AsyncListenerContext> clone =
+                (LinkedList<AsyncListenerContext>)
+                    asyncListenerContexts.clone();
             if (asyncEventType.equals(AsyncEventType.START_ASYNC)) {
-                asyncListenerHolders.clear();
+                asyncListenerContexts.clear();
             }
-            for (AsyncListenerHolder asyncListenerHolder : clone) {
+            for (AsyncListenerContext asyncListenerContext : clone) {
                 AsyncListener asyncListener =
-                    asyncListenerHolder.getAsyncListener();
+                    asyncListenerContext.getAsyncListener();
                 AsyncEvent asyncEvent = new AsyncEvent(
-                    this, asyncListenerHolder.getRequest(),
-                    asyncListenerHolder.getResponse(), t);
+                    this, asyncListenerContext.getRequest(),
+                    asyncListenerContext.getResponse(), t);
                 try {
                     switch (asyncEventType) {
                     case COMPLETE:
@@ -425,8 +439,8 @@ public class AsyncContextImpl implements AsyncContext {
     }
 
     void clear() {
-        synchronized(asyncListenerHolders) {
-            asyncListenerHolders.clear();
+        synchronized(asyncListenerContexts) {
+            asyncListenerContexts.clear();
         }
     }
 
@@ -434,19 +448,19 @@ public class AsyncContextImpl implements AsyncContext {
      * Class holding all the information required for invoking an
      * AsyncListener (including the AsyncListener itself).
      */
-    private static class AsyncListenerHolder {
+    private static class AsyncListenerContext {
 
         private AsyncListener listener;
         private ServletRequest request;
         private ServletResponse response;
 
-        public AsyncListenerHolder(AsyncListener listener) {
+        public AsyncListenerContext(AsyncListener listener) {
             this(listener, null, null);
         }
 
-        public AsyncListenerHolder(AsyncListener listener,
-                                   ServletRequest request,
-                                   ServletResponse response) {
+        public AsyncListenerContext(AsyncListener listener,
+                                    ServletRequest request,
+                                    ServletResponse response) {
             this.listener = listener;
             this.request = request;
             this.response = response;
