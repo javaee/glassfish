@@ -58,7 +58,6 @@ import org.jvnet.hk2.component.Habitat;
 /**
  * Recovery Handler for JMS Resources
  *
- * @author Satish Kumar
  */
 @Service
 public class LegacyJmsRecoveryResourceHandler implements RecoveryResourceHandler {
@@ -145,8 +144,8 @@ public class LegacyJmsRecoveryResourceHandler implements RecoveryResourceHandler
  public boolean isJMSConnectionFactory(ExternalJndiResource resType_) {
         if (resType_ == null) return false;
 
-        return (JMS_QUEUE_CONNECTION_FACTORY.equals(resType_) ||
-                JMS_TOPIC_CONNECTION_FACTORY.equals(resType_));
+        return (JMS_QUEUE_CONNECTION_FACTORY.equals(resType_.getResType()) ||
+                JMS_TOPIC_CONNECTION_FACTORY.equals(resType_.getResType()));
     }
 
   private boolean instanceOf(Object obj, String interfaceName)
