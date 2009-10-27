@@ -164,7 +164,7 @@ class ConfigFile extends AuthConfig {
     }
 
     public void refresh() throws AuthException {
-	synchronized (parser) {
+	synchronized (this) {
 	    ConfigParser nextParser;
 	    int next = this.epoch + 1;
 	    try {

@@ -150,45 +150,44 @@ public class DeleteFileUser implements AdminCommand {
         }
         
         // We have the right impl so let's try to remove one 
-        FileRealm fr = null;
         try {
-            fr = new FileRealm(keyFile);            
-        } catch(BadRealmException e) {
+            FileRealm fr = new FileRealm(keyFile);
+            try {
+                fr.removeUser(userName);
+                fr.writeKeyFile(keyFile);
+            } catch (NoSuchUserException e) {
+                report.setMessage(
+                        localStrings.getLocalString("delete.file.user.usernotfound",
+                        "There is no such existing user {0} in the file realm {1}.",
+                        userName, authRealmName) + "  " + e.getLocalizedMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setFailureCause(e);
+            } catch (Exception e) {
+                e.printStackTrace();
+                report.setMessage(
+                        localStrings.getLocalString("delete.file.user.userdeletefailed",
+                        "Removing User {0} from file realm {1} failed",
+                        userName, authRealmName) + "  " + e.getLocalizedMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setFailureCause(e);
+            }
+
+        } catch (BadRealmException e) {
             report.setMessage(
-                localStrings.getLocalString(
+                    localStrings.getLocalString(
                     "delete.file.user.realmcorrupted",
                     "Configured file realm {0} is corrupted.", authRealmName) +
-                "  " + e.getLocalizedMessage());
+                    "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-        } catch(NoSuchRealmException e) {
+        } catch (NoSuchRealmException e) {
             report.setMessage(
-                localStrings.getLocalString(
+                    localStrings.getLocalString(
                     "delete.file.user.realmnotsupported",
                     "Configured file realm {0} is not supported.", authRealmName) +
-                "  " + e.getLocalizedMessage());
+                    "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-
-        try {
-            fr.removeUser(userName);
-            fr.writeKeyFile(keyFile);
-        } catch (NoSuchUserException e) {
-            report.setMessage(
-                localStrings.getLocalString("delete.file.user.usernotfound",
-                "There is no such existing user {0} in the file realm {1}.", 
-                userName, authRealmName) + "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-        } catch (Exception e) {
-            e.printStackTrace();
-            report.setMessage(
-                localStrings.getLocalString("delete.file.user.userdeletefailed",
-                "Removing User {0} from file realm {1} failed", 
-                userName, authRealmName) + "  " + e.getLocalizedMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setFailureCause(e);
-        }        
     }
 }

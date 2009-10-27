@@ -89,7 +89,11 @@ public class PolicyConfigurationFactoryImpl extends PolicyConfigurationFactory {
     
     public PolicyConfigurationFactoryImpl(){
         repository = initializeRepository();
-        singleton = this;
+        setInstance(this);
+    }
+
+    private static void setInstance(PolicyConfigurationFactoryImpl impl) {
+        singleton = impl;
     }
 
    /**

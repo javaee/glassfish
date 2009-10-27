@@ -1089,10 +1089,10 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 
             if (handler != null) { // handler should be non-null
 		Set<Principal> ps = s.getPrincipals();
-		Iterator<Principal> it = ps.iterator();
 		if (ps == null || ps.isEmpty()) {
 		    return;
-		} 
+		}
+                Iterator<Principal> it = ps.iterator();
 
 		Callback[] callbacks = new Callback[] 
 		    { new CallerPrincipalCallback(s, it.next().getName()) };
