@@ -44,12 +44,17 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 
+import com.sun.logging.LogDomains;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -83,10 +88,17 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import com.sun.logging.LogDomains;
+
 @Service
 public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationContainer> 
     implements PostConstruct, EventListener {
 
+    private Logger _logger = LogDomains.getLogger(WeldDeployer.class, LogDomains.CORE_LOGGER);
+    
     public static final String WELD_EXTENSION = "org.glassfish.weld";
 
     public static final String WELD_DEPLOYMENT = "org.glassfish.weld.WeldDeployment";
@@ -158,10 +170,19 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                         bundleToBeanDeploymentArchive.remove(next);
                     }
                 }
-
+           
                 appToBootstrap.remove(app);
             }
 
+            WeldBootstrap bootstrap = (WeldBootstrap)appInfo.getTransientAppMetaData(WELD_BOOTSTRAP, 
+                WeldBootstrap.class);
+            if (null != bootstrap) {
+                try {
+                    bootstrap.shutdown();  
+                } catch(Exception e) {
+                    _logger.log(Level.WARNING, "JCDI shutdown error", e);
+                }
+            }
         }
     }
 
@@ -265,7 +286,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         BundleDescriptor bundle = (wDesc != null) ? wDesc : ejbBundle;
         if( bundle != null ) {
             // TODO change logic to support multiple 299 enabled modules in app
-            bundleToBeanDeploymentArchive.put(bundle, deploymentImpl.getBeanDeploymentArchives().iterator().next());
+//            bundleToBeanDeploymentArchive.put(bundle, deploymentImpl.getBeanDeploymentArchives().iterator().next());
+            BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getURI().getPath());
+            bundleToBeanDeploymentArchive.put(bundle, bda); 
         }
         
         WeldApplicationContainer wbApp = new WeldApplicationContainer(bootstrap);
