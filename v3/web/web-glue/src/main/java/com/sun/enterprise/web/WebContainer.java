@@ -102,6 +102,7 @@ import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.jasper.xmlparser.ParserUtils;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.invocation.InvocationManager;
@@ -161,6 +162,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             WebContainer.class, LogDomains.WEB_LOGGER);
 
     protected static final ResourceBundle rb = _logger.getResourceBundle();
+
+    public static final EventTypes<WebModule> AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT =
+        EventTypes.create("After_Servlet_Context_Initialized",
+            WebModule.class);
 
     /**
      * The current <code>WebContainer</code> instance used (single).
@@ -598,7 +603,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         */
     }
 
-
     public void event(Event event) {
         if (event.is(Deployment.ALL_APPLICATIONS_PROCESSED)) {
             // configure default web modules for virtual servers after all
@@ -609,6 +613,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+    /**
+     * Notifies any interested listeners that the ServletContextListeners
+     * of the given web module have been invoked at their contextInitialized
+     * method
+     */
+    void afterServletContextInitializedEvent(WebModule module) {
+        events.send(new Event<WebModule>(
+            AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT, module),
+            false);
+    }
 
     public void preDestroy() {
         try {
@@ -618,7 +632,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
     }
-
 
     JavaEEObjectStreamFactory getJavaEEObjectStreamFactory() {
         return javaEEObjectStreamFactory;

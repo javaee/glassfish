@@ -530,6 +530,12 @@ public class WebModule extends PwcWebModule {
         super.stop(getWebContainer().isShutdown());
     }
 
+    @Override
+    protected void contextListenerStart() {
+        super.contextListenerStart();
+        webContainer.afterServletContextInitializedEvent(this);
+    }
+
     /**
      * Sets the virtual server parent of this web module, and passes it on to
      * this web module's realm adapter..

@@ -4597,7 +4597,7 @@ public class StandardContext
      * Notifies all ServletContextListeners at their contextInitialized
      * method.
      */
-    private void contextListenerStart() {
+    protected void contextListenerStart() {
         ServletContextEvent event =
             new ServletContextEvent(getServletContext());
         ServletContextEvent restrictedEvent =
