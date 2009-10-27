@@ -95,15 +95,11 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
 
     public void postConstruct() {
         logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
-        
-        /* Create the auto-deployer right away, even if its use is disabled 
-         * currently.  This way any initialization errors will appear early 
-         * in the log rather than later if and when the auto-deployer is 
-         * enabled.
+
+        /*
+         * Always create the autoDeployer, even if autodeployment is not enabled.
+         * Just don't start it if it's not enabled.
          */
-        if (isEmbedded()) {
-            return;
-        }
         String directory = activeDasConfig.getAutodeployDir();
         target = getTarget();
         try {
@@ -154,10 +150,6 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
 
     static String getValue(String value, String defaultValue) {
         return (value == null || value.equals("")) ? defaultValue : value;
-    }
-
-    private boolean isEmbedded() {
-        return ! org.glassfish.api.embedded.Server.getServerNames().isEmpty();
     }
 
     private void logConfig(String title, 
