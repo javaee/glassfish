@@ -121,18 +121,20 @@ public final class AMXCoreTests extends AMXTestBase
     @Test
     public void testAMXComplianceMonitorFailureCount()
     {
-        try
-        {
+        //try
+        //{
         final Map<ObjectName, List<String>> failures = getDomainRootProxy().getComplianceFailures();
         
         assert failures.size() == 0 :
             "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failures.size() + "\n" + failures;
+        /*
         }
         catch( final Throwable t )
         {
             System.out.println( "\n******* Test testAMXComplianceMonitorFailureCount() IGNORED, see issue #10096 ******* \n" );
             t.printStackTrace();
         }
+        */
      }
 
 }
