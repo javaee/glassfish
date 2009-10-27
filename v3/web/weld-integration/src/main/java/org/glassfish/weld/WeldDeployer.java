@@ -107,7 +107,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
     private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
 
-
+    private static final String WELD_SHUTDOWN = "false";
 
     @Inject
     private Events events;
@@ -174,6 +174,10 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 appToBootstrap.remove(app);
             }
 
+            String shutdown = appInfo.getTransientAppMetaData(WELD_SHUTDOWN, String.class);
+            if (Boolean.valueOf(shutdown) == Boolean.TRUE) {
+                return;
+            }
             WeldBootstrap bootstrap = (WeldBootstrap)appInfo.getTransientAppMetaData(WELD_BOOTSTRAP, 
                 WeldBootstrap.class);
             if (null != bootstrap) {
@@ -182,6 +186,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 } catch(Exception e) {
                     _logger.log(Level.WARNING, "JCDI shutdown error", e);
                 }
+                appInfo.addTransientAppMetaData(WELD_SHUTDOWN, "true");
             }
         }
     }
