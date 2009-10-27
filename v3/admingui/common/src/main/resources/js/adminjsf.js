@@ -1853,7 +1853,7 @@ admingui.table = {
     },
 
     initAllRows : function (tableId) {
-        var table = document.getElementById(tableId + ":_table");
+        var table = document.getElementById(tableId);
         table.initAllRows();
     }
 }
