@@ -43,7 +43,7 @@ public abstract class SimpleDeployer <T extends Container,
      *
      * @parameters type type of metadata that this deployer has declared providing.
      */
-    public T loadMetaData(Class<T> type, DeploymentContext context) {
+    public <V> V loadMetaData(Class<V> type, DeploymentContext context) {
         return null;
     }
 
