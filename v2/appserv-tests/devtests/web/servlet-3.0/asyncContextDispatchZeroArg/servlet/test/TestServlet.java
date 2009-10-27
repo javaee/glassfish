@@ -52,7 +52,7 @@ public class TestServlet extends HttpServlet {
             final AsyncContext ac = req.startAsync();
             req.setAttribute("MYNAME", "MYVALUE");
 
-            Timer asyncTimer = new Timer("TestTimer", true);
+            Timer asyncTimer = new Timer("AsyncTimer", true);
             asyncTimer.schedule(
                 new TimerTask() {
                     @Override

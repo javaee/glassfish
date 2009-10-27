@@ -50,7 +50,7 @@ public class WebTest {
 
     private static final String TEST_NAME = "async-context-multiple-dispatch";
 
-    private static final String EXPECTED_RESPONSE = "onStartAsync,onComplete";
+    private static final String EXPECTED_RESPONSE = "onStartAsync,onStartAsync,onComplete";
 
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");

@@ -54,7 +54,7 @@ public class TestServlet extends HttpServlet {
 
         final String target = req.getParameter("target");
 
-        Timer asyncTimer = new Timer("TestTimer", true);
+        Timer asyncTimer = new Timer("AsyncTimer", true);
         asyncTimer.schedule(
             new TimerTask() {
                 @Override

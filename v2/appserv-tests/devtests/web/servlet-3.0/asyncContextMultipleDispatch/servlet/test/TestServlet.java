@@ -49,12 +49,12 @@ public class TestServlet extends HttpServlet implements AsyncListener {
             throw new ServletException("Async not supported when it should");
         }
    
-        if (!req.getDispatcherType().equals(DispatcherType.ASYNC)) {
+        if (req.getDispatcherType() == DispatcherType.REQUEST) {
             // Container-initiated dispatch
             req.setAttribute("ABC", "DEF");
             final AsyncContext ac = req.startAsync();
             ac.addListener(this);
-            Timer asyncTimer = new Timer("TestTimer", true);
+            Timer asyncTimer = new Timer("AsyncTimer", true);
             asyncTimer.schedule(
                 new TimerTask() {
                     @Override
@@ -63,11 +63,11 @@ public class TestServlet extends HttpServlet implements AsyncListener {
                     }
                 },
                 5000);
-        } else {
+        } else if (req.getDispatcherType() == DispatcherType.ASYNC) {
             if ("DEF".equals(req.getAttribute("ABC"))) {
                 // First async dispatch
-                AsyncContext ac = req.startAsync();
-                ac.dispatch();
+                req.removeAttribute("ABC");
+                req.startAsync().dispatch();
             } else {
                 // Second async dispatch
                 req.startAsync().complete();

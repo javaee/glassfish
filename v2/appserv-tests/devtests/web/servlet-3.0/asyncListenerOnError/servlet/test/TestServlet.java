@@ -53,7 +53,7 @@ public class TestServlet extends HttpServlet implements AsyncListener {
             // Container-initiated dispatch
             final AsyncContext ac = req.startAsync();
             ac.addListener(this);
-            Timer asyncTimer = new Timer("TestTimer", true);
+            Timer asyncTimer = new Timer("AsyncTimer", true);
             asyncTimer.schedule(
                 new TimerTask() {
                     @Override
