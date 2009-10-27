@@ -70,12 +70,6 @@ public class WeldApplicationContainer implements ApplicationContainer {
 
     public boolean stop(ApplicationContext stopContext) {
 
-        try {
-            weldBootstrap.shutdown();  // TODO move this to an application-level action
-        } catch(Exception e) {
-            _logger.log(Level.WARNING, "JCDI shutdown error", e);    
-        }
-
         return true;
     }
 
