@@ -5988,9 +5988,12 @@ public class StandardContext
      * @param urlPattern URL pattern to be validated
      */
     private boolean validateURLPattern(String urlPattern) {
-
-        if (urlPattern == null)
-            return (false);
+        if (urlPattern == null) {
+            return false;
+        }
+        if (urlPattern.isEmpty()) {
+            return true;
+        }
         if (urlPattern.indexOf('\n') >= 0 || urlPattern.indexOf('\r') >= 0) {
             log.warning(sm.getString("standardContext.crlfinurl", urlPattern));
             return false;
@@ -5998,16 +6001,16 @@ public class StandardContext
         if (urlPattern.startsWith("*.")) {
             if (urlPattern.indexOf('/') < 0) {
                 checkUnusualURLPattern(urlPattern);
-                return (true);
+                return true;
             } else
-                return (false);
+                return false;
         }
         if ( (urlPattern.startsWith("/")) &&
                 (!urlPattern.contains("*."))) {
             checkUnusualURLPattern(urlPattern);
-            return (true);
+            return true;
         } else
-            return (false);
+            return false;
 
     }
 

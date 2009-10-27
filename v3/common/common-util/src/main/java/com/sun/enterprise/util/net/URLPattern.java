@@ -76,7 +76,10 @@ public class URLPattern {
         }
 
         // check validity for path mapping
-        if ( urlPattern.startsWith("/") && urlPattern.indexOf("*.") < 0) {
+        if (urlPattern.isEmpty()) {
+            return true;
+        } else if (urlPattern.startsWith("/") &&
+                urlPattern.indexOf("*.") < 0) {
             return true;
         } else {
             return false;

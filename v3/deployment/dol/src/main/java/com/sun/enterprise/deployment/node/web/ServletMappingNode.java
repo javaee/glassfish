@@ -76,6 +76,9 @@ public class ServletMappingNode extends DeploymentDescriptorNode {
                 // try trimming url (in case DD uses extra
                 // whitespace for aligning)
                 String trimmedUrl = value.trim();
+                if ("\"\"".equals(trimmedUrl)) {
+                    trimmedUrl = "";
+                }
 
                 // If URL Pattern does not start with "/" then 
                 // prepend it (for Servlet2.2 Web apps) 
