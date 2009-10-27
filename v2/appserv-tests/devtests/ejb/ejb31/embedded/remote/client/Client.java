@@ -36,7 +36,7 @@
 
 package com.acme;
 
-import org.glassfish.tests.ejb.remote.SimpleEjb;
+import org.glassfish.tests.ejb.remote.SimpleRemote;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -72,7 +72,7 @@ public class Client {
         Context ic = c.getContext();
         try {
             System.out.println("Looking up EJB...");
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
+            SimpleRemote ejb = (SimpleRemote) ic.lookup("java:global/" + module + "/SimpleEjb");
             if (ejb!=null) {
                 System.out.println("Invoking EJB...");
                 String result = ejb.saySomething();
@@ -80,9 +80,9 @@ public class Client {
             }
 
             c.close();
-            stat.addStatus("EJB embedded with JPA", stat.PASS);
+            stat.addStatus("EJB embedded with remote", stat.PASS);
         } catch (Exception e) {
-            stat.addStatus("EJB embedded with JPA", stat.FAIL);
+            stat.addStatus("EJB embedded with remote", stat.FAIL);
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
         }
