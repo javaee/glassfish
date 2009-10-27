@@ -50,6 +50,7 @@ import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.v3.server.ExecutorServiceFactory;
 import com.sun.logging.LogDomains;
 import com.sun.ejb.base.sfsb.util.EJBServerConfigLookup;
+import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
@@ -159,6 +160,9 @@ public class EjbContainerUtilImpl
 
     @Inject //Note:- Not specific to any ejb descriptor
     private EJBServerConfigLookup ejbServerConfigLookup;
+
+    @Inject
+    private ProcessEnvironment processEnv;
 
     @Inject
     private EjbAsyncInvocationManager ejbAsyncInvocationManager;
@@ -387,6 +391,10 @@ public class EjbContainerUtilImpl
 
     public boolean isEJBLite() {
         return (habitat.getByContract(CMPDeployer.class) == null);
+    }
+
+    public boolean isEmbeddedServer() {
+        return processEnv.getProcessType().isEmbedded();
     }
 
     private static class EjbTimerThreadFactory

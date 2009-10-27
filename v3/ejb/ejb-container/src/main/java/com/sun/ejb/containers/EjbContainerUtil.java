@@ -143,4 +143,6 @@ public interface EjbContainerUtil {
     public EjbDescriptor ejbIdToDescriptor(long ejbId);
 
     public boolean isEJBLite();
+
+    public boolean isEmbeddedServer();
 }

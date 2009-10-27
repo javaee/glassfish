@@ -809,7 +809,11 @@ public abstract class BaseContainer
 
         } catch(Throwable t) {
             throw new RuntimeException("IIOP Protocol Manager initialization failed.  " +
-            "Possible cause is that ORB is not available in this container", t );
+            "Possible cause is that ORB is not available in this " + 
+            ((ejbContainerUtilImpl.isEmbeddedServer())? 
+                    "embedded container, or server instance is running and required ports are in use" : 
+                    "container")
+            , t );
         }
 
     }
