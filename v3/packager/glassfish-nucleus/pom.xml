@@ -152,12 +152,6 @@
            <artifactId>basedocs</artifactId>
            <version>${v3-docs.version}</version>
 	   <type>distribution-fragment</type>
-       </dependency> 
-       <!-- Remove gfprobe-provider-client when all external modules are using management-api instead -->
-       <dependency>
-            <groupId>org.glassfish.provider</groupId>
-            <artifactId>gfprobe-provider-client</artifactId>
-            <version>3.0.0-b008</version>
        </dependency>
        <dependency>
 	    <groupId>org.glassfish.external</groupId>
