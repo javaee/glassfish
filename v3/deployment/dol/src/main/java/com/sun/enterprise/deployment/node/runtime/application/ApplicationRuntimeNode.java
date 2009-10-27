@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.runtime.common.SecurityRoleMappingNode;
 import com.sun.enterprise.deployment.node.runtime.ResourceRefNode;
@@ -173,6 +174,10 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 	if (element.getQName().equals(RuntimeTagNames.PASS_BY_REFERENCE)) {
 	    descriptor.setPassByReference("true".equalsIgnoreCase(value));
 	} else
+        if (element.getQName().equals(RuntimeTagNames.UNIQUE_ID)) {
+            DOLUtils.getDefaultLogger().finer("Ignoring unique id");
+            return;
+        } else
 	if (element.getQName().equals(RuntimeTagNames.ARCHIVE_NAME)) {
 	    descriptor.setArchiveName(value);
 	} else
