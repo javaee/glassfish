@@ -177,6 +177,12 @@ public class ApplicationLifecycle implements Deployment {
         final DeployCommandParameters commandParams = context.getCommandParameters(DeployCommandParameters.class);
 
         final String appName = commandParams.name();
+        if (commandParams.origin == OpsParams.Origin.deploy && 
+            appRegistry.get(appName) != null) {
+            report.setMessage(localStrings.getLocalString("appnamenotunique","Application name {0} is already in use. Please pick a different name.", appName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return null;                
+        }
 
         // if the virtualservers param is not defined, set it to all
         // defined virtual servers minus __asadmin on that target
