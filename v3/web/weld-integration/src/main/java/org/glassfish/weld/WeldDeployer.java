@@ -119,8 +119,8 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     }
 
     /**
-     * Specific stages of the Web Beans bootstrapping process will execute across different stages
-     * of the deployment process.  Web Beans deployment will happen when the load phase of the 
+     * Specific stages of the Weld bootstrapping process will execute across different stages
+     * of the deployment process.  Weld deployment will happen when the load phase of the 
      * deployment process is complete.
      */
     public void event(Event event) {
@@ -258,7 +258,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
             wDesc.setExtensionProperty(WELD_EXTENSION, "true");
-            // Add the Web Beans Listener if it does not already exist..
+            // Add the Weld Listener if it does not already exist..
             wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WELD_LISTENER));
         }
 
