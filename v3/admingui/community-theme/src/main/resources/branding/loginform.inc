@@ -61,7 +61,7 @@
                     onmouseout="javascript: if (this.disabled==0) this.className='Btn1'"
                     onblur="javascript: if (this.disabled==0) this.className='Btn1'"
                     onfocus="javascript: if (this.disabled==0) this.className='Btn1Hov'"
-                    onclick="javascript: submitAndDisable(this, '$resource{i18n.loginPageTitle}');"
+                    onclick="return submitAndDisable(this, '$resource{i18n.loginPageTitle}');"
                     onkeypress="javascript: submitenter(event, 'loginButton', '$resource{i18n.loginPageTitle}');"
                     name="loginButton" id="loginButton">
         	    <input type="hidden" name="loginButton.DisabledHiddenField" value="true" />
