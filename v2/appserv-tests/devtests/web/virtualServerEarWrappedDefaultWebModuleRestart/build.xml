@@ -91,7 +91,6 @@
     </target>
 
     <target name="runsecond" depends="init-common">
-        <sleep seconds="10"/>
         <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
