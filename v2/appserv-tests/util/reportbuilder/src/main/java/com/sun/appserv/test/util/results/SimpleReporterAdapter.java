@@ -3,8 +3,13 @@ package com.sun.appserv.test.util.results;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 public class SimpleReporterAdapter implements Serializable {
@@ -12,11 +17,10 @@ public class SimpleReporterAdapter implements Serializable {
     public static final String DID_NOT_RUN = "did_not_run";
     public static final String FAIL = "fail";
     private static final Pattern TOKENIZER;
-
     private final boolean debug = true;
     private final Map<String, String> testCaseStatus = new TreeMap<String, String>();
-    private final String testSuiteName = getTestSuiteName();
-    private final String testSuiteID = testSuiteName + "ID";
+    private String testSuiteName = getTestSuiteName();
+    private String testSuiteID=testSuiteName+"ID";
     private String testSuiteDescription;
     private String ws_home = "appserv-tests";
 
@@ -31,11 +35,20 @@ public class SimpleReporterAdapter implements Serializable {
         TOKENIZER = Pattern.compile(pattern);
     }
 
+    @Deprecated
     public SimpleReporterAdapter() {
     }
 
+    @Deprecated
     public SimpleReporterAdapter(String ws_root) {
+        this();
         ws_home = ws_root;
+    }
+
+    public SimpleReporterAdapter(String ws_root, String suiteName) {
+        this(ws_root);
+        testSuiteName = suiteName;
+        testSuiteID = testSuiteName + "ID";
     }
 
     public void addStatus(String test, String status) {
@@ -131,14 +144,39 @@ public class SimpleReporterAdapter implements Serializable {
     }
 
     private String getTestSuiteName() {
-        final File file = new File("").getAbsoluteFile();
+        List<StackTraceElement> list = new ArrayList<StackTraceElement>(Arrays.asList(Thread.currentThread().getStackTrace()));
+        list.remove(0);
+        File jar = locate(getClass().getName().replace('.', '/') + ".class");
+        while(jar.equals(locate(list.get(0).getClassName().replace('.', '/') + ".class"))) {
+            list.remove(0);
+        }
+        StackTraceElement element = list.get(0);
+        File file = locate(element.getClassName().replace('.', '/') + ".class");
         StringBuilder buf = new StringBuilder(file.getName().length());
         for (String t : TOKENIZER.split(file.getName())) {
-            if (buf.length() > 0)
+            if (buf.length() > 0) {
                 buf.append('-');
+            }
             buf.append(t.toLowerCase());
         }
         return buf.toString().trim();
+    }
+
+    public File locate(String resource) {
+        String u = getClass().getClassLoader().getResource(resource).toString();
+        File file = null;
+        try {
+            if (u.startsWith("jar:file:")) {
+                file = new File(new URI(u.substring(4, u.indexOf("!"))));
+            } else if (u.startsWith("file:")) {
+                file = new File(new URI(u.substring(0, u.indexOf(resource))));
+            }
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        return file;
     }
 
     public void clearStatus() {
@@ -148,8 +186,9 @@ public class SimpleReporterAdapter implements Serializable {
     private static String or(String... tokens) {
         StringBuilder buf = new StringBuilder();
         for (String t : tokens) {
-            if (buf.length() > 0)
+            if (buf.length() > 0) {
                 buf.append('|');
+            }
             buf.append(t);
         }
         return buf.toString();

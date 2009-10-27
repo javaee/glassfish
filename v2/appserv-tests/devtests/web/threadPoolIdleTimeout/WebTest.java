@@ -33,13 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 import java.io.IOException;
 import java.net.URL;
 
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
+
 public class WebTest {
-	private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
+	private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", "thread-pool-idle-timeout");
 
 	public static void main(String args[]) {
 		stat.addDescription("HTTP thread timeout");
