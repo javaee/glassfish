@@ -75,11 +75,16 @@ public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory{
     private ProcessEnvironment penv;
     @Inject
     private Habitat habitat;
+    @Inject(optional=true)
+    private AlternateSecurityInterceptorFactory altSecFactory;
     
     // are we supposed to add the interceptor and then return or just return an instance ?.
     public ClientRequestInterceptor createClientRequestInterceptor(ORBInitInfo info, Codec codec) {
         if (!penv.getProcessType().isServer()) {
             return null;
+        }
+        if(altSecFactory != null){
+            return altSecFactory.getClientRequestInterceptor(codec);
         }
         ClientRequestInterceptor ret = getClientInterceptorInstance(codec);
         return ret;
@@ -91,7 +96,11 @@ public class SecurityIIOPInterceptorFactory implements IIOPInterceptorFactory{
             if (!penv.getProcessType().isServer()) {
                 return null;
             }
-            ret = getServerInterceptorInstance(codec);
+            if(altSecFactory != null){
+                ret = altSecFactory.getServerRequestInterceptor(codec);
+            }else{
+                ret = getServerInterceptorInstance(codec);
+            }
             //also register the IOR Interceptor here
             com.sun.corba.ee.spi.legacy.interceptor.ORBInitInfoExt infoExt = (com.sun.corba.ee.spi.legacy.interceptor.ORBInitInfoExt)info;
             IORInterceptor secIOR = getSecIORInterceptorInstance(codec, infoExt.getORB());
