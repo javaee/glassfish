@@ -95,6 +95,17 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
         transactions.addTransactionsListener(this);
     }
 
+
+    public PendingConfigBeanJob take() throws InterruptedException
+    {
+        return mJobs.take();
+    }
+
+    public PendingConfigBeanJob peek() throws InterruptedException
+    {
+        return mJobs.peek();
+    }
+    
     /**
     @return a ConfigBean, or null if it's not a ConfigBean
      */
@@ -110,20 +121,8 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
         final ConfigBean cb = asConfigBean(inhabitant);
         if (cb != null)
         {
-            final ConfigBean parent = asConfigBean(cb.parent());
-            // debug( "PendingConfigBeansNew.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
             add(cb);
         }
-    }
-
-    public PendingConfigBeanJob take() throws InterruptedException
-    {
-        return mJobs.take();
-    }
-
-    public PendingConfigBeanJob peek() throws InterruptedException
-    {
-        return mJobs.peek();
     }
 
     private PendingConfigBeanJob addJob(final PendingConfigBeanJob job)
@@ -137,20 +136,50 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
         return job;
     }
 
-    public PendingConfigBeanJob add(final ConfigBean cb)
+    private PendingConfigBeanJob add(final ConfigBean cb)
     {
         return add(cb, null);
     }
 
     public PendingConfigBeanJob add(final ConfigBean cb, final boolean useLatch)
     {
-        return add(cb, useLatch ? new CountDownLatch(1) : null);
+        final PendingConfigBeanJob job = add(cb, useLatch ? new CountDownLatch(1) : null);
+        
+        return job;
     }
 
-    public PendingConfigBeanJob add(final ConfigBean cb, final CountDownLatch latch)
+    private PendingConfigBeanJob add(final ConfigBean cb, final CountDownLatch latch)
     {
         //debug( "PendingConfigBeans.add():  " + cb.getProxyType().getName() );
-        return addJob(new PendingConfigBeanJob(cb, latch));
+        
+        // determine if the ConfigBean is a child of Domain by getting its most distant ancestor
+        ConfigBean ancestor = cb;
+        ConfigBean parent;
+        while ( (parent = asConfigBean(ancestor.parent())) != null )
+        {
+            ancestor = parent;
+        }
+        //debug( "PendingConfigBeansNew.onEntered: " + cb.getProxyType().getName() + " with parent " + (parent == null ? "null" : parent.getProxyType().getName()) );
+        
+        PendingConfigBeanJob job = null;
+        
+        // ignore bogus ConfigBeans that are not part of the Domain
+        if ( ancestor != null && ancestor.getProxyType().getName().endsWith( ".Domain" ))
+        {
+            //debug( "PendingConfigBeans.onEntered: " + cb.getProxyType().getName() );
+            job = addJob(new PendingConfigBeanJob(cb, latch));
+        }
+        else
+        {
+            Util.getLogger().info("PendingConfigBeans.onEntered: ignoring ConfigBean that does not have Domain as ancestor: " + cb.getProxyType().getName());
+            if ( latch != null )
+            {
+                latch.countDown();
+                // job remains null
+            }
+        }
+        
+        return job;
     }
 
     /**
@@ -164,7 +193,7 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
      */
     public boolean remove(final ConfigBean cb)
     {
-        //debug( "REMOVE: " + cb.getProxyType().getName() );
+        //debug( "PendingConfigBeans.remove(): REMOVE: " + cb.getProxyType().getName() );
         boolean found = false;
 
         for (final PendingConfigBeanJob job : mJobs)

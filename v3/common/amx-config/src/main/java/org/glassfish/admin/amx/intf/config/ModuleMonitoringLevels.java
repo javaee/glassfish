@@ -135,7 +135,7 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
             final String newLevel)
         {
             final Set<String> excluded =
-                SetUtil.newUnmodifiableStringSet(ATTR_NAME, ATTR_PARENT, ATTR_CHILDREN);
+                SetUtil.newUnmodifiableStringSet(ATTR_NAME, ATTR_PARENT, ATTR_CHILDREN, "Property");
             
             final Map<String,String>  changedValues = new HashMap<String,String>();
             final Map<String,Object>  attrs = levels.attributesMap();
@@ -143,16 +143,17 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
             final AttributeList originalValues = new AttributeList();
             for( final String attrName : attrs.keySet() )
             {
-                if ( excluded.contains(attrName) )
+                final Object originalValue = attrs.get(attrName);
+                if ( excluded.contains(attrName) || originalValue == null || !(originalValue instanceof String))
                 {
                     continue;
                 }
                 
-                final String value = "" + attrs.get(attrName);
-                if ( ! value.equals(newLevel) )
+                final String strValue = "" + originalValue;
+                if ( ! strValue.equals(newLevel) )
                 {
                     attributeList.add( new Attribute(attrName, newLevel) );
-                    originalValues.add( new Attribute(attrName, attrs.get(attrName)) );
+                    originalValues.add( new Attribute(attrName, originalValue) );
                 }
             }
             if ( attributeList.size() != 0 )

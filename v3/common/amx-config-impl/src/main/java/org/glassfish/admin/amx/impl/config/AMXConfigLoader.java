@@ -207,8 +207,10 @@ public final class AMXConfigLoader extends MBeanImplBase
                 final Class<? extends ConfigBeanProxy> proxyClass = cb.getProxyType();
                 //debug( "AMXConfigLoader.sortAndDispatch: process new ConfigBean: " + proxyClass.getNameProp() );
                 final boolean doWait = amxIsRunning();
-                handleConfigBean( cb, doWait );   // wait until registered
-                newConfigBeans.add( cb );
+                if ( handleConfigBean( cb, doWait ) )   // wait until registered
+                {
+                    newConfigBeans.add( cb );
+                }
             }
             else if ( newValue == null && oldValue instanceof ConfigBeanProxy && amxIsRunning() )
             {
@@ -253,8 +255,10 @@ public final class AMXConfigLoader extends MBeanImplBase
                         if ( ! newConfigBeans.contains(cb) )
                         {
                             //debug( "AMXConfigLoader.sortAndDispatch: process new ConfigBean (WORKAROUND): " + proxyClass.getNameProp() );
-                            handleConfigBean( cb, false );
-                            newConfigBeans.add( cb );
+                            if ( handleConfigBean( cb, false ) )
+                            {
+                                newConfigBeans.add( cb );
+                            }
                         }
                     }
                     else
@@ -333,13 +337,22 @@ public final class AMXConfigLoader extends MBeanImplBase
     /**
         No items will be processd until {@link #start} is called.
      */
-        protected void
+        boolean
     handleConfigBean( final ConfigBean cb, final boolean waitDone )
     {
+        boolean processed = true;
+        
         if ( mRegistry.getObjectName(cb) == null)
         {
             final PendingConfigBeanJob job = mPendingConfigBeans.add( cb, waitDone);
-            if ( waitDone )
+            
+            // a job could come back null for a bogus ConfigBean
+            if ( job == null )
+            {
+                mLogger.log( Level.INFO, "ConfigBean not processed, something wrong with it: " + cb.getProxyType().getName() );
+                processed = false;
+            }
+            else if ( waitDone )
             {
                 try
                 {
@@ -351,6 +364,11 @@ public final class AMXConfigLoader extends MBeanImplBase
                 }
             }
         }
+        else
+        {
+            // ok
+        }
+        return processed;
     }
 
      /**
