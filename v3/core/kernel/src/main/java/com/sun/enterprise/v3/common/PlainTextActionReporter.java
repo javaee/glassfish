@@ -22,6 +22,8 @@
  */
 package com.sun.enterprise.v3.common;
 
+import com.sun.enterprise.util.*;
+import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -43,23 +45,73 @@ public class PlainTextActionReporter extends ActionReporter {
     public void writeReport(OutputStream os) throws IOException {
         // The caller will read MAGIC and the next characters for success/failure
         // everything after the HEADER_END is good data
-        PrintWriter writer = new PrintWriter(os);
+        writer = new PrintWriter(os);
         writer.print(MAGIC);
         if(isFailure()) {
             writer.print("FAILURE");
             Throwable t = getFailureCause();
             
             if(t != null)
-                writer.println(t);
+                writer.print(t);
         }
         else {
             writer.print("SUCCESS");
-            writer.print(getMessage());
         }
-        writer.flush();        
+
+        if(superSimple(topMessage)) {
+            writer.print(topMessage.getMessage());
+        }
+
+        else {
+            writer.print("\n");
+            
+            if(StringUtils.ok(actionDescription))
+                writer.println("Description: " + actionDescription);
+
+            write("", topMessage);
+        }
+
+        if (!subActions.isEmpty())
+            writer.println("There are " + subActions.size() + " sub operations");
+
+        writer.flush();
     }
     @Override
     public String getContentType() {
         return "text/plain";
     }
+
+    private boolean superSimple(MessagePart part) {
+        // this is mainly here for backward compatability for when this Reporter
+        // only wrote out the main message.
+        List<MessagePart> list = part.getChildren();
+        Properties props = part.getProps();
+        boolean hasChildren =  ( list != null && !list.isEmpty() );
+        boolean hasProps = ( props != null && props.size() > 0 );
+
+        // return true if we are very very simple!
+        return !hasProps && !hasChildren;
+    }
+    private void write(String indent, MessagePart part) {
+        writer.printf("%s%s\n", indent, part.getMessage());
+        write(indent + INDENT, part.getProps());
+
+        for (MessagePart child : part.getChildren()) {
+            write(indent + INDENT, child);
+        }
+    }
+
+    private void write(String indent, Properties props) {
+        if (props == null || props.size() <= 0)
+            return;
+
+        for (Map.Entry<Object,Object> entry : props.entrySet()) {
+            String key = "" + entry.getKey();
+            String val = "" + entry.getValue();
+            writer.printf("%s[%s=%s]\n", indent, key, val);
+        }
+    }
+
+    private PrintWriter writer;
+    private static final String INDENT = "    ";
 }
