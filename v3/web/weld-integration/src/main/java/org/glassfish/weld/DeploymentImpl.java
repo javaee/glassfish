@@ -44,9 +44,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -80,6 +82,8 @@ public class DeploymentImpl implements Deployment {
     private final List<BeanDeploymentArchive> beanDeploymentArchives;
     private Collection<EjbDescriptor> ejbs;
 
+    private Map<String, BeanDeploymentArchive> archiveToBeanDeploymentArchive;
+
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
     public DeploymentImpl(ReadableArchive archive, Collection<EjbDescriptor> ejbs) {
@@ -88,6 +92,7 @@ public class DeploymentImpl implements Deployment {
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.archive = archive;
         this.ejbs = ejbs;
+        this.archiveToBeanDeploymentArchive = new HashMap<String, BeanDeploymentArchive>();
         scan();
     }
 
@@ -118,6 +123,7 @@ public class DeploymentImpl implements Deployment {
         wClasses.add(beanClass);
         BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(archiveId, wbClasses, wbUrls, ejbs);
         beanDeploymentArchives.add(beanDeploymentArchive);
+        archiveToBeanDeploymentArchive.put(archiveId, beanDeploymentArchive);
         return beanDeploymentArchive;
     }
 
@@ -135,6 +141,10 @@ public class DeploymentImpl implements Deployment {
         this.archive = archive;
         scan();
     }
+
+    public BeanDeploymentArchive getBeanDeploymentArchiveForArchive(String archiveId) {
+        return archiveToBeanDeploymentArchive.get(archiveId);
+    }  
 
     private void scan() {
 
@@ -193,6 +203,7 @@ public class DeploymentImpl implements Deployment {
 
         String archiveId = archive.getURI().getPath();
         BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(archiveId, wbClasses, wbUrls, ejbs);
+        archiveToBeanDeploymentArchive.put(archiveId, beanDeploymentArchive);
         beanDeploymentArchives.add(beanDeploymentArchive);
     }
 
