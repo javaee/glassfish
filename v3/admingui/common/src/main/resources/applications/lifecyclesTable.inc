@@ -65,7 +65,7 @@
             />
          </sun:button>
         <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
-                onClick="javascript: submitAndDisable(this, '$resource{i18n.button.Processing}');" >
+                onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
@@ -74,7 +74,7 @@
             />
             </sun:button>
         <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
-            onClick="javascript: submitAndDisable(this, '$resource{i18n.button.Processing}');" >
+            onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
