@@ -793,6 +793,7 @@ admingui.nav = {
             }
             
             admingui.ajax.processElement(window, document.getElementById(nodeId), true);
+            admingui.ajax.processElement(window, document.getElementById(nodeId+"_children"), true);
         }
     },
 
