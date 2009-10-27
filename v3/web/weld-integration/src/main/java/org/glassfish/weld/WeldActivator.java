@@ -43,13 +43,28 @@ import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
 
 /**
+ * This is a bundle activator which is responsible for initializing
+ * the SingletonProvider in Weld. It sets different SingletonProvider
+ * for different profiles. e.g., in WebProfile, it sets
+ * {@link org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider}, where as
+ * for full-javaee profile, it uses {@link org.glassfish.weld.ACLSingletonProvider}.
+ * It tests profile by testing existence of
+ * {@link org.glassfish.javaee.full.deployment.EarClassLoader}.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class WeldActivator implements BundleActivator
 {
     public void start(BundleContext context) throws Exception
     {
-        SingletonProvider.initialize(new TCCLSingletonProvider());
+        boolean earSupport = false;
+        try {
+            Class.forName("org.glassfish.javaee.full.deployment.EarClassLoader");
+            earSupport = true;
+        } catch (ClassNotFoundException cnfe) {
+        }
+        SingletonProvider.initialize(earSupport ?
+                new ACLSingletonProvider() : new TCCLSingletonProvider());
     }
 
     public void stop(BundleContext context) throws Exception

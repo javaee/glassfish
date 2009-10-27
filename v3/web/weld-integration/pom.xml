@@ -87,6 +87,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.deployment</groupId>
+            <artifactId>deployment-javaee-full</artifactId>
+            <version>${project.version}</version>
+            <!-- Since weld-integration artifact is part of web distro and we 
+                 don't want deployment-javaee-full to be part of web distro, we
+                 mark this dependency as optional for it to be excluded by packager
+            -->
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-osgi-bundle</artifactId>
             <exclusions>
