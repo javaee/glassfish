@@ -179,6 +179,8 @@ public class JavaWebStartInfo implements ConfigListener {
     private String jnlpDoc;
 
     private static LocalStringsImpl localStrings = new LocalStringsImpl(JavaWebStartInfo.class);
+    private static LocalStringsImpl servedContentLocalStrings =
+            new LocalStringsImpl(TokenHelper.class);
 
     private static class SignedSystemContentFromApp {
         private final String tokenName;
@@ -685,10 +687,12 @@ public class JavaWebStartInfo implements ConfigListener {
     
 
     private VendorInfo vendorInfo() {
-        VendorInfo vi = new VendorInfo(
-                acDesc.getJavaWebStartAccessDescriptor().getVendor(),
-                helper.pathToAppclientWithinApp(dc));
-        return vi;
+        if (vendorInfo == null) {
+            vendorInfo = new VendorInfo(
+                    acDesc.getJavaWebStartAccessDescriptor().getVendor(),
+                    helper.pathToAppclientWithinApp(dc));
+        }
+        return vendorInfo;
     }
 
     public static class VendorInfo {
@@ -708,14 +712,14 @@ public class JavaWebStartInfo implements ConfigListener {
                 vendor = parts[0];
             } else if (parts.length == 2) {
                 imageURIString = parts[0];
-                vendor = parts[0];
+                vendor = parts[1];
             } else if (parts.length == 3) {
                 imageURIString = parts[0];
                 splashImageURIString = parts[1];
                 vendor = parts[2];
             }
             if (vendor.length() == 0) {
-                vendor = localStrings.get("jws.defaultVendorName");
+                vendor = servedContentLocalStrings.get("jws.defaultVendorName");
             }
         }
 
@@ -732,11 +736,13 @@ public class JavaWebStartInfo implements ConfigListener {
         }
 
         public String JNLPImageURI() {
-            return JNLPPathFullPrefix + imageURIString;
+            return (imageURIString.length() > 0) ? 
+                JNLPPathFullPrefix + imageURIString : "";
         }
 
         public String JNLPSplashImageURI() {
-            return JNLPPathFullPrefix + splashImageURIString;
+            return (splashImageURIString.length() > 0) ? 
+                JNLPPathFullPrefix + splashImageURIString : "";
         }
     }
 
