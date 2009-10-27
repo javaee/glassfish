@@ -92,15 +92,13 @@ public class ServletContainerInitializerUtil {
 
             // Create a new List of URLs with missing fragments removed from
             // the currentUrls
-            URL[] currentUrlsInClassLoader = webAppCl.getURLs();
             ArrayList<URL> newClassLoaderUrlList = new ArrayList<URL>();
-            for (int i=0; i<currentUrlsInClassLoader.length; i++) {
+            for (URL classLoaderUrl : webAppCl.getURLs()) {
                 // Check that the URL is using file protocol, else ignore it
-                if (!"file".equals(currentUrlsInClassLoader[i].getProtocol())) {
+                if (!"file".equals(classLoaderUrl.getProtocol())) {
                     continue;
                 }
-                File file = new File(Util.URLDecode(
-                    currentUrlsInClassLoader[i].getFile()));
+                File file = new File(Util.URLDecode(classLoaderUrl.getFile()));
                 try {
                     file = file.getCanonicalFile();
                 } catch (IOException e) {
@@ -115,7 +113,7 @@ public class ServletContainerInitializerUtil {
                 }
                 if (!isFragmentMissingFromAbsoluteOrdering(file.getName(),
                         webFragmentMap, absoluteOrderingList)) {
-                    newClassLoaderUrlList.add(currentUrlsInClassLoader[i]);
+                    newClassLoaderUrlList.add(classLoaderUrl);
                 }
             }
 
