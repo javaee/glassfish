@@ -125,6 +125,12 @@
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
+       <dependency>
+      	    <groupId>org.glassfish.l10n</groupId>
+            <artifactId>l10n-distribution</artifactId>
+            <version>${l10n.version}</version>
+            <type>zip</type>    
+       </dependency>
     </dependencies>
 
     <profiles>

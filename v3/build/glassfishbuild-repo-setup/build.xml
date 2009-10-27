@@ -127,6 +127,56 @@ own identifying information: Portions Copyright [yyyy]
         <exec dir="target/source/javadb-javadoc" executable="python" failonerror="true">
 		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} javadb-javadoc" />
 	</exec>
+	
+	<echo message="Copying l10n packages" />
+	<resolveArtifact artifactId="l10n-distribution" groupId="org.glassfish.l10n" type="zip"  property="l10nrepo.zip"/>
+   
+
+        <unzip src="${l10nrepo.zip}" dest="target/source/l10n">   
+	</unzip>
+	
+	<chmod file="target/source/l10n/catalog/attrs" perm="644"/>
+        <chmod file="target/source/l10n/catalog/catalog" perm="644"/>
+        
+        <exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-web-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-upgrade-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-scripting-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-nucleus-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jts-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jms-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jdbc-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-jca-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-gui-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-ejb-lite-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-ejb-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-common-l10n" />
+	</exec>
+	<exec dir="target/source/l10n" executable="python" failonerror="true">
+		<arg line="${uc.toolkit.dir}/pkg/bin/copypkgs.py -s . -d ${target.repo.dir} glassfish-common-full-l10n" />
+	</exec>
 
     </target>
 </project>
