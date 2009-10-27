@@ -89,9 +89,9 @@ public class Client {
             startTime = now();
             c.close();
             System.err.println("\n==> Spent on CLOSE: " + (now() - startTime) + " msec");
-            stat.addStatus("EJB embedded with JPA", stat.PASS);
+            stat.addStatus("EJB embedded with profile", stat.PASS);
         } catch (Exception e) {
-            stat.addStatus("EJB embedded with JPA", stat.FAIL);
+            stat.addStatus("EJB embedded with profile", stat.FAIL);
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
         }
