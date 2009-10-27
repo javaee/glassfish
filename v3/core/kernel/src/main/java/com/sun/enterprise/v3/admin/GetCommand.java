@@ -253,7 +253,11 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
         if (value instanceof Stats) {
             for (Statistic s: ((Stats)value).getStatistics()) {
-                addStatisticInfo(s, name+"."+s.getName(), map);
+                String statisticName = s.getName();
+                if (statisticName != null) {
+                    statisticName = s.getName().toLowerCase();
+                }
+                addStatisticInfo(s, name+"."+statisticName, map);
             }
         } else if (value instanceof Statistic) {
             addStatisticInfo(value, name, map);
