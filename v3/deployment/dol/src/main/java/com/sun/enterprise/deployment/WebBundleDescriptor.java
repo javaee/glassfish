@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.deployment;
 
+import org.glassfish.api.event.EventTypes;
 import com.sun.enterprise.deployment.node.web.WebBundleNode;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.types.EjbReference;
@@ -63,7 +64,14 @@ public class WebBundleDescriptor extends BundleDescriptor
         ServiceReferenceContainer
 
 {
+    private final static String DEPLOYMENT_DESCRIPTOR_DIR = "WEB-INF";
 
+    private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(WebBundleDescriptor.class);
+
+    public static final EventTypes<WebBundleDescriptor> AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT =
+        EventTypes.create("After_Servlet_Context_Initialized",
+            WebBundleDescriptor.class);
 
     private Set<WebComponentDescriptor> webComponentDescriptors;
     private SessionConfig sessionConfig;
@@ -107,11 +115,6 @@ public class WebBundleDescriptor extends BundleDescriptor
     private Vector<ServletFilterMapping> servletFilterMappings = null;
 
     private AbsoluteOrderingDescriptor absOrdering = null;
-
-    private final static String DEPLOYMENT_DESCRIPTOR_DIR = "WEB-INF";
-
-    private static LocalStringManagerImpl localStrings =
-            new LocalStringManagerImpl(WebBundleDescriptor.class);
 
     private SunWebApp sunWebApp = null;
 

@@ -533,7 +533,8 @@ public class WebModule extends PwcWebModule {
     @Override
     protected void contextListenerStart() {
         super.contextListenerStart();
-        webContainer.afterServletContextInitializedEvent(this);
+        webContainer.afterServletContextInitializedEvent(
+            getWebBundleDescriptor());
     }
 
     /**

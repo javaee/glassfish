@@ -164,10 +164,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     protected static final ResourceBundle rb = _logger.getResourceBundle();
 
-    public static final EventTypes<WebModule> AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT =
-        EventTypes.create("After_Servlet_Context_Initialized",
-            WebModule.class);
-
     /**
      * The current <code>WebContainer</code> instance used (single).
      */
@@ -615,13 +611,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     /**
-     * Notifies any interested listeners that the ServletContextListeners
-     * of the given web module have been invoked at their contextInitialized
-     * method
+     * Notifies any interested listeners that all ServletContextListeners
+     * of the web module represented by the given WebBundleDescriptor
+     * have been invoked at their contextInitialized method
      */
-    void afterServletContextInitializedEvent(WebModule module) {
-        events.send(new Event<WebModule>(
-            AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT, module),
+    void afterServletContextInitializedEvent(WebBundleDescriptor wbd) {
+        events.send(new Event<WebBundleDescriptor>(
+            WebBundleDescriptor.AFTER_SERVLET_CONTEXT_INITIALIZED_EVENT, wbd),
             false);
     }
 
