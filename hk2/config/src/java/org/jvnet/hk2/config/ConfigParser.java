@@ -83,13 +83,13 @@ public class ConfigParser {
         return document;
     }
 
+    public void parse(XMLStreamReader in, DomDocument document) throws XMLStreamException {
+        parse(in, document, null);
+    }
+
     public void parse(XMLStreamReader in, DomDocument document, Dom parent) throws XMLStreamException {
         in.nextTag();
         document.root = handleElement(in, document, parent);
-    }
-
-    public void parse(XMLStreamReader in, DomDocument document) throws XMLStreamException {
-        parse(in, document, null);
     }
 
     /**
@@ -99,11 +99,14 @@ public class ConfigParser {
     public DomDocument parse(URL source) {
         return parse(source, new DomDocument(habitat));
     }
-                                  
 
     public DomDocument parse(URL source, DomDocument document) {
+        return parse(source, document, null);
+    }
+
+    public DomDocument parse(URL source, DomDocument document, Dom parent) {
         try {
-            parse(xif.createXMLStreamReader(new StreamSource(source.toString())), document);
+            parse(xif.createXMLStreamReader(new StreamSource(source.toString())), document, parent);
             return document;
         } catch (XMLStreamException e) {
             throw new ComponentException("Failed to parse "+source,e);
