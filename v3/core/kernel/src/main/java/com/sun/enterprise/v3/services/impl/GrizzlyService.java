@@ -297,6 +297,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 if(Boolean.valueOf(oneListener.getEnabled()) && Boolean.valueOf(oneListener.getLazyInit())) {
                     NetworkListener dummy = new DummyNetworkListener();
                     dummy.setPort(oneListener.getPort());
+                    dummy.setAddress(oneListener.getAddress());
                     dummy.setProtocol("light-weight-listener");
                     dummy.setTransport("tcp");
                     dummy.setName("iiop-service");
@@ -312,6 +313,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                     if( Boolean.valueOf(oneHost.getLazyInit())) {
                         NetworkListener dummy = new DummyNetworkListener();
                         dummy.setPort(oneHost.getPort());
+                        dummy.setAddress(oneHost.getHost());
                         dummy.setProtocol("light-weight-listener");
                         dummy.setTransport("tcp");
                         dummy.setName("mq-service");
