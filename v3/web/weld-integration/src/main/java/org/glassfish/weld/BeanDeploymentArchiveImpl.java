@@ -61,6 +61,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private final List<Class<?>> wbClasses;
     private final List<URL> wbUrls;
     private final Collection<EjbDescriptor<?>> ejbDescImpls;
+    private List<BeanDeploymentArchive> beanDeploymentArchives;
 
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
@@ -69,8 +70,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         this.id = id;
         this.wbClasses = wbClasses;
         this.wbUrls = wbUrls;
-
-        ejbDescImpls = new HashSet<EjbDescriptor<?>>();
+        this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
+        this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
 
         for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
 
@@ -82,7 +83,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }
 
     public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
-        return Collections.emptyList();
+        return beanDeploymentArchives;
     }
 
     public Collection<Class<?>> getBeanClasses() {
