@@ -83,9 +83,13 @@ public class ConfigParser {
         return document;
     }
 
-    public void parse(XMLStreamReader in, DomDocument document) throws XMLStreamException {
+    public void parse(XMLStreamReader in, DomDocument document, Dom parent) throws XMLStreamException {
         in.nextTag();
-        document.root = handleElement(in,document, null);
+        document.root = handleElement(in, document, parent);
+    }
+
+    public void parse(XMLStreamReader in, DomDocument document) throws XMLStreamException {
+        parse(in, document, null);
     }
 
     /**
