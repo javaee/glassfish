@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="472"/>
+    <property name="TOTAL_EXPECTED" value="473"/>
 
     &commonSetup;
     &commonBuild;
@@ -472,9 +472,7 @@
         <ant dir="headerBufferSize" target="all"/>
         <ant dir="defaultContentType" target="all"/>
         <ant dir="headerBufferFull" target="all"/>
-        <!-- Fail on Hudson, removing it for now
         <ant dir="dosSlowClient" target="all"/>
-        -->
         <ant dir="sslMultiSelector" target="all"/>
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
