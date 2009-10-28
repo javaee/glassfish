@@ -320,6 +320,8 @@ public abstract class AppClientDeployerHelper {
         }
         facadeMainAttrs.put(AppClientDeployer.GLASSFISH_APP_NAME, application.getAppName());
 
+        facadeMainAttrs.put(AppClientArchivist.GLASSFISH_ANCHOR_DIR, anchorDirRelativeToClient());
+        
         if ( ! appClientDesc.isStandalone()) {
             final DownloadableArtifacts.FullAndPartURIs earFacadeDownload =
                 dc().getTransientAppMetaData("earFacadeDownload", DownloadableArtifacts.FullAndPartURIs.class);
@@ -329,7 +331,7 @@ public abstract class AppClientDeployerHelper {
         }
     }
 
-    private String relativePathToGroupFacade() {
+    private String anchorDirRelativeToClient() {
         final String pathToClient = pathToAppclientWithinApp(dc);
         final StringBuilder sb = new StringBuilder();
         for (char c : pathToClient.toCharArray()) {
@@ -337,7 +339,15 @@ public abstract class AppClientDeployerHelper {
                 sb.append("../");
             }
         }
-        sb.append(appName() + "Client.jar");
+        return sb.toString();
+    }
+    private String relativePathToGroupFacade() {
+        final StringBuilder sb = new StringBuilder(anchorDirRelativeToClient());
+        /*
+         * One more level up because the group facade will reside in the
+         * download directory.
+         */
+        sb.append("../").append(appName()).append("Client.jar");
         return sb.toString();
     }
 

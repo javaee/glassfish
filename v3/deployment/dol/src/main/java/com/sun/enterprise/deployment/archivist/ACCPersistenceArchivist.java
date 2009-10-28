@@ -4,14 +4,17 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.deploy.shared.MultiReadableArchive;
 import com.sun.enterprise.deployment.util.XModuleType;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -62,11 +65,18 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
         final ApplicationClientDescriptor acDescr = ApplicationClientDescriptor.class.cast(descriptor);
         
         try {
+            final Manifest mf = archive.getManifest();
+            final Attributes mainAttrs = mf.getMainAttributes();
             /*
-             * We must scan the app client archive itself.
+             * We must scan the app client archive itself.  
              */
-
-            candidatePersistenceArchives.put(archive.getURI().toASCIIString(), archive);
+            URI clientURI;
+            try {
+                clientURI = makeFileURI(clientURI(archive, acDescr));
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            }
+            candidatePersistenceArchives.put(clientURI.toASCIIString(), archive);
 
             /*
              * If this app client 
@@ -79,10 +89,9 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
              * one (which will reside either as a stand-alone client or within an
              * EAR).
              */
-            final Manifest mf = archive.getManifest();
-            if (isDeployed(mf)) {
-                if ( ! isStandAlone(mf)) {
-                    addOtherDeployedScanTargets(archive, mf, candidatePersistenceArchives);
+            if (isDeployed(mainAttrs)) {
+                if ( ! isDeployedClientAlsoStandAlone(mainAttrs)) {
+                    addOtherDeployedScanTargets(archive, mainAttrs, candidatePersistenceArchives);
                 }
             } else if ( ! isStandAlone(acDescr)) {
                 addOtherNondeployedScanTargets(archive, acDescr, candidatePersistenceArchives);
@@ -96,19 +105,52 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
             }
         } finally {
             for (Map.Entry<String, ReadableArchive> pathToArchiveEntry : candidatePersistenceArchives.entrySet()) {
-                
+                //pathToArchiveEntry.getValue().close();
             }
         }
         return null;
     }
 
 
-    private boolean isStandAlone(final Manifest mf) {
-        final Attributes mainAttrs = mf.getMainAttributes();
+    private URI makeFileURI(final URI uri) throws URISyntaxException {
+        if (uri.getScheme() != null && uri.getScheme().equals("jar")) {
+            return new URI("file", uri.getPath(), null);
+        }
+        return uri;
+    }
+    private boolean isDeployedClientAlsoStandAlone(final Attributes mainAttrs) {
         final String relativePathToGroupFacade = mainAttrs.getValue(AppClientArchivist.GLASSFISH_GROUP_FACADE);
         return relativePathToGroupFacade == null;
     }
 
+    private URI clientURI(final ReadableArchive archive,
+            final ApplicationClientDescriptor acDesc) throws IOException {
+        if (archive instanceof MultiReadableArchive) {
+            /*
+             * Getting the manifest from a MultiReadableArchive returns the
+             * manifest from the facade.
+             */
+            final Manifest facadeMF = archive.getManifest();
+            final Attributes facadeMainAttrs = facadeMF.getMainAttributes();
+            final URI clientRelativeURI = URI.create(
+                facadeMainAttrs.getValue(AppClientArchivist.GLASSFISH_APPCLIENT));
+            if (isDeployedClientAlsoStandAlone(facadeMainAttrs)) {
+                return clientRelativeURI;
+            }
+            /*
+             * We need the relative URI to the developer's client JAR within
+             * the download directory.
+             */
+            final URI absURIToClient = ((MultiReadableArchive) archive).getURI(1);
+            final String relativeURIPathToAnchorDir =
+                    facadeMainAttrs.getValue(AppClientArchivist.GLASSFISH_ANCHOR_DIR);
+            final URI absURIToAnchorDir = archive.getURI().resolve(relativeURIPathToAnchorDir);
+            return absURIToAnchorDir.relativize(absURIToClient);
+        }
+
+        return archive.getURI();
+    }
+    
     private boolean isStandAlone(final ApplicationClientDescriptor ac) {
         /*
          * For a non-deployed app (this case), the descriptor for a stand-alone
@@ -117,19 +159,16 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
         return (ac.getApplication() == null || ac.isStandalone());
     }
 
-    private boolean isDeployed(final Manifest mf) throws IOException {
-        final Attributes mainAttrs = mf.getMainAttributes();
+    private boolean isDeployed(final Attributes mainAttrs) throws IOException {
         final String gfClient = mainAttrs.getValue(AppClientArchivist.GLASSFISH_APPCLIENT);
         return gfClient != null;
     }
     
     private void addOtherDeployedScanTargets(
             final ReadableArchive archive,
-            final Manifest mf, 
+            final Attributes mainAttrs,
             Map<String,ReadableArchive> candidates) throws IOException {
         
-        final Attributes mainAttrs = mf.getMainAttributes();
-//        final String classPathExpr = mainAttrs.getValue(Attributes.Name.CLASS_PATH);
         final String otherPUScanTargets = mainAttrs.getValue(
                 AppClientArchivist.GLASSFISH_CLIENT_PU_SCAN_TARGETS_NAME);
         
@@ -138,7 +177,6 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
          * any additional (typically top-level) JARs to be scanned.
          */
         
-//        addScanTargetsFromURIList(archive, classPathExpr, candidates);
         addScanTargetsFromURIList(archive, otherPUScanTargets, candidates);
     }
     
@@ -166,7 +204,7 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
     private void addScanTargetsFromURIList(final ReadableArchive archive,
             final String relativeURIList,
             final Map<String,ReadableArchive> candidates) throws IOException {
-        if (relativeURIList == null) {
+        if (relativeURIList == null || relativeURIList.isEmpty()) {
             return;
         }
         final String[] relativeURIs = relativeURIList.split(" ");
@@ -197,7 +235,7 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
          */
         @Override
         String getPathOfSubArchiveToScan() {
-            return null;
+            return "";
         }
     }
 }

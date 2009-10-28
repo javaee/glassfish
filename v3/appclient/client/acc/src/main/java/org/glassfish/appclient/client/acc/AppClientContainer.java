@@ -1050,7 +1050,10 @@ public class AppClientContainer {
 
         private void cleanupConnectorRuntime() {
             try {
-                connectorRuntime.cleanUpResourcesAndShutdownAllActiveRAs();
+                if (connectorRuntime != null) {
+                    connectorRuntime.cleanUpResourcesAndShutdownAllActiveRAs();
+                    connectorRuntime = null;
+                }
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "cleanupConnectorRuntime", t);
             }

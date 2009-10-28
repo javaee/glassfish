@@ -145,13 +145,13 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
 
         ReadableArchive getSubArchiveToScan(ReadableArchive parentArchive) {
             String pathOfSubArchiveToScan = getPathOfSubArchiveToScan();
-            return pathOfSubArchiveToScan.isEmpty() ? parentArchive :
+            return (pathOfSubArchiveToScan == null || pathOfSubArchiveToScan.isEmpty()) ? parentArchive :
                     getSubArchive(parentArchive, pathOfSubArchiveToScan, true /*It is possible that lib does not exist for a given ear */);
         }
 
         String getPurRootPrefix() {
             String pathOfSubArchiveToScan = getPathOfSubArchiveToScan();
-            return pathOfSubArchiveToScan.isEmpty() ? pathOfSubArchiveToScan : pathOfSubArchiveToScan + SEPERATOR_CHAR;
+            return (pathOfSubArchiveToScan == null || pathOfSubArchiveToScan.isEmpty()) ? pathOfSubArchiveToScan : pathOfSubArchiveToScan + SEPERATOR_CHAR;
         }
 
         boolean isProbablePuRootJar(String jarName) {
