@@ -163,7 +163,11 @@ public class UniformLogFormatter extends Formatter {
         if (Globals.getDefaultHabitat()!=null) {
             branding = Globals.getDefaultHabitat().getByContract(Branding.class);
         }
-        return (branding!=null?branding.getAbbreviatedVersion():"");
+        if (branding == null){
+            return null;
+        }
+        String version =  branding.getAbbreviatedVersion()+branding.getVersionPrefix()+ branding.getMajorVersion()+"."+branding.getMinorVersion();
+        return (version);
     }
 
     
