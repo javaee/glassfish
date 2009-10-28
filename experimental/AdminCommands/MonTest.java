@@ -86,7 +86,7 @@ public class MonTest implements AdminCommand {
             String msg = "Monitoring Test Here!";
             msg += "howmany= " + howmany;
             ppt.method1("xxx", 50);
-            ppt.method2("xxx", 2, 3, new Date().toString());
+            ppt.method2("xxx", 2, 3, new Date());
             ppt.method3("xxx");
             report.setMessage(msg);
         }
