@@ -61,7 +61,6 @@ pkg = {
 			"pkg:/mq-bin-sh" : {"type" : "require" },
 			"pkg:/mq-bin-exe" : {"type" : "require" },
                         "pkg:/mq-config-gf" : {"type" : "require" },
-			"pkg:/mq-locale" : {"type" : "require" },
 			"pkg:/glassfish-full-incorporation" : {"type" : "require" },
                       },
     "licenses"      : {
