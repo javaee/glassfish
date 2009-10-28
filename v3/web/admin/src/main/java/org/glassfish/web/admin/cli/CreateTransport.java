@@ -106,7 +106,7 @@ public class CreateTransport implements AdminCommand {
     String selectionKeyHandler;
     @Param(name = "selectorpolltimeoutmillis", optional = true, defaultValue = "1000")
     String selectorPollTimeoutMillis;
-    @Param(name = "tcpnodelay", optional = true)
+    @Param(name = "tcpnodelay", optional = true, defaultValue = "false")
     Boolean tcpNoDelay;
     @Inject
     Configs configs;
