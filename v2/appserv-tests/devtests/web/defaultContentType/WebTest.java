@@ -46,7 +46,7 @@ public class WebTest {
         new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "default-content-type";
     private static final String EXPECTED_CONTENT_TYPE =
-        "text/plain; charset=iso-8859-1";
+        "text/plain;charset=iso-8859-1";
 
     private String host;
     private String port;
