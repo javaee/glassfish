@@ -57,6 +57,7 @@ public class ApplicationInfo extends ModuleInfo {
 
     private String libraries;
     private boolean isJavaEEApp = false;
+    private ClassLoader appClassLoader;
 
 
     /**
@@ -207,6 +208,9 @@ public class ApplicationInfo extends ModuleInfo {
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
 
         super.load(context, tracker);
+
+        appClassLoader = context.getClassLoader();
+
         for (ModuleInfo module : modules) {
             module.load(getSubContext(module,context), tracker);
         }
@@ -237,24 +241,35 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void stop(ExtendedDeploymentContext context, Logger logger) {
 
-        super.stop(context, logger);
-        for (ModuleInfo module : getModuleInfos()) {
-            module.stop(getSubContext(module, context), logger);
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(appClassLoader);
+            super.stop(context, logger);
+            for (ModuleInfo module : getModuleInfos()) {
+                module.stop(getSubContext(module, context), logger);
+            }
+            if (events!=null) {
+                events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STOPPED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
-        if (events!=null) {
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STOPPED, this), false);
-        }
-        
     }
 
     public void unload(ExtendedDeploymentContext context) {
 
-        super.unload(context);
-        for (ModuleInfo module : getModuleInfos()) {
-            module.unload(getSubContext(module, context));
-        }
-        if (events!=null) {
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);
+        ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(appClassLoader);
+            super.unload(context);
+            for (ModuleInfo module : getModuleInfos()) {
+                module.unload(getSubContext(module, context));
+            }
+            if (events!=null) {
+                events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
     }
 
