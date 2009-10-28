@@ -54,9 +54,11 @@ function loadHelpPageFromContextRef(contextRef, targetNode) {
 	    contextRef = "docinfo.html";
 	}
         // Derive the prefix somehow
-        var prefix = "/resource/en/help/";
+        var prefix = "/resource/common/en/help/";
         contextRef = prefix + contextRef;
 	admingui.help.showHelpPage(contextRef, targetNode);
+        admingui.help.nav.selectTreeNodeWithURL(contextRef);
+        
 }
 
 admingui.tab = {

@@ -98,4 +98,198 @@ admingui.help = {
 	}
 	return reqObj;
     }
+};
+
+/*
+ *  The following functions are utility functions.
+ */
+admingui.util = {
+    /**
+     *	This function finds the Woodstock node which has the getProps
+     *	function and returns the requested property.  If it does not exist
+     *	on the given object, it will look at the parent.
+     */
+    getWoodstockProp: function(node, propName) {
+	if (node == null) {
+	    return;
+	}
+	if (node.getProps != null) {
+	    return node.getProps()[propName];
+	}
+	return admingui.util.getWoodstockProp(node.parentNode, propName);
+    },
+
+    /**
+     *	This function finds an Array[] of nodes matching the (checkFunc),
+     *	which is a JS function that takes two arguments: the HTML node object
+     *	to check, and an optional "argument" (arg) that is passed through.
+     */
+    findNodes: function(node, checkFunc, arg) {
+        var results = new Array();
+        if (node == null) {
+            return null;
+        }
+
+        // Check for match
+        if (checkFunc(node, arg)) {
+            results[results.length] = node;
+        }
+
+        // Not what we want, walk its children if any
+        var nodeList = node.childNodes;
+        if (nodeList && (nodeList.length > 0)) {
+            var moreResults;
+
+            // Look for more matches...
+            for (var count = 0; count<nodeList.length; count++) {
+                // Recurse
+                moreResults = admingui.util.findNodes(nodeList[count], checkFunc, arg);
+                if (moreResults) {
+                    // Append the results
+                    results = results.concat(moreResults);
+                }
+            }
+        }
+
+        // Make sure we found something...
+        if (results.length == 0) {
+            results = null;
+        }
+
+        // Return what we found (if anything)
+        return results;
+    },
+
+    /**
+     *	This function sets the <code>key</code> / <code>value</code> pair as
+     *	a persistent preference in the <code>root</code> path.  The root path
+     *	will automatically prefix "glassfish/" to the given String.
+     */
+    setPreference: function(root, key, value) {
+	root = 'glassfish/' + root;
+	admingui.ajax.invoke("setPreference", {root:root, key:key, value:value});
+    },
+
+    log : function(msg) {
+        if (!(typeof(console) === 'undefined') && (typeof(console.log) === 'function')) {
+            console.log((new Date()).toString() + ":  " + msg);
+        }
+    }
 }
+
+/*
+ *  The following functions provide tree functionality.
+ */
+admingui.help.nav = {
+    TREE_ID: "tocTree",
+    lastTreeNodeSelected: null,
+    
+    /**
+     *	This function selects a treeNode matching the given URL.
+     */
+    selectTreeNodeWithURL: function(url) {
+        var tree = document.getElementById(admingui.help.nav.TREE_ID);
+        var matches = admingui.util.findNodes(tree, admingui.help.nav.matchURL, url);
+        if (matches) {
+            // FIXME: Find "best" match... this will be needed if the URL
+            // is ambiguous, which may happen if post requests occur which
+            // leave off QUERY_STRING data that is needed to identify the
+            // URL.  It's probably best to leave the highlighting alone in
+            // many of these cases... perhaps search for the nearest match
+            // to the currently selected node.  Anyway, for now I will
+            // ignore this until we need to fix it...
+            admingui.help.nav.selectTreeNode(document.getElementById(matches[0].id));
+        } 
+    },
+
+    /**
+     *	This function selects the given treeNode.
+     */
+    selectTreeNode: function(treeNode) {
+        var tree = document.getElementById(admingui.help.nav.TREE_ID);// admingui.help.nav.getTree(treeNode);
+        if (tree) {
+            try {
+                this.expandNode(treeNode);
+            } catch (err) {
+                //console.log(err);
+            }
+        }
+    },
+
+    expandNode: function(treeNode) {
+        var id = treeNode.id;
+        var index = id.lastIndexOf(":");
+        while (index > -1) {
+            id = id.substring(0, index);
+	    var toSetStyle = document.getElementById(id+"_children");
+	    if (toSetStyle) {
+		toSetStyle.style.display = "block";
+	    }
+            index = id.lastIndexOf(":");
+        }
+    },
+
+    /**=
+     *	This function selects the given treeNode.
+     */
+    selectTreeNodeById: function(treeNodeId) {
+        var tree = document.getElementById(admingui.help.nav.TREE_ID);
+        //admingui.help.nav.getTreeFrameElementById(treeNodeId));
+        if (tree) {
+            tree.selectTreeNode(treeNodeId);
+        }
+    },
+
+    /**
+     *	This function looks for an "A" node with a url equal to the url
+     *	passed in.
+     */
+    matchURL: function(node, url) {
+        var result = null;
+        if ((node.nodeType == 1) && (node.nodeName == "A") && 
+            (node.href.indexOf(url) > -1) & (node.id.indexOf("link") > -1)) {
+            result = node;
+        }
+        return result;
+    },
+
+    /**
+     *	This function attempts to obtain the tree frame's tree object and
+     *	return its selected Tree node.  It will return null if unable to do
+     *	this.  It will <b>not</b> wait for the tree frame to load if it is not
+     *	already loaded.
+     */
+    getSelectedTreeNode: function() {
+        var tree = document.getElementById(admingui.help.nav.TREE_ID);
+        if (tree && tree.getSelectedTreeNode) {
+            return tree.getSelectedTreeNode(tree.id);
+        }
+    },
+
+    /**
+     *	This function provides access to DOM objects in the tree window.
+     */
+    getTreeFrameElementById: function(id) {
+	return document.getElementById(id);
+    },
+
+    /**
+     *	This function returns the parent TreeNode for the given TreeNode.
+     */
+    getParentTreeNode: function(treeNode) {
+        return document.getElementById(admingui.help.nav.TREE_ID).getParentTreeNode(treeNode);
+    },
+
+    getContainingTreeNode: function(href) {
+        var node =  document.getElementById(admingui.help.nav.TREE_ID).findContainingTreeNode(href);
+        return node;
+    },
+
+    getTree: function(treeNode) {
+        if (treeNode) {
+            var node = document.getElementById(admingui.help.nav.TREE_ID);
+            return node.getTree(treeNode);
+        }
+        return null;
+    }
+};
