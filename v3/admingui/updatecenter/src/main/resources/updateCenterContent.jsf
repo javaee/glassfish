@@ -65,13 +65,3 @@
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
             </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
-
-<f:verbatim>
-    <script type="text/javascript">
-       function reloadHeader(value) {
-            if (value == 'true') {
-                reloadHeaderFrame();
-            }
-        }
-    </script>
-</f:verbatim>
