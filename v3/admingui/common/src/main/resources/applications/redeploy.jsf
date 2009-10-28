@@ -48,7 +48,6 @@
         if (! #{requestScope.exist}){
             redirect(page="#{request.contextPath}/common/applications/applications.jsf");
         }
-        getRequestValue(key="nextPage" value=>$page{nextPage});
         createMap(result="#{pageSession.deployMap}")
         mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");
         setPageSessionAttribute(key="convertToFalse" value={"keepSessions", "precompilejsp", "verify"})
@@ -86,10 +85,12 @@
                 redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
         </sun:button>
-        <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" immediate="#{true}" primary="#{false}">
-            <!command
-                redirect(page="$pageSession{nextPage}");
-            />
+        <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
+            onClick="admingui.ajax.loadPage({url:'{request.contextPath}/common/applications/applications.jsf'}); return false;">
+        //    <!command
+        //        println("cancel");
+        //        navigate(page="{request.contextPath}/common/applications/applications.jsf");
+        //    />
         </sun:button>
     </sun:panelGroup>
     </facet>
