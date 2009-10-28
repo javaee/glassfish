@@ -442,8 +442,66 @@ public class MonitoringHandlers {
         }
         handlerCtx.setOutputValue("firstValue",  firstval);
      }
-    
 
+      @Handler(id = "getAppName",
+      input={
+        @HandlerInput(name="name",   type=String.class, required=true)},
+       output = {
+        @HandlerOutput(name = "appName", type = String.class)
+       })
+        public static void getAppName(HandlerContext handlerCtx) {
+        String name = (String) handlerCtx.getInputValue("name");
+        AMXProxy amx = V3AMX.getInstance().getApplications();
+        Map<String, AMXProxy> applications = amx.childrenMap("application");
+        List result = new ArrayList();
+        String appName = "";
+        for (AMXProxy oneApp : applications.values()) {
+            Map<String, AMXProxy> modules = oneApp.childrenMap("module");
+            for (AMXProxy oneModule : modules.values()) {
+                String moduleName = oneModule.getName();
+                    if (moduleName.equals(name)){
+                        appName = oneApp.getName();
+                        break;
+                    }
+            }
+        }
+        handlerCtx.setOutputValue("appName",  appName);
+    }
+
+    @Handler(id = "getNameforMbean",
+      input={
+        @HandlerInput(name="appName",   type=String.class, required=true),
+        @HandlerInput(name="compVal",   type=String.class, required=true)},
+       output = {
+        @HandlerOutput(name = "mbeanName", type = String.class)
+       })
+    public static void getNameforMbean(HandlerContext handlerCtx) {
+        String app = (String) handlerCtx.getInputValue("appName");
+        String comp = (String) handlerCtx.getInputValue("compVal");
+        String mbeanName = "";
+        try {
+            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+            Set data = (Set) query.queryType("server-mon");
+            Iterator iter = data.iterator();
+            while (iter.hasNext()) {
+                Map attrs = ((AMXProxy) iter.next()).attributesMap();
+                ObjectName[] pnames = (ObjectName[]) attrs.get("Children");
+                for (int i = 0; i < pnames.length; i++) {
+                    String pname = pnames[i].getKeyProperty("name");
+                    if (pname.endsWith(app + "/" + comp)) {
+                        mbeanName = pname;
+                        break;
+                    }
+
+                }
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+        handlerCtx.setOutputValue("mbeanName", mbeanName);
+
+    }
+      
     final private static List<String> levels= new ArrayList();
     static{
         levels.add("OFF");

@@ -61,7 +61,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import com.sun.webui.jsf.model.Option;
 import com.sun.webui.jsf.model.OptionGroup;
-import com.sun.webui.jsf.model.OptionTitle;
+import com.sun.webui.jsf.component.DropDown;
 
 
 import java.io.File;
@@ -71,11 +71,10 @@ import java.util.Random;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.handlers.MonitoringHandlers;
 import org.glassfish.admingui.util.SunOptionUtil;
 
 public class WoodstockHandler {
@@ -305,31 +304,30 @@ public class WoodstockHandler {
         ArrayList menuList = new ArrayList();
         menuList.add(new Option("", ""));
         // Menu for Virtual Servers
-        OptionGroup vsMenuOptions = getMenuOptions(vsList, "virtual-server");
+        OptionGroup vsMenuOptions = getMenuOptions(vsList, "virtual-server", "", false);
         if(vsMenuOptions != null){
             menuList.add(vsMenuOptions);
         }
 
         // Menu for Listeners
-        OptionGroup nlMenuOptions = getMenuOptions(nlList, "http-listener");
+        OptionGroup nlMenuOptions = getMenuOptions(nlList, "http-listener", "", false);
         if(nlMenuOptions != null){
             menuList.add(nlMenuOptions);
         }
         
 
          // Menu for Garbage Collectors
-        OptionGroup gcMenuOptions = getMenuOptions(gcList, "garbage-collector");
+        OptionGroup gcMenuOptions = getMenuOptions(gcList, "garbage-collector", "", false);
         if(gcMenuOptions != null){
              menuList.add(gcMenuOptions);
         }
 
         // Menu for Thread System
-        OptionGroup tsMenuOptions = getMenuOptions(threadList, "thread-system");
+        OptionGroup tsMenuOptions = getMenuOptions(threadList, "thread-system", "", false);
         if (tsMenuOptions != null) {
           menuList.add(tsMenuOptions);
       }
-
-        // Add Menu Options.
+       // Add Menu Options.
          jumpMenuOptions = (Option[])menuList.toArray(new Option[menuList.size()]);
 
         handlerCtx.setOutputValue("MonitorList", jumpMenuOptions);
@@ -389,56 +387,37 @@ public class WoodstockHandler {
     public void populateApplicationsMonitorDropDown(HandlerContext handlerCtx) {
         List aList = (List) handlerCtx.getInputValue("AppsList");
         ArrayList menuList = new ArrayList();
-        // Menu for Resources
         ArrayList appsList = new ArrayList();
         Option[] groupedOptions1 = new Option[0];
         String firstItem = null;
+        String title = null;
         if (aList != null) {
             ListIterator al = aList.listIterator();
             while (al.hasNext()) {
-                String name = (String) al.next();
-                //if (!doesAppProxyExit(name, "bean-pool-mon")) {
-                    appsList.add(new Option(name, name));
-                    if (firstItem == null) {
-                        firstItem = name;
+                ArrayList moduleList = new ArrayList();
+                String appName = (String) al.next();
+                Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
+                for (AMXProxy oneModule : modules.values()) {
+                    String moduleName = oneModule.getName();
+                    if (moduleName.endsWith(".war") || moduleName.endsWith(".jar")) {
+                        boolean hasSfullStats = doesAppProxyExist(moduleName, "stateful-session-bean-mon");
+                        boolean hasSlessStats = doesAppProxyExist(moduleName, "stateless-session-bean-mon");
+                        boolean hasWebStats = doesAppProxyExist(moduleName, "servlet-instance-mon");
+                        if (hasSfullStats || hasSlessStats || hasWebStats) {
+                            moduleList.add(moduleName);
+                        }
                     }
-                //}
-            }
-        }
-        groupedOptions1 = (Option[]) appsList.toArray(new Option[appsList.size()]);
-        OptionGroup jumpGroup1 = new OptionGroup();
-        jumpGroup1.setLabel("applications");
-        jumpGroup1.setOptions(groupedOptions1);
-        menuList.add(jumpGroup1);
-
-        // Menu for ejb app info
-        OptionGroup ejbAppOptions = setEjbGroupOptions("ejb-application-mon", "ejb-application-info");
-        if (ejbAppOptions != null) {
-            menuList.add(ejbAppOptions);
-        }
-
-        // Menu for ejb app info
-        OptionGroup ejbTimerOptions = setEjbGroupOptions("ejb-timed-object-mon", "ejb-timer");
-        if (ejbTimerOptions != null) {
-            menuList.add(ejbTimerOptions);
-        }
-
-        // Menu for bean-cache
-        OptionGroup bcOptions = setEjbGroupOptions("bean-cache-mon", "bean-cache");
-        if (bcOptions != null) {
-            menuList.add(bcOptions);
-        }
-
-        // Menu for bean-pool
-        OptionGroup bpOptions = setEjbGroupOptions("bean-pool-mon", "bean-pool");
-        if (bpOptions != null) {
-            menuList.add(bpOptions);
-        }
-
-        // Menu for bean-methods
-        OptionGroup bmOptions = setEjbGroupOptions("bean-method-mon", "bean-methods");
-        if (bmOptions != null) {
-            menuList.add(bmOptions);
+                }
+               if (moduleList.isEmpty()) {
+                    menuList.add(new Option(appName, appName));
+                } else {
+                    OptionGroup menuOptions = getMenuOptions(moduleList, appName, "", false);
+                    menuList.add(menuOptions);
+                }
+                if (firstItem == null) {
+                    firstItem = appName;
+                }
+          }
         }
 
         // Add Menu Options.
@@ -448,27 +427,71 @@ public class WoodstockHandler {
         handlerCtx.setOutputValue("FirstItem", firstItem);
     }
 
-    private static OptionGroup setEjbGroupOptions(String type, String label) {
-        List nameList = V3AMX.getProxyListByType(type);
-        if (nameList != null && nameList.size() != 0) {
-            ArrayList nList = new ArrayList();
-            ListIterator nl = nameList.listIterator();
-            while (nl.hasNext()) {
-                String name = (String) nl.next();
-                nList.add(new Option(name, name));
+  /**
+     *  <p> Returns the list of monitorable resource components</p>
+     *
+     */
+  @Handler(id="populateComponentDropDown",
+        input={
+            @HandlerInput(name="VSList", type=List.class, required=true),
+            @HandlerInput(name="AppName", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="ComponentList", type=Option[].class)})
+    public void populateComponentDropDown(HandlerContext handlerCtx) {
+        List vsList = (List) handlerCtx.getInputValue("VSList");
+        String appname = (String) handlerCtx.getInputValue("AppName");
+        ArrayList menuList = new ArrayList();
+        menuList.add(new Option("", ""));
+        if (appname.endsWith(".war")) {
+            if (vsList != null) {
+                ListIterator vl = vsList.listIterator();
+                while (vl.hasNext()) {
+                    String name = (String) vl.next();
+                    List servlets = servletInstanceValues(appname, "servlet-instance-mon", name);
+                    if (!servlets.isEmpty()) {
+                        OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
+                        menuList.add(menuOptions);
+                    }
+                }
             }
-            Option[] groupedOptions = new Option[0];
-            groupedOptions = (Option[]) nList.toArray(new Option[nList.size()]);
-            OptionGroup jumpGroup = new OptionGroup();
-            jumpGroup.setLabel(label);
-            jumpGroup.setOptions(groupedOptions);
-            return jumpGroup;
         } else {
-            return null;
+
+            List<String> sfullSession = getAllEjbComps(appname, "stateful-session-bean-mon", "");
+            if (!sfullSession.isEmpty()) {
+                OptionGroup menuOptions = getMenuOptions(sfullSession, (String)sfullSession.get(0),"", true);
+                menuList.add(menuOptions);
+                List sfullBeanMethods = getEjbComps(appname, "bean-method-mon", (String)sfullSession.get(0));
+                if (!sfullBeanMethods.isEmpty()) {
+                    OptionGroup bmmenuOptions = getMenuOptions(sfullBeanMethods, "bean-methods", (String)sfullSession.get(0), true);
+                    menuList.add(bmmenuOptions);
+                }
+            }
+
+
+            List slessSession = getAllEjbComps(appname, "stateless-session-bean-mon", "");
+             if (!slessSession.isEmpty()) {
+                OptionGroup menuOptions = getMenuOptions(slessSession, (String) slessSession.get(0), "", true);
+                menuList.add(menuOptions);
+                List slessBeanMethods = getEjbComps(appname, "bean-method-mon", (String)slessSession.get(0));
+                if (!slessBeanMethods.isEmpty()) {
+                    OptionGroup bmmenuOptions = getMenuOptions(slessBeanMethods, "bean-methods", (String)slessSession.get(0), true);
+                    menuList.add(bmmenuOptions);
+                }
+
+            }
+ 
         }
+
+
+        // Add Menu Options.
+        jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
+
+        handlerCtx.setOutputValue("ComponentList", jumpMenuOptions);
     }
 
-    private static OptionGroup getMenuOptions(List values, String label) {
+  
+
+    private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
         ArrayList nList = new ArrayList();
         Option[] groupedOptions3 = new Option[0];
         ListIterator nl = values.listIterator();
@@ -477,7 +500,18 @@ public class WoodstockHandler {
         } else {
             while (nl.hasNext()) {
                 String name = (String) nl.next();
-                nList.add(new Option(name, name));
+                if (addLabel && label2.equals("")) {
+                    if(!label.equals(name)){
+                        nList.add(new Option(label+"/" + name, name));
+                    } else {
+                        nList.add(new Option(name, name));
+                    }
+                    
+                } else if(addLabel && !label2.equals("")) {
+                    nList.add(new Option(label2+"/"+label+"/" + name, name));
+                } else {
+                    nList.add(new Option(name, name));
+                }
             }
             groupedOptions3 = (Option[]) nList.toArray(new Option[nList.size()]);
             OptionGroup jumpGroup3 = new OptionGroup();
@@ -487,20 +521,87 @@ public class WoodstockHandler {
         }
     }
 
-    private static Boolean doesAppProxyExit(String name, String type) {
+    private static Boolean doesAppProxyExist(String name, String type) {
         List proxyList = V3AMX.getProxyListByType(type);
         boolean proxyexist = false;
         if (proxyList != null && proxyList.size() != 0) {
             ListIterator li = proxyList.listIterator();
             while (li.hasNext()) {
                 String pname = (String) li.next();
-                if (pname.startsWith(name)) {
+                if (pname.contains(name)) {
                     proxyexist = true;
                 }
 
             }
         }
         return proxyexist;
+    }
+
+    private static List servletInstanceValues(String name, String type, String instance) {
+        List proxyList = V3AMX.getProxyListByType(type);
+        List servlets = new ArrayList();
+        if (proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (pname.contains(name)) {
+                    String vs = pname.substring(pname.lastIndexOf(".war") + 5, pname.lastIndexOf("/"));
+                    if(instance.equals(vs)) {
+                        servlets.add(pname.substring(pname.lastIndexOf("/")+1, pname.length()));
+                    }
+                }
+           }
+        }
+        return servlets;
+    }
+
+    private static List getAllEjbComps(String appname, String type, String state) {
+        List ejblist = new ArrayList();
+        List menuList = new ArrayList();
+        List bstate = getEjbComps(appname, type, "");
+        if (!bstate.isEmpty()) {
+            ejblist.addAll(bstate);
+            List bcache = getEjbComps(appname, "bean-cache-mon", (String) bstate.get(0));
+            List bpool = getEjbComps(appname, "bean-pool-mon", (String) bstate.get(0));
+            List timers = getEjbComps(appname, "ejb-timed-object-mon", (String) bstate.get(0));
+            if (!bcache.isEmpty()) {
+                ejblist.addAll(bcache);
+            }
+            if (!bpool.isEmpty() && bpool.size() > 0) {
+                ejblist.addAll(bpool);
+            }
+            if (!timers.isEmpty()) {
+                ejblist.addAll(timers);
+            }
+            /*List beanMethods = getEjbComps(appname, "bean-method-mon", (String)bstate.get(0));
+            if (!beanMethods.isEmpty()) {
+                OptionGroup menuOptions = getMenuOptions(beanMethods, "bean-methods");
+                menuList.add(menuOptions);
+            }*/
+        }
+        return ejblist;
+    }
+
+    private static List getEjbComps(String name, String type, String ejbstate) {
+        List proxyList = V3AMX.getProxyListByType(type);
+        List comps = new ArrayList();
+        if (proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (!ejbstate.isEmpty() || !ejbstate.equals("")) {
+                    if (pname.startsWith(name) || pname.contains("/"+name+"/") && pname.contains(ejbstate)) {
+                        comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
+                    }
+                } else {
+                    if (pname.startsWith(name) || pname.contains("/"+name+"/") ) {
+                        comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
+                        
+                    }
+                }
+            }
+        }
+        return comps;
     }
 
     private Option[] jumpMenuOptions = null;

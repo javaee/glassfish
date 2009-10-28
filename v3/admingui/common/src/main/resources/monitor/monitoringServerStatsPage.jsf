@@ -68,6 +68,7 @@
         getStatsbyTypeName(type="web-service-mon" name="webservices", result=>$attribute{webServicesStatsList}  hasStats=>$attribute{hasStatsWS});
         getStatsbyTypeName(type="GlobalStatsProvider" name="/jersey/global", result=>$attribute{jerseyGlobalStatsList}  hasStats=>$attribute{hasStatsJG});
         getStatsbyTypeName(type="thread-system-mon" name="jvm/thread-system", result=>$attribute{jvmThreadStatsList}  hasStats=>$attribute{hasStatsJVMThread});
+                    getStatsbyTypeName(type="jruby-container-mon" name="containers/jruby/applications", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
         }
         if(#{viewVal}){
             setAttribute(key="hasStatsJVMThread" value="#{false}");
@@ -87,6 +88,7 @@
             setAttribute(key="hasStatsWS" value="#{false}");
             setAttribute(key="hasStatsJG" value="#{false}");
             setAttribute(key="hasStatsCQ" value="#{false}");
+            setAttribute(key="hasStatsJPS" value="#{false}");
         }
     />
 </event>
@@ -304,6 +306,11 @@
     </sun:tableRowGroup>
      <sun:tableRowGroup id="webSecurity" rendered="#{hasStatsWSD}" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurityStats}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="jRubyStats" rendered="#{hasStatsJPS}" data={"$attribute{jRubyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jRubyProbeStatistics}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
