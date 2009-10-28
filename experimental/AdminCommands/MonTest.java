@@ -47,6 +47,7 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.universal.Duration;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 
@@ -58,8 +59,8 @@ import org.jvnet.hk2.component.Singleton;
 
 @Service(name = "mon-test")
 @Scoped(Singleton.class)
-//@I18n("mon-test")
-public class MonTest implements AdminCommand {
+
+public class MonTest implements AdminCommand, PostConstruct{
     @Inject
     ServerEnvironmentImpl env;
 
@@ -69,25 +70,31 @@ public class MonTest implements AdminCommand {
     @Inject
     ProbeClientMediator listenerRegistrar;
 
-    @Param(optional=true, defaultValue="10")
+    @Param(optional=true, defaultValue="10", primary=true)
     String howmanyString;
 
     public void execute(AdminCommandContext context) {
         int howmany = 10;
-        
+        msg = "";
         try { howmany = Integer.parseInt(howmanyString); } 
         catch(Exception e) { /*ignore*/ }
 
         final ActionReport report = context.getActionReport();
 
         try {
-            setup();
+            for(int i = 0; i  < howmany; i++) {
+                int which = randy.nextInt(3) + 1;
+
+                switch(which) {
+                    case 1: fire1(); break;
+                    case 2: fire2(); break;
+                    case 3: fire3(); break;
+                }
+            }
+
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            String msg = "Monitoring Test Here!";
+            msg = "Monitoring Test Here!";
             msg += "howmany= " + howmany;
-            ppt.method1("xxx", 50);
-            ppt.method2("xxx", 2, 3, new Date());
-            ppt.method3("xxx");
             report.setMessage(msg);
         }
         catch(Exception e) {
@@ -100,13 +107,30 @@ public class MonTest implements AdminCommand {
         }
     }
 
+    private void fire1() {
+        ppt.method1("xxx", 50);
+        msg += "fire1\n";
+    }
 
-    private void setup() throws InstantiationException, IllegalAccessException{
-        if(ppt != null) 
-            return;
+    private void fire2() {
+        ppt.method2("xxx", 2, 3, new Date());
+        msg += "fire2\n";
+    }
+    private void fire3() {
+         ppt.method3("xxx");
+        msg += "fire3\n";
+    }
 
-        ppt = probeProviderFactory.getProbeProvider(PPTester.class);
-        System.out.println("SUCCESS!!  Created PPTester instance!!!");
+    @Override
+    public void postConstruct() {
+        try {
+            ppt = probeProviderFactory.getProbeProvider(PPTester.class);
+            System.out.println("SUCCESS!!  Created PPTester instance!!!");
+        }
+        catch(Exception e) {
+            System.out.println(StringUtils.getStackTrace(e));
+            System.out.println("@@@@@@ ERROR registering listener @@@@@@@");
+        }
 
         try {
             listenerRegistrar.registerListener(new PPListener());
@@ -116,8 +140,12 @@ public class MonTest implements AdminCommand {
             System.out.println("@@@@@@ ERROR registering listener @@@@@@@");
 
         }
+        
+        randy = new Random(System.nanoTime());
     }
 
-    PPTester ppt = null;
+    private PPTester ppt = null;
+    private Random randy;
+    String msg;
 }
 
