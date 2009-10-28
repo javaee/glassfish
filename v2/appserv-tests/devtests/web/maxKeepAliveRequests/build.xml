@@ -54,7 +54,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.keep-alive.max-connections=1"/>
+                   value="${appserver.instance.name}.network-config.protocols.protocol.http-listener-1.http.max-connections=2"/>
         </antcall>
     </target>
 
@@ -62,7 +62,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.keep-alive.max-connections=250"/>
+                   value="${appserver.instance.name}.network-config.protocols.protocol.http-listener-1.http.max-connections=250"/>
         </antcall>
     </target>
 
