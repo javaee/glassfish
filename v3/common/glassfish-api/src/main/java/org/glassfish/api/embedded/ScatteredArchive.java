@@ -214,6 +214,13 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         topDir = builder.topDir;
         resources = builder.resources;
         urls.addAll(builder.urls);
+        if (topDir!=null && type!=Builder.type.war) {
+            try {
+                urls.add(topDir.toURI().toURL());
+            } catch (MalformedURLException ignore) {
+
+            }
+        }
         metadata.putAll(builder.metadata);
         this.type = type;
         prefix = type==Builder.type.war?"WEB-INF/classes":null;
@@ -241,14 +248,21 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
      * Returns the InputStream for the given entry name
      * The file name must be relative to the root of the module.
      *
-     * @param name the file name relative to the root of the module.
+     * @param arg the file name relative to the root of the module.
      * @return the InputStream for the given entry name or null if not found.
      */
 
-    public InputStream getEntry(String name) throws IOException {
-        File f = getFile(name);
+    public InputStream getEntry(String arg) throws IOException {
+        File f = getFile(arg);
         if (f!=null && f.exists()) return new FileInputStream(f);
         return null;
+    }
+
+    @Override
+    public long getEntrySize(String arg) {
+        File f = getFile(arg);
+        if (f!=null && f.exists()) return f.length();
+        return 0L;
     }
 
     /**
@@ -284,7 +298,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
 
         for (URL url : urls) {
             try {
-                if (localResources.toURI().toURL().sameFile(url)) {
+                if (localResources!=null && localResources.toURI().toURL().sameFile(url)) {
                     localResources=null;
                 }
                 File f = new File(url.toURI());

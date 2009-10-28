@@ -38,7 +38,7 @@ public class EmbeddedTest {
             assert(appName!=null);
             try {
                 System.out.println("Looking up EJB...");
-                SampleEjb ejb = (SampleEjb) (new InitialContext()).lookup("java:global/classes/SampleEjb");
+                SampleEjb ejb = (SampleEjb) (new InitialContext()).lookup("java:global/simple/SampleEjb");
                 if (ejb!=null) {
                     System.out.println("Invoking EJB...");
                     System.out.println(ejb.saySomething());

@@ -214,8 +214,10 @@ public class AutoDeployService implements PostStartup, PostConstruct, PreDestroy
          * and the timer.
          */
         logger.fine("[AutoDeploy] Stopping");
-        autoDeployer.cancel(true);
-        autoDeployerTimerTask.cancel();
+        if (autoDeployer!=null)
+            autoDeployer.cancel(true);
+        if (autoDeployerTimerTask!=null)
+            autoDeployerTimerTask.cancel();
     }
     
     /**
