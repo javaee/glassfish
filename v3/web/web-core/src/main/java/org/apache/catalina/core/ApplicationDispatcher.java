@@ -706,23 +706,10 @@ public final class ApplicationDispatcher
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
 
-        // Initialize local variables we may need
-        HttpServletRequest hrequest = null;
-        /* GlassFish 6386229
-        if (request instanceof HttpServletRequest)
-            hrequest = (HttpServletRequest) request;
-        */
-        // START GlassFish 6386229
-        hrequest = (HttpServletRequest) request;
-        // END GlassFish 6386229
         HttpServletResponse hresponse = null;
-        /* GlassFish 6386229
-        if (response instanceof HttpServletResponse)
+        if (response instanceof HttpServletResponse) {
             hresponse = (HttpServletResponse) response;
-        */
-        // START GlassFish 6386229
-        hresponse = (HttpServletResponse) response;
-        // END GlassFish 6386229
+        }
         Servlet servlet = null;
         IOException ioException = null;
         ServletException servletException = null;
