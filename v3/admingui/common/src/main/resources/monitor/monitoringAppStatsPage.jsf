@@ -99,7 +99,7 @@
                     <sun:propertySheetSection id="viewPropertySection">
             <sun:property id="ApplicationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}">
                 
-                <sun:dropDown id="View" label="$resource{web.monitoring.View} : " items="$attribute{monitorList}" selected="#{viewVal}" submitForm="#{true}" immediate="#{true}" >
+                <sun:dropDown id="View" label="$resource{web.monitoring.Application} : " items="$attribute{monitorList}" selected="#{viewVal}" submitForm="#{true}" immediate="#{true}" >
                                 <!command
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="viewVal" value="#{click.selected}");

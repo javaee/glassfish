@@ -53,7 +53,6 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.webui.jsf.component.Calendar;
 import com.sun.webui.jsf.model.UploadedFile;
 import com.sun.webui.jsf.component.Field;
-import com.sun.webui.jsf.component.DropDown;
 import com.sun.webui.jsf.component.Hyperlink;
 
 import javax.faces.context.ExternalContext;
@@ -72,6 +71,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
 
+import java.util.Collections;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
@@ -329,7 +329,7 @@ public class WoodstockHandler {
       }
        // Add Menu Options.
          jumpMenuOptions = (Option[])menuList.toArray(new Option[menuList.size()]);
-
+         //Arrays.sort(jumpMenuOptions);
         handlerCtx.setOutputValue("MonitorList", jumpMenuOptions);
     }
 
@@ -392,6 +392,7 @@ public class WoodstockHandler {
         String firstItem = null;
         String title = null;
         if (aList != null) {
+            //Collections.sort(aList);
             ListIterator al = aList.listIterator();
             while (al.hasNext()) {
                 ArrayList moduleList = new ArrayList();
@@ -494,6 +495,7 @@ public class WoodstockHandler {
     private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
         ArrayList nList = new ArrayList();
         Option[] groupedOptions3 = new Option[0];
+        Collections.sort(values);
         ListIterator nl = values.listIterator();
         if (values == null) {
             return null;
@@ -573,11 +575,6 @@ public class WoodstockHandler {
             if (!timers.isEmpty()) {
                 ejblist.addAll(timers);
             }
-            /*List beanMethods = getEjbComps(appname, "bean-method-mon", (String)bstate.get(0));
-            if (!beanMethods.isEmpty()) {
-                OptionGroup menuOptions = getMenuOptions(beanMethods, "bean-methods");
-                menuList.add(menuOptions);
-            }*/
         }
         return ejblist;
     }
