@@ -54,7 +54,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.connection-pool.queue-size-in-bytes=0"/>
+                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size=0"/>
         </antcall>
     </target>
 
@@ -62,7 +62,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.connection-pool.queue-size-in-bytes=4096"/>
+                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size=4096"/>
         </antcall>
     </target>
 
