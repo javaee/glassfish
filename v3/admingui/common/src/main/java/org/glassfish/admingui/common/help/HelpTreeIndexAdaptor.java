@@ -38,6 +38,9 @@ package org.glassfish.admingui.common.help;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptor;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptorBase;
 import com.sun.jsftemplating.layout.descriptors.LayoutComponent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import java.util.HashMap;
 import java.util.List;
@@ -123,12 +126,17 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
 	if (nodeObject == null) {
 	    return null;
 	}
+        List<IndexItem> result = null;
 	if (nodeObject instanceof IndexItem) {
-	    return ((IndexItem) nodeObject).getIndexItems();
+	    result = new ArrayList<IndexItem>(((IndexItem) nodeObject).getIndexItems());
 	}
 	if (nodeObject instanceof Index) {
-	    return ((Index) nodeObject).getIndexItems();
+	    result = new ArrayList<IndexItem>(((Index) nodeObject).getIndexItems());
 	}
+        if (null != result) {
+            Collections.sort(result, new HelpTreeIndexAdaptor.IndexItemComparator());
+            return result;
+        }
 	throw new IllegalArgumentException("Invalid node type for Index: "
 		+ nodeObject.getClass().getName());
     }
@@ -308,4 +316,37 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
 	}
 	return factory;
     }
+
+    private static class IndexItemComparator implements Comparator<IndexItem> {
+
+        @Override
+        public int compare(IndexItem x, IndexItem y) {
+            int result = 0;
+
+            if (null != x && null != y) {
+                if (!x.equals(y)) {
+                    String xText = x.getText(), yText = y.getText();
+                    if (null != xText && null != yText) {
+                        result = xText.compareTo(yText);
+                    }
+                }
+            } else {
+                if (null == x && null == y) {
+                    result = 0;
+                } else {
+                    // consider null to be less.
+                    if (null == x) {
+                        result = -1;
+                    } else {
+                        result = 1;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+    }
+
+
 }

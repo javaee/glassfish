@@ -38,18 +38,16 @@ package org.glassfish.admingui.common.help;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptor;
 import com.sun.jsftemplating.component.factory.tree.TreeAdaptorBase;
 import com.sun.jsftemplating.layout.descriptors.LayoutComponent;
-import com.sun.jsftemplating.layout.event.CommandActionListener;
-
 import java.util.ArrayList;
+import java.util.Collections;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import javax.faces.component.ActionSource;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
-import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.plugin.TOC;
 import org.glassfish.admingui.plugin.TOCItem;
 
@@ -129,12 +127,17 @@ public class HelpTreeAdaptor extends TreeAdaptorBase {
 	if (nodeObject == null) {
 	    return null;
 	}
+        List<TOCItem> result = null;
 	if (nodeObject instanceof TOCItem) {
-	    return ((TOCItem) nodeObject).getTOCItems();
+	    result = new ArrayList<TOCItem>(((TOCItem) nodeObject).getTOCItems());
 	}
 	if (nodeObject instanceof TOC) {
-	    return ((TOC) nodeObject).getTOCItems();
+	    result = new ArrayList<TOCItem>(((TOC) nodeObject).getTOCItems());
 	}
+        if (null != result) {
+            Collections.sort(result, new HelpTreeAdaptor.TOCItemComparator());
+            return result;
+        }
 	throw new IllegalArgumentException("Invalid node type for TOC: "
 		+ nodeObject.getClass().getName());
     }
@@ -309,4 +312,38 @@ public class HelpTreeAdaptor extends TreeAdaptorBase {
 	}
 	return factory;
     }
+
+
+    private static class TOCItemComparator implements Comparator<TOCItem> {
+
+        @Override
+        public int compare(TOCItem x, TOCItem y) {
+            int result = 0;
+
+            if (null != x && null != y) {
+                if (!x.equals(y)) {
+                    String xText = x.getText(), yText = y.getText();
+                    if (null != xText && null != yText) {
+                        result = xText.compareTo(yText);
+                    }
+                }
+            } else {
+                if (null == x && null == y) {
+                    result = 0;
+                } else {
+                    // consider null to be less.
+                    if (null == x) {
+                        result = -1;
+                    } else {
+                        result = 1;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+    }
+
+
 }

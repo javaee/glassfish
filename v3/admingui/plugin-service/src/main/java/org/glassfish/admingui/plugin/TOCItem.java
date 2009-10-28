@@ -146,6 +146,12 @@ public class TOCItem {
 	return result;
     }
 
+    @Override
+    public String toString() {
+        return getText() + " " + getTarget();
+    }
+
+
 
     private boolean expand;
     private String target;

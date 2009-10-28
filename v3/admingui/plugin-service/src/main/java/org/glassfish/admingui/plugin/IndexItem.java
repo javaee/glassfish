@@ -132,7 +132,10 @@ public class IndexItem {
         return hash;
     }
 
-
+    @Override
+    public String toString() {
+        return getText() + " " + getTarget();
+    }
 
     private String htmlFileForTarget;
     private String target;
