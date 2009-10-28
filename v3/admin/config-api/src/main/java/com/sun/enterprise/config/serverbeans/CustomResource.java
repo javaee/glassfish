@@ -56,6 +56,7 @@ import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.JavaClassName;
 /**
  * Custom (or generic) resource managed by a user-written factory class.
  */
@@ -99,6 +100,7 @@ public interface CustomResource extends ConfigBeanProxy, Injectable, Resource,
      */
     @Attribute
     @NotNull
+    @JavaClassName
     String getFactoryClass();
 
     /**

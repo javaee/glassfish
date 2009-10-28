@@ -58,6 +58,8 @@ import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.NotNull;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.JavaClassName;
+
 /* @XmlType(name = "", propOrder = {
     "description",
     "property"
@@ -98,6 +100,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="com.sun.mail.imap.IMAPStore")
+    @JavaClassName
     public String getStoreProtocolClass();
 
     /**
@@ -132,6 +135,7 @@ public interface MailResource extends ConfigBeanProxy, Injectable, Resource, Pro
      *         {@link String }
      */
     @Attribute (defaultValue="com.sun.mail.smtp.SMTPTransport")
+    @JavaClassName
     public String getTransportProtocolClass();
 
     /**
