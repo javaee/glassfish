@@ -37,6 +37,7 @@ package org.glassfish.web.admin.monitor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.sun.logging.LogDomains;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.RangeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
@@ -58,6 +59,9 @@ import org.glassfish.gmbal.ManagedObject;
 @Description( "Web Container Session Statistics" )
 public class SessionStatsProvider{
 
+    private static final Logger logger = LogDomains.getLogger(
+        SessionStatsProvider.class, LogDomains.WEB_LOGGER);
+
     private static final String ACTIVE_SESSIONS_DESCRIPTION =
         "Number of active sessions";
     private static final String TOTAL_SESSIONS_DESCRIPTION =
@@ -75,7 +79,6 @@ public class SessionStatsProvider{
 
     private String moduleName;
     private String vsName;
-    private Logger logger;    
     
     private RangeStatisticImpl activeSessionsCount;
     private CountStatisticImpl sessionsTotal;
@@ -85,9 +88,7 @@ public class SessionStatsProvider{
     private CountStatisticImpl passivatedSessionsTotal;
     private CountStatisticImpl activatedSessionsTotal;
 
-    public SessionStatsProvider(String moduleName, String vsName,
-                                Logger logger) {
-        this.logger = logger;
+    public SessionStatsProvider(String moduleName, String vsName) {
         this.moduleName = moduleName;
         this.vsName = vsName;
         long curTime = System.currentTimeMillis();

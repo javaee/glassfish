@@ -37,6 +37,7 @@ package org.glassfish.web.admin.monitor;
 
 import java.util.logging.Logger;
 import javax.servlet.Servlet;
+import com.sun.logging.LogDomains;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.RangeStatistic;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
@@ -56,20 +57,23 @@ import org.glassfish.gmbal.ManagedObject;
 @AMXMetadata(type="jsp-mon", group="monitoring")
 @ManagedObject
 @Description("Web Container JSP Statistics")
-public class JspStatsProvider{
+public class JspStatsProvider {
+
+    private static final Logger logger = LogDomains.getLogger(
+        JspStatsProvider.class, LogDomains.WEB_LOGGER);
 
     private static final String ACTIVE_JSPS_LOADED_DESCRIPTION =
         "Number of active JSP pages";
+
     private static final String TOTAL_JSPS_LOADED_DESCRIPTION =
         "Total number of JSP pages ever loaded";
 
     private String moduleName;
     private String vsName; 
-    private Logger logger;
     private RangeStatisticImpl activeJspsLoadedCount;
     private CountStatisticImpl totalJspsLoadedCount;
     
-    public JspStatsProvider(String moduleName, String vsName, Logger logger) {
+    public JspStatsProvider(String moduleName, String vsName) {
         this.moduleName = moduleName;
         this.vsName = vsName;
         long curTime = System.currentTimeMillis();

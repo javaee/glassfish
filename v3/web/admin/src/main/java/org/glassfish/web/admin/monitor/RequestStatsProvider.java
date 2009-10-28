@@ -37,6 +37,7 @@ package org.glassfish.web.admin.monitor;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.sun.logging.LogDomains;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
@@ -57,16 +58,10 @@ import org.glassfish.gmbal.ManagedAttribute;
 @ManagedObject
 @Description("Web Request Statistics")
 public class RequestStatsProvider {
-    //Provides the longest response time for a request - not a cumulative value, 
-    //but the largest response time from among the response times.
-    //private Counter maxTime = CounterFactory.createCount();
-    //Provides cumulative value of the times taken to process each request. 
-    //The processing time is the average of request processing times over the request count.
-    //private Counter processingTime = CounterFactory.createCount();
-    //Provides cumulative number of the requests processed so far.
-    //private Counter requestCount = CounterFactory.createCount();
-    //Provides the cumulative value of the error count. The error count represents 
-    //the number of cases where the response code was greater than or equal to 400.
+
+    private static final Logger logger = LogDomains.getLogger(
+        RequestStatsProvider.class, LogDomains.WEB_LOGGER);
+
     private static final String ERROR_COUNT_DESCRIPTION =
         "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400";
     private static final String REQUEST_COUNT_DESCRIPTION =
@@ -87,7 +82,6 @@ public class RequestStatsProvider {
 
     private TimeStatisticImpl requestProcessTime = new TimeStatisticImpl(0L, 0L, 0L, 0L,
             "", "", "", System.currentTimeMillis(), -1L);
-    private Logger logger;
     
     private String virtualServerName = null;
     private String moduleName = null;
@@ -107,8 +101,7 @@ public class RequestStatsProvider {
         }
     };
 
-    public RequestStatsProvider(String appName, String vsName, Logger logger) {
-        this.logger = logger;
+    public RequestStatsProvider(String appName, String vsName) {
         this.virtualServerName = vsName;
         this.moduleName = appName;
     }

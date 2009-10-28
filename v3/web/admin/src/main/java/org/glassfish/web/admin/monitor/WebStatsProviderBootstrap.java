@@ -13,10 +13,10 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -45,16 +45,14 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 @Service(name = "web")
 @Scoped(Singleton.class)
 public class WebStatsProviderBootstrap implements PostConstruct {
+
+    private static final Logger logger = LogDomains.getLogger(
+        WebStatsProviderBootstrap.class, LogDomains.WEB_LOGGER);
+
     private static final String NODE_SEPARATOR = "/";
 
     @Inject
-    private Logger logger;
-
-    @Inject
     private static Domain domain;
-
-    @Inject
-    private ApplicationRegistry appRegistry;
 
     private static HttpService httpService = null;
     private static NetworkConfig networkConfig = null;
@@ -69,18 +67,6 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     }
 
     public void postConstruct(){
-        // to set log level, uncomment the following 
-        // remember to comment it before checkin
-        // remove this once we find a proper solution
-        Level dbgLevel = Level.FINEST;
-        Level defaultLevel = logger.getLevel();
-        if ((defaultLevel == null) || (dbgLevel.intValue() < defaultLevel.intValue())) {
-            //logger.setLevel(dbgLevel);
-        }
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.finest("[Monitor]In the WebStatsProviderBootstrap.postConstruct ************");
-        }
-
         List<Config> lc = domain.getConfigs().getConfig();
         Config config = null;
         for (Config cf : lc) {
@@ -106,13 +92,10 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     }
 
     private void registerWebStatsProviders() {
-        JspStatsProvider jsp = new JspStatsProvider(null, null, logger);
-        RequestStatsProvider wsp = new RequestStatsProvider(null, null,
-            logger);
-        ServletStatsProvider svsp = new ServletStatsProvider(null, null,
-            logger);
-        SessionStatsProvider sssp = new SessionStatsProvider(null, null,
-            logger);
+        JspStatsProvider jsp = new JspStatsProvider(null, null);
+        RequestStatsProvider wsp = new RequestStatsProvider(null, null);
+        ServletStatsProvider svsp = new ServletStatsProvider(null, null);
+        SessionStatsProvider sssp = new SessionStatsProvider(null, null);
         StatsProviderManager.register("web-container", PluginPoint.SERVER,
             "web/jsp", jsp);
         StatsProviderManager.register("web-container", PluginPoint.SERVER,
@@ -137,32 +120,32 @@ public class WebStatsProviderBootstrap implements PostConstruct {
             statspList = new ConcurrentLinkedQueue();
         }
         JspStatsProvider jspStatsProvider =
-                new JspStatsProvider(monitoringName, vsName, logger);
+                new JspStatsProvider(monitoringName, vsName);
         StatsProviderManager.register(
                 "web-container", PluginPoint.APPLICATIONS, node,
                 jspStatsProvider);
         statspList.add(jspStatsProvider);
         ServletStatsProvider servletStatsProvider =
-                new ServletStatsProvider(monitoringName, vsName, logger);
+                new ServletStatsProvider(monitoringName, vsName);
         StatsProviderManager.register(
                 "web-container", PluginPoint.APPLICATIONS, node,
                 servletStatsProvider);
         statspList.add(servletStatsProvider);
         SessionStatsProvider sessionStatsProvider =
-                new SessionStatsProvider(monitoringName, vsName, logger);
+                new SessionStatsProvider(monitoringName, vsName);
         StatsProviderManager.register(
                 "web-container", PluginPoint.APPLICATIONS, node,
                 sessionStatsProvider);
         statspList.add(sessionStatsProvider);
         RequestStatsProvider websp =
-                new RequestStatsProvider(monitoringName, vsName, logger);
+                new RequestStatsProvider(monitoringName, vsName);
         StatsProviderManager.register(
                 "web-container", PluginPoint.APPLICATIONS, node,
                 websp);
 
         for (String servletName : servletNames) {
              ServletInstanceStatsProvider servletInstanceStatsProvider = 
-                     new ServletInstanceStatsProvider(servletName, monitoringName, vsName, logger);
+                     new ServletInstanceStatsProvider(servletName, monitoringName, vsName);
              StatsProviderManager.register(
                      "web-container", PluginPoint.APPLICATIONS,
                      getNodeString(monitoringName, vsName, servletName),
