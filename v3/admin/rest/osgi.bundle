@@ -1,8 +1,10 @@
 -exportcontents: 
 DynamicImport-Package: \
-                        com.sun.jersey.api.container;resolution:=optional, \
-                        com.sun.jersey.api.core;resolution:=optional, \
-                        com.sun.jersey.core.header;resolution:=optional, \
-                        com.sun.jersey.multipart;resolution:=optional, \
-                        *
+                        com.sun.jersey.api.container, \
+                        com.sun.jersey.api.core, \
+                        com.sun.jersey.core.header, \
+                        com.sun.jersey.multipart, \
+                        javax.ws.rs, \
+                        javax.ws.rs.core, \
+                        javax.ws.rs.ext
 

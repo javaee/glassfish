@@ -3,3 +3,7 @@
                         com.sun.enterprise.deployment.deploy.shared; \
                         org.glassfish.loader.util; \
                         org.glassfish.deployment.common; version=${project.osgi.version}
+                        
+DynamicImport-Package: \
+                        org.objectweb.asm;password=GlassFish, \
+                        org.objectweb.asm.commons;password=GlassFish

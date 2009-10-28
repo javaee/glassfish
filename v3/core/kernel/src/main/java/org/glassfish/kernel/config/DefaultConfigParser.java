@@ -90,7 +90,7 @@ public class DefaultConfigParser implements ConfigParser {
                 long now = System.currentTimeMillis();
                 if (configuration != null) {
                     try {
-                        DomDocument newElement = parser.parse(configuration,  doc);
+                        DomDocument newElement = parser.parse(configuration,  doc, Dom.unwrap(config));
                         logger.info(newElement.getRoot().getProxyType().toString());
                     } catch(Exception e) {
                         e.printStackTrace();
