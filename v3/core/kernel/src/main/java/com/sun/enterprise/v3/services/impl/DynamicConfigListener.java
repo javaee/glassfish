@@ -108,7 +108,7 @@ public class DynamicConfigListener implements ConfigListener {
                             notProcessed = processNetworkListener(type, listener);
                         }
                         return notProcessed;
-                    } else if (t instanceof VirtualServer){
+                    } else if (t instanceof VirtualServer && !grizzlyService.hasMapperUpdateListener()){
                         return processVirtualServer(type, (VirtualServer)t);
                     }
                     return null;

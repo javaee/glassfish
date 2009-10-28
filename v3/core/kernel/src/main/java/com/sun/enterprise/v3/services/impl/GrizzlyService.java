@@ -188,6 +188,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     }
 
     /**
+     * Is there any {@link MapperUpdateListener} registered?
+     */
+    public boolean hasMapperUpdateListener(){
+        return (mapperUpdateListeners.size() > 0? true:false);
+    }
+
+    /**
      * Adds {@link MapperUpdateListener} to listeners queue.
      * 
      * @param listener the listener to be added.
@@ -269,11 +276,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
-//        There is a thread race between the web container and grizzly-kernel
-//        If the web-container gets updated before grizzly-kernel, the wrong
-//        Adapter will be registered.
-//        bean = (ObservableBean) ConfigSupport.getImpl(config.getHttpService());
-//        bean.addListener(configListener);
+        bean = (ObservableBean) ConfigSupport.getImpl(config.getHttpService());
+        bean.addListener(configListener);
 
         configListener.setGrizzlyService(this);
         configListener.setLogger(logger);
