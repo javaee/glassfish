@@ -92,6 +92,41 @@
         .littlearrows{background:url("#{request.contextPath}/resource/images/ar_dbl_blue.png") no-repeat top left;padding-left:10px}
     </style>    
     <br>
+</f:verbatim>
+<sun:script>
+    <f:verbatim>
+        // The code nested within this conditional is pulled from
+        // jmaki.  It seems jmaki wasn't designed to be consumed by
+        // ajax, only to consume ajax service.  When it's being consumed
+        // by ajax, jmaki doesn't work as intended.  So to work around that,
+        // we find that the jmaki object has already been defined, then we'll
+        // recreate it which will case the widgets to be re-evaluated.  If we
+        // don't do this, the widgets will perform no action.
+        if (typeof(jmaki) != 'undefined') {
+            var jmaki = new Jmaki();
+            jmaki.widgets = {};
+
+            var oldLoad  = window.onload;
+
+            /**
+             * onload calls bootstrap function to initialize and load all registered widgets
+             * override initial onload.
+             */
+            window.onload = function() {
+                if (!jmaki.initialized) {
+                   jmaki.initialize();
+                } else {
+                   jmaki.bootstrapWidgets();
+                   return;
+                }
+                if (typeof oldLoad  == 'function') {
+                    oldLoad();
+                }
+            }
+        }
+    </f:verbatim>
+</sun:script>
+<f:verbatim>
     <div id="maincontainer">
         <div id="newsBlogs" class="md1" style1="margin-left: 20px; width: 90%;">
             <div class="hd">
@@ -300,8 +335,22 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
 <p>
 </f:verbatim>
+<sun:script>
+    <f:verbatim>
+        if (typeof(window.onload) != 'undefined' && typeof(window.onload) == 'function') {
+            // invoke window.onload as jmaki will have updated this value
+            window.onload();
+        }
+        // restore the the old unload handler (called oldLoad by jmaki)
+        // if it's available
+        if (typeof(oldLoad) != 'undefined') {
+            window.onload = oldLoad;
+            oldLoad = null;
+        }
+    </f:verbatim>
+</sun:script>
 </define>
 </composition>
