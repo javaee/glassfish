@@ -41,9 +41,19 @@
     <servlet-class>EmptyStringTarget</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>MyDefault</servlet-name>
+    <servlet-class>MyDefault</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>EmptyStringTarget</servlet-name>
     <url-pattern>""</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>MyDefault</servlet-name>
+    <url-pattern>/</url-pattern>
   </servlet-mapping>
 
 </web-app>

@@ -47,8 +47,11 @@ public class WebTest {
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
-    private static final String EXPECTED_RESPONSE =
+    private static final String EXPECTED_RESPONSE_1 =
         "Hello World from empty string URL pattern";
+
+    private static final String EXPECTED_RESPONSE_2 =
+        "Hello World from default URL pattern";
 
     private String host;
     private String port;
@@ -66,7 +69,8 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest();
+            webTest.doTest("/", EXPECTED_RESPONSE_1);
+            webTest.doTest("/helloWorld", EXPECTED_RESPONSE_2);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -76,13 +80,14 @@ public class WebTest {
 	stat.printSummary();
     }
 
-    public void doTest() throws Exception {
+    public void doTest(String path, String expectedResponse) throws Exception {
 
         InputStream is = null;
         BufferedReader input = null;
 
         try {
-            URL url = new URL("http://" + host  + ":" + port + contextRoot + "/");
+            URL url = new URL("http://" + host  + ":" + port + contextRoot +
+                path);
             System.out.println("Connecting to: " + url.toString());
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -97,9 +102,9 @@ public class WebTest {
             is = conn.getInputStream();
             input = new BufferedReader(new InputStreamReader(is));
             String response = input.readLine();
-            if (!EXPECTED_RESPONSE.equals(response)) {
+            if (!expectedResponse.equals(response)) {
                 throw new Exception("Missing or wrong response. Expected: " +
-                    EXPECTED_RESPONSE + ", received: " + response);
+                    expectedResponse + ", received: " + response);
             }
         } finally {
             try {

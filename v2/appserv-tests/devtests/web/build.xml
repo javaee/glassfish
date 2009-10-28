@@ -302,6 +302,9 @@
         <ant dir="servlet-3.0/asyncStartOutsideAsyncDispatchScope" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
         <ant dir="servlet-3.0/multipart" target="all"/>
+<!-- XXX temporarily commented out, see IT 10601
+        <ant dir="servlet-3.0/servletMappingEmptyString" target="all"/>
+-->
     </target>
 
     <target name="web-container">
