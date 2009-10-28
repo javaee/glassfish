@@ -48,13 +48,13 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup,restart-server-instance-common,run, restore,restart-server-instance-common"/>
+    <target name="all" depends="setup,run, restore"/>
 
     <target name="setup" depends="init-common">
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.network-config.protocols.protocol.http-listener-1.http.max-connections=2"/>
+                   value="${appserver.instance.name}.network-config.protocols.protocol.http-listener-1.http.max-connections=1"/>
         </antcall>
     </target>
 
