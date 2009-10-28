@@ -32,7 +32,8 @@ public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
 
     @Override
     public boolean handles(ReadableArchive archive) {
-        return archive instanceof ScatteredArchive;
+        return (archive instanceof ScatteredArchive &&
+                ((ScatteredArchive) archive).type()==ScatteredArchive.Builder.type.war);
     }
 
     @Override

@@ -154,6 +154,9 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     public String deploy(ReadableArchive archive, DeployCommandParameters params) {
 
         ActionReport report = new PlainTextActionReporter();
+        if (params==null) {
+            params = new DeployCommandParameters();
+        }
         ExtendedDeploymentContext initialContext = new DeploymentContextImpl(report, logger, archive, params, env);
         ArchiveHandler archiveHandler = null;
         try {

@@ -194,9 +194,9 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         }
 
         /**
-         * Suppeored types of scattered archives.
+         * Supported types of scattered archives.
          */
-        enum type {
+        public enum type {
             jar, war
         }
     }
@@ -376,6 +376,14 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
     }
 
     /**
+     * Returns the archive type
+     * @return the archive type
+     */
+    public Builder.type type() {
+        return type;
+    }
+
+    /**
      * Returns an enumeration of the module file entries with the
      * specified prefix.  All elements in the enumeration are of
      * type String.  Each String represents a file name relative
@@ -415,8 +423,10 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
                 return new File(resources, name);
             }
         }
-        if (name.startsWith(prefix)) {
-            name = name.substring(prefix.length()+1);
+        if (prefix!=null) {
+            if (name.startsWith(prefix)) {
+                name = name.substring(prefix.length()+1);
+            }
         }
         for (URL url : urls) {
             File f = null;

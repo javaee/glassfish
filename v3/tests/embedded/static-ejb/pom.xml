@@ -46,18 +46,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.tests</groupId>
-    <artifactId>embedded</artifactId>
+    <artifactId>static-ejb</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Embedded Tests</name>  
+    <name>GlassFish Static Embedded EJB Tests</name>  
     <modules>
-    	<module>utils</module>
-    	<module>ejb</module>
-        <module>inplanted</module>      
-    	<module>static</module>
-    	<module>web-api</module>
-    	<module>static-ejb</module>
-<!-- temporarily removing because of a failure
-        <module>web-all</module>
--->
+    	<module>simple</module>
     </modules>
 </project>
