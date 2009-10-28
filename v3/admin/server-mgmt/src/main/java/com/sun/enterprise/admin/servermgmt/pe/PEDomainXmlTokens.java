@@ -36,10 +36,7 @@
 
 package com.sun.enterprise.admin.servermgmt.pe;
 
-import java.io.File;
 
-import com.sun.enterprise.util.OS;
-import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.admin.util.TokenValue;
 import com.sun.enterprise.admin.util.TokenValueSet;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
@@ -71,6 +68,8 @@ public final class PEDomainXmlTokens
     public static final String ORB_SSL_PORT_TOKEN_NAME= "ORB_SSL_PORT";
 
     public static final String ORB_MUTUALAUTH_PORT_TOKEN_NAME= "ORB_MUTUALAUTH_PORT";
+
+    public static final String OSGI_SHELL_TELNET_PORT_TOKEN_NAME = "OSGI_SHELL_TELNET_PORT";
 
     //This token is used for SE/EE only now, but it is likely that we will want to expose it
     //in PE (i.e. to access the exposed Mbeans). Remember that the http jmx port (used by
@@ -152,7 +151,11 @@ public final class PEDomainXmlTokens
 
         tv = new TokenValue(DOMAIN_NAME_TOKEN_NAME, domainConfig.getRepositoryName());
         tokens.add(tv);
-
+        
+        final Integer osgiShellTelnetPort =
+            (Integer)domainConfig.get(DomainConfig.K_OSGI_SHELL_TELNET_PORT);
+        tv = new TokenValue(OSGI_SHELL_TELNET_PORT_TOKEN_NAME, osgiShellTelnetPort.toString());
+        tokens.add(tv);
         
         return ( tokens );
     }

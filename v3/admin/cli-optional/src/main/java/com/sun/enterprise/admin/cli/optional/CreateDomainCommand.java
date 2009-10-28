@@ -98,6 +98,7 @@ public final class CreateDomainCommand extends CLICommand {
     private static final String DEFAULT_JMS_PASSWORD = "admin";
     private static final int DEFAULT_IIOP_PORT = 3700;
     private static final int DEFAULT_JMX_PORT = 8686;
+    private static final int DEFAULT_OSGI_SHELL_TELNET_PORT = 6666;
     private static final int PORT_MAX_VAL = 65535;
     private static final int PORTBASE_ADMINPORT_SUFFIX = 48;
     private static final int PORTBASE_HTTPSSL_SUFFIX = 81;
@@ -107,6 +108,7 @@ public final class CreateDomainCommand extends CLICommand {
     private static final int PORTBASE_JMS_SUFFIX = 76;
     private static final int PORTBASE_IIOP_SUFFIX = 37;
     private static final int PORTBASE_JMX_SUFFIX = 86;
+    private static final int PORTBASE_OSGI_SHELL_SUFFIX = 66;
 
     private static final char ESCAPE_CHAR = '\\';
     private static final char EQUAL_SIGN = '=';
@@ -287,6 +289,14 @@ public final class CreateDomainCommand extends CLICommand {
         sb.append(DomainConfig.K_JMX_PORT);
         sb.append("=");
         sb.append(String.valueOf(portbase + PORTBASE_JMX_SUFFIX));
+        sb.append(":");
+
+        verifyPortBasePortIsValid(DomainConfig.K_OSGI_SHELL_TELNET_PORT,
+            portbase + PORTBASE_OSGI_SHELL_SUFFIX);
+        sb.append(DomainConfig.K_OSGI_SHELL_TELNET_PORT);
+        sb.append("=");
+        sb.append(String.valueOf(portbase + PORTBASE_OSGI_SHELL_SUFFIX));
+
         options.put(DOMAIN_PROPERTIES, sb.toString());
     }
 
@@ -577,6 +587,11 @@ public final class CreateDomainCommand extends CLICommand {
                 Integer.toString(DEFAULT_JMX_PORT),
                 "JMX_ADMIN");
 
+        final Integer osgiShellTelnetPort = getPort(domainProperties,
+                DomainConfig.K_OSGI_SHELL_TELNET_PORT, null,
+                Integer.toString(DEFAULT_OSGI_SHELL_TELNET_PORT),
+                "OSGI_SHELL");
+
         boolean saveMasterPassword = getSaveMasterPassword(masterPassword);
 
         checkPortPrivilege(new Integer[]{
@@ -592,7 +607,7 @@ public final class CreateDomainCommand extends CLICommand {
                 saveMasterPassword, instancePort, jmsUser,
                 jmsPassword, jmsPort, orbPort,
                 httpSSLPort, iiopSSLPort,
-                iiopMutualAuthPort, jmxPort,
+                iiopMutualAuthPort, jmxPort, osgiShellTelnetPort,
                 domainProperties);
         if (getOption(TEMPLATE) != null) {
             domainConfig.put(DomainConfig.K_TEMPLATE_NAME, getOption(TEMPLATE));

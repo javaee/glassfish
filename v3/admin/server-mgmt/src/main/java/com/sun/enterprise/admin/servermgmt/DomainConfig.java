@@ -40,8 +40,6 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Iterator;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Map;
 
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
@@ -78,7 +76,9 @@ public class DomainConfig extends RepositoryConfig
     public static final String K_TEMPLATE_NAME = "template.name";
     public static final String K_HTTP_SSL_PORT = "http.ssl.port";
     public static final String K_IIOP_SSL_PORT = "orb.ssl.port";
-    public static final String K_IIOP_MUTUALAUTH_PORT = "orb.mutualauth.port";  
+    public static final String K_IIOP_MUTUALAUTH_PORT = "orb.mutualauth.port";
+    public static final String K_OSGI_SHELL_TELNET_PORT = "osgi.shell.telnet.port";
+
     public static final String K_DEBUG = "domain.debug";   
     public static final String K_VERBOSE = "domain.verbose";             
     public static final String K_VALIDATE_PORTS = "domain.validatePorts";
@@ -118,7 +118,7 @@ public class DomainConfig extends RepositoryConfig
         String jmsUser, String jmsPassword, Integer jmsPort, 
         Integer orbPort, Integer httpSSLPort, 
         Integer iiopSSLPort, Integer iiopMutualAuthPort,
-        Integer jmxAdminPort,
+        Integer jmxAdminPort, Integer osgiShellTelnetPort,
         Properties domainProperties) throws DomainException
     {
         this(domainName, domainRoot);
@@ -137,6 +137,7 @@ public class DomainConfig extends RepositoryConfig
             put(K_IIOP_SSL_PORT, iiopSSLPort);
             put(K_IIOP_MUTUALAUTH_PORT, iiopMutualAuthPort);            
             put(K_JMX_PORT, jmxAdminPort);
+            put(K_OSGI_SHELL_TELNET_PORT, osgiShellTelnetPort);
 
             if(domainProperties!=null) {
                 Iterator iterator = domainProperties.keySet().iterator();

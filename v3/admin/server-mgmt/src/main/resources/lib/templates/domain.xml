@@ -154,7 +154,7 @@
         <!-- Configuration of various third-party OSGi bundles like
              Felix Remote Shell, FileInstall, etc. -->
         <!-- Port on which remote shell listens for connections.-->
-        <jvm-options>-Dosgi.shell.telnet.port=6666</jvm-options>
+        <jvm-options>-Dosgi.shell.telnet.port=%%%OSGI_SHELL_TELNET_PORT%%%</jvm-options>
         <!-- How many concurrent users can connect to this remote shell -->
         <jvm-options>-Dosgi.shell.telnet.maxconn=1</jvm-options>
         <!-- From which hosts users can connect -->
