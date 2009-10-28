@@ -1833,8 +1833,7 @@ admingui.table = {
         try {
             var table = document.getElementById(tableId);// + ":_table");
             var selections =
-                //table.getAllSelectedRowsCount();
-                admingui.table.getAllSelectedRowsCount(table);
+                table.getAllSelectedRowsCount();
             var disabled = (selections > 0) ? false : true;
             for (count=0; count < buttons.length; count++) {
                 var element = document.getElementById(buttons[count]);
@@ -1848,6 +1847,7 @@ admingui.table = {
         }
     },
 
+    /*
     getAllSelectedRowsCount : function (table) {
         inputs = admingui.util.findNodes(table, function (el) {
             var hit = (el instanceof HTMLInputElement) && (el.type=="checkbox") && (el.id.indexOf(":select") == el.id.length -7) && (el.checked == true) ;
@@ -1855,6 +1855,7 @@ admingui.table = {
         });
         return (inputs) ? inputs.length : 0;
     },
+    */
 
     initAllRows : function (tableId) {
         var table = document.getElementById(tableId);
