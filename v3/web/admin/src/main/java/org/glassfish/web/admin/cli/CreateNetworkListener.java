@@ -124,17 +124,16 @@ public class CreateNetworkListener implements AdminCommand {
             return;
         }
 
-        Protocol protocolObj = networkConfig.findProtocol(protocol);
-        if (protocolObj.getHttp() == null) {
+        Protocol prot = networkConfig.findProtocol(protocol);
+        if (prot == null || prot.getHttp() == null) {
                report.setMessage(localStrings.getLocalString(
                     "create.network.listener.fail.nohttp",
-                    "Network Listener named {0} refers to protocol {1} " +
-                    "that has no http configured",
+                    "Network Listener named {0} refers to protocol {1} that doesn't exist or has no http configured",
                     listenerName, protocol));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
         }
-            
+
         try {
             ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
                 public Object run(NetworkListeners param) throws TransactionFailure {
@@ -151,7 +150,7 @@ public class CreateNetworkListener implements AdminCommand {
                     return newNetworkListener;
                 }
             }, nls);
-            updateVirtualServer(protocolObj);
+            updateVirtualServer(prot);
         } catch (TransactionFailure e) {
             e.printStackTrace();
             report.setMessage(
