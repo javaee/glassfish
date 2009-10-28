@@ -272,13 +272,15 @@ public class ServletContainerInitializerUtil {
                         }
                     } else {
                         File file = new File(path);
-                        if (file.isDirectory()) {
-                            initializerList = scanDirectory(file, path, cl,
-                                interestList, initializerList);
-                        } else {
-                            log.log(Level.WARNING,
-                                "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
-                                path);
+                        if (file.exists()) {
+                            if (file.isDirectory()) {
+                                initializerList = scanDirectory(file, path, cl,
+                                    interestList, initializerList);
+                            } else {
+                                log.log(Level.WARNING,
+                                    "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
+                                    path);
+                            }
                         }
                     }
                 } catch(IOException ioex) {
