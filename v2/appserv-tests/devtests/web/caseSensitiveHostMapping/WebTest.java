@@ -37,51 +37,80 @@ import java.io.*;
 import java.net.*;
 
 import com.sun.ejte.ccl.reporter.*;
+
 /**
  * Unit test for 29661: Host Names parsing is case sensitive
  */
 public class WebTest{
 
-    static SimpleReporterAdapter stat=
-           new SimpleReporterAdapter("appserv-tests");
-    private static URLConnection conn = null;
-    private static URL url;
-    private static ObjectOutputStream objectWriter = null;
-    private static ObjectInputStream objectReader = null;  
-    
-    public static void main(String args[]) throws Exception{
-        String host = args[0];
-        String port = args[1];
-        String contextRoot = args[2];
+    private static final String TEST_NAME = "case-sensitive-host-mapping";
 
-        try{
-            stat.addDescription("Case sensitive host mapping");
-            
-            System.out.println("Running test");
-            url = new URL("http://LocalHost:" + port + contextRoot + "/ServletTest");
-            System.out.println("\n Invoking url: " + url.toString());
-            conn = url.openConnection();
-            if (conn instanceof HttpURLConnection) {
-                HttpURLConnection urlConnection = (HttpURLConnection)conn;
-                urlConnection.setDoOutput(true);
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
 
-                DataOutputStream out = 
-                   new DataOutputStream(urlConnection.getOutputStream());
-                                    out.writeByte(1);
+    private static final String EXPECTED_RESPONSE = "Hello world";
 
-               int responseCode=  urlConnection.getResponseCode();
-               System.out.println("responseCode: " + responseCode);
-                
-               if (urlConnection.getResponseCode() != 200){
-                    stat.addStatus("caseSensitiveHostMapping", stat.FAIL);
-               } else {
-                    stat.addStatus("caseSensitiveHostMapping", stat.PASS);
-               }
-            }
-            stat.printSummary("web/caseSensitiveHostMapping");
-        }catch(Exception ex){
+    private String host;
+    private String port;
+    private String contextRoot;
+
+    public WebTest(String[] args) {
+        host = args[0];
+        port = args[1];
+        contextRoot = args[2];
+    }
+
+    public static void main(String[] args) {
+
+        stat.addDescription("Unit test for case-insensitive host name");
+        WebTest webTest = new WebTest(args);
+
+        try {
+            webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception ex) {
             ex.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
+
+        stat.printSummary();
+    }
+
+    public void doTest() throws Exception {
+
+        InputStream is = null;
+        BufferedReader input = null;
+
+        try {
+            URL url = new URL("http://" + host  + ":" + port + contextRoot +
+                "/ServletTest");
+            System.out.println("Connecting to: " + url.toString());
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.connect();
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != 200) {
+                throw new Exception("Unexpected response code: " +
+                    responseCode);
+            }
+
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String response = input.readLine();
+            if (!EXPECTED_RESPONSE.equals(response)) {
+                throw new Exception("Missing or wrong response. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + response);
+            }
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException ex) {}
+            try {
+                if (input != null) input.close();
+            } catch (IOException ex) {}
+        }
+
     }
 
 }

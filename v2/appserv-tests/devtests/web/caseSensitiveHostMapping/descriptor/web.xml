@@ -40,12 +40,7 @@
          http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
 
-    <listener>     
-        <listener-class>test.ServletTest</listener-class>
-    </listener>
-
     <servlet>
-        <display-name>ServletTest</display-name>
         <servlet-name>ServletTest</servlet-name>
         <servlet-class>test.ServletTest</servlet-class>
     </servlet>  
@@ -54,5 +49,6 @@
         <servlet-name>ServletTest</servlet-name>
         <url-pattern>/ServletTest</url-pattern>
     </servlet-mapping>
+
 </web-app>
 
