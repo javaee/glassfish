@@ -36,6 +36,9 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.util.StringUtils;
+import java.util.*;
+import org.glassfish.api.Param;
+import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -63,22 +66,37 @@ public class MonTest implements AdminCommand {
     @Inject
     protected ProbeProviderFactory probeProviderFactory;
 
+    @Inject
+    ProbeClientMediator listenerRegistrar;
+
+    @Param(optional=true, defaultValue="10")
+    String howmanyString;
+
     public void execute(AdminCommandContext context) {
+        int howmany = 10;
+        
+        try { howmany = Integer.parseInt(howmanyString); } 
+        catch(Exception e) { /*ignore*/ }
+
         final ActionReport report = context.getActionReport();
 
         try {
             setup();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             String msg = "Monitoring Test Here!";
+            msg += "howmany= " + howmany;
             ppt.method1("xxx", 50);
-            ppt.method2("xxx", 2, 3, null,null);
-            //ppt.method2("xxx");
+            ppt.method2("xxx", 2, 3, new Date().toString());
+            ppt.method3("xxx");
             report.setMessage(msg);
         }
         catch(Exception e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             report.setMessage("ERROR! " + e.getMessage() + "\n" + StringUtils.getStackTrace(e));
+        }
+        finally {
+            howmanyString = "10";
         }
     }
 
@@ -89,6 +107,15 @@ public class MonTest implements AdminCommand {
 
         ppt = probeProviderFactory.getProbeProvider(PPTester.class);
         System.out.println("SUCCESS!!  Created PPTester instance!!!");
+
+        try {
+            listenerRegistrar.registerListener(new PPListener());
+        }
+        catch(Exception e) {
+            System.out.println(StringUtils.getStackTrace(e));
+            System.out.println("@@@@@@ ERROR registering listener @@@@@@@");
+
+        }
     }
 
     PPTester ppt = null;

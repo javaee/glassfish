@@ -16,15 +16,42 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  */
 @ProbeProvider (moduleProviderName="glassfish", moduleName="kernel", probeProviderName="PPTester")
 public class PPTester {
-    @Probe(name="event1")
+    @Probe(name="method1")
     public void method1(
         @ProbeParam("param1") String string1,
         @ProbeParam("param2") int int2) {
         System.out.println("HELLO FROM PPTester.method1  ARgs:" + string1 +", " + int2);
     }
 
-    @Probe(name="event2")
-     public void method2(String s23, int x, int y, Date date, List<Integer> li) {
-        System.out.println("HELLO FROM PPTester.method2!  My Arg ==>" + s23);
+    @Probe(name="method2")
+     public void method2(
+            @ProbeParam("s") String s23,
+            @ProbeParam("x") int x,
+            @ProbeParam("y") int y,
+            @ProbeParam("d") String date) {
+        System.out.println("HELLO FROM PPTester.method2!");
+
+        /*
+
+
+         String lout = (li == null) ? "null list" : Arrays.toString(li.toArray(new Integer[0]));
+        String dout = (date == null) ? "null date" : date.toString();
+
+
+        System.out.println("HELLO FROM PPTester.method2!  My Args ==>\n " +
+                "s23=" + s23 +
+                ", x=" + x +
+                ", y=" + y +
+                ", date=" + dout +
+                ", li=" + lout);
+
+
+         */
+     }
+
+    @Probe(name="method3")
+     public void method3(
+            @ProbeParam("s") String s){
+        System.out.println("HELLO FROM PPTester.method3!  My Arg ==>" + s);
      }
 }
