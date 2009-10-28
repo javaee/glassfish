@@ -35,11 +35,6 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import org.jvnet.hk2.config.Dom;
-
-import java.util.HashMap;
-import java.util.Set;
-
 /**
  * Response information object. Returned on call to GET method on command
  * resource. Information used by provider to generate the appropriate output.

@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.ResourceRef;
 public class ListResourceRefResource extends TemplateListOfResource<ResourceRef> {
 
@@ -22,7 +19,9 @@ public class ListResourceRefResource extends TemplateListOfResource<ResourceRef>
 	public ResourceRefResource getResourceRefResource(@PathParam("Ref") String id) {
 		ResourceRefResource resource = resourceContext.getResource(ResourceRefResource.class);
 		for (ResourceRef c: entity){
-			if(c.getRef().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getRef().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListResourceRefResource extends TemplateListOfResource<ResourceRef>
 	}
 
 
+@Override
 public String getPostCommand() {
 	return "create-resource-ref";
 }

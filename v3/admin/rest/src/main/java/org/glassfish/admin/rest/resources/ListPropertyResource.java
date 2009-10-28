@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import org.jvnet.hk2.config.types.Property;
 public class ListPropertyResource extends TemplateListOfResource<Property> {
 
@@ -22,7 +19,9 @@ public class ListPropertyResource extends TemplateListOfResource<Property> {
 	public PropertyResource getPropertyResource(@PathParam("Name") String id) {
 		PropertyResource resource = resourceContext.getResource(PropertyResource.class);
 		for (Property c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListPropertyResource extends TemplateListOfResource<Property> {
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

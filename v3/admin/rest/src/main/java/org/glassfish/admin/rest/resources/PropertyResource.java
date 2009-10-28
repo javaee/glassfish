@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import org.jvnet.hk2.config.types.Property;
 public class PropertyResource extends TemplateResource<Property> {
 

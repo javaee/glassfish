@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.Protocol;
 public class ProtocolResource extends TemplateResource<Protocol> {
 
@@ -28,10 +26,12 @@ ProtocolDeleteHttpResource resource = resourceContext.getResource(ProtocolDelete
 return resource;
 }
 
+@Override
 public String[][] getCommandResourcesPaths() {
 return new String[][]{{"create-http", "POST"}, {"delete-http", "DELETE"}};
 }
 
+@Override
 public String getDeleteCommand() {
 	return "delete-protocol";
 }

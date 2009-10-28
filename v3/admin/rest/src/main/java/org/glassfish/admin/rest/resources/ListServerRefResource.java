@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 public class ListServerRefResource extends TemplateListOfResource<ServerRef> {
 
@@ -23,7 +20,9 @@ public class ListServerRefResource extends TemplateListOfResource<ServerRef> {
 		ServerRefResource resource = resourceContext.getResource(ServerRefResource.class);
 		for (ServerRef c: entity){
 //THIS KEY IS THE FIRST Attribute ONE ludo
-			if(c.getRef().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getRef().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -31,6 +30,7 @@ public class ListServerRefResource extends TemplateListOfResource<ServerRef> {
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

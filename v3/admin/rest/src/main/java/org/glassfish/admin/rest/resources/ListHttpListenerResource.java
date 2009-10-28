@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.HttpListener;
 public class ListHttpListenerResource extends TemplateListOfResource<HttpListener> {
 
@@ -22,7 +19,9 @@ public class ListHttpListenerResource extends TemplateListOfResource<HttpListene
 	public HttpListenerResource getHttpListenerResource(@PathParam("Id") String id) {
 		HttpListenerResource resource = resourceContext.getResource(HttpListenerResource.class);
 		for (HttpListener c: entity){
-			if(c.getId().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getId().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListHttpListenerResource extends TemplateListOfResource<HttpListene
 	}
 
 
+@Override
 public String getPostCommand() {
 	return "create-http-listener";
 }

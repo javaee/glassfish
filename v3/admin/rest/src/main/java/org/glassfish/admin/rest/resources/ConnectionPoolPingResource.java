@@ -21,7 +21,6 @@ import javax.ws.rs.core.UriInfo;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.StringResult;

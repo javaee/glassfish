@@ -190,13 +190,10 @@ public class GeneratorResource {
         BufferedWriter out = new BufferedWriter(fstream);
         genHeader(out);
         out.write("package org.glassfish.admin.rest.resources;\n");
-        out.write("import com.sun.enterprise.config.serverbeans.*;\n");
         out.write("import javax.ws.rs.*;\n");
-        out.write("import java.util.List;\n");
 //        out.write("import org.glassfish.admin.rest.TemplateResource;\n");
         out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
 //        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
-        out.write("import org.glassfish.admin.rest.provider.GetResultList;\n");
         out.write("import " + model.targetTypeName + ";\n");
 
 
@@ -245,7 +242,10 @@ public class GeneratorResource {
             out.write("//THIS KEY IS THE FIRST Attribute ONE ludo\n");
 
         }
-        out.write("\t\t\tif(c.get" + keyAttributeName + "().equals(id)){\n");
+
+        out.write("\t\t\t//Using '-' for back-slash in resource names\n");
+        out.write("\t\t\t//For example, jndi names has back-slash in it.\n");
+        out.write("\t\t\tif(c.get" + keyAttributeName + "().replace('/', '-').equals(id)){\n");
         out.write("\t\t\t\tresource.setEntity(c);\n");
         out.write("\t\t\t}\n");
         out.write("\t\t}\n");
@@ -292,13 +292,11 @@ public class GeneratorResource {
         BufferedWriter out = new BufferedWriter(fstream);
         genHeader(out);
         out.write("package org.glassfish.admin.rest.resources;\n");
-        out.write("import com.sun.enterprise.config.serverbeans.*;\n");
         out.write("import javax.ws.rs.*;\n");
 //        out.write("import java.util.*;\n");
         out.write("import org.glassfish.admin.rest.TemplateResource;\n");
 //        out.write("import org.glassfish.admin.rest.TemplateListOfResource;\n");
 //        out.write("import com.sun.jersey.api.core.ResourceContext;\n");
-        out.write("import org.glassfish.admin.rest.provider.GetResult;\n");
         out.write("import " + model.targetTypeName + ";\n");
 
 
@@ -422,11 +420,13 @@ public class GeneratorResource {
                                 out.write("@Path(\"" + childmodel.getTagName() + "/\")\n");
                                 out.write("public List" + newName + "Resource get" + newName + "Resource() {\n");
                                 out.write("List" + newName + "Resource resource = resourceContext.getResource(List" + newName + "Resource.class);\n");
-                                out.write("java.util.List<Resource> l = entity.getResources();\n");
+                                out.write("java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();\n");
                                 out.write("java.util.List<" + childmodel.targetTypeName + "> newList = new java.util.ArrayList();\n");
-                                out.write("for (Resource r: l){\n");
+                                out.write("for (com.sun.enterprise.config.serverbeans.Resource r: l){\n");
                                 out.write("try {\n");
+                                out.write("if (r instanceof " + childmodel.targetTypeName + ") {\n");
                                 out.write("newList.add((" + childmodel.targetTypeName + ")r);\n");
+                                out.write("}\n");
                                 out.write("} catch (Exception e){\n");
 
                                 out.write("}\n");
@@ -491,6 +491,7 @@ public class GeneratorResource {
 
     void generateGetPostCommandMethod(String resourceName, BufferedWriter out) throws IOException {
         String commandName = getPostCommandName(resourceName);
+        out.write("@Override\n");
         out.write("public String getPostCommand() {\n");
         if (commandName != null) {
             out.write("\treturn \"" + commandName + "\";\n");
@@ -515,6 +516,7 @@ public class GeneratorResource {
     void generateGetDeleteCommandMethod(String resourceName, BufferedWriter out) throws IOException {
         String commandName = getDeleteCommandName(resourceName);
         if (commandName != null) {
+            out.write("@Override\n");
             out.write("public String getDeleteCommand() {\n");
             out.write("\treturn \"" + commandName + "\";\n");
             out.write("}\n");
@@ -719,6 +721,7 @@ public class GeneratorResource {
 
         //define method to return command resource paths. only if needed
         if (!commandResourcesPaths.equals("{}")){
+        out.write("@Override\n");
         out.write("public String[][] getCommandResourcesPaths() {\n");
         out.write("return new String[][]" +  commandResourcesPaths + ";\n");
         out.write("}\n\n");
@@ -758,7 +761,6 @@ public class GeneratorResource {
         out.write("import javax.ws.rs.core.Response;\n");
         out.write("import javax.ws.rs.core.UriInfo;\n\n");
         out.write("import com.sun.enterprise.util.LocalStringManagerImpl;\n\n");
-        out.write("import org.glassfish.admin.rest.provider.CommandResourceGetResult;\n");
         out.write("import org.glassfish.admin.rest.provider.OptionsResult;\n");
         out.write("import org.glassfish.admin.rest.provider.MethodMetaData;\n");
         if (commandMethod.equals("GET")) {
@@ -919,9 +921,9 @@ public class GeneratorResource {
                 throws IOException {
         out.write("@" + "GET" + "\n");
         out.write("@Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})\n");
-        out.write("public CommandResourceGetResult get() {\n");
+        out.write("public org.glassfish.admin.rest.provider.CommandResourceGetResult get() {\n");
         out.write("try {\n");
-        out.write("return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());\n");
+        out.write("return new org.glassfish.admin.rest.provider.CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());\n");
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");

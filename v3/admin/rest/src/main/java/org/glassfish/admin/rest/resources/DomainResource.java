@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Domain;
 @Path("/domain/")
 public class DomainResource extends TemplateResource<Domain> {
@@ -56,6 +54,7 @@ DomainHostPortResource resource = resourceContext.getResource(DomainHostPortReso
 return resource;
 }
 
+@Override
 public String[][] getCommandResourcesPaths() {
 return new String[][]{{"stop", "POST"}, {"restart", "POST"}, {"uptime", "GET"}, {"version", "GET"}, {"rotate-log", "POST"}, {"host-port", "GET"}};
 }

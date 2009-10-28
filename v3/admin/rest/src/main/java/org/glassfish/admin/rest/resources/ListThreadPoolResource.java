@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.grizzly.config.dom.ThreadPool;
 public class ListThreadPoolResource extends TemplateListOfResource<ThreadPool> {
 
@@ -22,7 +19,9 @@ public class ListThreadPoolResource extends TemplateListOfResource<ThreadPool> {
 	public ThreadPoolResource getThreadPoolResource(@PathParam("Name") String id) {
 		ThreadPoolResource resource = resourceContext.getResource(ThreadPoolResource.class);
 		for (ThreadPool c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListThreadPoolResource extends TemplateListOfResource<ThreadPool> {
 	}
 
 
+@Override
 public String getPostCommand() {
 	return "create-threadpool";
 }

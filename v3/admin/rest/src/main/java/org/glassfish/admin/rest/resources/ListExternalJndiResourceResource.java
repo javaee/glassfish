@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.ExternalJndiResource;
 public class ListExternalJndiResourceResource extends TemplateListOfResource<ExternalJndiResource> {
 
@@ -22,7 +19,9 @@ public class ListExternalJndiResourceResource extends TemplateListOfResource<Ext
 	public ExternalJndiResourceResource getExternalJndiResourceResource(@PathParam("JndiName") String id) {
 		ExternalJndiResourceResource resource = resourceContext.getResource(ExternalJndiResourceResource.class);
 		for (ExternalJndiResource c: entity){
-			if(c.getJndiName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getJndiName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListExternalJndiResourceResource extends TemplateListOfResource<Ext
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

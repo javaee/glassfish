@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.ConnectorResource;
 public class ListConnectorResourceResource extends TemplateListOfResource<ConnectorResource> {
 
@@ -22,7 +19,9 @@ public class ListConnectorResourceResource extends TemplateListOfResource<Connec
 	public ConnectorResourceResource getConnectorResourceResource(@PathParam("JndiName") String id) {
 		ConnectorResourceResource resource = resourceContext.getResource(ConnectorResourceResource.class);
 		for (ConnectorResource c: entity){
-			if(c.getJndiName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getJndiName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListConnectorResourceResource extends TemplateListOfResource<Connec
 	}
 
 
+@Override
 public String getPostCommand() {
 	return "create-connector-resource";
 }

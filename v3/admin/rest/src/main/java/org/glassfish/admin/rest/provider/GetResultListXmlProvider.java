@@ -40,7 +40,6 @@ import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Set;
 
 import org.jvnet.hk2.config.Dom;
 
@@ -67,12 +66,14 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
      @Context
      protected UriInfo uriInfo;
 
+     @Override
      public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
 
 
+     @Override
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
@@ -86,6 +87,7 @@ public class GetResultListXmlProvider extends ProviderUtil implements MessageBod
      }
 
 
+     @Override
      public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,

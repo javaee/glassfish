@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.Application;
 public class ApplicationResource extends TemplateResource<Application> {
 
@@ -28,6 +26,7 @@ ApplicationDisableResource resource = resourceContext.getResource(ApplicationDis
 return resource;
 }
 
+@Override
 public String[][] getCommandResourcesPaths() {
 return new String[][]{{"enable", "POST"}, {"disable", "POST"}};
 }

@@ -37,8 +37,6 @@ package org.glassfish.admin.rest.provider;
 
 import org.jvnet.hk2.config.Dom;
 
-import java.util.HashMap;
-import java.util.Set;
 import java.util.List;
 
 /**

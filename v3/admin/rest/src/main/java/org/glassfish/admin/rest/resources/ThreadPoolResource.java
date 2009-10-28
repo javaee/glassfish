@@ -9,13 +9,12 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.grizzly.config.dom.ThreadPool;
 public class ThreadPoolResource extends TemplateResource<ThreadPool> {
 
+@Override
 public String getDeleteCommand() {
 	return "delete-threadpool";
 }

@@ -39,10 +39,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
-import java.util.Set;
-
-import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -64,6 +60,7 @@ public class CommandResourceGetResultHtmlProvider extends ProviderUtil
     @Context
     protected UriInfo uriInfo;
 
+    @Override
     public long getSize(final CommandResourceGetResult proxy,
         final Class<?> type, final Type genericType,
         final Annotation[] annotations, final MediaType mediaType) {
@@ -71,6 +68,7 @@ public class CommandResourceGetResultHtmlProvider extends ProviderUtil
     }
 
 
+    @Override
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
@@ -86,6 +84,7 @@ public class CommandResourceGetResultHtmlProvider extends ProviderUtil
     }
 
 
+    @Override
     public void writeTo(final CommandResourceGetResult proxy,
             final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType,

@@ -78,6 +78,7 @@ public class JsonInputObject extends InputObject {
      * @throws InputException If there is a syntax error in the source string
      *  or a duplicated key.
      */
+    @Override
     public Map initializeMap() throws InputException {
         char c;
         String key = null;

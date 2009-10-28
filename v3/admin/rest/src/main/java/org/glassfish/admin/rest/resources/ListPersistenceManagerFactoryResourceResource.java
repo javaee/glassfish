@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.PersistenceManagerFactoryResource;
 public class ListPersistenceManagerFactoryResourceResource extends TemplateListOfResource<PersistenceManagerFactoryResource> {
 
@@ -22,7 +19,9 @@ public class ListPersistenceManagerFactoryResourceResource extends TemplateListO
 	public PersistenceManagerFactoryResourceResource getPersistenceManagerFactoryResourceResource(@PathParam("JndiName") String id) {
 		PersistenceManagerFactoryResourceResource resource = resourceContext.getResource(PersistenceManagerFactoryResourceResource.class);
 		for (PersistenceManagerFactoryResource c: entity){
-			if(c.getJndiName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getJndiName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListPersistenceManagerFactoryResourceResource extends TemplateListO
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

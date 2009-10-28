@@ -59,6 +59,7 @@ import org.jvnet.hk2.config.Dom;
 public class JsonProvider implements MessageBodyWriter<Dom> {
     @Context
     protected UriInfo uriInfo;
+    @Override
     public void writeTo(Dom p,
             Class<?> type, Type genericType, Annotation annotations[],
             MediaType mediaType, MultivaluedMap<String, Object> headers,
@@ -75,6 +76,7 @@ public class JsonProvider implements MessageBodyWriter<Dom> {
 
     }
 
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation annotations[], MediaType mediaType) {
 
         System.out.println("isWriteable called" + type);
@@ -83,6 +85,7 @@ public class JsonProvider implements MessageBodyWriter<Dom> {
         return Dom.class.isAssignableFrom(type);
     }
 
+    @Override
     public long getSize(Dom p, Class<?> type, Type genericType, Annotation annotations[], MediaType mediaType) {
         return -1;
     }

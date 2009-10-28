@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.grizzly.config.dom.SelectionKeyHandler;
 public class ListSelectionKeyHandlerResource extends TemplateListOfResource<SelectionKeyHandler> {
 
@@ -22,7 +19,9 @@ public class ListSelectionKeyHandlerResource extends TemplateListOfResource<Sele
 	public SelectionKeyHandlerResource getSelectionKeyHandlerResource(@PathParam("Name") String id) {
 		SelectionKeyHandlerResource resource = resourceContext.getResource(SelectionKeyHandlerResource.class);
 		for (SelectionKeyHandler c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListSelectionKeyHandlerResource extends TemplateListOfResource<Sele
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 public class ListSystemPropertyResource extends TemplateListOfResource<SystemProperty> {
 
@@ -22,7 +19,9 @@ public class ListSystemPropertyResource extends TemplateListOfResource<SystemPro
 	public SystemPropertyResource getSystemPropertyResource(@PathParam("Name") String id) {
 		SystemPropertyResource resource = resourceContext.getResource(SystemPropertyResource.class);
 		for (SystemProperty c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListSystemPropertyResource extends TemplateListOfResource<SystemPro
 	}
 
 
+@Override
 public String getPostCommand() {
 	return "create-system-properties";
 }

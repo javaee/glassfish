@@ -78,6 +78,7 @@ public class XmlInputObject extends InputObject {
      * @throws InputException If there is a syntax error in the source string
      *  or a duplicated key.
      */
+    @Override
     public Map initializeMap() throws InputException {
         while (xmlReader.more() && xmlReader.skipPast("<")) {
             parse(xmlReader, this, null);

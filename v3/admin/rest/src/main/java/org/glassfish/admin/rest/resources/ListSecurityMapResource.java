@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 public class ListSecurityMapResource extends TemplateListOfResource<SecurityMap> {
 
@@ -22,7 +19,9 @@ public class ListSecurityMapResource extends TemplateListOfResource<SecurityMap>
 	public SecurityMapResource getSecurityMapResource(@PathParam("Name") String id) {
 		SecurityMapResource resource = resourceContext.getResource(SecurityMapResource.class);
 		for (SecurityMap c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListSecurityMapResource extends TemplateListOfResource<SecurityMap>
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

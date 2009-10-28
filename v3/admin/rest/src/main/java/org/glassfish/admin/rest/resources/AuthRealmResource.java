@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 public class AuthRealmResource extends TemplateResource<AuthRealm> {
 
@@ -34,6 +32,7 @@ AuthRealmListUsersResource resource = resourceContext.getResource(AuthRealmListU
 return resource;
 }
 
+@Override
 public String[][] getCommandResourcesPaths() {
 return new String[][]{{"create-user", "POST"}, {"delete-user", "DELETE"}, {"list-users", "GET"}};
 }

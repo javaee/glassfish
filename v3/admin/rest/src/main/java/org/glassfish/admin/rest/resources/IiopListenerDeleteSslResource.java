@@ -21,7 +21,6 @@ import javax.ws.rs.core.UriInfo;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import org.glassfish.admin.rest.provider.CommandResourceGetResult;
 import org.glassfish.admin.rest.provider.OptionsResult;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.Constants;
@@ -106,9 +105,9 @@ return executeCommand(data);
 }
 @GET
 @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public CommandResourceGetResult get() {
+public org.glassfish.admin.rest.provider.CommandResourceGetResult get() {
 try {
-return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
+return new org.glassfish.admin.rest.provider.CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
 } catch (Exception e) {
 throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
 }

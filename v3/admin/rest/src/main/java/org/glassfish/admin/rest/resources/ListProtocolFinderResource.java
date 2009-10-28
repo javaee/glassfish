@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.grizzly.config.dom.ProtocolFinder;
 public class ListProtocolFinderResource extends TemplateListOfResource<ProtocolFinder> {
 
@@ -22,7 +19,9 @@ public class ListProtocolFinderResource extends TemplateListOfResource<ProtocolF
 	public ProtocolFinderResource getProtocolFinderResource(@PathParam("Name") String id) {
 		ProtocolFinderResource resource = resourceContext.getResource(ProtocolFinderResource.class);
 		for (ProtocolFinder c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListProtocolFinderResource extends TemplateListOfResource<ProtocolF
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

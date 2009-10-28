@@ -40,7 +40,6 @@ import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Set;
 
 import org.jvnet.hk2.config.Dom;
 
@@ -66,12 +65,14 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
      @Context
      protected UriInfo uriInfo;
 
+     @Override
      public long getSize(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
 
 
+     @Override
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          try {
@@ -85,6 +86,7 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
      }
 
 
+     @Override
      public void writeTo(final GetResultList proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
@@ -142,7 +144,7 @@ public class GetResultListHtmlProvider extends ProviderUtil implements MessageBo
             }
         }
 
-        if (result != "") {
+        if (!result.equals("")) {
             result = "<div>" + result + "</div>" + "<br>";
         }
         return result;

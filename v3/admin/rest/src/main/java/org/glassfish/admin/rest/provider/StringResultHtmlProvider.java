@@ -60,12 +60,14 @@ public class StringResultHtmlProvider extends ProviderUtil
     @Context
     protected UriInfo uriInfo;
 
+    @Override
     public long getSize(final StringResult proxy, final Class<?> type, final Type genericType,
                 final Annotation[] annotations, final MediaType mediaType) {
         return -1;
     }
 
 
+    @Override
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
@@ -79,6 +81,7 @@ public class StringResultHtmlProvider extends ProviderUtil
     }
 
 
+    @Override
     public void writeTo(final StringResult proxy, final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType,
             final MultivaluedMap<String, Object> httpHeaders,

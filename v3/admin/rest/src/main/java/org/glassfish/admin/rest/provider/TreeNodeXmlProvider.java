@@ -66,12 +66,14 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
      @Context
      protected UriInfo uriInfo;
 
+     @Override
      public long getSize(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
 
 
+     @Override
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
@@ -81,6 +83,7 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
      }
 
 
+     @Override
      public void writeTo(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,

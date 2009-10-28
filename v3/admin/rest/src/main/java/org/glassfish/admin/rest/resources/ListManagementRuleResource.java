@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.ManagementRule;
 public class ListManagementRuleResource extends TemplateListOfResource<ManagementRule> {
 
@@ -22,7 +19,9 @@ public class ListManagementRuleResource extends TemplateListOfResource<Managemen
 	public ManagementRuleResource getManagementRuleResource(@PathParam("Name") String id) {
 		ManagementRuleResource resource = resourceContext.getResource(ManagementRuleResource.class);
 		for (ManagementRule c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListManagementRuleResource extends TemplateListOfResource<Managemen
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

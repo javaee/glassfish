@@ -55,14 +55,6 @@ public class StringResult extends Result {
 
 
     /**
-     * Returns the name of the command resource this result belongs to.
-     */
-    public String getName() {
-        return __name;
-    }
-
-
-    /**
      * Returns the result string this object represents
      */
     public String getMessage() {
@@ -78,7 +70,6 @@ public class StringResult extends Result {
     }
 
 
-    String __name;
     String __message;
     OptionsResult __metaData;
 }

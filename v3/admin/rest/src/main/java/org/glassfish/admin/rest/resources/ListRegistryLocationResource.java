@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.RegistryLocation;
 public class ListRegistryLocationResource extends TemplateListOfResource<RegistryLocation> {
 
@@ -22,7 +19,9 @@ public class ListRegistryLocationResource extends TemplateListOfResource<Registr
 	public RegistryLocationResource getRegistryLocationResource(@PathParam("ConnectorResourceJndiName") String id) {
 		RegistryLocationResource resource = resourceContext.getResource(RegistryLocationResource.class);
 		for (RegistryLocation c: entity){
-			if(c.getConnectorResourceJndiName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getConnectorResourceJndiName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListRegistryLocationResource extends TemplateListOfResource<Registr
 	}
 
 
+@Override
 public String getPostCommand() {
 	return null;
 }

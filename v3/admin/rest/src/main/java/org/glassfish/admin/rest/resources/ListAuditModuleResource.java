@@ -9,11 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
-import java.util.List;
 import org.glassfish.admin.rest.TemplateListOfResource;
-import org.glassfish.admin.rest.provider.GetResultList;
 import com.sun.enterprise.config.serverbeans.AuditModule;
 public class ListAuditModuleResource extends TemplateListOfResource<AuditModule> {
 
@@ -22,7 +19,9 @@ public class ListAuditModuleResource extends TemplateListOfResource<AuditModule>
 	public AuditModuleResource getAuditModuleResource(@PathParam("Name") String id) {
 		AuditModuleResource resource = resourceContext.getResource(AuditModuleResource.class);
 		for (AuditModule c: entity){
-			if(c.getName().equals(id)){
+			//Using '-' for back-slash in resource names
+			//For example, jndi names has back-slash in it.
+			if(c.getName().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}
@@ -30,6 +29,7 @@ public class ListAuditModuleResource extends TemplateListOfResource<AuditModule>
 	}
 
 
+@Override
 public String getPostCommand() {
 	return "create-audit-module";
 }

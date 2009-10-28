@@ -62,6 +62,7 @@ public class CommandResourceGetResultXmlProvider extends ProviderUtil
     @Context
     protected UriInfo uriInfo;
 
+    @Override
     public long getSize(final CommandResourceGetResult proxy,
         final Class<?> type, final Type genericType,
         final Annotation[] annotations, final MediaType mediaType) {
@@ -69,6 +70,7 @@ public class CommandResourceGetResultXmlProvider extends ProviderUtil
     }
 
 
+    @Override
     public boolean isWriteable(final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType) {
         try {
@@ -84,6 +86,7 @@ public class CommandResourceGetResultXmlProvider extends ProviderUtil
     }
 
 
+    @Override
     public void writeTo(final CommandResourceGetResult proxy,
             final Class<?> type, final Type genericType,
             final Annotation[] annotations, final MediaType mediaType,

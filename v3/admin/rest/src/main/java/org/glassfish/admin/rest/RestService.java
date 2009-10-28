@@ -47,7 +47,7 @@ import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
+//import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import org.glassfish.api.Startup;
@@ -87,6 +87,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
     public final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(RestService.class);
 
+    @Override
     public Lifecycle getLifecycle() {
         // This service stays running for the life of the app server, hence SERVER.
         return Lifecycle.SERVER;
@@ -122,6 +123,7 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
 
      *
      * */
+    @Override
     public void postConstruct() {
         //events.register(this);
         logger.fine(localStrings.getLocalString("rest.service.initialization",
@@ -135,10 +137,12 @@ public class RestService implements Startup, PostConstruct, PreDestroy, RestInte
         }
     }
 
+    @Override
     public void preDestroy() {
     }
 
 
+    @Override
     public String getUID() {
         if (_uid == null) {
             _uid = localPassword.getLocalPassword();

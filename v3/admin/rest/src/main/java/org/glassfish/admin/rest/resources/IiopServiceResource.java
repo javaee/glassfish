@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.IiopService;
 public class IiopServiceResource extends TemplateResource<IiopService> {
 
@@ -28,6 +26,7 @@ IiopServiceDeleteSslResource resource = resourceContext.getResource(IiopServiceD
 return resource;
 }
 
+@Override
 public String[][] getCommandResourcesPaths() {
 return new String[][]{{"create-ssl", "POST"}, {"delete-ssl", "DELETE"}};
 }

@@ -109,12 +109,14 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
+    @Override
     public void postConstruct() {
         epd = new AdminEndpointDecider(config, logger);
         events.register(this);
     }
 
 
+    @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
         LogHelper.getDefaultLogger().finer("Rest monitoring adapter !");
         LogHelper.getDefaultLogger().finer("Received monitoring resource request: " + req.getRequestURI());
@@ -203,6 +205,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
      */
+    @Override
     public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
 
     }
@@ -221,6 +224,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
+    @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         if (event.is(EventTypes.SERVER_READY)) {
             latch.countDown();
@@ -233,6 +237,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
+    @Override
     public boolean isRegistered() {
         return isRegistered;
     }
@@ -242,16 +247,19 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
      * Marks this adapter as having been registered or unregistered as a
      * network endpoint
      */
+    @Override
     public void setRegistered(boolean isRegistered) {
         this.isRegistered = isRegistered;
     }
 
 
+    @Override
     public int getListenPort() {
         return epd.getListenPort();
     }
 
 
+    @Override
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
     }

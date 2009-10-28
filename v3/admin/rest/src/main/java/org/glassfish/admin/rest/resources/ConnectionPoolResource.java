@@ -9,10 +9,8 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import com.sun.enterprise.config.serverbeans.*;
 import javax.ws.rs.*;
 import org.glassfish.admin.rest.TemplateResource;
-import org.glassfish.admin.rest.provider.GetResult;
 import com.sun.enterprise.config.serverbeans.ConnectionPool;
 public class ConnectionPoolResource extends TemplateResource<ConnectionPool> {
 
@@ -22,6 +20,7 @@ ConnectionPoolPingResource resource = resourceContext.getResource(ConnectionPool
 return resource;
 }
 
+@Override
 public String[][] getCommandResourcesPaths() {
 return new String[][]{{"ping", "GET"}};
 }

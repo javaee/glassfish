@@ -65,18 +65,20 @@ public class OptionsResultJsonProvider extends ProviderUtil implements MessageBo
      @Context
      protected UriInfo uriInfo;
 
+     @Override
      public long getSize(final OptionsResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
 
-
+     @Override
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          return type.equals(OptionsResult.class);
      }
 
 
+     @Override
      public void writeTo(final OptionsResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,

@@ -58,14 +58,18 @@ import org.jvnet.hk2.config.Dom;
 public class FormWriter implements MessageBodyWriter<Dom> {
     @Context
     protected UriInfo uriInfo;
+
+    @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return Dom.class.isAssignableFrom(type);
     }
 
+    @Override
     public long getSize(Dom data, Class<?> type, Type genericType, Annotation annotations[], MediaType mediaType) {
         return -1;
     }
 
+    @Override
     public void writeTo(Dom data,
             Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, Object> headers,

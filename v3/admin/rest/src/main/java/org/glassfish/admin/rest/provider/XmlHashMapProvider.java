@@ -53,11 +53,13 @@ import javax.ws.rs.ext.Provider;
 @Consumes(MediaType.APPLICATION_XML)
 @Provider
 public class XmlHashMapProvider implements MessageBodyReader<HashMap<String, String>> {
-    
+
+    @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return type.equals(HashMap.class);
     }
 
+    @Override
     public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
         Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
         InputStream in) throws IOException {

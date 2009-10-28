@@ -39,7 +39,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -68,12 +67,14 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
      @Context
      protected UriInfo uriInfo;
 
+     @Override
      public long getSize(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
           return -1;
      }
 
 
+     @Override
      public boolean isWriteable(final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
          if ("java.util.List<org.glassfish.flashlight.datatree.TreeNode>".equals(genericType.toString())) {
@@ -83,6 +84,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
      }
 
 
+     @Override
      public void writeTo(final List<TreeNode> proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType,
                final MultivaluedMap<String, Object> httpHeaders,
@@ -169,7 +171,7 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
                     result = result + "<dd>" + attributeValue.toString() + "</dd>";
                 }
 
-                if (result != "") {
+                if (!result.equals("")) {
                     result = "<h3>" + name + "</h3>" +
                         "<div><dl>" + result + "</dl></div>";
                 }

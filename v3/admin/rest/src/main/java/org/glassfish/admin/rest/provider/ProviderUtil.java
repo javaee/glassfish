@@ -49,10 +49,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.Dom;
 
 import org.glassfish.admin.rest.Constants;
-import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
@@ -143,6 +141,10 @@ public class ProviderUtil extends Util {
 
     static protected final String getElementLink(UriInfo uriInfo,
         String elementName) {
+        //Using '-' for back-slash in resource names
+        //For example, jndi names has back-slash in it
+        elementName = elementName.replace('/', '-');
+
         String link = uriInfo.getAbsolutePath().toString();
         return link.endsWith("/")?
             (link + elementName):(link + "/" + elementName);
@@ -220,7 +222,7 @@ public class ProviderUtil extends Util {
                     proxy.attribute(parameter));
         }
 
-        if (result != "") {
+        if (!result.equals("")) {
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() + "\" method=\"post\">" +
                 "<dl>" + result +
                     "<dt class=\"button\"></dt><dd class=\"button\"><input value=\"Update\" type=\"submit\"></dd>" +
@@ -242,7 +244,7 @@ public class ProviderUtil extends Util {
             String commandMethod, String commandDisplayName, UriInfo uriInfo,
                 boolean displayId) {
         String result ="";
-        if ((command != null) && (command != "")) {
+        if ((command != null) && (!command.equals(""))) {
             ResourceUtil resourceUtil = new ResourceUtil();
             MethodMetaData methodMetaData = resourceUtil.getMethodMetaData(
             command, RestService.getHabitat(), RestService.logger);
@@ -270,7 +272,7 @@ public class ProviderUtil extends Util {
 
         }
 
-        if (result != "") {
+        if (!result.equals("")) {
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
                 "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
                 "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
@@ -314,7 +316,7 @@ public class ProviderUtil extends Util {
 
         }
 
-        if (result != "") {
+        if (!result.equals("")) {
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
                 "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
                 "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
