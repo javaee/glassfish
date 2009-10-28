@@ -944,7 +944,7 @@ admingui.nav = {
 
 admingui.help = {
     launchHelp: function(url) {
-	var helpLink = url.href;
+	var helpLink = "/common/help/help.jsf";
 	var helpKeys = admingui.util.findNodes(document,
 	    function(node, name) {
 		if ((typeof(node.name) === "undefined") || (node.name == null)) {
@@ -956,7 +956,7 @@ admingui.help = {
 	    },
 	    "helpKey");
 	if (!(helpKeys === null)) {
-	    helpLink = helpLink.replace("CONTEXT_HELP.html", helpKeys[0].value);
+	    helpLink = helpLink + "?contextRef=" + helpKeys[0].value;
 	}
 	admingui.help.openHelpWindow(helpLink);
     },

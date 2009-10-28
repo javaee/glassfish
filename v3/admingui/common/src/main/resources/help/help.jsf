@@ -40,14 +40,25 @@
 	createDefaultViewRoot(viewRoot="#{requestScope.newVR}");
 	navigate("#{requestScope.newVR}");
     }
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 </ui:event>
 <sun:page>
 <sun:html>
-    <sun:head title="Help!" debug="false" parseOnLoad="false"> <!-- FIXME: I18N -->
+    <sun:head title="$resource{i18n.helpWindowTitle}" debug="false" parseOnLoad="false">
 	<sun:link url="/resource/common/help/help.css" />
 	<sun:script url="/resource/common/help/help.js" />
 <f:verbatim>
 <script type="text/javascript">
+function loadHelpPageFromContextRef(contextRef, targetNode) {
+	if (typeof contextRef == 'undefined' || contextRef === "") {
+	    contextRef = "docinfo.html";
+	}
+        // Derive the prefix somehow
+        var prefix = "/resource/en/help/";
+        contextRef = prefix + contextRef;
+	admingui.help.showHelpPage(contextRef, targetNode);
+}
+
 admingui.tab = {
 switchTab: function(tabElement, toShow, toHide) {
   // 
@@ -83,7 +94,7 @@ switchTab: function(tabElement, toShow, toHide) {
 	    </style>
 	</f:verbatim>
     </sun:head>
-    <sun:body>
+    <sun:body onLoad="loadHelpPageFromContextRef('#{param.contextRef}', 'helpContent')">
 	"<div id="menuContent" class="helpMenuBox">
 	    <sun:form id="tabForm">
 
@@ -120,7 +131,7 @@ switchTab: function(tabElement, toShow, toHide) {
 
 	"</div>
 	"<div id="helpContent" class="helpContentBox">
-	"<h3>GlassFish Help</h3>
+	"
 	"</div>
     </sun:body>
 
