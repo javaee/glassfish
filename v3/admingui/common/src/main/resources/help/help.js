@@ -198,6 +198,7 @@ admingui.help.nav = {
             // many of these cases... perhaps search for the nearest match
             // to the currently selected node.  Anyway, for now I will
             // ignore this until we need to fix it...
+	    // FIXME: This really should highlight the selected node.
             admingui.help.nav.selectTreeNode(document.getElementById(matches[0].id));
         } 
     },
