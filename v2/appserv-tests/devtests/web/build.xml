@@ -334,9 +334,6 @@
         <ant dir="formHintFieldPostWithQueryParam" target="all"/>
         <ant dir="formHintFieldPostWithQueryParamPrecedence" target="all"/>
         <ant dir="formHintFieldPrecedence" target="all"/>
-        <!-- the class is not available at this point, need to investigate with admin team
-        <ant dir="jsr77startstop" target="all"/>
-        -->
         <ant dir="replaceRootContext" target="all"/>
         <ant dir="broken_webapp" target="all"/>
         <ant dir="contextRoot" target="all"/>
