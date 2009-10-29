@@ -127,7 +127,7 @@ public class EmbeddedTest {
             System.out.println("Deployed " + appName);
             Assert.assertTrue(appName != null);
             try {
-                URL servlet = new URL("http://localhost:8080/test-war/TestServlet");
+                URL servlet = new URL("http://localhost:8080/test-war/");
                 URLConnection yc = servlet.openConnection();
                 BufferedReader in = new BufferedReader(
                                         new InputStreamReader(
