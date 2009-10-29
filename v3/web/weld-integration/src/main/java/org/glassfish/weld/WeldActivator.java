@@ -69,5 +69,6 @@ public class WeldActivator implements BundleActivator
 
     public void stop(BundleContext context) throws Exception
     {
+        SingletonProvider.reset();
     }
 }
