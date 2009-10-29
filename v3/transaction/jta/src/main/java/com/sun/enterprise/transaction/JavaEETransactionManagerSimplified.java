@@ -956,6 +956,7 @@ public class JavaEETransactionManagerSimplified
 
     public Transaction suspend() throws SystemException {
         return getDelegate().suspend(transactions.get());
+
 /** XXX TO BE MOVED TO DELEGATES XXX **
         if ( tx != null ) {
             if ( !tx.isLocalTx() )

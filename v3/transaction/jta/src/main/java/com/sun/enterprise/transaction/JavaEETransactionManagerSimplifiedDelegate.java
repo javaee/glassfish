@@ -161,17 +161,15 @@ public class JavaEETransactionManagerSimplifiedDelegate
     public Transaction suspend(JavaEETransaction tx) throws SystemException {
         if ( tx != null ) {
             tm.setCurrentTransaction(null);
-            return tx;
         }
 
-        throw new IllegalStateException(sm.getString(
-                "enterprise_distributedtx.transaction_notactive"));
+        return tx;
     }
 
     public void resume(Transaction tx)
         throws InvalidTransactionException, IllegalStateException,
         SystemException {
-        /** XXX Throw an exception ??? XXX **/
+        /** XXX Throw an exception ??? The process should happen in the caller. XXX **/
     }
 
     public void removeTransaction(Transaction tx) {}

@@ -269,6 +269,9 @@ public class AppTest extends TestCase {
     public void testTxSuspendResume() {
         System.out.println("**Testing TM suspend ===>");
         try {
+            System.out.println("**No-tx suspend ....");
+            assertNull(t.suspend());
+
             System.out.println("**Starting transaction ....");
             t.begin();
 
@@ -276,6 +279,10 @@ public class AppTest extends TestCase {
             assertNotNull(tx);
 
             System.out.println("**TX suspended ....");
+
+            System.out.println("**No-tx suspend ....");
+            assertNull(t.suspend());
+
             System.out.println("**Calling TM resume ===>");
             t.resume(tx);
 

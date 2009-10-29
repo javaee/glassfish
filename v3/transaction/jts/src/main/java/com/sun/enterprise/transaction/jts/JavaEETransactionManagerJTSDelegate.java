@@ -318,14 +318,15 @@ public class JavaEETransactionManagerJTSDelegate
     public Transaction suspend(JavaEETransaction tx) throws SystemException {
         if ( tx != null ) {
             if ( !tx.isLocalTx() )
-                suspendInternal();
+                suspendXA();
 
             javaEETM.setCurrentTransaction(null);
             return tx;
+        } else if (tmLocal.get() != null) {
+            return suspendXA(); // probably a JTS imported tx
         }
-        else {
-            return suspendInternal(); // probably a JTS imported tx
-        }
+
+        return null;
     }
 
     public void resume(Transaction tx)
@@ -397,7 +398,7 @@ public class JavaEETransactionManagerJTSDelegate
         return TransactionManagerImpl.getXATerminator();
     }
 
-    private Transaction suspendInternal() throws SystemException {
+    private Transaction suspendXA() throws SystemException {
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: suspend");
         validateTransactionManager();
