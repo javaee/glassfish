@@ -28,7 +28,7 @@ public class StatsProviderRegistry {
     private boolean isMBeanEnabled = true;
     
     static final String[] defaultConfigLevels = new String[] {"LOW","HIGH"};
-    public static Map<String, Integer> configLevelsMap = new ConcurrentHashMap();
+    public static final Map<String, Integer> configLevelsMap = new ConcurrentHashMap();
 
     public StatsProviderRegistry(MonitoringRuntimeDataRegistry mrdr) {
         this.mrdr = mrdr;

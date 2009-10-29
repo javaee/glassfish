@@ -45,6 +45,12 @@ public interface TreeNode extends TreeElement {
     public Collection<TreeNode> getChildNodes ();
     
     /**
+     *
+     * @return Collection<TreeNode> collection of children
+     */
+    public Collection<TreeNode> getEnabledChildNodes ();
+
+    /**
      * 
      * @param completeName dotted name to the node
      * @return TreeNode uniquely identified tree node. Null if no matching tree node.

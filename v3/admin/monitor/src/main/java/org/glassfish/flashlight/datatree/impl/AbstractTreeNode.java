@@ -107,6 +107,19 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         return children.values();
     }
 
+    /**
+     * Returns a mutable view of the children
+     * @return
+     */
+    public Collection<TreeNode> getEnabledChildNodes() {
+        List<TreeNode> childNodes = new ArrayList();
+        for (TreeNode child : children.values()) {
+            if (child.isEnabled())
+                childNodes.add(child);
+        }
+        return childNodes;
+    }
+
     public Enumeration<TreeNode> getChildNodesImmutable() {
 
         return ((ConcurrentHashMap) children).elements();
