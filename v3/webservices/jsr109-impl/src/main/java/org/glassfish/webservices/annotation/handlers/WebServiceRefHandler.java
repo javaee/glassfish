@@ -253,8 +253,20 @@ public class WebServiceRefHandler extends AbstractHandler  {
         for (ServiceReferenceContainer container : containers) {
             try {
                 aRef =container.getServiceReferenceByName(serviceRefName);
-            } catch(Throwable t) {}; // ignore 
-               
+            } catch(Throwable t) {} // ignore
+            
+            if (aRef== null && hasLookupName(annotation.lookup())) {
+                //another try with lookup.
+                //There is a possiblity that there is a descriptor with lookup-name
+                //specified and also a WebserviceRef annotation which does not have
+                //name in that case still retry because the ServiceReferenceDescriptor
+                //will have the non default value
+                try {
+                    String serviceRefName2 =  serviceRefName.replace('/','.');
+                    aRef = container.getServiceReferenceByName(serviceRefName2);
+                } catch(Throwable t) {} //ignore
+            }
+            //Last attempt
             if (aRef==null) {
                 // time to create it...
                 aRef = new ServiceReferenceDescriptor();
@@ -406,6 +418,11 @@ public class WebServiceRefHandler extends AbstractHandler  {
             otherAnnotations.put(f.getClass(), f);
         }
     }
+
+    public boolean hasLookupName(String lookupName) {
+        return (lookupName != null && lookupName.length() > 0);
+    }
+
 
 
 }

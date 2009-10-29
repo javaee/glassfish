@@ -170,6 +170,8 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
                         descriptor.getName());
         appendTextChild(serviceRefNode, WebServicesTagNames.SERVICE_INTERFACE, 
                         descriptor.getServiceInterface());
+        appendTextChild(serviceRefNode, TagNames.LOOKUP_NAME,
+                descriptor.getLookupName());
         appendTextChild(serviceRefNode, WebServicesTagNames.SERVICE_REF_TYPE, 
                 descriptor.getInjectionTargetType());        
         appendTextChild(serviceRefNode, WebServicesTagNames.WSDL_FILE,
@@ -227,8 +229,7 @@ public class ServiceReferenceNode extends DisplayableComponentNode {
             }
         }
 
-        appendTextChild(serviceRefNode, TagNames.LOOKUP_NAME,
-                descriptor.getMappedName());
+        
         return serviceRefNode;
     }    
     
