@@ -47,6 +47,8 @@
         <property value="${com.sun.aas.installRoot}/lib/install/applications/admingui.war" name="adminConsoleDownloadLocation" />
         <property value="${com.sun.aas.installRoot}/.." name="ipsRoot" />
       </admin-service>
+      <connector-service shutdown-timeout-in-seconds="30">
+      </connector-service>
       <web-container>
         <session-config>
           <session-manager>
