@@ -98,6 +98,7 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
         //if (!success)
             //logger.warning("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET OR KEYSTORE DOES NOT EXIST ...");
         setJSSEProperties();
+        com.sun.enterprise.security.store.IdentityManager.setMasterPassword(masterPassword);
     }
 
     private void setJSSEProperties() {
