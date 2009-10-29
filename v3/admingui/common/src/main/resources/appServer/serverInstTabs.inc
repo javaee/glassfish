@@ -38,25 +38,25 @@
 
 <sun:tabSet id="serverInstTabs" immediate="true" selected="#{sessionScope.serverInstTabs}">
 
-    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" >
+    <sun:tab id="general" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
         <!command
         setSessionAttribute(key="serverInstTabs" value="general");
         redirect(page="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
 	    />       
     </sun:tab>
 
-    <sun:tab id="advanced" immediate="true" text="$resource{i18n.headings.Advanced}">
+    <sun:tab id="advanced" immediate="true" text="$resource{i18n.headings.Advanced}" toolTip="$resource{i18n.headings.Advanced} Tab">
         <!command
         setSessionAttribute(key="serverInstTabs" value="advanced");
         redirect(page="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf?configName=server-config");
         />
-        <sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" >
+        <sun:tab id="appConfig" immediate="true" text="$resource{i18n.headings.AppConfig}" toolTip="$resource{i18n.headings.AppConfig} Tab" >
             <!command
             setSessionAttribute(key="serverInstTabs" value="appConfig");
             redirect(page="#{request.contextPath}/common/appServer/serverInstAppsConfig.jsf?configName=server-config");
             />
         </sun:tab>
-        <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" >
+        <sun:tab id="domainAttrs" immediate="true" text="$resource{i18n.headings.DomainAttributes}" toolTip="$resource{i18n.headings.DomainAttributes} Tab" >
             <!command
             setSessionAttribute(key="serverInstTabs" value="domainAttrs");
             redirect(page="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?configName=server-config");
@@ -64,14 +64,14 @@
         </sun:tab>
     </sun:tab>
 
-      <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" >
+      <sun:tab id="adminPassword" immediate="true" text="$resource{i18n.headings.AdminPassword}" toolTip="$resource{i18n.headings.AdminPassword} Tab" >
 	    <!command
         setSessionAttribute(key="serverInstTabs" value="adminPassword");
 		redirect(page="#{request.contextPath}/common/appServer/serverInstAdminPassword.jsf");
 	    />
     </sun:tab>
 
-    <sun:tab id="token" immediate="true" text="$resource{i18n.systemProps.tableTitle}">
+    <sun:tab id="token" immediate="true" text="$resource{i18n.systemProps.tableTitle}" toolTip="$resource{i18n.systemProps.tableTitle} Tab">
         <!command
             setSessionAttribute(key="serverInstTabs" value="token");
             redirect(page="#{request.contextPath}/common/appServer/token.jsf");

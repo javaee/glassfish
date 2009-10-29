@@ -39,28 +39,28 @@
 
 <sun:tabSet id="javaConfigTab" immediate="true" selected="#{sessionScope.javaConfigTab}" >
 
-	<sun:tab id="jvmGeneral" immediate="true" text="$resource{i18n.common.General}">
+	<sun:tab id="jvmGeneral" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab">
 	<!command
             setSessionAttribute(key="javaConfigTab" value="jvmGeneral");
             redirect(page="#{request.contextPath}/common/javaConfig/serverInstJvmGeneral.jsf?configName=server-config");
 	/>
 	</sun:tab>
 
-	<sun:tab id="pathSettings" immediate="true" text="$resource{i18nc.jvm.PathSettings}">
+	<sun:tab id="pathSettings" immediate="true" text="$resource{i18nc.jvm.PathSettings}" toolTip="$resource{i18nc.jvm.PathSettings} Tab">
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="pathSettings");
 		redirect(page="#{request.contextPath}/common/javaConfig/serverInstJvmPathSettings.jsf?configName=server-config");
 	    />        
 	</sun:tab>
 
-	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18nc.jvm.Options}" >
+	<sun:tab id="jvmOptions" immediate="true" text="$resource{i18nc.jvm.Options}" toolTip="$resource{i18nc.jvm.Options} Tab" >
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="jvmOptions");
 		redirect(page="#{request.contextPath}/common/javaConfig/serverJvmOptions.jsf?configName=server-config");
 	    />        
 	</sun:tab>
 
-	<sun:tab id="profiler" immediate="true" text="$resource{i18nc.jvm.Profiler}" >
+	<sun:tab id="profiler" immediate="true" text="$resource{i18nc.jvm.Profiler}" toolTip="$resource{i18nc.jvm.Profiler} Tab" >
 	    <!command
                 setSessionAttribute(key="javaConfigTab" value="profiler");
 		redirect(page="#{request.contextPath}/common/javaConfig/serverInstProfiler.jsf?configName=server-config");

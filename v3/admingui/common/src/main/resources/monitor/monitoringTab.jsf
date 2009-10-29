@@ -1,4 +1,4 @@
-<sun:tab id="monitoring" immediate="true" text="$resource{i18n_web.monitoring}">
+<sun:tab id="monitoring" immediate="true" text="$resource{i18n_web.monitoring}" toolTip="$resource{i18n_web.monitoring} Tab">
     <!beforeCreate
         setResourceBundle(key="i18n_web" bundle="org.glassfish.common.admingui.Strings");
     />

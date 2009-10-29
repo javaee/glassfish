@@ -1,4 +1,4 @@
-<sun:tab id="monitor_server" immediate="true" text="$resource{i18n_web.server}">
+<sun:tab id="monitor_server" immediate="true" text="$resource{i18n_web.server}" toolTip="$resource{i18n_web.server} Tab">
     <!command
 	setSessionAttribute(key="serverInstTabs" value="monitor_server");
 	redirect(page="#{request.contextPath}/monitor/monitoringServerStatsPage.jsf");

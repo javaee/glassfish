@@ -39,25 +39,25 @@
 <sun:tabSet id="webContainerTabs" immediate="$boolean{true}" selected="#{sessionScope.webContainerTabs}">
 
 <!-- comment out till we convert the general and Manager page -->
-    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+    <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="general");
         redirect(page="#{request.contextPath}/web/configuration/webContainerGeneral.jsf?configName=#{configName}");
         />       
     </sun:tab>
-    <sun:tab id="sessionTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.sessionProp}" >
+    <sun:tab id="sessionTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.sessionProp}" toolTip="$resource{i18n_web.webContainer.sessionProp} Tab" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="sessionTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerSession.jsf?configName=#{configName}");
         />
     </sun:tab>
-    <sun:tab id="managerTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.managerProp}" >
+    <sun:tab id="managerTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.managerProp}" toolTip="$resource{i18n_web.webContainer.managerProp} Tab" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="managerTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerManager.jsf?configName=#{configName}");
         />
     </sun:tab>
-    <sun:tab id="storeTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.storeProp}" >
+    <sun:tab id="storeTab" immediate="$boolean{true}" text="$resource{i18n_web.webContainer.storeProp}" toolTip="$resource{i18n_web.webContainer.storeProp} Tab" >
         <!command
         setSessionAttribute(key="webContainerTabs" value="storeTab");
         redirect(page="#{request.contextPath}/web/configuration/webContainerStore.jsf?configName=#{configName}");

@@ -36,25 +36,25 @@
 <!-- jca/connectorConnectionPoolTabs.inc -->
 
 <sun:tabSet id="connectorPoolSet" immediate="$boolean{true}" selected="#{sessionScope.connectorPoolTabs}">
-        <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" >
+        <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
                 <!command
                     setSessionAttribute(key="connectorPoolTabs" value="general");
                     redirect(page="connectorConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
                 />       
         </sun:tab>
-        <sun:tab id="advanceTab" immediate="$boolean{true}" text="$resource{i18n.common.Advanced}">
+        <sun:tab id="advanceTab" immediate="$boolean{true}" text="$resource{i18n.common.Advanced}" toolTip="$resource{i18n.common.Advanced} Tab">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="advanceTab");
                 redirect(page="connectorConnectionPoolAdvance.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
-        <sun:tab id="propertyTab" immediate="$boolean{true}" text="$resource{i18n.common.AdditonalProperties}">
+        <sun:tab id="propertyTab" immediate="$boolean{true}" text="$resource{i18n.common.AdditonalProperties}" toolTip="$resource{i18n.common.AdditonalProperties} Tab">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="propertyTab");
                 redirect(page="connectorConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
-        <sun:tab id="securityMapTab" immediate="$boolean{true}" text="$resource{i18njca.connectorSecurityMaps.tabTitle}">
+        <sun:tab id="securityMapTab" immediate="$boolean{true}" text="$resource{i18njca.connectorSecurityMaps.tabTitle}" toolTip="$resource{i18njca.connectorSecurityMaps.tabTitle} Tab">
             <!command
                 setSessionAttribute(key="connectorPoolTabs" value="securityMapTab");
                 redirect(page="connectorSecurityMaps.jsf?name=#{pageSession.encodedName}");

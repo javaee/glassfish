@@ -39,14 +39,14 @@
 
 <sun:tabSet id="loggingTabs" immediate="true" selected="#{sessionScope.loggingTabs}" >
 
-	<sun:tab id="loggerGeneral" immediate="true" text="$resource{i18n.common.General}">
+	<sun:tab id="loggerGeneral" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab">
 	<!command
             setSessionAttribute(key="loggingTabs" value="loggerGeneral");
             redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf");
 	/>
 	</sun:tab>
 
-    <sun:tab id="loggerLevels" immediate="true" text="$resource{i18nc.log.LogLevels}">
+    <sun:tab id="loggerLevels" immediate="true" text="$resource{i18nc.log.LogLevels}" toolTip="$resource{i18nc.log.LogLevels} Tab">
 	<!command
             setSessionAttribute(key="loggingTabs" value="loggerLevels");
             redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf");

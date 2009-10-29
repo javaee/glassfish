@@ -37,13 +37,13 @@
 <!-- security/msgSecurity/msgSecurityTabs.inc -->
 
 <sun:tabSet id="msgSecurityTabs" immediate="$boolean{true}" selected="#{sessionScope.msgSecurityTabs}">
-    <sun:tab id="msgSecurityEdit" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.msgSecurityTab}" >
+    <sun:tab id="msgSecurityEdit" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.msgSecurityTab}" toolTip="$resource{i18nc.msgSecurity.msgSecurityTab} Tab" >
         <!command
             setSessionAttribute(key="msgSecurityTabs" value="msgSecurityEdit");
             redirect(page="msgSecurityEdit.jsf?configName=#{encodedConfigName}&name=#{pageSession.encodedName}");
         />       
     </sun:tab>
-    <sun:tab id="providers" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.providersTab}" >
+    <sun:tab id="providers" immediate="$boolean{true}" text="$resource{i18nc.msgSecurity.providersTab}" toolTip="$resource{i18nc.msgSecurity.providersTab} Tab" >
         <!command
             setSessionAttribute(key="msgSecurityTabs" value="providers");
             redirect(page="providers.jsf?configName=#{encodedConfigName}&name=#{pageSession.encodedName}");
