@@ -37,70 +37,70 @@
 */ 
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.tests</groupId>
         <artifactId>maven-plugin</artifactId>
         <version>3.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
+    
+    <groupId>org.glassfish</groupId>
+    <artifactId>standalonewar</artifactId>
+    <packaging>war</packaging>
+    <version>3.0-SNAPSHOT</version>
+    
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <configuration>
+                    <goalPrefix>glassfish</goalPrefix>
+                    <app>target/standalonewar.war</app>
+                    <port>8080</port>
+                    <name>test</name>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>runweb</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        
+        <extensions>
+            <extension>
+                <groupId>org.jvnet.wagon-svn</groupId>
+                <artifactId>wagon-svn</artifactId>
+                <version>1.8</version>
+            </extension>
+        </extensions>
+    </build>
 
-  <groupId>org.glassfish</groupId>
-  <artifactId>standalonewar</artifactId>
-  <packaging>war</packaging>
-  <version>3.0-SNAPSHOT</version>
-
-  <name>Maven deploy test</name>
-
-  <build>
-  <defaultGoal>install</defaultGoal>
-  <plugins>
-    <plugin>
-      <groupId>org.glassfish</groupId>
-      <artifactId>maven-glassfish-plugin</artifactId>
-      <configuration>
-        <goalPrefix>glassfish</goalPrefix>
-        <app>target/standalonewar.war</app>
-        <port>8080</port> 
-        <name>test</name>
-      </configuration>
-      <executions>
-        <execution>
-          <phase>install</phase>
-          <goals>
-            <goal>runweb</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
-  </plugins>
- 
-  <extensions>
-    <extension>
-      <groupId>org.jvnet.wagon-svn</groupId>
-      <artifactId>wagon-svn</artifactId>
-      <version>1.8</version>
-    </extension>
-  </extensions>
-  </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>javax.servlet</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.servlet</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 
 </project>
 
