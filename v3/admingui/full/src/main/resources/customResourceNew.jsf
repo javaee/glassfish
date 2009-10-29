@@ -68,7 +68,7 @@
             
             setAttribute(key="tableList" value="#{newList}");
         }
-        getJndiResourceForCreate(result="#{requestScope.entriesList}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}" );
+        getJndiResourceForCreate(result="#{requestScope.entriesList}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}", factoryMap="#{pageSession.factoryMap}");
         addEmptyFirstElement(in="$attribute{entriesList}"  out="#{pageSession.builtInEntries}")
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");  
         //set the following for including buttons.inc

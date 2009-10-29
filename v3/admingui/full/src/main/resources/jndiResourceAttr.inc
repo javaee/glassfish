@@ -37,6 +37,7 @@
 
 
 <!-- PropertySheet .... -->
+<sun:hidden id="option"  value="#{myOption}" />
 <sun:propertySheet id="propertySheet">			 
     <sun:propertySheetSection id="propertSectionTextField"> 
         <sun:property id="jndiStaticProp" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
@@ -56,8 +57,7 @@
                     onClick="enableClassnameFields('predefine'); "
                 />                              
                 <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{pageSession.valueMap['ResType']}" 
-                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);"
-                    submitForm1="#{true}" immediate1="#{true}"  >
+                    disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
                     />

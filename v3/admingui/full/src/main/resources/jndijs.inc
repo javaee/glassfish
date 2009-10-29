@@ -52,18 +52,22 @@
 	enableComponent('#{classnameTextId}', 'text');  
 	getTextElement('#{classnameTextId}').focus(); 
 	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', true); 
-        showDisplay('none'); 
+        //showDisplay('none');
         document.getElementById('form1:option').value='input'; 
     }else{
         //We need to set a timeout to delay the call to getTextElement inside disable component.
         //otherwise getTextElement will always return null, causing JS error.
 	window.setTimeout("disableComponent('#{classnameTextId}', 'text')", 1); 
 	#{themeJavascript.JS_PREFIX}.dropDown.setDisabled('#{classnameDropdownId}', false); 
-        showDisplay(''); 
-        document.getElementById('form1:option').value='predefine'; 
+        //showDisplay('');
+        document.getElementById('form1:option').value='predefine';
     }
  }
-
+ var factoryMap = #{pageSession.factoryMap};
+ function updateFactoryClass(selected) {
+    var component = document.getElementById("#{pageSession.factoryClassTextId}");
+    component.value = factoryMap[selected];
+ }
 </script>
 </f:verbatim>
 

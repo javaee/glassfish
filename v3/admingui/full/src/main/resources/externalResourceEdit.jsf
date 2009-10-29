@@ -65,7 +65,7 @@
             mapPut(map="#{pageSession.valueMap}" key="JndiLookupName" value="#{jndiLookup}") 
             setAttribute(key="tableList" value="#{newList}");
     }
-    getJndiResourceAttrForEdit(resType="#{pageSession.valueMap['ResType']}", result="#{pageSession.builtInEntries}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}");
+    getJndiResourceAttrForEdit(resType="#{pageSession.valueMap['ResType']}", result="#{pageSession.builtInEntries}", classnameOption=>$page{classnameOption}, attrMap="#{pageSession.attrMap}", factoryMap="#{pageSession.factoryMap}");
     setPageSessionAttribute(key="myOption" value="#{classnameOption}");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );

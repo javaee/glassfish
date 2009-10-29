@@ -79,14 +79,7 @@
 
     />
     </event>
-    <f:verbatim>
-        <script type="text/javascript">
-            var factoryMap = #{pageSession.factoryMap};
-            function updateFactoryClass(selected) {
-                document.getElementById("#{pageSession.factoryClassTextId}_field").value = factoryMap[selected];
-            }
-        </script>
-    </f:verbatim>
+    
 #include "/common/shared/restart.inc"
             <sun:form id="form1">
 #include "/common/shared/alertMsg.inc"

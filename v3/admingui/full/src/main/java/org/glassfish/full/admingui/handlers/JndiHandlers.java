@@ -82,28 +82,18 @@ public class JndiHandlers {
         List result = new ArrayList();
         try{
             Map<String, Object> entries = (Map)V3AMX.getInstance().getConnectorRuntime().attributesMap().get("BuiltInCustomResources");
-            StringBuilder factoryMap = new StringBuilder();
             Map emap = (Map)entries.get(CUSTOM_RESOURCES_MAP_KEY);
             if(emap != null) {
                 result.addAll(emap.keySet());
-                String sep = "";
-                for (String key : (Set<String>)emap.keySet()) {
-                    factoryMap.append(sep)
-                            .append("\"")
-                            .append(key)
-                            .append("\": '")
-                            .append(getFactoryClass(key))
-                            .append("'");
-                    sep = ",";
-                }
-
             }
+            String factoryMap = getFactoryMap(emap);
+            
             handlerCtx.setOutputValue("result",result);
             handlerCtx.setOutputValue("classnameOption", "predefine");
             Map attrMap = new HashMap();
             attrMap.put("predefinedClassname", Boolean.TRUE);
             handlerCtx.setOutputValue("attrMap", attrMap);
-            handlerCtx.setOutputValue("factoryMap", "{" + factoryMap.toString() + "}");
+            handlerCtx.setOutputValue("factoryMap", factoryMap);
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -141,7 +131,8 @@ public class JndiHandlers {
     output={
         @HandlerOutput(name="attrMap",      type=Map.class),
         @HandlerOutput(name="classnameOption",      type=String.class),
-        @HandlerOutput(name="result",      type=List.class)})
+        @HandlerOutput(name="result",      type=List.class),
+        @HandlerOutput(name="factoryMap", type=String.class)})
         
     public static void getJndiResourceAttrForEdit(HandlerContext handlerCtx) {
         List result = new ArrayList();
@@ -151,6 +142,10 @@ public class JndiHandlers {
             result.addAll(emap.keySet());
         }
         handlerCtx.setOutputValue("result", result);
+
+        String factoryMap = getFactoryMap(emap);
+        handlerCtx.setOutputValue("factoryMap", factoryMap);
+        
         String resType = (String) handlerCtx.getInputValue("resType");
         Map attrMap = new HashMap();
         if (emap.containsKey(resType)) {
@@ -160,13 +155,32 @@ public class JndiHandlers {
 
         } else {
             //Custom realm class
-           handlerCtx.setOutputValue("classnameOption", "input");
+            handlerCtx.setOutputValue("classnameOption", "input");
             attrMap.put("predefinedClassname", Boolean.FALSE);
             attrMap.put("classnameInput", resType);
 
         }
 
         handlerCtx.setOutputValue("attrMap", attrMap);
+    }
+
+    private static String getFactoryMap(Map emap){
+        String factMap = null;
+        StringBuilder factoryMap = new StringBuilder();
+        if(emap != null) {
+            String sep = "";
+            for (String key : (Set<String>)emap.keySet()) {
+                    factoryMap.append(sep)
+                            .append("\"")
+                            .append(key)
+                            .append("\": '")
+                            .append(getFactoryClass(key))
+                            .append("'");
+                    sep = ",";
+            }
+        }
+        factMap = "{" + factoryMap.toString() + "}";
+        return factMap;
     }
     
         @Handler(id="updateJndiResourceAttrs",
