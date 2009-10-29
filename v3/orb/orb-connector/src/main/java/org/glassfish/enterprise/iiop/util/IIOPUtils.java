@@ -78,6 +78,8 @@ public class IIOPUtils implements PostConstruct {
             configs     = habitat.getComponent(Configs.class);
         }
 
+        _me = this;
+
     }
 
 
@@ -157,4 +159,5 @@ public class IIOPUtils implements PostConstruct {
     public ORB getORB() {
         return defaultORB;
     }
+    
 }

@@ -47,6 +47,7 @@ import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolChooser;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolFactory;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
 
 public class S1ASThreadPoolManager implements ThreadPoolManager {
 
@@ -63,17 +64,17 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
     private static String defaultID;
 
     private static ThreadPoolManager s1asThreadPoolMgr = new S1ASThreadPoolManager();
+    private static IIOPUtils _iiopUtils;
 
     public static ThreadPoolManager getThreadPoolManager() {
         return s1asThreadPoolMgr;
     }
 
-
+    
     S1ASThreadPoolManager() {
-
-        IIOPUtils iiopUtils = IIOPUtils.getInstance();
         try {
-            Collection<com.sun.grizzly.config.dom.ThreadPool> tpCol = iiopUtils.getAllThreadPools();
+            _iiopUtils = Globals.getDefaultHabitat().getByType(IIOPUtils.class);
+            Collection<com.sun.grizzly.config.dom.ThreadPool> tpCol = _iiopUtils.getAllThreadPools();
             com.sun.grizzly.config.dom.ThreadPool[] allThreadPools = tpCol.toArray(new com.sun.grizzly.config.dom.ThreadPool[tpCol.size()]);
             for (int i = 0; i < allThreadPools.length; i++) {
                 createThreadPools(allThreadPools[i], i);
@@ -89,7 +90,6 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
 
     private void createThreadPools(com.sun.grizzly.config.dom.ThreadPool
             threadpoolBean, int index) {
-        IIOPUtils iiopUtils = IIOPUtils.getInstance();
         String threadpoolId = null;
         String minThreadsValue, maxThreadsValue, timeoutValue;//, numberOfQueuesValue;
         int minThreads = DEFAULT_MIN_THREAD_COUNT;
@@ -184,7 +184,7 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
         ThreadPool threadpool =
                 threadPoolFactory.create(minThreads, maxThreads,
                         idleTimeoutInSeconds * 1000, threadpoolId,
-                        iiopUtils.getCommonClassLoader());
+                        _iiopUtils.getCommonClassLoader());
 
         // Add the threadpool instance to the threadpoolList
         threadpoolList.add(threadpool);
@@ -194,7 +194,6 @@ public class S1ASThreadPoolManager implements ThreadPoolManager {
 
         // Associate the threadpoolId to the index passed
         indexToIdTable.put(new Integer(index), threadpoolId);
-
     }
 
     /**
