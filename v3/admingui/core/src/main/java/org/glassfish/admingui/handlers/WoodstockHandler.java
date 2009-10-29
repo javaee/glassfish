@@ -432,58 +432,59 @@ public class WoodstockHandler {
      *  <p> Returns the list of monitorable resource components</p>
      *
      */
-  @Handler(id="populateComponentDropDown",
-        input={
-            @HandlerInput(name="VSList", type=List.class, required=true),
-            @HandlerInput(name="AppName", type=String.class, required=true)},
-        output={
-            @HandlerOutput(name="ComponentList", type=Option[].class)})
+    @Handler(id = "populateComponentDropDown",
+    input = {
+        @HandlerInput(name = "VSList", type = List.class, required = true),
+        @HandlerInput(name = "AppName", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "ComponentList", type = Option[].class)})
     public void populateComponentDropDown(HandlerContext handlerCtx) {
         List vsList = (List) handlerCtx.getInputValue("VSList");
         String appname = (String) handlerCtx.getInputValue("AppName");
         ArrayList menuList = new ArrayList();
         menuList.add(new Option("", ""));
-        if (appname.endsWith(".war")) {
-            if (vsList != null) {
-                ListIterator vl = vsList.listIterator();
-                while (vl.hasNext()) {
-                    String name = (String) vl.next();
-                    List servlets = servletInstanceValues(appname, "servlet-instance-mon", name);
-                    if (!servlets.isEmpty()) {
-                        OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
-                        menuList.add(menuOptions);
+        if (appname != null && !appname.isEmpty()) {
+            if (appname.endsWith(".war")) {
+                if (vsList != null) {
+                    ListIterator vl = vsList.listIterator();
+                    while (vl.hasNext()) {
+                        String name = (String) vl.next();
+                        List servlets = servletInstanceValues(appname, "servlet-instance-mon", name);
+                        if (!servlets.isEmpty()) {
+                            OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
+                            menuList.add(menuOptions);
+                        }
                     }
                 }
-            }
-        } else {
+            } else {
 
-            List<String> sfullSession = getAllEjbComps(appname, "stateful-session-bean-mon", "");
-            if (!sfullSession.isEmpty()) {
-                OptionGroup menuOptions = getMenuOptions(sfullSession, (String)sfullSession.get(0),"", true);
-                menuList.add(menuOptions);
-                List sfullBeanMethods = getEjbComps(appname, "bean-method-mon", (String)sfullSession.get(0));
-                if (!sfullBeanMethods.isEmpty()) {
-                    OptionGroup bmmenuOptions = getMenuOptions(sfullBeanMethods, "bean-methods", (String)sfullSession.get(0), true);
-                    menuList.add(bmmenuOptions);
-                }
-            }
-
-
-            List slessSession = getAllEjbComps(appname, "stateless-session-bean-mon", "");
-             if (!slessSession.isEmpty()) {
-                OptionGroup menuOptions = getMenuOptions(slessSession, (String) slessSession.get(0), "", true);
-                menuList.add(menuOptions);
-                List slessBeanMethods = getEjbComps(appname, "bean-method-mon", (String)slessSession.get(0));
-                if (!slessBeanMethods.isEmpty()) {
-                    OptionGroup bmmenuOptions = getMenuOptions(slessBeanMethods, "bean-methods", (String)slessSession.get(0), true);
-                    menuList.add(bmmenuOptions);
+                List<String> sfullSession = getAllEjbComps(appname, "stateful-session-bean-mon", "");
+                if (!sfullSession.isEmpty()) {
+                    OptionGroup menuOptions = getMenuOptions(sfullSession, (String) sfullSession.get(0), "", true);
+                    menuList.add(menuOptions);
+                    List sfullBeanMethods = getEjbComps(appname, "bean-method-mon", (String) sfullSession.get(0));
+                    if (!sfullBeanMethods.isEmpty()) {
+                        OptionGroup bmmenuOptions = getMenuOptions(sfullBeanMethods, "bean-methods", (String) sfullSession.get(0), true);
+                        menuList.add(bmmenuOptions);
+                    }
                 }
 
+
+                List slessSession = getAllEjbComps(appname, "stateless-session-bean-mon", "");
+                if (!slessSession.isEmpty()) {
+                    OptionGroup menuOptions = getMenuOptions(slessSession, (String) slessSession.get(0), "", true);
+                    menuList.add(menuOptions);
+                    List slessBeanMethods = getEjbComps(appname, "bean-method-mon", (String) slessSession.get(0));
+                    if (!slessBeanMethods.isEmpty()) {
+                        OptionGroup bmmenuOptions = getMenuOptions(slessBeanMethods, "bean-methods", (String) slessSession.get(0), true);
+                        menuList.add(bmmenuOptions);
+                    }
+
+                }
+
             }
- 
+
         }
-
-
         // Add Menu Options.
         jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
 
