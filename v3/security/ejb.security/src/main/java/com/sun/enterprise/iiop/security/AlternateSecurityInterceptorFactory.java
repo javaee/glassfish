@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.iiop.security;
 
-import org.jvnet.hk2.annotations.Contract;
 import org.omg.IOP.Codec;
 import org.omg.PortableInterceptor.ClientRequestInterceptor;
 import org.omg.PortableInterceptor.ServerRequestInterceptor;
@@ -46,8 +45,8 @@ import org.omg.PortableInterceptor.ServerRequestInterceptor;
  * 
  * @author Sudarsan Sridhar
  */
-@Contract
 public interface AlternateSecurityInterceptorFactory {
+    public static final String SEC_INTEROP_INTFACTORY_PROP="com.sun.enterprise.iiop.security.interceptorFactory";
     public ClientRequestInterceptor getClientRequestInterceptor(Codec codec);
     public ServerRequestInterceptor getServerRequestInterceptor(Codec codec);
 }
