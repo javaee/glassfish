@@ -37,7 +37,6 @@
 
 
 <!initPage
-    setPageSessionAttribute(key="showThreadPoolId" value="#{true}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{true}")
     setPageSessionAttribute(key="showVS" value="#{true}")
     setPageSessionAttribute(key="showContextRoot" value="#{true}")

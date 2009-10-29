@@ -36,7 +36,6 @@
 <!-- editEar.jsf -->
 
 <!initPage
-    setPageSessionAttribute(key="showThreadPoolId" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{true}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{true}")

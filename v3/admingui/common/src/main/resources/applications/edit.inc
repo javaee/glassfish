@@ -73,9 +73,6 @@
             <sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.propMap['javaWebStartEnabled']}" selectedValue="true" />
         </sun:property>
 
-        <sun:property id="threadPoolId" rendered="#{pageSession.showThreadPoolId}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.threadpoolid}" helpText="$resource{i18n.deploy.threadpoolidHelp}" >
-            <sun:textField id="threadPoolId" columns="$int{40}" text="#{pageSession.propMap['ThreadPool-id']}" />
-        </sun:property>
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
             <sun:textField id="desc" columns="$int{40}" text="#{pageSession.valueMap['Description']}" />
         </sun:property>

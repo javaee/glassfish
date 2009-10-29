@@ -38,7 +38,6 @@
 <!initPage
     setResourceBundle(key="i18n_jruby" bundle="org.glassfish.jruby.admingui.Strings");
     setResourceBundle(key="help_jruby" bundle="org.glassfish.jruby.admingui.Helplinks");
-    setPageSessionAttribute(key="showThreadPoolId" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")

@@ -68,15 +68,10 @@
         <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.rar['verify']}" selectedValue="true" />
 </sun:property>
 
-
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
         <sun:checkbox id="force"  selected="#{pageSession.rar['force']}" selectedValue="true" />
 </sun:property>
 
-
-<sun:property id="threadPoolId" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.threadpoolid}" helpText="$resource{i18n.deploy.threadpoolidHelp}" >
-	<sun:textField id="threadPoolId" columns="$int{40}" text="#{pageSession.rar['PROPERTY-ThreadPool-id']}" />
-</sun:property>
 
 <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18n.deploy.descHelp}" >
 	<sun:textField id="description" columns="$int{40}" text="#{pageSession.rar['description']}" />

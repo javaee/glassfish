@@ -38,7 +38,6 @@
 <!initPage
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
-    setPageSessionAttribute(key="showThreadPoolId" value="#{false}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/full/apps/editEjb.jsf")
 />

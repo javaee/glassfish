@@ -36,12 +36,10 @@
 <!-- editEjb.jsf -->
 
 <!initPage
-    setPageSessionAttribute(key="showThreadPoolId" value="#{true}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jca/apps/editRar.jsf")
-
 />
 
 <!composition template="/common/applications/appEdit.layout"   >

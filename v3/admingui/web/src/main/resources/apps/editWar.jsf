@@ -36,7 +36,6 @@
 <!-- editWar.jsf -->
 
 <!initPage
-    setPageSessionAttribute(key="showThreadPoolId" value="#{false}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{true}")
     setPageSessionAttribute(key="showContextRoot" value="#{true}")

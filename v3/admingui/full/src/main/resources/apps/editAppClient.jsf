@@ -36,7 +36,6 @@
 <!-- editAppClient.jsf -->
 
 <!initPage
-    setPageSessionAttribute(key="showThreadPoolId" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showJavaWebStart" value="#{true}")
