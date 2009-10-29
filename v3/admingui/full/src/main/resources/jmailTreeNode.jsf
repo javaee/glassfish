@@ -1,27 +1,27 @@
 
 <dynamicTreeNode id="mailResources"
-        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
-        objectName="amx:pp=/domain,type=resources"
-        amxChildType="mail-resource"
-        attributeName="name"
-        childImageURL="/resource/full/images/javaMailSession.gif"
-        childExpanded="$boolean{false}"
-        childURL="/full/mailResourceEdit.jsf?name=#{$this{valueBinding}.text}"
-        text="$resource{i18n.tree.javaMailSessions}"
-        url="/full/mailResources.jsf"
-        >
-        <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/mailResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.javaMailSessions}"/>
-        </facet>
+    treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+    objectName="amx:pp=/domain,type=resources"
+    amxChildType="mail-resource"
+    attributeName="name"
+    childImageURL="/resource/full/images/javaMailSession.gif"
+    childExpanded="$boolean{false}"
+    childURL="/full/mailResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+    text="$resource{i18n.tree.javaMailSessions}"
+    url="/full/mailResources.jsf">
+    <!facet image>
+        <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/mailResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.javaMailSessions}"/>
+    </facet>
 </dynamicTreeNode>
 
-<sun:treeNode id="Jmail"
-        text="$resource{i18n.tree.jndi}"
-        url="/full/jndi.jsf"
-        imageURL="/resource/full/images/jndi.gif"
-        >
-            
-        <dynamicTreeNode id="customResources"
+<sun:treeNode id="jndi"
+    text="$resource{i18n.tree.jndi}"
+    toolTip="$resource{i18n.tree.jndi}"
+    url="/full/jndi.jsf"
+    imageURL="/resource/full/images/jndi.gif"
+    >
+
+    <dynamicTreeNode id="customResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:pp=/domain,type=resources"
         amxChildType="custom-resource"
@@ -30,13 +30,12 @@
         childExpanded="$boolean{false}"
         childURL="/full/customResourceEdit.jsf?name=#{$this{valueBinding}.text}"
         text="$resource{i18n.tree.customResources}"
-        url="/full/customResources.jsf"
-        >
+        url="/full/customResources.jsf">
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/customResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.customResources}"/>
         </facet>
-        </dynamicTreeNode>                  
-        <dynamicTreeNode id="externalResources"
+    </dynamicTreeNode>
+    <dynamicTreeNode id="externalResources"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:pp=/domain,type=resources"
         amxChildType="external-jndi-resource"
@@ -45,10 +44,9 @@
         childExpanded="$boolean{false}"
         childURL="/full/externalResourceEdit.jsf?name=#{$this{valueBinding}.text}"
         text="$resource{i18n.tree.externalResources}"
-        url="/full/externalResources.jsf"
-        >
+        url="/full/externalResources.jsf">
         <!facet image>
             <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/externalResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.externalResources}"/>
         </facet>
-        </dynamicTreeNode>  
+    </dynamicTreeNode>
  </sun:treeNode> 
