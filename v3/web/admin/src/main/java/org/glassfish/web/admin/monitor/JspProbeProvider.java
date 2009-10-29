@@ -52,8 +52,18 @@ public class JspProbeProvider {
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
+    @Probe(name="jspReloadedEvent")
+    public void jspReloadedEvent(
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName) {}
+
     @Probe(name="jspDestroyedEvent")
     public void jspDestroyedEvent(
+        @ProbeParam("appName") String appName,
+        @ProbeParam("hostName") String hostName) {}
+
+    @Probe(name="jspErrorEvent")
+    public void jspErrorEvent(
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 }

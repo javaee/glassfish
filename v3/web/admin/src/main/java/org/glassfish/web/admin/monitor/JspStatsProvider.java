@@ -62,39 +62,65 @@ public class JspStatsProvider {
     private static final Logger logger = LogDomains.getLogger(
         JspStatsProvider.class, LogDomains.WEB_LOGGER);
 
-    private static final String ACTIVE_JSPS_LOADED_DESCRIPTION =
+    private static final String JSP_COUNT_DESCRIPTION =
         "Number of active JSP pages";
 
-    private static final String TOTAL_JSPS_LOADED_DESCRIPTION =
+    private static final String TOTAL_JSP_COUNT_DESCRIPTION =
         "Total number of JSP pages ever loaded";
+
+    private static final String JSP_RELOADED_COUNT_DESCRIPTION =
+        "Total number of JSP pages that were reloaded";
+
+    private static final String JSP_ERROR_COUNT_DESCRIPTION =
+        "Total number of errors triggered by JSP page invocations";
 
     private String moduleName;
     private String vsName; 
-    private RangeStatisticImpl activeJspsLoadedCount;
-    private CountStatisticImpl totalJspsLoadedCount;
+    private RangeStatisticImpl jspCount;
+    private CountStatisticImpl totalJspCount;
+    private CountStatisticImpl jspReloadedCount;
+    private CountStatisticImpl jspErrorCount;
     
     public JspStatsProvider(String moduleName, String vsName) {
         this.moduleName = moduleName;
         this.vsName = vsName;
         long curTime = System.currentTimeMillis();
-        activeJspsLoadedCount = new RangeStatisticImpl(
-            0L, 0L, 0L, "ActiveJspsLoaded", StatisticImpl.UNIT_COUNT,
-            ACTIVE_JSPS_LOADED_DESCRIPTION, curTime, curTime);
-        totalJspsLoadedCount = new CountStatisticImpl(
-            "TotalJspsLoaded", StatisticImpl.UNIT_COUNT,
-            TOTAL_JSPS_LOADED_DESCRIPTION);
+        jspCount = new RangeStatisticImpl(
+            0L, 0L, 0L, "JspCount", StatisticImpl.UNIT_COUNT,
+            JSP_COUNT_DESCRIPTION, curTime, curTime);
+        totalJspCount = new CountStatisticImpl(
+            "TotalJspCount", StatisticImpl.UNIT_COUNT,
+            TOTAL_JSP_COUNT_DESCRIPTION);
+        jspReloadedCount = new CountStatisticImpl(
+            "JspReloadedCount", StatisticImpl.UNIT_COUNT,
+            JSP_RELOADED_COUNT_DESCRIPTION);
+        jspErrorCount = new CountStatisticImpl(
+            "JspErrorCount", StatisticImpl.UNIT_COUNT,
+            JSP_ERROR_COUNT_DESCRIPTION);
     }
 
-    @ManagedAttribute(id="activejspsloadedcount")
-    @Description(ACTIVE_JSPS_LOADED_DESCRIPTION)
-    public RangeStatistic getActiveJspsLoaded() {
-        return activeJspsLoadedCount;
+    @ManagedAttribute(id="jspcount")
+    @Description(JSP_COUNT_DESCRIPTION)
+    public RangeStatistic getJspCount() {
+        return jspCount;
     }
 
-    @ManagedAttribute(id="totaljspsloadedcount")
-    @Description(TOTAL_JSPS_LOADED_DESCRIPTION)
-    public CountStatistic getTotalJspsLoaded() {
-        return totalJspsLoadedCount;
+    @ManagedAttribute(id="totaljspcount")
+    @Description(TOTAL_JSP_COUNT_DESCRIPTION)
+    public CountStatistic getTotalJspCount() {
+        return totalJspCount;
+    }
+
+    @ManagedAttribute(id="jspreloadedcount")
+    @Description(JSP_RELOADED_COUNT_DESCRIPTION)
+    public CountStatistic getJspReloadedCount() {
+        return jspReloadedCount;
+    }
+
+    @ManagedAttribute(id="jsperrorcount")
+    @Description(JSP_ERROR_COUNT_DESCRIPTION)
+    public CountStatistic getJspErrorCount() {
+        return jspErrorCount;
     }
     
     @ProbeListener("glassfish:web:jsp:jspLoadedEvent")
@@ -102,16 +128,25 @@ public class JspStatsProvider {
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
-            synchronized (activeJspsLoadedCount) {
-                activeJspsLoadedCount.setCurrent(
-                    activeJspsLoadedCount.getCurrent() + 1);
-                if (activeJspsLoadedCount.getCurrent() > 
-                        activeJspsLoadedCount.getHighWaterMark()) {
-                    activeJspsLoadedCount.setHighWaterMark(
-                        activeJspsLoadedCount.getCurrent());
+            synchronized (jspCount) {
+                jspCount.setCurrent(
+                    jspCount.getCurrent() + 1);
+                if (jspCount.getCurrent() > 
+                        jspCount.getHighWaterMark()) {
+                    jspCount.setHighWaterMark(
+                        jspCount.getCurrent());
                 }
             }
-            totalJspsLoadedCount.increment();
+            totalJspCount.increment();
+        }
+    }
+
+    @ProbeListener("glassfish:web:jsp:jspReloadedEvent")
+    public void jspReloadedEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("hostName") String hostName) {
+        if (isValidEvent(appName, hostName)) {
+            jspReloadedCount.increment();
         }
     }
 
@@ -120,10 +155,19 @@ public class JspStatsProvider {
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
-            synchronized (activeJspsLoadedCount) {
-                activeJspsLoadedCount.setCurrent(
-                    activeJspsLoadedCount.getCurrent() - 1);
+            synchronized (jspCount) {
+                jspCount.setCurrent(
+                    jspCount.getCurrent() - 1);
             }
+        }
+    }
+
+    @ProbeListener("glassfish:web:jsp:jspErrorEvent")
+    public void jspErrorEvent(
+            @ProbeParam("appName") String appName,
+            @ProbeParam("hostName") String hostName) {
+        if (isValidEvent(appName, hostName)) {
+            jspErrorCount.increment();
         }
     }
 
@@ -148,9 +192,11 @@ public class JspStatsProvider {
     }
 
     private void resetStats() {
-        activeJspsLoadedCount.setCurrent(0L);
-        activeJspsLoadedCount.setLowWaterMark(0L);
-        activeJspsLoadedCount.setHighWaterMark(0L);
-        totalJspsLoadedCount.setCount(0);
+        jspCount.setCurrent(0L);
+        jspCount.setLowWaterMark(0L);
+        jspCount.setHighWaterMark(0L);
+        totalJspCount.setCount(0);
+        jspReloadedCount.setCount(0);
+        jspErrorCount.setCount(0);
     }
 }
