@@ -77,6 +77,12 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
 
+        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{i18nc.log.levelLabel}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
+            <!beforeCreate
+                addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
+            />
+        </sun:dropDown>
+
         <sun:button id="button1" text="$resource{i18n.button.changeLevel}" disabled="#{true}" primary="#{true}" >
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
@@ -86,11 +92,6 @@
         />
         </sun:button>
 
-        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{i18nc.log.levelLabel}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
-            <!beforeCreate
-                addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
-            />
-        </sun:dropDown>
     </sun:panelGroup>
     </facet>
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{tableList}"}  sourceVar="td">
