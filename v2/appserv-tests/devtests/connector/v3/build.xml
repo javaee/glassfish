@@ -254,8 +254,8 @@
         <echo message="@@## installed libraries embedded rar EXTENSION_LIST ##@@"/>
         <ant dir="installed-libraries-embedded" target="all-ext"/>
 
-        <!--<echo message="@@## rar-accessibility ##@@"/>
-        <ant dir="rar-accessibility" target="all"/>-->
+        <echo message="@@## rar-accessibility ##@@"/>
+        <ant dir="rar-accessibility" target="all"/>
 
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
