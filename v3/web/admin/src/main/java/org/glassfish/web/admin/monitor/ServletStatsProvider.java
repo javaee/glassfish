@@ -68,10 +68,14 @@ public class ServletStatsProvider {
     private static final String TOTAL_SERVLETS_LOADED_DESCRIPTION =
         "Total number of Servlets ever loaded";
 
+    private static final String SERVLET_PROCESSING_TIMES_DESCRIPTION =
+        "Cumulative Servlet processing times";
+
     private String moduleName;
     private String vsName;
     private RangeStatisticImpl activeServletsLoadedCount;
     private CountStatisticImpl totalServletsLoadedCount;
+    private CountStatisticImpl servletProcessingTimes;
     
     public ServletStatsProvider(String moduleName, String vsName) {
         this.moduleName = moduleName;
@@ -83,8 +87,10 @@ public class ServletStatsProvider {
         totalServletsLoadedCount = new CountStatisticImpl(
             "TotalServletsLoaded", StatisticImpl.UNIT_COUNT,
             TOTAL_SERVLETS_LOADED_DESCRIPTION);
+        servletProcessingTimes = new CountStatisticImpl(
+            "ServletProcessingTimes", StatisticImpl.UNIT_MILLISECOND,
+            SERVLET_PROCESSING_TIMES_DESCRIPTION);
     }
-
 
     @ManagedAttribute(id="activeservletsloadedcount")
     @Description(ACTIVE_SERVLETS_LOADED_DESCRIPTION)
@@ -96,6 +102,12 @@ public class ServletStatsProvider {
     @Description(TOTAL_SERVLETS_LOADED_DESCRIPTION)
     public CountStatistic getTotalServletsLoaded() {
         return totalServletsLoadedCount;
+    }
+
+    @ManagedAttribute(id="servletprocessingtimes")
+    @Description(SERVLET_PROCESSING_TIMES_DESCRIPTION)
+    public CountStatistic getServletProcessingTimes() {
+        return servletProcessingTimes;
     }
     
     @ProbeListener("glassfish:web:servlet:servletInitializedEvent")
@@ -156,11 +168,16 @@ public class ServletStatsProvider {
     public String getVSName() {
         return vsName;
     }
+
+    void addServletProcessingTime(long servletProcessingTime) {
+        servletProcessingTimes.increment(servletProcessingTime);
+    }
     
     private void resetStats() {
         activeServletsLoadedCount.setCurrent(0L);
         activeServletsLoadedCount.setLowWaterMark(0L);
         activeServletsLoadedCount.setHighWaterMark(0L);
         totalServletsLoadedCount.setCount(0);
+        servletProcessingTimes.reset();
     }
 }

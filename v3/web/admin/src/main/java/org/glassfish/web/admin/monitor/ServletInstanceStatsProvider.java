@@ -82,6 +82,7 @@ public class ServletInstanceStatsProvider {
     private String servletName;
     private String moduleName;
     private String vsName;
+    private ServletStatsProvider servletStatsProvider;
 
     private ThreadLocal<TimeStatData> timeStatDataLocal = new ThreadLocal<TimeStatData> (){
         TimeStatData tsd;
@@ -98,11 +99,13 @@ public class ServletInstanceStatsProvider {
         }
     };
     
-    public ServletInstanceStatsProvider(String servletName, String moduleName,
-            String vsName) {
+    public ServletInstanceStatsProvider(String servletName,
+            String moduleName, String vsName,
+            ServletStatsProvider servletStatsProvider) {
         this.servletName = servletName;
         this.moduleName = moduleName;
         this.vsName = vsName;
+        this.servletStatsProvider = servletStatsProvider;
         long curTime = System.currentTimeMillis();
     }
 
@@ -171,7 +174,10 @@ public class ServletInstanceStatsProvider {
         if (isValidEvent(servletName, appName, hostName)) {
             TimeStatData tsd = timeStatDataLocal.get();
             tsd.setExitTime(System.currentTimeMillis());
-            requestProcessTime.incrementCount(tsd.getTotalTime());
+            long servletProcessingTime = tsd.getTotalTime();
+            requestProcessTime.incrementCount(servletProcessingTime);
+            servletStatsProvider.addServletProcessingTime(
+                servletProcessingTime);
 
             if (responseStatus >= 400) {
                 errorCount.increment();

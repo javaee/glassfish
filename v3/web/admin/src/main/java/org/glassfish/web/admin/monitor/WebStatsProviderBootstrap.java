@@ -145,7 +145,8 @@ public class WebStatsProviderBootstrap implements PostConstruct {
 
         for (String servletName : servletNames) {
              ServletInstanceStatsProvider servletInstanceStatsProvider = 
-                     new ServletInstanceStatsProvider(servletName, monitoringName, vsName);
+                 new ServletInstanceStatsProvider(servletName,
+                     monitoringName, vsName, servletStatsProvider);
              StatsProviderManager.register(
                      "web-container", PluginPoint.APPLICATIONS,
                      getNodeString(monitoringName, vsName, servletName),
