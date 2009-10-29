@@ -114,7 +114,7 @@ public class SessionStatsProvider{
             ACTIVATED_SESSIONS_DESCRIPTION);
     }
     
-    @ManagedAttribute(id="activesessionscount")
+    @ManagedAttribute(id="activesessionscurrent")
     @Description(ACTIVE_SESSIONS_DESCRIPTION)
     public RangeStatistic getActiveSessions() {
         return activeSessionsCount;
