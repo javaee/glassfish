@@ -48,7 +48,7 @@
 
   <servlet-mapping>
     <servlet-name>EmptyStringTarget</servlet-name>
-    <url-pattern>""</url-pattern>
+    <url-pattern>&quot;&quot;</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
