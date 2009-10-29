@@ -65,7 +65,7 @@ class TimeStatData {
         this.totalTime = totalTime;
     }
 
-    public void setReset (){
+    public void reset(){
         entryTime = 0L;
         exitTime = 0L;
         totalTime = 0L;

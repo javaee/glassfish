@@ -131,11 +131,6 @@ public class JspStatsProvider {
             synchronized (jspCount) {
                 jspCount.setCurrent(
                     jspCount.getCurrent() + 1);
-                if (jspCount.getCurrent() > 
-                        jspCount.getHighWaterMark()) {
-                    jspCount.setHighWaterMark(
-                        jspCount.getCurrent());
-                }
             }
             totalJspCount.increment();
         }

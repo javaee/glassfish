@@ -322,11 +322,6 @@ public class SessionStatsProvider{
         synchronized (activeSessionsCount) {
             activeSessionsCount.setCurrent(
                 activeSessionsCount.getCurrent() + 1);
-            if (activeSessionsCount.getCurrent() > 
-                    activeSessionsCount.getHighWaterMark()) {
-                activeSessionsCount.setHighWaterMark(
-                    activeSessionsCount.getCurrent());
-            }
         }
     }
 

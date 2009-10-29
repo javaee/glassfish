@@ -113,11 +113,6 @@ public class ServletStatsProvider {
             synchronized (activeServletsLoadedCount) {
                 activeServletsLoadedCount.setCurrent(
                     activeServletsLoadedCount.getCurrent() + 1);
-                if (activeServletsLoadedCount.getCurrent() > 
-                        activeServletsLoadedCount.getHighWaterMark()) {
-                    activeServletsLoadedCount.setHighWaterMark(
-                        activeServletsLoadedCount.getCurrent());
-                }
             }
             totalServletsLoadedCount.increment();
         }   
