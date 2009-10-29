@@ -67,7 +67,7 @@ final class BootAMX implements BootAMXMBean
 
         if (mMBeanServer.isRegistered(mObjectName))
         {
-            throw new IllegalStateException();
+            throw new IllegalStateException("AMX Booter MBean is already registered: " + mObjectName);
         }
     }
 
