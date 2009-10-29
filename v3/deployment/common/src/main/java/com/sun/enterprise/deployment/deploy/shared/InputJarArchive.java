@@ -107,14 +107,29 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     }
 
     /**
-     * Returns the enumeration of first level directories in this
-     * archive
-     * @return enumeration of directories under the root of this archive
+     * Returns the collection of first level directories in this
+     * archive.
+     * <p>
+     * Avoid having to fetch all the entries if we can avoid it.  The only time
+     * we must do that is if size() is invoked on the collection.  Use
+     * the CollectionWrappedEnumeration for this optimization which will
+     * create a full in-memory list of the entries only if and when needed
+     * to satisfy the size() method.
+     *
+     * @return collection of directories under the root of this archive
      */
+    @Override
     public Collection<String> getDirectories() throws IOException {
-        return entries(true);
-    }     
-        
+        return new CollectionWrappedEnumeration<String>(
+                new CollectionWrappedEnumeration.EnumerationFactory<String>() {
+
+            @Override
+            public Enumeration<String> enumeration() {
+                return entries(true);
+            }
+        });
+    }
+
     /** 
      * creates a new abstract archive with the given path
      *
@@ -124,55 +139,40 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         throw new UnsupportedOperationException("Cannot write to an JAR archive open for reading");        
     }
 
+    @Override
     public Enumeration<String> entries() {
-
-        return entries(false).elements();
-
+        return entries(false);
     }
-    /** 
-     * @return an @see java.util.Enumeration of entries in this abstract
-     * archive
-     */
-    private Vector<String> entries(boolean directory) {
-        Vector<String> entries = new Vector<String>();
 
-        if (parentArchive!=null) {
+    /**
+     * Returns an enumeration of the entry names in the archive.
+     *
+     * @param directoriesOnly whether to report directories only or non-directories only
+     * @return enumeration of the matching entry names, excluding the manifest
+     */
+    private Enumeration<String> entries(final boolean directoriesOnly) {
+        if (parentArchive != null) {
             try {
-                // reopen the embedded archive and position the input stream
-                // at the beginning of the desired element
-                jarIS = new JarInputStream(parentArchive.jarFile.getInputStream(parentArchive.jarFile.getJarEntry(uri.getSchemeSpecificPart())));
-                JarEntry ze;
-                do {
-                    ze = jarIS.getNextJarEntry();
-                    if (ze!=null && ze.isDirectory()==directory) {
-                        entries.add(ze.getName());
-                    }                
-                } while (ze!=null);
-                jarIS.close();
-                jarIS = null;
-            } catch(IOException ioe) {
-                return null;
+                return new SubarchiveEntryEnumeration(directoriesOnly);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         } else {
             try {
-                if (jarFile==null) {
+                if (jarFile == null) {
                     getJarFile(uri);
                 }
-            } catch(IOException ioe) {
-                return entries;
+            } catch (IOException ioe) {
+                return Collections.enumeration(Collections.EMPTY_LIST);
             }
-            if (jarFile==null) {
-                return entries;
+            if (jarFile == null) {
+                return Collections.enumeration(Collections.EMPTY_LIST);
             }
-            for (Enumeration e = jarFile.entries();e.hasMoreElements();) {
-                ZipEntry ze = (ZipEntry) e.nextElement();
-                if (ze.isDirectory()==directory && !ze.getName().equals(JarFile.MANIFEST_NAME)) {
-                    entries.add(ze.getName());
-                }
-            }
+
+            return new TopLevelEntryEnumeration(directoriesOnly);
         }
-        return entries;        
     }
+    
     
     /**
      *  @return an @see java.util.Enumeration of entries in this abstract
@@ -402,5 +402,222 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             }
         }
         return null;
-    }    
+    }
+    
+    /**
+     * Logic for enumerations of the entry names that is common between the
+     * top-level archive implementation and the subarchive implementation.
+     * <p>
+     * The goal is to wrap an Enumeration around the underlying entries 
+     * available in the archive, whether the archive is a top-level archive or a
+     * subarchive within a parent archive.  This avoids collecting all
+     * the entry names first and then returning an enumeration of the collection;
+     * that can be very costly for large JARs.
+     */
+    private abstract class EntryEnumeration implements Enumeration<String> {
+
+        /** look-ahead of one entry */
+        private JarEntry nextMatchingEntry;
+        private final boolean directoriesOnly;
+
+        private EntryEnumeration(final boolean directoriesOnly) {
+            this.directoriesOnly = directoriesOnly;
+        }
+
+        /**
+         * Finishes the initialization for the enumeration; MUST be invoked
+         * from the subclass constructor after super(...).
+         */
+        protected void completeInit() {
+            nextMatchingEntry = skipToNextMatchingEntry();
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return nextMatchingEntry != null;
+        }
+
+        @Override
+        public String nextElement() {
+            if (nextMatchingEntry == null) {
+                throw new NoSuchElementException();
+            }
+            final String answer = nextMatchingEntry.getName();
+            nextMatchingEntry = skipToNextMatchingEntry();
+            return answer;
+        }
+
+        /**
+         * Returns the next JarEntry available from the archive.
+         * @return the next available JarEntry; null if no more are available
+         */
+        protected abstract JarEntry getNextJarEntry();
+
+        protected JarEntry skipToNextMatchingEntry() {
+            JarEntry candidateNextEntry;
+            while ((candidateNextEntry = getNextJarEntry()) != null) {
+                if (directoriesOnly == candidateNextEntry.isDirectory() &&
+                       ! candidateNextEntry.getName().equals(JarFile.MANIFEST_NAME)) {
+                    break;
+                }
+            }
+            return candidateNextEntry;
+        }
+    }
+
+    /**
+     * Enumerates the entries from a top-level archive (as opposed to a
+     * subarchive within a parent archive).
+     * <p>
+     * This implementation uses the enumeration of JarEntry objects from the
+     * JarFile itself.
+     */
+    private class TopLevelEntryEnumeration extends EntryEnumeration {
+        private final Enumeration<JarEntry> jarEnum = jarFile.entries();
+
+        private TopLevelEntryEnumeration(final boolean directoriesOnly) {
+            super(directoriesOnly);
+            completeInit();
+        }
+
+        @Override
+        protected JarEntry getNextJarEntry() {
+            if (jarEnum.hasMoreElements()) {
+                return jarEnum.nextElement();
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Enumerates the entries from a sub-archive.
+     * <p>
+     * This implementation uses a JarInputStream to obtain successive
+     * JarEntry objects from the subarchive, via the parent archive.
+     */
+    private class SubarchiveEntryEnumeration extends EntryEnumeration {
+
+        private final JarInputStream jis;
+        private boolean reachedEndOfStream = false;
+
+        private SubarchiveEntryEnumeration(final boolean directoriesOnly) throws IOException {
+            super(directoriesOnly);
+            jis = new JarInputStream(parentArchive.jarFile.getInputStream(
+                    parentArchive.jarFile.getJarEntry(uri.getSchemeSpecificPart())));
+            completeInit();
+        }
+
+        @Override
+        protected JarEntry getNextJarEntry() {
+            if (reachedEndOfStream) {
+                return null;
+            }
+            try {
+                final JarEntry result = jis.getNextJarEntry();
+                if (result == null) {
+                    jis.close();
+                    reachedEndOfStream = true;
+                }
+                return result;
+            } catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            if ( ! reachedEndOfStream) {
+                jis.close();
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Note that the nextSlot field is always updated, even if we are using
+     * the original enumeration to return the next value from the iterator.  This
+     * is so that, if the caller invokes size() which causes us to build the
+     * ArrayList containing all the elements -- even if that invocation comes while
+     * the iterator is being used to return values -- the subsequent invocations
+     * of hasNext and next will use the correct place in the newly-constructed
+     * ArrayList of values.
+     *
+     * @param <T>
+     */
+    static class CollectionWrappedEnumeration<T> extends AbstractCollection<T> {
+
+        /** Used only if size is invoked */
+        private ArrayList<T> entries = null;
+
+        /** always updated, even if we use the enumeration */
+        private int nextSlot = 0;
+
+        private final EnumerationFactory<T> factory;
+
+        private Enumeration<T> e;
+
+        static interface EnumerationFactory<T> {
+            public Enumeration<T> enumeration();
+        }
+
+        CollectionWrappedEnumeration(final EnumerationFactory<T> factory) {
+            this.factory = factory;
+            e = factory.enumeration();
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            return new Iterator<T>() {
+
+                @Override
+                public boolean hasNext() {
+                    return (entries != null) ?
+                        nextSlot < entries.size() :
+                        e.hasMoreElements();
+                }
+
+                @Override
+                public T next() {
+                    T result = null;
+                    if (entries != null) {
+                        if (nextSlot >= entries.size()) {
+                            throw new NoSuchElementException();
+                        }
+                        result = entries.get(nextSlot++);
+                    } else {
+                        result = e.nextElement();
+                        nextSlot++;
+                    }
+                    return result;
+                }
+
+                @Override
+                public void remove() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            if (entries == null) {
+                populateEntries();
+            };
+            return entries.size();
+        }
+
+        private void populateEntries() {
+            entries = new ArrayList<T>();
+            /*
+             * Fill up the with data from
+             * a new enumeration.
+             */
+            for (Enumeration<T> newE = factory.enumeration(); newE.hasMoreElements(); ) {
+                entries.add(newE.nextElement());
+            }
+            e = null;
+        }
+    }
 }
