@@ -61,7 +61,7 @@
     <sun:head id="propertyhead">
         <sun:script url="/resource/common/js/adminjsf.js" />
     </sun:head>
-    <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+    <sun:body id="body3">
         <sun:form id="propertyForm">
             <!-- PropertySheet .... -->
             <sun:propertySheet id="propertySheet">			 

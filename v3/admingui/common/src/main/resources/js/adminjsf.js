@@ -22,18 +22,22 @@ function showAlert(msg) {
 function submitAndDisable(button, msg, target) {
     button.className="Btn2Dis_sun4"; // the LH styleClass for disabled buttons.
     button.disabled=true;
+    var oldaction = button.form.action;
     var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
     button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
     button.value=msg;
     if (target) {
+	var oldtarget = button.form.target;
 	button.form.target = target;
 	if (target === "_top") {
 	    // In this case we want the non-ajax behavior
 	    button.form.submit();
+	    button.form.target = oldtarget;
 	    return false;
 	}
     }
     admingui.ajax.submitFormAjax(button.form);
+    button.form.action = oldaction;
     return false; 
 }
 
@@ -1649,7 +1653,6 @@ function checkForSelectedValue(fieldId) {
 function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
     if (currentRestartStatus != oldRestartStatus) {
         reloadHeaderFrame();
-        //showLargeHeaderFrame(true);
     }
     return true;
 }
@@ -1659,23 +1662,14 @@ function reloadHeaderFrame() {
        parent.parent.frames["header"].location.reload();
 }
 
-function showLargeHeaderFrame(showLarge) {
-// FIXME: We no longer use frames
-    if (showLarge == true) {
-        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '94,*', 0);
-    } else {
-        parent.parent.document.getElementById('outerFrameset').setAttribute('rows', '71,*', 0);
-    }
-}
-
 admingui.deploy = {
-    uploadInit: function(dirPathId, restartRequired, dirSelectBtnId, filSelectBtnId, fileuploadId) {
+    uploadInit: function(dirPathId, oldRestartFlag, newRestartFlag, dirSelectBtnId, filSelectBtnId, fileuploadId) {
             //
             //We need to set a timeout to delay the call to getTextElement inside disable component.
             //otherwise getTextElement will always return null, causing JS error.
             //disableComponent(dirPathId, 'text');
             window.setTimeout("disableComponent('" + dirPathId+ "', 'text')", 1);
-            synchronizeRestartRequired(restartRequired, restartRequired);
+            synchronizeRestartRequired(newRestartFlag, oldRestartFlag);
             if(getSelectedValueFromForm(document.forms['form'], 'uploadRdBtn')=='serverSide'){
                 enableDOMComponent(dirPathId);
                 enableBtnComponent(dirSelectBtnId);
@@ -1868,7 +1862,6 @@ admingui.ajax = {
     whitelist : ['onchange','onclick'],
 
     loadPage : function (args) {
-        //window.frames['buffer'].location = url;
         var url = admingui.ajax.modifyUrl(args.url);
 //        if (url != admingui.ajax.lastPageLoaded) {
             admingui.util.log("Loading " + url + " via ajax.");
@@ -1901,9 +1894,6 @@ admingui.ajax = {
             contentNode = document.getElementById("content");
         }
         contentNode.innerHTML = o.responseText;
-        if (typeof(oldFunc) == 'function') {
-        //    oldFunc();
-        }
 	// FIXME: These 2 functions only need to be replaced after a FPR...
         webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
@@ -2050,37 +2040,6 @@ admingui.ajax = {
         return changed;
     },
 
-    _copyFunctions : function (node) {
-//        if (node.id == 'javax.faces.ViewState') {
-//            return;
-//        }
-        if ((typeof(node.id) == 'undefined') || (node.id == "")) {
-            return;
-        }
-
-        var source = window.frames['buffer'].document.getElementById(node.id);
-        if (source == null) {
-            return;
-        }
-
-        var props = Array();
-        for (var prop in source) {
-            try {
-                if ((typeof(node[prop]) == 'undefined') && (node[prop] != source[prop])) {
-                    node[prop] = source[prop];
-                }
-            } catch (err) {
-            }
-        }
-
-        for (var i = 0; i < admingui.ajax.whitelist.length; i++) {
-            prop = admingui.ajax.whitelist[i];
-            if (typeof(source[prop]) != 'undefined') {
-                node[prop] = source[prop];
-            }
-        }
-    },
-
     /**
      *	handler - The name of the handler to invoke.
      *	args - An object containing properties / values for the parameters.
@@ -2159,6 +2118,7 @@ admingui.woodstock = {
         //var oldTarget = theForm.target;
         //var oldAction = theForm.action;
         //theForm.action += "&" + hyperlink.id + "_submittedField="+hyperlink.id;
+	var oldaction = form.action;
         form.action = //admingui.ajax.lastPageLoaded +
             admingui.ajax.modifyUrl(form.action) + "&" + hyperlink.id + "_submittedField="+hyperlink.id;
         if (params != null) {
@@ -2167,10 +2127,15 @@ admingui.woodstock = {
                 i++;
             }
         }
+	var oldtarget = form.target;
         if (hyperlink.target != "") {
             form.target = hyperlink.target;
         }
         admingui.ajax.submitFormAjax(form);
+
+	// Retore form action
+	form.target = oldtarget;
+	form.action = oldaction;
 
         return false;
     },
@@ -2207,12 +2172,13 @@ admingui.woodstock = {
                     listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
                 }
             }
-            form.target = "buffer";
+	    var oldaction = form.action;
             form.action = //admingui.ajax.lastPageLoaded;
                 admingui.ajax.modifyUrl(form.action);
             admingui.ajax.submitFormAjax(form);
+	    form.action = oldaction;
         }
-        return true;
+        return false;
     },
 
     commonTaskHandler : function(treeNode, targetUrl) {

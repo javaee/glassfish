@@ -53,7 +53,7 @@
         <sun:head id="propertyhead" title="#{pageTitle}" >
             <sun:script url="/resource/common/js/restart.js" />
         </sun:head>
-        <sun:body id="body3" onLoad="javascript: synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
             <sun:form id="propertyForm">
   //#include "resourceNode/resourcesTabs.inc"
 #include "/common/shared/alertMsg.inc"                <!-- Page Title -->
