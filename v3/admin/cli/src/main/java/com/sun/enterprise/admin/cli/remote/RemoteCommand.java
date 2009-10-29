@@ -909,7 +909,7 @@ public class RemoteCommand extends CLICommand {
              */
             if (sawFile) {
                 valid.add(new ValidOption("upload", "BOOLEAN",
-                        ValidOption.OPTIONAL, "false"));
+                        ValidOption.OPTIONAL, null));
                 addedUploadOption = true;
             }
         } catch (ParserConfigurationException pex) {
@@ -941,7 +941,7 @@ public class RemoteCommand extends CLICommand {
      * if any of them are FILE type parameters.  If so, check for the
      * "--upload" option.
      */
-    private void initializeDoUpload() {
+    private void initializeDoUpload() throws CommandException {
         boolean sawFile = false;
         boolean sawDirectory = false;
         for (Map.Entry<String, String> param : options.entrySet()) {
@@ -968,17 +968,45 @@ public class RemoteCommand extends CLICommand {
             }
         }
 
-        if (sawFile && !sawDirectory) {
+        if (sawFile) {
             // found a FILE param, is doUpload set?
             String upString = getOption("upload");
             if (ok(upString))
                 doUpload = Boolean.parseBoolean(upString);
             else
-                doUpload = true;        // defaults to true
+                doUpload = !isLocal(programOpts.getHost());
+            if (sawDirectory && doUpload) {
+                // oops, can't upload directories
+                logger.printDebugMessage("--upload=" + upString +
+                                            ", doUpload=" + doUpload);
+                throw new CommandException(strings.get("CantUploadDirectory"));
+            }
         }
 
         if (addedUploadOption)
             options.remove("upload");    // XXX - remove it
+
+        logger.printDebugMessage("doUpload set to " + doUpload);
+    }
+
+    /**
+     * Does the given hostname represent the local host?
+     */
+    private static boolean isLocal(String hostname) {
+        if (hostname.equalsIgnoreCase("localhost"))     // the common case
+            return true;
+        try {
+            // let NetUtils do the hard work
+            InetAddress ia = InetAddress.getByName(hostname);
+            return NetUtils.isLocal(ia.getHostAddress());
+        } catch (UnknownHostException ex) {
+            /*
+             * Sometimes people misconfigure their name service and they
+             * can't even look up the name of their own machine.
+             * Too bad.  We just give up and say it's not local.
+             */
+            return false;
+        }
     }
 
     /**
