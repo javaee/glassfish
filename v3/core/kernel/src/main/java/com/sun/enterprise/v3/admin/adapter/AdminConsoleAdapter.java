@@ -167,6 +167,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private static final String MYURL_TOKEN = "%%%MYURL%%%";
     private static final String STATUS_TOKEN = "%%%STATUS%%%";
+    private static final String REDIRECT_TOKEN = "%%%LOCATION%%%";
     private static final String ADMIN_CONSOLE_IPS_PKGNAME = "glassfish-gui";
 
     private static final String INSTALL_ROOT = "com.sun.aas.installRoot";
@@ -233,11 +234,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		    setDownloadedVersion();
 		}
 		if (isInstalling()) {
-		    sendStatusPage(res);
+		    sendStatusPage(req, res);
 		} else {
                     if (isErrorOccurred()) {
                         restore();
-                        sendStatusPage(res);
+                        sendStatusPage(req, res);
                         return;
                     } else if (isApplicationLoaded()) {
 			// Double check here that it is not yet loaded (not
@@ -250,10 +251,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		    } else {
                         if (redeployNeeded()) {
                             setStateMsg(AdapterState.APPLICATION_PREPARE_UPGRADE);
-                            sendStatusPage(res);
+                            sendStatusPage(req, res);
                             if (!prepareRedeploy()) {
                                 setErrorOccurred(true);
-                                sendStatusPage(res);
+                                sendStatusPage(req, res);
                                 return;
                             }
                         }
@@ -269,7 +270,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 			    throw new RuntimeException(
 				    "Unable to install Admin Console!", ex);
 			}
-			sendStatusPage(res);
+			sendStatusPage(req, res);
 		    }
 		}
 	    }
@@ -628,7 +629,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     /**
      *
      */
-    private void sendStatusPage(GrizzlyResponse res) {
+    private void sendStatusPage(GrizzlyRequest req, GrizzlyResponse res) {
         byte[] bytes;
         try {
             GrizzlyOutputBuffer ob = getOutputBuffer(res);
@@ -644,6 +645,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 // Use the non-localized String version of the status
                 status = getStateMsg().toString();
             }
+            String locationUrl = req.getScheme()
+                                 + "://" + req.getServerName()
+                                 + ':' + req.getServerPort() + "/login.jsf";
+            localHtml = localHtml.replace(REDIRECT_TOKEN, locationUrl);
             bytes = localHtml.replace(STATUS_TOKEN, status).getBytes("UTF-8");
             res.setContentLength(bytes.length);
             ob.write(bytes, 0, bytes.length);

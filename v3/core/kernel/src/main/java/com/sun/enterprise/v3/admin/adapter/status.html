@@ -28,6 +28,11 @@ h4 {font-style:normal;font-size:.9em;color:#666;}
 </head>
 
 <body onLoad="document.getElementById('spin').src = 'http://download.java.net/glassfish/v3/admingui/asynch-1F.gif';">
+ <script type="text/javascript">
+    if (document.getElementById('layout-doc') != null) {
+        window.location = '%%%LOCATION%%%';
+    }
+</script>
     <div id="header"></div>
     <div class="container">
 	<div id="center" class="column">

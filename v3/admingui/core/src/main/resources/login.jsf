@@ -47,6 +47,11 @@
 <html>
 <head>
     <title>$resource{i18n.loginPageTitle}</title>
+<script type="text/javascript">
+    if (document.getElementById('layout-doc') != null) {
+        window.location = "#{request.scheme}://#{request.serverName}:#{request.serverPort}/login.jsf";
+    }
+</script>
 </f:verbatim>
     <sun:themeLinks/>
     <sun:link url="/resource/css/css_ns6up.css" />
