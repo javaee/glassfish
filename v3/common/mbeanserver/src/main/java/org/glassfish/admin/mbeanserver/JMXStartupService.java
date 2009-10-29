@@ -139,11 +139,18 @@ public final class JMXStartupService implements Startup, PostConstruct
     }
 
 
-    private void shutdown()
+    private synchronized void shutdown()
     {
-        Util.getLogger().info("JMXStartupService: shutting down AMX and JMX");
+        Util.getLogger().fine("JMXStartupService: shutting down AMX and JMX");
 
         mConnectorsStarterThread.shutdown();
+        mConnectorsStarterThread = null;
+        
+        mBootAMX.shutdown();
+        mBootAMX = null;
+        
+        // we can't block here waiting, we have to assume that the rest of the AMX modules do the right thing
+        Util.getLogger().log( java.util.logging.Level.INFO, "JMXStartupService and JMXConnectors have been shut down." );
     }
     
     private static final class BootAMXThread extends Thread

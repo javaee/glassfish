@@ -38,6 +38,7 @@ import javax.management.ObjectName;
 import javax.management.StandardMBean;
 import javax.management.remote.JMXServiceURL;
 
+import java.util.Set;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
@@ -74,6 +75,7 @@ import org.glassfish.admin.amx.util.stringifier.StringifierRegistryImpl;
 import org.glassfish.admin.amx.util.stringifier.StringifierRegistryIniterImpl;
 
 import org.glassfish.external.amx.AMXGlassfish;
+import org.glassfish.external.amx.AMXUtil;
 
 import com.sun.enterprise.config.serverbeans.AmxPref;
 
@@ -130,8 +132,23 @@ public final class AMXStartupService
 
     private void shutdown()
     {
-        ImplUtil.getLogger().info("AMXStartupService: shutting down AMX MBeans");
+        ImplUtil.getLogger().fine("AMXStartupService: shutting down AMX MBeans");
         unloadAMXMBeans();
+        
+        final ObjectName allAMXPattern = AMXUtil.newObjectName(AMXGlassfish.DEFAULT.amxJMXDomain(), "*");
+        final Set<ObjectName> remainingAMX = mMBeanServer.queryNames( allAMXPattern, null);
+        if ( remainingAMX.size() != 0 )
+        {
+            ImplUtil.getLogger().log( java.util.logging.Level.WARNING, "AMXStartupService.shutdown: MBeans have not been unregistered: " + remainingAMX);
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch( final InterruptedException e )
+            {
+            }
+        }
+        ImplUtil.getLogger().info("AMXStartupService: has been shut down and all AMX MBeans unregistered, remaining MBeans: " + mMBeanServer.queryNames( allAMXPattern, null));
     }
 
     public void postConstruct()

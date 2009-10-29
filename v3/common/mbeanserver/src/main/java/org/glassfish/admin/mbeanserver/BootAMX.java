@@ -163,6 +163,18 @@ final class BootAMX implements BootAMXMBean
     {
         return JMXStartupService.getJMXServiceURLs(mMBeanServer);
     }
+    
+    public void shutdown() 
+    {
+        try
+        {
+            mMBeanServer.unregisterMBean(getBootAMXMBeanObjectName());
+        }
+        catch( final Exception e )
+        {
+            Util.getLogger().log( java.util.logging.Level.WARNING, "BootAMX.shutdown", e);
+        }
+   }
 }
 
 
