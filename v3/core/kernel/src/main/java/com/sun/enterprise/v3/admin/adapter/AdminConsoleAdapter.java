@@ -518,9 +518,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void logRequest(GrizzlyRequest req) {
-        // FIXME: Change all INFO to FINE
-        log.info("AdminConsoleAdapter's STATE IS: " + getStateMsg());
         if (log.isLoggable(Level.FINE)) {
+            log.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
             log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
             Enumeration names = req.getParameterNames();
             while (names.hasMoreElements()) {
