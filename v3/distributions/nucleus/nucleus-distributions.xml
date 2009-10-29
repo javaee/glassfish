@@ -43,28 +43,31 @@ own identifying information: Portions Copyright [yyyy]
     <antcall target="create-common-image">
         <param name="image.dir" value="${installer.image.dir}/${install.dir.name}"/>
     </antcall>
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="install-l10n-packages">
+        <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
 </target>
 
 <target name="create-glassfish-image" description="Creating IPS Image with Domains">
     <antcall target="create-common-image">
         <param name="image.dir" value="${glassfish.image.dir}/${install.dir.name}"/>
     </antcall>
-
-    <!-- copy domains -->
-    <!-- unzip dest="${image.dir}" -->
-    <!-- unzip dest="target/local_image/glassfish/${install.dir.name}">
-        <fileset dir="../target">
-            <include name="nucleus-base*.zip"/>
-        </fileset>
-        <patternset>
-            <include name="**/domains/**"/>
-        </patternset>
-    </unzip -->
-
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="install-l10n-packages">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
 
     <!-- get modules required to create default domain -->
     <ant antfile="../distributions.xml" target="fetch-domain-creation-artifacts">
         <property name="modules.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/modules"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="fetch-domain-creation-artifacts">
+        <property name="modules.dir" value="${basedir}/target/local_image/glassfish-l10n/${install.dir.name}/glassfish/modules"/>
     </ant>
 
     <!-- create domain -->
@@ -72,16 +75,21 @@ own identifying information: Portions Copyright [yyyy]
     <echo message="user.dir: ${user.dir}"/>
     <echo message="basedir: ${basedir}"/>
     <antcall target="create-domain"/>
+    <antcall target="create-domain-ml"/>
 
     <!-- delete modules required to create default domain; these are not bundled as part of nucleus -->
     <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
         <property name="modules.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/modules"/>
     </ant>
+    <ant antfile="../distributions.xml" target="delete-domain-creation-artifacts">
+        <property name="modules.dir" value="${basedir}/target/local_image/glassfish-l10n/${install.dir.name}/glassfish/modules"/>
+    </ant>
 
-    <!-- delete dir="target" includes="*.zip"/ -->
 </target>
 
 <target name="create-domain" depends="create-domain-on-windows, create-domain-on-unix"/>
+
+<target name="create-domain-ml" depends="create-domain-on-windows-ml, create-domain-on-unix-ml"/>
 
 <target name="create-domain-on-windows" depends="init" if="windows">
     <ant antfile="../distributions.xml" target="create-domain">
@@ -90,10 +98,24 @@ own identifying information: Portions Copyright [yyyy]
     </ant>
 </target>
 
+<target name="create-domain-on-windows-ml" depends="init" if="windows">
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish-l10n/${install.dir.name}/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish-l10n/${install.dir.name}/glassfish/bin/asadmin.bat"/>
+    </ant>
+</target>
+
 <target name="create-domain-on-unix" depends="init" if="unix">
     <ant antfile="../distributions.xml" target="create-domain">
         <property name="exec.dir" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/bin"/>
         <property name="exec.executable" value="${basedir}/target/local_image/glassfish/${install.dir.name}/glassfish/bin/asadmin"/>
+    </ant>
+</target>
+
+<target name="create-domain-on-unix-ml" depends="init" if="unix">
+    <ant antfile="../distributions.xml" target="create-domain">
+        <property name="exec.dir" value="${basedir}/target/local_image/glassfish-l10n/${install.dir.name}/glassfish/bin"/>
+        <property name="exec.executable" value="${basedir}/target/local_image/glassfish-l10n/${install.dir.name}/glassfish/bin/asadmin"/>
     </ant>
 </target>
 
@@ -147,6 +169,15 @@ own identifying information: Portions Copyright [yyyy]
 
 	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+    
+</target>
+
+<target name="install-l10n-packages" description="Installing l10n packages">
+
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-nucleus-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
     
 </target>
 </project>

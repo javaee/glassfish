@@ -24,11 +24,13 @@ own identifying information: Portions Copyright [yyyy]
 <property name="image.root" value="target/local_image"/>
 <property name="installer.image.dir" value="${image.root}/installer"/>
 <property name="glassfish.image.dir" value="${image.root}/glassfish"/>
+<property name="installer.image.dir.l10n" value="${image.root}/installer-l10n"/>
+<property name="glassfish.image.dir.l10n" value="${image.root}/glassfish-l10n"/>
 <property name="install.dir.name" value="glassfishv3"/>
 <property name="repo.url" value="http://repine.sfbay.sun.com:40000"/>
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
-<property name="title" value="GlassFish v3 Preview"/>
+<property name="title" value="GlassFish v3"/>
 <property name="description" value="GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform."/>
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 <property name="dev.authority" value="dev.glassfish.org"/>
@@ -86,13 +88,20 @@ own identifying information: Portions Copyright [yyyy]
 <target name="create-distributions" description="Creating IPS Distributions">
     <chmod file="${installer.image.dir}/${install.dir.name}/bin/*" perm="ugo+rx"/>
     <chmod file="${installer.image.dir}/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
+    <chmod file="${installer.image.dir.l10n}/${install.dir.name}/bin/*" perm="ugo+rx"/>
+    <chmod file="${installer.image.dir.l10n}/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
         <fileset dir="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
         <fileset dir="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
+        <fileset dir="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <antcall target="pack-compression">
         <param name="image.directory" value="${installer.image.dir}"/>
+    </antcall>
+    <antcall target="pack-compression">
+        <param name="image.directory" value="${installer.image.dir.l10n}"/>
     </antcall>
     <!-- backup cfg_cache file, replace repo.url value, zip, restore -->
     <copy file="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
@@ -107,13 +116,30 @@ own identifying information: Portions Copyright [yyyy]
     <move file="${basedir}/cfg_cache.bak" 
 	  tofile="${installer.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
 	  overwrite="true" />
+	  
+    <copy file="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${basedir}/cfg_cache.bak" />
+    <replace file="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
+	    <replacefilter token="${repo.url}"
+		    value="${dev.repository.url}"/>
+    </replace>	
+    <exec dir="${installer.image.dir.l10n}/${install.dir.name}" executable="zip">
+        <arg line= "-r ../../../../target/${image.name}-ips-ml-installer.zip ."/>
+    </exec>
+    <move file="${basedir}/cfg_cache.bak" 
+	  tofile="${installer.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  overwrite="true" />  
 
     <chmod file="${glassfish.image.dir}/${install.dir.name}/bin/*" perm="ugo+rx"/>
     <chmod file="${glassfish.image.dir}/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir.l10n}/${install.dir.name}/bin/*" perm="ugo+rx"/>
+    <chmod file="${glassfish.image.dir.l10n}/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
     <!-- Delete all contents under ips-metadata download directory --> 
     <delete includeemptydirs="true">
         <fileset dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
         <fileset dir="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
+        <fileset dir="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/download" includes="**/*"/>
+        <fileset dir="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/pkg" includes="**/license.*"/>
     </delete>
     <!-- backup cfg_cache file, replace repo.url value, zip, restore -->
     <copy file="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
@@ -128,7 +154,20 @@ own identifying information: Portions Copyright [yyyy]
     <move file="${basedir}/cfg_cache.bak" 
 	  tofile="${glassfish.image.dir}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
 	  overwrite="true" />
-    <!-- delete dir="${image.root}"/ -->
+	  
+    <copy file="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	    tofile="${basedir}/cfg_cache.bak" />
+    <replace file="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache">
+	    <replacefilter token="${repo.url}"
+		    value="${dev.repository.url}"/>
+    </replace>	
+    <exec dir="${glassfish.image.dir.l10n}" executable="zip">
+        <arg line= "-r ../../../target/${image.name}-ips-ml.zip ${install.dir.name}"/>
+    </exec>
+    <move file="${basedir}/cfg_cache.bak" 
+	  tofile="${glassfish.image.dir.l10n}/${install.dir.name}/.org.opensolaris,pkg/cfg_cache"
+	  overwrite="true" />
+    
 </target>
 
 <target name="create-local-image" depends="check-ips"
@@ -183,15 +222,6 @@ own identifying information: Portions Copyright [yyyy]
          <param name="image.dir" value="${image.dir}"/>
     </antcall> 
 
-    <!-- final origin URLs are already set in set-authority commands -->
-
-    <!--antcall target="update-cfg-cache-for-dev-repository-urls"/--> 
-
-    <!--antcall target="update-cfg-cache-for-contrib-repository-urls"/-->
-
-    <!-- disabling sun contrib repo setup until close to fcs
-    <antcall target="update-cfg-cache-for-sun-contrib-repository-urls"/>
-    --> 
 </target>
 
 <target name="create-authorities" depends="check-ips"
@@ -208,82 +238,6 @@ own identifying information: Portions Copyright [yyyy]
 	    <arg line="set-authority -O ${repo.url} '${sun.contrib.authority}'"/>
     </exec>
     -->
-</target>
-
-
-<target name="update-cfg-cache-for-dev-repository-urls">
-    <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="prefix = ${dev.authority}">
-        <replacevalue><![CDATA[prefix = dev.glassfish.org
-origin-for-windows-i386-dev
-origin-for-sunos-i386-dev
-origin-for-sunos-sparc-dev
-origin-for-linux-i386-dev
-origin-for-darwin-universal-dev]]>
-        </replacevalue>
-    </replace>
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
-        <replacefilter token="origin-for-windows-i386-dev"
-            value="origin-for-windows-i386 = http://pkg.glassfish.org/v3/dev/windows/"/>
-        <replacefilter token="origin-for-sunos-i386-dev"
-            value="origin-for-sunos-i386 = http://pkg.glassfish.org/v3/dev/solaris-x86/"/>
-        <replacefilter token="origin-for-sunos-sparc-dev"
-            value="origin-for-sunos-sparc = http://pkg.glassfish.org/v3/dev/solaris-sparc/"/>
-        <replacefilter token="origin-for-linux-i386-dev"
-            value="origin-for-linux-i386 = http://pkg.glassfish.org/v3/dev/linux/"/>
-        <replacefilter token="origin-for-darwin-universal-dev"
-            value="origin-for-darwin-universal = http://pkg.glassfish.org/v3/dev/mac/"/>
-    </replace>
-</target>
-
-<target name="update-cfg-cache-for-contrib-repository-urls">
-    <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="prefix = ${contrib.authority}">
-        <replacevalue><![CDATA[prefix = contrib.glassfish.org
-origin-for-windows-i386-contrib
-origin-for-sunos-i386-contrib
-origin-for-sunos-sparc-contrib
-origin-for-linux-i386-contrib
-origin-for-darwin-universal-contrib]]>
-        </replacevalue>
-    </replace>
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
-        <replacefilter token="origin-for-windows-i386-contrib"
-            value="origin-for-windows-i386 = http://pkg.glassfish.org/v3/contrib/windows/"/>
-        <replacefilter token="origin-for-sunos-i386-contrib"
-            value="origin-for-sunos-i386 = http://pkg.glassfish.org/v3/contrib/solaris-x86/"/>
-        <replacefilter token="origin-for-sunos-sparc-contrib"
-            value="origin-for-sunos-sparc = http://pkg.glassfish.org/v3/contrib/solaris-sparc/"/>
-        <replacefilter token="origin-for-linux-i386-contrib"
-            value="origin-for-linux-i386 = http://pkg.glassfish.org/v3/contrib/linux/"/>
-        <replacefilter token="origin-for-darwin-universal-contrib"
-            value="origin-for-darwin-universal = http://pkg.glassfish.org/v3/contrib/mac/"/>
-    </replace>
-</target>
-
-<target name="update-cfg-cache-for-sun-contrib-repository-urls">
-    <!-- This double replacement is necessary because the replace task doesn't allow properties to be substituted in a multi-line replace -->
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache" token="prefix = ${sun.contrib.authority}">
-        <replacevalue><![CDATA[prefix = contrib.glassfish.sun.com 
-origin-for-windows-i386-sun-contrib
-origin-for-sunos-i386-sun-contrib
-origin-for-sunos-sparc-sun-contrib
-origin-for-linux-i386-sun-contrib
-origin-for-darwin-universal-sun-contrib]]>
-        </replacevalue>
-    </replace>
-    <replace file="${image.dir}/.org.opensolaris,pkg/cfg_cache">
-        <replacefilter token="origin-for-windows-i386-sun-contrib"
-            value="origin-for-windows-i386 = http://pkg.sun.com/glassfish/v3/contrib/windows/"/>
-        <replacefilter token="origin-for-sunos-i386-sun-contrib"
-            value="origin-for-sunos-i386 = http://pkg.sun.com/glassfish/v3/contrib/solaris-x86/"/>
-        <replacefilter token="origin-for-sunos-sparc-sun-contrib"
-            value="origin-for-sunos-sparc = http://pkg.sun.com/glassfish/v3/contrib/solaris-sparc/"/>
-        <replacefilter token="origin-for-linux-i386-sun-contrib"
-            value="origin-for-linux-i386 = http://pkg.sun.com/glassfish/v3/contrib/linux/"/>
-        <replacefilter token="origin-for-darwin-universal-sun-contrib"
-            value="origin-for-darwin-universal = http://pkg.sun.com/glassfish/v3/contrib/mac/"/>
-    </replace>
 </target>
 
 <!-- Create Domain -->

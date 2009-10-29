@@ -32,11 +32,20 @@ own identifying information: Portions Copyright [yyyy]
     <antcall target="create-common-image">
         <param name="image.dir" value="${installer.image.dir}/${install.dir.name}"/>
     </antcall>
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
 </target>
 
 <target name="create-glassfish-image" description="Creating IPS Image with Domains">
     <antcall target="create-common-image">
         <param name="image.dir" value="${glassfish.image.dir}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="install-l10n-packages">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
     </antcall>
 </target>
 
@@ -93,7 +102,7 @@ own identifying information: Portions Copyright [yyyy]
         <property name="package.name" value="glassfish-web"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
-     <ant antfile="../distributions.xml" target="install-package">
+    <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-jcdi"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
@@ -117,5 +126,37 @@ own identifying information: Portions Copyright [yyyy]
 	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
 
+</target>
+
+<target name="install-l10n-packages" description="Installing l10n packages">
+
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-common-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-upgrade-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jca-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jts-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-ejb-lite-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-web-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-jdbc-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
 </target>
 </project>
