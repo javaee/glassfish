@@ -8,6 +8,15 @@
 </ui:event>
 
 // Need to write the title so it is updated in the browser.
+<f:verbatim>
+<script type="text/javascript">
+    var loc = window.location.href;
+    var index = loc.indexOf("bare=true");
+    if (index > -1) {
+        window.location = loc.substring(0, index);
+    }
+</script>
+</f:verbatim>
 "<title>#{guiTitle}</title>
 <!insert name="content">
     Content Missing!
