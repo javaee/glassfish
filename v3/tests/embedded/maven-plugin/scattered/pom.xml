@@ -59,7 +59,7 @@
       <artifactId>maven-glassfish-plugin</artifactId>
       <configuration>
         <goalPrefix>glassfish</goalPrefix>
-        <app>src/main/web</app>
+        <rootdirectory>src/main/web</rootdirectory>
         <port>8080</port> 
         <name>test</name>
       </configuration>
@@ -67,7 +67,7 @@
         <execution>
           <phase>install</phase>
           <goals>
-            <goal>run-scattered</goal>
+            <goal>runscatteredarchive</goal>
           </goals>
         </execution>
       </executions>
