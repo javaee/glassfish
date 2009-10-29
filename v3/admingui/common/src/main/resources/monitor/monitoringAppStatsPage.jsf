@@ -66,10 +66,7 @@
         if(#{cVal}) {
         setPageSessionAttribute(key="cVal" value="#{cVal}");
         }
-        getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", mbeanName=>$attribute{mbName});
-        if(!#{mbName}){
-            setAttribute(key="mbName" value="EMPTY");
-        }
+        getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
 
     />
 </event>    
@@ -134,7 +131,17 @@
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
+ <sun:tableRowGroup id="jerseyStats" rendered="#{hasStatsJersey}" data={"$attribute{jerseyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jerseyStatistics} : #{viewVal}"
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getNameforMbean(appName="applications/#{viewVal}", compVal="jersey", end="false", mbeanName=>$attribute{jMbName});
+            getStatsbyTypeName(type="jersey-application-mon" name="#{jMbName}", result=>$attribute{jerseyStatsList} hasStats=>$attribute{hasStatsJersey});
 
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="ejbAppStats" rendered="#{hasStatsEJBApp}" data={"$attribute{EJBAppStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJB} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
@@ -248,7 +255,7 @@
         groupToggleButton="$boolean{true}" collapsed="#{collapseServlets}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
             setAttribute(key="collapseServlets" value="#{false}");
-            if(#{hasStatsSI}) {
+            if(#{hasStatsSI} || #{hasStatsJersey}) {
                 setAttribute(key="collapseServlets" value="#{true}");
             }
             getStatsbyTypeName(type="servlet-mon" name="#{webStatsMbeanName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsSS});

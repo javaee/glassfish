@@ -37,7 +37,6 @@
 package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.V3AMX;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -55,17 +54,15 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Date;
 
+import java.util.ListIterator;
 import javax.management.Attribute;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
-import javax.management.openmbean.CompositeDataSupport;
-import javax.management.openmbean.CompositeType;
 import org.glassfish.admingui.common.util.V3AMX;
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.CompositeType;
 
 
-import javax.management.openmbean.TabularDataSupport;
 import org.glassfish.admin.amx.base.Query;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
@@ -168,7 +165,7 @@ public class MonitoringHandlers {
             while (iter.hasNext()) {
                 Map<String, Object> monattrs = ((AMXProxy) iter.next()).attributesMap();
                for (String monName : monattrs.keySet()) {
-                    if ((!monName.equals("Parent")) && (!monName.equals("Children"))&& (!monName.equals("Name"))) {
+                   if ((!monName.equals("Parent")) && (!monName.equals("Children"))&& (!monName.equals("Name"))) {
                         Map statMap = new HashMap();
                         Object val = monattrs.get(monName);
                         String details = "--";
@@ -187,19 +184,29 @@ public class MonitoringHandlers {
                             CompositeType ctype = cds.getCompositeType();
                             if (cds.containsKey("statistics")) {
                                 Object statistics = cds.get("statistics");
-                                if (statistics instanceof CompositeData[]) {
+                               if (statistics instanceof CompositeData[]) {
                                     CompositeData[] mycd = (CompositeData[])cds.get("statistics");
                                     if(((CompositeData[])cds.get("statistics")).length == 0){
                                         val = "--";
                                     }
                                     for (CompositeData cd : (CompositeData[]) cds.get("statistics")) {
+                                        String statname = null;
                                         nostatskey = false;
                                         Map statsMap = new HashMap();
                                         if (cd.containsKey("name")&& type.equals("web-service-mon")) {
                                             val = cd.get("name");
                                         }
-                                        if (cd.containsKey("name")) {
+                                        if (cd.containsKey("name")&& cd.containsKey("count")) {
+                                            statname = (String)cd.get("name");
+                                        }
+                                        if (cd.containsKey("name") && !cd.containsKey("count")) {
                                             val = cd.get("name");
+                                        }
+                                        if (cd.containsKey("unit")) {
+                                            unit = (String) cd.get("unit");
+                                        }
+                                        if (cd.containsKey("count")) {
+                                            val = cd.get("count") + " " + unit;
                                         }
                                         if (cd.containsKey("description")) {
                                             desc = (String) cd.get("description");
@@ -221,6 +228,9 @@ public class MonitoringHandlers {
                                         }
                                         if (cd.containsKey("endpointName")) {
                                             details = details + (GuiUtil.getMessage("msg.EndPointName") + ": " + cd.get("endpointName") + "<br/>");
+                                        }
+                                        if (cd.containsKey("classname")) {
+                                            details = (GuiUtil.getMessage("msg.ClassName") + ": " + cd.get("classname") + "<br/>");
                                         }
                                         if (cd.containsKey("implType")) {
                                             details = details + (GuiUtil.getMessage("msg.ImplClass") + ": " + cd.get("implClass") + "<br/>");
@@ -244,7 +254,7 @@ public class MonitoringHandlers {
                                         if (cd.containsKey("wsdl")) {
                                             details = details + (GuiUtil.getMessage("msg.WSDL") + ": " + cd.get("wsdl") +  "<br/>");
                                         }
-                                        statsMap.put("Name", monName);
+                                        statsMap.put("Name", (statname == null) ? monName : statname);
                                         statsMap.put("StartTime", start);
                                         statsMap.put("LastTime", last);
                                         statsMap.put("Description", desc);
@@ -471,6 +481,7 @@ public class MonitoringHandlers {
     @Handler(id = "getNameforMbean",
       input={
         @HandlerInput(name="appName",   type=String.class, required=true),
+        @HandlerInput(name="end",   type=String.class, required=true),
         @HandlerInput(name="compVal",   type=String.class, required=true)},
        output = {
         @HandlerOutput(name = "mbeanName", type = String.class)
@@ -478,7 +489,8 @@ public class MonitoringHandlers {
     public static void getNameforMbean(HandlerContext handlerCtx) {
         String app = (String) handlerCtx.getInputValue("appName");
         String comp = (String) handlerCtx.getInputValue("compVal");
-        String mbeanName = "";
+        String end = (String) handlerCtx.getInputValue("end");
+        String mbeanName = "EMPTY";
         try {
             Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
             Set data = (Set) query.queryType("server-mon");
@@ -488,9 +500,16 @@ public class MonitoringHandlers {
                 ObjectName[] pnames = (ObjectName[]) attrs.get("Children");
                 for (int i = 0; i < pnames.length; i++) {
                     String pname = pnames[i].getKeyProperty("name");
-                    if (pname.endsWith(app + "/" + comp)) {
-                        mbeanName = pname;
-                        break;
+                    if (end.equals("true")) {
+                        if (pname.endsWith(app + "/" + comp)) {
+                            mbeanName = pname;
+                            break;
+                        }
+                    } else {
+                        if (pname.startsWith(app + "/" + comp)) {
+                            mbeanName = pname;
+                            break;
+                        }
                     }
 
                 }
@@ -500,6 +519,85 @@ public class MonitoringHandlers {
         }
         handlerCtx.setOutputValue("mbeanName", mbeanName);
 
+    }
+
+
+    public static Boolean doesAppProxyExist(String name, String type) {
+        List proxyList = V3AMX.getProxyListByType(type);
+        boolean proxyexist = false;
+        if (proxyList != null && proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (pname.contains(name)) {
+                    proxyexist = true;
+                }
+
+            }
+        }
+        return proxyexist;
+    }
+
+    public static List servletInstanceValues(String name, String type, String instance) {
+        List proxyList = V3AMX.getProxyListByType(type);
+        List servlets = new ArrayList();
+        if (proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (pname.contains(name)) {
+                    String vs = pname.substring(pname.lastIndexOf(".war") + 5, pname.lastIndexOf("/"));
+                    if(instance.equals(vs)) {
+                        servlets.add(pname.substring(pname.lastIndexOf("/")+1, pname.length()));
+                    }
+                }
+           }
+        }
+        return servlets;
+    }
+
+    public static List getAllEjbComps(String appname, String type, String state) {
+        List ejblist = new ArrayList();
+        List menuList = new ArrayList();
+        List bstate = getEjbComps(appname, type, "");
+        if (!bstate.isEmpty()) {
+            ejblist.addAll(bstate);
+            List bcache = getEjbComps(appname, "bean-cache-mon", (String) bstate.get(0));
+            List bpool = getEjbComps(appname, "bean-pool-mon", (String) bstate.get(0));
+            List timers = getEjbComps(appname, "ejb-timed-object-mon", (String) bstate.get(0));
+            if (!bcache.isEmpty()) {
+                ejblist.addAll(bcache);
+            }
+            if (!bpool.isEmpty() && bpool.size() > 0) {
+                ejblist.addAll(bpool);
+            }
+            if (!timers.isEmpty()) {
+                ejblist.addAll(timers);
+            }
+        }
+        return ejblist;
+    }
+
+    public static List getEjbComps(String name, String type, String ejbstate) {
+        List proxyList = V3AMX.getProxyListByType(type);
+        List comps = new ArrayList();
+        if (proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (!ejbstate.isEmpty() || !ejbstate.equals("")) {
+                    if (pname.startsWith(name) || pname.contains("/"+name+"/") && pname.contains(ejbstate)) {
+                        comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
+                    }
+                } else {
+                    if (pname.startsWith(name) || pname.contains("/"+name+"/") ) {
+                        comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
+
+                    }
+                }
+            }
+        }
+        return comps;
     }
       
     final private static List<String> levels= new ArrayList();

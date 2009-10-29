@@ -75,6 +75,7 @@ import java.util.Collections;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.handlers.MonitoringHandlers;
 import org.glassfish.admingui.util.SunOptionUtil;
 
 public class WoodstockHandler {
@@ -375,7 +376,7 @@ public class WoodstockHandler {
     }
 
    /**
-     *  <p> Returns the list of monitorable resource components</p>
+     *  <p> Returns the list of monitorable application components</p>
      *
      */
   @Handler(id="populateApplicationsMonitorDropDown",
@@ -401,9 +402,9 @@ public class WoodstockHandler {
                 for (AMXProxy oneModule : modules.values()) {
                     String moduleName = oneModule.getName();
                     if (moduleName.endsWith(".war") || moduleName.endsWith(".jar")) {
-                        boolean hasSfullStats = doesAppProxyExist(moduleName, "stateful-session-bean-mon");
-                        boolean hasSlessStats = doesAppProxyExist(moduleName, "stateless-session-bean-mon");
-                        boolean hasWebStats = doesAppProxyExist(moduleName, "servlet-instance-mon");
+                        boolean hasSfullStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateful-session-bean-mon");
+                        boolean hasSlessStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateless-session-bean-mon");
+                        boolean hasWebStats = MonitoringHandlers.doesAppProxyExist(moduleName, "servlet-instance-mon");
                         if (hasSfullStats || hasSlessStats || hasWebStats) {
                             moduleList.add(moduleName);
                         }
@@ -429,7 +430,7 @@ public class WoodstockHandler {
     }
 
   /**
-     *  <p> Returns the list of monitorable resource components</p>
+     *  <p> Returns the list of monitorable components of an application</p>
      *
      */
     @Handler(id = "populateComponentDropDown",
@@ -449,7 +450,7 @@ public class WoodstockHandler {
                     ListIterator vl = vsList.listIterator();
                     while (vl.hasNext()) {
                         String name = (String) vl.next();
-                        List servlets = servletInstanceValues(appname, "servlet-instance-mon", name);
+                        List servlets = MonitoringHandlers.servletInstanceValues(appname, "servlet-instance-mon", name);
                         if (!servlets.isEmpty()) {
                             OptionGroup menuOptions = getMenuOptions(servlets, name, "", true);
                             menuList.add(menuOptions);
@@ -458,11 +459,11 @@ public class WoodstockHandler {
                 }
             } else {
 
-                List<String> sfullSession = getAllEjbComps(appname, "stateful-session-bean-mon", "");
+                List<String> sfullSession = MonitoringHandlers.getAllEjbComps(appname, "stateful-session-bean-mon", "");
                 if (!sfullSession.isEmpty()) {
                     OptionGroup menuOptions = getMenuOptions(sfullSession, (String) sfullSession.get(0), "", true);
                     menuList.add(menuOptions);
-                    List sfullBeanMethods = getEjbComps(appname, "bean-method-mon", (String) sfullSession.get(0));
+                    List sfullBeanMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) sfullSession.get(0));
                     if (!sfullBeanMethods.isEmpty()) {
                         OptionGroup bmmenuOptions = getMenuOptions(sfullBeanMethods, "bean-methods", (String) sfullSession.get(0), true);
                         menuList.add(bmmenuOptions);
@@ -470,11 +471,11 @@ public class WoodstockHandler {
                 }
 
 
-                List slessSession = getAllEjbComps(appname, "stateless-session-bean-mon", "");
+                List slessSession = MonitoringHandlers.getAllEjbComps(appname, "stateless-session-bean-mon", "");
                 if (!slessSession.isEmpty()) {
                     OptionGroup menuOptions = getMenuOptions(slessSession, (String) slessSession.get(0), "", true);
                     menuList.add(menuOptions);
-                    List slessBeanMethods = getEjbComps(appname, "bean-method-mon", (String) slessSession.get(0));
+                    List slessBeanMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) slessSession.get(0));
                     if (!slessBeanMethods.isEmpty()) {
                         OptionGroup bmmenuOptions = getMenuOptions(slessBeanMethods, "bean-methods", (String) slessSession.get(0), true);
                         menuList.add(bmmenuOptions);
@@ -491,9 +492,7 @@ public class WoodstockHandler {
         handlerCtx.setOutputValue("ComponentList", jumpMenuOptions);
     }
 
-  
-
-    private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
+        private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
         ArrayList nList = new ArrayList();
         Option[] groupedOptions3 = new Option[0];
         Collections.sort(values);
@@ -509,7 +508,7 @@ public class WoodstockHandler {
                     } else {
                         nList.add(new Option(name, name));
                     }
-                    
+
                 } else if(addLabel && !label2.equals("")) {
                     nList.add(new Option(label2+"/"+label+"/" + name, name));
                 } else {
@@ -522,84 +521,6 @@ public class WoodstockHandler {
             jumpGroup3.setOptions(groupedOptions3);
             return jumpGroup3;
         }
-    }
-
-    private static Boolean doesAppProxyExist(String name, String type) {
-        List proxyList = V3AMX.getProxyListByType(type);
-        boolean proxyexist = false;
-        if (proxyList != null && proxyList.size() != 0) {
-            ListIterator li = proxyList.listIterator();
-            while (li.hasNext()) {
-                String pname = (String) li.next();
-                if (pname.contains(name)) {
-                    proxyexist = true;
-                }
-
-            }
-        }
-        return proxyexist;
-    }
-
-    private static List servletInstanceValues(String name, String type, String instance) {
-        List proxyList = V3AMX.getProxyListByType(type);
-        List servlets = new ArrayList();
-        if (proxyList.size() != 0) {
-            ListIterator li = proxyList.listIterator();
-            while (li.hasNext()) {
-                String pname = (String) li.next();
-                if (pname.contains(name)) {
-                    String vs = pname.substring(pname.lastIndexOf(".war") + 5, pname.lastIndexOf("/"));
-                    if(instance.equals(vs)) {
-                        servlets.add(pname.substring(pname.lastIndexOf("/")+1, pname.length()));
-                    }
-                }
-           }
-        }
-        return servlets;
-    }
-
-    private static List getAllEjbComps(String appname, String type, String state) {
-        List ejblist = new ArrayList();
-        List menuList = new ArrayList();
-        List bstate = getEjbComps(appname, type, "");
-        if (!bstate.isEmpty()) {
-            ejblist.addAll(bstate);
-            List bcache = getEjbComps(appname, "bean-cache-mon", (String) bstate.get(0));
-            List bpool = getEjbComps(appname, "bean-pool-mon", (String) bstate.get(0));
-            List timers = getEjbComps(appname, "ejb-timed-object-mon", (String) bstate.get(0));
-            if (!bcache.isEmpty()) {
-                ejblist.addAll(bcache);
-            }
-            if (!bpool.isEmpty() && bpool.size() > 0) {
-                ejblist.addAll(bpool);
-            }
-            if (!timers.isEmpty()) {
-                ejblist.addAll(timers);
-            }
-        }
-        return ejblist;
-    }
-
-    private static List getEjbComps(String name, String type, String ejbstate) {
-        List proxyList = V3AMX.getProxyListByType(type);
-        List comps = new ArrayList();
-        if (proxyList.size() != 0) {
-            ListIterator li = proxyList.listIterator();
-            while (li.hasNext()) {
-                String pname = (String) li.next();
-                if (!ejbstate.isEmpty() || !ejbstate.equals("")) {
-                    if (pname.startsWith(name) || pname.contains("/"+name+"/") && pname.contains(ejbstate)) {
-                        comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
-                    }
-                } else {
-                    if (pname.startsWith(name) || pname.contains("/"+name+"/") ) {
-                        comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
-                        
-                    }
-                }
-            }
-        }
-        return comps;
     }
 
     private Option[] jumpMenuOptions = null;
