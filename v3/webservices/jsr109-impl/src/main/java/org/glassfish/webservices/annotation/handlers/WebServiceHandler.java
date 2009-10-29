@@ -395,8 +395,8 @@ public class WebServiceHandler extends AbstractHandler {
             // Servlet link name
             WebBundleDescriptor webBundle = (WebBundleDescriptor) bundleDesc;
             if(endpoint.getWebComponentLink() == null) {
-                //<servlet-link> = <port-component-name>
-                endpoint.setWebComponentLink(endpoint.getEndpointName());
+                //<servlet-link> = fully qualified name of the implementation class
+                endpoint.setWebComponentLink(implClassFullName);
             }
             if(endpoint.getWebComponentImpl() == null) {
                 WebComponentDescriptor webComponent = (WebComponentDescriptor) webBundle.
