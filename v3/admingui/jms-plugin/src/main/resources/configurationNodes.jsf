@@ -1,5 +1,6 @@
 <gf:navNode id="jmsConfiguration"
 	    label="$resource{i18n.tree.javaMessageService}"
+	    toolTip="$resource{i18n.tree.javaMessageService}"
             url="#{request.contextPath}/jms/jmsService.jsf?configName=server-config"
 	    icon="#{request.contextPath}/resource/images/jms.gif">
     <dynamicTreeNode id="jmsHosts"
@@ -14,7 +15,8 @@
         url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"
         >
         <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}"
+                alt="$resource{i18n.tree.jmsHosts}"/>
         </facet>
     </dynamicTreeNode>
 

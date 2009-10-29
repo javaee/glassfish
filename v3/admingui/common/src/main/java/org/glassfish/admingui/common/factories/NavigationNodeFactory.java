@@ -108,20 +108,14 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
         final Object expanded = descriptor.getOption("expanded");
         final Object template = descriptor.getOption("template");
         final Object processPage = descriptor.getOption("processPage");
+        final Object toolTip = descriptor.getOption("toolTip");
 
         // Set all the attributes / properties
-        if (label != null) {
-            setOption(context, comp, descriptor, "text", label);
-        }
-        if (target != null) {
-            setOption(context, comp, descriptor, "target", target);
-        }
-        if (expanded != null) {
-            setOption(context, comp, descriptor, "expanded", expanded);
-        }
-        if (icon != null) {
-            setOption(context, comp, descriptor, "imageURL", icon);
-        }
+        applyOption(context, comp, descriptor, "text", label);
+        applyOption(context, comp, descriptor, "target", target);
+        applyOption(context, comp, descriptor, "expanded", expanded);
+        applyOption(context, comp, descriptor, "imageURL", icon);
+        applyOption(context, comp, descriptor, "toolTip", toolTip);
         if (url != null) {
             final boolean externalResource = ((String) url).contains("://");
 // FIXME: There does not seem to be any way to have an external URL which does *not* use a template!
@@ -137,12 +131,11 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
             setOption(context, comp, descriptor, "url", url);
             if (icon != null) {
                 UIComponent imageHyperlink = context.getApplication().createComponent("com.sun.webui.jsf.ImageHyperlink");
-                setOption(context, imageHyperlink, descriptor, "imageURL", icon);
-                setOption(context, imageHyperlink, descriptor, "url", url);
-                setOption(context, imageHyperlink, descriptor, "border", 0);
-		if (target != null) {
-		    setOption(context, imageHyperlink, descriptor, "target", target);
-		}
+                applyOption(context, imageHyperlink, descriptor, "imageURL", icon);
+                applyOption(context, imageHyperlink, descriptor, "url", url);
+                applyOption(context, imageHyperlink, descriptor, "border", 0);
+                applyOption(context, imageHyperlink, descriptor, "target", target);
+                applyOption(context, imageHyperlink, descriptor, "alt", toolTip);
                 comp.getFacets().put("image", imageHyperlink);
             }
         }
@@ -155,6 +148,12 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
 
         // Return the component
         return comp;
+    }
+
+    protected void applyOption(FacesContext context, UIComponent comp, LayoutComponent lc, String name, Object value) {
+        if (value != null) {
+            this.setOption(context, comp, lc, name, value);
+        }
     }
 
     /**

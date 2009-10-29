@@ -55,7 +55,7 @@
         url="/web/grizzly/networkListeners.jsf?configName=#{configName}"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/networkListeners.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n_web.tree.grizzly.networkListeners}"/>
         </facet>
         <!beforeCreate
             setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
@@ -74,7 +74,7 @@
         url="/web/grizzly/protocols.jsf?configName=#{configName}"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/protocols.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n_web.tree.grizzly.protocols}"/>
         </facet>
         <!beforeCreate
             setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
@@ -93,7 +93,7 @@
         url="/web/grizzly/transports.jsf?configName=#{configName}"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/web/grizzly/transports.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n_web.tree.grizzly.transports}"/>
         </facet>
         <!beforeCreate
             setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");

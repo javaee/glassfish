@@ -42,7 +42,8 @@
         url="#{request.contextPath}/common/security/security.jsf?configName=#{configName}"
         >
         <!facet image>
-        <sun:imageHyperlink imageURL="/resource/common/security/images/security.gif" url="#{request.contextPath}/common/security/security.jsf?configName=#{configName}"  border="0" immediate="true" />
+            <sun:imageHyperlink imageURL="/resource/common/security/images/security.gif" url="#{request.contextPath}/common/security/security.jsf?configName=#{configName}" 
+                alt="$resource{i18n.tree.security}" border="0" immediate="true" />
         </facet>
 
 
@@ -58,7 +59,8 @@
             url="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{configName}"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{configName}" 
+                    alt="$resource{i18n.tree.realms}" border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
 
@@ -75,7 +77,8 @@
             url="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{configName}"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{configName}" 
+                    alt="$resource{i18n.tree.auditModules}" border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
 
@@ -91,7 +94,8 @@
             url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}" 
+                    alt="$resource{i18n.tree.jaccProviders}" border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
 
@@ -107,7 +111,8 @@
             url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"  
+                    alt="$resource{i18n.tree.msgSecurityConfigs}" border="$int{0}" immediate="$boolean{true}" />
             </facet>
         </dynamicTreeNode>
     </sun:treeNode>

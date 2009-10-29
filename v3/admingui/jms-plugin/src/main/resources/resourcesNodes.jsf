@@ -14,7 +14,7 @@
         url="#{request.contextPath}/jms/jmsConnections.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsConnections.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsConnections.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectionFactories}"/>
         </facet>
         <!filterTree filterOutNonJms(); />
     </dynamicTreeNode>
@@ -31,7 +31,7 @@
         url="#{request.contextPath}/jms/jmsDestinations.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsDestinations.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsDestinations.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.destinationResources}"/>
         </facet>
     </dynamicTreeNode>
 </gf:navNode>

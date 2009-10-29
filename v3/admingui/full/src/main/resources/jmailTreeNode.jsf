@@ -11,7 +11,7 @@
         url="/full/mailResources.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/mailResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/mailResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.javaMailSessions}"/>
         </facet>
 </dynamicTreeNode>
 
@@ -33,7 +33,7 @@
         url="/full/customResources.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/customResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/customResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.customResources}"/>
         </facet>
         </dynamicTreeNode>                  
         <dynamicTreeNode id="externalResources"
@@ -48,8 +48,7 @@
         url="/full/externalResources.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/externalResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/full/externalResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.externalResources}"/>
         </facet>
         </dynamicTreeNode>  
  </sun:treeNode> 
-    

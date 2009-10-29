@@ -114,7 +114,8 @@ update tool    updatetool 800
             url="/common/sysnet/registration.jsf"
             >
             <!facet image>
-                <sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"  border="0" immediate="true" />
+                <sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"
+                    alt="$resource{i18n.tree.registration}" border="0" immediate="true" />
             </facet>
         </sun:treeNode>
 
@@ -123,7 +124,8 @@ update tool    updatetool 800
                 url="/common/sysnet/support.jsf"
                 >
                 <!facet image>
-                    <sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  border="0" immediate="true" />
+                    <sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  
+                        border="0" immediate="true" alt="$resource{i18n.tree.support}"/>
                 </facet>
             </sun:treeNode>
 
@@ -134,7 +136,8 @@ update tool    updatetool 800
                       imageURL="/resource/images/instance.gif"
                       >
             <!facet image>
-                <sun:image id="xyz" url="/resource/images/instance.gif" />
+                <sun:imageHyperlink imageURL="/resource/images/instance.gif" url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
+                    border="0" immediate="true" alt="$resource{i18n.tree.appServer}"/>
             </facet>
 
         </sun:treeNode>
@@ -153,7 +156,8 @@ update tool    updatetool 800
             childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
         >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf"  border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf" alt="$resource{i18n.tree.applications}"
+                    border="$int{0}" immediate="$boolean{true}" />
             </facet>
             <!filterTree filterOutLifecycle() />
         </dynamicTreeNode>
@@ -171,7 +175,8 @@ update tool    updatetool 800
             childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}"
         >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"  border="$int{0}" immediate="$boolean{true}" />
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
+                    alt="$resource{i18n.tree.lifecycle}" border="$int{0}" immediate="$boolean{true}" />
             </facet>
             <!filterTree filterOutNonLifecycle() />
         </dynamicTreeNode>

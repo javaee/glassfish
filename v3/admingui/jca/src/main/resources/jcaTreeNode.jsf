@@ -16,7 +16,7 @@
         url="/jca/connectorResources.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectorResources}"/>
         </facet>
         </dynamicTreeNode>                  
         <dynamicTreeNode id="connectorConnectionPools"
@@ -31,7 +31,7 @@
         url="/jca/connectorConnectionPools.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/connectorConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/connectorConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectorConnectionPools}"/>
         </facet>
         </dynamicTreeNode>    
         <dynamicTreeNode id="adminObjectResources"
@@ -46,7 +46,7 @@
         url="/jca/adminObjectResources.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.adminObjectResources}"/>
         </facet>
         </dynamicTreeNode>  
         <dynamicTreeNode id="workSecurityMaps"
@@ -61,7 +61,7 @@
         url="/jca/workSecurityMaps.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/workSecurityMaps.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/workSecurityMaps.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.workSecurityMaps}"/>
         </facet>
         </dynamicTreeNode>
  </sun:treeNode> 

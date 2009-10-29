@@ -52,7 +52,7 @@
         url="/corba/iiopListeners.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf"  border="$int{0}" immediate="$boolean{true}" />
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.iiopListeners}"/>
         </facet>
     </dynamicTreeNode>
     <!beforeCreate
