@@ -50,7 +50,7 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
         <sun:button id="deployButton" text="$resource{i18n.button.New}" primary="#{true}">
-                <!command redirect(page="#{pageSession.nextPageLink}&bare=true") />
+                <!command redirect(page="#{pageSession.nextPageLink}") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
