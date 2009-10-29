@@ -1657,9 +1657,22 @@ public class WebappClassLoader
         purgeELBeanClasses();
         // END GlassFish Issue 587
 
-        // Clearing references should be done before setting started to
-        // false, due to possible side effects
-        clearReferences();
+        /*
+         * Clearing references should be done before setting started to
+         * false, due to possible side effects.
+         * In addition, set this classloader as the Thread's context
+         * classloader, see IT 9894 for details
+         */
+        ClassLoader curCl = null;
+        try {
+            curCl = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(this);
+            clearReferences();
+        } finally {
+            if (curCl != null) {
+                Thread.currentThread().setContextClassLoader(curCl);
+            }
+        }
 
         // START SJSAS 6258619
         ClassLoaderUtil.releaseLoader(this);
