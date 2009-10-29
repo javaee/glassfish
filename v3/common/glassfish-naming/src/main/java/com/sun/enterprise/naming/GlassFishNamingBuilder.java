@@ -41,6 +41,8 @@ import org.glassfish.api.Startup;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -51,9 +53,11 @@ import javax.naming.spi.NamingManager;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.lang.reflect.Field;
 
 import com.sun.enterprise.naming.util.LogFacade;
 
@@ -71,50 +75,12 @@ import com.sun.enterprise.naming.util.LogFacade;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 @Service
-public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Startup
+public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Startup, PostConstruct, PreDestroy
 {
     @Inject
     private ServerContext sc;
 
     private static Logger _logger = LogFacade.getLogger();
-
-    public GlassFishNamingBuilder()
-    {
-        try
-        {
-            SecurityManager sm = System.getSecurityManager();
-            if (sm != null)
-            {
-                try
-                {
-                    AccessController.doPrivileged(new PrivilegedExceptionAction<Void>()
-                    {
-                        public Void run() throws NamingException
-                        {
-                            NamingManager.setInitialContextFactoryBuilder(GlassFishNamingBuilder.this);
-                            return null;  //Nothing to return
-                        }
-                    });
-                }
-                catch (PrivilegedActionException e)
-                {
-                    if (e.getCause() instanceof NamingException)
-                    {
-                        throw (NamingException) e.getCause();
-                    }
-                    throw new RuntimeException(e); // should never get here
-                }
-            }
-            else
-            {
-                NamingManager.setInitialContextFactoryBuilder(this);
-            }
-        }
-        catch (NamingException e)
-        {
-            throw new RuntimeException(e);
-        }
-    }
 
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) throws NamingException
     {
@@ -168,6 +134,73 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
                 }
             }
             throw e;
+        }
+    }
+
+    public void postConstruct()
+    {
+        try
+        {
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null)
+            {
+                try
+                {
+                    AccessController.doPrivileged(new PrivilegedExceptionAction<Void>()
+                    {
+                        public Void run() throws NamingException
+                        {
+                            NamingManager.setInitialContextFactoryBuilder(GlassFishNamingBuilder.this);
+                            return null;  //Nothing to return
+                        }
+                    });
+                }
+                catch (PrivilegedActionException e)
+                {
+                    throw (NamingException) e.getCause();
+                }
+            }
+            else
+            {
+                NamingManager.setInitialContextFactoryBuilder(this);
+            }
+        }
+        catch (NamingException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void preDestroy()
+    {
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            AccessController.doPrivileged(new PrivilegedAction<Void>(){
+                public Void run() {
+                    resetInitialContextFactoryBuilder();
+                    return null;
+                }
+            });
+        } else {
+            resetInitialContextFactoryBuilder();
+        }
+    }
+
+    private void resetInitialContextFactoryBuilder()
+    {
+        try
+        {
+            Field f = NamingManager.class.getDeclaredField("initctx_factory_builder");
+            f.setAccessible(true);
+            f.set(null, null);
+        }
+        catch (NoSuchFieldException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
         }
     }
 }
