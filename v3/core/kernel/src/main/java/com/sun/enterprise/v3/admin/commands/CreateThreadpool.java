@@ -87,6 +87,9 @@ public class CreateThreadpool implements AdminCommand {
     @Param(name="workqueues", optional=true)
     String workqueues;
 
+    @Param(name="maxqueuesize", optional=true)
+    String maxQueueSize;
+
     @Param(optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
@@ -121,6 +124,11 @@ public class CreateThreadpool implements AdminCommand {
             }
         }
 
+        if (workqueues != null) {
+            report.setMessage(localStrings.getLocalString("create.threadpool.deprecated.workqueues",
+                        "Deprecated Syntax: --workqueues option is deprecated for create-threadpool command."));
+        }
+
         try {
             ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
                 public Object run(ThreadPools param) throws PropertyVetoException, TransactionFailure {
@@ -128,7 +136,7 @@ public class CreateThreadpool implements AdminCommand {
                     newPool.setName(threadpool_id);
                     newPool.setMaxThreadPoolSize(maxthreadpoolsize);
                     newPool.setMinThreadPoolSize(minthreadpoolsize);
-                    newPool.setMaxQueueSize(workqueues);
+                    newPool.setMaxQueueSize(maxQueueSize);
                     newPool.setIdleThreadTimeoutSeconds(idletimeout);
                     param.getThreadPool().add(newPool);
                     return newPool;
