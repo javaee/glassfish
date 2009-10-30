@@ -76,7 +76,7 @@ public class RequestStatsProvider {
     private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount",
             StatisticImpl.UNIT_COUNT, REQUEST_COUNT_DESCRIPTION);
     private CountStatisticImpl maxTime = new CountStatisticImpl("MaxTime",
-            StatisticImpl.UNIT_COUNT, MAX_TIME_DESCRIPTION);
+            StatisticImpl.UNIT_MILLISECOND, MAX_TIME_DESCRIPTION);
     private CountStatisticImpl processingTime = new CountStatisticImpl("ProcessingTime",
             StatisticImpl.UNIT_MILLISECOND, PROCESSING_TIME_DESCRIPTION);
 
