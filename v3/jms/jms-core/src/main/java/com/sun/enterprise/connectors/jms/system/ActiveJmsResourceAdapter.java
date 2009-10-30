@@ -92,6 +92,8 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.component.PostConstruct;
+
 //import com.sun.messaging.jmq.util.service.PortMapperClientHandler;
 
 
@@ -109,9 +111,9 @@ import org.jvnet.hk2.config.types.Property;
 @Scoped(Singleton.class)
 
 
-public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl implements LazyServiceInitializer {
+public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl implements LazyServiceInitializer, PostConstruct {
 
-    static Logger logger = LogDomains.getLogger(ActiveJmsResourceAdapter.class,LogDomains.RSR_LOGGER);
+    static Logger logger = Logger.getLogger(ActiveJmsResourceAdapter.class.getName());
 
     private final String SETTER = "setProperty";
     private static final String SEPARATOR = "#";
@@ -286,6 +288,28 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         if (mqPassFile != null) {
             mqPassFile.delete();
         }
+    }
+    public void postConstruct()
+    {
+            /*
+                * If any special handling is required for the system resource
+                * adapter, then ActiveResourceAdapter implementation for that
+                * RA should implement additional functionality by extending
+                * ActiveInboundResourceAdapter or ActiveOutboundResourceAdapter.
+                *
+                * For example ActiveJmsResourceAdapter extends
+                * ActiveInboundResourceAdapter.
+                */
+               //if (moduleName.equals(ConnectorConstants.DEFAULT_JMS_ADAPTER)) {
+                   // Upgrade jms resource adapter, if necessary before starting
+                   // the RA.
+           try {
+                       JmsRaUtil raUtil = new JmsRaUtil();
+                       raUtil.upgradeIfNecessary();
+           }
+           catch (Throwable t) {
+                   _logger.log(Level.FINE,"Cannot upgrade jmsra"+ t.getMessage());
+           }
     }
 
     /**
