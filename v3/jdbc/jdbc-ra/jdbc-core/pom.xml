@@ -30,6 +30,7 @@
     <dependency>
       <groupId>org.glassfish.common</groupId>
       <artifactId>glassfish-api</artifactId>
+      <version>${project.version}</version>
     </dependency>		    
 
     <dependency>
@@ -44,12 +45,5 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.3.1</version>
-      <scope>test</scope>
-      <optional>true</optional>
-    </dependency>
   </dependencies>
 </project>

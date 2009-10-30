@@ -79,14 +79,13 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.stream</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
-	    <!--<version>10.0.0-rev6</version>-->
-	    <!--<version>[10.0*,11.0)</version> -->
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

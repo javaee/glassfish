@@ -32,6 +32,7 @@
     	<dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
         </dependency>         
     </dependencies>
 </project>

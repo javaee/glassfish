@@ -133,6 +133,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>glassfish-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
@@ -156,7 +157,6 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>auto-depends</artifactId>
-            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.deployment</groupId>

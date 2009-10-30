@@ -127,7 +127,6 @@
         <jmac-api.version>1.0-rev-1</jmac-api.version>
         <jaxws-ri.version>2.1.3</jaxws-ri.version>
         <stax-api.version>1.0-2</stax-api.version>
-        <glassfish-jruby.version>RELEASE</glassfish-jruby.version>
         <dataprovider.version>4.2</dataprovider.version>
         <jsftemplating.version>2.0.1</jsftemplating.version>
         <scales.version>1.3.1</scales.version>
@@ -753,9 +752,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.glassfish.common</groupId>
-                <artifactId>glassfish-api</artifactId>
-                <version>${project.version}</version>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>auto-depends</artifactId>
+                <version>${hk2.version}</version>
             </dependency>
 
             <dependency>
@@ -1056,66 +1055,65 @@
                 <version>${v3-docs.version}</version>
             </dependency>
 
-
-
-
-
-
-
-
-        <dependency>
-            <groupId>org.jvnet</groupId>
-            <artifactId>mimepull</artifactId>
-            <version>${mimepull.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-multipart</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
+            <dependency>
+                <groupId>org.jvnet</groupId>
+                <artifactId>mimepull</artifactId>
+                <version>${mimepull.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey.contribs</groupId>
+                <artifactId>jersey-multipart</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
 
             <dependency>
               <groupId>javax.help</groupId>
               <artifactId>javahelp</artifactId>
               <version>2.0.02</version>
             </dependency>
-          <dependency>
-            <groupId>com.sun.tools.btrace</groupId>
-            <artifactId>btrace-agent</artifactId>
-            <version>${btrace.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>com.sun.tools.btrace</groupId>
-            <artifactId>btrace-boot</artifactId>
-            <version>${btrace.version}</version>
-          </dependency>
 
-        <dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-orbgeneric</artifactId>
-            <version>${glassfish-corba.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.corba</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${glassfish-corba.version}</version>
-        </dependency>
-        <dependency>
-           <groupId>org.glassfish.admin</groupId>
-           <artifactId>config-api</artifactId>
-           <version>${project.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.core</groupId>
-           <artifactId>kernel</artifactId>
-           <version>${project.version}</version>
-       </dependency>
-       <dependency>
-           <groupId>org.glassfish.tests</groupId>
-           <artifactId>utils</artifactId>
-           <version>${project.version}</version>
-       </dependency>
+            <dependency>
+                <groupId>com.sun.tools.btrace</groupId>
+                <artifactId>btrace-agent</artifactId>
+                <version>${btrace.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>com.sun.tools.btrace</groupId>
+                <artifactId>btrace-boot</artifactId>
+                <version>${btrace.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sun.corba</groupId>
+                <artifactId>glassfish-corba-orbgeneric</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.corba</groupId>
+                <artifactId>glassfish-corba-omgapi</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kohsuke.metainf-services</groupId>
+                <artifactId>metainf-services</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.stream</groupId>
+                <artifactId>stax-api</artifactId>
+                <version>${stax-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.stream</groupId>
+                <artifactId>sjsxp</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.3.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <!--  End:   Dependency management -->
