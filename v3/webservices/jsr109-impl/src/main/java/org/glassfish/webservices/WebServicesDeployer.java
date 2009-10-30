@@ -1,24 +1,37 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
 
 package org.glassfish.webservices;
@@ -27,7 +40,6 @@ package org.glassfish.webservices;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.Archivist;
-import com.sun.enterprise.deployment.node.WebServiceNode;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -38,23 +50,19 @@ import com.sun.logging.LogDomains;
 import com.sun.tools.ws.util.xml.XmlUtil;
 import com.sun.xml.bind.api.JAXBRIContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
-import org.glassfish.api.deployment.Deployer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DownloadableArtifacts;
-import org.glassfish.webservices.codegen.*;
 import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.internal.api.JAXRPCCodeGenFacade;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -94,16 +102,10 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     private ResourceBundle rb = logger.getResourceBundle();
 
     @Inject
-    private ServerEnvironment env;
-
-    @Inject
     private RequestDispatcher dispatcher;
 
     @Inject(name="server-config")
     private Config config;
-
-    @Inject
-    private Habitat habitat;
 
     @Inject
     private DownloadableArtifacts downloadableArtifacts;
@@ -124,6 +126,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     public WebServicesDeployer() {
     }
     
+    @Override
     protected String getModuleType () {
         return "webservices";
     }
@@ -147,7 +150,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
      * @return true if the prepare phase was successful
      *
      */
-   
+    @Override
     public boolean prepare(DeploymentContext dc) {
         try {
 
@@ -276,6 +279,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
      *
      * @parameters type type of metadata that this deployer has declared providing.
      */
+    @Override
     public Object loadMetaData(Class type, DeploymentContext dc) {
          //Moved the doWebServicesDeployment back to prepare after discussing with
          //Jerome
@@ -288,7 +292,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
      *
      * @return the meta data for this Deployer
      */
-
+    @Override
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] {Application.class});
     }
@@ -535,30 +539,48 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     }
 
-    public void doWebServicesDeployment(Application app, DeploymentContext dc)throws Exception{
+    private void doWebServicesDeployment(Application app, DeploymentContext dc)
+        throws Exception{
 
-        Collection webBundles = new HashSet();
-        Collection webServices = new HashSet();
+        WebBundleDescriptor webBundleDesc =
+            dc.getModuleMetaData(WebBundleDescriptor.class);
 
-        // First collect all web applications and web service descriptors.
-        webBundles.addAll( app.getWebBundleDescriptors() );
-        webServices.addAll( app.getWebServiceDescriptors() );
+        Collection<WebService> webServices = new HashSet<WebService>();
+        WebServicesDescriptor wsDesc =
+            dc.getModuleMetaData(WebServicesDescriptor.class);
+        if (wsDesc != null) {
+            // when there are multiple submodules in ear, we only
+            // want to handle the ones local to this deployment context
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("In doWebServicesDeployment: using local web " +
+                    "services. There are " +
+                    wsDesc.getWebServices().size() +
+                    ". The app has total of " +
+                    app.getWebServiceDescriptors().size());
+            }
+            webServices.addAll(wsDesc.getWebServices());
+        } else {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("In doWebServicesDeployment: using app web " +
+                    " services, local ws descriptor is null. Total numer: " +
+                    app.getWebServiceDescriptors().size());
+            }
+            webServices.addAll(app.getWebServiceDescriptors());
+        }
 
         // swap the deployment descriptors context-root with the one
         // provided in the deployment request.
-        if (dc.getAppProps().get("context-root") !=null ) {
-            if (app.isVirtual()) {
-                String contextRoot = ((String)dc.getAppProps().get("context-root"));
-                ((WebBundleDescriptor) webBundles.iterator().next()).setContextRoot(contextRoot);
+        if (dc.getAppProps().get("context-root") != null &&
+            app.isVirtual() && webBundleDesc != null) {
 
-            }
+            String contextRoot = ((String)dc.getAppProps().get("context-root"));
+            webBundleDesc.setContextRoot(contextRoot);
         }
 
         // Generate final wsdls for all web services and store them in
         // the application repository directory.
-        for(Iterator<WebService> iter = webServices.iterator(); iter.hasNext(); ) {
+        for(WebService next : webServices) {
             WsUtil wsUtil = new WsUtil();
-            WebService next = iter.next();
 
             // For JAXWS services, we rely on JAXWS RI to do WSL gen and publishing
             // For JAXRPC we do it here in 109
@@ -600,26 +622,26 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         // one provided by the container.  The original class is stored
         // as runtime information since it will be used as the servant at
         // dispatch time.
-
-        for(Iterator<WebBundleDescriptor> iter = webBundles.iterator(); iter.hasNext(); ) {
-            doWebServiceDeployment(iter.next());
+        if (webBundleDesc != null) {
+            doWebServiceDeployment(webBundleDesc);
         }
     }
 
-    public void doWebServiceDeployment(WebBundleDescriptor web) throws DeploymentException, MalformedURLException {
+    private void doWebServiceDeployment(WebBundleDescriptor webBunDesc)
+        throws DeploymentException, MalformedURLException {
+
         /**
          * Combining code from <code>com.sun.enterprise.deployment.backend.WebServiceDeployer</code>
          * in v2
          */
         final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
 
-        Collection endpoints = web.getWebServices().getEndpoints();
-        ClassLoader cl = web.getClassLoader();
+        Collection<WebServiceEndpoint> endpoints =
+            webBunDesc.getWebServices().getEndpoints();
+        ClassLoader cl = webBunDesc.getClassLoader();
         WsUtil wsutil = new WsUtil();
 
-        for(Iterator endpointIter = endpoints.iterator();endpointIter.hasNext();) {
-
-            WebServiceEndpoint nextEndpoint = (WebServiceEndpoint)endpointIter.next();
+        for(WebServiceEndpoint nextEndpoint : endpoints) {
             WebComponentDescriptor webComp = nextEndpoint.getWebComponentImpl();
             if( !nextEndpoint.hasServletImplClass() ) {
                 throw new DeploymentException( format(rb.getString(
@@ -667,7 +689,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // If yes, https will be used.  Otherwise, http will be used.
             WebServerInfo wsi = new WsUtil().getWebServerInfoForDAS();
             URL rootURL = wsi.getWebServerRootURL(nextEndpoint.isSecure());
-            String contextRoot = web.getContextRoot();
+            String contextRoot = webBunDesc.getContextRoot();
             URL actualAddress = nextEndpoint.composeEndpointAddress(rootURL, contextRoot);
             //Ommitting the part of generating the wsdl for now
             //I think we need that to set the endpointAddressURL of WebServiceEndpoint
@@ -687,6 +709,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         new File(sourceFile).delete();
     }
 
+    @Override
     public void unload(WebServicesApplication container, DeploymentContext context) {
         final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
 
@@ -701,6 +724,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         }
     }
 
+    @Override
     public void clean(DeploymentContext dc) {
         super.clean(dc);
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
@@ -713,7 +737,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     }
 
-
+    @Override
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
         probe = container.getDeploymentProbeProvider();
         Application app = context.getModuleMetaData(Application.class);

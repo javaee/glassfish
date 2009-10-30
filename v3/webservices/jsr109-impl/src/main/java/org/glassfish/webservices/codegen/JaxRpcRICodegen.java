@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,12 +37,15 @@
 package org.glassfish.webservices.codegen;
 
 import com.sun.appserv.ClassLoaderUtil;
-import java.net.URLClassLoader;
-import java.util.*;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -55,11 +58,9 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import com.sun.enterprise.deploy.shared.FileArchive;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.io.JaxrpcMappingDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.JaxrpcMappingDescriptor.Mapping;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
-import com.sun.enterprise.deployment.util.DefaultDOLVisitor;
 import com.sun.enterprise.deployment.util.ModuleContentLinker;
 import com.sun.enterprise.deployment.util.WebServerInfo;
 import com.sun.enterprise.deployment.*;
@@ -71,7 +72,6 @@ import com.sun.enterprise.loader.ASURLClassLoader;
 // TODO : Neds quivalent
 //import com.sun.enterprise.deployment.backend.Deployer;
 
-import javax.xml.namespace.QName;
 import javax.xml.rpc.Stub;
 
 // web service impl imports
@@ -128,6 +128,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         rpcFactory = JaxRpcObjectFactory.newInstance();
     }
 
+    @Override
     public void run(Habitat habitat, DeploymentContext context, String cp) throws Exception {
         rootLocation_ = new FileArchive();
         BundleDescriptor bundle = context.getModuleMetaData(BundleDescriptor.class);
@@ -149,6 +150,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     /**
      * Visits a webs service reference
      */
+    @Override
     public void accept(ServiceReferenceDescriptor serviceRef)  {
         boolean codegenRequired = false;
 
@@ -282,7 +284,11 @@ public class JaxRpcRICodegen extends ModuleContentLinker
      * visits a web service definition
      * @param webService
      */
+    @Override
     public void accept(WebService webService) {
+        if (!webServiceInContext(webService)) {
+            return;
+        }
         super.accept(webService);
         try {
             if((new WsUtil()).isJAXWSbasedService(webService)) {
@@ -306,10 +312,12 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         }
     }
 
+    @Override
     public Iterator getListOfBinaryFiles() {
         return files.iterator();
     }
 
+    @Override
     public Iterator getListOfSourceFiles() {
         // for now I do not maintain those
         return null;
@@ -318,6 +326,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     /**
      *Releases resources used during the code gen and compilation.
      */
+    @Override
     public void done() {
 //        done(CompileTool) is now invoked after each compilation is complete
 //        from inside the jaxrpc method.  Otherwise, multiple uses of jaxrpc could
@@ -599,11 +608,9 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     private String[] createJaxrpcCompileArgs(boolean generateTies)
             throws IOException
     {
-        int numJaxrpcArgs = 0;
+        int numJaxrpcArgs = 11;
         if (logger.isLoggable(Level.FINE) ) {
             numJaxrpcArgs = 16;
-        } else {
-            numJaxrpcArgs = 11;
         }
 
         // If we need to run wscompile more than once per .ear or
@@ -637,10 +644,20 @@ public class JaxRpcRICodegen extends ModuleContentLinker
                     File.pathSeparatorChar + moduleClassPath;
         }
         
-        moduleClassPath = context.getSourceDir().getAbsolutePath()+
-                File.separatorChar +"WEB-INF" +File.separatorChar
-                +"classes"+ File.pathSeparatorChar +
-                moduleClassPath ;
+        // Could also check if getSourceDir() ends in 'war,' but
+        // this is a little more general.
+        String moduleBasePath = context.getSourceDir().getAbsolutePath();
+        String moduleWebInfPath = moduleBasePath +
+            File.separatorChar + "WEB-INF" +
+            File.separatorChar + "classes";
+        File moduleWebInfFile = new File(moduleWebInfPath);
+        if (moduleWebInfFile.exists()) {
+            moduleClassPath = moduleWebInfPath +
+                File.pathSeparatorChar + moduleClassPath;
+        } else {
+            moduleClassPath = moduleBasePath +
+                File.pathSeparatorChar + moduleClassPath;
+        }
 
         jaxrpcArgs[jaxrpcCnt++] = generateTies ? "-gen:server" : "-gen:client";
 
@@ -759,6 +776,21 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         if (logger.isLoggable(Level.FINE) ) {
             System.out.println("[JaxRpcRICodegen] --> " + msg);
         }
+    }
+
+    /*
+     * The run() method calls visit() on the entire application.
+     * If this is being called in the context of a submodule within
+     * the application, then accept(WebService) will be called
+     * for every web service in the app, not just in the current
+     * module. We want to ignore the unrelated web services --
+     * they will be handled when their module is loaded.
+     */
+    private boolean webServiceInContext(WebService webService) {
+        BundleDescriptor contextBundleDescriptor =
+            context.getModuleMetaData(BundleDescriptor.class);
+        String moduleId = contextBundleDescriptor.getModuleID();
+        return moduleId.equals(webService.getBundleDescriptor().getModuleID());
     }
 
 }
