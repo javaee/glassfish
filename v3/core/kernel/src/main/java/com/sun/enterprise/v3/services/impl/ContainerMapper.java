@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.appserv.server.util.Version;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -85,11 +86,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     private final GrizzlyService grizzlyService;
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
-    private static final String serverName =
-            System.getProperty("product.name") == null ? "" : System.getProperty("product.name");
-    private final static byte[] errorBody =
-            HttpUtils.getErrorPage(serverName,"HTTP Status 404");
-
+            
     private final HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
 
     /**
@@ -344,10 +341,20 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
      */
     @Override
     protected void customizedErrorPage(Request req, Response res) throws Exception {
+        byte[] errorBody = null;
+        if (res.getStatus() == 404){
+            errorBody = HttpUtils.getErrorPage(Version.getVersion(),
+                    "The requested resource () is not available.", "404");
+        } else {
+             errorBody = HttpUtils.getErrorPage(Version.getVersion(),
+                     "Interna; Error", "500");
+        }
+
         ByteChunk chunk = new ByteChunk();
         chunk.setBytes(errorBody, 0, errorBody.length);
         res.setContentLength(errorBody.length);
         res.setContentType("text/html");
+        res.addHeader("Server", Version.getVersion());
         res.sendHeaders();
         res.doWrite(chunk);
     }

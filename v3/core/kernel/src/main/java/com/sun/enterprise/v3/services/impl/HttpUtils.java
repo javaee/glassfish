@@ -95,22 +95,22 @@ public class HttpUtils {
         }
     }
     
-    public final static byte[] getErrorPage(String serverName, String message) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<html><head><title>");
-        sb.append(serverName);
-        sb.append("</title>");
-        sb.append("<style><!--");
-        sb.append(CSS);
-        sb.append("--></style> ");
-        sb.append("</head><body>");
-        sb.append("<h1>");
-        sb.append(message);
-        sb.append("</h1>");
-        sb.append("</h3> type Status report<br>message<br>description Not Found</h3>");
-        sb.append("<HR size=\"1\" noshade>");
-        sb.append("<h3>").append(serverName).append("</h3>");
-        sb.append("</body></html>");
+    public final static byte[] getErrorPage(String serverName, String message, String errorCode) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" ");
+        sb.append("\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
+        sb.append("<html><head><title>GlassFish v3 - Error report</title><style type=\"");
+        sb.append("text/css\"><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;}");
+        sb.append(" H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;}");
+        sb.append(" H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;}");
+        sb.append(" BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} ");
+        sb.append(" B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P");
+        sb.append("{font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A");
+        sb.append(" {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status ");
+        sb.append(errorCode + " - ");
+        sb.append("</h1><hr/><p><b>type</b> Status report</p><p><b>message</b></p><p><b>description</b>");
+        sb.append(message + "</p><hr/><h3>");
+        sb.append(serverName + "</h3></body></html>");
         return sb.toString().getBytes();
     }
     
