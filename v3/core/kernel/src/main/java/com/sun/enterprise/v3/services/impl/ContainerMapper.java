@@ -347,7 +347,7 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
                     "The requested resource () is not available.", "404");
         } else {
              errorBody = HttpUtils.getErrorPage(Version.getVersion(),
-                     "Interna; Error", "500");
+                     "Internal Error", "500");
         }
 
         ByteChunk chunk = new ByteChunk();
