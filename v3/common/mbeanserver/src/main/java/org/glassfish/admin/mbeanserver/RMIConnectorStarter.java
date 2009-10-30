@@ -39,6 +39,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import javax.management.MBeanServer;
 
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+
 
 import java.util.Map;
 import java.util.HashMap;
@@ -49,6 +55,7 @@ import javax.management.remote.rmi.RMIConnection;
 import javax.management.remote.rmi.RMIConnectorServer;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
+import java.rmi.server.RMISocketFactory;
 import javax.security.auth.Subject;
 
 import java.rmi.registry.Registry;
@@ -65,6 +72,9 @@ final class RMIConnectorStarter extends ConnectorStarter
     private final boolean   mBindToSingleIP;
     private volatile MyRMIJRMPServerImpl  mMyServer;
     
+    /** will be null if we don't need it */
+    private final MyRMIServerSocketFactory  mServerSocketFactory;
+    
     public RMIConnectorStarter(
         final MBeanServer mbeanServer,
         final String address,
@@ -73,7 +83,7 @@ final class RMIConnectorStarter extends ConnectorStarter
         final String authRealmName,
         final boolean securityEnabled,
         final Habitat habitat,
-        final BootAMXListener bootListener)
+        final BootAMXListener bootListener) throws UnknownHostException
     {
         super(mbeanServer, address, port, authRealmName, securityEnabled, habitat, bootListener);
 
@@ -82,10 +92,17 @@ final class RMIConnectorStarter extends ConnectorStarter
             throw new IllegalArgumentException("JMXConnectorServer not yet supporting protocol: " + protocol);
         }
         
-        final boolean ENABLED = false;
-        mBindToSingleIP = ENABLED && ! ( address.equals("0.0.0.0") || address.equals("") );
-        
+        final boolean ENABLED = true;
+        mBindToSingleIP = ENABLED && ! ( address.equals("0.0.0.0") || address.equals("localhost") || address.equals("") );
+
+        mServerSocketFactory = mBindToSingleIP ? new MyRMIServerSocketFactory( getAddress(address) ) : null;
         mRegistry = startRegistry(mPort);
+    }
+    
+    private static InetAddress getAddress(final String addrSpec) throws UnknownHostException
+    {
+        final InetAddress addr = InetAddress.getByName(addrSpec);
+        return addr;
     }
     
     public static final String RMI_HOSTNAME_PROP = "java.rmi.server.hostname";
@@ -109,6 +126,31 @@ final class RMIConnectorStarter extends ConnectorStarter
         }
     }
     
+    public static final class MyRMIServerSocketFactory extends RMISocketFactory
+    {
+        private final InetAddress mAddress;
+        
+        public MyRMIServerSocketFactory(final InetAddress addr)
+        {
+            mAddress = addr;
+        }
+        
+        public ServerSocket	createServerSocket(int port) throws IOException
+        {
+            final int backlog = 5;  // plenty
+            final ServerSocket s = new ServerSocket(port, backlog, mAddress );
+            //System.out.println( "MyRMIServerSocketFactory.createServerSocket(): port " + port );
+            return s;
+        }
+        
+        /** shouldn't be called */
+        public Socket	createSocket(String host, int port) throws IOException
+        {
+            //System.out.println( "MyRMIServerSocketFactory.createSocket(): " + host + ":" + port );
+            throw new IllegalStateException("MyRMIServerSocketFactory.createSocket");
+        }
+    }
+    
     /**
         Purpose: to ensure binding to a specific IP address instead fo all IP addresses.
      */
@@ -117,11 +159,11 @@ final class RMIConnectorStarter extends ConnectorStarter
         
         public MyRMIJRMPServerImpl(
             final int port,
-            final RMIClientSocketFactory csf,
-            final RMIServerSocketFactory ssf,
             final Map<String,?> env,
-            final String bindToAddr ) throws IOException {
-            super( port, csf, ssf, env);
+            final RMIServerSocketFactory serverSocketFactory,
+            final String bindToAddr ) throws IOException
+        {
+            super( port, null, serverSocketFactory, env);
             
             mBindToAddr = bindToAddr;
         }
@@ -132,6 +174,7 @@ final class RMIConnectorStarter extends ConnectorStarter
             final String saved = setupRMIHostname( mBindToAddr );
             try {
                 super.export();
+                System.out.println( "MyRMIJRMPServerImpl: exported on address " + mBindToAddr);
             }
             finally {
                 restoreRMIHostname(saved, mBindToAddr);
@@ -143,6 +186,7 @@ final class RMIConnectorStarter extends ConnectorStarter
         makeClient(final String connectionId, final Subject subject)  throws IOException {
             final String saved = setupRMIHostname( mBindToAddr );
             try {
+                Util.getLogger().fine( "MyRMIJRMPServerImpl: makeClient on address = " + System.getProperty(RMI_HOSTNAME_PROP) );
                 return super.makeClient( connectionId, subject);
             }
             finally {
@@ -151,39 +195,35 @@ final class RMIConnectorStarter extends ConnectorStarter
         }
     }
 
-    private Registry startRegistry(final int port)
-    {
+    private Registry startRegistry(final int port) {
         Registry registry = null;
         
-        System.out.println( "mBindToSingleIP: " + mBindToSingleIP + ", " + mAddress);
-        if ( mBindToSingleIP )
-        {
-        System.out.println( RMI_HOSTNAME_PROP + " before: " + System.getProperty(RMI_HOSTNAME_PROP) );
+        if ( mBindToSingleIP ) {
+            //System.out.println( RMI_HOSTNAME_PROP + " before: " + System.getProperty(RMI_HOSTNAME_PROP) );
             final String saved = setupRMIHostname( mAddress );
             try {
-        System.out.println( RMI_HOSTNAME_PROP + ": " + System.getProperty(RMI_HOSTNAME_PROP) );
+                Util.getLogger().info( "Binding RMI port to single IP address = " + System.getProperty(RMI_HOSTNAME_PROP) + ":" + port);
                 registry = _startRegistry(mPort);
             }
             finally {
                 restoreRMIHostname(saved, mAddress);
             }
         }
-        else
-        {
+        else {
+             Util.getLogger().info( "Binding RMI port to *:" + port );
             registry = _startRegistry(mPort);
         }
         return registry;
     }
 
-    private static Registry _startRegistry(final int port)
+    private Registry _startRegistry(final int port)
     {
         // Ensure cryptographically strong random number generator used
         // to choose the object number - see java.rmi.server.ObjID
         System.setProperty("java.rmi.server.randomIDs", "true");
-
         try
         {
-            return LocateRegistry.createRegistry(port);
+            return LocateRegistry.createRegistry(port, null, mServerSocketFactory );
         }
         catch (final Exception e)
         {
@@ -228,7 +268,7 @@ final class RMIConnectorStarter extends ConnectorStarter
             final RMIClientSocketFactory csf = null;
             final RMIServerSocketFactory ssf = null;
             
-            mMyServer = new MyRMIJRMPServerImpl( mPort, csf, ssf, env, mAddress);
+            mMyServer = new MyRMIJRMPServerImpl( mPort, env, mServerSocketFactory, mAddress);
 
             mConnectorServer = new RMIConnectorServer( mJMXServiceURL, env, mMyServer, mMBeanServer);
         }
