@@ -119,7 +119,7 @@ public class EmbeddedTest {
     @Test
     public void testAll() throws LifecycleException {
         server.addContainer(ContainerBuilder.Type.all);
-        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
+        Set<Sniffer> sniffers = new HashSet<Sniffer>();
         for (EmbeddedContainer c : server.getContainers()) {
             sniffers.addAll(c.getSniffers());
         }

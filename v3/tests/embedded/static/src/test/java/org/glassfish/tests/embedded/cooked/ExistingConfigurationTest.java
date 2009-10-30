@@ -36,7 +36,7 @@ public class ExistingConfigurationTest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.installRoot(f, true);
+            efsb.installRoot(f, false);
             // find the domain root.
             f = new File(f,"domains");
             f = new File(f, "domain1");

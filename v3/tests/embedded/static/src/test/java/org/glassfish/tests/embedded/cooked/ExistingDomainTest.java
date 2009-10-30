@@ -37,7 +37,7 @@ public class ExistingDomainTest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.installRoot(f, true);
+            efsb.installRoot(f, false);
             // find the domain root.
             f = new File(f,"domains");
             f = new File(f, "domain1");
@@ -87,7 +87,7 @@ public class ExistingDomainTest {
 
     @AfterClass
     public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
+        System.out.println("shutdown initiated for server " + server);
         if (server!=null) {
             try {
                 server.stop();

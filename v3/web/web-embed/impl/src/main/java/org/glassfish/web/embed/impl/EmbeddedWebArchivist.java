@@ -39,6 +39,7 @@ package org.glassfish.web.embed.impl;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.embedded.web.WebBuilder;
+import org.glassfish.api.embedded.*;
 import org.glassfish.apf.ProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
 
@@ -114,12 +115,10 @@ public class EmbeddedWebArchivist extends WebArchivist {
             throws AnnotationProcessorException, IOException {
 
         // in embedded mode, I ignore all scanners and parse all possible classes.
-        return super.processAnnotations(bundleDesc, getScanner(), archive);
+        if (archive instanceof ScatteredArchive) {
+            return super.processAnnotations(bundleDesc, this.scanner, archive);
+        } else {
+            return super.processAnnotations(bundleDesc, scanner, archive);
+        }
     }
-
-    @Override
-    public ModuleScanner getScanner() {
-        return scanner;
-    }
-
 }

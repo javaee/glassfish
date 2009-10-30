@@ -36,7 +36,7 @@ public class InplantedTest {
         }
         try {
             EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-            efsb.installRoot(f, true);
+            efsb.installRoot(f, false);
             Server.Builder builder = new Server.Builder("inplanted");
             builder.embeddedFileSystem(efsb.build());
             server = builder.build();
@@ -62,13 +62,12 @@ public class InplantedTest {
             System.out.println(contents.nextElement());
         }
         try {
-            System.out.println("Port created " + server.createPort(8080));
+            System.out.println("Port created " + server.createPort(14587));
             server.addContainer(ContainerBuilder.Type.web);
             server.start();
             DeployCommandParameters dp = new DeployCommandParameters(f);
             String appName = server.getDeployer().deploy(war, dp);
             System.out.println("Application deployed under name = " + appName);
-            Thread.sleep(30000);
             if (appName!=null) {
                 server.getDeployer().undeploy(appName, null);
             }
@@ -76,9 +75,7 @@ public class InplantedTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (LifecycleException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        } 
     }
 
     @Test

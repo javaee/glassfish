@@ -268,7 +268,7 @@ public class AppServerStartup implements ModuleStartup {
         // finally let's calculate our starting times
 
 
-        logger.info(version.getVersion()
+        logger.info(version.getVersion() + " (" + version.getBuildVersion() + ")"
                 + " startup time : " + platform + "(" + (platformInitTime - context.getCreationTime()) + "ms)" +
                 " startup services(" + (System.currentTimeMillis() - platformInitTime)  + "ms)" +
                 " total(" + (System.currentTimeMillis() - context.getCreationTime()) + "ms)");
