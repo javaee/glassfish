@@ -193,15 +193,17 @@ public class JdbcTempHandler {
         } else {
 
             if (!GuiUtil.isEmpty(resType) && !GuiUtil.isEmpty(dbVendor)) {
-                List dsl = null;
+                List dsl = new ArrayList();
                 try {
                     String classname = "";
                     GuiUtil.getLogger().info("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
                     Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
+                    GuiUtil.getLogger().info("======= returns " + ((dcn == null)? "NULL" : " Map of size " + dcn.size()));
                     if (dcn != null) {
                         dsl = new ArrayList((Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY));
+                        GuiUtil.getLogger().info("=======  # of items for JDBC_DRIVER_CLASS_NAMES_KEY  " + dsl.size() );
                         for(int i=0; i< dsl.size(); i++){
-                            System.out.println("======= " + dsl.get(i));
+                            System.out.println( "classname[" + i + "] : " + dsl.get(i));
                         }
                     }
                     if (resType.equals(DRIVER)) {
@@ -216,21 +218,19 @@ public class JdbcTempHandler {
                         extra.put("dsClassname", Boolean.TRUE);
                     }
                     List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
-                    if (dsl != null && (dsl.size() > 0)) {
-                        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults((String) dsl.get(0), resType);
-                        if (result != null) {
-                            Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
-                            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
-                        }
-
-                    } else {
+                    String dslName = (dsl != null && (dsl.size() > 0)) ? (String) dsl.get(0) : "";
+                    GuiUtil.getLogger().info("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType +")");
+                    Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(dslName, resType);
+                    if (result != null) {
+                        Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
+                        GuiUtil.getLogger().info("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+                        handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+                    }else {
+                        GuiUtil.getLogger().info("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
-
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
-
                 }
             } else {
                 // Allow user to provide DataSource ClassName when resourceType is not of type Driver
