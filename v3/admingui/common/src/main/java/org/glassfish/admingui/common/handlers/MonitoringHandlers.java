@@ -175,8 +175,8 @@ public class MonitoringHandlers {
                         Object val = monattrs.get(monName);
                         String details = "--";
                         String desc = "--";
-                        String start = "--";
-                        String last = "--";
+                        Object start = "--";
+                        Object last = "--";
                         String unit = "";
                         String current = "";
                         String mname = null;
@@ -217,10 +217,18 @@ public class MonitoringHandlers {
                                             desc = (String) cd.get("description");
                                         }
                                         if (cd.containsKey("lastSampleTime")) {
-                                            last = df.format(new Date((Long) cd.get("lastSampleTime")));
+                                            if ((Long)cd.get("lastSampleTime") == -1) {
+                                                last = cd.get("lastSampleTime");
+                                            } else {
+                                                last = df.format(new Date((Long) cd.get("lastSampleTime")));
+                                            }
                                         }
                                         if (cd.containsKey("startTime")) {
-                                            start = df.format(new Date((Long) cd.get("startTime")));
+                                            if ((Long) cd.get("startTime") == -1) {
+                                                start = cd.get("startTime");
+                                            } else {
+                                                start = df.format(new Date((Long) cd.get("lastSampleTime")));
+                                            }
                                         }
                                         if (cd.containsKey("appName")) {
                                             details = (GuiUtil.getMessage("msg.AppName") + ": " + cd.get("appName") + "<br/>");
@@ -294,10 +302,18 @@ public class MonitoringHandlers {
                                     desc = (String) cds.get("description");
                                 }
                                 if (cds.containsKey("startTime")) {
-                                    start = df.format(new Date((Long) cds.get("startTime")));
+                                    if ((Long) cds.get("startTime") == -1) {
+                                        start = cds.get("startTime");
+                                    } else {
+                                        start = df.format(new Date((Long) cds.get("lastSampleTime")));
+                                    }
                                 }
                                 if (cds.containsKey("lastSampleTime")) {
-                                    last = df.format(new Date((Long) cds.get("lastSampleTime")));
+                                    if ((Long) cds.get("lastSampleTime") == -1) {
+                                        last = cds.get("lastSampleTime");
+                                    } else {
+                                        last = df.format(new Date((Long) cds.get("lastSampleTime")));
+                                    }
                                 }
                                 if (cds.containsKey("maxTime")) {
                                     details = (GuiUtil.getMessage("msg.MaxTime") + ": " + cds.get("maxTime") + " " + unit + "<br/>");

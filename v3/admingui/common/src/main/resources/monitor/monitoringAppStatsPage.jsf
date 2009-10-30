@@ -142,6 +142,15 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
+    <sun:tableRowGroup id="mdbAppStats" rendered="#{hasStatsMDBApp}" data={"$attribute{MDBAppStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.MDB} : #{viewVal}/#{cVal} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="message-driven-bean-mon" name="#{mbName}", result=>$attribute{MDBAppStatsList}  hasStats=>$attribute{hasStatsMDBApp});
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="ejbAppStats" rendered="#{hasStatsEJBApp}" data={"$attribute{EJBAppStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJB} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate

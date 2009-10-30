@@ -405,7 +405,11 @@ public class WoodstockHandler {
                         boolean hasSfullStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateful-session-bean-mon");
                         boolean hasSlessStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateless-session-bean-mon");
                         boolean hasWebStats = MonitoringHandlers.doesAppProxyExist(moduleName, "servlet-instance-mon");
-                        if (hasSfullStats || hasSlessStats || hasWebStats) {
+                        boolean hasMdbStats = MonitoringHandlers.doesAppProxyExist(moduleName, "message-driven-bean-mon");
+                        boolean hasPoolStats = MonitoringHandlers.doesAppProxyExist(moduleName, "bean-pool-mon");
+                        boolean hasCacheStats = MonitoringHandlers.doesAppProxyExist(moduleName, "bean-cache-mon");
+                        boolean hasMethodStats = MonitoringHandlers.doesAppProxyExist(moduleName, "bean-method-mon");
+                        if (hasSfullStats || hasSlessStats || hasWebStats || hasMdbStats || hasPoolStats || hasCacheStats || hasMethodStats) {
                             moduleList.add(moduleName);
                         }
                     }
@@ -478,6 +482,18 @@ public class WoodstockHandler {
                     List slessBeanMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) slessSession.get(0));
                     if (!slessBeanMethods.isEmpty()) {
                         OptionGroup bmmenuOptions = getMenuOptions(slessBeanMethods, "bean-methods", (String) slessSession.get(0), true);
+                        menuList.add(bmmenuOptions);
+                    }
+
+                }
+
+                List mdbs = MonitoringHandlers.getAllEjbComps(appname, "message-driven-bean-mon", "");
+                if (!mdbs.isEmpty()) {
+                    OptionGroup menuOptions = getMenuOptions(mdbs, (String) mdbs.get(0), "", true);
+                    menuList.add(menuOptions);
+                    List mdbsMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String)mdbs.get(0));
+                    if (!mdbsMethods.isEmpty()) {
+                        OptionGroup bmmenuOptions = getMenuOptions(mdbsMethods, "bean-methods", (String) mdbs.get(0), true);
                         menuList.add(bmmenuOptions);
                     }
 
