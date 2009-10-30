@@ -43,9 +43,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -82,6 +84,15 @@ import com.sun.enterprise.v3.admin.RestartDomainCommand;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import org.glassfish.api.admin.AdminCommand;
 import com.sun.enterprise.v3.admin.commands.JVMInformation;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbEntityDescriptor;
+import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.WebComponentDescriptor;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.StringUtil;
@@ -405,6 +416,83 @@ public final class RuntimeRootImpl extends AMXImplBase
             }
         }
         return inDebugMode;
+    }
+
+    /**
+     * Return the subcomponents (ejb/web) of a specified module. 
+     * @param applicationName the application name
+     * @param moduleName the module name
+     * @return a map of the sub components, where the key is the component
+     *         name and the value is the component type
+     */
+    public Map<String, String> getSubComponentsOfModule(
+        String applicationName, String moduleName) {
+        ApplicationRegistry appRegistry = mHabitat.getComponent(
+            ApplicationRegistry.class);
+
+        ApplicationInfo appInfo = appRegistry.get(applicationName);
+        if (appInfo != null) {
+            Application app = appInfo.getMetaData(Application.class);
+            if (app != null) {
+                BundleDescriptor bundleDesc = app.getModuleByUri(moduleName);
+                return getModuleLevelComponents(bundleDesc);
+            }
+        }
+        return Collections.emptyMap();
+    }
+
+    private Map<String, String> getModuleLevelComponents(
+        BundleDescriptor bundle) {
+        Map<String, String> subComponentsMap = new HashMap<String, String>();
+        if (bundle instanceof WebBundleDescriptor) {
+            WebBundleDescriptor wbd = (WebBundleDescriptor)bundle;
+            // look at ejb in war case
+            Collection<EjbBundleDescriptor> ejbBundleDescs =
+                wbd.getExtensionsDescriptors(EjbBundleDescriptor.class);
+            if (ejbBundleDescs.size() > 0) {
+                EjbBundleDescriptor ejbBundle =
+                        ejbBundleDescs.iterator().next();
+                subComponentsMap.putAll(getModuleLevelComponents(ejbBundle));
+            }
+
+            for (WebComponentDescriptor wcd :
+                   wbd.getWebComponentDescriptors()) {
+                String wcdName = wcd.getCanonicalName();
+                String wcdType = wcd.isServlet() ? "Servlet" : "JSP";
+                subComponentsMap.put(wcdName, wcdType);
+            }
+        } else if (bundle instanceof EjbBundleDescriptor)  {
+            EjbBundleDescriptor ebd = (EjbBundleDescriptor)bundle;
+            for (EjbDescriptor ejbDesc : ebd.getEjbs()) {
+                String ejbName = ejbDesc.getName();
+                String ejbType = getEjbType(ejbDesc);
+                subComponentsMap.put(ejbName, ejbType);
+            }
+        }
+
+        return subComponentsMap;
+    }
+
+
+    private String getEjbType(EjbDescriptor ejbDesc) {
+        String type = null;
+        if (ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor)ejbDesc;
+            if (sessionDesc.isStateful()) {
+                type = "StatefulSessionBean";
+            } else if (sessionDesc.isStateless()) {
+                type = "StatelessSessionBean";
+            } else if (sessionDesc.isSingleton()) {
+                type = "SingletonSessionBean";
+            }
+        } else if (ejbDesc.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
+            type = "MessageDrivenBean";
+
+        } else if (ejbDesc.getType().equals(EjbEntityDescriptor.TYPE)) {
+            type = "EntityBean";
+        }
+
+        return type;
     }
 }
 

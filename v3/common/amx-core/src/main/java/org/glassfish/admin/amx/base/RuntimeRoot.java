@@ -93,6 +93,18 @@ public interface RuntimeRoot extends AMXProxy, Utility, Singleton
             @Param(name = "applicationName") String applicationName);
 
     /**
+     * Return the subcomponents (ejb/web) of a specified module.
+     * @param applicationName the application name
+     * @param moduleName the module name
+     * @return a map of the sub components, where the key is the component
+     *         name and the value is the component type
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public Map<String, String> getSubComponentsOfModule(
+            @Param(name = "applicationName") String applicationName,
+            @Param(name = "moduleName") String moduleName);
+
+    /**
     Execute a REST command.  Do not include a leading "/".
      */
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)
