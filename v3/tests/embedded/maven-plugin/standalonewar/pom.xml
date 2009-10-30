@@ -56,7 +56,7 @@
         <plugins>
             <plugin>
                 <groupId>org.glassfish</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
+                <artifactId>maven-glassfish-embedded-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                     <app>target/standalonewar.war</app>
