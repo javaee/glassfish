@@ -220,6 +220,18 @@ public class MonitoringHandlers {
                                         if (cd.containsKey("appName")) {
                                             details = (GuiUtil.getMessage("msg.AppName") + ": " + cd.get("appName") + "<br/>");
                                         }
+                                        if (cd.containsKey("appname")) {
+                                            details = (GuiUtil.getMessage("msg.AppName") + ": " + cd.get("appname") + "<br/>");
+                                        }
+                                        if (cd.containsKey("jrubyversion")) {
+                                            details = details + (GuiUtil.getMessage("msg.JrubyVersion") + ": " + cd.get("jrubyversion") + "<br/>");
+                                        }
+                                        if (cd.containsKey("rubyframework")) {
+                                            details = details + (GuiUtil.getMessage("msg.Framework") + ": " + cd.get("rubyframework") + "<br/>");
+                                        }
+                                        if (cd.containsKey("environment")) {
+                                            details = details + (GuiUtil.getMessage("msg.Environment") + ": " + cd.get("environment") + "<br/>");
+                                        }
                                         if (cd.containsKey("address")) {
                                             details = details + (GuiUtil.getMessage("msg.Address") + ": " + cd.get("address") + "<br/>");
                                         }
