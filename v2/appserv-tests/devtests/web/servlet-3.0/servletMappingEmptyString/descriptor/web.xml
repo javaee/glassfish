@@ -46,6 +46,11 @@
     <servlet-class>MyDefault</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>DispatchFrom</servlet-name>
+    <servlet-class>DispatchFrom</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>EmptyStringTarget</servlet-name>
     <url-pattern>&quot;&quot;</url-pattern>
@@ -54,6 +59,11 @@
   <servlet-mapping>
     <servlet-name>MyDefault</servlet-name>
     <url-pattern>/</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>DispatchFrom</servlet-name>
+    <url-pattern>/dispatch</url-pattern>
   </servlet-mapping>
 
 </web-app>

@@ -39,6 +39,8 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  * Unit test for "empty string" URL pattern (Servlet 3.0 feature).
+ *
+ * See also https://glassfish.dev.java.net/issues/show_bug.cgi?id=10601
  */
 public class WebTest {
 
@@ -70,6 +72,7 @@ public class WebTest {
 
         try {
             webTest.doTest("/", EXPECTED_RESPONSE_1);
+            webTest.doTest("/dispatch", EXPECTED_RESPONSE_1);
             webTest.doTest("/helloWorld", EXPECTED_RESPONSE_2);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
