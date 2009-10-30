@@ -85,54 +85,59 @@ public class MonitoringHandlers {
         String objectName = (String) handlerCtx.getInputValue("objectName");
         List result = new ArrayList();
         try {
+            Query query = V3AMX.getInstance().getDomainRoot().getQueryMgr();
+            Set data = (Set) query.queryType("monitoring-service");
+            Iterator iter = data.iterator();
+            while (iter.hasNext()) {
+                Map attrs = ((AMXProxy) iter.next()).attributesMap();
+                ObjectName[] pnames = (ObjectName[]) attrs.get("ContainerMonitoring");
+                for (int i = 0; i < pnames.length; i++) {
+                    Map oneRow = new HashMap();
+                    String cname = null;
+                    String pname = pnames[i].getKeyProperty("name");
+                    ListIterator ci = containerDispList.listIterator();
+                    ListIterator vi = containerNameList.listIterator();
+                    while (ci.hasNext() && vi.hasNext()) {
+                        String dispName = (String) ci.next();
+                        String value = (String) vi.next();
+                        if (pname.equals(value)) {
+                            cname = dispName;
+                        }
+                    }
+                    oneRow.put("monCompName", (cname == null) ? pname : cname);
+                    oneRow.put("level", V3AMX.getAttribute(pnames[i], "Level"));
+                    oneRow.put("selected", false);
+                    result.add(oneRow);
+                }
+            }
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectName));
             AMXConfigHelper helper = new AMXConfigHelper((AMXConfigProxy) amx);
             final Map<String, Object> attrs = helper.simpleAttributesMap();
             for (String oneMonComp : attrs.keySet()) {
-                //if (oneMonComp.endsWith(".level")){
                 if ((!oneMonComp.equals("Parent")) && (!oneMonComp.equals("Children")) && (!oneMonComp.equals("Name")) && (!oneMonComp.equals("Property"))) {
                     Map oneRow = new HashMap();
                     String name = null;
-                    if(oneMonComp.equals("Jvm"))
-                       name = JVM;
-                    if(oneMonComp.equals("WebContainer"))
-                        name = WEB_CONTAINER;
-                    if(oneMonComp.equals("HttpService"))
-                        name = HTTP_SERVICE;
-                    if(oneMonComp.equals("ThreadPool"))
-                        name = THREAD_POOL;
-                    if(oneMonComp.equals("JdbcConnectionPool"))
-                        name = JDBC_CONNECTION_POOL;
-                    if(oneMonComp.equals("ConnectorConnectionPool"))
-                        name = CONNECTOR_CONNECTION_POOL;
-                    if(oneMonComp.equals("EjbContainer"))
-                        name = EJB_CONTAINER;
-                    if(oneMonComp.equals("TransactionService"))
-                        name = TRANSACTION_SERVICE;
-                    if(oneMonComp.equals("Orb"))
-                        name = ORB;
-                    if(oneMonComp.equals("ConnectorService"))
-                        name = CONNECTOR_SERVICE;
-                    if(oneMonComp.equals("JmsService"))
-                        name = JMS_SERVICE;
-                    if(oneMonComp.equals("WebServicesContainer"))
-                        name = WEB_SERVICES_CONTAINER;
-                    if(oneMonComp.equals("Jpa"))
-                        name = JPA;
-                    if(oneMonComp.equals("Security"))
-                        name = SECURITY;
-                    if(oneMonComp.equals("Jersey"))
-                        name = JERSEY;
-                    if(name == null)
+                    ListIterator ni = monDisplayList.listIterator();
+                    ListIterator vi = monNamesList.listIterator();
+                    while (ni.hasNext() && vi.hasNext()) {
+                        String dispName = (String) ni.next();
+                        String value = (String) vi.next();
+                        if ((oneMonComp.equals(value))) {
+                            name = dispName;
+                        }
+                    }
+                    if (name == null) {
                         name = oneMonComp;
+                    }
                     oneRow.put("monCompName", name);
                     oneRow.put("level", attrs.get(oneMonComp));
                     oneRow.put("selected", false);
                     result.add(oneRow);
-                //}
+                    //}
                 }
             }
         } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
         }
         handlerCtx.setOutputValue("monitorCompList", result);
     }
@@ -374,46 +379,39 @@ public class MonitoringHandlers {
     @Handler(id = "updateMonitorLevels",
     input = {
         @HandlerInput(name = "allRows", type = List.class, required = true),
-        @HandlerInput(name = "objectName", type = String.class)})
+        @HandlerInput(name = "objectName", type = String.class),
+        @HandlerInput(name = "containerObjectName", type = String.class)})
     public static void updateMonitorLevels(HandlerContext handlerCtx) {
-        String objectNameStr = (String) handlerCtx.getInputValue("objectName");
+        String objectName = (String) handlerCtx.getInputValue("objectName");
+        String cObjectName = (String) handlerCtx.getInputValue("containerObjectName");
         List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
+        String objectNameStr = null;
         for (Map<String, String> oneRow : allRows) {
             String name = oneRow.get("monCompName");
             String value = null;
-            if (name.equals(JVM))
-                value = "Jvm";
-            if (name.equals(WEB_CONTAINER)) 
-                value = "WebContainer";
-            if (name.equals(HTTP_SERVICE))
-                value = "HttpService";
-            if (name.equals(THREAD_POOL))
-                value = "ThreadPool";
-            if (name.equals(JDBC_CONNECTION_POOL)) 
-                value = "JdbcConnectionPool";
-            if (name.equals(CONNECTOR_CONNECTION_POOL)) 
-                value = "ConnectorConnectionPool";
-            if (name.equals(EJB_CONTAINER)) 
-                value = "EjbContainer";
-            if (name.equals(TRANSACTION_SERVICE)) 
-                value = "TransactionService";
-            if (name.equals(ORB)) 
-                value = "Orb";
-            if (name.equals(CONNECTOR_SERVICE)) 
-                value = "ConnectorService";
-            if (name.equals(JMS_SERVICE))
-                value = "JmsService";
-            if (name.equals(WEB_SERVICES_CONTAINER))
-                value = "WebServicesContainer";
-            if (name.equals(JPA))
-                value = "Jpa";
-            if (name.equals(SECURITY))
-                value = "Security";
-            if (name.equals(JERSEY)) 
-                value = "Jersey";
-            if(value == null)
-                value = name;
-            V3AMX.setAttribute(objectNameStr, new Attribute(value, oneRow.get("level")));
+            ListIterator ni = monDisplayList.listIterator();
+            ListIterator vi = monNamesList.listIterator();
+            while (ni.hasNext() && vi.hasNext()) {
+                String dispName = (String) ni.next();
+                String mvalue = (String) vi.next();
+                if (name.equals(dispName)) {
+                    value = mvalue;
+                    objectNameStr = objectName;
+                }
+            }
+            if (value == null) {
+                ListIterator ci = containerDispList.listIterator();
+                ListIterator cni = containerNameList.listIterator();
+                while (ci.hasNext() && cni.hasNext()) {
+                    String cDispName = (String) ci.next();
+                    String cName = (String) cni.next();
+                    if (name.equals(cDispName)) {
+                        value = "Level";
+                        objectNameStr = cObjectName+cName;
+                    }
+                }
+            }
+            V3AMX.setAttribute((objectNameStr == null) ? cObjectName+name : objectNameStr, new Attribute((value == null) ? name : value, oneRow.get("level")));
         }
      }
 
@@ -619,6 +617,7 @@ public class MonitoringHandlers {
         levels.add("HIGH");
     }
     //monitoring component names
+    public static final String JRUBY = "JRuby Container";
     public static final String JVM = "JVM";
     public static final String WEB_CONTAINER = "Web Container";
     public static final String HTTP_SERVICE = "HTTP Service";
@@ -635,6 +634,51 @@ public class MonitoringHandlers {
     public static final String SECURITY = "Security";
     public static final String JERSEY = "Jersey";
 
+    final private static List monDisplayList= new ArrayList();
+    static{
+        monDisplayList.add(JVM);
+        monDisplayList.add(WEB_CONTAINER);
+        monDisplayList.add(HTTP_SERVICE);
+        monDisplayList.add(THREAD_POOL);
+        monDisplayList.add(JDBC_CONNECTION_POOL);
+        monDisplayList.add(CONNECTOR_CONNECTION_POOL);
+        monDisplayList.add(EJB_CONTAINER);
+        monDisplayList.add(TRANSACTION_SERVICE);
+        monDisplayList.add(ORB);
+        monDisplayList.add(CONNECTOR_SERVICE);
+        monDisplayList.add(JMS_SERVICE);
+        monDisplayList.add(WEB_SERVICES_CONTAINER);
+        monDisplayList.add(JPA);
+        monDisplayList.add(SECURITY);
+        monDisplayList.add(JERSEY);
+    }
+    
+    final private static List monNamesList = new ArrayList();
+    static{
+        monNamesList.add("Jvm");
+        monNamesList.add("WebContainer");
+        monNamesList.add("HttpService");
+        monNamesList.add("ThreadPool");
+        monNamesList.add("JdbcConnectionPool");
+        monNamesList.add("ConnectorConnectionPool");
+        monNamesList.add("EjbContainer");
+        monNamesList.add("TransactionService");
+        monNamesList.add("Orb");
+        monNamesList.add("ConnectorService");
+        monNamesList.add("JmsService");
+        monNamesList.add("WebServicesContainer");
+        monNamesList.add("Jpa");
+        monNamesList.add("Security");
+        monNamesList.add("Jersey");
+    }
 
+    final private static List containerDispList= new ArrayList();
+    static{
+        containerDispList.add(JRUBY);
+    }
 
+    final private static List containerNameList= new ArrayList();
+    static{
+        containerNameList.add("jruby-container");
+    }
 }

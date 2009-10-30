@@ -68,7 +68,7 @@
                 <!command
                     getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
-                    updateMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels", allRows="#{requestScope.allRows}")
+                    updateMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels", containerObjectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=container-monitoring,name=", allRows="#{requestScope.allRows}")
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
