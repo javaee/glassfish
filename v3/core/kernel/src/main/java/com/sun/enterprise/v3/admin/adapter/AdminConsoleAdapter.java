@@ -68,10 +68,18 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
 import java.beans.PropertyVetoException;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -170,6 +178,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String REDIRECT_TOKEN = "%%%LOCATION%%%";
     private static final String ADMIN_CONSOLE_IPS_PKGNAME = "glassfish-gui";
 
+    private static final String RESOURCE_PACKAGE = "com/sun/enterprise/v3/admin/adapter";
+
+
     private static final String INSTALL_ROOT = "com.sun.aas.installRoot";
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
 
@@ -218,6 +229,24 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             return;
         }
         logRequest(req);
+        if (isResourceRequest(req)) {
+            try {
+                handleResourceRequest(req, res);
+            } catch (IOException ioe) {
+                if (log.isLoggable(Level.SEVERE)) {
+                    log.severe("Unable to serve resource: "
+                                  + req.getRequestURI()
+                                  + ".  Cause: "
+                                  + ioe.toString());
+                }
+                if (log.isLoggable(Level.FINE)) {
+                    log.log(Level.FINE,
+                            ioe.toString(),
+                            ioe);
+                }
+            }
+            return;
+        }
         bundle = getResourceBundle(req.getLocale());
         res.setContentType("text/html; charset=UTF-8");
 
@@ -275,6 +304,76 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 		}
 	    }
 	}
+
+    }
+
+    /**
+     * @param req the GrizzlyRequest
+     * @return <code>true</code> if the request is for a resource with a known content
+     *  type otherwise <code>false</code>.
+     */
+    private boolean isResourceRequest(GrizzlyRequest req) {
+
+        return (getContentType(req.getRequestURI()) != null);
+
+    }
+
+
+    private String getContentType(String resource) {
+
+        if (resource == null || resource.length() == 0) {
+            return null;
+        }
+        // this may need to be expanded upon the future, in which case, the
+        // current implementation may not be worth maintaining
+        if (resource.endsWith(".gif")) {
+            return "image/gif";
+        } else if (resource.endsWith(".jpg")) {
+            return "image/jpg";
+        } else {
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Unhandled content-type: " + resource);
+            }
+            return null;
+        }
+
+    }
+
+    private void handleResourceRequest(GrizzlyRequest req, GrizzlyResponse res)
+    throws IOException {
+
+        String resourcePath = RESOURCE_PACKAGE + req.getRequestURI();
+
+        ClassLoader loader = AdminConsoleAdapter.class.getClassLoader();
+
+        InputStream in = null;
+        try {
+            in = loader.getResourceAsStream(resourcePath);
+            if (in == null) {
+                if (log.isLoggable(Level.WARNING)) {
+                    log.warning("Resource not found: " + resourcePath);
+                }
+                return;
+            }
+            byte[] buf = new byte[512];
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
+            for (int i = in.read(buf); i != -1; i = in.read(buf)) {
+                baos.write(buf, 0, i);
+            }
+            String contentType = getContentType(resourcePath);
+            if (contentType != null) {
+                res.setContentType(contentType);
+            }
+            res.setContentLength(baos.size());
+            OutputStream out = res.getOutputStream();
+            baos.writeTo(out);
+            out.flush();
+
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
 
     }
 
