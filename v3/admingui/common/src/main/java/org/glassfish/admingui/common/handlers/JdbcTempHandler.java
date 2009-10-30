@@ -193,16 +193,15 @@ public class JdbcTempHandler {
         } else {
 
             if (!GuiUtil.isEmpty(resType) && !GuiUtil.isEmpty(dbVendor)) {
-                List dsl = new ArrayList();
+                List dsl = null;
                 try {
                     String classname = "";
+                    GuiUtil.getLogger().info("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
                     Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
                     if (dcn != null) {
-                        Set keys = (Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY);
-                        Iterator iter = keys.iterator();
-                        while (iter.hasNext()) {
-                            dsl.add((String) iter.next());
-
+                        dsl = new ArrayList((Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY));
+                        for(int i=0; i< dsl.size(); i++){
+                            System.out.println("======= " + dsl.get(i));
                         }
                     }
                     if (resType.equals(DRIVER)) {
