@@ -50,10 +50,9 @@
     <plugins>
       <plugin>
         <groupId>org.glassfish</groupId>
-        <artifactId>maven-glassfish-plugin</artifactId>
+        <artifactId>maven-embedded-glassfish-plugin</artifactId>
         <configuration>
           <goalPrefix>glassfish</goalPrefix>
-	<installRoot>/ws/v3/publish/glassfishv3/glassfish</installRoot>      
     <port>8989</port>
           <app>/wsp/apps/test/test.war</app>
        </configuration>
