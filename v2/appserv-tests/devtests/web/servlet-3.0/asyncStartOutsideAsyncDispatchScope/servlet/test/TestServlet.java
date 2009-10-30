@@ -74,6 +74,18 @@ public class TestServlet extends HttpServlet {
                     }
                 },
 	        5000);
+        } else if (req.getDispatcherType() == DispatcherType.ASYNC) {
+            /*
+             * Sleep during the ASYNC dispatch, which is executed on a
+             * separate thread, in order to delay the closing of the
+             * response, so that the thread that called AsyncContext#dispatch
+             * has a chance to write "Hello world" to the response
+             */
+            try {
+                Thread.currentThread().sleep(5000);
+            } catch (Exception e) {
+                // Ignore
+            }
         }
     }
 }

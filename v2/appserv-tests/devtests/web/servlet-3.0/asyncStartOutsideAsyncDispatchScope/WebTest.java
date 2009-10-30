@@ -83,7 +83,7 @@ public class WebTest {
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(10000);
+        conn.setReadTimeout(15000);
         conn.connect();
         if (conn.getResponseCode() != 200) {
             throw new Exception("Unexpected return code: " +
@@ -96,12 +96,8 @@ public class WebTest {
         try {
             is = conn.getInputStream();
             input = new BufferedReader(new InputStreamReader(is));
-            while ((line = input.readLine()) != null) {
-                System.out.println(line);
-                if (line.equals(EXPECTED_RESPONSE)) {
-                    break;
-                }
-            }
+            line = input.readLine();
+            System.out.println("Response: " + line);
         } finally {
             try {
                 if (is != null) {
@@ -119,9 +115,10 @@ public class WebTest {
             }
         }
 
-        if (line == null) {
+        if (!EXPECTED_RESPONSE.equals(line)) {
             throw new Exception("Missing or unexpected response body, " +
-                                "expected: " + EXPECTED_RESPONSE);
+                                "expected: " + EXPECTED_RESPONSE + 
+                                ", received: " + line);
         }
     }
 }
