@@ -182,7 +182,7 @@ public class CreateJMSResource implements AdminCommand {
                 //rollback the connection pool ONLY if we created it...
                   if (createdPool)
 	   	  	         commandRunner.getCommandInvocation("delete-connector-connection-pool", subReport).parameters(populateConnectionPoolParameters()).execute();
-                  
+
 
                     return;
               }
@@ -199,7 +199,7 @@ public class CreateJMSResource implements AdminCommand {
                             propString += prop.getKey() + "=" + prop.getValue() + ":";
                     }
                     propString = propString.substring(0, propString.length());
-                    aoAttrList.set("property", propString); 
+                    aoAttrList.set("property", propString);
                 }catch (Exception e)
                 {
                     if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())){
@@ -288,6 +288,13 @@ public class CreateJMSResource implements AdminCommand {
                         props.setProperty(propKey, "\""+ addressListProp + "\"");
                     }
 
+                    else if ("Password".equals(propKey)){
+                        String password = props.getProperty(propKey);
+                        if (isPasswordAlias(password))
+                            //If the string is a password alias, it needs to be escapted with another pair of quotes...
+                            props.setProperty(propKey, "\"" + password + "\"");
+                    }
+
                     tmpProps.setProperty(propKey, props.getProperty(propKey));
                 }
             }
@@ -335,6 +342,12 @@ public class CreateJMSResource implements AdminCommand {
         }
 
         return parameters;
+    }
+    private boolean isPasswordAlias(String password){
+        if (password != null && password.startsWith("${ALIAS="))
+            return true;
+
+        return false;
     }
 
     private ParameterMap populateConnectionResourceParameters()
