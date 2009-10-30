@@ -149,9 +149,9 @@ public class EnableMonitoring implements AdminCommand {
     private void attachAgent(ActionReport report) {
         ActionReport.MessagePart part = report.getTopMessagePart().addChild();
         if (options == null) {
-            options = "unsafe=true";
+            options = "unsafe=true,noServer=true";
         } else {
-            options = "unsafe=true"+","+options;
+            options = "unsafe=true,noServer=true"+","+options;
         }
         try {
             VirtualMachine vm = VirtualMachine.attach(pid);

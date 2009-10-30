@@ -53,6 +53,8 @@ import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.glassfish.internal.api.Init;
+import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
+
 /**
  *
  * @author abbagani
@@ -426,8 +428,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                                 "Level change event received, {0} New Level = {1}, Old Level = {2}",
                                 propName, newEnabled, oldEnabled));
 
-                if(newEnabled != oldEnabled)
+                if(newEnabled != oldEnabled) {
                     handleServiceChange(spr, propName, newEnabled);
+                }
             }
         }
 
@@ -486,7 +489,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 logger.log(Level.INFO,
                         localStrings.getLocalString("monitoringEnabled",
                             "monitoring-enabled flag is turned on. Enabling all the Probes and Stats"));
-                // TODO attach btrace agent dynamically
+                // attach btrace agent dynamically
+                FlashlightProbeClientMediator.attachAgent();
                 enableMonitoringForProbeProviders(true);
                 //Lets do the catch up for all the statsProviders (we might have ignored the module level changes earlier) s
                 spmd.updateAllStatsProviders();

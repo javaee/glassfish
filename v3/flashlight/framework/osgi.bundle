@@ -1,5 +1,6 @@
 -exportcontents: \
                             org.glassfish.flashlight.client; \
+                            org.glassfish.flashlight.impl.client; \
                             org.glassfish.flashlight.provider; version=${project.osgi.version}
 
 DynamicImport-Package: \
