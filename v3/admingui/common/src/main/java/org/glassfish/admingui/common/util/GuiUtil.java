@@ -168,6 +168,8 @@ public class GuiUtil {
         sessionMap.put("DOMAIN_ROOT", V3AMX.getInstance().getDomainRoot().objectName());
         sessionMap.put("ADMIN_LISTENER", V3AMX.getInstance().getAdminListener().objectName());
         sessionMap.put("_SESSION_INITIALIZED","TRUE");
+        sessionMap.put("restartRequired", Boolean.FALSE);
+
 
         /* refer to issue# 5698 and issue# 3691
          * There is a chance that this getAdminSessionTimoutInMinutes() throws an exception in Turkish locale.
