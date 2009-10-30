@@ -211,6 +211,12 @@ public class EjbDeployer
                      ejbBundle.getModuleName() + " dependency namespace", e);
         }
 
+        if (ejbBundle.containsCMPEntity()) {
+            initCMPDeployer();
+            if (cmpDeployer != null) {
+                cmpDeployer.unload(ejbBundle.getClassLoader());
+            }
+        }
 
         // All the other work is done in EjbApplication. 
 

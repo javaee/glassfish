@@ -278,4 +278,11 @@ abstract public class TransactionHelperImpl
         
     }
     
+    /**
+     * @inheritDoc 
+     */ 
+    public void notifyApplicationUnloaded(ClassLoader cl) {
+        
+    }
+    
 }

@@ -52,6 +52,7 @@ import javax.tools.ToolProvider;
 
 import com.sun.jdo.spi.persistence.support.ejb.ejbc.JDOCodeGenerator;
 import com.sun.jdo.spi.persistence.support.ejb.ejbc.CMPProcessor;
+import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import org.glassfish.persistence.common.I18NHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
@@ -275,6 +276,17 @@ public class CMPDeployerImpl implements CMPDeployer {
     public void clean(DeploymentContext ctx) {
         CMPProcessor processor = new CMPProcessor(ctx);
         processor.clean();
+    }
+        
+    /**
+     * Integration point for application unload
+     */
+    public void unload(ClassLoader cl) {
+        try {
+            EJBHelper.notifyApplicationUnloaded(cl);
+        } catch (Exception e) {
+            _logger.log(Logger.WARNING, "cmpc.cmp_cleanup_problems", e);
+        }
     }
         
     /**

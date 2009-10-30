@@ -232,6 +232,15 @@ import com.sun.jdo.api.persistence.support.PersistenceManagerFactory;
      */ 
     void registerApplicationLifeCycleEventListener(
             ApplicationLifeCycleEventListener listener);
+        
+    /**
+     * Called to notify a ApplicationLifeCycleEventListeners that an application
+     * is unloaded. If ApplicationLifeCycle management is active (typically in managed
+     * environment), the registered listener will handle the notification.
+     *
+     * @param cl An instance of the ClassLoader that loaded the application.
+     */ 
+    void notifyApplicationUnloaded(ClassLoader cl);
 
 }
 

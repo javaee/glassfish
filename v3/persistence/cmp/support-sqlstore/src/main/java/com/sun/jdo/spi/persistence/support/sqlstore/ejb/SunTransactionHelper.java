@@ -238,25 +238,20 @@ public class SunTransactionHelper extends TransactionHelperImpl
              applicationLifeCycleEventListeners.add(listener);
         }
     }
-// TODO - Implement this clean up at unload to prevent leaks    
-//    //-------------------ApplicationLifeCycleEventListener Methods --------------//
-//
-//    /**
-//     * @inheritDoc
-//     */
-//    public void handleApplicationEvent(ApplicationEvent event) {
-//            // Change to switch-case if handling more than one events.
-//            if(ApplicationEvent.AFTER_APPLICATION_UNLOAD == event.getEventType() ) {
-//                ClassLoader classLoader = event.getClassLoader();
-//                for (Iterator iterator = applicationLifeCycleEventListeners.iterator();
-//                     iterator.hasNext();) {
-//                    ApplicationLifeCycleEventListener applicationLifeCycleEventListener =
-//                            (ApplicationLifeCycleEventListener) iterator.next();
-//                    applicationLifeCycleEventListener.notifyApplicationUnloaded(classLoader);
-//            }
-//        }
-//    }
-//
+    //-------------------ApplicationLifeCycleEventListener Methods --------------//
+
+    /**
+     * @inheritDoc
+     */
+    public void notifyApplicationUnloaded(ClassLoader classLoader) {
+        for (Iterator iterator = applicationLifeCycleEventListeners.iterator();
+               iterator.hasNext();) {
+            ApplicationLifeCycleEventListener applicationLifeCycleEventListener =
+                    (ApplicationLifeCycleEventListener) iterator.next();
+            applicationLifeCycleEventListener.notifyApplicationUnloaded(classLoader);
+        }
+    }
+
 //    /**
 //     * @inheritDoc
 //     */

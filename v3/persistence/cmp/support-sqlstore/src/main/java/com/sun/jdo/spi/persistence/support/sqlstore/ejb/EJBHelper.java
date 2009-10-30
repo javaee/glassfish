@@ -267,6 +267,16 @@ public class EJBHelper {
             ApplicationLifeCycleEventListener listener) {
         myHelper.registerApplicationLifeCycleEventListener(listener);        
     }
+    /**
+     * Called to notify a ApplicationLifeCycleEventListeners that an application
+     * is unloaded. If ApplicationLifeCycle management is active (typically in managed
+     * environment), the registered listener will handle the notification.
+     *
+     * @param cl An instance of the ClassLoader that loaded the application.
+     */  
+    public static void notifyApplicationUnloaded(ClassLoader cl) {
+        myHelper.notifyApplicationUnloaded(cl);        
+    }
 
       /**
      * This is the default implementation of the TransactionHelper interface
@@ -450,6 +460,13 @@ public class EJBHelper {
          */ 
         public void registerApplicationLifeCycleEventListener(
                 ApplicationLifeCycleEventListener listener) {
+            // The default implementation is no-op 
+        }
+          
+        /**
+         * @inheritDoc
+         */ 
+        public void notifyApplicationUnloaded(ClassLoader cl) {
             // The default implementation is no-op 
         }
    }

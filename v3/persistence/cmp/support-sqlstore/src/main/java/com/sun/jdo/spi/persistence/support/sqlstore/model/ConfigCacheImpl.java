@@ -38,12 +38,14 @@
 package com.sun.jdo.spi.persistence.support.sqlstore.model;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ConfigCache;
+import com.sun.jdo.spi.persistence.support.sqlstore.LogHelperSQLStore;
 import com.sun.jdo.spi.persistence.support.sqlstore.PersistenceConfig;
 import com.sun.jdo.spi.persistence.support.sqlstore.VersionConsistencyCache;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.ApplicationLifeCycleEventListener;
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.EJBHelper;
 import com.sun.jdo.spi.persistence.support.sqlstore.query.util.type.TypeTable;
 import com.sun.jdo.api.persistence.model.Model;
+import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
 import java.util.*;
 
@@ -76,6 +78,9 @@ public class ConfigCacheImpl
      * classes loaded by the classloader.
      */
     private Map classLoaderToClassType;
+
+    /** The logger. */
+    protected final static Logger logger = LogHelperSQLStore.getLogger();
 
     public ConfigCacheImpl() {
         classConfigs = new HashMap();
@@ -129,11 +134,26 @@ public class ConfigCacheImpl
      * @inheritDoc
      */
     public void notifyApplicationUnloaded(ClassLoader classLoader) {
+        boolean debug = logger.isLoggable(Logger.FINEST);
+
         // Clean up classConfigs and oidClassToClassType for the given
         // classLoader.
         synchronized (this) {
+            if (debug) {
+                Object[] items = new Object[] {"classLoaderToClassType", classLoaderToClassType.size()};
+                logger.finest("sqlstore.model.configcacheimpl.size_before",items); // NOI18N
+            }
+
             List pcClasses = (List) classLoaderToClassType.get(classLoader);
             if (pcClasses != null) {
+                if (debug) {
+                    Object[] items = new Object[] {"classConfigs", classConfigs.size()};
+                    logger.finest("sqlstore.model.configcacheimpl.size_before",items); // NOI18N
+                
+                    items = new Object[] {"oidClassToClassType", oidClassToClassType.size()};
+                    logger.finest("sqlstore.model.configcacheimpl.size_before",items); // NOI18N
+                }
+
                 Iterator it = pcClasses.iterator();
                 while (it.hasNext()) {
                     Class classType = (Class) it.next();
@@ -145,9 +165,22 @@ public class ConfigCacheImpl
                         vcCache.removePCType(classType);
                     }
                 }
+                if (debug) {
+                    Object[] items = new Object[] {"classConfigs", classConfigs.size()};
+                    logger.finest("sqlstore.model.configcacheimpl.size_after",items); // NOI18N
+                
+                    items = new Object[] {"oidClassToClassType", oidClassToClassType.size()};
+                    logger.finest("sqlstore.model.configcacheimpl.size_after",items); // NOI18N
+                }
+
                 // Data about this classLoader is no longer needed. 
                 // Remove it from cache.  
                 classLoaderToClassType.remove(classLoader);
+                if (debug) {
+                    Object[] items = new Object[] {"classLoaderToClassType", classLoaderToClassType.size()};
+                    logger.finest("sqlstore.model.configcacheimpl.size_after",items); // NOI18N
+                }
+
             }
         }
 
