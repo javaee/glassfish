@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="473"/>
+    <property name="TOTAL_EXPECTED" value="469"/>
 
     &commonSetup;
     &commonBuild;
@@ -451,7 +451,9 @@
         <ant dir="httpConnectorKeepAlive" target="all"/>
         <ant dir="doubleContentLength" target="all"/>
         <ant dir="dosBrokenPost" target="all"/>
+<!-- IT 10553         
         <ant dir="defaultKeepAlive" target="all"/>
+-->
         <ant dir="multiServletRequests" target="all"/>
         <ant dir="networkListenerDynamicConfig" target="all"/>
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
@@ -461,13 +463,19 @@
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
         <ant dir="httpServletDoPost" target="all"/>
+<!-- IT 10553         
         <ant dir="keepAliveTimeoutZero" target="all"/>
+-->
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
+<!-- IT 10553         
         <ant dir="defaultResponseType" target="all"/>
+-->
         <ant dir="httpListenerAdminReconfig" target="all"/>
         <ant dir="headerBufferSize" target="all"/>
+<!-- IT 10553         
         <ant dir="defaultContentType" target="all"/>
+-->
         <ant dir="headerBufferFull" target="all"/>
         <ant dir="dosSlowClient" target="all"/>
         <ant dir="sslMultiSelector" target="all"/>
