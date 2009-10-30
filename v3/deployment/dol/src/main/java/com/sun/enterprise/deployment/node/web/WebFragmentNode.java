@@ -82,7 +82,19 @@ public class WebFragmentNode extends WebCommonNode<WebFragmentDescriptor> {
         registerElementHandler(new XMLElement(WebTagNames.ORDERING),
                 OrderingNode.class, "setOrderingDescriptor");
     }
-    
+
+    /**
+     * all sub-implementation of this class can use a dispatch table to map xml element to
+     * method name on the descriptor class for setting the element value. 
+     *  
+     * @return the map with the element name as a key, the setter method as a value
+     */    
+    protected Map getDispatchTable() {
+        Map table = super.getDispatchTable();
+        table.put(WebTagNames.COMMON_NAME, "setName");
+        return table;
+    }
+
    /**
      * @return the XML tag associated with this XMLNode
      */

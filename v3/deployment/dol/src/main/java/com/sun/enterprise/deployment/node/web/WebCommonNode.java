@@ -175,8 +175,6 @@ public abstract class WebCommonNode<T extends WebBundleDescriptor> extends Bundl
     public void setElementValue(XMLElement element, String value) {    
         if (WebTagNames.WELCOME_FILE.equals(element.getQName())) {
             descriptor.addWelcomeFile(value);
-        } else if (WebTagNames.COMMON_NAME.equals(element.getQName())) {
-            descriptor.setName(value);
         } else {
             super.setElementValue(element, value);
         }
