@@ -66,6 +66,8 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
                 "The Security realms table does not appear to have been rendered.");
     }
 
+    /*
+     * Disabling for now, we have a new help system in place -- the old help system has been removed.
     @Test
     public void testHelpPage() throws Exception {
         Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=CONTEXT_HELP.html",
@@ -77,4 +79,5 @@ public class AdminConsoleTests extends BaseAdminConsoleTest {
         Assert.assertTrue(getUrlAndTestForStrings(this.adminUrl + "html/en/help/CONTEXT_HELP.html",
                 "body class=\"HlpBdy\""));
     }
+    */
 }
