@@ -8,7 +8,7 @@ import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import java.util.Map;
 import java.util.HashMap;
-import java.io.File;
+import java.io.*;
 
 /**
  * this test will use the ejb API testing.
@@ -16,6 +16,12 @@ import java.io.File;
  * @author Jerome Dochez
  */
 public class EmbeddedTest {
+
+    public static void main(String[] args) {
+        EmbeddedTest test = new EmbeddedTest();
+        System.setProperty("basedir", System.getProperty("user.dir"));
+        test.test();        
+    }
 
     @Test
     public void test() {
