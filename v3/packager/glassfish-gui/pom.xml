@@ -93,6 +93,10 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-common-help</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-updatecenter-plugin</artifactId>
             <version>${project.version}</version>
     	</dependency>

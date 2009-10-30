@@ -106,6 +106,10 @@
 	    <artifactId>console-jruby-plugin</artifactId>
             <version>${project.version}</version>
         </dependency> 
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+	    <artifactId>console-jruby-plugin-help</artifactId>
+        </dependency> 
     </dependencies>
 
     <profiles>

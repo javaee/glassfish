@@ -999,6 +999,69 @@
                 <artifactId>webui-jsf-suntheme</artifactId>
                 <version>${woodstock.version}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-common-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-corba-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-ejb-lite-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-ejb-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-jca-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-jdbc-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-jmail-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-jms-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-jruby-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-jts-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-web-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+
+
+
+
+
+
+
 
         <dependency>
             <groupId>org.jvnet</groupId>

@@ -77,6 +77,10 @@
             <version>${project.version}</version>
        </dependency>
        <dependency>
+           <groupId>org.glassfish.admingui</groupId>
+           <artifactId>console-jms-plugin-help</artifactId>
+       </dependency>
+       <dependency>
             <groupId>org.glassfish.jms</groupId>
 	    <artifactId>jms-core</artifactId>
             <version>${project.version}</version>

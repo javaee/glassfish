@@ -99,8 +99,16 @@
         </dependency> 
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-ejb-plugin-help</artifactId>
+        </dependency> 
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-corba-plugin</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>console-corba-plugin-help</artifactId>
         </dependency>
 
          <!-- now, listing package dependencies so that their content
