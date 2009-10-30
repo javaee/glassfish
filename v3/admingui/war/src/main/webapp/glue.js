@@ -11,6 +11,8 @@ jmaki.listeners.urlHandler = function(args) {
 }
 
 
+jmaki.debug=false;
+jmaki.debugGlue=false;
 jmaki.namespace("jmaki.filters");
 
 jmaki.namespace("admin.blockList.RSSFilter");

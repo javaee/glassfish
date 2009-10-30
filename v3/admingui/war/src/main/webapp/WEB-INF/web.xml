@@ -121,9 +121,7 @@
             <web-resource-name>public</web-resource-name>
             <url-pattern>/theme/com/*</url-pattern>
             <url-pattern>/theme/org/*</url-pattern>        
-            <url-pattern>/theme/woodstock4_3/*</url-pattern>
-	        <url-pattern>/accessDenied.jsf</url-pattern>
-            <!-- We need to make this more secure -->
+            <url-pattern>/accessDenied.jsf</url-pattern>
             <url-pattern>/resource/*</url-pattern>
             <!--<url-pattern>/resource/theme/*</url-pattern>-->           		
             <!--<url-pattern>/resource/js/*</url-pattern>-->

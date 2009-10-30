@@ -72,13 +72,6 @@
       <artifactId>console-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- Ed: The following dependency is no longer needed after you switch to the new help!  -->
-    <dependency>
-	<groupId>org.glassfish.docs</groupId>
-	<artifactId>console-common-help</artifactId>
-	<version>3.0-b01</version>
-	<scope>runtime</scope>
-    </dependency>
     <dependency>
 	<groupId>commons-fileupload</groupId>
 	<artifactId>commons-fileupload</artifactId>
