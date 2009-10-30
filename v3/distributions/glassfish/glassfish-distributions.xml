@@ -35,6 +35,9 @@ own identifying information: Portions Copyright [yyyy]
     <antcall target="create-common-image">
         <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
     </antcall>
+    <antcall target="install-l10n-packages">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
 </target>
 
 <target name="create-glassfish-image" description="Creating IPS Image with Domains">
