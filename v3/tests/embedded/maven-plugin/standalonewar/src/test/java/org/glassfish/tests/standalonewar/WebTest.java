@@ -68,41 +68,31 @@ public class WebTest {
 
     private static void goGet(String host, int port,
                               String result, String contextPath) throws Exception {
-        try{
-            long time = System.currentTimeMillis();
-            Socket s = new Socket(host, port);
-            s.setSoTimeout(5000);
-            OutputStream os = s.getOutputStream();
-
-            System.out.println(("GET " + contextPath + " HTTP/1.1\n"));
-            os.write(("GET " + contextPath + " HTTP/1.1\n").getBytes());
-            os.write(("Host: localhost\n").getBytes());
-            os.write("\n".getBytes());
-    
-            InputStream is = s.getInputStream();
-            System.out.println("Time: " + (System.currentTimeMillis() - time));
-            BufferedReader bis = new BufferedReader(new InputStreamReader(is));
+        try {
+            URL servlet = new URL("http://localhost:8080/test/ServletTest");
+            URLConnection yc = servlet.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    yc.getInputStream()));
             String line = null;
-
             int index;
-            while ((line = bis.readLine()) != null) {
+            while ((line = in.readLine()) != null) {
                 index = line.indexOf(result);
                 System.out.println(line);
                 if (index != -1) {
                     index = line.indexOf(":");
                     String status = line.substring(index+1);
 
-                    /*
                     if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus("web-requestdispatcher: " + line.substring(0,index), stat.PASS);
+                        count++;
                     } else {
-                        stat.addStatus("web-requestdispatcher: " + line.substring(0,index), stat.FAIL);
-                    }*/
-                    count++;
+                        return;
+                    }
                 }
             }
-        } catch( Exception ex){
-            ex.printStackTrace();
+            Assert.assertTrue(count==3);
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         }
    }
 
