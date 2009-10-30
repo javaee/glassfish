@@ -44,6 +44,12 @@ import java.util.Map;
 import java.util.HashMap;
 
 import javax.management.remote.*;
+import javax.management.remote.rmi.RMIJRMPServerImpl;
+import javax.management.remote.rmi.RMIConnection;
+import javax.management.remote.rmi.RMIConnectorServer;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
+import javax.security.auth.Subject;
 
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -56,7 +62,9 @@ Start the JMX RMI connector server using rmi_jrmp protocol.
 final class RMIConnectorStarter extends ConnectorStarter
 {
     private final Registry mRegistry;
-
+    private final boolean   mBindToSingleIP;
+    private volatile MyRMIJRMPServerImpl  mMyServer;
+    
     public RMIConnectorStarter(
         final MBeanServer mbeanServer,
         final String address,
@@ -73,12 +81,101 @@ final class RMIConnectorStarter extends ConnectorStarter
         {
             throw new IllegalArgumentException("JMXConnectorServer not yet supporting protocol: " + protocol);
         }
-
+        
+        final boolean ENABLED = false;
+        mBindToSingleIP = ENABLED && ! ( address.equals("0.0.0.0") || address.equals("") );
+        
         mRegistry = startRegistry(mPort);
     }
+    
+    public static final String RMI_HOSTNAME_PROP = "java.rmi.server.hostname";
+    
+    
+    static String setupRMIHostname(final String host) {
+        return System.setProperty( RMI_HOSTNAME_PROP, host );
+    }
+        
+    private static void restoreRMIHostname(final String saved, final String expectedValue)
+    {
+        if ( saved == null ) {
+            System.clearProperty(RMI_HOSTNAME_PROP);
+        }
+        else {
+            final String temp = System.setProperty( RMI_HOSTNAME_PROP, saved);
+            // check that it didn't change since the last setup
+            if ( ! temp.equals(expectedValue) ) {
+                throw new IllegalStateException( "Something changed " + RMI_HOSTNAME_PROP + " to " + temp );
+            }
+        }
+    }
+    
+    /**
+        Purpose: to ensure binding to a specific IP address instead fo all IP addresses.
+     */
+    private static final class MyRMIJRMPServerImpl extends RMIJRMPServerImpl {
+        private final String mBindToAddr;
+        
+        public MyRMIJRMPServerImpl(
+            final int port,
+            final RMIClientSocketFactory csf,
+            final RMIServerSocketFactory ssf,
+            final Map<String,?> env,
+            final String bindToAddr ) throws IOException {
+            super( port, csf, ssf, env);
+            
+            mBindToAddr = bindToAddr;
+        }
+        
+        /** must be 'synchronized': threads can't save/restore the same system property concurrently */
+            protected synchronized void
+        export(final String host) throws IOException {
+            final String saved = setupRMIHostname( mBindToAddr );
+            try {
+                super.export();
+            }
+            finally {
+                restoreRMIHostname(saved, mBindToAddr);
+            }
+        }
+        
+        /** must be 'synchronized': threads can't save/restore the same system property concurrently */
+            protected synchronized RMIConnection
+        makeClient(final String connectionId, final Subject subject)  throws IOException {
+            final String saved = setupRMIHostname( mBindToAddr );
+            try {
+                return super.makeClient( connectionId, subject);
+            }
+            finally {
+                restoreRMIHostname(saved, mBindToAddr);
+            }
+        }
+    }
 
+    private Registry startRegistry(final int port)
+    {
+        Registry registry = null;
+        
+        System.out.println( "mBindToSingleIP: " + mBindToSingleIP + ", " + mAddress);
+        if ( mBindToSingleIP )
+        {
+        System.out.println( RMI_HOSTNAME_PROP + " before: " + System.getProperty(RMI_HOSTNAME_PROP) );
+            final String saved = setupRMIHostname( mAddress );
+            try {
+        System.out.println( RMI_HOSTNAME_PROP + ": " + System.getProperty(RMI_HOSTNAME_PROP) );
+                registry = _startRegistry(mPort);
+            }
+            finally {
+                restoreRMIHostname(saved, mAddress);
+            }
+        }
+        else
+        {
+            registry = _startRegistry(mPort);
+        }
+        return registry;
+    }
 
-    private static Registry startRegistry(final int port)
+    private static Registry _startRegistry(final int port)
     {
         // Ensure cryptographically strong random number generator used
         // to choose the object number - see java.rmi.server.ObjID
@@ -126,7 +223,20 @@ final class RMIConnectorStarter extends ConnectorStarter
         //final String urlStr = "service:jmx:rmi:///jndi/rmi://" + hostPort + "/" + name;  <== KEEP for reference, this is the basic form
 
         mJMXServiceURL = new JMXServiceURL(urlStr);
-        mConnectorServer = JMXConnectorServerFactory.newJMXConnectorServer(mJMXServiceURL, env, mMBeanServer);
+        if ( mBindToSingleIP )
+        {
+            final RMIClientSocketFactory csf = null;
+            final RMIServerSocketFactory ssf = null;
+            
+            mMyServer = new MyRMIJRMPServerImpl( mPort, csf, ssf, env, mAddress);
+
+            mConnectorServer = new RMIConnectorServer( mJMXServiceURL, env, mMyServer, mMBeanServer);
+        }
+        else
+        {
+            mConnectorServer = JMXConnectorServerFactory.newJMXConnectorServer(mJMXServiceURL, env, mMBeanServer);
+        }
+        
         if ( mBootListener != null )
         {
             mConnectorServer.addNotificationListener(mBootListener, null, mJMXServiceURL.toString() );
