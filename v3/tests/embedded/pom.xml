@@ -55,6 +55,7 @@
         <module>inplanted</module>      
     	<module>static</module>
     	<module>web-api</module>
+    	<module>web-war</module>
     	<module>static-ejb</module>
 <!-- temporarily removing because of a failure
         <module>web-all</module>

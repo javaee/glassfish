@@ -135,7 +135,7 @@ public class EmbeddedTest {
                 String inputLine = in.readLine();
                 if (inputLine != null)
                     System.out.println(inputLine);
-                Assert.assertEquals(inputLine.trim(), "filterMessage=123");
+                Assert.assertEquals(inputLine.trim(), "filterMessage=213");
                 in.close();
             } catch(Exception e) {
                 e.printStackTrace();
