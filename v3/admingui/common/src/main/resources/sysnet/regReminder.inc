@@ -59,11 +59,16 @@
 
 		<div style="text-align: center;">
     </f:verbatim>
-        <sun:button text="$resource{i18n.button.register}" 
-              onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.location='#{request.contextPath}/common/sysnet/#{registrationNodePage}.jsf'
-               admingui.nav.selectTreeNodeById('form:registration'); return false;" onKeyPress="javascript: return false;">
-        </sun:button>
-        <sun:button text="$resource{i18n.button.regRemind}" onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}" onKeyPress="javascript: return true;">
+        <h:commandButton value="$resource{i18n.button.register}" styleClass="Btn1_sun4"
+            onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.location='#{request.contextPath}/common/sysnet/#{registrationNodePage}.jsf'; admingui.nav.selectTreeNodeById('form:registration'); return false;"
+            onKeyPress="javascript: return false;">
+            <!command
+                println("");
+            />
+        </h:commandButton>
+        <h:commandButton value="$resource{i18n.button.regRemind}" styleClass="Btn2_sun4"
+            onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}"
+            onKeyPress="javascript: return true;">
             <!command
                 setRegistrationRemindLater();
                 setCookie(key="appServerRegistrationRemindLaterCookie" value="true" maxAge="1296000");
@@ -74,8 +79,8 @@
                     redirect("clusterCommonTask.jsf");
                 }
             />
-        </sun:button>
-        <sun:button text="$resource{i18n.button.regNever}" onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}" onKeyPress="javascript: return true;">
+        </h:commandButton>
+        <h:commandButton value="$resource{i18n.button.regNever}" styleClass="Btn2_sun4" onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary1="#{false}" onKeyPress="javascript: return true;">
             <!command
                 setRegistrationDontAsk();
                 if(! $session{supportCluster}){
@@ -85,8 +90,8 @@
                     redirect("clusterCommonTask.jsf");
                 }
             />
-        </sun:button>
-	<sun:button text="$resource{i18n.button.Cancel}" onClick="document.getElementById('${popupId}').style.visibility='hidden'; " primary="#{false}"  onKeyPress="javascript: return true;">
+        </h:commandButton>
+	<h:commandButton value="$resource{i18n.button.Cancel}" styleClass="Btn2_sun4" onClick="document.getElementById('${popupId}').style.visibility='hidden'; " primary1="#{false}"  onKeyPress="javascript: return true;">
 	    <!command
 		setSessionAttribute(key="dontAskRegistrationInThisSession" value="true");
 		if(! $session{supportCluster}){
@@ -96,7 +101,7 @@
                     redirect("clusterCommonTask.jsf");
                 }
 	    />
-	    </sun:button>
+	    </h:commandButton>
 	"</div>
 
     <sun:script>
