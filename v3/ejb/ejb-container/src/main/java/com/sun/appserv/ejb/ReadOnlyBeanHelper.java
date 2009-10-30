@@ -57,7 +57,6 @@ import com.sun.logging.*;
  * @author Mahesh Kannan
  */
 public class ReadOnlyBeanHelper {
-
     protected static final Logger _logger =
         LogDomains.getLogger(ReadOnlyBeanHelper.class, LogDomains.EJB_LOGGER);
 

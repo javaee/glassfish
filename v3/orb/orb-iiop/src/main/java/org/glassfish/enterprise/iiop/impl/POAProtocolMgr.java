@@ -197,8 +197,8 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     {
 
 	    // NOTE: The TransientNameService reference is NOT HA.
-        new TransientNameService((com.sun.corba.ee.spi.orb.ORB)orb);
-        _logger.log(Level.FINE, "POAProtocolMgr.initializeNaming: complete");
+        // new TransientNameService((com.sun.corba.ee.spi.orb.ORB)orb);
+        // _logger.log(Level.FINE, "POAProtocolMgr.initializeNaming: complete");
     }
 
 

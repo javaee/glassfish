@@ -60,6 +60,7 @@ import java.net.Socket;
 import org.glassfish.enterprise.iiop.api.ORBLazyServiceInitializer;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 
+import com.sun.corba.ee.impl.naming.cosnaming.TransientNameService;
 
 // TODO import org.omg.CORBA.TSIdentification;
 
@@ -133,6 +134,12 @@ public class PEORBConfigurator implements ORBConfigurator {
             IiopListener[] iiopListenerBeans =   (IiopListener[]) IIOPUtils.getInstance().
                     getIiopService().getIiopListener().toArray(new IiopListener[0]);
             this.createORBListeners(iiopUtils, iiopListenerBeans, orb);
+        }
+
+        if (orb.getORBData().environmentIsGFServer()) {
+            // Start the transient name service, which publishes NameService
+            // in the ORB's local resolver.
+            new TransientNameService( orb ) ;
         }
 
         // Publish the ORB reference back to GlassFishORBHelper, so that
@@ -247,7 +254,7 @@ public class PEORBConfigurator implements ORBConfigurator {
                 int port = Integer.valueOf( ilb.getPort() ) ;
                 String host = handleAddrAny( ilb.getAddress() ) ;
 
-                if (securityEnabled || ilb.getSsl() == null) {
+                if (!securityEnabled || ilb.getSsl() == null) {
                     CorbaAcceptor acceptor = addAcceptor( orb, isLazy, host, 
                             IIOP_CLEAR_TEXT_CONNECTION, port ) ;
                     if( isLazy ) {

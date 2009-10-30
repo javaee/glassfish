@@ -45,6 +45,9 @@ import javax.ejb.NoSuchObjectLocalException;
 import java.rmi.Remote;
 import javax.rmi.CORBA.*;
 
+import java.security.AccessController ;
+import java.security.PrivilegedAction ;
+
 import org.omg.CORBA.*;
 import org.omg.CORBA.portable.Delegate;
 
@@ -84,6 +87,8 @@ import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.corba.ee.org.omg.CORBA.SUNVMCID;
 
 import com.sun.enterprise.util.Utility;
+
+import com.sun.corba.ee.spi.orbutil.codegen.Wrapper ;
 
 /**
  * This class implements the RemoteReferenceFactory interface for the
@@ -378,12 +383,37 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
 	        ejbHomeStubFactory, ejbHomeRepositoryId ) ;
     }
 
+    private void setClassLoader() {
+        ClassLoader cl ;
+        SecurityManager sman = System.getSecurityManager() ;
+        if (sman == null) {
+            cl = this.getClass().getClassLoader() ;
+        } else {
+            cl = AccessController.doPrivileged( 
+                new PrivilegedAction<ClassLoader>() {
+                    public ClassLoader run() {
+                        return this.getClass().getClassLoader() ;
+                    }
+                }
+            ) ;
+        }
+
+        Wrapper._setClassLoader( cl ) ;
+    }
+
     private Remote createRef(byte[] instanceKey, ReferenceFactory rf, 
 	    PresentationManager.StubFactory stubFactory, String repoid )
     {
 	    try {
   	        PresentationManager.StubFactory stubFact = stubFactory;
 	        org.omg.CORBA.Object ref = _createRef(rf, instanceKey,repoid);
+                
+                // Set the ClassLoader to the ClassLoader for this class,
+                // which is loaded by the OSGi bundle ClassLoader for the
+                // orb-iiop bundle, which depends on (among others) the
+                // glassfish-corba-codegen bundle, which contains the
+                // CodegenProxyStub class needed inside the makeStub call.
+                setClassLoader() ;
 
 	        org.omg.CORBA.Object stub = stubFact.makeStub();
                 Delegate delegate = StubAdapter.getDelegate(ref);
@@ -461,23 +491,22 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
                                 CookieHolder cookieHolder)
                 throws org.omg.PortableServer.ForwardRequest
     {
-	    if (logger.isLoggable(Level.FINE)) {
-	        logger.log(Level.FINE,"In preinvoke for operation:" + operation);
-	    }
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE,"In preinvoke for operation:" + operation);
+        }
 
-	    // get instance key
-	    int keyLen = Utility.bytesToInt(ejbKey, INSTANCEKEYLEN_OFFSET);
-	    byte[] instanceKey = new byte[keyLen];
-	    System.arraycopy(ejbKey, INSTANCEKEY_OFFSET, instanceKey, 0, keyLen);
+        // get instance key
+        int keyLen = Utility.bytesToInt(ejbKey, INSTANCEKEYLEN_OFFSET);
+        byte[] instanceKey = new byte[keyLen];
+        System.arraycopy(ejbKey, INSTANCEKEY_OFFSET, instanceKey, 0, keyLen);
 
         Servant servant = null;
         try {
             while ( servant == null ) {
-		        // get the EJBObject / EJBHome
-	            Remote targetObj =
-                    container.getTargetObject(instanceKey, 
-                                              (isRemoteHomeView ? null :
-                                               remoteBusinessIntf));
+                // get the EJBObject / EJBHome
+                Remote targetObj =
+                container.getTargetObject(instanceKey, 
+                    (isRemoteHomeView ? null : remoteBusinessIntf));
 
                 // This could be null in rare cases for sfsbs and entity 
                 // beans.  It would be preferable to push the retry logic
@@ -486,13 +515,13 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
                 // the looping logic the same as it has always been.
                 if( targetObj != null ) {
                     // get the Tie which is the POA Servant
-		            //fix for bug 6484935
-		            Tie tie = (Tie)java.security.AccessController.doPrivileged(
-						new java.security.PrivilegedAction() {
-                        public Tie run()  {
-			                return presentationMgr.getTie();
-			            }
-		                });
+                    //fix for bug 6484935
+                    Tie tie = (Tie)AccessController.doPrivileged( 
+                        new PrivilegedAction() {
+                            public Tie run()  {
+                                return presentationMgr.getTie();
+                        }
+                    });
 
                     tie.setTarget(targetObj);
                     servant = (Servant) tie;
@@ -513,23 +542,22 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
     public void postinvoke(byte[] ejbKey, POA adapter, String operation,
                             java.lang.Object cookie, Servant servant)
     {
-	    Remote target = null;
-	    if ( servant != null ) {
-	        target = ((Tie)servant).getTarget();
+        Remote target = null;
+        if ( servant != null ) {
+            target = ((Tie)servant).getTarget();
         }
 
         // Always release, since that restores previous context class loader.
-	    container.releaseTargetObject(target);
+        container.releaseTargetObject(target);
     }
 
 
     public void destroy() {
         try {
-
-	        ejbHomeReferenceFactory.destroy() ;
-	        ejbObjectReferenceFactory.destroy() ;
-	        ejbHomeReferenceFactory = null ;
-	        ejbObjectReferenceFactory = null ;
+            ejbHomeReferenceFactory.destroy() ;
+            ejbObjectReferenceFactory.destroy() ;
+            ejbHomeReferenceFactory = null ;
+            ejbObjectReferenceFactory = null ;
 
             container = null;
             ejbDescriptor = null;

@@ -68,7 +68,11 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
             synchronized( this ) {
                 if (orb == null) {
                     try {
+                        final boolean isServer = processEnv.getProcessType().isServer() ;
+
                         Properties props = new Properties();
+                        props.setProperty( GlassFishORBFactory.ENV_IS_SERVER_PROPERTY,
+                            Boolean.valueOf( isServer ).toString() ) ;
 
                         // Create orb and make it visible.  This will allow
                         // loopback calls to getORB() from
@@ -80,13 +84,15 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
                         // cannot depend on having access to the protocol manager.
                         orb = orbFactory.createORB(props);
 
-                        if( processEnv.getProcessType().isServer()) {
+                        if (isServer) {
                             if (protocolManager == null) {
                                 ProtocolManager tempProtocolManager =
                                                 habitat.getByContract(ProtocolManager.class);
 
                                 tempProtocolManager.initialize(orb);
-                                tempProtocolManager.initializeNaming();
+                                // Move startup of naming to PEORBConfigurator so it runs
+                                // before interceptors.
+                                // tempProtocolManager.initializeNaming();
                                 tempProtocolManager.initializePOAs();
 
                                 // Now make protocol manager visible.
