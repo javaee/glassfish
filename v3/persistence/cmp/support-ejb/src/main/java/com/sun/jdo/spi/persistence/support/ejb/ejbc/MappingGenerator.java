@@ -70,8 +70,7 @@ import org.glassfish.api.deployment.DeploymentContext;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
 
-//import com.sun.enterprise.deployment.backend.DeploymentStatus;
-
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 import com.sun.jdo.api.persistence.mapping.ejb.beans.EntityMapping;
@@ -97,6 +96,7 @@ import com.sun.jdo.spi.persistence.utility.StringHelper;
 import com.sun.jdo.spi.persistence.utility.logging.Logger;
 
 import org.glassfish.persistence.common.database.DBVendorTypeHelper;
+import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import org.glassfish.persistence.common.DatabaseConstants;
 
 import com.sun.jdo.spi.persistence.support.sqlstore.ejb.DeploymentHelper;
@@ -249,16 +249,9 @@ public class MappingGenerator extends
                 }
 
                 if (warning != null) {
-//TODO - Status reporting should be enabled. Hint - May be able to use Reporter from deploymen. Check with Jerome 
-/*
-                    DeploymentStatus status =
-                        ctx.getDeploymentRequest()
-                        .getCurrentDeploymentStatus();
-                    status.setStageStatus(DeploymentStatus.WARNING);
-                    String msg = status.getStageStatusMessage();
-                    msg = (msg == null) ? warning : (msg + "\n" + warning); // NOI18N
-                    status.setStageStatusMessage(msg);
-*/
+                    ActionReport subActionReport = ctx.getActionReport().addSubActionsReport();
+                    // Propagte warning to client side so that the deployer can see the warning.
+                    Java2DBProcessorHelper.warnUser(subActionReport, warning);
                 }
             }
             // Sun-cmp-mapping.xml exists, use normal MappingClass loading
