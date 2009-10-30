@@ -501,19 +501,23 @@ public class ApplicationContext
     /**
      * Return a <code>RequestDispatcher</code> instance that acts as a
      * wrapper for the resource at the given path.  The path must begin
-     * with a "/" and is interpreted as relative to the current context root.
+     * with a "/" or be empty, and is interpreted as relative to the current
+     * context root.
      *
      * @param path The path to the desired resource.
      */
     public RequestDispatcher getRequestDispatcher(String path) {
 
         // Validate the path argument
-        if (path == null)
-            return (null);
-        if (!path.startsWith("/"))
-            throw new IllegalArgumentException
-                (sm.getString
-                 ("applicationContext.requestDispatcher.iae", path));
+        if (path == null) {
+            return null;
+        }
+
+        if (!path.startsWith("/") && !path.isEmpty()) {
+            throw new IllegalArgumentException(
+                sm.getString("applicationContext.requestDispatcher.iae",
+                             path));
+        }
 
         // Get query string
         String queryString = null;
@@ -602,7 +606,9 @@ public class ApplicationContext
         throws MalformedURLException {
 
         if (path == null || !path.startsWith("/")) {
-            throw new MalformedURLException(sm.getString("applicationContext.requestDispatcher.iae", path));
+            throw new MalformedURLException(
+                sm.getString("applicationContext.resourcePaths.iae",
+                             path));
         }
         
         path = RequestUtil.normalize(path);
