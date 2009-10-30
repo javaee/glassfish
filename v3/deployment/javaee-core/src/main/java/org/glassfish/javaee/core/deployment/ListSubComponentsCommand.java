@@ -44,13 +44,11 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbEntityDescriptor;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -252,34 +250,13 @@ public class ListSubComponentsCommand implements AdminCommand {
                 StringBuffer sb = new StringBuffer();    
                 sb.append(ejbDesc.getName()); 
                 sb.append(" <"); 
-                sb.append(getEjbType(ejbDesc));
+                sb.append(DOLUtils.getEjbType(ejbDesc));
                 sb.append(">"); 
                 moduleSubComponentList.add(sb.toString());
             }
         }
 
         return moduleSubComponentList;
-    }
-
-
-    private String getEjbType(EjbDescriptor ejbDesc) {
-        String type = null;
-        if (ejbDesc.getType().equals(EjbSessionDescriptor.TYPE)) {
-            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor)ejbDesc;
-            if (sessionDesc.isStateful()) {
-                type = "StatefulSessionBean";
-            } else if (sessionDesc.isStateless()) {
-                type = "StatelessSessionBean";
-            } else if (sessionDesc.isSingleton()) {
-                type = "SingletonSessionBean";
-            }
-        } else if (ejbDesc.getType().equals(EjbMessageBeanDescriptor.TYPE)) {
-            type = "MessageDrivenBean";
-        } else if (ejbDesc.getType().equals(EjbEntityDescriptor.TYPE)) {
-            type = "EntityBean";
-        }
-
-        return type;
     }
 
     private String getModuleType(ModuleDescriptor modDesc) {
