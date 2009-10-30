@@ -60,15 +60,12 @@
 		<div style="text-align: center;">
     </f:verbatim>
         <h:commandButton value="$resource{i18n.button.register}" styleClass="Btn1_sun4"
-            onClick="document.getElementById('${popupId}').style.visibility='hidden'; window.location='#{request.contextPath}/common/sysnet/#{registrationNodePage}.jsf'; admingui.nav.selectTreeNodeById('form:registration'); return false;"
-            onKeyPress="javascript: return false;">
-            <!command
-                println("");
-            />
+            onclick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.loadPage({url:'#{request.contextPath}/common/sysnet/#{registrationNodePage}.jsf'}); return false;"
+            onkeypress="javascript: return false;">
         </h:commandButton>
         <h:commandButton value="$resource{i18n.button.regRemind}" styleClass="Btn2_sun4"
-            onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}"
-            onKeyPress="javascript: return true;">
+            onclick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}"
+            onkeypress="javascript: return true;">
             <!command
                 setRegistrationRemindLater();
                 setCookie(key="appServerRegistrationRemindLaterCookie" value="true" maxAge="1296000");
@@ -80,7 +77,7 @@
                 }
             />
         </h:commandButton>
-        <h:commandButton value="$resource{i18n.button.regNever}" styleClass="Btn2_sun4" onClick="document.getElementById('${popupId}').style.visibility='hidden';" primary1="#{false}" onKeyPress="javascript: return true;">
+        <h:commandButton value="$resource{i18n.button.regNever}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden';" primary1="#{false}" onkeypress="javascript: return true;">
             <!command
                 setRegistrationDontAsk();
                 if(! $session{supportCluster}){
@@ -91,7 +88,7 @@
                 }
             />
         </h:commandButton>
-	<h:commandButton value="$resource{i18n.button.Cancel}" styleClass="Btn2_sun4" onClick="document.getElementById('${popupId}').style.visibility='hidden'; " primary1="#{false}"  onKeyPress="javascript: return true;">
+	<h:commandButton value="$resource{i18n.button.Cancel}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden'; " primary1="#{false}"  onkeypress="javascript: return true;">
 	    <!command
 		setSessionAttribute(key="dontAskRegistrationInThisSession" value="true");
 		if(! $session{supportCluster}){

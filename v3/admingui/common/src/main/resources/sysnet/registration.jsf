@@ -54,7 +54,7 @@
     setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
 
 />  
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); " >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); admingui.nav.selectTreeNodeById('treeForm:tree:registration');" >
 
 <!define name="content">
 <sun:script url="/resource/common/js/adminjsf.js" />
