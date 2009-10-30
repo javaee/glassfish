@@ -81,6 +81,12 @@
 		.please {color: #FFFFFF; font-size: 1.6em; font-weight: bold; padding-bottom: 10px;}
 		.why {color: #b9d2e9; font-size: 1.3em; font-weight: bold; font-style: italic; padding-bottom: 8px;}
 		.why a:link, .why a:visited {color: #b9d2e9;}
+
+                .skip {
+                     position: absolute;
+                     left: -999em;
+                     width: 990em;
+                }
 	    </style>
 	    </f:verbatim>
 	</sun:head>
@@ -88,6 +94,7 @@
 	<sun:body styleClass="yui-skin-sam" 
 		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);#{guiOnLoad};#{guiTemplateOnLoad};">
 "	    <div class="yui-skin-sam"><div id="gfLayoutTop"><div class="header_main">
+//                "<a class="skip" href="#navigation" alt="Skip masthead" title="Skip masthead">Skip Masthead</a>
 			<sun:form id="af" prependId="false">
 			    <h:commandButton id="execButton" text="na" style="display:none;">
 				<ui:event type="command">
@@ -103,13 +110,16 @@
 			</sun:form>
 "		    </div></div>
 
-"		<div id="gfLayoutLeft"> <div id="leftNav">
-			<!insert name="guiLeftNav" />
-"		    </div> </div>
+"		<div id="gfLayoutLeft">
+"               <a class="skip" name="navigation">Past masthead</a><a class="skip" href="#contentArea" alt="Skip navigation" title="Skip navigation">Skip navigation</a>
+"                       <div id="leftNav">
+                            <!insert name="guiLeftNav" />
+"                       </div>
+"               </div>
 
 "		<div id="gfLayoutCenter">
-
 		    <!-- Content -->
+                    "<a class="skip" name="contentArea">Content Area</a>
 "		    <div id="content" style="padding-left: 5px; padding-right: 5px;">
 			<!insert name="guiTemplateContent1">
 			    <!insert name="content">
