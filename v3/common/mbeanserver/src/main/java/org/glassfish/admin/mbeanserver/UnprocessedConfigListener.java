@@ -98,6 +98,11 @@ public final class UnprocessedConfigListener implements Startup, PostConstruct, 
         mUnprocessedChangeEvents.addAll(changes);
         //debug( "UnprocessedConfigListener.unprocessedTransactedEvents: total lists: " + mUnprocessedChangeEvents.size() );
     }
+    
+    public boolean serverRequiresRestart()
+    {
+        return getUnprocessedChangeEvents().size() != 0; 
+    }
 
     public synchronized List<UnprocessedChangeEvents> getUnprocessedChangeEvents()
     {
