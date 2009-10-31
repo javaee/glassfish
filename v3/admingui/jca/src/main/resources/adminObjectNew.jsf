@@ -44,9 +44,16 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/adminObjectNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/adminObjectResources.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="admin-object-resource");
+        if(#{reload}){
+            createMap(result="#{pageSession.tmpMap}")
+            mapPut(map="#{pageSession.tmpMap}" key="Name" value="$attribute{nameChosen}");
+            mapPut(map="#{pageSession.tmpMap}" key="ResAdapter" value="$attribute{resAdapter}");
+            mapPut(map="#{pageSession.tmpMap}" key="ResType" value="$attribute{resType}");
+        }
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
@@ -56,11 +63,19 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        setPageSessionAttribute(key="reload" value="#{false}" );
 
         createMap(result="#{pageSession.valueMap2}")
         mapPut(map="#{pageSession.valueMap2}" key="Enabled" value="true");
         setPageSessionAttribute(key="createResourceRef" value="#{true}" );
-        
+
+        getAdminObjectResourceWizard(
+            reload="#{reload}"
+            attrMap="#{pageSession.tmpMap}"
+            currentMap="#{pageSession.valueMap}"
+            valueMap=>$pageSession{valueMap}
+            resourceTypes=>$attribute{resourceTypes}
+            classNames=>$attribute{classNames})
     />
     </event>
 #include "/common/shared/restart.inc"

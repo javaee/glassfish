@@ -44,7 +44,19 @@
 <event>
     <!beforeCreate
     setSessionAttribute(key="resEditTabs" value="general");
-    getRequestValue(key="name" value="#{pageSession.Name}");
+    getRequestValue(key="reload" value="#{reload}");
+    if(#{reload}){
+         createMap(result="#{pageSession.tmpMap}")
+         getRequestValue(key="name" value="#{pageSession.Name}");
+         getRequestValue(key="resAdapter" value="#{resAdapter}");
+         getRequestValue(key="resType" value="#{resType}");
+         mapPut(map="#{pageSession.tmpMap}" key="Name" value="#{pageSession.Name}");
+         mapPut(map="#{pageSession.tmpMap}" key="ResAdapter" value="#{resAdapter}");
+         mapPut(map="#{pageSession.tmpMap}" key="ResType" value="#{resType}");
+    }
+    if(!#{reload}){
+        getRequestValue(key="name" value="#{pageSession.Name}");
+    }
     urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/adminObjectEdit.jsf?name=#{pageSession.encodedName}");
     setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/adminObjectResources.jsf");
@@ -61,11 +73,19 @@
     setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-
+    setPageSessionAttribute(key="reload" value="#{false}" );
     setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
     getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
     setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
     setPageSessionAttribute(key="has2Objects" value="#{true}" );
+
+    getAdminObjectResourceWizard(
+        reload="#{reload}"
+        attrMap="#{pageSession.tmpMap}"
+        currentMap="#{pageSession.valueMap}"
+        valueMap=>$pageSession{valueMap}
+        resourceTypes=>$attribute{resourceTypes}
+        classNames=>$attribute{classNames})
     />
 </event>
 #include "/common/shared/restart.inc"

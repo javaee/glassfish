@@ -42,31 +42,80 @@
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="name"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
+            <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{edit}" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{nameId});
+                />
+            </sun:staticText>
         </sun:property>
 
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
-        </sun:property>
-
- 
-        <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  helpText="$resource{i18njca.adminObjectResource.resTypeHelp}">
-            <sun:textField id="ResType" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['ResType']}" required="#{true}"/>
-        </sun:property>  
-
-       <sun:property id="className"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.adminObjectResource.classname}" helpText="$resource{i18njca.adminObjectResource.classnameHelp}">
-            <sun:textField id="className"  columns="$int{55}" text="#{pageSession.valueMap['ClassName']}" />
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{nameNewId});
+            />
+            </sun:textField>
         </sun:property>
 
 
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" >
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" submitForm="#{true}" immediate="#{true}">
                 <!beforeCreate
-                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.connList}")
-                     listAdd(list="#{requestScope.connList}" value="jmsra")
-                     addEmptyFirstElement(in="$attribute{connList}"  out="#{pageSession.connectorList}")
+                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
+                     listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
+                <!afterCreate
+                      getClientId(component="$this{component}" clientId=>$page{resAdaptorPropId});
+                />
+                <!command
+                    setAttribute(key="click" value="$this{component}");
+                    setAttribute(key="resAdapter" value="#{click.selected}");
+                    setAttribute(key="reload" value="#{true}" );
+                    //navigate works only for new page & not for edit page
+                    //conversely redirect works only for edit page & not new page
+                    //needs more investigation - same scenario in component below too
+                    if(!#{edit}){
+                        getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
+                        getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
+                        navigate(page="#{selfPage}");
+                    }
+                    if(#{edit}){
+                        getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
+                        getUIComponentProperty(component="$attribute{nameComponent}", name="value", value=>$attribute{nameChosen});
+                        redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resAdapter=#{resAdapter}");
+                    }
+                 />
            </sun:dropDown>
+        </sun:property>
+
+        <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  helpText="$resource{i18njca.adminObjectResource.resTypeHelp}">
+            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ResType']}"  labels="$attribute{resourceTypes}" submitForm="#{true}" immediate="#{true}">
+            <!command
+                    setAttribute(key="click" value="$this{component}");
+                    setAttribute(key="resType" value="#{click.selected}")
+                    setAttribute(key="reload" value="#{true}" );
+                    getUIComponent(clientId="#{resAdaptorPropId}", component=>$attribute{resAdaptorComponent});
+                    getUIComponentProperty(component="$attribute{resAdaptorComponent}", name="selected", value=>$attribute{resAdapter});
+                    if(!#{edit}){
+                        getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
+                        getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
+                        navigate(page="#{selfPage}");
+                    }
+                    if(#{edit}){
+                        getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
+                        getUIComponentProperty(component="$attribute{nameComponent}", name="value", value=>$attribute{nameChosen});
+                        redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resType=#{resType}&resAdapter=$attribute{resAdapter}");
+                    }
+                />
+            </sun:dropDown>
+        </sun:property>  
+
+        <sun:property id="className"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.adminObjectResource.classname}" helpText="$resource{i18njca.adminObjectResource.classnameHelp}">
+            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ClassName']}"  labels="$attribute{classNames}" values="$attribute{classNames}" immediate="#{true}" >
+                <!afterCreate
+                      getClientId(component="$this{component}" clientId=>$page{classNameId});
+                />
+            </sun:dropDown>
         </sun:property>
         <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">
             <sun:textField id="descAdaptor" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />      

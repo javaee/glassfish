@@ -268,8 +268,94 @@ public class ConnectorsHandlers {
 
     }
 
+    /**
+     *	<p> This handler creates a Admin Object Resource
+     */
+    @Handler(id = "getAdminObjectResourceWizard", input = {
+    @HandlerInput(name = "reload", type = Boolean.class),
+    @HandlerInput(name = "attrMap", type = Map.class),
+    @HandlerInput(name = "currentMap", type = Map.class)
+    }, output = {
+    @HandlerOutput(name = "resourceTypes", type = List.class),
+    @HandlerOutput(name = "classNames", type = List.class),
+    @HandlerOutput(name = "valueMap", type = Map.class)
+    })
+    public static void getAdminObjectResourceWizard(HandlerContext handlerCtx) {
+        Boolean reload = (Boolean) handlerCtx.getInputValue("reload");
+        Map attrMap = (Map) handlerCtx.getInputValue("attrMap");
+        Map currentMap = (Map) handlerCtx.getInputValue("currentMap");
+        String name = null;
+        String resAdapter = null;
+        String resType = null;
+        
+        if (attrMap == null) {
+            attrMap = new HashMap();
+        }
+        if (((reload == null) || (!reload)) && (currentMap != null)) {
+            name = (String) currentMap.get("Name");
+            resAdapter = (String) currentMap.get("ResAdapter");
+            resType = (String) currentMap.get("ResType");
+            currentMap.putAll(attrMap);
+        } else {
+            if (attrMap != null) {
+                name = (String) attrMap.get("Name");
+                resAdapter = (String) attrMap.get("ResAdapter");
+                resType = (String) attrMap.get("ResType");
+            }
+        }
+        if (resAdapter != null) {
+            resAdapter = resAdapter.trim();
+        }
+        if (resAdapter == null || resAdapter.equals("")) {
+            resAdapter = "jmsra";
+        }
+        List defs = getResourceTypesForRA(resAdapter);
 
+        if (resType == null) {
+            if (defs.size() > 0) {
+                resType = (String) defs.get(0);
+            }
+        }
+        List classNames = getClassNames(resAdapter, resType);
+        attrMap.put("Name", name);
+        attrMap.put("ResType", resType);
+        attrMap.put("ResAdapter", resAdapter);
+        handlerCtx.setOutputValue("resourceTypes", defs);
+        handlerCtx.setOutputValue("classNames", classNames);
+        handlerCtx.setOutputValue("valueMap", attrMap);
+    }
+
+    private static List getResourceTypesForRA(String ra) {
+        List defs = new ArrayList();
+        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getAdminObjectInterfaceNames(ra);
+        String[] names = (String[]) result.get(ADMINOBJECT_INTERFACES_KEY);
+        if (names != null) {
+            defs = Arrays.asList(names);
+            //defs.add(0, "");
+        }
+        return defs;
+    }
+
+    private static List getClassNames(String raName, String resType) {
+        ArrayList defs = new ArrayList();
+        if (raName == null || raName.equals("") || resType == null || resType.equals("")) {
+            return defs;
+        } else {
+            Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getAdminObjectClassNames(raName, resType);
+            String[] names = (String[]) result.get(ADMINOBJECT_CLASSES_KEY);
+            if (names != null) {
+                for(int i=0; i<names.length; i++){
+                    if(names[i] != null){
+                        defs.add(names[i]);
+                    }
+                }
+            } 
+            return defs;
+        }
+    }
     
+    public static final String ADMINOBJECT_INTERFACES_KEY = "AdminObjectInterfacesKey";
+    public static final String ADMINOBJECT_CLASSES_KEY = "AdminObjectClassesKey";
     public static final String CONNECTION_DEFINITION_NAMES_KEY = "ConnectionDefinitionNamesKey";
     public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
     public static final String SYSTEM_CONNECTORS_KEY = "SystemConnectorsKey";
