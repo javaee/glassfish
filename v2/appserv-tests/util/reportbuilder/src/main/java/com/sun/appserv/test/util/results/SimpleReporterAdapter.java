@@ -20,7 +20,7 @@ public class SimpleReporterAdapter implements Serializable {
     private final boolean debug = true;
     private final Map<String, String> testCaseStatus = new TreeMap<String, String>();
     private String testSuiteName = getTestSuiteName();
-    private String testSuiteID=testSuiteName+"ID";
+    private String testSuiteID = testSuiteName + "ID";
     private String testSuiteDescription;
     private String ws_home = "appserv-tests";
 
@@ -41,12 +41,11 @@ public class SimpleReporterAdapter implements Serializable {
 
     @Deprecated
     public SimpleReporterAdapter(String ws_root) {
-        this();
         ws_home = ws_root;
     }
 
     public SimpleReporterAdapter(String ws_root, String suiteName) {
-        this(ws_root);
+        ws_home = ws_root;
         testSuiteName = suiteName;
         testSuiteID = testSuiteName + "ID";
     }
@@ -94,6 +93,12 @@ public class SimpleReporterAdapter implements Serializable {
                 System.out.println(String.format("- %-37s -", testCaseName + ": " + status.toUpperCase()));
                 reporter.addTestCase(testSuiteID, testSuiteID, testCaseName + "ID", testCaseName);
                 reporter.setTestCaseStatus(testSuiteID, testSuiteID, testCaseName + "ID", status);
+            }
+            if(pass == 0 && fail == 0 && d_n_r == 0) {
+                d_n_r++;
+                System.out.println(String.format("- %-37s -", testSuiteName + ": " + DID_NOT_RUN));
+                reporter.addTestCase(testSuiteID, testSuiteID, testSuiteID, testSuiteName);
+                reporter.setTestCaseStatus(testSuiteID, testSuiteID, testSuiteID, DID_NOT_RUN);
             }
             System.out.println("-----------------------------------------");
             result("PASS", pass);
@@ -144,10 +149,11 @@ public class SimpleReporterAdapter implements Serializable {
     }
 
     private String getTestSuiteName() {
-        List<StackTraceElement> list = new ArrayList<StackTraceElement>(Arrays.asList(Thread.currentThread().getStackTrace()));
+        List<StackTraceElement> list = new ArrayList<StackTraceElement>(
+            Arrays.asList(Thread.currentThread().getStackTrace()));
         list.remove(0);
         File jar = locate(getClass().getName().replace('.', '/') + ".class");
-        while(jar.equals(locate(list.get(0).getClassName().replace('.', '/') + ".class"))) {
+        while (jar.equals(locate(list.get(0).getClassName().replace('.', '/') + ".class"))) {
             list.remove(0);
         }
         StackTraceElement element = list.get(0);

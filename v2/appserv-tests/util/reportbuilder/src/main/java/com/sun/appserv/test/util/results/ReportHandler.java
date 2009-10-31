@@ -120,7 +120,8 @@ public class ReportHandler {
                 + "%s"
                 + "\n</body>"
                 + "\n</html>\n"
-            , readFile("TestResults.js"), readFile("TestResults.css"), header(), date, config == null ? "" : config.toHtml(), testSuiteSummary(), detailedResults()));
+            , readFile("TestResults.js"), readFile("TestResults.css"), header(), date,
+                config == null ? "" : config.toHtml(), testSuiteSummary(), detailedResults()));
         writer.flush();
         writer.close();
     }

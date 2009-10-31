@@ -525,6 +525,7 @@
     <target name="init">
         <delete>
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+            <fileset dir="${env.APS_HOME}" includes="count.txt"/>
         </delete>
         <delete>
             <fileset dir="." includes="*.output"/>

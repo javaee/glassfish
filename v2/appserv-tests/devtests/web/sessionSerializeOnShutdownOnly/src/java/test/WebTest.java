@@ -45,19 +45,20 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 /*
- * Unit test for
- *
- *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=6447
- *  ("Avoid serializing and saving sessions to file during un- or redeployment (unless requested by user)")
- */
+* Unit test for
+*
+*  https://glassfish.dev.java.net/issues/show_bug.cgi?id=6447
+*  ("Avoid serializing and saving sessions to file during un- or redeployment (unless requested by user)")
+*/
 public class WebTest {
     private static final String TEST_ROOT_NAME = "session-serialize-on-shutdown-only";
     private static final String EXPECTED_RESPONSE = "Found map";
     private static final String JSESSIONID = "JSESSIONID";
-    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests",
+        "session-serialize-on-shutdown-only");
     private String testName;
     private String host;
     private String port;
@@ -161,10 +162,10 @@ public class WebTest {
         int index = cookie.indexOf(field);
         if (index != -1) {
             int endIndex = cookie.indexOf(';', index);
-            if (endIndex != -1) {
-                ret = cookie.substring(index, endIndex);
-            } else {
+            if (endIndex == -1) {
                 ret = cookie.substring(index);
+            } else {
+                ret = cookie.substring(index, endIndex);
             }
             ret = ret.trim();
         }

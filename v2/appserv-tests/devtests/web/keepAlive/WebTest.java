@@ -33,24 +33,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.lang.*;
-import java.io.*;
-import java.net.*;
 
-import com.sun.ejte.ccl.reporter.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
+
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 public class WebTest
 {
     
     private static int count = 0;
-    private static int EXPECTED_COUNT = 1;
+    private static final int EXPECTED_COUNT = 1;
     
-    static SimpleReporterAdapter stat=
-        new SimpleReporterAdapter("appserv-tests");
+    static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", "keep-alive");
 
-    public static void main(String args[])
-    {
-
+    public static void main(String args[]) {
         // The stat reporter writes out the test info and results
         // into the top-level quicklook directory during a run.
       
@@ -60,7 +60,7 @@ public class WebTest
         String portS = args[1];
         String contextRoot = args[2];
 
-        int port = new Integer(portS).intValue();
+        int port = new Integer(portS);
         String name;
         
         try {
@@ -69,7 +69,7 @@ public class WebTest
         } catch (Throwable t) {
         } finally {
             if (count != EXPECTED_COUNT){
-                stat.addStatus("web-keepAlive", stat.FAIL);
+                stat.addStatus("web-keepAlive", SimpleReporterAdapter.FAIL);
             }           
         }
 
@@ -96,17 +96,18 @@ public class WebTest
         int tripCount = 0;
         try {
             while ((line = bis.readLine()) != null) {
-                System.out.println(line);
+                System.out.println("from server: " + line);
                 int index = line.indexOf("Connection:");
                 if (index >= 0) {
                     index = line.indexOf(":");
                     String state = line.substring(index+1).trim();
-                    if (state.equalsIgnoreCase("keep-alive")) {
-                        stat.addStatus("web-keepalive ", stat.PASS);
+                    if ("keep-alive".equalsIgnoreCase(state)) {
+							  System.out.println("found keep-alive");
+                        stat.addStatus("web-keepalive ", SimpleReporterAdapter.PASS);
                         count++;
                     }
                 } 
-                if (line.indexOf("KeepAlive:end") >= 0) {
+                if (line.contains("KeepAlive:end")) {
                     if (++tripCount == 1) {
                         System.out.println("GET " + contextPath + " HTTP/1.0");
                         os.write(("GET " + contextPath + " HTTP/1.0\n\n").getBytes());
