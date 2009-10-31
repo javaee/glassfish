@@ -113,7 +113,6 @@ public class JavaEETransactionManagerJTSDelegate
 
     public JavaEETransactionManagerJTSDelegate() {
         globalTransactions = new Hashtable();
-        instance = this;
     }
 
     public void postConstruct() {
@@ -123,6 +122,8 @@ public class JavaEETransactionManagerJTSDelegate
         }
 
         initTransactionProperties();
+
+        setInstance(this);
     }
 
     public boolean useLAO() {
@@ -566,6 +567,12 @@ public class JavaEETransactionManagerJTSDelegate
 
     public static JavaEETransactionManagerJTSDelegate getInstance() {
         return instance;
+    }
+
+    private static void setInstance(JavaEETransactionManagerJTSDelegate new_instance) {
+        if (instance == null) {
+            instance = new_instance;
+        }
     }
 
     public void initXA() {
