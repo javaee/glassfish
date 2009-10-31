@@ -137,7 +137,6 @@ public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess,
             final Set<String> excluded =
                 SetUtil.newUnmodifiableStringSet(ATTR_NAME, ATTR_PARENT, ATTR_CHILDREN, "Property");
             
-            final Map<String,String>  changedValues = new HashMap<String,String>();
             final Map<String,Object>  attrs = levels.attributesMap();
             final AttributeList attributeList = new AttributeList();
             final AttributeList originalValues = new AttributeList();
