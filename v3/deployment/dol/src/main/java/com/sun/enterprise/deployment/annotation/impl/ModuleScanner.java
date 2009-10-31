@@ -274,9 +274,14 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
 
         for (URL url : libraryURLs) {
             try {
-                addScanJar(new File(url.toURI()));
-            } catch (URISyntaxException uriEx) {
-                logger.log(Level.WARNING, "Malform URL: " + url, uriEx);
+                File libFile = new File(url.toURI());;
+                if (libFile.isFile()) {
+                    addScanJar(libFile);
+                }
+            } catch (Exception ex) {
+                // we log a warning and proceed for any problems in 
+                // adding library jars to the scan list
+                logger.log(Level.WARNING, ex.getMessage());
             }
         }       
     }
