@@ -428,12 +428,11 @@ public class UpdateCenterHandlers {
             UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
             boolean donotping = userPreference == UpdateCheckFrequency.NEVER;
             if(donotping){
-//                System.out.println("!!!!!!!!!!!!!!!! In do NOT PING");
+                GuiUtil.getLogger().info("UpdateCheckFrequency is set to NEVER by user.  Component update count not performed. ");
                 GuiUtil.setSessionValue(USER_OK, Boolean.FALSE);
                 handlerCtx.setOutputValue("count", -1);
                 return;
             }else{
-//                System.out.println("!!!!!!!!!!!!OK TO ping");
                 GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
             }
         }else{
@@ -447,6 +446,7 @@ public class UpdateCenterHandlers {
             Image image = getUpdateCenterImage();
             countInt = updateCountInSession(image);
         }
+        GuiUtil.getLogger().info("Update Component count = " + countInt);
         handlerCtx.setOutputValue("count", countInt);
     }
 

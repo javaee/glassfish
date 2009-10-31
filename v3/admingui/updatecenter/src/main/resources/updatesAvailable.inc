@@ -8,17 +8,19 @@
 	    style="color:white; margin-left: 5px; text-decoration: none;"
 	    rendered="#{sessionScope.showUpdateMsg}">
 	<ui:event type="beforeCreate">
-	    if ("#{showUpdateMsg}=#{null}") {
-		getUpdateComponentCount(count="#{requestScope.numUpdatesAvailable}");
-		setSessionAttribute(key="showUpdateMsg", value="#{numUpdatesAvailable != 0}");
+	    if ("#{sessionScope._updateCountCalculated}=#{null}") {
+		getUpdateComponentCount(count="#{sessionScope.numUpdatesAvailable}");
 		setResourceBundle(key="uc" bundle="org.glassfish.updatecenter.admingui.Strings");
-		setSessionAttribute(key="linkMsg" value="$resource{uc.msg.checkingForUpdates}");
-		if ("#{numUpdatesAvailable} > 0") {
+                setSessionAttribute(key="linkMsg" value="$resource{uc.msg.checkForUpdates}");
+                setSessionAttribute(key="showUpdateMsg", value="#{true}")
+		if ("#{sessionScope.numUpdatesAvailable} > 0") {
 		    setSessionAttribute(key="linkMsg" value="$resource{uc.msg.updatesAvailable}");
 		}
-		if ("#{numUpdatesAvailable} = 0") {
+		if ("#{sessionScope.numUpdatesAvailable} = 0") {
 		    setSessionAttribute(key="linkMsg" value="$resource{uc.msg.noUpdates}");
+                    setSessionAttribute(key="showUpdateMsg", value="#{false}")
 		}
+                setSessionAttribute(key="_updateCountCalculated", value="true");
 	    }
 	</ui:event>
     </sun:imageHyperlink>
