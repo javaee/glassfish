@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="469"/>
+    <property name="TOTAL_EXPECTED" value="470"/>
 
     &commonSetup;
     &commonBuild;
@@ -300,6 +300,7 @@
         <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
         <ant dir="servlet-3.0/asyncContextMultipleDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncStartOutsideAsyncDispatchScope" target="all"/>
+        <ant dir="servlet-3.0/asyncContextSetTimeout" target="all"/>
         <ant dir="errorPageHandlingForError" target="all"/>
         <ant dir="servlet-3.0/multipart" target="all"/>
 <!-- XXX temporarily commented out, see IT 10601
