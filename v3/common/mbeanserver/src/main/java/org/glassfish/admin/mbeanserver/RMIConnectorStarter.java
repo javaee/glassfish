@@ -93,7 +93,7 @@ final class RMIConnectorStarter extends ConnectorStarter
         }
         
         final boolean ENABLED = true;
-        mBindToSingleIP = ENABLED && ! ( address.equals("0.0.0.0") || address.equals("localhost") || address.equals("") );
+        mBindToSingleIP = ENABLED && ! ( address.equals("0.0.0.0") && address.equals("") );
 
         mServerSocketFactory = mBindToSingleIP ? new MyRMIServerSocketFactory( getAddress(address) ) : null;
         mRegistry = startRegistry(mPort);
