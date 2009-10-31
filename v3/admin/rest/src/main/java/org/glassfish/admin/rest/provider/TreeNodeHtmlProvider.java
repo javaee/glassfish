@@ -36,6 +36,7 @@
 package org.glassfish.admin.rest.provider;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,7 +45,8 @@ import java.util.Set;
 import java.util.Map;
 
 //import javax.management.j2ee.statistics.Statistics; //?
-import  org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.Statistic;
+import org.glassfish.external.statistics.Stats;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -159,26 +161,30 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         try {
             if (value instanceof Statistic) {
                 Statistic statisticObject = (Statistic)value;
-                Map map = getStatistics(statisticObject);
-                Set<String> attributes = map.keySet();
-                Object attributeValue;
-                for (String attributeName: attributes) {
-                    attributeValue = map.get(attributeName);
-                    //for html output, string value of the object should suffice,
-                    //irrespective of the type of object
-                    result = result + "<dt><label for=\"" + attributeName + "\">"
-                        + attributeName + ":&nbsp;" + "</label></dt>";
-                    result = result + "<dd>" + attributeValue.toString() + "</dd>";
+                result = result + getStatisticRepresentation(statisticObject);
+            } else if (value instanceof Stats) {
+                String statResult;
+                boolean firstEntry = true;
+                String lineSpacing = "";
+                for (Statistic statistic: ((Stats)value).getStatistics()) {
+                    statResult = getStatisticRepresentation(statistic);
+                    if (!statResult.equals("")) {
+                        if (!firstEntry) lineSpacing = "<br><br>";
+                        statResult = "<dt>" + lineSpacing + "<b>" +
+                            statistic.getName() + "</b></dt><br>" + statResult + "<br>";
+                        firstEntry = false;
+                    }
+                    result = result + statResult;
+                    statResult = "";
                 }
-
-                if (!result.equals("")) {
-                    result = "<h3>" + name + "</h3>" +
-                        "<div><dl>" + result + "</dl></div>";
-                }
-
-                result = result + "<br class=\"separator\">";
-                return result;
             }
+            if (!result.equals("")) {
+                result = "<h3>" + name + "</h3>" +
+                    "<div><dl>" + result + "</dl></div>";
+            }
+
+            result = result + "<br class=\"separator\">";
+            return result;
         } catch (Exception exception) {
             //log exception message as warning
         }
@@ -192,4 +198,23 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         return result;
     }
 
+    
+    private String getStatisticRepresentation(Statistic statistic)
+            throws IllegalAccessException, InvocationTargetException {
+        String result ="";
+        //Swithching to getStatistic(Statistic) method i.e Gettting the attribute
+        //map provided by monitoring infrastructure instead of introspecting
+        Map<String, Object> map = getStatistic(statistic);
+        Set<String> attributes = map.keySet();
+        Object attributeValue;
+        for (String attributeName: attributes) {
+            attributeValue = map.get(attributeName);
+            //for html output, string value of the object should suffice,
+            //irrespective of the type of object
+            result = result + "<dt><label for=\"" + attributeName + "\">"
+                + attributeName + ":&nbsp;" + "</label></dt>";
+            result = result + "<dd>" + attributeValue.toString() + "</dd>";
+        }
+        return result;
+    }
 }

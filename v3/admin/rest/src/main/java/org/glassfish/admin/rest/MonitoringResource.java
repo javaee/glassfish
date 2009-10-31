@@ -140,7 +140,10 @@ public class MonitoringResource {
 
         if (currentNode.hasChildNodes()) {
             //print(currentNode.getChildNodes());
-            list.addAll(currentNode.getChildNodes());
+            //TreeNode.getChildNodes() is returning disabled nodes too.
+            //Switching to new api TreeNode.getEnabledChildNodes() which returns
+            //only the enabled nodes. Reference Issue: 9921
+            list.addAll(currentNode.getEnabledChildNodes());
         } else {
             Object result = currentNode.getValue();
             System.out.println("result: " + result);

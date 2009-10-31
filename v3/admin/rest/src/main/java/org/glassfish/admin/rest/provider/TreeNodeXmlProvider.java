@@ -36,6 +36,7 @@
 package org.glassfish.admin.rest.provider;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,6 +55,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.flashlight.datatree.TreeNode;
+import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.Statistic;
 
 /**
@@ -186,23 +188,18 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         try {
             if (value instanceof Statistic) {
                 Statistic statisticObject = (Statistic)value;
-                Map map = getStatistics(statisticObject);
-                Set<String> attributes = map.keySet();
-                Object attributeValue;
-
-                result = result + Constants.INDENT;
-                result = result + "<" + statisticObject.getName();
-                for (String attributeName: attributes) {
-                    attributeValue = map.get(attributeName);
-                    result = " " + result + " " + attributeName + "=" +
-                         quote(attributeValue.toString());
+                result = result + getStatisticRepresentation(statisticObject);
+            } else if (value instanceof Stats) {
+                String statResult;
+                for (Statistic statistic: ((Stats)value).getStatistics()) {
+                    statResult = getStatisticRepresentation(statistic);
+                    if (!statResult.equals("")) {
+                        result = result + statResult;
+                        statResult = "";
+                    }
                 }
-                result = result + ">";
-                result = result + getEndXmlElement(statisticObject.getName());
-
-                result = result + "\n\n";
-                return result;
             }
+            return result;
         } catch (Exception exception) {
             //log exception message as warning
         }
@@ -210,4 +207,30 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         return result;
     }
 
+
+    private String getStatisticRepresentation(Statistic statistic)
+            throws IllegalAccessException, InvocationTargetException {
+        String result ="";
+        //Swithching to getStatistic(Statistic) method i.e Gettting the attribute
+        //map provided by monitoring infrastructure instead of introspecting
+        Map map = getStatistic(statistic);
+        Set<String> attributes = map.keySet();
+        Object attributeValue;
+
+        result = result + Constants.INDENT;
+        //Replacing slash(/) from the element name with underscore(_) to form the
+        //valid xml. Xml element names cannot start with forward slash(/)
+        //or dash(-) character.
+        result = result + "<" + statistic.getName().replace('/', '_');
+        for (String attributeName: attributes) {
+            attributeValue = map.get(attributeName);
+            result = " " + result + " " + attributeName + "=" +
+                 quote(attributeValue.toString());
+        }
+        result = result + ">";
+        result = result + getEndXmlElement(statistic.getName().replace('/', '_'));
+
+        result = result + "\n\n";
+        return result;
+    }
 }

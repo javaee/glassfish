@@ -36,6 +36,7 @@
 package org.glassfish.admin.rest.provider;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -53,6 +54,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 
 import org.glassfish.admin.rest.Constants;
+import org.glassfish.external.statistics.Stats;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.flashlight.datatree.TreeNode;
 
@@ -128,7 +130,6 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
                 //Statistic object, String object or the object for primitive type
                 result = result +
                         jsonForNodeValue(node.getName(), node.getValue(), indent);
-                result = result + ",";
             }
         }
 
@@ -163,31 +164,37 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
 
     private String jsonForNodeValue(String name, Object value, String indent) {
         String result = "";
-        if (value == null) return " " + quote(name) + ":";
+        if (value == null) return result;
 
         try {
             if (value instanceof Statistic) {
                 Statistic statisticObject = (Statistic)value;
-                Map map = getStatistics(statisticObject);
-                Set<String> attributes = map.keySet();
-                Object attributeValue;
-                for (String attributeName: attributes) {
-                    attributeValue = map.get(attributeName);
-                    result = result + " " + quote(attributeName) + ":" + jsonValue(attributeValue);
-                    result = result + ",";
+                result = result + getStatisticRepresentation(statisticObject);
+            } else if (value instanceof Stats) {
+                String statResult;
+                for (Statistic statistic: ((Stats)value).getStatistics()) {
+                    statResult = getStatisticRepresentation(statistic);
+                    if (!statResult.equals("")) {
+                        statResult = "\n" + indent + indent +
+                                quote(statistic.getName()) + ":" + "{" + statResult + "}";
+                        result = result + statResult;
+                        result = result + ",";
+                        statResult ="";
+                    }
                 }
 
                 int endIndex = result.length() - 1;
                 if (endIndex > 0) result = result.substring(0, endIndex);
-
-                result = "\n" + indent + quote(name) + ":" + "{" + result + "}";
-                return result;
             }
+            result = "\n" + indent + quote(name) + ":" + "{" + result + "}";
+            result = result + ",";
+            return result;
         } catch (Exception exception) {
             //log exception message as warning
         }
 
         result = " " + quote(name) + ":" + jsonValue(value);
+        result = result + ",";
         return result;
     }
 
@@ -200,6 +207,27 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
         } else {
             result =  value.toString();
         }
+
+        return result;
+    }
+
+
+    private String getStatisticRepresentation(Statistic statistic)
+            throws IllegalAccessException, InvocationTargetException {
+        String result ="";
+        //Swithching to getStatistic(Statistic) method i.e Gettting the attribute
+        //map provided by monitoring infrastructure instead of introspecting
+        Map map = getStatistic(statistic);
+        Set<String> attributes = map.keySet();
+        Object attributeValue;
+        for (String attributeName: attributes) {
+            attributeValue = map.get(attributeName);
+            result = result + " " + quote(attributeName) + ":" + jsonValue(attributeValue);
+            result = result + ",";
+        }
+
+        int endIndex = result.length() - 1;
+        if (endIndex > 0) result = result.substring(0, endIndex);
 
         return result;
     }

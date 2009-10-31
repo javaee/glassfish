@@ -42,6 +42,7 @@ import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,6 +55,7 @@ import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
+import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.Statistic;
 
 import javax.ws.rs.core.UriInfo;
@@ -196,6 +198,20 @@ public class ProviderUtil extends Util {
              }
         }
         return results;
+    }
+
+
+    static protected Map<String, Object> getStatistic(Statistic statistic) {
+        Map<String,Object> statsMap;
+        // Most likely we will get the proxy of the StatisticImpl,
+        // reconvert that so you can access getStatisticAsMap method
+        if (Proxy.isProxyClass(statistic.getClass())) {
+                statsMap = ((StatisticImpl)Proxy.getInvocationHandler(statistic)).getStaticAsMap();
+        } else {
+            statsMap = ((StatisticImpl)statistic).getStaticAsMap();
+        }
+
+        return  statsMap;
     }
 
 
