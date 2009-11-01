@@ -226,6 +226,14 @@ public abstract class AbstractHandler implements AnnotationHandler {
 
     /**
      * This is called by getTypeDependencies().
+     * @return an array of all web types annotation
+     */
+    protected Class<? extends Annotation>[] getWebAnnotationTypes() {
+        return new Class[]{javax.servlet.annotation.WebServlet.class};
+    }
+
+    /**
+     * This is called by getTypeDependencies().
      * @return an array of all connector type annotations
      */
     protected Class<? extends Annotation>[] getConnectorAnnotationTypes() {

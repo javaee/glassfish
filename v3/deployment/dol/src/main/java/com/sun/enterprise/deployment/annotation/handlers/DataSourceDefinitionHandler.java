@@ -42,13 +42,17 @@ import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 
 import javax.annotation.sql.DataSourceDefinition;
+import javax.interceptor.Interceptors;
+import javax.interceptor.Interceptor;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import java.lang.annotation.Annotation;
-import java.util.Set;
-import java.util.Properties;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
 
-import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
-import com.sun.enterprise.deployment.DataSourceDefinitionDescriptor;
-import com.sun.enterprise.deployment.MetadataSource;
+import com.sun.enterprise.deployment.annotation.context.*;
+import com.sun.enterprise.deployment.*;
 
 /**
  * @author Jagadish Ramu
@@ -70,14 +74,22 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
             throws AnnotationProcessorException {
         DataSourceDefinition dataSourceDefnAn =
                 (DataSourceDefinition)ainfo.getAnnotation();
-        return processAnnotation(dataSourceDefnAn, rcContexts);
+        return processAnnotation(dataSourceDefnAn, ainfo, rcContexts);
     }
 
-    protected HandlerProcessingResult processAnnotation(DataSourceDefinition dataSourceDefnAn,
+    protected HandlerProcessingResult processAnnotation(DataSourceDefinition dataSourceDefnAn, AnnotationInfo aiInfo,
                                                         ResourceContainerContext[] rcContexts)
             throws AnnotationProcessorException {
+        Class annotatedClass = (Class)aiInfo.getAnnotatedElement();
+        Annotation[] annotations = annotatedClass.getAnnotations();
+        boolean warClass = isAWebComponentClass(annotations);
+        boolean ejbClass = isAEjbComponentClass(annotations);
 
         for(ResourceContainerContext context : rcContexts){
+                if (!canProcessAnnotation(annotatedClass, ejbClass, warClass, context)){
+                    return getDefaultProcessedResult();
+                }
+
             Set<DataSourceDefinitionDescriptor> dsdDescs = context.getDataSourceDefinitionDescriptors();
             DataSourceDefinitionDescriptor desc = getDescriptor(dataSourceDefnAn);
             if(isDefinitionAlreadyPresent(dsdDescs, desc)){
@@ -87,6 +99,129 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
             }
         }
         return getDefaultProcessedResult();
+    }
+
+    private boolean isAEjbComponentClass(Annotation[] annotations) {
+        boolean ejbClass = false;
+        Class ejbAnnotations[] = getEjbAnnotationTypes();
+        for(Annotation annotation : annotations){
+            for(Class ejbAnnotation : ejbAnnotations){
+                if(ejbAnnotation.equals(annotation.annotationType())){
+                    ejbClass = true;
+                    break;
+                }
+            }
+        }
+        return ejbClass;
+    }
+
+    private boolean isAWebComponentClass(Annotation[] annotations) {
+        boolean warClass = false;
+        Class webAnnotations[] = getWebAnnotationTypes();
+        for(Annotation annotation : annotations){
+            for(Class webAnnotation : webAnnotations){
+                if(webAnnotation.equals(annotation.annotationType())){
+                    warClass = true;
+                    break;
+                }
+            }
+        }
+        return warClass;
+    }
+
+    /**
+     * To take care of the case where an ejb is provided in a .war and
+     * annotation processor will process this class twice (once for ejb and
+     * once for web-bundle-context, which is a bug).<br>
+     * This method helps to overcome the issue, partially.<br>
+     * Checks whether both the annotated class and the context are either ejb or web.
+     *
+     * @param annotatedClass annotated-class
+     * @param ejbClass indicates whether the class is an ejb-class
+     * @param warClass indicates whether the class is an web-class
+     * @param context resource-container-context
+     * @return boolean indicates whether the annotation can be processed.
+     */
+    private boolean canProcessAnnotation(Class annotatedClass, boolean ejbClass, boolean warClass,
+                                         ResourceContainerContext context) {
+        if (ejbClass) {
+            if (!(context instanceof EjbBundleContext ||
+                    context instanceof EjbContext ||
+                    context instanceof EjbInterceptorContext
+            )) {
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.log(Level.FINEST, "Ignoring @DataSourceDefinition annotation processing as the class is" +
+                            "an EJB class and context is not one of EJBContext");
+                }
+                return false;
+            }
+        } else if (context instanceof EjbBundleContext) {
+            EjbBundleContext ejbContext = (EjbBundleContext) context;
+            EjbBundleDescriptor ejbBundleDescriptor = ejbContext.getDescriptor();
+            EjbDescriptor[] ejbDescriptor = ejbBundleDescriptor.getEjbByClassName(annotatedClass.getName());
+            if (ejbDescriptor == null || ejbDescriptor.length == 0) {
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.log(Level.FINEST, "Ignoring @DataSourceDefinition annotation processing as the class " +
+                            "[ " + annotatedClass + " ] is" +
+                            "not an EJB class and the context is EJBContext");
+                }
+                return false;
+            }
+        } else if (warClass) {
+            if (!(context instanceof WebBundleContext || context instanceof WebComponentsContext
+                    || context instanceof WebComponentContext )) {
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.log(Level.FINEST, "Ignoring @DataSourceDefinition annotation processing as the class is" +
+                            "an Web class and context is not one of WebContext");
+                }
+                return false;
+            }
+        } else if (context instanceof WebBundleContext) {
+            WebBundleContext webBundleContext = (WebBundleContext) context;
+            WebBundleDescriptor webBundleDescriptor = webBundleContext.getDescriptor();
+            Collection<RootDeploymentDescriptor> extDesc = webBundleDescriptor.getExtensionsDescriptors();
+            for(RootDeploymentDescriptor desc : extDesc){
+                if(desc instanceof EjbBundleDescriptor){
+                    EjbBundleDescriptor ejbBundleDesc = (EjbBundleDescriptor)desc;
+                    EjbDescriptor[] ejbDescs = ejbBundleDesc.getEjbByClassName(annotatedClass.getName());
+                    if(ejbDescs != null && ejbDescs.length > 0){
+                        if (logger.isLoggable(Level.FINEST)) {
+                            logger.log(Level.FINEST, "Ignoring @DataSourceDefinition annotation processing as the class " +
+                                    "[ " + annotatedClass + " ] is" +
+                                    "not an Web class and the context is WebContext");
+                        }
+                        return false;
+                    }else if(ejbBundleDesc.getInterceptorByClassName(annotatedClass.getName()) != null){
+                            if (logger.isLoggable(Level.FINEST)) {
+                                logger.log(Level.FINEST, "Ignoring @DataSourceDefinition annotation processing " +
+                                        "as the class " +
+                                        "[ " + annotatedClass + " ] is" +
+                                        "not an Web class and the context is WebContext");
+                            }
+                            return false;
+                    }else{
+                        Method[] methods = annotatedClass.getDeclaredMethods();
+                        for(Method method : methods){
+                            Annotation annotations[] = method.getAnnotations();
+                            for(Annotation annotation : annotations){
+                                if(annotation.annotationType().equals(AroundInvoke.class) ||
+                                        annotation.annotationType().equals(AroundTimeout.class) ||
+                                        annotation.annotationType().equals(Interceptors.class)) {
+                                    if (logger.isLoggable(Level.FINEST)) {
+                                        logger.log(Level.FINEST, "Ignoring @DataSourceDefinition annotation processing " +
+                                                "as the class " +
+                                                "[ " + annotatedClass + " ] is" +
+                                                "not an Web class, an interceptor and the context is WebContext");
+                                    }
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     private boolean isDefinitionAlreadyPresent(Set<DataSourceDefinitionDescriptor> dsdDescs,
@@ -103,7 +238,18 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
 
 
     public Class<? extends Annotation>[] getTypeDependencies() {
-        return getEjbAndWebAnnotationTypes();
+        Class<? extends Annotation> [] annotations = getEjbAndWebAnnotationTypes();
+        List<Class <? extends Annotation>> annotationsList = new ArrayList<Class <? extends Annotation>>();
+        for(Class<? extends Annotation> annotation : annotations){
+            annotationsList.add(annotation);
+        }
+        annotationsList.add(Interceptors.class);
+        annotationsList.add(Interceptor.class);
+        annotationsList.add(AroundInvoke.class);
+        annotationsList.add(AroundTimeout.class);
+
+        Class<? extends Annotation>[] result = new Class[annotationsList.size()];
+        return annotationsList.toArray(result);
     }
 
 

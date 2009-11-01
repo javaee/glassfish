@@ -97,7 +97,7 @@ public class DataSourceDefinitionsHandler extends AbstractResourceHandler {
                     duplicates.add(defnName);
                 }
                 DataSourceDefinitionHandler handler = new DataSourceDefinitionHandler();
-                handler.processAnnotation(defn, rcContexts);
+                handler.processAnnotation(defn, ainfo, rcContexts);
             }
             duplicates.clear();
         }
