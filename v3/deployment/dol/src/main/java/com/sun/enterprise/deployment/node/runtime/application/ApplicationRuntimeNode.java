@@ -181,6 +181,9 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 	if (element.getQName().equals(RuntimeTagNames.ARCHIVE_NAME)) {
 	    descriptor.setArchiveName(value);
 	} else
+	if (element.getQName().equals(RuntimeTagNames.COMPATIBILITY)) {
+	    descriptor.setCompatibility(value);
+	} else
 	if (element.getQName().equals(RuntimeTagNames.WEB_URI)) {
 	    currentWebUri=value;
 	} else 
@@ -275,6 +278,9 @@ public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 
         // archive-name
         appendTextChild(appNode, RuntimeTagNames.ARCHIVE_NAME, application.getArchiveName());
+
+        // compatibility
+        appendTextChild(appNode, RuntimeTagNames.COMPATIBILITY, application.getCompatibility());
 
         return appNode;
     }

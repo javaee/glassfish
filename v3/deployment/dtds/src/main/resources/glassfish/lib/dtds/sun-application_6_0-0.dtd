@@ -12,7 +12,7 @@
 <!--
 This is the root element of the runtime descriptor document.
 -->
-<!ELEMENT sun-application (web*, pass-by-reference?, unique-id?, security-role-mapping*, realm?, ejb-ref*, resource-ref*, resource-env-ref*, service-ref*, message-destination-ref*, message-destination*, archive-name?) >
+<!ELEMENT sun-application (web*, pass-by-reference?, unique-id?, security-role-mapping*, realm?, ejb-ref*, resource-ref*, resource-env-ref*, service-ref*, message-destination-ref*, message-destination*, archive-name?, compatibility?) >
 
 <!ELEMENT web (web-uri, context-root)>
 <!ELEMENT web-uri (#PCDATA)>
@@ -472,7 +472,20 @@ Used in: method-params
 
 
 <!--
-  The value of the archive-name element will be used to derive the default name of the app-name when app-name is not present in application.xml.
-  The default app name will be archive-name value minus the file extension. For example, if archive-name is foo.ear, the default app-name will be foo.
+  The value of the archive-name element will be used to derive the default 
+name of the app-name when app-name is not present in application.xml.
+  The default app name will be archive-name value minus the file extension. 
+For example, if archive-name is foo.ear, the default app-name will be foo.
 -->
 <!ELEMENT archive-name (#PCDATA)> 
+
+<!--
+Specifies the Enterprise Server release with which to be backward compatible 
+in terms of JAR visibility requirements for applications. 
+The current allowed value is v2, which refers to GlassFish version 2 or 
+Enterprise Server version 9.1 or 9.1.1. The Java EE 6 platform specification 
+imposes stricter requirements than Java EE 5 did on which JAR files can be 
+visible to various modules within an EAR file. Setting this element to v2 
+removes these Java EE 6 restrictions.
+-->
+<!ELEMENT compatibility (#PCDATA)>

@@ -72,6 +72,10 @@ import java.io.*;
 import java.util.logging.Level;
 import java.net.URLClassLoader;
 import java.net.URL;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import static javax.xml.stream.XMLStreamConstants.*;
 
 /*;
  * Created by IntelliJ IDEA.
@@ -102,6 +106,14 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     private static final String EMBEDDED_RAR = "embedded_rar";
 
     private static LocalStringsImpl strings = new LocalStringsImpl(EarHandler.class);;
+
+    private static XMLInputFactory xmlIf = null;
+
+    static {
+        xmlIf = XMLInputFactory.newInstance();
+        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    }
+
 
     public String getArchiveType() {
         return "ear";
@@ -185,6 +197,17 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         try {
             String compatProp = context.getAppProps().getProperty(
                 DeploymentProperties.COMPATIBILITY);
+            // if user does not specify the compatibility property
+            // let's see if it's defined in sun-application.xml
+            if (compatProp == null) {
+                SunApplicationXmlParser sunApplicationXmlParser = 
+                    new SunApplicationXmlParser(context.getSourceDir());
+                compatProp = sunApplicationXmlParser.getCompatibilityValue();
+                if (compatProp != null) {
+                    context.getAppProps().put(
+                        DeploymentProperties.COMPATIBILITY, compatProp);
+                }
+            }
             EarLibClassLoader earLibCl = new EarLibClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory(), compatProp), parent);
             embeddedConnCl = new DelegatingClassLoader(earLibCl);
             cl = new EarClassLoader(embeddedConnCl);
@@ -192,7 +215,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
             // add ear lib to module classloader list so we can 
             // clean it up later
             cl.addModuleClassLoader(EAR_LIB, earLibCl);
-        } catch (IOException e) {
+        } catch (Exception e) {
             _logger.log(Level.SEVERE, strings.get("errAddLibs") ,e);
             throw new RuntimeException(e);
         }
@@ -324,4 +347,82 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         return holder;
     }
 
+    private class SunApplicationXmlParser {
+        private XMLStreamReader parser = null;
+        private String compatValue = null;
+
+        SunApplicationXmlParser(File baseDir) throws XMLStreamException, FileNotFoundException {
+            InputStream input = null;
+            File f = new File(baseDir, "META-INF/sun-application.xml");
+            if (f.exists()) {
+                input = new FileInputStream(f);
+                try {
+                    read(input);
+                } finally {
+                    if (parser != null) {
+                        try {
+                            parser.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                    if (input != null) {
+                        try {
+                            input.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        }
+
+        private void read(InputStream input) throws XMLStreamException {
+            parser = xmlIf.createXMLStreamReader(input);
+
+            int event = 0;
+            boolean done = false;
+            skipRoot("sun-application");
+
+            while (!done && (event = parser.next()) != END_DOCUMENT) {
+
+                if (event == START_ELEMENT) {
+                    String name = parser.getLocalName();
+                    if (DeploymentProperties.COMPATIBILITY.equals(name)) {
+                        compatValue = parser.getElementText();
+                        done = true;
+                    } else {
+                        skipSubTree(name);
+                    }
+                }
+            }
+        }
+
+        private void skipRoot(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == START_ELEMENT) {
+                    if (!name.equals(parser.getLocalName())) {
+                       throw new XMLStreamException();
+                    }
+                    return;
+                }
+            }
+        }
+
+        private void skipSubTree(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == END_DOCUMENT) {
+                    throw new XMLStreamException();
+                } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
+                    return;
+                }
+            }
+        }
+
+        String getCompatibilityValue() {
+            return compatValue;
+        }
+    }
 } 

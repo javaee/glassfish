@@ -141,6 +141,8 @@ public class Application extends BundleDescriptor
    
     private String archiveName;
 
+    private String compatValue;
+
     private boolean initializeInOrder = false;
 
     // realm associated with this application
@@ -683,6 +685,15 @@ public class Application extends BundleDescriptor
             appName = DeploymentUtils.getDefaultEEName(archiveName);
         }
     }
+
+    public String getCompatibility() {
+        return compatValue;
+    }
+
+    public void setCompatibility(String compatValue) {
+        this.compatValue = compatValue;
+    }
+
 
     /**
      * @return the initializeInOrder flag
