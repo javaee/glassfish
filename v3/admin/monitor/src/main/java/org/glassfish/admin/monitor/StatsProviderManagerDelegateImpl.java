@@ -340,12 +340,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         }
 
         /* Step 4. gmbal registration */
-        ManagedObjectManager mom = null;
         if (AMXReady && getMbeanEnabledValue()) {
             //Create mom root using the statsProvider
             String subTreePath = spre.getSubTreePath();
-            mom = registerGmbal(statsProvider, subTreePath);
-            spre.setManagedObjectManager(mom);
+            ManagedObjectManager mom = spre.getManagedObjectManager();
+            if (mom == null) {
+                mom = registerGmbal(statsProvider, subTreePath);
+                spre.setManagedObjectManager(mom);
+            }
         }
 
         spre.setEnabled(true);
@@ -376,8 +378,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             printd("Registering all the statsProviders whose enabled flag is 'on' with Gmbal");
         for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
             if (spre.isEnabled()) {
-                ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
-                spre.setManagedObjectManager(mom);
+                ManagedObjectManager mom = spre.getManagedObjectManager();
+                if (mom == null) {
+                    mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
+                    spre.setManagedObjectManager(mom);
+                }
             }
         }
     }
@@ -610,8 +615,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         if (this.getMbeanEnabledValue()) {
             for (StatsProviderRegistry.StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
                 if (spre.isEnabled()) {
-                    ManagedObjectManager mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
-                    spre.setManagedObjectManager(mom);
+                    ManagedObjectManager mom = spre.getManagedObjectManager();
+                    if (mom == null) {
+                        mom = registerGmbal(spre.getStatsProvider(), spre.getMBeanName());
+                        spre.setManagedObjectManager(mom);
+                    }
                 }
             }
         }
