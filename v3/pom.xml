@@ -209,6 +209,7 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
+                <module>maven-plugin</module>
             </modules>
         </profile>
         <profile>
@@ -325,6 +326,7 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
+                <module>maven-plugin</module>
             </modules>
        </profile>
 
@@ -374,6 +376,7 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
+                <module>maven-plugin</module>
             </modules>
         </profile>
         <profile>
