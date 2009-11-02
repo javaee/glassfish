@@ -105,6 +105,17 @@ public interface RuntimeRoot extends AMXProxy, Utility, Singleton
             @Param(name = "moduleName") String moduleName);
 
     /**
+     * Return the context root of a specified module.
+     * @param applicationName the application name
+     * @param moduleName the module name
+     * @return the context root of a specified module 
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public String getContextRoot(
+            @Param(name = "applicationName") String applicationName,
+            @Param(name = "moduleName") String moduleName);
+
+    /**
     Execute a REST command.  Do not include a leading "/".
      */
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)

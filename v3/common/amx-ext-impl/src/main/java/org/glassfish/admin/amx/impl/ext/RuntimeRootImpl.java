@@ -435,7 +435,9 @@ public final class RuntimeRootImpl extends AMXImplBase
             Application app = appInfo.getMetaData(Application.class);
             if (app != null) {
                 BundleDescriptor bundleDesc = app.getModuleByUri(moduleName);
-                return getModuleLevelComponents(bundleDesc);
+                if (bundleDesc != null) {
+                    return getModuleLevelComponents(bundleDesc);
+                }
             }
         }
         return Collections.emptyMap();
@@ -493,6 +495,30 @@ public final class RuntimeRootImpl extends AMXImplBase
         }
 
         return type;
+    }
+
+    /**
+     * Return the context root of a specified module.
+     * @param applicationName the application name
+     * @param moduleName the module name
+     * @return the context root of a specified module
+     */
+    public String getContextRoot(String applicationName, String moduleName) {
+        ApplicationRegistry appRegistry = mHabitat.getComponent(
+            ApplicationRegistry.class);
+
+        ApplicationInfo appInfo = appRegistry.get(applicationName);
+        if (appInfo != null) {
+            Application app = appInfo.getMetaData(Application.class);
+            if (app != null) {
+                BundleDescriptor bundleDesc = app.getModuleByUri(moduleName);
+                if (bundleDesc != null && 
+                    bundleDesc instanceof WebBundleDescriptor) {
+                    return ((WebBundleDescriptor)bundleDesc).getContextRoot();
+                }
+            }
+        }
+        return null;
     }
 }
 
