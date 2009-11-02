@@ -39,6 +39,8 @@ package com.sun.enterprise.connectors.util;
 import com.sun.enterprise.deployment.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
+import java.util.Properties;
+
 /** Interface class of admin object interface parser methods. 
  *  @author Srikanth P
  */
@@ -78,5 +80,22 @@ public interface AdminObjectConfigParser extends ConnectorConfigParser {
      */
     public boolean hasAdminObject(ConnectorDescriptor desc, String intfName, String className)
         throws ConnectorRuntimeException;
+
+    /**
+     * Obtains the merged javabean properties (properties present in ra.xml
+     * and introspected properties) of a specific configuration.
+     *
+     * @param desc              ConnectorDescriptor pertaining to rar .
+     * @param adminObjectIntfName admin object interface .
+     * @param adminObjectClassName admin object classname
+     * @param rarName resource-adapter-name
+     * @return Merged properties.
+     *  @throws ConnectorRuntimeException If rar is not exploded or
+     *                                    incorrect ra.xml
+     */
+    Properties getJavaBeanProps(ConnectorDescriptor desc,
+                                String adminObjectIntfName, String adminObjectClassName,
+                                String rarName) throws ConnectorRuntimeException;
+
 }
 

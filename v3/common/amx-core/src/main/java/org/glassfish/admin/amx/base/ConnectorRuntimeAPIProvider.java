@@ -177,6 +177,13 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
             @Param(name = "adminObjectIntf") String adminObjectIntf);
 
     @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    @Description("List of administered object configuration properties")
+    public Map<String, Object> getAdminObjectConfigProps(
+            @Param(name = "rarName") String rarName,
+            @Param(name = "adminObjectIntf") String adminObjectIntf,
+            @Param(name = "adminObjectClass") String adminObjectClass);
+
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
     @Description("List of java bean properties and their default values for a connection definition")
     public Map<String, Object> getConnectorConfigJavaBeans(
             @Param(name = "rarName") String rarName,

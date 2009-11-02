@@ -426,6 +426,27 @@ public interface ConnectorRuntime extends ConnectorConstants{
       String rarName,String adminObjectIntf) throws ConnectorRuntimeException ;
 
     /**
+     *  Retrieves the admin object javabean properties with default values.
+     *  The default values will the values present in the ra.xml. If the
+     *  value is not present in ra.xxml, javabean is introspected to obtain
+     *  the default value present, if any. If intrspection fails or null is the
+     *  default value, empty string is returned.
+     *  If ra.xml has only the property and no value, empty string is the value
+     *  returned.
+     *  If the AdministeredObject Java bean is annotated, properties will be the result of merging
+     *  annotated config property and config-property of AdministeredObject in ra.xml
+
+     *  @param rarName rar module name
+     *  @param adminObjectIntf admin-object-interface name
+     *  @param adminObjectClass admin-object-class name
+     *  @return admin object javabean properties with
+     *          default values.
+     *  @throws ConnectorRuntimeException if property retrieval fails.
+     */
+    public Map<String,String> getAdminObjectConfigProps(
+      String rarName,String adminObjectIntf, String adminObjectClass) throws ConnectorRuntimeException ;
+
+    /**
      *  Retrieves the XXX javabean properties with default values.
      *  The javabean to introspect/retrieve is specified by the type.
      *  The default values will be the values present in the ra.xml. If the

@@ -62,9 +62,7 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
     /**
      * Default constructor.
      */
-
     public AdminObjectConfigParserImpl() {
-
     }
 
     /**
@@ -80,8 +78,7 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
      * present for the corresponding adminobjectInterface, null is returned.
      *
      * @param desc                 ConnectorDescriptor pertaining to rar.
-     * @param adminObjectInterface AdminObject interface which is unique
-     *                             across all the admin Object elements in a given rar.
+     * @param adminObjectInterface AdminObject interface
      * @return Javabean properties with the propety names and values
      *         of propeties. The property values will be the values
      *         mentioned in ra.xml if present. Otherwise it will be the
@@ -96,8 +93,40 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
     public Properties getJavaBeanProps(ConnectorDescriptor desc,
                                        String adminObjectInterface, String rarName)
             throws ConnectorRuntimeException {
+        return getJavaBeanProps(desc, adminObjectInterface, null, rarName);
+    }
 
-        if (desc == null || adminObjectInterface == null) {
+    /**
+     * Parses the ra.xml for the admin object javabean properties.
+     * The admin object to be parsed is identified by the moduleDir
+     * where ra.xml is present and the adminObject interface.
+     * Admin object interface will be unique in a given ra.xml.
+     * <p/>
+     * It throws ConnectorRuntimeException if either or both the
+     * parameters are null, if corresponding rar is not deployed,
+     * if no adminObjectInterce is found in ra.xml. If rar is deployed
+     * and admin Object interface is present but no properties are
+     * present for the corresponding adminobjectInterface, null is returned.
+     *
+     * @param desc                 ConnectorDescriptor pertaining to rar.
+     * @param adminObjectInterface AdminObject interface 
+     * @param adminObjectClass AdminObject class
+     * @return Javabean properties with the propety names and values
+     *         of propeties. The property values will be the values
+     *         mentioned in ra.xml if present. Otherwise it will be the
+     *         default values obtained by introspecting the javabean.
+     *         In both the case if no value is present, empty String is
+     *         returned as the value.
+     * @throws ConnectorRuntimeException if either of the parameters are null.
+     *                                   If corresponding rar is not deployed i.e moduleDir is invalid.
+     *                                   If no admin object intercface is found in ra.xml
+     */
+
+    public Properties getJavaBeanProps(ConnectorDescriptor desc,
+                                       String adminObjectInterface, String adminObjectClass, String rarName)
+            throws ConnectorRuntimeException {
+
+        if (desc == null || adminObjectInterface == null ) {
             throw new ConnectorRuntimeException("Invalid arguments");
         }
 
@@ -108,17 +137,17 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
         AdminObject adminObject = null;
         Iterator iter = adminObjectSet.iterator();
         Properties mergedVals = null;
-        boolean adminInterfaceFound = false;
+        boolean adminObjectFound = false;
         while (iter.hasNext()) {
             adminObject = (AdminObject) iter.next();
-            if (adminObjectInterface.equals(
-                    adminObject.getAdminObjectInterface())) {
-                adminInterfaceFound = true;
+            if (adminObjectInterface.equals(adminObject.getAdminObjectInterface()) &&
+                    (adminObjectClass == null || adminObjectClass.equals(adminObject.getAdminObjectClass()))) {
+                adminObjectFound = true;
                 break;
             }
         }
 
-        if (adminInterfaceFound == false) {
+        if (!adminObjectFound) {
             StringManager localStrings =
                     StringManager.getManager(AdminObjectConfigParserImpl.class);
             String msg = localStrings.getString(
@@ -126,7 +155,13 @@ public class AdminObjectConfigParserImpl implements AdminObjectConfigParser {
             _logger.log(Level.FINE, msg);
             throw new ConnectorRuntimeException(msg);
         }
+        mergedVals = getMergedValues(adminObject, mergedVals);
 
+
+        return mergedVals;
+    }
+
+    private Properties getMergedValues(AdminObject adminObject, Properties mergedVals) throws ConnectorRuntimeException {
         /* ddVals           -> Properties present in ra.xml
         *  introspectedVals -> All properties with values
         *                                 obtained by introspection of resource

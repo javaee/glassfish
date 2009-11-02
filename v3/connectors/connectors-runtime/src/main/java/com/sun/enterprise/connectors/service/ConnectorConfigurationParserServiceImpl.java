@@ -188,6 +188,38 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
     }
 
     /**
+     *  Retrieves the admin object javabean properties with default values.
+     *  The default values will the values present in the ra.xml. If the
+     *  value is not present in ra.xxml, javabean is introspected to obtain
+     *  the default value present, if any. If intrspection fails or null is the
+     *  default value, empty string is returned.
+     *  If ra.xml has only the property and no value, empty string is the value
+     *  returned.
+     *  @param rarName rar module name
+     *  @param adminObjectIntf admin object interface
+     *  @param adminObjectClass admin object class
+     *  @return admin object javabean properties with
+     *          default values.
+     *  @throws ConnectorRuntimeException if property retrieval fails.
+     */
+
+    public Properties getAdminObjectConfigProps(
+      String rarName,String adminObjectIntf, String adminObjectClass) throws ConnectorRuntimeException
+    {
+        ConnectorDescriptor desc = getConnectorDescriptor(rarName);
+        if(desc != null) {
+            AdminObjectConfigParser adminObjectConfigParser =
+                 (AdminObjectConfigParser)
+                 ConnectorConfigParserFactory.getParser(
+                 ConnectorConfigParser.AOR);
+            return adminObjectConfigParser.getJavaBeanProps(
+                       desc,adminObjectIntf, adminObjectClass, rarName);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      *  Retrieves the XXX javabean properties with default values.
      *  The javabean to introspect/retrieve is specified by the type.
      *  The default values will be the values present in the ra.xml. If the

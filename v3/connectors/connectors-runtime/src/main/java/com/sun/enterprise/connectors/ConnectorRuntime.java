@@ -556,6 +556,18 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
+    public Map<String,String> getAdminObjectConfigProps(
+      String rarName,String adminObjectIntf, String adminObjectClass) throws ConnectorRuntimeException {
+        Properties properties =
+	    rarName.indexOf( ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER ) == -1
+	        ? configParserAdmService.getAdminObjectConfigProps(rarName,adminObjectIntf, adminObjectClass)
+		: new Properties();
+        return ConnectorsUtil.convertPropertiesToMap(properties);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Map<String,String> getConnectorConfigJavaBeans(String rarName,
         String connectionDefName,String type) throws ConnectorRuntimeException {
 

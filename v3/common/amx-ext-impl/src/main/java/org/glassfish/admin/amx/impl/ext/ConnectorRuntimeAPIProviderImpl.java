@@ -259,6 +259,29 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         return result;
     }
 
+    public Map<String, Object> getAdminObjectConfigProps(String rarName, String adminObjectIntf, String adminObjectClass)
+    {
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        try
+        {
+            Map<String, String> configProperties = getConnectorRuntime().getAdminObjectConfigProps(
+                    rarName, adminObjectIntf, adminObjectClass);
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_CONFIG_PROPS_KEY, configProperties);
+        }
+        catch (ConnectorRuntimeException e)
+        {
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_CONFIG_PROPS_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        catch (ComponentException e)
+        {
+            result.put(ConnectorRuntimeAPIProvider.ADMIN_OBJECT_CONFIG_PROPS_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        return result;
+    }
+
     public Map<String, Object> getAdminObjectConfigProps(String rarName, String adminObjectIntf)
     {
         final Map<String, Object> result = new HashMap<String, Object>();
