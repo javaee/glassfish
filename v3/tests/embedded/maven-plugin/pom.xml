@@ -49,9 +49,14 @@
     <artifactId>maven-plugin</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Embedded Maven Plugin test</name>
-
+            
     <modules>
+        <module>applicationDispatcher</module>
+        <module>dirListing</module>
+        <module>getRequestURI</module>
+        <module>index</module>
         <module>standalonewar</module>
-        <module>scattered</module>
+        <!--module>scattered</module-->
+        <module>queryString</module>
     </modules>
 </project>

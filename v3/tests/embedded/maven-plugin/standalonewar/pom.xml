@@ -54,14 +54,32 @@
         <defaultGoal>install</defaultGoal>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
+             <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="target/standalonewar.war"
+                                tofile="${basedir}/../target/standalonewar.war"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> 
             <plugin>
                 <groupId>org.glassfish</groupId>
-                <artifactId>maven-glassfish-embedded-plugin</artifactId>
+                <artifactId>maven-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                     <app>target/standalonewar.war</app>
                     <port>8080</port>
                     <name>test</name>
+                    <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>
@@ -96,11 +114,14 @@
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
+                    <name>test</name>
+                    <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>post-integration-test</phase>
                         <goals>
+                            <goal>undeploy</goal>
                             <goal>stop</goal>
                         </goals>
                     </execution>

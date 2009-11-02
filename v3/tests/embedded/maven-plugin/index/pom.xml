@@ -58,6 +58,7 @@
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <configuration>
+                    <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>
@@ -91,6 +92,7 @@
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
+                    <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>

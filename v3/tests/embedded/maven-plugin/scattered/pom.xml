@@ -56,7 +56,7 @@
   <plugins>
     <plugin>
       <groupId>org.glassfish</groupId>
-      <artifactId>maven-embedded-glassfish-plugin</artifactId>
+      <artifactId>maven-glassfish-plugin</artifactId>
       <configuration>
         <goalPrefix>glassfish</goalPrefix>
         <rootdirectory>src/main/web</rootdirectory>

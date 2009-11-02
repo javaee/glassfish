@@ -54,6 +54,23 @@
         <defaultGoal>install</defaultGoal>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
+             <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <copy file="target/queryString.war"
+                                tofile="${basedir}/../target/queryString.war"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> 
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
@@ -62,6 +79,7 @@
                     <app>target/queryString.war</app>
                     <port>8080</port>
                     <name>test</name>
+                    <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>
@@ -96,6 +114,8 @@
                 <artifactId>maven-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
+                    <name>test</name>
+                    <serverID>embedded</serverID>
                 </configuration>
                 <executions>
                     <execution>

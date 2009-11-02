@@ -63,24 +63,22 @@ public class WebTest {
             URLConnection yc = servlet.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     yc.getInputStream()));
-            /*
-            String line = null;
-            int index;
-            while ((line = in.readLine()) != null) {
-                index = line.indexOf(result);
-                System.out.println(line);
-                if (index != -1) {
-                    index = line.indexOf(":");
-                    String status = line.substring(index+1);
 
-                    if (status.equalsIgnoreCase("PASS")){
-                        count++;
-                    } else {
-                        return;
-                    }
-                }
+            String originalLoc = servlet.toString();
+            System.out.println("\n Invoking url: " + servlet.toString());
+            if (yc instanceof HttpURLConnection) {
+                HttpURLConnection urlConnection = (HttpURLConnection)yc;
+                urlConnection.setDoOutput(true);
+
+                DataOutputStream out =
+                   new DataOutputStream(urlConnection.getOutputStream());
+                                    out.writeByte(1);
+
+               int responseCode=  urlConnection.getResponseCode();
+               System.out.println("Response code: " + responseCode + " Expected code: 200");
+               Assert.assertTrue(urlConnection.getResponseCode()==200);
             }
-            Assert.assertTrue(count==3);*/
+
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
