@@ -43,9 +43,15 @@ public class MyServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
-        Object attrValue = getServletContext().getAttribute("testname");
+        ServletContext ctx = getServletContext();
+        Object attrValue = ctx.getAttribute("testname");
         if (attrValue == null || !"testvalue".equals(attrValue)) {
             throw new ServletException("Missing ServletContext attribute");
+        }
+
+        // Check for ServletContext instance equality (see IT 10736)
+        if (ctx != ctx.getAttribute("servletContextInstance")) {
+            throw new ServletException("Different ServletContext instances");
         }
     }
 }

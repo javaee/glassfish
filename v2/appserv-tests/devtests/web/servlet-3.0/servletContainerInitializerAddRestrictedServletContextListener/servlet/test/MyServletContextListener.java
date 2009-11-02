@@ -44,6 +44,8 @@ public class MyServletContextListener
         ServletContext ctx = sce.getServletContext();
         ctx.setAttribute("testname", "testvalue");
 
+        ctx.setAttribute("servletContextInstance", ctx);
+
         // Make sure that this ServletContextListener is restricted, because
         // it was registered programmatically by MyServletContainerInitializer
         try {

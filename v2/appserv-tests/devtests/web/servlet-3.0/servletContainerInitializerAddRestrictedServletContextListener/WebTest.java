@@ -42,6 +42,9 @@ import com.sun.ejte.ccl.reporter.*;
  *
  *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=8565
  *  ("[SPEC] Restricted ServletContextListeners")
+ * and
+ *   https://glassfish.dev.java.net/issues/show_bug.cgi?id=10736
+ *   ("two different ServletContext instances servicing the same application")
  *
  * This unit test declares a ServletContainerInitializer, which registers
  * a ServletContextListener, which in turn adds a ServletContext attribute
