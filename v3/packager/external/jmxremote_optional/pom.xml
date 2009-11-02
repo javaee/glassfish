@@ -100,9 +100,8 @@
              won't package them. It is sufficient to package the wrapped jar. 
         -->
         <dependency>
-            <groupId>org.jvnet.opendmk</groupId>
-            <artifactId>jmxremote_optional</artifactId>
-            <version>1.0_01-ea</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>opendmk_jmxremote_optional_jar</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
