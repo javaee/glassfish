@@ -62,10 +62,12 @@ public class ServiceInitializerHandler extends TCPSelectorHandler {
     private Collection<LazyServiceInitializer> initializerImplList = null;
     protected static final Logger logger = Logger.getLogger(ServiceInitializerHandler.class.getName());
     private Object LOCK_OBJ = new Object();
+    private long timeout = 60000;
 
     public ServiceInitializerHandler(ServiceInitializerThread selectorThread) {
         this.selectorThread = selectorThread;
         initializerImplList = selectorThread.getHabitat().getAllByContract(LazyServiceInitializer.class);
+        setSelectTimeout(timeout);
     }
     
     public void setSelectorThread(ServiceInitializerThread selectorThread) {
