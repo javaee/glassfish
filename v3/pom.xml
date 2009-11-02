@@ -326,7 +326,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>maven-plugin</module>
             </modules>
        </profile>
 
@@ -376,7 +375,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>maven-plugin</module>
             </modules>
         </profile>
         <profile>
