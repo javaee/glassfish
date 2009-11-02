@@ -39,8 +39,17 @@ own identifying information: Portions Copyright [yyyy]
             </patternset>
         </unzip>
 
-        <!-- replace the colons used as path separators with blanks -->
-        <replace file="${classpath.file}" token=":" value=" "/>
+        <replace file="${classpath.file}">
+            <!-- replace the colons used as path separators with blanks -->
+            <replacefilter token=":" value=" "/>
+
+            <!-- replace incorrect entries ../modules/x.jar for JARs that will actually reside in the
+                 endorsed subdirectory with ../modules/endorsed/x.jar                -->
+
+            <replacefilter token="../modules/javax.annotation.jar" value="../modules/endorsed/javax.annotation.jar"/>
+            <replacefilter token="../modules/jaxb-api-osgi.jar" value="../modules/endorsed/jaxb-api-osgi.jar"/>
+            <replacefilter token="../modules/webservices-api-osgi.jar" value="../modules/endorsed/webservices-api-osgi.jar"/>
+        </replace>
 
         <!-- define the classpath property -->
         <property file="${classpath.file}"/>
