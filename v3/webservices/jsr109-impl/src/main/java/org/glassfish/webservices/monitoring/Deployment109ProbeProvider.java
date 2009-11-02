@@ -15,13 +15,13 @@ import com.sun.enterprise.deployment.Application;
 @ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="deployment-109")
 public class Deployment109ProbeProvider {
 
-    @Probe(name="deploy")
+    @Probe(name="deploy", hidden=true)
     public void deploy(@ProbeParam("app") Application app,
                        @ProbeParam("endpoint") WebServiceEndpoint endpoint) {
         // intentionally left empty.
     }
 
-    @Probe(name="undeploy")
+    @Probe(name="undeploy", hidden=true)
     public void undeploy(@ProbeParam("path")String path) {
         // intentionally left empty.
     }
