@@ -668,7 +668,6 @@ admingui.util = {
  */
 admingui.nav = {
     TREE_ID: "treeForm:tree",
-    lastTreeNodeSelected: null,
     
     refreshCluster: function(hasCluster){
         var node1 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters');
@@ -827,7 +826,7 @@ admingui.nav = {
      *	This function clears all treeNode selections.
      */
     clearTreeSelection: function(treeId) {
-        var tree = admingui.nav.getTreeFrameElementById(treeId);
+        var tree = document.getElementById(treeId);
         if (tree) {
             tree.clearAllHighlight(treeId);
         }
@@ -848,8 +847,6 @@ admingui.nav = {
             // to the currently selected node.  Anyway, for now I will
             // ignore this until we need to fix it...
             admingui.nav.selectTreeNode(admingui.nav.getContainingTreeNode(matches[0]));
-        } else {
-            admingui.nav.selectTreeNode(document.getElementById(getCookie('admingui.nav.lastTreeNodeSelected')));
         }
     },
 
@@ -862,9 +859,8 @@ admingui.nav = {
             try {
                 admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
                 tree.clearAllHighlight(tree.id);
-                tree.highlight(treeNode);
-                this.expandNode(treeNode);
-                setCookie('admingui.nav.lastTreeNodeSelected', treeNode.id);
+                tree.selectTreeNode(treeNode.id);
+                admingui.nav.expandNode(treeNode);
             } catch (err) {
                 //console.log(err);
             }
@@ -937,6 +933,7 @@ admingui.nav = {
         return node;
     },
 
+    /* @deprecated :) */
     getTree: function(treeNode) {
         if (treeNode) {
             var node = document.getElementById(admingui.nav.TREE_ID);
@@ -1859,35 +1856,38 @@ admingui.table = {
 
 admingui.ajax = {
     lastPageLoaded : '',
-    whitelist : ['onchange','onclick'],
 
     loadPage : function (args) {
         var url = admingui.ajax.modifyUrl(args.url);
-//        if (url != admingui.ajax.lastPageLoaded) {
-            admingui.util.log("Loading " + url + " via ajax.");
-            var oldOnClick = args.oldOnClickHandler;
+        args.lastPage = document.getElementById(admingui.nav.TREE_ID).getSelectedTreeNode
 
-            var callback = {
-                success : admingui.ajax.processPageAjax,
-                failure : function(o) {
-		    document.body.style.cursor = 'auto';
-                    alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
-                },
-                argument : args
-            };
-	    // Make cursor spin...
-	    document.body.style.cursor = 'wait';
-            YAHOO.util.Connect.resetDefaultHeaders();
-            YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
-            if (typeof oldOnClick == 'function') {
-                admingui.util.log(oldOnClick);
+        admingui.util.log("Loading " + url + " via ajax.");
+        var oldOnClick = args.oldOnClickHandler;
+
+        var callback = {
+            success : admingui.ajax.processPageAjax,
+            failure : function(o) {
+                document.body.style.cursor = 'auto';
+                alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
+            },
+            argument : args
+        };
+        // Make cursor spin...
+        document.body.style.cursor = 'wait';
+        YAHOO.util.Connect.resetDefaultHeaders();
+        YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
+        if (typeof oldOnClick == 'function') {
+            admingui.util.log(oldOnClick);
 //                oldOnClick();
-            }
-//        }
+        }
         return false;
     },
 
     processPageAjax : function (o) {
+        var tree = document.getElementById(admingui.nav.TREE_ID);
+        tree.clearAllHighlight(admingui.nav.TREE_ID);
+        var selnode = tree.getSelectedTreeNode(admingui.nav.TREE_ID);
+
         admingui.ajax.updateCurrentPageLink(o.argument.url);
         var contentNode = o.argument.target;
         if (contentNode == null) {
@@ -1903,8 +1903,9 @@ admingui.ajax = {
 	document.body.style.cursor = 'auto';
         var node = o.argument.sourceNode;
         if (typeof node != 'undefined') {
-            admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
+            //admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
         }
+        admingui.nav.selectTreeNodeWithURL(o.argument.url);
     },
 
     submitFormAjax : function (form) {
@@ -1948,7 +1949,9 @@ admingui.ajax = {
         if (node.nodeName == 'A') {
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
+                //if (((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) || (node.href.charAt(0) == '#')) {
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
+                    admingui.util.log("*NOT* replacing href for " + node.id);
                     shouldReplace = false;
                 }
                 if (shouldReplace) {
