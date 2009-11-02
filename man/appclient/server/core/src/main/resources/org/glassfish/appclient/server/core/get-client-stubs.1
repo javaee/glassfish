@@ -7,8 +7,7 @@ NAME
 SYNOPSIS
      get-client-stubs
      [--help]
-      --appname  application_name
-     [--target target_name] [local_directory_path]
+      --appname  application_name[--target target] [local_directory_path]
 
 DESCRIPTION
      The get-client-stubs  subcommand  copies  the  required  JAR
@@ -47,12 +46,11 @@ OPERANDS
          directory.
 
 EXAMPLES
+     Example 1 Using get-client-stubs
 
 Java EE 6           Last change: 15 Sep 2009                    1
 
 asadmin Utility Subcommands                   get-client-stubs(1)
-
-     Example 1 Using get-client-stubs
 
        asadmin> get-client-stubs --appname myapplication /sample/example
        Command get-client-stubs executed successfully

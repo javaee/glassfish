@@ -8,8 +8,8 @@ SYNOPSIS
      list-jdbc-connection-pools [--help]
 
 DESCRIPTION
-     Use this subcommand to get the JDBC  connection  pools  that
-     have been created.
+     The list-jdbc-connection-pools subcommand lists the  current
+     JDBC connection pools.
 
      This subcommand is supported in the remote mode only.
 
@@ -20,13 +20,14 @@ OPTIONS
          Displays the help text for the subcommand.
 
 EXAMPLES
-     Example 1 Using the list-jdbc-connection-pools subcommand
+     Example 1 Listing the JDBC Connection Pools
+
+     This example lists the existing JDBC connection pools.
 
        asadmin> list-jdbc-connection-pools
        sample_derby_pool
+       __TimerPool
        Command list-jdbc-connection-pools executed successfully.
-
-     Where: sample_derby_pool is the JDBC connection pool.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -40,5 +41,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 

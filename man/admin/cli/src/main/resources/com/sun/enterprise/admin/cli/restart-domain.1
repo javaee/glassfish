@@ -5,27 +5,27 @@ NAME
      restart-domain - restarts the DAS of the specified domain
 
 SYNOPSIS
-     restart-domain [--help] [--domaindir domain-dir] [domain-name]
+     restart-domain [--help] [--domaindir domaindir] [domain_name]
 
 DESCRIPTION
      The restart-domain subcommand stops and  then  restarts  the
      Domain  Administration Server (DAS) of the specified domain.
      If a domain is not specified, the default domain is assumed.
-     If  there  are  two or more domains, the domain-name operand
-     must be specified. If the server is not already running, you
-     are asked if you want to start it.
+     If  there  are  two or more domains, the domain_name operand
+     must be specified. If the server is not already running, the
+     subcommand attempts to restart it.
 
      The restart-domain subcommand does not exit until  the  sub-
      command  has  verified  that the domain has been stopped and
      restarted.
 
-     A domain can also be restarted  by  using  the  start-domain
-     subcommand  with  the  --verbose option set to true. In this
-     situation, after the domain is restarted, messages  continue
-     to  be  displayed in the console window that was opened when
-     the domain was originally started.
-
-     This subcommand is supported in local mode only.
+     This subcommand is supported in local or remote mode. If you
+     specify  a host name, the subcommand assumes you are operat-
+     ing in remote mode, which means you must correctly authenti-
+     cate  to  the  remote server. In local mode, you normally do
+     not need to authenticate to the server as long  as  you  are
+     running  the  subcommand  as  the  same user who started the
+     server.
 
 OPTIONS
      --help
@@ -40,17 +40,16 @@ OPTIONS
          install/glassfish/domains directory is restarted.
 
 OPERANDS
-     domain-name         The name of the domain you want to  res-
+     domain_name         The name of the domain you want to  res-
                          tart. Default is the name specified dur-
                          ing installation, usually domain1.
 
 EXAMPLES
+     Example 1 Restarting a Domain
 
-Java EE 6            Last change: 7Oct 2009                     1
+Java EE 6           Last change: 19 Oct 2009                    1
 
 asadmin Utility Subcommands                     restart-domain(1)
-
-     Example 1 Restarting a Domain
 
      This example  restarts  mydomain4  in  the  default  domains
      directory.
@@ -70,5 +69,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 7Oct 2009                     2
+Java EE 6           Last change: 19 Oct 2009                    2
 

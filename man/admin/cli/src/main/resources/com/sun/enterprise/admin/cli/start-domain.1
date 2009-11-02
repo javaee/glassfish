@@ -5,19 +5,18 @@ NAME
      start-domain - starts a domain
 
 SYNOPSIS
-     start-domain [--help] [--domaindir domain-dir] [--verbose={true|false}]
-     [ --debug ={true|false}] [--upgrade={true|false}] [domain-name]
+     start-domain [--help] [--debug ={true|false}] [--domaindir domaindir]
+      [--upgrade={true|false}] [--verbose={true|false}] [domain_name]
 
 DESCRIPTION
      The start-domain subcommand starts the specified domain.  If
      the  domain  directory  is  not specified, the domain in the
-     default as-install/glassfish/domains directory  is  started.
-     If  there  are  two or more domains, the domain-name operand
-     must be specified.
+     default domains directory is started. If there  are  two  or
+     more domains, the domain_name operand must be specified.
 
      Note -
 
-       On the Mac OS X platform, processes can bind to  the  same
+       On the Windows platform, processes can bind  to  the  same
        port. To avoid this problem, do not start multiple domains
        with the same port number at the same time.
 
@@ -29,7 +28,12 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --debug
+         If set to true, the server is started in debug mode  and
+         prints the JPDA port on the console. Default is false.
+
      --domaindir
+
          Specifies the directory where the domain to  be  started
          is located. If specified, the path must be accessible in
          the file system. If not specified,  the  domain  in  the
@@ -38,49 +42,36 @@ OPTIONS
 
       --verbose
      -v
+         If set to true, a console  window  is  opened  in  which
+         detailed  server  startup  messages and log messages are
+         displayed until the server is started.  If the domain is
+         later  restarted by using the restart-domain subcommand,
+         issued from a different console  window,  messages  con-
+         tinue  to  be  displayed in the original console window.
 
-         Specifies whether detailed server startup  messages  are
-         displayed. Possible values are as follows:
-
-         false
-             Detailed server startup messages are not displayed.
-
-         true
-
-             A console window is opened in which detailed  server
-             startup  messages  are  displayed.  If the domain is
-
-Java EE 6            Last change: 7Oct 2009                     1
+Java EE 6           Last change: 20 Oct 2009                    1
 
 asadmin Utility Subcommands                       start-domain(1)
 
-             later restarted by using the restart-domain  subcom-
-             mand, messages continue to be displayed in this con-
-             sole window. The console window that is opened  also
-             enables  you  to obtain a thread dump and, on UNIXTM
-             systems, to kill the server:
+         You can kill the server by  typing CTRL-C, or by getting
+         a  thread  dump  for  the  server by typing CTRL-\fR  on
+         UNIXTM  systems,  or  CTRL-Break  on  Windows   systems.
+         Default is false.
 
-                 o    On Windows  systems,  press  CTRL-Break  to
-                      obtain a thread dump.
+     --upgrade
 
-                 o    On UNIX systems, press CTRL-C to  kill  the
-                      server  and press CTRL-\ to obtain a thread
-                      dump.
-
-         --upgrade
-
-             Specifies upgrade TBWritten. Default is false.
-
-             false    TBW
-
-             true     TBW
-
-     --debug
-         If set to true, the server is started in debug mode  and
-         prints the JPDA port on the console. Default is false.
+         If set to true, the server is upgraded from  a  previous
+         release.  The  server  is  started, the configuration is
+         modified to be compatible with this  release  of  Enter-
+         prise  Server,  and the server process stops.  Normally,
+         if the start-domain subcommand detects that  the  confi-
+         guration is from an older release of  Enterprise Server,
+         the  domain  is  upgraded  automatically  before   being
+         started.  You  should not need to use this option expli-
+         citly. Default is false.
 
 OPERANDS
-     domain-name         The unique name of the domain  you  want
+     domain_name         The unique name of the domain  you  want
                          to  start. Default is the name specified
                          during installation, usually domain1.
 
@@ -98,15 +89,15 @@ EXAMPLES
        Admin port for the domain: 4848
        Command start-domain executed successfully.
 
-Java EE 6            Last change: 7Oct 2009                     2
-
-asadmin Utility Subcommands                       start-domain(1)
-
 EXIT STATUS
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
                                  mand
+
+Java EE 6           Last change: 20 Oct 2009                    2
+
+asadmin Utility Subcommands                       start-domain(1)
 
 SEE ALSO
      create-domain(1),     delete-domain(1),     list-domains(1),
@@ -114,5 +105,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 7Oct 2009                     3
+Java EE 6           Last change: 20 Oct 2009                    3
 

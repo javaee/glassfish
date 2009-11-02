@@ -5,18 +5,20 @@ NAME
      create-threadpool - adds a thread pool
 
 SYNOPSIS
-     create-threadpool [--help] [--target target_name] [--maxthreadpoolsize max_threadpool_size]
-     [--minthreadpoolsize min_threadpool_size] [--idletimeout idletimeout-in-seconds]
-     [--workqueues number_work_queues] threadpool_id
+     create-threadpool [--help] [--target target_name]
+     [--maxthreadpoolsize maxthreadpoolsize]
+     [--minthreadpoolsize minthreadpoolsize]
+     [--idletimeout idletimeout] [--maxqueuesize maxqueuesize]
+     [--workqueues workqueues] threadpool_id
 
 DESCRIPTION
      The create-threadpool subcommand creates a thread pool  with
      the  specified  name.  You  can  specify maximum and minimum
-     number of threads in the pool, the quantity of work  queues,
-     and  the  idle  timeout of a thread. The created thread pool
-     can be used for servicing IIOP  requests  and  for  resource
-     adapters  to service work management requests. A thread pool
-     can be used in multiple resource adapters.
+     number of threads in the pool, the quantity of messages, and
+     the idle timeout of a thread. The created thread pool can be
+     used for servicing IIOP requests and for  resource  adapters
+     to  service  work  management requests. A thread pool can be
+     used in multiple resource adapters.
 
      This subcommand is supported in remote mode only.
 
@@ -46,21 +48,31 @@ OPTIONS
      --idletimeout
 
          Specifies the amount of time in seconds after which idle
-         threads are removed from the pool. Default is 900.
 
-Java EE 6           Last change: 13 Oct 2009                    1
+Java EE 6           Last change: 20 Oct 2009                    1
 
 asadmin Utility Subcommands                  create-threadpool(1)
 
-     --workqueues
+         threads are removed from the pool. Default is 900.
 
-         Identifies the total number of work queues  serviced  by
-         this thread pool.
+     --maxqueuesize
+
+         Specifies the maximum number of  messages  that  can  be
+         queued until threads are available to process them for a
+         network listener or IIOP listener. A value of -1  speci-
+         fies no limit. Default is 4096.
+
+     --workqueues
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
 
 OPERANDS
      threadpool_id
-         An ID for the work  queue;  for  example,  threadpool-1,
-         threadpool-2, and so forth.
+
+         An ID for the work queue, for example, threadpool-1.
 
 EXAMPLES
      Example 1 Creating a Thread Pool
@@ -82,5 +94,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 13 Oct 2009                    2
+Java EE 6           Last change: 20 Oct 2009                    2
 

@@ -16,7 +16,7 @@ SYNOPSIS
 
      appclient [jvm-options]
      [-mainclass main_class_name | -name display_name]
-     [-xml sun-acc.xml file] [-textauth]
+     [-xml client_config_xml_file] [-textauth]
      [ -targetserver  host[:port][,host[:port]...]]
      [-user username] [-passwordfile password_file]
      class-selector [application-options]
@@ -49,7 +49,7 @@ DESCRIPTION
      can find the client without using the  -mainclass  or  -name
      options.  If  you  provide  a -mainclass or -name value that
 
-Java EE 6           Last change: 28 Aug 2009                    1
+Java EE 6           Last change: 26 Oct 2009                    1
 
 Utility Commands                                    appclient(1M)
 
@@ -103,7 +103,7 @@ OPTIONS
          display  name   is   specified   in   the   client   jar
          application-client.xml  file  which is identified by the
 
-Java EE 6           Last change: 28 Aug 2009                    2
+Java EE 6           Last change: 26 Oct 2009                    2
 
 Utility Commands                                    appclient(1M)
 
@@ -111,11 +111,11 @@ Utility Commands                                    appclient(1M)
 
       -xml
 
-         optional if using the default domain and instance,  oth-
-         erwise  it is required; identifies the name and location
-         of the client configuration XML file. If not  specified,
-         defaults   to   the  sun-acc.xml  file  in  the  domain-
-         dir/config directory.
+         optional if using the default domain, instance, and name
+         (sun-acc.xml),  otherwise it is required; identifies the
+         name and location of the client configuration XML  file.
+         If  not  specified,  defaults to the sun-acc.xml file in
+         the domain-dir/config directory.
 
       -textauth
          optional; used to specify using text format  authentica-
@@ -155,7 +155,7 @@ Utility Commands                                    appclient(1M)
          The password can be specified by one  of  the  following
          means:
 
-Java EE 6           Last change: 28 Aug 2009                    3
+Java EE 6           Last change: 26 Oct 2009                    3
 
 Utility Commands                                    appclient(1M)
 
@@ -209,7 +209,7 @@ Utility Commands                                    appclient(1M)
              or   Setting   the   Class   Path,  Windows  Version
              (http://java.sun.com/javase/6/docs/technotes/tools/windows/classpath.html).
 
-Java EE 6           Last change: 28 Aug 2009                    4
+Java EE 6           Last change: 26 Oct 2009                    4
 
 Utility Commands                                    appclient(1M)
 
@@ -246,5 +246,5 @@ SEE ALSO
 
      asadmin(1M), package-appclient(1M)
 
-Java EE 6           Last change: 28 Aug 2009                    5
+Java EE 6           Last change: 26 Oct 2009                    5
 

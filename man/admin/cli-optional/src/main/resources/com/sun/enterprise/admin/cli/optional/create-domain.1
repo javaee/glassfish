@@ -5,35 +5,51 @@ NAME
      create-domain - creates a domain
 
 SYNOPSIS
-     create-domain {--adminport port_number | --portbase portbase}
-     [(--profile developer | cluster | enterprise] --template domain_template)]
-     [--domaindir domain_directory] [--instanceport port_number]
+     create-domain [--help]
+     [--adminport adminport]
+     [--instanceport instanceport]
+     [--portbase portbase]
+     [--profile profile-name]
+     [--template template-name]
+     [--domaindir domaindir]
      [--savemasterpassword={false|true}]
      [--domainproperties (name=value)[:name=value]*]
      [--keytooloptions (name=value)[:name=value]*]
-     [--savelogin={false|true}] domain_name
-     [--checkports=true] domain_name
+     [--savelogin={false|true}]
+     [--checkports={true|false}]
+     [--nopassword={false|true}]
+     domain_name
 
 DESCRIPTION
-     The create-domain subcommand creates the configuration of an
-     administrative   domain.   A  domain  is  an  administrative
-     namespace. Every domain has a configuration, which is stored
-     in  a set of files. Any number of domains, each of which has
-     a distinct administrative identity,  can  be  created  in  a
-     given  installation of Enterprise Server. A domain can exist
-     independent of other domains. Any user who has access to the
-     asadmin  utility  on a  given system can create a domain and
-     store its configuration in a folder of choice.  By  default,
-     the domain configuration is created in the default directory
-     for domains. You can override this  location  to  store  the
-     configuration elsewhere.
+     An Enterprise Server  domain  is  a  JavaTM  EE-6  compliant
+     administrative  namespace. Every domain has a configuration,
+     which is stored in a set of files. Any  number  of  domains,
+     each of which has a distinct administrative identity, can be
+     created in a given  installation  of  Enterprise  Server.  A
+     domain can exist independent of other domains.
 
-     In addition to being an administrative boundary, a domain is
-     also  a  fully compliant Java EE server. This means that you
-     can deploy your Java EE applications to the domain  and  run
-     them  when  the domain is started. A domain provides all the
-     necessary environment and  services  essential  to  run  the
-     applications.
+     Any user who has access to the asadmin utility on  a   given
+     system  can create a domain and store its configuration in a
+     folder of choice. By default, the  domain  configuration  is
+     created  in the default directory for domains. You can over-
+     ride this location to store the configuration elsewhere.
+
+     If domain customizers are found in domain.xml file when  the
+     create-domain  subcommand  is  run, the customizers are pro-
+     cessed.
+
+     The create-domain subcommand creates a domain with a  single
+     administrative  user specified by the asadmin utility option
+     --user. If the --user option is not specified,  and  the  --
+     nopassword option is set to true, the default administrative
+     user, admin, is used.  If the --nopassword option is set  to
+     false  (the  default), a username is required. In this case,
+     if you have not specified the user name by using the  --user
+     option, you are prompted to do so.
+
+Java EE 6           Last change: 30 Oct 2009                    1
+
+asadmin Utility Subcommands                      create-domain(1)
 
      This subcommand is supported in local mode only.
 
@@ -43,39 +59,23 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --domaindir
-         The directory where the domain  is  to  be  created.  If
-         specified,  the  path must be accessible in the filesys-
-         tem. If not specified, the  domain  is  created  in  the
-         default domain directory.
-
-Java EE 6            Last change: 6 Oct 2009                    1
-
-asadmin Utility Subcommands                      create-domain(1)
-
-     --profile
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
-     --template
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command  runs  successfully  and  the option is silently
-         ignored.
-
      --adminport
+         The HTTP port or the  HTTPS  port  for   administration.
+         This  port  is  the  port in the URL that you specify in
+         your web browser to  manage  the  domain,  for  example,
+         http://localhost:4949.  The --adminport option cannot be
+         used with the --portbase option. The  default  value  is
+         4848.
 
-         The HTTP/S port for  administration. This is the port to
-         which   you   should   point   your  browser   (example,
-         http://localhost:this-port) to manage the domain.
+     --instanceport
 
-         Either the --adminport option or the  --portbase  option
-         must be specified.
+         The  domain provides services so that  applications  can
+         run  when  deployed.  This HTTP port specifies where the
+         web application context roots are available  for  a  web
+         browser  to connect to. This port  is a positive integer
+         and must be available at the time  of  domain  creation.
+         The  --instanceport  option  cannot  be used with the --
+         portbase option. The default value is 8080.
 
      --portbase
          Determines the number with  which  the  port  assignment
@@ -87,36 +87,48 @@ asadmin Utility Subcommands                      create-domain(1)
          port: portbase + 80, IIOP listener port: portbase +  37,
          JMX  port: portbase + 86. See the output of this subcom-
          mand for a complete list  of  occupied  ports,  when  --
-         portbase option is specified.
+         portbase option is specified. The --portbase option can-
+         not be used with the --adminport, --instanceport, or the
+         --domainproperties option.
 
          Note -
 
            This subcommand uses some ports that are not required.
            This behavior is retained for compatibility with other
            releases.
-         Either the --adminport option or the  --portbase  option
-         must be specified.
 
-         Note -
+     --profile
 
-           The --portbase option  cannot  be  used  with  the  --
-           adminport or the --instanceport option.
+         Do not specify this option. This option is retained  for
 
-Java EE 6            Last change: 6 Oct 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    2
 
 asadmin Utility Subcommands                      create-domain(1)
 
-     --instanceport
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
 
-         The  domain provides services so that  applications  can
-         run  when deployed. This (HTTP) port specifies where the
-         web application context roots are available  for  a  web
-         browser  to connect to. This port  is a positive integer
-         and must be available at the time of domain creation.
+     --template
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
+         ignored.
+
+     --domaindir
+         The directory where the domain  is  to  be  created.  If
+         specified,  the  path must be accessible in the filesys-
+         tem. If not specified, the  domain  is  created  in  the
+         default domain directory, as-installglassfish/domains.
 
      --savemasterpassword
+
          Setting this option to true allows the masterpassword to
-         be written to the file system. Default is false.
+         be  written  to  the  file  system. The default value is
+         false.
 
          A master password is really a password  for  the  secure
          key  store. A domain is designed to keep  its own certi-
@@ -143,6 +155,11 @@ asadmin Utility Subcommands                      create-domain(1)
          start-domain  subcommand.  For  security  purposes,  the
          default setting should be false, because saving the mas-
          ter password on the disk is an insecure practice, unless
+
+Java EE 6           Last change: 30 Oct 2009                    3
+
+asadmin Utility Subcommands                      create-domain(1)
+
          file  system permissions are properly set. If the master
          password is saved, then start-domain does not prompt for
          it. The master password gives an extra level of security
@@ -152,68 +169,71 @@ asadmin Utility Subcommands                      create-domain(1)
 
          Setting the  optional  name/value  pairs  overrides  the
          default  values  for  the properties of the domain to be
-         created. The list must be separated  by  the  :  (colon)
-         character. The following properties are available:
-
-Java EE 6            Last change: 6 Oct 2009                    3
-
-asadmin Utility Subcommands                      create-domain(1)
+         created. The list must be separated  by  the  colon  (:)
+         character.  The  --portbase  options cannot be used with
+         the --domainproperties option. The following  properties
+         are available:
 
          jms.port
-
              Specifies the port number for JMS.  Valid  value  is
              7676.
 
          domain.jmxPort
+
              Specifies the port on which  the  JMX  connector  is
              initialized. The valid values are 1-65535.
 
          orb.listener.port
-
              Specifies the ORB listener port   for  IIOP  connec-
              tions on which orb-listener-1 listens.
 
          http.ssl.port
+
              Specifies the port number for http-listener-2. Valid
              values  are  1  to 65535. On UNIX, to create sockets
              that listen on  ports  1-1024,  you  need  superuser
              privileges.
 
          orb.ssl.port
-
              Specifies the ORB listener port for IIOP connections
              on which the IIOP listener called SSL listens.
 
          orb.mutualauth.port
+
              Specifies the ORB listener port for IIOP connections
              on  which  the  IIOP  listener called SSL_MUTUALAUTH
              listens.
 
-     --keytooloptions
+Java EE 6           Last change: 30 Oct 2009                    4
 
+asadmin Utility Subcommands                      create-domain(1)
+
+         osgi.shell.telnet.port
+
+             Specifies the port for connecting to the Felix shell
+             service  that Enterprise Server provides to interact
+             with the OSGi runtime. The default value is 6666.
+
+     --keytooloptions
          Specifies an optional list of name-value pairs  of  key-
          tool  options  for a self-signed server certificate. The
          certificate is generated  during  the  creation  of  the
-         domain. Each pair in the list must be separated by the :
-         (colon) character.
+         domain.  Each  pair in the list must be separated by the
+         colon (:) character.
 
          Allowed options are as follows:
 
          CN
+
              Specifies the common name of the host that is to  be
              used  for  the  self-signed certificate. This option
              name is case insensitive.
-
-Java EE 6            Last change: 6 Oct 2009                    4
-
-asadmin Utility Subcommands                      create-domain(1)
 
              By default, the name is the fully-qualified name  of
              the  machine  where  the create-domain subcommand is
              run.
 
       --savelogin
-
          If set to true, this option saves the  admin  user  name
          and  password.  Default value is false. The username and
          password are stored in the .asadminpass file  in  user's
@@ -234,10 +254,29 @@ asadmin Utility Subcommands                      create-domain(1)
            the  subcommand does not ask if the password should be
            overwritten. The password will always be overwritten.
 
+Java EE 6           Last change: 30 Oct 2009                    5
+
+asadmin Utility Subcommands                      create-domain(1)
+
      --checkports
+
          Specifies whether to check for the availability  of  the
-         Admin,  HTTP, JMS, JMX, and IIOP ports. Default value is
-         true.
+         Admin, HTTP, JMS, JMX, and IIOP ports. The default value
+         is true.
+
+     --nopassword
+         Specifies whether the administrative user  will  have  a
+         password. If false (the default), the password is speci-
+         fied by the AS_ADMIN_PASSWORD entry in the asadmin pass-
+         word  file  (set by using the --passwordfile option). If
+         false and the AS_ADMIN_PASSWORD  is  not  set,  you  are
+         prompted for the password.
+
+          If true, the administrative user is created  without  a
+         password.   If  a user name for the domain is not speci-
+         fied by using the --user option,  and  the  --nopassword
+         option  is set to true, the default user name, admin, is
+         used.
 
 OPERANDS
      domain_name                 The name of  the  domain  to  be
@@ -249,16 +288,7 @@ EXAMPLES
      This example creates a domain named domain4.
 
        asadmin>create-domain --adminport 4848 domain4
-       Please enter the admin user name>admin
-       Please enter the admin password>
-       Please enter the admin password again>
-       Please enter the master password>
-
-Java EE 6            Last change: 6 Oct 2009                    5
-
-asadmin Utility Subcommands                      create-domain(1)
-
-       Please enter the master password again>
+       Enter admin user name [Enter to accept default "admin" / no password]>
        Using port 4848 for Admin.
        Using default port 8080 for HTTP Instance.
        Using default port 7676 for JMS.
@@ -267,33 +297,43 @@ asadmin Utility Subcommands                      create-domain(1)
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
        Using default port 8686 for JMX_ADMIN.
+       Using default port 6666 for OSGI_SHELL.
        Distinguished Name of the self-signed X.509 Server Certificate is:
-       [CN=starless,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       [CN=sr1-usca-22,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       No domain initializers found, bypassing customization step
        Domain domain4 created.
+       Domain domain4 admin port is 4848.
+       Domain domain4 allows admin login as user "admin" with no password.
        Command create-domain executed successfully.
+
+Java EE 6           Last change: 30 Oct 2009                    6
+
+asadmin Utility Subcommands                      create-domain(1)
 
      Example 2 Creating a Domain in an Alternate Directory
 
      This example creates a  domain  named  sampleDomain  in  the
-     /export/domains directory.
+     /home/someuser/domains directory.
 
-       asadmin> create-domain --domaindir /export/domains --adminport 7070
+       asadmin>  create-domain --domaindir /home/someuser/domains  --adminport 7070
        --instanceport 7071 sampleDomain
-       Please enter the admin password>
-       Please enter the admin password again>
-       Please enter the master password>
-       Please enter the master password again>
+       Enter admin user name [Enter to accept default "admin" / no password]>
        Using port 7070 for Admin.
-       Using default port 7071 for HTTP Instance.
+       Using port 7071 for HTTP Instance.
        Using default port 7676 for JMS.
        Using default port 3700 for IIOP.
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
        Using default port 8686 for JMX_ADMIN.
-       Distinguished Name of the self-signed X.509 Server Certificate is:
-       [CN=fracture,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       Using default port 6666 for OSGI_SHELL.
+       Enterprise ServiceDistinguished Name of the self-signed X.509 Server Certificate is:
+       [CN=sr1-usca-22,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       No domain initializers found, bypassing customization step
        Domain sampleDomain created.
+       Domain sampleDomain admin port is 7070.
+       Domain sampleDomain allows admin login as user "admin" with no password.
+       Command create-domain executed successfully.
 
      Example 3 Creating a Domain and Saving  the  Admin  Username
      and Password
@@ -301,12 +341,9 @@ asadmin Utility Subcommands                      create-domain(1)
      This example creates a domain named myDomain and  saves  the
      administration username and password.
 
-       asadmin> create-domain --adminport 8282 --user admin --savelogin=true myDomain
-
-Java EE 6            Last change: 6 Oct 2009                    6
-
-asadmin Utility Subcommands                      create-domain(1)
-
+       asadmin> create-domain --adminport 8282 --savelogin=true myDomain
+       Enter the admin password [Enter to accept default of no password]>
+       Enter the master password [Enter to accept default password "changeit"]>
        Using port 8282 for Admin.
        Using default port 8080 for HTTP Instance.
        Using default port 7676 for JMS.
@@ -315,29 +352,36 @@ asadmin Utility Subcommands                      create-domain(1)
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
        Using default port 8686 for JMX_ADMIN.
-       Distinguished Name of the self-signed X.509 Server Certificate is:
-       [CN=exiles,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       Using default port 6666 for OSGI_SHELL.
+       Enterprise ServiceDistinguished Name of the self-signed X.509 Server Certificate is:
+       [CN=sr1-usca-22,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
+       No domain initializers found, bypassing customization step
+
+Java EE 6           Last change: 30 Oct 2009                    7
+
+asadmin Utility Subcommands                      create-domain(1)
+
        Domain myDomain created.
-       Admin login information for host [localhost] and port [8282] is being overwritten
-       with credentials provided. This is because the --savelogin option was used during
-       create-domain command.
-       Login information relevant to admin user name [admin] for this domain [myDomain]
-       stored at [/home/someuser/.asadminpass] successfully.
-       Make sure that this file remains protected. Information stored in this file will be
-       used by asadmin commands to manage this domain.
+       Domain myDomain admin port is 8282.
+       Domain myDomain allows admin login as user "admin" with no password.
+       Login information relevant to admin user name [admin]
+       for this domain [myDomain] stored at
+       [/home/someuser/.asadminpass] successfully.
+       Make sure that this file remains protected.
+       Information stored in this file will be used by
+       asadmin commands to manage this domain.
        Command create-domain executed successfully.
 
      Example 4 Creating a Domain and Designating the  Certificate
      Host
 
-     This example creates a domain named customdomain. The common
-     name of the host that is to be used for the self-signed cer-
-     tificate is trio.
+     This example creates a domain named domain5. The common name
+     of  the host that is to be used for the self-signed certifi-
+     cate is trio.
 
-       asadmin> create-domain --adminport 9898 --user admin
-       --keytooloptions CN=trio customdomain
-       Enter admin password>
-       Enter admin password again>
+       asadmin> create-domain --adminport 9898 --keytooloptions CN=trio domain5
+       Enter the admin password [Enter to accept default of no password]>
+       Enter the master password [Enter to accept default password "changeit"]>
        Using port 9898 for Admin.
        Using default port 8080 for HTTP Instance.
        Using default port 7676 for JMS.
@@ -346,19 +390,24 @@ asadmin Utility Subcommands                      create-domain(1)
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
        Using default port 8686 for JMX_ADMIN.
+       Using default port 6666 for OSGI_SHELL.
        Distinguished Name of the self-signed X.509 Server Certificate is:
        [CN=trio,OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US]
-       Domain customdomain created.
+       No domain initializers found, bypassing customization step
+       Domain domain5 created.
+       Domain domain5 admin port is 9898.
+       Domain domain5 allows admin login as user "admin" with no password.
+       Command create-domain executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
 
-Java EE 6            Last change: 6 Oct 2009                    7
-
-asadmin Utility Subcommands                      create-domain(1)
-
      1                           error in executing  the  subcom-
                                  mand
+
+Java EE 6           Last change: 30 Oct 2009                    8
+
+asadmin Utility Subcommands                      create-domain(1)
 
 SEE ALSO
      login(1), delete-domain(1), start-domain(1), stop-domain(1),
@@ -366,5 +415,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 6 Oct 2009                    8
+Java EE 6           Last change: 30 Oct 2009                    9
 

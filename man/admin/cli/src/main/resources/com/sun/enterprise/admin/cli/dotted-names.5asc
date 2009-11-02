@@ -65,7 +65,8 @@ Enterprise Server Concepts                     dotted-names(5ASC)
          o    If any part of the name itself contains a dot  (.),
               then  the  dot  must  be escaped with a leading \fR
               (backslash) so that the . (dot) does not act like a
-              delimiter.
+              delimiter.  For further information on escape char-
+              acters, see the asadmin(1M) help page.
 
          o    An * (asterisk) character can be used  anywhere  in
               the  dotted name and acts like the wildcard charac-
@@ -102,12 +103,12 @@ Enterprise Server Concepts                     dotted-names(5ASC)
                   abstract hierarchy. When you specify this  name
                   to  the  list  subcommand,  the  names  of  the
                   immediate children at that level are  returned.
-                  For  example,  the  following command lists all
 
 Java EE 6           Last change: 14 Sep 2009                    2
 
 Enterprise Server Concepts                     dotted-names(5ASC)
 
+                  For  example,  the  following command lists all
                   the web modules deployed to the domain  or  the
                   default server:
 
@@ -149,12 +150,12 @@ EXAMPLES
        configs.config.server-config.admin-service.property.adminConsoleContextRoot
        configs.config.server-config.admin-service.property.adminConsoleDownloadLocation
        configs.config.server-config.admin-service.property.ipsRoot
-       configs.config.server-config.ejb-container
 
 Java EE 6           Last change: 14 Sep 2009                    3
 
 Enterprise Server Concepts                     dotted-names(5ASC)
 
+       configs.config.server-config.ejb-container
        configs.config.server-config.ejb-container.ejb-timer-service
        configs.config.server-config.http-service
        configs.config.server-config.http-service.access-log

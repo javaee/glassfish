@@ -7,10 +7,10 @@ NAME
 
 SYNOPSIS
      create-jdbc-resource [--help]
-     --connectionpoolid id
+     --connectionpoolid connectionpoolid
      [--enabled={false|true}]
-     [--description text]
-     [--property (name=value)[:name=value]*]
+     [--description description]
+     [--property (property=value)[:name=value]*]
      [--target target]
      jndi_name
 
@@ -45,7 +45,7 @@ OPTIONS
          Optional attribute name/value pairs for configuring  the
          resource.
 
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands               create-jdbc-resource(1)
 
@@ -62,7 +62,9 @@ OPERANDS
          The JNDI name of this JDBC resource.
 
 EXAMPLES
-     Example 1 Using the create-jdbc-resource subcommand
+     Example 1 Creating a JDBC Resource
+
+     This example creates a JDBC resource named jdbc/DerbyPool.
 
        asadmin> create-jdbc-resource
        --connectionpoolid sample_derby_pool jdbc/DerbyPool
@@ -79,5 +81,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    2
 

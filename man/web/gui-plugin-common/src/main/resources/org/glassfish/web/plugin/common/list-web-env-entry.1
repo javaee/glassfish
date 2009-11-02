@@ -6,7 +6,7 @@ NAME
      deployed web application or module
 
 SYNOPSIS
-     list-web-env-entry [--help] [--name=env-entry-name] application-name[/module-name]
+     list-web-env-entry [--help] [--name=env-entry-name] application-name[/module]
 
 DESCRIPTION
      The  list-web-env-entry  subcommand  lists  the  environment
@@ -47,7 +47,7 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6            Last change: 7 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands                 list-web-env-entry(1)
 
@@ -62,16 +62,36 @@ asadmin Utility Subcommands                 list-web-env-entry(1)
 
 OPERANDS
      application-name
-         The  name  of  the  application.  The  application  must
-         already be deployed. Otherwise, an error occurs.
+         The name of the application. This name can  be  obtained
+         from  the  Administration  Console or by using the list-
+         applications(1) subcommand.
 
-     module-name
+         The application must already be deployed. Otherwise,  an
+         error occurs.
 
-         The name of the module within the  application.  module-
-         name  is  required only if the environment entry applies
-         to a web module of a Java EE application. If  specified,
-         module-name must follow application-name, separated by a
+     module
+
+         The relative path to the module within the application's
+         enterprise archive (EAR) file. The path to the module is
+         specified in the module  element  of  the  application's
+         application.xml file.
+
+         module is required only if the environment entry applies
+         to  a web module of a Java EE application. If specified,
+         module must  follow  application-name,  separated  by  a
          slash (/).
+
+         For example, the  application.xml  file  for  the  myApp
+         application might specify the following web module:
+
+           <module>
+               <web>
+                   <web-uri>myWebModule.war</web-uri>
+               </web>
+           </module>
+
+         The module would be specified as  the  operand  of  this
+         command as myApp/myWebModule.war.
 
 EXAMPLES
      Example 1 Listing Environment Entries for a Web Application
@@ -80,6 +100,11 @@ EXAMPLES
      set  for the web application hello by using the set-web-env-
      entry subcommand. Because no description was specified  when
      the  Hello Port environment entry was set, null is displayed
+
+Java EE 6           Last change: 30 Oct 2009                    2
+
+asadmin Utility Subcommands                 list-web-env-entry(1)
+
      instead of a description for this entry.
 
        asadmin> list-web-env-entry hello
@@ -94,14 +119,11 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6            Last change: 7 Oct 2009                    2
-
-asadmin Utility Subcommands                 list-web-env-entry(1)
-
 SEE ALSO
-     set-web-env-entry(1), unset-web-env-entry(1)
+     list-applications(1),  set-web-env-entry(1),  unset-web-env-
+     entry(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 7 Oct 2009                    3
+Java EE 6           Last change: 30 Oct 2009                    3
 

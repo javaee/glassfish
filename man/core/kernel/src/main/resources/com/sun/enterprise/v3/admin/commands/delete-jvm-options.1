@@ -2,109 +2,61 @@
 asadmin Utility Subcommands                 delete-jvm-options(1)
 
 NAME
-     delete-jvm-options - removes options from  the  Java  confi-
-     guration or profiler elements of the domain.xml file
+     delete-jvm-options - removes one or  more  options  for  the
+     Java application launcher
 
 SYNOPSIS
-     delete-jvm-options
-     [--help]
-     [ --target  target]
-     [--profiler={true|false}] (jvm_option_name[=jvm_option_value])
-     [:jvm_option_name[=jvm_option_name]]*
+     delete-jvm-options [--help] [--target target] [--profiler={true|false}]
+     (jvm_option_name[=jvm_option_value]) [:jvm_option_name[=jvm_option_name]]*
 
 DESCRIPTION
-     The  delete-jvm-options  subcommand   removes   command-line
-     options for the Java application launcher. These options are
-     removed from the Java configuration element or profiler ele-
-     ment of the domain.xml file.
+     The  delete-jvm-options  subcommand  removes  one  or   more
+     command-line  options  for  the JavaTM application launcher.
+     These options are removed from the Java configuration  java-
+     config  element  or  the  profiler  profiler  element of the
+     domain.xml  file.  To  see  the  Java  application  launcher
+     options  that  can  be  deleted, use the list-jvm-options(1)
+     subcommand.
 
-     Note -
+     The deletion of some options requires a server  restart  for
+     changes  to  become effective. Other options are set immedi-
+     ately in the environment of the domain administration server
+     (DAS) and do not require a restart.
 
-       In  the  syntax,  there  can  be  more  than  one  option,
-       separated by a colon.
-
-     This subcommand is supported in remote mode only.
-
-     The  delete-jvm-options  subcommand  deletes  the  following
-     options:
-
-         o    Java system properties. System properties  are  set
-              through  the  -D  option  of  the  Java application
-              launcher, for example:
-
-             o    -Djava.security.manager
-
-             o    -Denvironment=Production
-
-         o    Startup parameters for the Virtual Machine for  the
-              Java   platform   (Java   Virtual  Machine  or  JVM
-              machine).
-
-         The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
-         tual  Machine  for  the Java platform.Startup parameters
-         are preceded by the dash character (-) , for example:
-
-             o    --XX:PermSize=size
-
-             o    -Xmx1024m
-
-             o    -client
-
-Java EE 6            Last change: 4 Sep 2009                    1
-
-asadmin Utility Subcommands                 delete-jvm-options(1)
-
-             o    -d64
-
-     In the following situations, you must terminate the  command
-     with a double-dash (--) before the options:
-
-         o    You are specifying only one  system  property  with
-              just   a   name   and   no   value,   for  example,
-              -Djava.security.manager.
-
-         o    You are specifying a startup parameter for the  JVM
-              machine without a value, for example, -Xmx1024m
-
-     The removal of some options requires a restart of the domain
-     administration  server  (DAS)  to  become  effective.  Other
-     options become immediately unavailable in the environment of
-     the DAS and do not require a restart.
-
-     Whether a restart is required depends on  the  type  of  the
-     option.
+     Whether a restart is required depends on the type of option.
 
          o    Restart is not required for Java system  properties
               whose  names  do not start with -Djava. or -Djavax.
               (including the trailing period). For example,  res-
-              tart  is  not required for the Java system property
-              -Denvironment=Production.
+              tart  is not required for the following Java system
+              property:
+
+              -Denvironment=Production
 
          o    Restart is required for the following options:
 
-             o    System  properties  whose  names   start   with
+             o    Java system properties whose names  start  with
                   -Djava.  or  -Djavax.  (including  the trailing
-                  period), for example, -Djava.security.manager
+                  period). For example:
 
-             o    Startup parameters for  the  JVM  machine,  for
-                  example, -Xmx1024m, -client or -d64
+                  -Djava.security.manager
+
+             o    Startup parameters  for  the  Java  application
+                  launcher. For example:
+
+                  -client
+
+                  -Xmx1024m
+
+                  -d64
+
+Java EE 6           Last change: 15 Oct 2009                    1
+
+asadmin Utility Subcommands                 delete-jvm-options(1)
 
       To restart the DAS, use the restart-domain(1) command.
 
-     For more information about the  Java  application  launcher,
-     see the reference page for the operating system that you are
-     using:
-
-         o    Solaris Operating System (Solaris  OS)  and  Linux:
-              java    -    the    Java    application    launcher
-              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
-
-         o    Windows:  java  -  the  Java  application  launcher
-              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
-
-Java EE 6            Last change: 4 Sep 2009                    2
-
-asadmin Utility Subcommands                 delete-jvm-options(1)
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -121,15 +73,20 @@ OPTIONS
 
      --profiler
 
-         Indicates whether the JVM options are for the  profiler.
-         The profiler must exist for this option to be true.
+         Indicates whether the Java application launcher  options
+         are  for the profiler. The option must have been set for
+         a profiler for this option to be true.
 
 OPERANDS
-     jvm_option_name=jvm_option_value
-         the left side of the equal sign (=) is  the  JVM  option
-         name.  The  right  side of the equal sign (=) is the JVM
-         option value. A colon (:) is a  delimiter  for  multiple
-         options.
+     jvm_option_name
+         One or more options delimited by a colon (:). The format
+         of the operand depends on the following:
+
+             o    If the option has a name and a value, the  for-
+                  mat is option-name=value.
+
+             o    If the option has only a name,  the  format  is
+                  option_name. For example, -Xmx2048m.
 
          Note -
 
@@ -137,29 +94,31 @@ OPERANDS
            the  backslash  (\fR) must be used to escape the colon
            in the name or  value.  Other  characters  might  also
            require  an  escape  character.  For  more information
-           about escape characters in command  options,  see  the
+           about escape characters in subcommand options, see the
            asadmin(1M) man page.
 
 EXAMPLES
-     Example 1 Deleting JVM Options
+     Example 1 Deleting Java Application Launcher Options
 
-     To remove more than one JVM  option,  use  a  colon  (:)  to
-     separate  the  options.  If the JVM option itself contains a
-     colon (:), use the backslash (\fR) to offset the  colon  (:)
-     delimiter.
-
-       asadmin> delete-jvm-options -e "-Dtmp=sun"
-       Command delete-jvm-options executed successfully
-
-Java EE 6            Last change: 4 Sep 2009                    3
+Java EE 6           Last change: 15 Oct 2009                    2
 
 asadmin Utility Subcommands                 delete-jvm-options(1)
 
-     Where more than one JVM options are deleted.
+     This example  removes  multiple  Java  application  launcher
+     options.
 
-       asadmin> delete-jvm-options -e -Doption1=value1
+       asadmin> delete-jvm-options -Doption1=value1
         "-Doption1=value1:-Doption2=value2"
        Command delete-jvm-options executed successfully
+
+     Example 2 Deleting a Java Application Launcher  Option  From
+     the Profiler
+
+     This example removes a  Java  application  launcher  startup
+     parameter for the profiler.
+
+       asadmin> delete-jvm-options --profiler=true -XX:MaxPermSize=192m
+       Command delete-jvm-options executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -173,5 +132,16 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 4 Sep 2009                    4
+     For more information about the  Java  application  launcher,
+     see the reference page for the operating system that you are
+     using:
+
+         o    Solaris Operating System (Solaris  OS)  and  Linux:
+              java    -    the    Java    application    launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
+
+         o    Windows:  java  -  the  Java  application  launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 6           Last change: 15 Oct 2009                    3
 

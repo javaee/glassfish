@@ -6,14 +6,12 @@ NAME
      connector connection pool
 
 SYNOPSIS
-     delete-connector-connection-pool [--help]
-     [--cascade={false|true}] [--target target]
-     connector_connection_pool_name
+     delete-connector-connection-pool [--help] [--target target]
+     [--cascade={false|true}] poolname
 
 DESCRIPTION
      The delete-connector-connection-pool subcommand removes  the
-     connector   connection  pool  specified  using  the  operand
-     connector_connection_pool_name.
+     specified connector connection pool.
 
      This subcommand is supported in remote mode only.
 
@@ -23,40 +21,39 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --cascade
-         When set to true, it  deletes  all  connector  resources
-         associated  with  the  pool  apart from the pool itself.
-         When set to false, the deletion of  pool  fails  if  any
-         resources  are  associated  with  the pool. The resource
-         must be deleted explicitly or the option must be set  to
-         true. The default setting is false.
-
      --target
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
          command  runs  successfully  and  the option is silently
          ignored.
 
+     --cascade
+
+         When set to true,  all  connector  resources  associated
+         with  the  pool,  and the pool itself, are deleted. When
+         set  to  false,  the  deletion  of  pool  fails  if  any
+         resources  are  associated  with  the pool. The resource
+         must be deleted explicitly or the option must be set  to
+         true. Default is false.
+
 OPERANDS
-     connector_connection_pool_name
+     poolname
          The name of the connection pool to be removed.
 
 EXAMPLES
-     Example 1 Using the delete-connector-connection-pool subcom-
-     mand
+     Example 1 Deleting a Connector Connection Pool
 
-Java EE 6           Last change: 09 Oct 2009                    1
+     This example deletes the  connector  connection  pool  named
+     jms/qConnPool.
+
+Java EE 6           Last change: 29 Oct 2009                    1
 
 asadmin Utility Subcommands   delete-connector-connection-pool(1)
 
        asadmin> delete-connector-connection-pool
        --cascade=false jms/qConnPool
        Command delete-connector-connection-pool executed successfully
-
-     Where jms/qConnPool is the connector connection pool that is
-     removed.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -66,9 +63,9 @@ EXIT STATUS
 
 SEE ALSO
      create-connector-connection-pool(1),         list-connector-
-     connection-pools(1)
+     connection-pools(1), ping-connection-pool(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 29 Oct 2009                    2
 

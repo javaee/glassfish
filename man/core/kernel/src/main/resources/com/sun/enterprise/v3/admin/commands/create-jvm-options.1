@@ -2,119 +2,110 @@
 asadmin Utility Subcommands                 create-jvm-options(1)
 
 NAME
-     create-jvm-options - creates options in the Java  configura-
-     tion or profiler element of the domain.xml file.
+     create-jvm-options - creates options for the  Java  applica-
+     tion launcher
 
 SYNOPSIS
-     create-jvm-options
-     [--help]
-     [ --target  target]
-     [--profiler={true|false}] (jvm_option_name=jvm_option_value)
-     [:jvm_option_name=jvm_option_value*]
+     create-jvm-options [--help] [--target target] [--profiler={true|false}]
+     (jvm_option_name=jvm_option_value) [:jvm_option_name=jvm_option_value*]
 
 DESCRIPTION
      The  create-jvm-options  subcommand   creates   command-line
-     options  that  are passed to the JavaTM application launcher
-     when Enterprise Server is started. These options are  stored
-     in the Java configuration element or profiler element of the
-     domain.xml file. If options are created for a profiler, they
-     are used to record the settings that are required to start a
-     particular profiler.
+     options  that  are  passed  to the Java application launcher
+     when Enterprise Server is started.  The  options  that  this
+     subcommand  creates  are in addition to the options that are
+     preset with Enterprise  Server.  Java  application  launcher
+     options  are  stored  in  the Java configuration java-config
+     element or the profiler profiler element of  the  domain.xml
+     file.  The options are sent to the command line in the order
+     they appear in the java-config element or the profiler  pro-
+     filer element in the domain.xml file.
 
-     Note -
+     Profiler options are used to record the  settings  that  are
+     required  to  start a particular profiler. The profiler must
+     already exist. If necessary, use the create-profiler(1) sub-
+     command to create the profiler.
 
-       In  the  syntax,  there  can  be  more  than  one  option,
-       separated by a colon.
-
-     This subcommand is supported in remote mode only.
-
-     The  create-jvm-options  subcommand  creates  the  following
+     This subcommand can be used to create the following types of
      options:
 
-         o    Java system properties. System properties  are  set
+         o    Java  system  properties.  These  options  are  set
               through  the  -D  option  of  the  Java application
-              launcher, for example:
+              launcher. For example:
 
-             o    -Djava.security.manager
+              -Djava.security.manager
 
-             o    -Denvironment=Production
+              -Denvironment=Production
 
-         o    Startup parameters for the Virtual Machine for  the
-              Java   platform  (Java  Virtual  Machine  or  JVMTM
-              machine).
+         o    Startup  parameters  for   the   Java   application
+              launcher.  These  options  are preceded by the dash
+              character (-). For example:
 
-         The terms "Java Virtual Machine" and "JVM" mean  a  Vir-
-         tual  Machine  for  the Java platform.Startup parameters
-         are preceded by the dash character (-) , for example:
+              --XX:PermSize=size
 
-             o    --XX:PermSize=size
+              -Xmx1024m
 
-Java EE 6            Last change: 4 Sep 2009                    1
+              -d64
+
+     If the subcommand specifies an option that  already  exists,
+     the command does not re-create the option.
+
+Java EE 6           Last change: 15 Oct 2009                    1
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
-             o    -Xmx1024m
-
-             o    -client
-
-             o    -d64
-
-     In the following situations, you must terminate the  command
-     with a double-dash (--) before the options:
-
-         o    You are specifying only one  system  property  with
-              just   a   name   and   no   value,   for  example,
-              -Djava.security.manager.
-
-         o    You are specifying a startup parameter for the  JVM
-              machine without a value, for example, -Xmx1024m
-
      Note -
 
-       If the command specifies an option  that  already  exists,
-       the command does not re-create the option.
+       Ensure that any option that you create is valid. The  sub-
+       command  might  allow you to create an invalid option, but
+       such an invalid option can cause startup to fail.
 
-     The addition of some  options  requires  a  restart  of  the
-     domain  administration  server  (DAS)  to  become effective.
-     Other options are set immediately in the environment of  the
-     DAS and do not require a restart.
+     An option can be verified by examining the server log  after
+     Enterprise  Server  starts. Options for the Java application
+     launcher are written to the server.log file before any other
+     information when Enterprise Server starts.
 
-     Whether a restart is required depends on  the  type  of  the
-     option.
+     The addition of some options requires a server  restart  for
+     changes  to  become effective. Other options are set immedi-
+     ately in the environment of the domain administration server
+     (DAS)  and  do  not  require a restart. Whether a restart is
+     required depends on the type of option.
 
          o    Restart is not required for Java system  properties
               whose  names  do not start with -Djava. or -Djavax.
               (including the trailing period). For example,  res-
-              tart  is  not required for the Java system property
-              -Denvironment=Production.
+              tart  is not required for the following Java system
+              property:
+
+              -Denvironment=Production
 
          o    Restart is required for the following options:
 
-             o    System  properties  whose  names   start   with
+             o    Java system properties whose names  start  with
                   -Djava.  or  -Djavax.  (including  the trailing
-                  period), for example, -Djava.security.manager
+                  period). For example:
 
-             o    Startup parameters for  the  JVM  machine,  for
-                  example, -Xmx1024m, -client or -d64
+                  -Djava.security.manager
+
+             o    Startup parameters  for  the  Java  application
+                  launcher. For example:
+
+                  -client
+
+                  -Xmx1024m
+
+                  -d64
 
       To restart the DAS, use the restart-domain(1) command.
 
-Java EE 6            Last change: 4 Sep 2009                    2
+     This subcommand is supported in remote mode only.
+
+OPTIONS
+
+Java EE 6           Last change: 15 Oct 2009                    2
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
-     For more information about the  Java  application  launcher,
-     see the reference page for the operating system that you are
-     using:
-
-         o    SolarisTM Operating System (Solaris OS) and  Linux:
-              java    -    the    Java    application    launcher
-              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
-
-         o    Windows:  java  -  the  Java  application  launcher
-              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
-
-OPTIONS
      --help
      -?
 
@@ -129,16 +120,20 @@ OPTIONS
 
      --profiler
 
-         Indicates whether the JVM options are for the  profiler.
-         The  profiler  must  exist  for  this option to be true.
-         Default is false.
+         Indicates whether the Java application launcher  options
+         are  for  the profiler. The profiler must exist for this
+         option to be true. Default is false.
 
 OPERANDS
      jvm_option_name
-         The left side of the equal sign (=) is  the  JVM  option
-         name.  The  right  side of the equal sign (=) is the JVM
-         option value. A colon (:) is a  delimiter  for  multiple
-         options.
+         One or more options delimited by a colon (:). The format
+         of an option depends on the following:
+
+             o    If the option has a name and a value, the  for-
+                  mat is option-name=value.
+
+             o    If the option has only a name,  the  format  is
+                  option_name. For example, -Xmx2048m.
 
          Note -
 
@@ -150,68 +145,76 @@ OPERANDS
            asadmin(1M) man page.
 
 EXAMPLES
+     Example 1 Setting Java System Properties
 
-Java EE 6            Last change: 4 Sep 2009                    3
+     This example sets multiple Java system properties.
+
+       asadmin> create-jvm-options -Dunixlocation=/root/example:
+       -Dvariable=OME:-Dwindowslocation=d:\sun\appserver:-Doption1=-value1
+       created 4 option(s)
+
+Java EE 6           Last change: 15 Oct 2009                    3
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
-     Example 1 Setting Java System Properties
+       Command create-jvm-options executed successfully.
 
-     JVM machine options must start with  a  dash  (-).  Use  the
-     backslash (\fR) to escape the dash delimiter.
+     Example 2 Setting a Startup Parameter for the Java  Applica-
+     tion Launcher
 
-       asadmin> create-jvm-options --interactive=true
-       --passwordfile passwords.txt --terse=false
-       --user admin --host localhost --port 4848 --target server
-       -Dunixlocation=/root/example:
-       -Dvariable=OME:
-       -Dwindowslocation=d:\sun\appserver:
-       -Doption1=-value1
-       created 4 option(s)
+     This example sets the maximum available heap size to 1024.
 
-       Command create-jvm-options executed successfully
-
-     Example 2 Setting a Single Startup  Parameter  for  the  JVM
-     Machine
-
-     This example sets the maximum available heap size  to  1024.
-     Because  this example is setting a startup parameter for the
-     JVM machine without a value, the command is terminated by  a
-     double dash -- before the parameter.
-
-       asadmin> create-jvm-options -- -Xmx1024m
+       asadmin> create-jvm-options -Xmx1024m
        created 1 option(s)
        Command create-jvm-options executed successfully.
 
-     Example 3 Setting Multiple Startup Parameters  for  the  JVM
-     Machine
+     Example 3 Setting Multiple Startup Parameters for  the  Java
+     Application Launcher
 
-     This example sets startup parameters for  the  JVM  machine.
-     The  maximum available heap size is set to 1024. Information
-     about garbage collection is to be provided.
+     This example sets the maximum available heap  size  to  1024
+     and requests details about garbage collection.
 
        asadmin> create-jvm-options "-Xmx1024m:-XX:+PrintGCDetails"
        created 1 option(s)
        Command create-jvm-options executed successfully.
 
-Java EE 6            Last change: 4 Sep 2009                    4
+     In this case, one of the two parameters already  exists,  so
+     the subcommand reports that only one option was set.
 
-asadmin Utility Subcommands                 create-jvm-options(1)
+     Example 4 Setting a JVM Startup Parameter for the Profiler
 
-     Because one parameter already existed before the command was
-     run, the command reports that only one option was set.
+     This example sets a JVM startup parameter for the profiler.
+
+       asadmin> create-jvm-options --profiler=true -XX:MaxPermSize=192m
+       created 1 option(s)
+       Command create-jvm-options executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
+
+Java EE 6           Last change: 15 Oct 2009                    4
+
+asadmin Utility Subcommands                 create-jvm-options(1)
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     delete-jvm-options(1),     list-jvm-options(1),     restart-
-     domain(1)
+     delete-jvm-options(1),     list-jvm-options(1),      create-
+     profiler(1), restart-domain(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 4 Sep 2009                    5
+     For more information about the  Java  application  launcher,
+     see the reference page for the operating system that you are
+     using:
+
+         o    SolarisTM Operating System (Solaris OS) and  Linux:
+              java    -    the    Java    application    launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
+
+         o    Windows:  java  -  the  Java  application  launcher
+              (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+
+Java EE 6           Last change: 15 Oct 2009                    5
 

@@ -6,7 +6,10 @@ NAME
      ponents and services
 
 SYNOPSIS
-     monitor [--help] --type monitor-type  [--interval interval] [--filter filter_name] instance-name
+     monitor [--help] --type type
+     [--filename filename]
+     [--interval interval]
+     [--filter filter_name] instance-name
 
 DESCRIPTION
      The monitor subcommand displays statistics for commonly mon-
@@ -46,67 +49,70 @@ OPTIONS
                  The total number errors  in  the  processing  of
                  HTTP requests.
 
-             mt
-
-                 The longest response time (in milliseconds)  for
-
-Java EE 6            Last change: 7 Oct 2009                    1
+Java EE 6           Last change: 29 Oct 2009                    1
 
 asadmin Utility Subcommands                            monitor(1)
 
+             mt
+
+                 The longest response time (in milliseconds)  for
                  the processing of a single HTTP request.
 
              pt
-
                  The total amount of time (in milliseconds)  that
                  the  HTTP listener service has spent in process-
                  ing HTTP requests.
 
              rc
+
                  The total  number  of  requests  that  the  HTTP
                  listener service has processed.
 
          jvm
-
              For  this   type,   the   attribute   server.server-
              config.monitoring-service.module-monitoring-
              levels.jvm must be set to LOW or HIGH.
 
-             Displays the following sTMtistics for   the  Virtual
-             Machine   for TMhe  Java    platform  (Java  Virtual
-             Machine or JVM   machine):
+             Displays the following statistics for   the  Virtual
+             Machine   for  the  JavaTM  platform  (Java  Virtual
+             Machine or JVMTM machine):
 
              The terms "Java Virtual Machine" and  "JVM"  mean  a
              Virtual Machine for the Java platform.
 
              UpTime
+
                  The number of milliseconds that the JVM  machine
                  has been running since it was last started.
 
              min
-
                  The initial amount of memory (in bytes) that the
                  JVM  machine  requests from the operating system
                  for memory management during startup.
 
+             max
+
+                 The maximum amount of memory that  can  be  used
+                 for memory management.
+
              low
                  Retained for compatibility with other releases.
+
+Java EE 6           Last change: 29 Oct 2009                    2
+
+asadmin Utility Subcommands                            monitor(1)
 
              high
 
                  Retained for compatibility with other releases.
 
-Java EE 6            Last change: 7 Oct 2009                    2
-
-asadmin Utility Subcommands                            monitor(1)
-
              count
-
                  The  amount  of  memory  (in  bytes)   that   is
                  guaranteed  to  be  available for use by the JVM
                  machine.
 
          webmodule
+
              For  this   type,   the   attribute   server.server-
              config.monitoring-service.module-monitoring-
              levels.web-container must be set to LOW or HIGH.
@@ -115,55 +121,55 @@ asadmin Utility Subcommands                            monitor(1)
              web modules:
 
              asc
-
                  The number of currently active sessions.
 
              ast
+
                  The total number of sessions that are  currently
                  active or have been active previously.
 
              rst
-
                  The total number of rejected sessions.
 
              st
+
                  The total number  of  sessions  that  have  been
                  created.
 
              ajlc
-
-                 The  TMmber  oTM currently   active   JavaServer
-                 Pages     (JSP  )   technology  pages  that  are
+                 The  number  of  currently   active   JavaServer
+                 PagesTM   (JSPTM)   technology  pages  that  are
                  loaded.
 
              mjlc
+
                  The maximum number of JSP technology pages  that
                  were active at any time simultaneously.
+
+Java EE 6           Last change: 29 Oct 2009                    3
+
+asadmin Utility Subcommands                            monitor(1)
 
              tjlc
 
                  Total number of JSP technology pages  that  have
                  been loaded.
 
-Java EE 6            Last change: 7 Oct 2009                    3
-
-asadmin Utility Subcommands                            monitor(1)
-
              aslc
-
                  The number of  currently  active  Java  servlets
                  that are loaded.
 
              mslc
+
                  The maximum number of Java  servlets  that  were
                  active at any time simultaneously.
 
              tslc
-
                  The total number of Java servlets that have been
                  loaded.
 
      --filename
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -171,13 +177,13 @@ asadmin Utility Subcommands                            monitor(1)
          ignored.
 
      --interval
-
          The interval  in  seconds  before  capturing  monitoring
          attributes.  The  interval  must  be greater than 0. The
          monitoring attributes are displayed on stdout until  you
          type Control-C or q. The default value is 30.
 
      --filter
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -188,12 +194,12 @@ OPERANDS
      instance-name               The server instance for which to
                                  view monitoring data.
 
-EXAMPLES
-     Example 1 Displaying Monitoring Statistics by Interval
-
-Java EE 6            Last change: 7 Oct 2009                    4
+Java EE 6           Last change: 29 Oct 2009                    4
 
 asadmin Utility Subcommands                            monitor(1)
+
+EXAMPLES
+     Example 1 Displaying Monitoring Statistics by Interval
 
      This example displays monitoring data for  the  JVM  machine
      every 2000 seconds.
@@ -223,5 +229,5 @@ SEE ALSO
      Chapter 8, Administering  the  Monitoring  Service,  in  Sun
      GlassFish Enterprise Server v3 Administration Guide
 
-Java EE 6            Last change: 7 Oct 2009                    5
+Java EE 6           Last change: 29 Oct 2009                    5
 

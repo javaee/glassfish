@@ -3,10 +3,10 @@ asadmin Utility Subcommands                 disable-monitoring(1)
 
 NAME
      disable-monitoring - disables monitoring for the  server  or
-     for specific monitorable objects
+     for specific monitorable modules
 
 SYNOPSIS
-     disable-monitoring [--help] --modules module-name[=level][:module-name[=level]]*
+     disable-monitoring [--help] [--modules module-name][:module-name]*
 
 DESCRIPTION
      The disable-monitoring subcommand is used to turn off  moni-
@@ -17,7 +17,7 @@ DESCRIPTION
      Running the disable-monitoring  subcommand  without  the  --
      module option disables the monitoring service by setting the
      monitoring-enabled attribute of the monitoring-service  ele-
-     ment  is false. The individual modules retain their monitor-
+     ment  to false. The individual modules retain their monitor-
      ing levels, but no monitoring data is generated because  the
      entire monitoring service is disabled.
 
@@ -48,7 +48,7 @@ OPTIONS
          service,   jvm,   security,   thread-pool,  transaction-
          service,  web-container,   and   web-services-container.
 
-Java EE 6            Last change: 9 Oct 2009                    1
+Java EE 6           Last change: 21 Oct 2009                    1
 
 asadmin Utility Subcommands                 disable-monitoring(1)
 
@@ -89,12 +89,12 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Oct 2009                    2
+Java EE 6           Last change: 21 Oct 2009                    2
 
 asadmin Utility Subcommands                 disable-monitoring(1)
 
      Chapter 8, Administering  the  Monitoring  Service,  in  Sun
      GlassFish Enterprise Server v3 Administration Guide
 
-Java EE 6            Last change: 9 Oct 2009                    3
+Java EE 6           Last change: 21 Oct 2009                    3
 

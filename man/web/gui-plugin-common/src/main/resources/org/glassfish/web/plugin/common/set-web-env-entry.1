@@ -9,7 +9,7 @@ SYNOPSIS
      set-web-env-entry [--help]
      --name=env-entry-name --type=env-entry-type
      {--value=value|--ignoreDescriptorItem={true|false}}
-     [--description=description] application-name[/module-name]
+     [--description=description] application-name[/module]
 
 DESCRIPTION
      The set-web-env-entry subcommand sets an  environment  entry
@@ -45,7 +45,7 @@ OPTIONS
          text. The name must be unique within a  deployment  com-
          ponent.
 
-Java EE 6            Last change: 7 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
 
@@ -97,7 +97,7 @@ asadmin Utility Subcommands                  set-web-env-entry(1)
          false
              The value is not ignored (default).
 
-Java EE 6            Last change: 7 Oct 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    2
 
 asadmin Utility Subcommands                  set-web-env-entry(1)
 
@@ -123,15 +123,39 @@ asadmin Utility Subcommands                  set-web-env-entry(1)
 OPERANDS
      application-name
 
-         The  name  of  the  application.  The  application  must
-         already be deployed. Otherwise, an error occurs.
+         The name of the application. This name can  be  obtained
+         from  the  Administration  Console or by using the list-
+         applications(1) subcommand.
 
-     module-name
-         The name of the module within the  application.  module-
-         name  is  required only if the environment entry applies
-         to a web module of a Java EE application. If  specified,
-         module-name must follow application-name, separated by a
+         The application must already be deployed. Otherwise,  an
+         error occurs.
+
+     module
+         The relative path to the module within the application's
+         enterprise archive (EAR) file. The path to the module is
+         specified in the module  element  of  the  application's
+         application.xml file.
+
+         module is required only if the environment entry applies
+         to  a web module of a Java EE application. If specified,
+         module must  follow  application-name,  separated  by  a
          slash (/).
+
+         For example, the  application.xml  file  for  the  myApp
+         application might specify the following web module:
+
+           <module>
+               <web>
+                   <web-uri>myWebModule.war</web-uri>
+               </web>
+           </module>
+
+Java EE 6           Last change: 30 Oct 2009                    3
+
+asadmin Utility Subcommands                  set-web-env-entry(1)
+
+         The module would be specified as  the  operand  of  this
+         command as myApp/myWebModule.war.
 
 EXAMPLES
      Example 1 Setting an Environment Entry for a Web Application
@@ -145,10 +169,6 @@ EXAMPLES
        --description="User authentication for Hello appplication" hello
 
        Command set-web-env-entry executed successfully.
-
-Java EE 6            Last change: 7 Oct 2009                    3
-
-asadmin Utility Subcommands                  set-web-env-entry(1)
 
      Example 2 Ignoring an Environment Entry That Is Defined in a
      Deployment Descriptor
@@ -167,9 +187,10 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     list-web-env-entry(1), unset-web-env-entry(1)
+     list-applications(1), list-web-env-entry(1),  unset-web-env-
+     entry(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 7 Oct 2009                    4
+Java EE 6           Last change: 30 Oct 2009                    4
 

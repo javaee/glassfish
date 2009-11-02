@@ -5,7 +5,7 @@ NAME
      list-jndi-resources - lists all existing JNDI resources
 
 SYNOPSIS
-     list-jndi-resources [--help] [--target server]
+     list-jndi-resources [--help] [--target target]
 
 DESCRIPTION
      Use the list-jndi-resources subcommand to identify  all  the
@@ -27,7 +27,9 @@ OPTIONS
          ignored.
 
 EXAMPLES
-     Example 1 Using the list-jndi-resources subcommand
+     Example 1 Listing JNDI Resources
+
+     This example lists the JNDI in the default domain.
 
        asadmin> list-jndi-resources
        jndi_resource1
@@ -41,14 +43,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-SEE ALSO
-     create-jndi-resource(1), delete-jndi-resource(1)
-
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 27 Oct 2009                    1
 
 asadmin Utility Subcommands                list-jndi-resources(1)
 
+SEE ALSO
+     create-jndi-resource(1), delete-jndi-resource(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 27 Oct 2009                    2
 

@@ -8,16 +8,16 @@ NAME
 SYNOPSIS
      create-connector-resource [--help]
      --poolname connectorConnectionPoolName
-     [--enabled={false|true}]
-     [--objecttype type]
-     [--description text]
+     [--enabled={true|false}]
+     [--description description]
+     [--objecttype ovjecttype]
      [--property (name=value)[:name=value]*]
      [--target target]
      jndi_name
 
 DESCRIPTION
-     This subcommand registers the connector  resource  with  the
-     JNDI name, which is specified by the jndi_name operand.
+     The create-connector-resource subcommand registers the  con-
+     nector resource with the specified JNDI name.
 
      This subcommand is supported in remote mode only.
 
@@ -38,15 +38,15 @@ OPTIONS
          at runtime. The default value is true.
 
      --objecttype
-         Defines the type  of  the  connector  resource.  Allowed
-         values are:.
+         Defines the type of the connector resource.  Default  is
+         user. Allowed values are:
 
          system-all
 
              A system resource for all server instances  and  the
              domain application server.
 
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 27 Oct 2009                    1
 
 asadmin Utility Subcommands          create-connector-resource(1)
 
@@ -61,8 +61,6 @@ asadmin Utility Subcommands          create-connector-resource(1)
          user
 
              A user resource.
-
-         The default value is user.
 
      --description
          Text providing details about the connector resource.
@@ -85,18 +83,18 @@ OPERANDS
          The JNDI name of this connector resource.
 
 EXAMPLES
-     Example 1 Using the create-connector-resource subcommand
+     Example 1 Creating a Connector Resource
+
+     This   example   creates   a   connector   resource    named
+     jms/qConnFactory.
 
        asadmin> create-connector-resource --poolname jms/qConnPool
-       --description "creating sample connector resource" jms/qConnFactory
+       --description "sample connector resource" jms/qConnFactory
        Command create-connector-resource executed successfully
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 27 Oct 2009                    2
 
 asadmin Utility Subcommands          create-connector-resource(1)
-
-     Where jms/qConnFactory is the sample connector resource that
-     is created.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -109,5 +107,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    3
+Java EE 6           Last change: 27 Oct 2009                    3
 

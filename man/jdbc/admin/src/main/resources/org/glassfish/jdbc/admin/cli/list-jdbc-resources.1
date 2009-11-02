@@ -2,14 +2,14 @@
 asadmin Utility Subcommands                list-jdbc-resources(1)
 
 NAME
-     list-jdbc-resources - gets all JDBC resources
+     list-jdbc-resources - lists all JDBC resources
 
 SYNOPSIS
-     list-jdbc-resources [--help] [target]
+     list-jdbc-resources [--help] [target target]
 
 DESCRIPTION
-     The list-jdbc-resources subcommand displays a list  of  JDBC
-     resources that have been created.
+     The list-jdbc-resources subcommand displays a  list  of  the
+     existing JDBC resources.
 
      This subcommand is supported in remote mode only.
 
@@ -20,7 +20,7 @@ OPTIONS
          Displays the help text for the subcommand.
 
 OPERANDS
-     target
+     --target
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -28,7 +28,9 @@ OPERANDS
          ignored.
 
 EXAMPLES
-     Example 1 Using the list-jdbc-resources subcommand
+     Example 1 Listing the JDBC Resources
+
+     This example lists the current JDBC resources.
 
        asadmin> list-jdbc-resources
        jdbc/DerbyPool
@@ -40,14 +42,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-SEE ALSO
-     create-jdbc-resource(1), delete-jdbc-resource(1)
-
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands                list-jdbc-resources(1)
 
+SEE ALSO
+     create-jdbc-resource(1), delete-jdbc-resource(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    2
 

@@ -9,15 +9,12 @@ SYNOPSIS
      delete-jdbc-connection-pool [--help]
      [--cascade={false|true}]
      [--target target]
-     connectionpoolid
+     jdbc_connection_pool_id
 
 DESCRIPTION
      The delete-jdbc-connection-pool subcommand  deletes  a  JDBC
-     connection  pool. The operand identifies the JDBC connection
-     pool to be deleted.
-
-     Ensure that all associations to this  resource  are  removed
-     before executing the delete-jdbc-connection-pool subcommand.
+     connection pool. Before running this subcommand, all associ-
+     ations to the JDBC connection pool must be removed.
 
      This subcommand is supported in remote mode only.
 
@@ -33,7 +30,7 @@ OPTIONS
          are deleted. When set to false,  the  deletion  of  pool
          fails  if  any  resources  are associated with the pool.
          Resources must be deleted explicitly or the option  must
-         be set to true. By default, the option is false.
+         be set to true. The default value is false.
 
      --target
 
@@ -44,23 +41,21 @@ OPTIONS
          ignored.
 
 OPERANDS
-     connectionpoolid
+     jdbc_connection_pool_id
          The name of the JDBC resource to be removed.
 
-Java EE 6           Last change: 09 Oct 2009                    1
+EXAMPLES
+     Example 1 Deleting a JDBC Connection Pool
+
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands        delete-jdbc-connection-pool(1)
 
-EXAMPLES
-     Example 1 Using the delete-jdbc-connection-pool subcommand
+     This example deletes the sample_derby_pool  JDBC  connection
+     pool.
 
-       asadmin> delete-jdbc-connection-pool
-       --cascade=false sample_derby_pool
-
+       asadmin> delete-jdbc-connection-pool --cascade=false sample_derby_pool
        Command delete-jdbc-connection-pool executed correctly.
-
-     Where sample_derby_pool is the JDBC connection  pool  to  be
-     removed.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -73,5 +68,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    2
 

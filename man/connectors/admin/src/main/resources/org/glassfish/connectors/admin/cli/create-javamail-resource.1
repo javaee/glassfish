@@ -8,10 +8,9 @@ NAME
 SYNOPSIS
      create-javamail-resource [--help] [--target target] --mailhost hostname
      --mailuser username --fromaddress address [--storeprotocol storeprotocol]
-     [storeprotocolclass storeprotocolclass] [transprotocol transprotocol]
+     [--storeprotocolclass storeprotocolclass] [--transprotocol transprotocol]
      [--transprotocolclass transprotocolclass] [--debug={false|true}] [--enabled={true|false}]
-     [--description text]
-     [--property (name=value)[:name=value]*] jndi-name
+     [--description resource-description] [--property (name=value)[:name=value]*] jndi-name
 
 DESCRIPTION
      The create-javamail-resource subcommand creates  a  JavaMail
@@ -46,36 +45,37 @@ OPTIONS
          and Transport objects use  this  value  if  a  protocol-
          specific username property is not supplied.
 
-Java EE 6            Last change: 8 Oct 2009                    1
-
-asadmin Utility Subcommands           create-javamail-resource(1)
-
      --fromaddress
 
          The email address of  the  default  user,  in  the  form
+
+Java EE 6           Last change: 13 Oct 2009                    1
+
+asadmin Utility Subcommands           create-javamail-resource(1)
+
          username@host.domain.
 
      --storeprotocol
+
          The mail server store protocol.  The  default  is  imap.
          Change  this  value  only  if  you have reconfigured the
-         Application Server's mail provider to use  a  nondefault
+         Application Server's mail provider to use a  non-default
          store protocol.
 
      --storeprotocolclass
-
          The mail server store protocol class name.  The  default
          is  com.sun.mail.imap.IMAPStore.  Change this value only
          if you have reconfigured the Application  Server's  mail
          provider to use a nondefault store protocol.
 
      --transprotocol
+
          The mail server transport protocol. The default is smtp.
          Change  this  value  only  if  you have reconfigured the
          Application Server's mail provider to use  a  nondefault
          transport protocol.
 
      --transprotocolclass
-
          The mail  server  transport  protocol  class  name.  The
          default  is com.sun.mail.smtp.SMTPTransport. Change this
          value only if  you  have  reconfigured  the  Application
@@ -83,6 +83,7 @@ asadmin Utility Subcommands           create-javamail-resource(1)
          protocol.
 
      --debug
+
          If set to true, the server starts up in debug  mode  for
          this  resource. If the JavaMail log level is set to FINE
          or FINER, the debugging output  will  be  generated  and
@@ -90,28 +91,27 @@ asadmin Utility Subcommands           create-javamail-resource(1)
          value is false.
 
      --enabled
-
          If set to true, the resource is enabled at runtime.  The
          default value is true.
-
-Java EE 6            Last change: 8 Oct 2009                    2
-
-asadmin Utility Subcommands           create-javamail-resource(1)
 
      --description
 
           Text providing some details of the JavaMail resource.
 
+Java EE 6           Last change: 13 Oct 2009                    2
+
+asadmin Utility Subcommands           create-javamail-resource(1)
+
      --property
+
          Optional attribute name/value pairs for configuring  the
-         JavaMail  resource.  GlassFish-specific  mail- prefix is
-         converted to standard  mail  prefix.  The  JavaMail  API
-         documentation  lists  the  properties  you might want to
+         JavaMail resource. Enterprise Server-specific mail- pre-
+         fix is converted to standard mail prefix.  The  JavaMail
+         API documentation lists the properties you might want to
          set.
 
 OPERANDS
      jndi-name
-
          The JNDI name of the JavaMail resource to be created. It
          is  a  recommended practice to use the naming subcontext
          prefix mail/ for JavaMail resources.
@@ -120,13 +120,11 @@ EXAMPLES
      Example 1 Creating a JavaMail Resource
 
      This   example   creates   a   JavaMail    resource    named
-     mail/MyMailSession.  The escape character (\) is used in the
-     --fromaddress option to distinguish the dot (.) and at  sign
-     (@).  The  JNDI  name  for  a JavaMail session resource cus-
-     tomarily includes the mail/ naming subcontext.
+     mail/MyMailSession.  The  JNDI  name  for a JavaMail session
+     resource customarily includes the mail/ naming subcontext.
 
        asadmin> create-javamail-resource --mailhost localhost
-       --mailuser sample --fromaddress sample\@sun\.com mail/MyMailSession
+       --mailuser sample --fromaddress sample@sun.com mail/MyMailSession
        Command create-javamail-resource executed successfully.
 
 EXIT STATUS
@@ -140,5 +138,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 8 Oct 2009                    3
+Java EE 6           Last change: 13 Oct 2009                    3
 

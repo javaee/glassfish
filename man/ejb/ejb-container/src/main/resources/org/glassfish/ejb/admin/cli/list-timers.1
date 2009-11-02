@@ -2,15 +2,15 @@
 asadmin Utility Subcommands                        list-timers(1)
 
 NAME
-     list-timers -  lists all  of  the  timers  owned  by  server
-     instance(s)
+     list-timers -  lists all of the persistent timers  owned  by
+     server instance(s)
 
 SYNOPSIS
      list-timers [--help] target
 
 DESCRIPTION
-     The list-timers subcommand  lists  the  timers  owned  by  a
-     specific  server  instance.  This  command  is  supported in
+     The list-timers subcommand lists the persistent timers owned
+     by  a specific server instance. This command is supported in
      remote mode only.
 
 OPTIONS
@@ -27,8 +27,9 @@ OPERANDS
 EXAMPLES
      Example 1 Listing the Current Timers in a Server Instance
 
-     This example lists the timers  in  a  particular  standalone
-     server instance. There is one currently active timer set.
+     This example lists the persistent  timers  in  a  particular
+     standalone  server  instance.  There is one currently active
+     timer set.
 
        asadmin> list-timers server
        1
@@ -43,14 +44,14 @@ EXIT STATUS
 SEE ALSO
      asadmin(1M)
 
-Java EE 6           Last change: 12 Oct 2009                    1
+Java EE 6           Last change: 16 Oct 2009                    1
 
 asadmin Utility Subcommands                        list-timers(1)
 
      Using the Timer Service in The Java EE 6 Tutorial, Volume I
 
-     EJB Timer Service in Sun GlassFish Enterprise Server v3 Pre-
-     view Application Development Guide
+     EJB Timer Service in  Sun  GlassFish  Enterprise  Server  v3
+     Application Development Guide
 
-Java EE 6           Last change: 12 Oct 2009                    2
+Java EE 6           Last change: 16 Oct 2009                    2
 

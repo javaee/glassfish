@@ -28,7 +28,11 @@ DESCRIPTION
      When  you  exit the second multimode environment, you return
      to your original multimode environment.
 
-     This subcommand is supported in local mode only.
+     All the remote asadmin utility options can be supplied  when
+     invoking  the  multimode subcommand. The settings will apply
+     as defaults for all subcommands that are run within the mul-
+     timode  session.  For a list of the asadmin utility options,
+     see the asadmin(1M) help page.
 
 OPTIONS
      --help
@@ -37,22 +41,24 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --file filename
-         Reads the subcommands as defined in filename.
+         Reads the subcommands as specified in filename.
 
      --printprompt
 
-         Allows the printing of the  asadmin  prompt  after  each
-         subcommand  is  run.  Set  this option to false when the
-         commands are piped or redirected from the standard input
-         or file. By default the option is set to true.
+         Controls printing of the  asadmin  prompt.  By  default,
+         this  option  is  set  to  the  same  value  as  the  --
+         interactive asadmin utility option.  Normally  you  will
 
-Java EE 6            Last change: 5 Oct 2009                    1
+Java EE 6           Last change: 19 Oct 2009                    1
 
 asadmin Utility Subcommands                          multimode(1)
 
+         not need to specify this option. Default is true.
+
      --encoding
 
-         Specifies the locale for the file to be decoded.
+         Specifies the character set for the file to be  decoded.
+         By default, the system character set is used.
 
 EXAMPLES
      Example 1 Starting a Multimode Session
@@ -84,5 +90,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 5 Oct 2009                    2
+Java EE 6           Last change: 19 Oct 2009                    2
 

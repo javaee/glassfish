@@ -5,24 +5,16 @@ NAME
      create-resource-ref - creates a reference to a resource
 
 SYNOPSIS
-     create-resource-ref
-     [--help]
-     [--target target]
-     [--enabled={false|true}]
-     reference_name
+     create-resource-ref [--help] [--target target]
+     [--enabled={false|true}] reference_name
 
 DESCRIPTION
      The create-resource-ref subcommand creates a reference  from
-     a  cluster or an unclustered server instance to a previously
-     created resource (for example, a JDBC resource created using
-     the   create-jdbc-resource   subcommand).  This  effectively
-     results in the resource being made  available  in  the  JNDI
-     tree of the targeted instance or cluster.
-
-     The target instance or instances making up the cluster  need
-     not  be running or available for this subcommand to succeed.
-     If one or  more  instances  are  not  available,  they  will
-     receive the new resource the next time they start.
+     a   server  instance  to  a previously-created resource, for
+     example, a JDBC  resource  created  using  the  create-jdbc-
+     resource   subcommand.   This  effectively  results  in  the
+     resource being made  available  in  the  JNDI  tree  of  the
+     instance.
 
      This subcommand is supported in remote mode only.
 
@@ -46,13 +38,7 @@ OPTIONS
          at the global level. The default is true.
 
 OPERANDS
-
-Java EE 6           Last change: 09 Oct 2009                    1
-
-asadmin Utility Subcommands                create-resource-ref(1)
-
      reference_name
-
          The name or JNDI name of the resource.
 
 EXAMPLES
@@ -60,6 +46,10 @@ EXAMPLES
 
      The following subcommand creates a reference to the JMS des-
      tination resource jms/Topic on the cluster Cluster1.
+
+Java EE 6           Last change: 23 Oct 2009                    1
+
+asadmin Utility Subcommands                create-resource-ref(1)
 
        asadmin> create-resource-ref --user admin
        --passwordfile passwords.txt --target Cluster1 jms/Topic
@@ -76,5 +66,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 23 Oct 2009                    2
 

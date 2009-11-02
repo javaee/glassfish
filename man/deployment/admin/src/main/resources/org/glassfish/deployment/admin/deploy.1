@@ -5,16 +5,27 @@ NAME
      deploy - deploys the specified component
 
 SYNOPSIS
-     deploy [--help] [--force={false|true}] [--virtualservers virtual-servers]
-     [--contextroot context-root] [--precompilejsp={false|true}] [--verify={false|true}]
-     [--name component-name] [--upload={true|false}]
-     [--retrieve local-dirpath] [--dbvendorname dbvendorname]
-     [--createtables={true|false} | --dropandcreatetables={true|false}]
-     [--uniquetablenames={true|false}] [--deploymentplan deployment-plan]
-     [--enabled={true|false}] [--generatermistubs={false|true}]
-     [--availabilityenabled={false|true}] [--libraries jar-file[,jar-file]*]
-     [--target target] [--type pkg-type]
-     [--properties(name=value)[:name=value]*] filepath
+     deploy [--help]
+     [--force={false|true}]
+     [--virtualservers virtual-servers]
+     [--contextroot context-root]
+     [--precompilejsp={false|true}]
+     [--verify={false|true}]
+     [--name component-name]
+     [--upload={true|false}]
+     [--retrieve local-dirpath]
+     [--dbvendorname dbvendorname]
+     [--createtables={true|false}|--dropandcreatetables={true|false}]
+     [--uniquetablenames={true|false}]
+     [--deploymentplan deployment-plan]
+     [--enabled={true|false}]
+     [--generatermistubs={false|true}]
+     [--availabilityenabled={false|true}]
+     [--libraries jar-file[,jar-file]*]
+     [--target target]
+     [--type pkg-type]
+     [--properties(name=value)[:name=value]*]
+     filepath
 
 DESCRIPTION
      The deploy subcommand deploys applications  to  the  server.
@@ -38,6 +49,10 @@ OPTIONS
          specified component has already been deployed or already
          exists. Default is false.
 
+Java EE 6           Last change: 29 Oct 2009                    1
+
+asadmin Utility Subcommands                             deploy(1)
+
      --virtualservers
 
          One  or  more  virtual  server  IDs.  Multiple  IDs  are
@@ -47,10 +62,6 @@ OPTIONS
          Valid only if the archive is a web module. It is ignored
          for  other  archive  types; defaults to filename without
          extension.
-
-Java EE 6            Last change: 8 Oct 2009                    1
-
-asadmin Utility Subcommands                             deploy(1)
 
      --precompilejsp
 
@@ -72,8 +83,12 @@ asadmin Utility Subcommands                             deploy(1)
          Uploads  the  deployable  file  to  the   administration
          server.  The deployable file must be accessible from the
          client. If the file is accessible  to  both  server  and
-         client,  set  the  --upload  option to false. Default is
-         true.
+         client,  set  the  --upload option to false. The default
+         value depends on whether the server you are deploying to
+         is  local or remote.  If the server is local, the option
+         defaults to false.  If the server is remote, the  option
+         defaults  to  true.  Explicitly specifying true or false
+         overrides the default.
 
      --retrieve
 
@@ -83,6 +98,11 @@ asadmin Utility Subcommands                             deploy(1)
      --dbvendorname
          Specifies the name of  the  database  vendor  for  which
          tables are created. Supported values include db2, mssql,
+
+Java EE 6           Last change: 29 Oct 2009                    2
+
+asadmin Utility Subcommands                             deploy(1)
+
          oracle,  derby,  javadb,  postgresql,   pointbase,   and
          sybase, case-insensitive. If not specified, the value of
          the database-vendor-name attribute in sun-ejb-jar.xml is
@@ -100,12 +120,7 @@ asadmin Utility Subcommands                             deploy(1)
          deploy entry in the cmp-resource  element  of  the  sun-
          ejb-jar.xml file.
 
-Java EE 6            Last change: 8 Oct 2009                    2
-
-asadmin Utility Subcommands                             deploy(1)
-
      --dropandcreatetables
-
          If set to true, when the component  is  redeployed,  the
          tables  created  by  the previous deployment are dropped
          before creating  the  new  tables.  Applies  to  already
@@ -120,6 +135,7 @@ asadmin Utility Subcommands                             deploy(1)
          the sun-ejb-jar.xml file is set to true.
 
      --uniquetablenames
+
          Guarantees unique table names  for  all  the  beans  and
          results in a hash code added to the table names. This is
          useful if you have an  application  with  case-sensitive
@@ -127,14 +143,19 @@ asadmin Utility Subcommands                             deploy(1)
          beans.
 
      --deploymentplan
-
          Deploys the deployment plan, which is a  JAR  containing
          Sun-specific  descriptors.  This  should be passed along
          when deploying a pure EAR file. A pure EAR  file  is  an
          EAR without Sun-specific descriptors.
 
      --enabled
+
          Allows users to access the application. If set to false,
+
+Java EE 6           Last change: 29 Oct 2009                    3
+
+asadmin Utility Subcommands                             deploy(1)
+
          users  will  not  be  able  to  access  the application.
          Default is true.
 
@@ -150,10 +171,6 @@ asadmin Utility Subcommands                             deploy(1)
          option, a syntax error does not occur. Instead, the sub-
          command  runs  successfully  and  the option is silently
          ignored.
-
-Java EE 6            Last change: 8 Oct 2009                    3
-
-asadmin Utility Subcommands                             deploy(1)
 
      --libraries
 
@@ -186,14 +203,31 @@ asadmin Utility Subcommands                             deploy(1)
 
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
+
+Java EE 6           Last change: 29 Oct 2009                    4
+
+asadmin Utility Subcommands                             deploy(1)
+
          are determined by the implementation  of  the  component
          that  is  being deployed or redeployed. The --properties
          option and the --property option are equivalent. You can
          use either option regardless of the number of properties
-         that you specify. You can specify the following  proper-
-         ties for a deployment:
+         that you specify.
+
+         Note -
+
+           For properties that  contain  .  (dot)  separators  in
+           their  names, using the set subcommand to change these
+           properties  requires  a  server  restart.   A   better
+           approach  is  to  use the redeploy subcommand with the
+           changed properties. If you do use the set  subcommand,
+           the  . (dot) separators in these properties names must
+           be escaped.
+         You can specify the following properties for  a  deploy-
+         ment:
 
          jar-signing-alias
+
              Specifies the alias  for  the  security  certificate
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
@@ -204,11 +238,6 @@ asadmin Utility Subcommands                             deploy(1)
              certificate  with  this alias from the domain's key-
              store. Java Web Start then asks the user whether  to
              trust  the  code  and displays the Enterprise Server
-
-Java EE 6            Last change: 8 Oct 2009                    4
-
-asadmin Utility Subcommands                             deploy(1)
-
              certificate information.  To sign this JAR file with
              a  different certificate, add the certificate to the
              domain keystore, then use this property.  For  exam-
@@ -219,50 +248,53 @@ asadmin Utility Subcommands                             deploy(1)
              signed certificate created for every domain.
 
          java-web-start-enabled
-
              Specifies whether Java Web Start access is permitted
              for an application client module. Default is true.
 
-         jruby-home
+         jruby.home
+
              Specifies the directory where JRuby itself (not  the
              Enterprise  Server  JRuby  container)  is installed.
              Default is as-install/jruby.
 
-         jruby-runtime
-
-             Specifies the initial number of  JRuby  runtimes  to
-             start.  Must  be  at  greater  than  zero,  at least
-             jruby.runtime.min, and  jruby.runtime.max  or  less.
-             Overrides  the  jruby-runtime  attribute  of  jruby-
-             runtime-pool. Default is 1.
-
-         jruby-runtime-min
-             Specifies the minimum number of  JRuby  runtimes  in
-             the  pool.  Must be greater than zero, jruby.runtime
-             or less, and jruby.runtime.max  or  less.  Overrides
-             the  jruby-runtime-min  attribute  of jruby-runtime-
-             pool. Default is 1.
-
-         jruby-runtime-max
-
-             Specifies the maximum number of  JRuby  runtimes  in
-             the  pool.  Must  be  greater  than  zero,  at least
-             jruby.runtime.min, and at least jruby.runtime. Over-
-             rides  the  jruby-runtime-max  attribute  of  jruby-
-             runtime-pool. Default is 1.
-
-         jruby-rackEnv
-             Specifies the environment in which a JRuby  applica-
-             tion  such as Rails or Merb runs. Allowed values are
-             development,  production,  or   test.   Default   is
-
-Java EE 6            Last change: 8 Oct 2009                    5
+Java EE 6           Last change: 29 Oct 2009                    5
 
 asadmin Utility Subcommands                             deploy(1)
 
+         jruby.runtime
+
+             Specifies the initial number of  JRuby  runtimes  to
+             start.  Must  be  greater than zero, greater than or
+             equal to jruby.runtime.min, and less than  or  equal
+             to  jruby.runtime.max. Default is 1. Overrides JRuby
+             container runtime pool settings. For  more  informa-
+             tion,   see  the  configure-jruby-container(1)  help
+             page.
+
+         jruby.runtime.min
+             Specifies the minimum number of  JRuby  runtimes  in
+             the  pool.  Must  be greater than zero, less than or
+             equal  to   jruby.runtime   and   jruby.runtime.max.
+             Default is 1. Overrides JRuby container runtime pool
+             settings. For more information, see  the  configure-
+             jruby-container(1) help page.
+
+         jruby.runtime.max
+
+             Specifies the maximum number of  JRuby  runtimes  in
+             the pool. Must be greater than zero, greater than or
+             equal to jruby.runtime and jruby.runtime.min.  Over-
+             rides JRuby container runtime pool settings. Default
+             is 1.  For  more  information,  see  the  configure-
+             jruby-container(1) help page.
+
+         jruby.rackEnv
+             Specifies the environment in which a JRuby  applica-
+             tion  such as Rails or Merb runs. Allowed values are
+             development,  production,  or   test.   Default   is
              development.
 
-         jruby-applicationType
+         jruby.applicationType
 
              Specifies the name of a supported framework  or  the
              path  to a script that initializes the user's frame-
@@ -275,7 +307,12 @@ asadmin Utility Subcommands                             deploy(1)
              work, errors result.  Default  is  computed  through
              auto-detection.
 
-         jruby-MTSafe
+Java EE 6           Last change: 29 Oct 2009                    6
+
+asadmin Utility Subcommands                             deploy(1)
+
+         jruby.MTSafe
+
              If true, specifies that a  framework  being  started
              using   jruby.applicationType   is  thread-safe  and
              therefore does not need a pool created for it.  This
@@ -295,7 +332,6 @@ asadmin Utility Subcommands                             deploy(1)
              detection.
 
          compatibility
-
              Specifies the Enterprise Server release  with  which
              to be backward compatible in terms of JAR visibility
              requirements  for  applications.  The  only  allowed
@@ -311,10 +347,6 @@ asadmin Utility Subcommands                             deploy(1)
              library-directory mechanism. Setting  this  property
              to v2 removes these Java EE 6 restrictions.
 
-Java EE 6            Last change: 8 Oct 2009                    6
-
-asadmin Utility Subcommands                             deploy(1)
-
          keepSessions={false|true}
 
              If the --force option is set to true, this  property
@@ -327,6 +359,10 @@ asadmin Utility Subcommands                             deploy(1)
              false
                  Active  sessions  of  the  application  are  not
                  preserved and restored (default).
+
+Java EE 6           Last change: 29 Oct 2009                    7
+
+asadmin Utility Subcommands                             deploy(1)
 
              true
 
@@ -363,10 +399,6 @@ EXAMPLES
      This example deploys the enterprise application packaged  in
      the Cart.ear file.
 
-Java EE 6            Last change: 8 Oct 2009                    7
-
-asadmin Utility Subcommands                             deploy(1)
-
        asadmin> deploy Cart.ear
        Command deploy executed successfully
 
@@ -375,6 +407,10 @@ asadmin Utility Subcommands                             deploy(1)
 
      This example deploys the web application  in  the  hello.war
      file.
+
+Java EE 6           Last change: 29 Oct 2009                    8
+
+asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy hello.war
        Command deploy executed successfully
@@ -404,10 +440,6 @@ asadmin Utility Subcommands                             deploy(1)
      This example deploys a connector module that is packaged  in
      an RAR file.
 
-Java EE 6            Last change: 8 Oct 2009                    8
-
-asadmin Utility Subcommands                             deploy(1)
-
        asadmin> deploy jdbcra.rar
        Command deploy executed successfully
 
@@ -417,13 +449,18 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
+Java EE 6           Last change: 29 Oct 2009                    9
+
+asadmin Utility Subcommands                             deploy(1)
+
 SEE ALSO
-     redeploy(1), list-components(1), undeploy(1)
+     redeploy(1),  list-components(1),  undeploy(1),   configure-
+     jruby-container(1)
 
      asadmin(1M)
 
      Sun GlassFish Enterprise Server  v3  Application  Deployment
      Guide
 
-Java EE 6            Last change: 8 Oct 2009                    9
+Java EE 6           Last change: 29 Oct 2009                   10
 

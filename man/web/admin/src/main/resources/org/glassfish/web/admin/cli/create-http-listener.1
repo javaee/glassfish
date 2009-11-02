@@ -15,9 +15,9 @@ SYNOPSIS
      [--acceptorthreads acceptor-threads]
      [--xpowered={true|false}]
      [ --redirectport  redirect_port]
-     [--securityenabled={true|false}]
+     [--securityenabled={false|true}]
      [ --enabled ={true|false}]
-     [ --target  server] listener_id
+     [ --target  target] listener_id
 
 DESCRIPTION
      The create-http-listener subcommand creates an HTTP  network
@@ -52,7 +52,7 @@ OPTIONS
          The port number to create the listen  socket  on.  Legal
          values  are  1-65535.  On  UNIX,  creating  sockets that
 
-Java EE 6           Last change: 23 Sep 2009                    1
+Java EE 6           Last change: 26 Oct 2009                    1
 
 asadmin Utility Subcommands               create-http-listener(1)
 
@@ -91,7 +91,7 @@ asadmin Utility Subcommands               create-http-listener(1)
          which containers may add to responses that use JSP tech-
          nology.   The goal of these headers is to aid in gather-
          ing statistical data  about the use of Servlet  and  JSP
-         technology.
+         technology. The default value is true.
 
      --redirectport
 
@@ -101,7 +101,7 @@ asadmin Utility Subcommands               create-http-listener(1)
          command  runs  successfully  and  the option is silently
          ignored.
 
-Java EE 6           Last change: 23 Sep 2009                    2
+Java EE 6           Last change: 26 Oct 2009                    2
 
 asadmin Utility Subcommands               create-http-listener(1)
 
@@ -114,7 +114,8 @@ asadmin Utility Subcommands               create-http-listener(1)
          instance. The default value is false.
 
      --enabled
-         If set to true, the listener is enabled at runtime.
+         If set to true, the listener is enabled at runtime.  The
+         default value is true.
 
      --target
 
@@ -145,16 +146,15 @@ EXIT STATUS
 
      1                           error in executing the command
 
-SEE ALSO
-
-Java EE 6           Last change: 23 Sep 2009                    3
+Java EE 6           Last change: 26 Oct 2009                    3
 
 asadmin Utility Subcommands               create-http-listener(1)
 
+SEE ALSO
      delete-http-listener(1),   list-http-listeners(1),   create-
      virtual-server(1), create-ssl(1), create-network-listener(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 23 Sep 2009                    4
+Java EE 6           Last change: 26 Oct 2009                    4
 

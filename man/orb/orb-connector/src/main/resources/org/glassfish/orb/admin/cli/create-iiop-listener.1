@@ -8,9 +8,11 @@ SYNOPSIS
      create-iiop-listener
      [--help]
        --listeneraddress  address
-      [--iiopport iiop-port-number] [--securityenabled=false]
-      [--enabled=true] [--property (name=value)[:name=value]*]
-      [--target server] listener_id
+      [--iiopport iiop-port-number]
+     [--securityenabled={false|true}]
+      [ --enabled ={true|false}]
+     [ --property  (name=value)[:name=value]*]
+      [--target target] listener_id
 
 DESCRIPTION
      The  create-iiop-listener   subcommand   creates   an   IIOP
@@ -40,6 +42,7 @@ OPTIONS
      --enabled
 
          If set to true, the IIOP listener is enabled at runtime.
+         The default value is true.
 
      --property
          Optional attribute name/value pairs for configuring  the

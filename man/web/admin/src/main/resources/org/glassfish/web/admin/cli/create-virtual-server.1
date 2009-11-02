@@ -79,7 +79,9 @@ asadmin Utility Subcommands;             create-virtual-server(1)
 
          Name of the file where  log  entries  for  this  virtual
          server are to be written. By default, this is the server
-         log.
+         log. The file and directory in which the access  log  is
+         kept  must  be  writable by the user account under which
+         the server runs.
 
      --property
          Optional property name/value pairs for  configuring  the
@@ -222,8 +224,8 @@ asadmin Utility Subcommands;             create-virtual-server(1)
              the context.xml file for this virtual server, if one
              is used. For more information about the  context.xml
              file,  see Using a context.xml File in Sun GlassFish
-             Enterprise Server v3 Preview Application Development
-             Guide       and      The      Context      Container
+             Enterprise Server v3 Application  Development  Guide
+             and          The          Context          Container
              (http://tomcat.apache.org/tomcat-5.5-
              doc/config/context.html).     Context    parameters,
              environment entries,  and  resource  definitions  in
@@ -387,25 +389,42 @@ asadmin Utility Subcommands;             create-virtual-server(1)
 
          docroot
 
-             Deprecated. Replaced with a virtual-server attribute
-             that is accessible using the get, set, and list sub-
-             commands.
+             Absolute path to root document directory for server.
+             Deprecated.  Replaced  with  a virtual-server attri-
+             bute, docroot, that is  accessible  using  the  get,
+             set, and list subcommands.
+
+         accesslog
+             Absolute path to  server  access  logs.  Deprecated.
+             Replaced  with  a virtual-server attribute , access-
+             log, that is accessible using the get, set, and list
+             subcommands.
 
          accessLoggingEnabled
-             Deprecated. Replaced with a virtual-server attribute
-             that is accessible using the get, set, and list sub-
-             commands.
+
+             If true, access logging is enabled for this  virtual
+             server.  Deprecated.  Replaced with a virtual-server
+             attribute, access-logging-enabled, that is  accessi-
+             ble using the get, set, and list subcommands.
 
          sso-enabled
-
-             Deprecated. Replaced with a virtual-server attribute
-             that is accessible using the get, set, and list sub-
-             commands.
+             If true, single sign-on is enabled for web  applica-
+             tions on this virtual server that are configured for
+             the  same  realm.  Deprecated.   Replaced   with   a
+             virtual-server   attribute,   sso-enabled,  that  is
+             accessible using the get, set, and list subcommands.
 
          ssoCookieSecure
-             Deprecated. Replaced with a virtual-server attribute
-             that is accessible using the get, set, and list sub-
-             commands.
+
+             Sets the Secure attribute of any JSESSIONIDSSO cook-
+             ies associated with the web applications deployed to
+             this virtual server.  Deprecated.  Replaced  with  a
+             virtual-server attribute, sso-cookie-secure, that is
+             accessible using the get, set, and list subcommands.
+
+Java EE 6           Last change: 15 Sep 2009                    8
+
+asadmin Utility Subcommands;             create-virtual-server(1)
 
 OPERANDS
      virtual_server_id
@@ -415,10 +434,6 @@ OPERANDS
 
 EXAMPLES
      Example 1 Using the create-virtual-server subcommand
-
-Java EE 6           Last change: 15 Sep 2009                    8
-
-asadmin Utility Subcommands;             create-virtual-server(1)
 
      The following command creates a virtual  server  named  sam-
      pleServer:

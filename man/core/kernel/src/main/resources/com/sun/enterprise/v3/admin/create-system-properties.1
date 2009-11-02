@@ -2,18 +2,17 @@
 asadmin Utility Subcommands           create-system-properties(1)
 
 NAME
-     create-system-properties - adds one or more overridable sys-
-     tem property elements at the server level
+     create-system-properties - adds one or more system  property
+     elements  that can be referenced elsewhere in the configura-
+     tion.
 
 SYNOPSIS
      create-system-properties [--help] [--target target-name] [name=value)[:name=value]*]
 
 DESCRIPTION
-     The create-system-properties subcommand adds or updates  the
-     system  properties  that  can be referenced elsewhere on the
-     server. Any configuration attribute in a server instance can
-     be overridden through a system property of the corresponding
-     name.
+     The create-system-properties subcommand adds or updates sys-
+     tem  properties  that  can  be  referenced  elsewhere on the
+     server.
 
      Enterprise Server provides hooks where tokens  (system  pro-
      perties)  can  be  specified. Because Enterprise Server does
@@ -49,13 +48,14 @@ OPERANDS
          the specified target. Multiple system properties must be
          separated by a : (colon). If a : (colon) appears in  the
          name  or  value of a system property, it must be escaped
+         with a  (blackslash).  If  any  system  properties  were
 
 Java EE 6           Last change: 12 Oct 2009                    1
 
 asadmin Utility Subcommands           create-system-properties(1)
 
-         with a  (blackslash). If any system properties were pre-
-         viously defined, they are updated with the new values.
+         previously  defined,  they  are  updated  with  the  new
+         values.
 
 EXAMPLES
      Example 1 Creating System Properties

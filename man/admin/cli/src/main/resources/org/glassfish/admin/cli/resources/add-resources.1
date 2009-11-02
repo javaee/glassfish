@@ -6,7 +6,7 @@ NAME
      file
 
 SYNOPSIS
-     add-resources [--help] [--target target] xml_file_path
+     add-resources [--help] [--target target] xml_file_name
 
 DESCRIPTION
      The add-resources subcommand creates the resources named  in
@@ -14,10 +14,11 @@ DESCRIPTION
      with this subcommand are listed in See  Also  in  this  help
      page.
 
-     The xml_file_path is the path to the XML file that  contains
-     the  resources  to be created. The DOCTYPE must be specified
-     as            http://www.sun.com/software/dtd/appserver/sun-
-     resources_1_3.dtd in the resources.xml file.
+     The xml_file_name operand is the path to the XML  file  that
+     contains  the  resources  to be created. The DOCTYPE must be
+     specified                                                 as
+     http://www.sun.com/software/appserver/dtds/sun-
+     resources_1_4.dtd in the resources.xml file.
 
      This subcommand is supported in remote mode only.
 
@@ -35,24 +36,23 @@ OPTIONS
          ignored.
 
 OPERANDS
-     xml_file_path
+     xml_file_name
 
          The path to the XML file that contains  the  resource(s)
          to  be created. If you specify an absolute path, the XML
          file can be anywhere. If you specify only the file, then
          the    XML    file   must   reside   in   the   install-
-         dir/domains/domain1/config directory. If you  specify  a
+         dir/domains/domain1/config directory.  If you specify  a
          relative path, then the XML file must be in the relative
          directory.
 
          An example XML file follows.
 
-       <?xml version="1.0" encoding="UTF-8"?>
-
-Java EE 6           Last change: 15 Sep 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands                      add-resources(1)
 
+       <?xml version="1.0" encoding="UTF-8"?>
        <!DOCTYPE resources PUBLIC
           "-//Sun Microsystems Inc.//DTD Application Server 9.1 Domain//EN"
           "*http://www.sun.com/software/appserver/dtds/sun-resources_1_2.dtd*">
@@ -80,7 +80,7 @@ EXAMPLES
      Example 1 Adding Resources
 
      This example creates resources using the contents of the XML
-     file resource.xml:
+     file resource.xml.
 
        asadmin> add-resources resource.xml
        Command : Connector connection pool jms/testQFactoryPool created.
@@ -97,7 +97,7 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 15 Sep 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    2
 
 asadmin Utility Subcommands                      add-resources(1)
 
@@ -111,5 +111,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 15 Sep 2009                    3
+Java EE 6           Last change: 30 Oct 2009                    3
 

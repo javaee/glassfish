@@ -8,22 +8,16 @@ SYNOPSIS
      ping-connection-pool [--help] pool_name
 
 DESCRIPTION
-     This subcommand tests if a connection  pool  is  usable  for
-     both  JDBC  connection pools and connector connection pools.
-     For example, if you create a new JDBC connection pool for an
-     application  that is expected to be deployed later, the JDBC
-     pool is tested with this  subcommand  before  deploying  the
-     application.
+     The ping-connection-pool subcommand  tests  if  an  existing
+     JDBC  or  connector connection pool is usable . For example,
+     if you create a new JDBC connection pool for an  application
+     that  is  expected  to  be  deployed later, the JDBC pool is
+     tested with this subcommand before  deploying  the  applica-
+     tion.
 
-     A JDBC connection pool or a connector connection  pool  with
-     authentication  can  be  created. You can either use a -pro-
-     perty option to specify user, password, or other  connection
-     information  using  the command line, or specify the connec-
-     tion information in the xml descriptor file.
-
-     Before pinging a connection pool, you must create  the  con-
-     nection  pool with authentication and ensure that the enter-
-     prise server or database is started.
+     Before testing availability of a connection pool,  you  must
+     create  the  connection  pool with authentication and ensure
+     that the server or database is started.
 
      This subcommand is supported in remote mode only.
 
@@ -35,21 +29,34 @@ OPTIONS
 
 OPERANDS
      pool_name
-         This is the name of the pool to test.
+         The name of the pool to test.
+
+EXAMPLES
+     Example 1 Contacting a Connection Pool
+
+     This example tests to see if the connection pool named  Der-
+     byPool is usable.
+
+       asadmin> ping-connection-pool DerbyPool
+       Command ping-connection-pool executed successfully
 
 EXIT STATUS
      0                           subcommand executed successfully
+
+Java EE 6           Last change: 29 Oct 2009                    1
+
+asadmin Utility Subcommands;              ping-connection-pool(1)
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-
-Java EE 6           Last change: 09 Oct 2009                    1
-
-asadmin Utility Subcommands;              ping-connection-pool(1)
+     create-connector-connection-pool(1),       delete-connector-
+     connection-pool(1),      list-connector-connection-pools(1),
+     create-jdbc-connection-pool(1),      delete-jdbc-connection-
+     pool(1), list-jdbc-connection-pools(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 29 Oct 2009                    2
 

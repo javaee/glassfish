@@ -3,18 +3,28 @@ asadmin Utility Subcommands                create-admin-object(1)
 
 NAME
      create-admin-object - adds the administered object with  the
-     specified JNDI name
+     specified JNDI name for a resource adapter
 
 SYNOPSIS
-     create-admin-object [--help] --restype restype --raname  resource_adapter_name
-     [--enabled={true|false}] [--target target] [--description text]
-     [--classname class-name] [--property name=value[:name=value]*] jndi-name
+     create-admin-object [--help] [--target target]
+     --restype restype
+     [--classname classname]
+     --raname raname
+     [--enabled={true|false}]
+     [--description description]
+     [--property name=value[:name=value]*]
+     jndi_name
 
 DESCRIPTION
      The create-admin-object subcommand creates the  administered
-     object that has a specified JNDI name.
+     object with the specified JNDI name and the interface defin-
+     ition for a resource adapter.
 
-     This subcommand is supported in remote mote only.
+     To create an administered object for a  non-system  resource
+     adapter,  the  non-system  resource adapter must be deployed
+     before running this subcommand.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -31,51 +41,61 @@ OPTIONS
 
      --restype
 
-         Administers the object resource types, as defined by the
-         resource adapter in the ra.xml file.
+         Specifies the interface definition for the  administered
+         object.  The  resource type must be an interface defini-
+         tion that  is  specified  in  the  ra.xml  file  of  the
+         resource adapter.
 
-     --classname
-
-      --raname
-
-         Specifies the name of the  resource  adapter  associated
-         with this object.
-
-     --enabled
-         Specifies if this object is enabled. Default is true.
-
-Java EE 6            Last change: 8 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands                create-admin-object(1)
 
-     --description
+     --classname
 
-         The text description of the administered object.
+         Specifies the class name  of  the  administered  object.
+         Required  if  multiple administered objects use the same
+         interface definition.
+
+      --raname
+         Specifies the name of the inbound resource adapter asso-
+         ciated with this administered object.
+
+     --enabled
+
+         Specifies if this object is enabled. Default is true.
+
+     --description
+         Text string describing the administered object.
 
      --property
-         Describes the "name/values" pairs  for  configuring  the
+
+         Description of the name/values pairs for configuring the
          resource.  Dependent  on  the  resource adapter. For JMS
          properties, see create-jms-resource(1) for JMS  destina-
          tion resources.
 
 OPERANDS
-     jndi-name
-
-         This is the JNDI name of the administered object  to  be
-         created.
+     jndi_name
+         JNDI name of the administered object to be created.
 
 EXAMPLES
      Example 1 Creating an Administered Object
 
-     The javax.jms.Queue  resource  type  is  obtained  from  the
-     ra.xml  file. The jmsrar.rar must be deployed before running
-     this subcommand.
+     In this example, jmsra is a system resource adapter with the
+     admin     object     interfaces,     javax.jms.Queue     and
+     javax.jms.Topic.
 
-       asadmin> create-admin-object --restype javax.jms.Queue --raname jmsra
-       --description "sample administered object" --property Name=sample_jmsqueue jms/samplequeue
+       asadmin> create-admin-object --restype javax.jms.Queue
+       --raname jmsra --description "sample administered object"
+       --property Name=sample_jmsqueue jms/samplequeue
        Command create-admin-object executed successfully
 
 EXIT STATUS
+
+Java EE 6           Last change: 30 Oct 2009                    2
+
+asadmin Utility Subcommands                create-admin-object(1)
+
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
@@ -86,5 +106,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 8 Oct 2009                    2
+Java EE 6           Last change: 30 Oct 2009                    3
 

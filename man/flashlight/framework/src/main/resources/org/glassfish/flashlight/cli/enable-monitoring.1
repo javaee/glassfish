@@ -3,12 +3,15 @@ asadmin Utility Subcommands                  enable-monitoring(1)
 
 NAME
      enable-monitoring - enables monitoring for the server or for
-     specific monitorable objects
+     specific monitorable modules
 
 SYNOPSIS
-     enable-monitoring [--help] [--mbean={false|true}] [--dtrace={true|false]
-     --modules module-name[=level][:module-name[=level]]* [--pid=pid]
-     [--options option-name]
+     enable-monitoring [--help]
+     [--mbean={false|true}]
+     [--dtrace={true|false]
+     [--modules modules[=level][:module[=level]]*
+     [--pid pid]
+     [--options options={true|false]]
 
 DESCRIPTION
      The enable-monitoring subcommand is used to turn on monitor-
@@ -42,32 +45,38 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --mbean
-         Enables Mbean monitoring. Default is false.
+         Enables Mbean monitoring. Default value is false.
 
-     --dtrace
-
-         Only usable if Value  Add  module  is  present.  Enables
-
-Java EE 6            Last change: 9 Oct 2009                    1
+Java EE 6           Last change: 30 Oct 2009                    1
 
 asadmin Utility Subcommands                  enable-monitoring(1)
 
-         SolarisTM DTrace monitoring. Default is false.
+     --dtrace
+
+         Only usable if tTM DTrace Monitoring module is  present.
+         Enables  Solaris    DTrace  monitoring. Default value is
+         false.
 
      --modules
-
          Enables specified module or modules by indicating  moni-
          toring  level. Valid levels are OFF, HIGH, LOW. If level
-         is not specified,  default  setting  is  HIGH.  Multiple
+         is not specified, the default setting is HIGH.  Multiple
          modules  are separated by : (colon). Monitorable modules
          include  connector-connection-pool,   connector-service,
          ejb-container,  http-service, jdbc-connection-pool, jer-
          sey,  jpa,  jms-service,  jvm,  security,   thread-pool,
-         transaction-service,  web-container,  and  web-services-
-         container. Additional modules can be listed by using the
-         get subcommand.
+         transaction-service, web-container, jruby-container, and
+         web-services-container. Additional modules can be listed
+         by using the get subcommand.
 
-     --pid=pid
+         To set the level of JRuby container monitoring you  need
+         to  deploy  at  least  one  Ruby  application or use the
+         configure-jruby-container subcommand to enable  monitor-
+         ing.   For   more   information,   see  configure-jruby-
+         container(1).
+
+     --pid
+
          Specifies the Enterprise Server JVM  process  identifier
          (PID).  When  monitoring is enabled, the btrace-agent is
          attached, based on the specified PID.  Need  to  specify
@@ -77,26 +86,20 @@ asadmin Utility Subcommands                  enable-monitoring(1)
          cess.
 
      --options
-
          Sets the following btrace-agent options:
 
-         debug=false
+         debug
 
-         dumpClasses=false
-
-         probeDescPath=/foo/bar
-
-         noServer=true,script=$1
-
-OPERANDS
-
-Java EE 6            Last change: 9 Oct 2009                    2
-
-asadmin Utility Subcommands                  enable-monitoring(1)
+             Enables  debugging  for  BTrace.  Default  value  is
+             false.
 
 EXAMPLES
      Example 1 Enabling the  Monitoring  Service  for  Enterprise
      Server
+
+Java EE 6           Last change: 30 Oct 2009                    2
+
+asadmin Utility Subcommands                  enable-monitoring(1)
 
      This example enables monitoring  for  Enterprise  Server  in
      general  by  setting  the  enable-monitoring  flag  to  true
@@ -127,18 +130,19 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     disable-monitoring(1), monitor(1), list(1), get(1), set(1)
+     disable-monitoring(1), monitor(1), list(1), get(1),  set(1),
+     configure-jruby-container(1)
 
      monitoring(5ASC)
 
-Java EE 6            Last change: 9 Oct 2009                    3
+     asadmin(1M)
+
+Java EE 6           Last change: 30 Oct 2009                    3
 
 asadmin Utility Subcommands                  enable-monitoring(1)
-
-     asadmin(1M)
 
      Chapter 8, Administering  the  Monitoring  Service,  in  Sun
      GlassFish Enterprise Server v3 Administration Guide
 
-Java EE 6            Last change: 9 Oct 2009                    4
+Java EE 6           Last change: 30 Oct 2009                    4
 
