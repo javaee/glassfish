@@ -689,13 +689,6 @@ public class StandardContext
      */
     private List<String> orderedLibs;
 
-    /**
-     * Restricted ServletContext, some of whose methods (namely the
-     * configuration methods added by Servlet 3.0) throw an
-     * IllegalStateException if invoked by a restricted ServletContextListener
-     */
-    protected transient ServletContext restrictedContext = null;
-
     // <jsp-config> related info aggregated from web.xml and web-fragment.xml
     private JspConfigDescriptor jspConfigDesc;
 
@@ -1595,7 +1588,6 @@ public class StandardContext
      * Return the servlet context for which this Context is a facade.
      */
     public ServletContext getServletContext() {
-
         if (context == null) {
             context = new ApplicationContext(getBasePath(getDocBase()),
                                              getAlternateDocBases(),
@@ -1607,24 +1599,7 @@ public class StandardContext
             }
         }
 
-        return (context.getFacade());
-    }
-
-    /**
-     * Gets the restricted ServletContext, some of whose methods (namely
-     * the configuration methods added by Servlet 3.0) throw an
-     * IllegalStateException if invoked by a ServletContextListener
-     * declared in a Tag Library Descriptor (TLD) resource of a web
-     * fragment JAR file excluded from absolute ordering.
-     *
-     * See IT 8565 for additional details.
-     */
-    public ServletContext getRestrictedServletContext() {
-        if (restrictedContext == null) {
-            restrictedContext =
-                RestrictedServletContext.newInstance(getServletContext());
-        }
-        return restrictedContext;
+        return context.getFacade();
     }
 
     /**
@@ -4598,26 +4573,20 @@ public class StandardContext
      * method.
      */
     protected void contextListenerStart() {
-        ServletContextEvent event =
-            new ServletContextEvent(getServletContext());
-        ServletContextEvent restrictedEvent =
-            new ServletContextEvent(getRestrictedServletContext());
+        ServletContextEvent event = new ServletContextEvent(
+            getServletContext());
         for (ServletContextListener listener : contextListeners) {
-            boolean isRestricted = false;
             if (listener instanceof RestrictedServletContextListener) {
                 listener = ((RestrictedServletContextListener) listener).
                     getNestedListener();
-                isRestricted = true;
+                context.setRestricted(true);
             }
             try {
                 fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_INITIALIZED,
                                    listener);
-                if (isRestricted) {
-                    listener.contextInitialized(restrictedEvent);
-                } else {
-                    listener.contextInitialized(event);
-                }
+                listener.contextInitialized(event);
             } finally {
+                context.setRestricted(false);
                 fireContainerEvent(ContainerEvent.AFTER_CONTEXT_INITIALIZED,
                                    listener);
             }
@@ -4689,32 +4658,26 @@ public class StandardContext
             return ok;
         }
 
-        ServletContextEvent event =
-            new ServletContextEvent(getServletContext());
-        ServletContextEvent restrictedEvent =
-            new ServletContextEvent(getRestrictedServletContext());
+        ServletContextEvent event = new ServletContextEvent(
+            getServletContext());
         int len = contextListeners.size();
         for (int i = 0; i < len; i++) {
-            boolean isRestricted = false;
             // Invoke in reverse order of declaration 
             ServletContextListener listener =
                 contextListeners.get((len - 1) - i);
             if (listener instanceof RestrictedServletContextListener) {
                 listener = ((RestrictedServletContextListener) listener).
                     getNestedListener();
-                isRestricted = true;
+                context.setRestricted(true);
             }
             try {
                 fireContainerEvent(ContainerEvent.BEFORE_CONTEXT_DESTROYED,
                                    listener);
-                if (isRestricted) {
-                    listener.contextDestroyed(restrictedEvent);
-                } else {
-                    listener.contextDestroyed(event);
-                }
+                listener.contextDestroyed(event);
                 fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
                                    listener);
             } catch (Throwable t) {
+                context.setRestricted(false);
                 fireContainerEvent(ContainerEvent.AFTER_CONTEXT_DESTROYED,
                                    listener);
                 getServletContext().log(sm.getString(
@@ -6630,76 +6593,7 @@ public class StandardContext
     public void sessionPassivatedEndEvent(HttpSession session) {
         // Deliberate noop
     }
-
     
-    /**
-     * Restricted ServletContext, some of whose methods (namely any
-     * methods that are new in Servlet 3.0) throw an IllegalStateException.
-     *
-     * Instances of RestrictedServletContext will be passed to the
-     * contextInitialized and contextDestroyed callbacks of any
-     * restricted ServletContextListeners, that is, any
-     * ServletContextListeners not declared in <code>web.xml</code> or
-     * <code>web-fragment.xml</code>, or annotated with
-     * <code>javax.servlet.annotation.WebListener</code> (see IT 8565).
-     */
-    static class RestrictedServletContext implements InvocationHandler {
-
-        private static final List<String> restrictedMethods =
-            Arrays.asList(
-                "getEffectiveMajorVersion", "getEffectiveMinorVersion",
-                "setInitParameter", "addServlet", "createServlet",
-                "getServletRegistration", "getServletRegistrations", 
-                "addFilter", "createFilter", "getFilterRegistration",
-                "getFilterRegistrations", "getSessionCookieConfig",
-                "setSessionTrackingModes", "getDefaultSessionTrackingModes",
-                "getEffectiveSessionTrackingModes", "addListener",
-                "createListener", "getJspConfigDescriptor", "getClassLoader",
-                "declareRoles");
-
-        /*
-         * The ServletContext to which to delegate the invocation of any
-         * unrestricted methods
-         */
-        private ServletContext delegate;
-
-        /**
-         * Constructor
-         */
-        public RestrictedServletContext(ServletContext delegate) {
-            this.delegate = delegate;
-        }
-
-        static public ServletContext newInstance(ServletContext obj) {
-            return (ServletContext)
-                Proxy.newProxyInstance(obj.getClass().getClassLoader(),
-                    new Class[] { ServletContext.class },
-                    new RestrictedServletContext(obj));
-        }
-
-        public Object invoke(Object proxy, Method m, Object[] args)
-                throws Throwable {
-
-            if (restrictedMethods.contains(m.getName())) {
-                throw new UnsupportedOperationException
-                    ("Not allowed to call " + m.getName());
-            }
-
-            Object result;
-            try {
-                result = m.invoke(delegate, args);
-            } catch (InvocationTargetException e) {
-                throw e.getTargetException();
-            } catch (Exception e) {
-                throw new RuntimeException(
-                    "Unexpected invocation exception: " +
-                    e.getMessage());
-            }
-
-            return result;
-        }
-    }
-
     private static class RestrictedServletContextListener
             implements ServletContextListener {
 

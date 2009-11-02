@@ -52,9 +52,7 @@
  * limitations under the License.
  */
 
-
 package org.apache.catalina.core;
-
 
 import java.io.*;
 import java.net.*;
@@ -89,7 +87,6 @@ import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import com.sun.grizzly.util.http.mapper.MappingData;
 
-
 /**
  * Standard implementation of <code>ServletContext</code> that represents
  * a web application's execution environment.  An instance of this class is
@@ -99,9 +96,7 @@ import com.sun.grizzly.util.http.mapper.MappingData;
  * @author Remy Maucherat
  * @version $Revision: 1.15.2.1 $ $Date: 2008/04/17 18:37:06 $
  */
-
-public class ApplicationContext
-    implements ServletContext {
+public class ApplicationContext implements ServletContext {
 
     // ----------------------------------------------------------- Constructors
 
@@ -145,13 +140,11 @@ public class ApplicationContext
 
     // ----------------------------------------------------- Instance Variables
 
-
     /**
      * The context attributes for this context.
      */
     private Map<String, Object> attributes =
         new ConcurrentHashMap<String, Object>();
-
 
     /**
      * List of read only attributes for this context.
@@ -159,12 +152,10 @@ public class ApplicationContext
     private HashMap<String, String> readOnlyAttributes =
         new HashMap<String, String>();
 
-
     /**
      * The Context instance with which we are associated.
      */
     private StandardContext context = null;
-
 
     /**
      * Empty collection to serve as the basis for empty enumerations.
@@ -172,18 +163,15 @@ public class ApplicationContext
      */
     private static final ArrayList empty = new ArrayList();
 
-
     /**
      * The facade around this object.
      */
     private ServletContext facade = new ApplicationContextFacade(this);
 
-
     /**
      * The merged context initialization parameters for this Context.
      */
     private HashMap parameters = null;
-
 
     /**
      * The string manager for this package.
@@ -191,18 +179,15 @@ public class ApplicationContext
     private static final StringManager sm =
       StringManager.getManager(Constants.Package);
 
-
     /**
      * Base path.
      */
     private String basePath = null;
 
-
     /**
      * Alternate doc bases
      */
     private ArrayList<AlternateDocBase> alternateDocBases = null;
-
 
     // START PWC 6403328
     /**
@@ -217,9 +202,10 @@ public class ApplicationContext
     private ThreadLocal<DispatchData> dispatchData =
         new ThreadLocal<DispatchData>();
     
+    private boolean isRestricted;
+
     
     // --------------------------------------------------------- Public Methods
-
 
     /**
      * Return the resources object that is mapped to a specified path.
@@ -233,7 +219,6 @@ public class ApplicationContext
 
     // ------------------------------------------------- ServletContext Methods
 
-
     /**
      * Return the value of the specified context attribute, if any;
      * otherwise return <code>null</code>.
@@ -244,7 +229,6 @@ public class ApplicationContext
         return attributes.get(name);
     }
 
-
     /**
      * Return an enumeration of the names of the context attributes
      * associated with this context.
@@ -252,7 +236,6 @@ public class ApplicationContext
     public Enumeration<String> getAttributeNames() {
         return new Enumerator(attributes.keySet(), true);
     }
-
 
     /**
      * Returns the context path of the web application.
@@ -276,7 +259,6 @@ public class ApplicationContext
     public String getContextPath() {
         return context.getPath();
     }
-
 
     /**
      * Return a <code>ServletContext</code> object that corresponds to a
@@ -328,7 +310,6 @@ public class ApplicationContext
         }
     }
 
-
     /**
      * Return the value of the specified initialization parameter, or
      * <code>null</code> if this parameter does not exist.
@@ -342,7 +323,6 @@ public class ApplicationContext
         }
     }
 
-
     /**
      * Return the names of the context's initialization parameters, or an
      * empty enumeration if the context has no initialization parameters.
@@ -354,14 +334,18 @@ public class ApplicationContext
         }
     }
 
-
     /**
      * @return true if the context initialization parameter with the given
      * name and value was set successfully on this ServletContext, and false
      * if it was not set because this ServletContext already contains a
      * context initialization parameter with a matching name
      */
+    @Override
     public boolean setInitParameter(String name, String value) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         try {
             context.addParameter(name, value);
             if (parameters != null) {
@@ -374,14 +358,12 @@ public class ApplicationContext
         }
     }
 
-
     /**
      * Return the major version of the Java Servlet API that we implement.
      */
     public int getMajorVersion() {
         return (Constants.MAJOR_VERSION);
     }
-
 
     /**
      * Return the minor version of the Java Servlet API that we implement.
@@ -390,24 +372,31 @@ public class ApplicationContext
         return (Constants.MINOR_VERSION);
     }
 
-
     /**
      * Gets the major version of the Servlet specification that the
      * application represented by this ServletContext is based on.
      */
+    @Override
     public int getEffectiveMajorVersion() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getEffectiveMajorVersion();
     }
-    
-    
+        
     /**
      * Gets the minor version of the Servlet specification that the
      * application represented by this ServletContext is based on.
      */
+    @Override
     public int getEffectiveMinorVersion() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getEffectiveMinorVersion();
     }
-
 
     /**
      * Return the MIME type of the specified file, or <code>null</code> if
@@ -429,7 +418,6 @@ public class ApplicationContext
 
     }
 
-
     /**
      * Return a <code>RequestDispatcher</code> object that acts as a
      * wrapper for the named servlet.
@@ -449,7 +437,6 @@ public class ApplicationContext
         
         return new ApplicationDispatcher(wrapper, null, null, null, null, name);
     }
-
 
     /**
      * @param path The virtual path to be translated
@@ -496,7 +483,6 @@ public class ApplicationContext
             return file.getAbsolutePath();
         }
     }
-
 
     /**
      * Return a <code>RequestDispatcher</code> instance that acts as a
@@ -587,10 +573,7 @@ public class ApplicationContext
         return new ApplicationDispatcher
             (wrapper, uriCC.toString(), wrapperPath, pathInfo, 
              queryString, null);
-
     }
-
-
 
     /**
      * Return the URL to the resource that is mapped to a specified path.
@@ -674,7 +657,6 @@ public class ApplicationContext
         return (null);
     }
 
-
     /**
      * Return the requested resource as an <code>InputStream</code>.  The
      * path must be specified according to the rules described under
@@ -729,7 +711,6 @@ public class ApplicationContext
 
     }
 
-
     /**
      * Return a Set containing the resource paths of resources member of the
      * specified collection. Each path will be a String starting with
@@ -773,9 +754,7 @@ public class ApplicationContext
         }
 
         return (null);
-
     }
-
 
     /**
      * Internal implementation of getResourcesPath() logic.
@@ -816,14 +795,12 @@ public class ApplicationContext
         return Collections.unmodifiableSet(set);
     }
 
-
     /**
      * Return the name and version of the servlet container.
      */
     public String getServerInfo() {
         return (ServerInfo.getServerInfo());
     }
-
 
     /**
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
@@ -832,14 +809,12 @@ public class ApplicationContext
         return (null);
     }
 
-
     /**
      * Return the display name of this web application.
      */
     public String getServletContextName() {
         return (context.getDisplayName());
     }
-
 
     /**
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
@@ -848,7 +823,6 @@ public class ApplicationContext
         return (new Enumerator(empty));
     }
 
-
     /**
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
      */
@@ -856,14 +830,12 @@ public class ApplicationContext
         return (new Enumerator(empty));
     }
 
-
     /**
      * Writes the specified message to a servlet log file.
      *
      * @param message Message to be written
      */
     public void log(String message) {
-
         Logger logger = context.getLogger();
         if (logger != null) {
             /* PWC 6403328
@@ -875,7 +847,6 @@ public class ApplicationContext
         }
     }
 
-
     /**
      * Writes the specified exception and message to a servlet log file.
      *
@@ -885,14 +856,11 @@ public class ApplicationContext
      * @deprecated As of Java Servlet API 2.1, use
      *  <code>log(String, Throwable)</code> instead
      */
-    public void log(Exception exception, String message) {
-        
+    public void log(Exception exception, String message) {        
         Logger logger = context.getLogger();
         if (logger != null)
             logger.log(exception, context.logName() + message);
-
     }
-
 
     /**
      * Writes the specified message and exception to a servlet log file.
@@ -901,13 +869,10 @@ public class ApplicationContext
      * @param throwable Exception to be reported
      */
     public void log(String message, Throwable throwable) {
-        
         Logger logger = context.getLogger();
         if (logger != null)
             logger.log(context.logName() + message, throwable);
-
     }
-
 
     /**
      * Remove the context attribute with the specified name, if any.
@@ -915,7 +880,6 @@ public class ApplicationContext
      * @param name Name of the context attribute to be removed
      */
     public void removeAttribute(String name) {
-
         Object value = null;
         boolean found = false;
 
@@ -968,7 +932,6 @@ public class ApplicationContext
         }
 
     }
-
 
     /**
      * Bind the specified value with the specified context attribute name,
@@ -1067,146 +1030,201 @@ public class ApplicationContext
                 log(sm.getString("applicationContext.attributeEvent"), t);
             }
         }
-
     }
-
 
     /*
      * Adds the servlet with the given name and class name to this
      * servlet context.
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(
             String servletName, String className) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.addServlet(servletName, className);
     }
-
 
     /*
      * Registers the given servlet instance with this ServletContext
      * under the given <tt>servletName</tt>.
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(
             String servletName, Servlet servlet) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.addServlet(servletName, servlet);
     }
-
 
     /*
      * Adds the servlet with the given name and class type to this
      * servlet context.
      */
+    @Override
     public ServletRegistration.Dynamic addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.addServlet(servletName, servletClass);
     }
-
 
     /**
      * Instantiates the given Servlet class and performs any required
      * resource injection into the new Servlet instance before returning
      * it.
      */
+    @Override
     public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.createServlet(clazz);
     }
-
 
     /**
      * Gets the ServletRegistration corresponding to the servlet with the
      * given <tt>servletName</tt>.
      */
+    @Override
     public ServletRegistration getServletRegistration(String servletName) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getServletRegistration(servletName);
     }
-
 
     /**
      * Gets a Map of the ServletRegistration objects corresponding to all
      * currently registered servlets.
      */
+    @Override
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getServletRegistrations();
     }
-
 
     /**
      * Adds the filter with the given name and class name to this servlet
      * context.
      */
+    @Override
     public FilterRegistration.Dynamic addFilter(
             String filterName, String className) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.addFilter(filterName, className);
     }
     
-
     /*
      * Registers the given filter instance with this ServletContext
      * under the given <tt>filterName</tt>.
      */
+    @Override
     public FilterRegistration.Dynamic addFilter(
             String filterName, Filter filter) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.addFilter(filterName, filter);
     }
-
 
     /**
      * Adds the filter with the given name and class type to this servlet
      * context.
      */
+    @Override
     public FilterRegistration.Dynamic addFilter(String filterName,
             Class <? extends Filter> filterClass) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.addFilter(filterName, filterClass);
     }
-
     
     /**
      * Instantiates the given Filter class and performs any required
      * resource injection into the new Filter instance before returning
      * it.
      */
+    @Override
     public <T extends Filter> T createFilter(Class<T> clazz)
             throws ServletException {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.createFilter(clazz);
     }
-
 
     /**
      * Gets the FilterRegistration corresponding to the filter with the
      * given <tt>filterName</tt>.
      */
+    @Override
     public FilterRegistration getFilterRegistration(String filterName) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getFilterRegistration(filterName);
     }
-
 
     /**
      * Gets a Map of the FilterRegistration objects corresponding to all
      * currently registered filters.
      */
+    @Override
     public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getFilterRegistrations();
     }
-
 
     /**
      * Gets the <tt>SessionCookieConfig</tt> object through which various
      * properties of the session tracking cookies created on behalf of this
      * <tt>ServletContext</tt> may be configured.
      */
+    @Override
     public SessionCookieConfig getSessionCookieConfig() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getSessionCookieConfig();        
     }
- 
- 
+  
     /**
      * Sets the session tracking modes that are to become effective for this
      * <tt>ServletContext</tt>.
      */
-    public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
+    @Override
+    public void setSessionTrackingModes(
+            Set<SessionTrackingMode> sessionTrackingModes) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         context.setSessionTrackingModes(sessionTrackingModes);
     }
-
 
     /**
      * Gets the session tracking modes that are supported by default for this
@@ -1215,10 +1233,14 @@ public class ApplicationContext
      * @return set of the session tracking modes supported by default for
      * this <tt>ServletContext</tt>
      */
+    @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getDefaultSessionTrackingModes();
     }
-
 
     /**
      * Gets the session tracking modes that are in effect for this
@@ -1227,45 +1249,65 @@ public class ApplicationContext
      * @return set of the session tracking modes in effect for this
      * <tt>ServletContext</tt>
      */
+    @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getEffectiveSessionTrackingModes();
     }
-
 
     /**
      * Adds the listener with the given class name to this ServletContext.
      */
+    @Override
     public void addListener(String className) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         context.addListener(className);
     }
-
 
     /**
      * Adds the given listener to this ServletContext.
      */
+    @Override
     public <T extends EventListener> void addListener(T t) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         context.addListener(t);
     }
-
 
     /**
      * Adds a listener of the given class type to this ServletContext.
      */
+    @Override
     public void addListener(Class <? extends EventListener> listenerClass) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         context.addListener(listenerClass);
     }
-
 
     /**
      * Instantiates the given EventListener class and performs any
      * required resource injection into the new EventListener instance
      * before returning it.
      */
+    @Override
     public <T extends EventListener> T createListener(Class<T> clazz)
             throws ServletException {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.createListener(clazz);
     }
-
 
     /**
      * Gets the <code>&lt;jsp-config&gt;</code> related configuration
@@ -1273,21 +1315,32 @@ public class ApplicationContext
      * <code>web-fragment.xml</code> descriptor files of the web application
      * represented by this ServletContext.
      */
+    @Override
     public JspConfigDescriptor getJspConfigDescriptor() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getJspConfigDescriptor();
     }
 
-
+    @Override
     public ClassLoader getClassLoader() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         return context.getClassLoader();
     }
 
-
     @Override
     public void declareRoles(String... roleNames) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                sm.getString("applicationContext.restrictedMethod"));
+        }
         // TBD
     }
-
 
     // START PWC 1.2
     /**
@@ -1310,7 +1363,6 @@ public class ApplicationContext
 
     // -------------------------------------------------------- Package Methods
 
-
     /**
      * Clear all application-created attributes.
      */
@@ -1331,20 +1383,15 @@ public class ApplicationContext
         while (keys.hasNext()) {
             String key = (String) keys.next();
             removeAttribute(key);
-        }
-        
+        }        
     }
-    
     
     /**
      * Return the facade associated with this ApplicationContext.
      */
     protected ServletContext getFacade() {
-
-        return (this.facade);
-
+        return this.facade;
     }
-
 
     /**
      * Set an attribute as read only.
@@ -1356,9 +1403,12 @@ public class ApplicationContext
         }
     }
 
+    void setRestricted(boolean isRestricted) {
+        this.isRestricted = isRestricted;
+    }
+
 
     // -------------------------------------------------------- Private Methods
-
 
     /**
      * Merge the context initialization parameters specified in the application
@@ -1389,9 +1439,7 @@ public class ApplicationContext
             }
         }
         parameters = results;
-
     }
-
 
     /**
      * List resource paths (recursively), and store all of them in the given
@@ -1415,9 +1463,7 @@ public class ApplicationContext
             }
             set.add(childPath.toString());
         }
-
     }
-
 
     /**
      * Get full path, based on the host name and the context path.
@@ -1429,13 +1475,11 @@ public class ApplicationContext
             return "/" + hostName + path;
     }
 
-
     /**
      * Internal class used as thread-local storage when doing path
      * mapping during dispatch.
      */
     private static final class DispatchData {
-
         public MessageBytes uriMB;
         public MappingData mappingData;
 
