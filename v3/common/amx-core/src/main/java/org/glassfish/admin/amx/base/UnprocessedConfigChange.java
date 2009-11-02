@@ -140,8 +140,8 @@ public final class UnprocessedConfigChange
     {
         return "UnprocessedConfigChange: name = " + getPropertyName() +
                ", source = " + getSource() +
-               ", oldValue = " + getOldValue() +
-               ", newValue = " + getNewValue() +
+               ", oldValue = " + StringUtil.quote( getOldValue() ) +
+               ", newValue = " + StringUtil.quote( getNewValue() ) +
                ", reason = " + StringUtil.quote("" + getReason());
     }
 
