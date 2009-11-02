@@ -210,7 +210,6 @@
                 <module>verifier/verifier-impl</module>
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
-                <module>maven-plugin</module>
             </modules>
         </profile>
         <profile>
