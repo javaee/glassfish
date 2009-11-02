@@ -429,7 +429,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         }
         String shortName = (name.indexOf("/") != -1 ? name.substring(name.indexOf("/") + 1) : name);
         if (metadata.containsKey(shortName)) {
-            return metadata.get(name);
+            return metadata.get(shortName);
         }
         if (resources != null) {
             File f = new File(resources, name);
