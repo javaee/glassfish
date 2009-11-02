@@ -110,7 +110,9 @@
 
 <!insert name="editAppFields" />
 
-#include "/common/applications/subComponentTable.inc"
+//#include "/common/applications/subComponentTable.inc"
+#include "/common/applications/subComponentTableNew.inc"
+
 	<sun:hidden id="helpKey" value="$resource{help.applicationEdit}" />
         </sun:form>
 </define>

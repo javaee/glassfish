@@ -76,6 +76,9 @@ import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.deployment.client.DFDeploymentProperties;
 
+import javax.management.openmbean.CompositeData;
+
+
 public class WebAppHandlers {
 
     /** Creates a new instance of ApplicationsHandler */
@@ -166,6 +169,116 @@ public class WebAppHandlers {
         handlerCtx.setOutputValue("result", result);
     }
 
+
+    @Handler(id = "getSubComponentsNew",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class),
+            @HandlerOutput(name = "has2", type = Boolean.class),
+            @HandlerOutput(name = "has3", type = Boolean.class)})
+    public static void getSubComponentsNew(HandlerContext handlerCtx) {
+        List result = new ArrayList();
+        String appName = (String) handlerCtx.getInputValue("appName");
+        Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
+        for(AMXProxy oneModule: modules.values()){
+            Map oneSection = new HashMap();
+            List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
+            List<Map> sectionDetail = getSubComponentDetail(appName, oneModule.getName(), snifferList);
+            oneSection.put("sectionTitle", oneModule.getName());  // + " : " + snifferList.toString());
+            oneSection.put("sectionDetail", sectionDetail);
+            result.add(oneSection);
+        }
+
+        handlerCtx.setOutputValue("result", result);
+        handlerCtx.setOutputValue("has2", (result.size()>1)? true: false);
+        handlerCtx.setOutputValue("has3", (result.size()>2)? true: false);
+    }
+
+
+    @Handler(id = "getEndpointInfo",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true),
+            @HandlerInput(name = "subComponentName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "result", type = Map.class)})
+    public static void getEndpointInfo(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String subComponentName = (String) handlerCtx.getInputValue("subComponentName");
+        Map result = findEndpointInfo(appName, subComponentName);
+        String launchLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
+        if (GuiUtil.isEmpty(launchLink)){
+            result.put("disableTester", "true");
+            result.put("hasWsdlLink", false);
+        }else{
+            result.put("disableTester", "false");
+            result.put("hasWsdlLink", true);
+            result.put("testLink", launchLink+result.get("tester"));
+            result.put("wsdlLink", launchLink+result.get("wsdl"));
+        }
+        GuiUtil.getLogger().info("Endpoint Info for " + appName + "#" + subComponentName  +" : " + result);
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
+    private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList){
+        Map<String, String> sMap = V3AMX.getInstance().getRuntime().getSubComponentsOfModule(appName, moduleName);
+        List result = new ArrayList();
+        for(String cName: sMap.keySet()){
+            Map oneRow = new HashMap();
+            oneRow.put("name", cName);
+            oneRow.put("type", sMap.get(cName));
+            if (snifferList.contains("webservices")){
+                oneRow.put("hasEndpoint", (findEndpointInfo(appName, cName).size()>0) );
+            }else{
+                oneRow.put("hasEndpoint", false);
+            }
+            result.add(oneRow);
+        }
+        return result;
+    }
+
+
+
+    //This method will have to be modified once the webservice endpoint info is de-coupled from monitoring framework.
+    //This is temp and hard code the monitoring bean object name.
+    private static Map<String, String> findEndpointInfo(String appName, String compName){
+        Map result = new HashMap();
+        String objectName = "amx:pp=/mon/server-mon[server],type=web-service-mon,name=webservices";
+        if (!ProxyHandlers.doesProxyExist(objectName)){
+            return result;
+        }
+        try{
+            CompositeData endpoints = (CompositeData)V3AMX.getAttribute(objectName, "Endpoints");
+            CompositeData[] dataList = (CompositeData[])endpoints.get("statistics");
+            for(int i=0; i < dataList.length; i++){
+                CompositeData endInfo = dataList[i];
+                String dAppName = (String) endInfo.get("appName");
+                String endpointName = (String) endInfo.get("endpointName");
+                if (appName.equals(dAppName) && compName.equals(endpointName)){
+                    result.put("appName", appName);
+                    result.put("endpointName", endpointName);
+                    result.put("address", endInfo.get("address"));
+                    result.put("deploymentType", endInfo.get("deploymentType"));
+                    result.put("description", endInfo.get("description"));
+                    result.put("implClass", endInfo.get("implClass"));
+                    result.put("implType", endInfo.get("implType"));
+                    result.put("name", endInfo.get("name"));
+                    result.put("namespace", endInfo.get("namespace"));
+                    result.put("portName", endInfo.get("portName"));
+                    result.put("serviceName", endInfo.get("serviceName"));
+                    result.put("tester", endInfo.get("tester"));
+                    result.put("wsdl", endInfo.get("wsdl"));
+                    break;
+                }
+            }
+        }catch(Exception ex){
+            GuiUtil.getLogger().warning("Cannot get info for webservice , compName="+compName);
+            //ex.printStackTrace();
+        }
+        
+        return result;
+    }
 
     /**
      *	<p> This handler returns the list of applications for populating the table.

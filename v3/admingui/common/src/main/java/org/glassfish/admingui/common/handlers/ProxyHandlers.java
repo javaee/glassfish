@@ -967,7 +967,7 @@ public class ProxyHandlers {
             final ObjectName objName = new ObjectName(objectNameStr);
             return V3AMX.getInstance().getMbeanServerConnection().isRegistered(objName);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
             return false;
         }
     }

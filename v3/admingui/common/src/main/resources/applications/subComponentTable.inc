@@ -42,6 +42,9 @@
         getSubComponents(appName="#{appName}"  result=>$attribute{listOfRows});
     />
 <sun:tableRowGroup id="rowGroup1" data={"$attribute{listOfRows}"} sourceVar="td">
+<!beforeCreate
+    println("=============== #$attribute{listOfRows}" );
+/>
 
     <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" rowHeader="$boolean{true}" id="col1">
         <staticText id="nameCol" value="#{td.value.componentName}" />
