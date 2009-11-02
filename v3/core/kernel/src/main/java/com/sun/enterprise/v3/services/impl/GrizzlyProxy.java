@@ -150,7 +150,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
             String ct = httpProtocol.getHttp().getDefaultResponseType();
             adapter.setDefaultContentType(ct);
-            if (httpProtocol != null && !grizzlyService.hasMapperUpdateListener()) {
+            if (httpProtocol != null) {
                 final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
                 final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
                 for (VirtualServer virtualServer : list) {
@@ -158,7 +158,8 @@ public class GrizzlyProxy implements NetworkProxy {
                         vs = virtualServer;
                         embeddedHttp.setWebAppRootPath(vs.getDocroot());
 
-                        if (vs.getProperty() != null && !vs.getProperty().isEmpty()){
+                        if (!grizzlyService.hasMapperUpdateListener() &&
+                                vs.getProperty() != null && !vs.getProperty().isEmpty()) {
                             for (Property p: vs.getProperty()){
                                 String name = p.getName();
                                 if (name.startsWith("alternatedocroot")){
