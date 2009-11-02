@@ -216,7 +216,7 @@ public class WebAppHandlers {
             result.put("testLink", launchLink+result.get("tester"));
             result.put("wsdlLink", launchLink+result.get("wsdl"));
         }
-        GuiUtil.getLogger().info("Endpoint Info for " + appName + "#" + subComponentName  +" : " + result);
+        GuiUtil.getLogger().fine("Endpoint Info for " + appName + "#" + subComponentName  +" : " + result);
         handlerCtx.setOutputValue("result", result);
     }
 
@@ -255,22 +255,35 @@ public class WebAppHandlers {
                 CompositeData endInfo = dataList[i];
                 String dAppName = (String) endInfo.get("appName");
                 String endpointName = (String) endInfo.get("endpointName");
+                boolean found = false;
+                if ( "RI".equals(endInfo.get("deploymentType")) &&
+                     endInfo.get("implClass").toString().startsWith(compName+".")){
+                    //TODO:  RI type deployment actually supports multi endpoints in one servlet.  I just display one here.
+                    //need to fix this.  Current UI doesn't work well with multi endpoint.
+                    found = true;
+                    result.put("hasTesterButton", false);
+                }else
                 if (appName.equals(dAppName) && compName.equals(endpointName)){
-                    result.put("appName", appName);
-                    result.put("endpointName", endpointName);
-                    result.put("address", endInfo.get("address"));
-                    result.put("deploymentType", endInfo.get("deploymentType"));
-                    result.put("description", endInfo.get("description"));
-                    result.put("implClass", endInfo.get("implClass"));
-                    result.put("implType", endInfo.get("implType"));
-                    result.put("name", endInfo.get("name"));
-                    result.put("namespace", endInfo.get("namespace"));
-                    result.put("portName", endInfo.get("portName"));
-                    result.put("serviceName", endInfo.get("serviceName"));
-                    result.put("tester", endInfo.get("tester"));
-                    result.put("wsdl", endInfo.get("wsdl"));
-                    break;
+                    found = true;
+                    result.put("hasTesterButton", true);
                 }
+                if (!found){
+                    continue;
+                }
+                result.put("appName", appName);
+                result.put("endpointName", endpointName);
+                result.put("address", endInfo.get("address"));
+                result.put("deploymentType", endInfo.get("deploymentType"));
+                result.put("description", endInfo.get("description"));
+                result.put("implClass", endInfo.get("implClass"));
+                result.put("implType", endInfo.get("implType"));
+                result.put("name", endInfo.get("name"));
+                result.put("namespace", endInfo.get("namespace"));
+                result.put("portName", endInfo.get("portName"));
+                result.put("serviceName", endInfo.get("serviceName"));
+                result.put("tester", endInfo.get("tester"));
+                result.put("wsdl", endInfo.get("wsdl"));
+                break;
             }
         }catch(Exception ex){
             GuiUtil.getLogger().warning("Cannot get info for webservice , compName="+compName);

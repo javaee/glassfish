@@ -58,6 +58,7 @@
         <sun:button id="testButton" style="margin-left: 8pt"  primary="#{true}"
             text="$resource{i18nc.endpoint.testButton}"
             //disabled="#{pageSession.valueMap['disableTester']}"
+            rendered="#{pageSession.valueMap['hasTesterButton']}"
             disabled="#{false}"
             onClick="javascript:var win=window.open('#{pageSession.valueMap['testLink']}','_blank');win.focus(); return false;"
          />
