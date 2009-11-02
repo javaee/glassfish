@@ -35,9 +35,11 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
+import com.sun.grizzly.http.KeepAliveStats;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -49,12 +51,12 @@ import org.glassfish.gmbal.ManagedObject;
  *
  * @author Alexey Stashok
  */
-@AMXMetadata(type="keep-alive-mon", group="monitoring")
+@AMXMetadata(type = "keep-alive-mon", group = "monitoring")
 @ManagedObject
 @Description("Keep-Alive Statistics")
-public class KeepAliveStatsProvider {
-    private final String name;
+public class KeepAliveStatsProvider implements StatsProvider {
 
+    private final String name;
     private final CountStatisticImpl maxRequestsCount = new CountStatisticImpl("MaxRequests", "count", "Maximum number of requests allowed on a single keep-alive connection");
     private final CountStatisticImpl timeoutInSeconds = new CountStatisticImpl("SecondsTimeouts", "seconds", "Keep-alive timeout value in seconds");
     private final CountStatisticImpl keepAliveConnectionsCount = new CountStatisticImpl("CountConnections", "count", "Number of connections in keep-alive mode");
@@ -62,11 +64,26 @@ public class KeepAliveStatsProvider {
     private final CountStatisticImpl hitsCount = new CountStatisticImpl("CountHits", "count", "Number of requests received by connections in keep-alive mode");
     private final CountStatisticImpl refusalsCount = new CountStatisticImpl("CountRefusals", "count", "Number of keep-alive connections that were rejected");
     private final CountStatisticImpl timeoutsCount = new CountStatisticImpl("CountTimeouts", "count", "Number of keep-alive connections that timed out");
+    private volatile KeepAliveStats keepAliveStats;
 
     public KeepAliveStatsProvider(String name) {
         this.name = name;
     }
-    
+
+    @Override
+    public Object getStatsObject() {
+        return keepAliveStats;
+    }
+
+    @Override
+    public void setStatsObject(Object object) {
+        if (object instanceof KeepAliveStats) {
+            keepAliveStats = (KeepAliveStats) object;
+        } else {
+            keepAliveStats = null;
+        }
+    }
+
     @ManagedAttribute(id = "maxrequests")
     @Description("Maximum number of requests allowed on a single keep-alive connection")
     public CountStatistic getMaxKeepAliveRequestsCount() {
@@ -167,5 +184,20 @@ public class KeepAliveStatsProvider {
         if (name.equals(listenerName)) {
             timeoutsCount.increment();
         }
+    }
+
+    @Reset
+    public void reset() {
+        final KeepAliveStats stats = keepAliveStats;
+        if (stats != null) {
+            maxRequestsCount.setCount(stats.getMaxKeepAliveRequests());
+            timeoutInSeconds.setCount(stats.getKeepAliveTimeoutInSeconds());
+        }
+
+        keepAliveConnectionsCount.setCount(0);
+        flushesCount.setCount(0);
+        hitsCount.setCount(0);
+        refusalsCount.setCount(0);
+        timeoutsCount.setCount(0);
     }
 }

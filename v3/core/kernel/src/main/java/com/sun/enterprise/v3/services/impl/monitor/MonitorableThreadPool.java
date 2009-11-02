@@ -38,6 +38,7 @@
 package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider;
+import com.sun.enterprise.v3.services.impl.monitor.stats.StatsProvider;
 import com.sun.grizzly.http.StatsThreadPool;
 import com.sun.grizzly.util.AbstractThreadPool.Worker;
 import java.util.concurrent.ThreadFactory;
@@ -63,6 +64,22 @@ public class MonitorableThreadPool extends StatsThreadPool {
                 keepAliveTime, unit);
         this.monitoring = monitoring;
         this.monitoringId = monitoringId;
+
+        if (monitoring != null) {
+            StatsProvider statsProvider =
+                    monitoring.getThreadPoolStatsProvider(monitoringId);
+            if (statsProvider != null) {
+                statsProvider.setStatsObject(this);
+            }
+
+            statsProvider =
+                    monitoring.getConnectionQueueStatsProvider(monitoringId);
+            if (statsProvider != null) {
+                statsProvider.setStatsObject(this);
+            }
+
+        }
+
         setThreadFactory(new ProbeWorkerThreadFactory());
 
         final ThreadPoolProbeProvider threadPoolProbeProvider =

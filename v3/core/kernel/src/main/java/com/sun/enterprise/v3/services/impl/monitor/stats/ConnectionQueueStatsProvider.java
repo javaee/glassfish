@@ -35,12 +35,14 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
+import com.sun.grizzly.util.ExtendedThreadPool;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -55,7 +57,7 @@ import org.glassfish.gmbal.ManagedObject;
 @AMXMetadata(type = "connection-queue-mon", group = "monitoring")
 @ManagedObject
 @Description("Connection Queue Statistics")
-public class ConnectionQueueStatsProvider {
+public class ConnectionQueueStatsProvider implements StatsProvider {
     private static final long MINUTE = 60 * 1000;
     
     private final String name;
@@ -81,8 +83,24 @@ public class ConnectionQueueStatsProvider {
     private long averageLastShift;
     private int averageMinuteCounter;
 
+    private volatile ExtendedThreadPool threadPool;
+
     public ConnectionQueueStatsProvider(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Object getStatsObject() {
+        return threadPool;
+    }
+
+    @Override
+    public void setStatsObject(Object object) {
+        if (object instanceof ExtendedThreadPool) {
+            threadPool = (ExtendedThreadPool) object;
+        } else {
+            threadPool = null;
+        }
     }
 
     @ManagedAttribute(id = "counttotalconnections")
@@ -298,4 +316,32 @@ public class ConnectionQueueStatsProvider {
         averageLastShift += (shift * MINUTE);
     }
 
+    @Reset
+    public void reset() {
+        countTotalConnections.setCount(0);
+        openConnectionsCount.clear();
+        countOverflows.setCount(0);
+
+        countQueuedAtomic.set(0);
+        countQueued.setCount(0);
+
+        countTotalQueued.setCount(0);
+
+        final ExtendedThreadPool threadPoolObject = threadPool;
+        if (threadPoolObject != null) {
+            maxQueued.setCount(threadPoolObject.getMaxQueuedTasksCount());
+        }
+
+        peakQueuedAtomic.set(0);
+        peakQueued.setCount(0);
+
+        ticksTotalQueued.setCount(0);
+
+        averageLastShift = 0;
+        averageMinuteCounter = 0;
+
+        for (int i = 0; i < averageStatsPerMinute.length; i++) {
+            averageStatsPerMinute[i] = 0;
+        }
+    }
 }

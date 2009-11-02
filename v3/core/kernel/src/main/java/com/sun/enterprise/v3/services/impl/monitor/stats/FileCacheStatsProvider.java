@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
+import com.sun.grizzly.http.FileCache;
 import java.util.concurrent.atomic.AtomicLong;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
@@ -53,7 +54,7 @@ import org.glassfish.gmbal.ManagedObject;
 @AMXMetadata(type="file-cache-mon", group="monitoring")
 @ManagedObject
 @Description("File Cache Statistics")
-public class FileCacheStatsProvider {
+public class FileCacheStatsProvider implements StatsProvider {
 
     private final String name;
 
@@ -71,8 +72,24 @@ public class FileCacheStatsProvider {
     private final AtomicLong maxHeapSize = new AtomicLong();
     private final AtomicLong maxMappedMemorySize = new AtomicLong();
 
+    private volatile FileCache fileCache;
+    
     public FileCacheStatsProvider(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Object getStatsObject() {
+        return fileCache;
+    }
+
+    @Override
+    public void setStatsObject(Object object) {
+        if (object instanceof FileCache) {
+            fileCache = (FileCache) object;
+        } else {
+            fileCache = null;
+        }
     }
 
     @ManagedAttribute(id = "hits")

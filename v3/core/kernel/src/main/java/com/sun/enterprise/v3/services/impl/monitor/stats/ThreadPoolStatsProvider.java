@@ -35,9 +35,11 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
+import com.sun.grizzly.util.ExtendedThreadPool;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
@@ -52,7 +54,7 @@ import org.glassfish.gmbal.ManagedObject;
 @AMXMetadata(type = "thread-pool-mon", group = "monitoring")
 @ManagedObject
 @Description("Thread Pool Statistics")
-public class ThreadPoolStatsProvider {
+public class ThreadPoolStatsProvider implements StatsProvider {
 
     private final String name;
     private final CountStatisticImpl maxThreadsCount = new CountStatisticImpl("MaxThreads", "count", "Maximum number of threads allowed in the thread pool");
@@ -62,8 +64,24 @@ public class ThreadPoolStatsProvider {
     private final CountStatisticImpl currentThreadCount = new CountStatisticImpl("CurrentThreadCount", "count", "Provides the number of request processing threads currently in the listener thread pool");
     private final CountStatisticImpl currentThreadsBusy = new CountStatisticImpl("CurrentThreadsBusy", "count", "Provides the number of request processing threads currently in use in the listener thread pool serving requests");
 
+    private volatile ExtendedThreadPool threadPool;
+
     public ThreadPoolStatsProvider(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Object getStatsObject() {
+        return threadPool;
+    }
+
+    @Override
+    public void setStatsObject(Object object) {
+        if (object instanceof ExtendedThreadPool) {
+            threadPool = (ExtendedThreadPool) object;
+        } else {
+            threadPool = null;
+        }
     }
 
     @ManagedAttribute(id = "maxthreads")
@@ -161,5 +179,18 @@ public class ThreadPoolStatsProvider {
             totalExecutedTasksCount.increment();
             currentThreadsBusy.decrement();
         }
+    }
+
+    @Reset
+    public void reset() {
+        final ExtendedThreadPool threadPoolObject = threadPool;
+        if (threadPoolObject != null) {
+            maxThreadsCount.setCount(threadPoolObject.getMaximumPoolSize());
+            coreThreadsCount.setCount(threadPoolObject.getCorePoolSize());
+            currentThreadCount.setCount(threadPoolObject.getPoolSize());
+            currentThreadsBusy.setCount(threadPoolObject.getActiveCount());
+        }
+
+        totalExecutedTasksCount.setCount(0);
     }
 }

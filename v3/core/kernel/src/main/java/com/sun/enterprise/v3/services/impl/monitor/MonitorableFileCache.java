@@ -37,6 +37,7 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor;
 
+import com.sun.enterprise.v3.services.impl.monitor.stats.FileCacheStatsProvider;
 import com.sun.grizzly.http.FileCache;
 
 /**
@@ -53,6 +54,13 @@ public class MonitorableFileCache extends FileCache {
     public MonitorableFileCache(GrizzlyMonitoring grizzlyMonitoring, String monitoringId) {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.monitoringId = monitoringId;
+        if (grizzlyMonitoring != null) {
+            final FileCacheStatsProvider statsProvider =
+                    grizzlyMonitoring.getFileCacheStatsProvider(monitoringId);
+            if (statsProvider != null) {
+                statsProvider.setStatsObject(this);
+            }
+        }
     }
 
     @Override

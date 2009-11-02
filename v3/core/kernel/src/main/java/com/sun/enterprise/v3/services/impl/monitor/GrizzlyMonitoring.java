@@ -246,6 +246,22 @@ public class GrizzlyMonitoring {
         }
     }
 
+    public ConnectionQueueStatsProvider getConnectionQueueStatsProvider(String name) {
+        return connectionQueueStatsProvidersMap.get(name);
+    }
+
+    public FileCacheStatsProvider getFileCacheStatsProvider(String name) {
+        return fileCacheStatsProvidersMap.get(name);
+    }
+
+    public KeepAliveStatsProvider getKeepAliveStatsProvider(String name) {
+        return keepAliveStatsProvidersMap.get(name);
+    }
+
+    public ThreadPoolStatsProvider getThreadPoolStatsProvider(String name) {
+        return threadPoolStatsProvidersMap.get(name);
+    }
+
     private String subtreePrefix(String name) {
         return "network/" + name;
     }

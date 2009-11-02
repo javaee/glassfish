@@ -35,6 +35,7 @@
  */
 package com.sun.enterprise.v3.services.impl.monitor;
 
+import com.sun.enterprise.v3.services.impl.monitor.stats.KeepAliveStatsProvider;
 import com.sun.grizzly.http.KeepAliveStats;
 
 /**
@@ -53,6 +54,12 @@ public class MonitorableKeepAliveStats extends KeepAliveStats {
         this.monitoringId = monitoringId;
 
         if (grizzlyMonitoring != null) {
+            final KeepAliveStatsProvider statsProvider =
+                    grizzlyMonitoring.getKeepAliveStatsProvider(monitoringId);
+            if (statsProvider != null) {
+                statsProvider.setStatsObject(this);
+            }
+
             // Set initial monitoring values
             setMaxKeepAliveRequests(getMaxKeepAliveRequests());
             setKeepAliveTimeoutInSeconds(getKeepAliveTimeoutInSeconds());
