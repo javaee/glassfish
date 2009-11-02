@@ -1339,7 +1339,7 @@ public class ApplicationContext implements ServletContext {
             throw new UnsupportedOperationException(
                 sm.getString("applicationContext.restrictedMethod"));
         }
-        // TBD
+        context.declareRoles(roleNames);
     }
 
     // START PWC 1.2

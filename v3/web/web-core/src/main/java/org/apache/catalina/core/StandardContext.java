@@ -2797,7 +2797,9 @@ public class StandardContext
     }
 
     public void declareRoles(String... roleNames) {
-        // TBD
+        for (String roleName : roleNames) {
+            addSecurityRole(roleName);
+        }
     }
 
     public void setEffectiveMajorVersion(int effectiveMajorVersion) {
