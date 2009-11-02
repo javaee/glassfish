@@ -39,8 +39,10 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
 import com.sun.enterprise.web.WebApplication;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.v3.server.ApplicationLoaderService;
+import com.sun.enterprise.web.WebModule;
 import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -136,6 +138,49 @@ public class EndpointInfoCollector {
                 logger.log(Level.FINE, "serviceengine.websvc_endpoints_added", new Object[]{appName});
             }
         }
+    }
+
+    /*
+     * This function is called once for every endpoint registration.
+     * and the WebModule corresponding to that endpoint is stored.
+     */
+    public WebModule getWebModule(WebServiceEndpoint wsep) {
+        ApplicationRegistry appRegistry = habitat.getComponent(ApplicationRegistry.class);
+        String appName = wsep.getBundleDescriptor().getApplication().getAppName();
+        ApplicationInfo appInfo = appRegistry.get(appName);
+
+        WebApplication webApp = null;
+        if (appInfo != null) {
+            Collection<ModuleInfo> moduleInfos = appInfo.getModuleInfos();
+            Set<EngineRef> engineRefs = null;
+            WebBundleDescriptor requiredWbd = (WebBundleDescriptor) wsep.getBundleDescriptor();
+            for (ModuleInfo moduleInfo : moduleInfos) {
+                engineRefs = moduleInfo.getEngineRefs();
+                for (EngineRef engineRef : engineRefs) {
+                    if (engineRef.getApplicationContainer() instanceof WebApplication) {
+                        webApp = (WebApplication) engineRef.getApplicationContainer();
+                        WebBundleDescriptor wbd = webApp.getDescriptor();
+                        if (wbd.equals(requiredWbd)) {
+                            break; //WebApp corresponding to wsep is found.
+                        } else {
+                            webApp = null;
+                        }
+                    }
+                }
+            }
+        }
+        //get the required WebModule from the webApp.
+        if (webApp != null) {
+            String requiredModule = ((WebBundleDescriptor) wsep.getBundleDescriptor()).getModuleName();
+            Set<WebModule> webModules = webApp.getWebModules();
+            for(WebModule wm : webModules) {
+                if(wm.getModuleName().equalsIgnoreCase(requiredModule)) {
+                    return wm;
+                }
+            }
+        }
+        
+        return null;
     }
 
     /**

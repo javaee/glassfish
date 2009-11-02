@@ -40,6 +40,7 @@ import com.sun.enterprise.jbi.serviceengine.bridge.transport.JBIAdapter;
 import com.sun.enterprise.jbi.serviceengine.core.EndpointRegistry;
 import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineEndpoint;
 import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineRuntimeHelper;
+import com.sun.enterprise.web.WebComponentInvocation;
 import org.glassfish.webservices.JAXWSAdapterRegistry;
 import org.glassfish.webservices.EjbRuntimeEndpointInfo;
 import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
@@ -60,6 +61,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.glassfish.api.invocation.InvocationManager;
 import org.w3c.dom.Document;
 
 /**
@@ -91,6 +93,7 @@ public class JBIAdapterBuilder {
             AdapterInvocationInfo adapterInfo = null;
             ServletAdapter sadapter;
             EjbRuntimeEndpointInfo ejbEndPtInfo=null;
+            WebComponentInvocation inv = null;
             if(endpt.isImplementedByEJB()) {
                 WebServiceEjbEndpointRegistry registry = ServiceEngineRuntimeHelper.getRuntime().getWebServiceEjbEndpointRegistry();
                 ejbEndPtInfo = registry.getEjbWebServiceEndpoint(endpt.getURI(), "POST", null);
@@ -104,6 +107,19 @@ public class JBIAdapterBuilder {
                 String contextRoot = endpt.getContextRoot();
                 Adapter adapter =
                         JAXWSAdapterRegistry.getInstance().getAdapter(contextRoot, url, url);
+                if (endpt.getWebModule() == null) {
+                    //This is a hack as webModule should have been initialized in EndointHelper
+                    //during the creation of ServiceEngineEndpoint. But, sometimes webApp.getWebModules()
+                    //returns null on accessing it just after the deployment.
+                    EndpointInfoCollector infoCollector
+                            = ServiceEngineRuntimeHelper.getRuntime().getEndpointInfoCollector();
+                    endpt.setWebModule(infoCollector.getWebModule(endpt.getEndpointDesc()));
+                }
+                InvocationManager invocationMgr =
+                        ServiceEngineRuntimeHelper.getRuntime().getInvocationManager();
+                inv = new WebComponentInvocation(endpt.getWebModule());
+                invocationMgr.preInvoke(inv);
+            
                 if(adapter != null)
                     endpt.setWsep(adapter.getEndpoint());
                 //for null adapter endpt is already set during comp app deployment
@@ -120,7 +136,7 @@ public class JBIAdapterBuilder {
                     }
                 }
             }
-            return new JBIAdapter(endpt.getWsep(), endpt, me, endpt.getClassLoader(), ejbEndPtInfo, adapterInfo);
+            return new JBIAdapter(endpt.getWsep(), endpt, me, endpt.getClassLoader(), ejbEndPtInfo, adapterInfo, inv);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE,"Exception in creating JBIAdapter:"+e.getMessage(), e);

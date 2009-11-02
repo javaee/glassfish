@@ -152,8 +152,13 @@ public class EndpointHelper {
                             getWebBundleDescriptor().getContextRoot();
                     relativeURI = contextRoot + relativeURI;
                 }
-                ServiceEngineEndpoint seEndpoint = 
+                EndpointInfoCollector epInfoCollector =
+                        ServiceEngineRuntimeHelper.getRuntime().getEndpointInfoCollector();
+                com.sun.enterprise.web.WebModule webModule =
+                        epInfoCollector.getWebModule(webServiceDesc);
+                ServiceEngineEndpoint seEndpoint =
                         new ServiceEngineEndpoint(webServiceDesc,
+                            webModule,
                             webServiceDesc.getServiceName(),
                             endpointName,
                             implClass,

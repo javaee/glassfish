@@ -37,7 +37,8 @@ package com.sun.enterprise.jbi.serviceengine.bridge.transport;
 
 import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineEndpoint;
 //import org.glassfish.webservices.EjbRuntimeEndpointInfo;
-import com.sun.xml.ws.api.message.Message;
+import com.sun.enterprise.jbi.serviceengine.core.ServiceEngineRuntimeHelper;
+import com.sun.enterprise.web.WebComponentInvocation;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.TransportBackChannel;
@@ -47,6 +48,7 @@ import com.sun.logging.LogDomains;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.jbi.messaging.MessageExchange;
+import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.webservices.AdapterInvocationInfo;
 import org.glassfish.webservices.EjbRuntimeEndpointInfo;
 
@@ -63,6 +65,7 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
     private ClassLoader classLoader;
     private EjbRuntimeEndpointInfo ejbEndPtInfo;
     private AdapterInvocationInfo adapterInvocationInfo;
+    private WebComponentInvocation inv;
     
     /**
      * Creates an {@link com.sun.xml.ws.api.server.Adapter} that delivers
@@ -73,12 +76,14 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
                       MessageExchange me,
                       ClassLoader classLoader
                       ,EjbRuntimeEndpointInfo ejbEndPtInfo,
-                      AdapterInvocationInfo adapterInvocationInfo) {
+                      AdapterInvocationInfo adapterInvocationInfo,
+                      WebComponentInvocation inv) {
         super(endpoint);
         con = new NMRServerConnection(me, endpt);
         this.classLoader = classLoader;
         this.ejbEndPtInfo = ejbEndPtInfo;
         this.adapterInvocationInfo = adapterInvocationInfo;
+        this.inv = inv;
     }
     
     protected WSToolkit createToolkit() {
@@ -101,8 +106,8 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
     public ClassLoader getClassLoader() {
         return classLoader;
     }
-    
-    /** For every EJB endpoint invocation a preInvoke and postInvoke must be
+
+    /** For every endpoint invocation a preInvoke and postInvoke must be
      * called. The preInvoke is called during the creation of JBIAdapter in  
      * JBIAdapterBuilder. The postInvoke method should be called before 
      * returning the response back to NMR. 
@@ -110,8 +115,13 @@ public class JBIAdapter extends Adapter<JBIAdapter.WSToolkit> {
     private void postInvoke() {
         if(ejbEndPtInfo!=null && adapterInvocationInfo != null) {
             ejbEndPtInfo.releaseImplementor(adapterInvocationInfo.getInv());
+        } else if(inv != null){
+            //for non-EJB endpoints.
+            InvocationManager invocationMgr =
+                    ServiceEngineRuntimeHelper.getRuntime().getInvocationManager();
+            invocationMgr.postInvoke(inv);
         }
-        
+
     }
     
     final class WSToolkit extends Adapter.Toolkit implements TransportBackChannel {

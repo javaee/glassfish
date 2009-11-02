@@ -43,6 +43,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.web.WebModule;
 import com.sun.xml.ws.api.server.WSEndpoint;
 
 /**
@@ -56,6 +57,7 @@ public class ServiceEngineEndpoint {
     private ServiceEndpoint jbiEndpoint;
     private WSEndpoint wsep = null;
     private WebServiceEndpoint endpointDesc;
+    private WebModule webModule;
     private String url;
     private String sei;
     private String implClass;
@@ -70,6 +72,7 @@ public class ServiceEngineEndpoint {
 
     /** Creates a new instance of Endpoint */
     public ServiceEngineEndpoint(WebServiceEndpoint endpointDesc,
+                                 WebModule webModule,
                                  QName serviceName,
                                  String endpointName,
                                  String implClass,
@@ -78,6 +81,7 @@ public class ServiceEngineEndpoint {
         this.serviceName = serviceName;
         this.endpointName = endpointName;
         this.endpointDesc = endpointDesc;
+        this.webModule = webModule;
         setApplicationName(endpointDesc);
         this.url = endpointDesc.getEndpointAddressUri();
         this.ejbType = endpointDesc.implementedByEjbComponent();
@@ -174,6 +178,14 @@ public class ServiceEngineEndpoint {
         this.wsep = wsep;
     }
 
+    public WebModule getWebModule() {
+        return webModule;
+    }
+
+    public void setWebModule(WebModule webModule) {
+        this.webModule = webModule;
+    }
+    
     private synchronized void initializeEndpointMetaData() {
         if(endpointMetaData == null) {
             try {
