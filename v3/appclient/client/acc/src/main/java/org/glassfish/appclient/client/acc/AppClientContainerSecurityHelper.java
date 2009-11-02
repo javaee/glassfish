@@ -139,7 +139,16 @@ public class AppClientContainerSecurityHelper {
                         false);
             configURI = tempFile.toURI();
         }
-        System.setProperty("java.security.auth.login.config", configURI.toString());
+        final File configFile = new File(configURI);
+        /*
+         * Ugly, but necessary.  The Java com.sun.security.auth.login.ConfigFile class
+         * expects the java.security.auth.login.config property value to be
+         * a URL, but one with NO encoding.  That is, if the path to the
+         * config file contains a blank then ConfigFile class expects the URL
+         * to contain a blank, not %20 for example.  So, we need to use the
+         * deprecated File.toURL() method to create such a URL.
+         */
+        System.setProperty("java.security.auth.login.config", configFile.toURL().toString());
     }
     /**
      * Sets the callback handler for future use.
