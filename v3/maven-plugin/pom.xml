@@ -106,15 +106,12 @@
   </reporting>
 
   <distributionManagement>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>java.net-maven2-repository</id>
-      <url>java-net:/maven2-repository/trunk/www/repository/</url>
-    </repository>
-    <site>
-      <id>maven-glassfish-plugin-www</id>
-      <url>java-net:/maven-glassfish-plugin/trunk/www/</url>
-    </site>
+      <repository>            
+          <uniqueVersion>false</uniqueVersion>
+          <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
+          <id>rator.sfbay</id>
+          <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
+      </repository>
   </distributionManagement>
 
   <repositories>
