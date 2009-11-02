@@ -778,16 +778,19 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             String moduleName = bundle.getApplication().getAppName();
             File sourceDir = dc.getScratchDir("xml");
 
-            URI clientPublishURI =  null;
-
+            File parent;
             try {
-                clientPublishURI =  webService.getClientPublishUrl().toURI();
+                URI clientPublishURI = webService.getClientPublishUrl().toURI();
+                if(!clientPublishURI.isOpaque()) {
+                    parent = new File(clientPublishURI);
+                } else {
+                    parent =  new File(webService.getClientPublishUrl().getPath());
+                }
             } catch (URISyntaxException e) {
                 logger.warning(rb.getString("exception.thrown") + e);
-
+                parent = new File(webService.getClientPublishUrl().getPath());
             }
-            File parent = new File(clientPublishURI);
-            
+
             // Collect the names of all entries in or below the
             // dedicated wsdl directory.
             FileArchive archive = new FileArchive();
