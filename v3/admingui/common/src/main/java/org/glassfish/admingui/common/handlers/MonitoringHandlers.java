@@ -324,6 +324,12 @@ public class MonitoringHandlers {
                                 if (cds.containsKey("totalTime")) {
                                     details = details + (GuiUtil.getMessage("msg.TotalTime") + ": " + cds.get("totalTime") + " " + unit + "<br/>");
                                 }
+                                if (cds.containsKey("highWaterMark")) {
+                                    details = (GuiUtil.getMessage("msg.HWaterMark") + ": " + cds.get("highWaterMark") + " " + unit + "<br/>");
+                                }
+                                if (cds.containsKey("lowWaterMark")) {
+                                    details = details + (GuiUtil.getMessage("msg.LWaterMark") + ": " + cds.get("lowWaterMark") + " " + unit + "<br/>");
+                                }
                                 if (cds.containsKey("activeRuntimes")) {
                                     runtimes = (Integer) cds.get("activeRuntimes");
                                 }
