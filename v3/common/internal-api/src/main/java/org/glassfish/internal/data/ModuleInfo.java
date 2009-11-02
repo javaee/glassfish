@@ -245,7 +245,7 @@ public class ModuleInfo {
         }
     }
 
-    public synchronized void stop(ApplicationContext context, Logger logger) {
+    public synchronized void stop(ExtendedDeploymentContext context, Logger logger) {
 
         if (!started)
             return;
@@ -254,6 +254,7 @@ public class ModuleInfo {
             ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(moduleClassLoader);
+                context.setClassLoader(moduleClassLoader);
                 module.stop(context);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, "Cannot stop module " +
@@ -277,12 +278,14 @@ public class ModuleInfo {
                 ClassLoader currentClassLoader  = Thread.currentThread().getContextClassLoader();
                 try {
                     Thread.currentThread().setContextClassLoader(moduleClassLoader);
+                    context.setClassLoader(moduleClassLoader);
                     engine.unload(context);
                 } catch(Throwable e) {
                     logger.log(Level.SEVERE, "Failed to unload from container type : " +
                             engine.getContainerInfo().getSniffer().getModuleType(), e);
                 } finally {
                     Thread.currentThread().setContextClassLoader(currentClassLoader);
+                    context.setClassLoader(null);
                 }
             }
         }

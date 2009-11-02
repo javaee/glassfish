@@ -125,6 +125,13 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      */
     public Map<String, ExtendedDeploymentContext> getModuleDeploymentContexts();
 
+   /**
+     * Sets the classloader
+     *
+     * @param cloader
+     */
+    public void setClassLoader(ClassLoader cloader);
+
 
 
 }

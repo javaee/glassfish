@@ -164,6 +164,11 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         return getClassLoader(true);
     }
 
+    public void setClassLoader(ClassLoader cloader) {
+        this.cloader = cloader;
+    }
+
+
     // this classloader will be used for sniffer retrieval, metadata parsing 
     // and the prepare
     public void createDeploymentClassLoader(ClassLoaderHierarchy clh, ArchiveHandler handler)

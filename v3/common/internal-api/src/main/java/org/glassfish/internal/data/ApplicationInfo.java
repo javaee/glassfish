@@ -244,6 +244,7 @@ public class ApplicationInfo extends ModuleInfo {
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(appClassLoader);
+            context.setClassLoader(appClassLoader);
             super.stop(context, logger);
             for (ModuleInfo module : getModuleInfos()) {
                 module.stop(getSubContext(module, context), logger);
@@ -261,6 +262,7 @@ public class ApplicationInfo extends ModuleInfo {
         ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(appClassLoader);
+            context.setClassLoader(appClassLoader);
             super.unload(context);
             for (ModuleInfo module : getModuleInfos()) {
                 module.unload(getSubContext(module, context));
@@ -270,6 +272,7 @@ public class ApplicationInfo extends ModuleInfo {
             }
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
+            context.setClassLoader(null);
         }
     }
 
