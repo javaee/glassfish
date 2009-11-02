@@ -78,7 +78,7 @@
        <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -88,18 +88,18 @@
         <dependency>
            <groupId>org.glassfish.admin</groupId>
            <artifactId>config-api</artifactId>
-            <version>${parent.version}</version>
+           <version>${project.version}</version>
        </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>kernel</artifactId>
-            <version>${parent.version}</version>
+           <version>${project.version}</version>
            <scope>test</scope>
        </dependency>
        <dependency>
            <groupId>org.glassfish.tests</groupId>
            <artifactId>utils</artifactId>
-            <version>${parent.version}</version>
+           <version>${project.version}</version>
            <scope>test</scope>
        </dependency>
     </dependencies>
