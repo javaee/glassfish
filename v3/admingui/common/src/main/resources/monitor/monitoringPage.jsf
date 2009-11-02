@@ -83,13 +83,13 @@
 </sun:title>
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
-        <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monService}">
+        <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monService}"  helpText="$resource{web.monitoring.monServiceHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MonitoringEnabled']}" selectedValue="true" />
         </sun:property>
-        <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monMbeans}">
+        <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monMbeans}"  helpText="$resource{web.monitoring.monMbeansHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MbeanEnabled']}" selectedValue="true" />
         </sun:property>
-        <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.DTrace}">
+        <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.DTrace}" helpText="$resource{web.monitoring.DTraceHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DtraceEnabled']}" selectedValue="true" />
         </sun:property>
         "<br /><br />
