@@ -119,7 +119,7 @@ public class ASMainStatic extends ASMainNonOSGi {
 
         // create our masking class loader
         final ClassLoader parent = getClass().getClassLoader();
-        ClassLoader maskingClassLoade = getMaskingClassLoader(parent, sc.getRootDirectory());
+        ClassLoader maskingClassLoade = getMaskingClassLoader(parent, sc.getRootDirectory(), logger);
 
         // our unique class loader.
         ClassLoader singleClassLoader = createTmpClassLoader(maskingClassLoade, modulesDir);
@@ -232,7 +232,13 @@ public class ASMainStatic extends ASMainNonOSGi {
 */        
     }
 
-    protected ClassLoader getMaskingClassLoader(ClassLoader parent, File root) {
+    protected static ClassLoader getMaskingClassLoader(ClassLoader parent, File root,
+            Logger logger) {
+        return getMaskingClassLoader(parent, root, logger, true);
+    }
+
+    public static ClassLoader getMaskingClassLoader(ClassLoader parent, File root,
+            Logger logger, boolean useExplicitSystemClassLoaderCalls) {
         File f = new File(root, ASMainFelix.GF_FELIX_HOME);
         f = new File(f, ASMainFelix.CONFIG_PROPERTIES);
         if (!f.exists()) {
@@ -256,7 +262,12 @@ public class ASMainStatic extends ASMainNonOSGi {
             }
         }
 
-        return getMaskingClassLoader(parent, props);
+        return getMaskingClassLoader(parent, props, useExplicitSystemClassLoaderCalls);
+    }
+
+    public static ClassLoader getMaskingClassLoader(final ClassLoader parent,
+            final Properties props) {
+        return getMaskingClassLoader(parent, props, true);
     }
 
     /**
@@ -273,7 +284,8 @@ public class ASMainStatic extends ASMainNonOSGi {
      * @return
      */
     public static ClassLoader getMaskingClassLoader(final ClassLoader parent,
-            final Properties props) {
+            final Properties props,
+            final boolean useExplicitSystemClassLoaderCalls) {
     
     
         String punchins = props.getProperty("jre-1.6");
@@ -289,7 +301,7 @@ public class ASMainStatic extends ASMainNonOSGi {
             }
             p.add(tk.trim());
         }
-        return new MaskingClassLoader(parent, p, multiples);
+        return new MaskingClassLoader(parent, p, multiples, useExplicitSystemClassLoaderCalls);
     }
     
 

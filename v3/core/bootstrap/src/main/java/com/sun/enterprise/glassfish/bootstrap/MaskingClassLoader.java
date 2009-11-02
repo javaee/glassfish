@@ -54,6 +54,11 @@ public class MaskingClassLoader extends ClassLoader {
     private final Set<String> punchins = new HashSet<String>();
     private final String[] multiples;
 
+    private final boolean useExplicitCallsToFindSystemClass;
+
+    public MaskingClassLoader(ClassLoader parent, Collection<String> punchins, Collection<String> multiples) {
+        this(parent, punchins, multiples, true /* use explicit calls to findSystemClass*/);
+    }
     /**
      * Creates a new masking class loader letting a set of defined packages be loaded by the parent
      * classloader. Multiples packages can be specified so that only the parent package needs to
@@ -63,10 +68,12 @@ public class MaskingClassLoader extends ClassLoader {
      * @param punchins list of packages allowed to be visible from the parent
      * @param multiples list of parent packages allowed to be visible from the parent class loader
      */
-    public MaskingClassLoader(ClassLoader parent, Collection<String> punchins, Collection<String> multiples) {
+    public MaskingClassLoader(ClassLoader parent, Collection<String> punchins, Collection<String> multiples,
+            boolean useExplicitCallsToFindSystemClass) {
         super(parent);
         this.punchins.addAll(punchins);
         this.multiples = multiples.toArray(new String[multiples.size()]);
+        this.useExplicitCallsToFindSystemClass = useExplicitCallsToFindSystemClass;
     }
 
     @Override
@@ -74,9 +81,11 @@ public class MaskingClassLoader extends ClassLoader {
 
         // I do not mask java packages, and I only mask javax. stuff for now.
         try {
-            return findSystemClass(name);
+            if (useExplicitCallsToFindSystemClass) {
+                return findSystemClass(name);
+            }
         } catch(ClassNotFoundException e) {
-            
+
         }
         if (isDottedNameLoadableByParent(name)) {
             return super.loadClass(name, resolve);
@@ -120,7 +129,7 @@ public class MaskingClassLoader extends ClassLoader {
         return name.replace("/", ".");
     }
     
-    private boolean isDottedNameLoadableByParent(final String name) {
+    protected boolean isDottedNameLoadableByParent(final String name) {
         if (!(name.startsWith("javax.") || name.startsWith("org."))) {
             return true;
         }
