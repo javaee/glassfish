@@ -56,9 +56,10 @@
         populateComponentDropDown(AppName="#{viewVal}", VSList="#{vsList}", ComponentList=>$attribute{componentList});
         getAppName(name="#{viewVal}", appName=>$attribute{appValue});
         setAttribute(key="webStatsMbeanName" value="#{viewVal}/server");
+        getNameforMbeanByType(appName="#{viewVal}", compVal="", type="servlet-mon", end="false", mbeanName=>$attribute{webStatsMbeanName});
         getStatsbyTypeName(type="servlet-mon" name="#{webStatsMbeanName}", result=>$attribute{servletList}  hasStats=>$attribute{hasStatsServletsTemp});
         if(!#{hasStatsServletsTemp}) {
-            setAttribute(key="webStatsMbeanName" value="#{appValue}/#{viewVal}/server");
+            getNameforMbeanByType(appName="#{appValue}", compVal="#{viewVal}", end="false", type="servlet-mon", mbeanName=>$attribute{webStatsMbeanName});
         }
         if(#{viewVal}) {
         setPageSessionAttribute(key="viewVal" value="#{viewVal}");
@@ -67,7 +68,6 @@
         setPageSessionAttribute(key="cVal" value="#{cVal}");
         }
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
-
     />
 </event>    
 #include "/common/shared/restart.inc"        
@@ -131,10 +131,10 @@
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
- <sun:tableRowGroup id="jerseyStats" rendered="#{hasStatsJersey}" data={"$attribute{jerseyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jerseyStatistics} : #{viewVal}"
+ <sun:tableRowGroup id="jerseyStats" rendered="#{hasStatsJersey}" data={"$attribute{jerseyStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jAppStatistics} : #{viewVal}"
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
-            getNameforMbean(appName="applications/#{viewVal}", compVal="jersey", end="false", mbeanName=>$attribute{jMbName});
+            getNameforMbeanByType(appName="applications/#{viewVal}", compVal="jersey", end="false", type="jersey-application-mon", mbeanName=>$attribute{jMbName});
             getStatsbyTypeName(type="jersey-application-mon" name="#{jMbName}", result=>$attribute{jerseyStatsList} hasStats=>$attribute{hasStatsJersey});
 
          />

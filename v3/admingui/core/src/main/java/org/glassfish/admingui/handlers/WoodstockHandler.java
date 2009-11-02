@@ -401,7 +401,7 @@ public class WoodstockHandler {
                 Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
                 for (AMXProxy oneModule : modules.values()) {
                     String moduleName = oneModule.getName();
-                    if (moduleName.endsWith(".war") || moduleName.endsWith(".jar")) {
+                    //if (moduleName.endsWith(".war") || moduleName.endsWith(".jar")) {
                         boolean hasSfullStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateful-session-bean-mon");
                         boolean hasSlessStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateless-session-bean-mon");
                         boolean hasWebStats = MonitoringHandlers.doesAppProxyExist(moduleName, "servlet-instance-mon");
@@ -412,7 +412,7 @@ public class WoodstockHandler {
                         if (hasSfullStats || hasSlessStats || hasWebStats || hasMdbStats || hasPoolStats || hasCacheStats || hasMethodStats) {
                             moduleList.add(moduleName);
                         }
-                    }
+                    //}
                 }
                if (moduleList.isEmpty()) {
                     menuList.add(new Option(appName, appName));
@@ -449,7 +449,7 @@ public class WoodstockHandler {
         ArrayList menuList = new ArrayList();
         menuList.add(new Option("", ""));
         if (appname != null && !appname.isEmpty()) {
-            if (appname.endsWith(".war")) {
+            if (MonitoringHandlers.doesAppProxyExist(appname, "servlet-instance-mon")) {
                 if (vsList != null) {
                     ListIterator vl = vsList.listIterator();
                     while (vl.hasNext()) {

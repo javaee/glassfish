@@ -547,6 +547,43 @@ public class MonitoringHandlers {
 
     }
 
+        @Handler(id = "getNameforMbeanByType",
+      input={
+        @HandlerInput(name="appName",   type=String.class, required=true),
+        @HandlerInput(name="end",   type=String.class, required=true),
+        @HandlerInput(name="type",   type=String.class, required=true),
+        @HandlerInput(name="compVal",   type=String.class, required=true)},
+       output = {
+        @HandlerOutput(name = "mbeanName", type = String.class)
+       })
+    public static void getNameforMbeanByType(HandlerContext handlerCtx) {
+        String app = (String) handlerCtx.getInputValue("appName");
+        String comp = (String) handlerCtx.getInputValue("compVal");
+        String end = (String) handlerCtx.getInputValue("end");
+        String type = (String) handlerCtx.getInputValue("type");
+        String mbeanName = "EMPTY";
+        List proxyList = V3AMX.getProxyListByType(type);
+        if (proxyList.size() != 0) {
+            ListIterator li = proxyList.listIterator();
+            while (li.hasNext()) {
+                String pname = (String) li.next();
+                if (end.equals("true")) {
+                    if (pname.endsWith(app + "/" + comp)) {
+                        mbeanName = pname;
+                        break;
+                    }
+                } else {
+                    if (pname.startsWith(app + "/" + comp)) {
+                        mbeanName = pname;
+                        break;
+                    }
+                }
+            }
+        }
+        handlerCtx.setOutputValue("mbeanName", mbeanName);
+
+    }
+
 
     public static Boolean doesAppProxyExist(String name, String type) {
         List proxyList = V3AMX.getProxyListByType(type);
@@ -555,10 +592,9 @@ public class MonitoringHandlers {
             ListIterator li = proxyList.listIterator();
             while (li.hasNext()) {
                 String pname = (String) li.next();
-                if (pname.contains(name)) {
+                if (pname.contains(name+"/")) {
                     proxyexist = true;
                 }
-
             }
         }
         return proxyexist;
@@ -571,13 +607,18 @@ public class MonitoringHandlers {
             ListIterator li = proxyList.listIterator();
             while (li.hasNext()) {
                 String pname = (String) li.next();
-                if (pname.contains(name)) {
-                    String vs = pname.substring(pname.lastIndexOf(".war") + 5, pname.lastIndexOf("/"));
-                    if(instance.equals(vs)) {
-                        servlets.add(pname.substring(pname.lastIndexOf("/")+1, pname.length()));
+               if (pname.contains(name)) {
+                    String vs = "";
+                    if (pname.contains(".war")) {
+                        vs = pname.substring(pname.lastIndexOf(".war") + 5, pname.lastIndexOf("/"));
+                    } else {
+                        vs = pname.substring(pname.indexOf("/") + 1, pname.lastIndexOf("/"));
+                    }
+                    if (instance.equals(vs)) {
+                        servlets.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
                     }
                 }
-           }
+            }
         }
         return servlets;
     }
