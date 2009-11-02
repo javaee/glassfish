@@ -50,6 +50,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -143,6 +145,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             if( bootstrap != null ) {
                 DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
                     WELD_DEPLOYMENT, DeploymentImpl.class);
+                deploymentImpl = buildDeploymentGraph(deploymentImpl);
                 bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
                 bootstrap.startInitialization();
                 bootstrap.deployBeans();
@@ -321,6 +324,29 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             }
         }
         return ejbBundle;
+    }
+
+    private DeploymentImpl buildDeploymentGraph(DeploymentImpl deploymentImpl) {
+        List<BeanDeploymentArchive> warBDAs = deploymentImpl.getWarBeanDeploymentArchives();
+        ListIterator lIter = warBDAs.listIterator();
+        boolean modifiedArchive = false;
+        while (lIter.hasNext()) {
+            BeanDeploymentArchive warBDA = (BeanDeploymentArchive)lIter.next();
+            List<BeanDeploymentArchive> jarBDAs = deploymentImpl.getJarBeanDeploymentArchives();
+            ListIterator lIter1 = jarBDAs.listIterator();
+            while (lIter1.hasNext()) {
+                BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)lIter1.next();
+                warBDA.getBeanDeploymentArchives().add(jarBDA);
+                modifiedArchive = true;
+            }
+            if (modifiedArchive) {
+                int idx = deploymentImpl.getBeanDeploymentArchives().indexOf(warBDA);
+                deploymentImpl.getBeanDeploymentArchives().remove(idx);
+                deploymentImpl.getBeanDeploymentArchives().add(warBDA);
+                modifiedArchive = false;
+            }
+        }
+        return deploymentImpl;
     }
 }
 

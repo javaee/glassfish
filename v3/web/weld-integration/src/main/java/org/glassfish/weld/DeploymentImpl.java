@@ -74,6 +74,8 @@ public class DeploymentImpl implements Deployment {
     private static final String WEB_INF_CLASSES = "WEB-INF/classes";
     private static final String CLASS_SUFFIX = ".class";
     private static final String JAR_SUFFIX = ".jar";
+    private static final String EXPLODED_WAR_SUFFIX = "_war/";
+    private static final String EXPLODED_JAR_SUFFIX = "_jar/";
     private static final char SEPARATOR_CHAR = '/';
 
     private List<Class<?>> wbClasses;
@@ -146,6 +148,28 @@ public class DeploymentImpl implements Deployment {
         return archiveToBeanDeploymentArchive.get(archiveId);
     }  
 
+    public List<BeanDeploymentArchive> getWarBeanDeploymentArchives() {
+        List<BeanDeploymentArchive> warBDAs = new ArrayList<BeanDeploymentArchive>(); 
+        Set<Map.Entry<String, BeanDeploymentArchive>> set = archiveToBeanDeploymentArchive.entrySet();
+        for (Map.Entry<String, BeanDeploymentArchive> me : set) {
+            if (me.getKey().endsWith(EXPLODED_WAR_SUFFIX)) {
+                warBDAs.add(me.getValue());
+            }
+        }
+        return warBDAs;
+    }
+     
+    public List<BeanDeploymentArchive> getJarBeanDeploymentArchives() {
+        List<BeanDeploymentArchive> jarBDAs = new ArrayList<BeanDeploymentArchive>();
+        Set<Map.Entry<String, BeanDeploymentArchive>> set = archiveToBeanDeploymentArchive.entrySet();
+        for (Map.Entry<String, BeanDeploymentArchive> me : set) {
+            if (me.getKey().endsWith(EXPLODED_JAR_SUFFIX)) {
+                jarBDAs.add(me.getValue());
+            }
+        }
+        return jarBDAs;
+    }
+        
     private void scan() {
 
         try {
