@@ -462,29 +462,16 @@ public class ASClassLoaderUtil {
     public static List<URL> getAppLibDirLibrariesAsList(File appRoot, String appLibDir, String compatibilityProp)
         throws IOException {
         URL[] libDirLibraries = new URL[0];
-        // first get all the app lib dir libraries
+        // get all the app lib dir libraries
         if (appLibDir != null) {
             String libPath = appLibDir.replace('/', File.separatorChar);
             libDirLibraries =  getURLs(null,
                 new File[] {new File(appRoot, libPath)}, true);
         }
 
-        // now also get the libraries referenced by lib dir library manifest
         List<URL> allLibDirLibraries = new ArrayList<URL>();
         for (URL url : libDirLibraries) {
             allLibDirLibraries.add(url);
-            JarFile jarFile = null;
-            try {
-                jarFile = new JarFile(new File(url.toURI()));
-                allLibDirLibraries.addAll(getManifestClassPathAsURLs(
-                        jarFile.getManifest(), appLibDir));
-            } catch (URISyntaxException e) {
-                _logger.log(Level.WARNING, "Malformed URL: " + url, e);
-            } finally {
-                if (jarFile != null) {
-                    jarFile.close();
-                }
-            }
         }
 
         // if the compatibility property is set to "v2", we should add all the 

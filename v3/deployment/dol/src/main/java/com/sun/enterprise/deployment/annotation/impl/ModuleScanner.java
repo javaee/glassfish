@@ -277,6 +277,8 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
                 File libFile = new File(url.toURI());;
                 if (libFile.isFile()) {
                     addScanJar(libFile);
+                } else if (libFile.isDirectory()) {
+                    addScanDirectory(libFile);
                 }
             } catch (Exception ex) {
                 // we log a warning and proceed for any problems in 
