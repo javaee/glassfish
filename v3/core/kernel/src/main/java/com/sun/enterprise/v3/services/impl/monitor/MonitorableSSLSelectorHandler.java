@@ -40,8 +40,10 @@ import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.ssl.SSLSelectorThreadHandler;
 import com.sun.grizzly.util.Copyable;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 
 /**
  * Monitoring aware {@link SSLSelectorThreadHandler} implementation.
@@ -77,9 +79,11 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     @Override
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
-        final SelectableChannel channel = super.acceptWithoutRegistration(key);
+        final SocketChannel channel = (SocketChannel) super.acceptWithoutRegistration(key);
+        final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
+
         grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
-                monitoringId, channel.hashCode());
+                monitoringId, channel.hashCode(), address);
 
         return channel;
     }
@@ -87,8 +91,11 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     @Override
     public boolean onConnectInterest(SelectionKey key, Context ctx)
             throws IOException {
+        final SocketChannel channel = (SocketChannel) key.channel();
+        final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
+
         grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(
-                monitoringId, key.channel().hashCode());
+                monitoringId, channel.hashCode(), address);
 
         return super.onConnectInterest(key, ctx);
     }

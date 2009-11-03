@@ -189,7 +189,8 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
     @ProbeListener("glassfish:kernel:connection-queue:connectionAcceptedEvent")
     public void connectionAcceptedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("connection") int connectionId) {
+            @ProbeParam("connection") int connectionId,
+            @ProbeParam("address") String address) {
 
         if (name.equals(listenerName)) {
             countTotalConnections.increment();
@@ -201,7 +202,8 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
 //    @ProbeListener("glassfish:kernel:connection-queue:connectionConnectedEvent")
 //    public void connectionConnectedEvent(
 //            @ProbeParam("listenerName") String listenerName,
-//            @ProbeParam("connection") int connectionId) {
+//            @ProbeParam("connection") int connectionId,
+//            @ProbeParam("address") String address) {
 //    }
     @ProbeListener("glassfish:kernel:connection-queue:connectionClosedEvent")
     public void connectionClosedEvent(

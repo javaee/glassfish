@@ -41,8 +41,10 @@ import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.http.SelectorThreadHandler;
 import com.sun.grizzly.util.Copyable;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 
 /**
  * Monitoring aware {@link SelectorThreadHandler} implementation.
@@ -75,12 +77,15 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
         copyHandler.monitoringId = monitoringId;
     }
 
-
     @Override
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
-        final SelectableChannel channel = super.acceptWithoutRegistration(key);
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(monitoringId, channel.hashCode());
+        final SocketChannel channel = (SocketChannel) super.acceptWithoutRegistration(key);
+        final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
+        
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
+                monitoringId, channel.hashCode(), address);
+
         
         return channel;
     }
@@ -88,7 +93,11 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
     @Override
     public boolean onConnectInterest(SelectionKey key, Context ctx)
             throws IOException {
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(monitoringId, key.channel().hashCode());
+        final SocketChannel channel = (SocketChannel) key.channel();
+        final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
+        
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(
+                monitoringId, channel.hashCode(), address);
         
         return super.onConnectInterest(key, ctx);
     }

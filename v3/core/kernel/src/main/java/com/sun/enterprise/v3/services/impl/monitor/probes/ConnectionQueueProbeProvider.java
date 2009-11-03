@@ -50,12 +50,14 @@ public class ConnectionQueueProbeProvider {
     @Probe(name = "connectionAcceptedEvent")
     public void connectionAcceptedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("connection") int connectionId) {}
+            @ProbeParam("connection") int connectionId,
+            @ProbeParam("address") String address) {}
 
     @Probe(name = "connectionConnectedEvent")
     public void connectionConnectedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("connection") int connectionId) {}
+            @ProbeParam("connection") int connectionId,
+            @ProbeParam("address") String address) {}
 
     @Probe(name = "connectionClosedEvent")
     public void connectionClosedEvent(
