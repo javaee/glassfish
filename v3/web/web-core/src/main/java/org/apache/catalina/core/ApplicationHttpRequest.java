@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,11 +52,7 @@
  * limitations under the License.
  */
 
-
-
-
 package org.apache.catalina.core;
-
 
 import java.io.IOException;
 import java.util.*;
@@ -81,18 +77,12 @@ import org.apache.catalina.connector.SessionTracker;
  * one passed to a servlet, or might be based on the 2.3
  * <code>javax.servlet.http.HttpServletRequestWrapper</code> class)
  * back into an internal <code>org.apache.catalina.HttpRequest</code>.
- * <p>
- * <strong>WARNING</strong>:  Due to Java's lack of support for multiple
- * inheritance, all of the logic in <code>ApplicationRequest</code> is
- * duplicated in <code>ApplicationHttpRequest</code>.  Make sure that you
- * keep these two classes in synchronization when making changes!
  *
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  * @version $Revision: 1.15 $ $Date: 2007/05/03 21:58:54 $
  */
 public class ApplicationHttpRequest extends HttpServletRequestWrapper {
-
 
     // ------------------------------------------------------- Static Variables
 
@@ -103,13 +93,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         StringManager.getManager(Constants.Package);
 
     /**
-     * Descriptive information about this implementation.
-     */
-    protected static final String info =
-        "org.apache.catalina.core.ApplicationHttpRequest/1.0";
-
-    /**
-     * The set of attribute names that are special for request dispatchers.
+     * The set of attribute names that are special for request dispatchers
      */
     private static final HashSet<String> specials = new HashSet(15);
 
@@ -704,7 +688,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
     // -------------------------------------------------------- Package Methods
 
-
     /**
      * Recycle this request
      */
@@ -713,17 +696,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             session.endAccess();
         }
     }
-
-
-    /**
-     * Return descriptive information about this implementation.
-     */
-    public String getInfo() {
-
-        return (this.info);
-
-    }
-
 
     /**
      * Perform a shallow copy of the specified Map, and return the result.
@@ -743,9 +715,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             }
         }
         return (dest);
-
     }
-
 
     /**
      * Set the context path for this request.
@@ -753,11 +723,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * @param contextPath The new context path
      */
     void setContextPath(String contextPath) {
-
         this.contextPath = contextPath;
-
     }
-
 
     /**
      * Set the path information for this request.
@@ -765,11 +732,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * @param pathInfo The new path info
      */
     void setPathInfo(String pathInfo) {
-
         this.pathInfo = pathInfo;
-
     }
-
 
     /**
      * Set the query string for this request.
@@ -777,11 +741,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * @param queryString The new query string
      */
     void setQueryString(String queryString) {
-
         this.queryString = queryString;
-
     }
-
 
     /**
      * Set the request that we are wrapping.
@@ -805,18 +766,14 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
     }
 
-
     /**
      * Set the request URI for this request.
      *
      * @param requestURI The new request URI
      */
     void setRequestURI(String requestURI) {
-
         this.requestURI = requestURI;
-
     }
-
 
     /**
      * Set the servlet path for this request.
@@ -824,11 +781,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * @param servletPath The new servlet path
      */
     void setServletPath(String servletPath) {
-
         this.servletPath = servletPath;
-
     }
-
 
     /**
      * Parses the parameters of this request.
@@ -837,7 +791,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * content, they are merged.
      */
     void parseParameters() {
-
 	if (parsedParams) {
 	    return;
 	}
@@ -849,7 +802,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 	    parsedParams = true;
         }
     }
-
 
     /**
      * Save query parameters for this request.
@@ -864,7 +816,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
     // ------------------------------------------------------ Protected Methods
 
-
     /**
      * Is this attribute name one of the special ones that is added only for
      * included servlets?
@@ -874,7 +825,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     protected boolean isSpecial(String name) {
         return specials.contains(name);
     }
-
 
     /**
      * Initializes the special attributes of this request wrapper.
@@ -890,7 +840,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                String servletPath,
                                String pathInfo,
                                String queryString) {
-
         specialAttributes = new HashMap(5);
 
         switch (dispatcherType) {
@@ -934,7 +883,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         }
     }
 
-
     /**
      * Merge the two sets of parameter values into a single String array.
      *
@@ -974,7 +922,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
 
     // ------------------------------------------------------ Private Methods
-
 
     /**
      * Merge the parameters from the saved query parameter string (if any), and
@@ -1024,7 +971,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
 
     // ----------------------------------- AttributeNamesEnumerator Inner Class
-
 
     /**
      * Utility class used to expose the special attributes as being available
@@ -1085,7 +1031,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     private void incrementSessionVersion(StandardSession ss,
                                          Context context) {
-
         if (ss == null || context == null) {
             return;
         }
