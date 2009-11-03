@@ -270,10 +270,7 @@ public class AsadminMain {
      * XXX - should be derived from ProgramOptions.
      */
     private static void printUsage() {
-        CLILogger.getInstance().printError(
-"Usage: asadmin [-H|--host localhost] [-p|--port 4848] [-u|--user anonymous]\n"+
-"\t[-W|--passwordfile file] [-s|--secure=false] [-e|--echo=false]\n" +
-"\t[-I|--interactive=true] [-?|--help] [command [options] [operands]]");
+        CLILogger.getInstance().printError(strings.get("Asadmin.usage"));
     }
 
     private static boolean ok(String s) {
