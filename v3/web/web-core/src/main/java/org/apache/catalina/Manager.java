@@ -420,37 +420,6 @@ public interface Manager {
 
 
     /**
-     * Finds and returns the session with the given id that also satisfies
-     * the given version requirement.
-     *
-     * This overloaded version of findSession() will be invoked only if
-     * isSessionVersioningSupported() returns true. By default, this method
-     * delegates to the version of findSession() that does not take any
-     * session version number.
-     *
-     * @param id The session id to match
-     * @param version The session version requirement to satisfy
-     *
-     * @return The session that matches the given id and also satisfies the
-     * given version requirement, or null if no such session could be found
-     * by this session manager
-     *
-     * @exception IOException if an IO error occurred
-     */
-    public Session findSession(String id, String version) throws IOException;
-
-
-    /**
-     * Returns true if this session manager supports session versioning, false
-     * otherwise.
-     *
-     * @return true if this session manager supports session versioning, false
-     * otherwise.
-     */
-    public boolean isSessionVersioningSupported();
-
-
-    /**
      * Return the set of active Sessions associated with this Manager.
      * If this Manager has no active Sessions, a zero-length array is returned.
      */

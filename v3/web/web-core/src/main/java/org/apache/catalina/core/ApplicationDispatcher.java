@@ -407,8 +407,8 @@ public final class ApplicationDispatcher
             hresponse = (HttpServletResponse) response;
         }
 
-        // Handle a non-HTTP forward
         if ((hrequest == null) || (hresponse == null)) {
+            // Handle a non-HTTP forward
             ApplicationHttpRequest wrequest = wrapRequest(state);
             processRequest(request, response, state,
                 wrequest.getRequestFacade());

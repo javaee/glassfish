@@ -137,28 +137,12 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         this.dispatcherType = dispatcherType;
 
         setRequest(request);
-
-        if (context.getManager() != null) {
-            isSessionVersioningSupported =
-                context.getManager().isSessionVersioningSupported();
-            if (isSessionVersioningSupported) {
-                HashMap<String, String> sessionVersions =
-                    (HashMap<String, String>) getAttribute(
-                        Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
-                if (sessionVersions != null) {
-                    requestedSessionVersion = sessionVersions.get(
-                        context.getPath());
-                }
-            }
-        }
     }
 
 
     // ----------------------------------------------------- Instance Variables
 
     private String requestedSessionVersion = null;
-
-    private boolean isSessionVersioningSupported = false;
 
     /**
      * The context for this request.
@@ -580,17 +564,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             if (other != null) {
                 Session localSession = null;
                 try {
-                    if (isSessionVersioningSupported) {
-                        localSession =
-                            context.getManager().findSession(
-                                other.getId(),
-                                requestedSessionVersion);
-                        incrementSessionVersion((StandardSession) localSession,
-                                                context);
-                    } else {
-                        localSession =
-                            context.getManager().findSession(other.getId());
-                    }
+                    localSession =
+                        context.getManager().findSession(other.getId());
                 } catch (IOException e) {
                     // Ignore
                 }
@@ -601,10 +576,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                     //START OF 6364900
                     localSession = 
                         context.getManager().createSession(other.getId());
-                    if (isSessionVersioningSupported) {
-                        incrementSessionVersion((StandardSession) localSession,
-                                                context);
-                    }
                     //END OF 6364900
                     /* CR 6364900
                     localSession = context.getManager().createEmptySession();
@@ -665,12 +636,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                 return (false);
             Session localSession = null;
             try {
-                if (isSessionVersioningSupported) {
-                    localSession = manager.findSession(requestedSessionId,
-                                                       requestedSessionVersion);
-                } else {
-                    localSession = manager.findSession(requestedSessionId);
-                }
+                localSession = manager.findSession(requestedSessionId);
             } catch (IOException e) {
                 localSession = null;
             }
@@ -1023,32 +989,6 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             }
             return result;
         }
-    }
-
-    /**
-     * Increments the version of the given session, and stores it as a
-     * request attribute, so it can later be included in a response cookie.
-     */
-    private void incrementSessionVersion(StandardSession ss,
-                                         Context context) {
-        if (ss == null || context == null) {
-            return;
-        }
-
-        String versionString = Long.toString(ss.incrementVersion());
-
-        HashMap<String, String> sessionVersions = (HashMap<String, String>)
-            getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
-        if (sessionVersions == null) {
-            sessionVersions = new HashMap<String, String>();
-            setAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,
-                         sessionVersions);
-        }
-        String path = context.getPath();
-        if ("".equals(path)) {
-            path = "/";
-        }
-        sessionVersions.put(path, versionString);
     }
 
     /**
