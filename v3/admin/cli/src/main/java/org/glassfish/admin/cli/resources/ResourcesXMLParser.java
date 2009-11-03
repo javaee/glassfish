@@ -104,8 +104,8 @@ public class ResourcesXMLParser implements EntityResolver
     private static final int CONNECTOR = 1;
 
     /** Creates new ResourcesXMLParser */
-    public ResourcesXMLParser(String resourceFileName) throws Exception {
-        resourceFile = new File(resourceFileName);
+    public ResourcesXMLParser(File resourceFile) throws Exception {
+        this.resourceFile = resourceFile;
         initProperties();
         vResources = new ArrayList<Resource>();
         generateResourceObjects();

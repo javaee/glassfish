@@ -46,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import java.util.HashMap;
 import java.util.Properties;
+import java.io.File;
 
 /**
  * This class serves as the API to creating new resources when an xml file 
@@ -60,7 +61,7 @@ public class ResourcesManager {
      * the admin framework when the add-resources command is used to create
      * resources
      */
-    static ArrayList createResources(Resources resources, String resourceXMLFile,
+    static ArrayList createResources(Resources resources, File resourceXMLFile,
             Server targetServer, ResourceFactory resourceFactory) throws Exception {
         ArrayList results = new ArrayList();
         ResourcesXMLParser resourcesParser =

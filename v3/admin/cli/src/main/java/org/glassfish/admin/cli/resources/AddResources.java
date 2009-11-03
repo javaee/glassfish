@@ -72,7 +72,7 @@ public class AddResources implements AdminCommand {
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
     @Param(name="xml_file_name", primary=true)
-    String xmlFileName;
+    File xmlFile;
     
     @Inject
     Resources resources;
@@ -94,18 +94,17 @@ public class AddResources implements AdminCommand {
         
         Server targetServer = domain.getServerNamed(target);
         
-        // Check if the path xmlFileName exists
-        File file = new File(xmlFileName);
-        if (!file.exists()) {
+        // Check if the path xmlFile exists
+        if (!xmlFile.exists()) {
             report.setMessage(localStrings.getLocalString("FileNotFound", 
-                "The system cannot find the path specified: {0}", xmlFileName));
+                "The system cannot find the path specified: {0}", xmlFile.getName()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
         
         try {
             final ArrayList results = ResourcesManager.createResources(
-                    resources, xmlFileName, targetServer, resourceFactory);
+                    resources, xmlFile, targetServer, resourceFactory);
             final Iterator resultsIter = results.iterator();
             report.getTopMessagePart().setChildrenType("Command");
             boolean isSuccess = false;
@@ -123,12 +122,12 @@ public class AddResources implements AdminCommand {
                     (isSuccess)?ActionReport.ExitCode.SUCCESS:ActionReport.ExitCode.FAILURE);
             if (!isSuccess)
                 report.setMessage(localStrings.getLocalString("add.resources.failed", 
-                                                "add-resources <{0}> failed", xmlFileName));
+                                                "add-resources <{0}> failed", xmlFile.getName()));
                 
         } catch (Exception ex) {
             Logger.getLogger(AddResources.class.getName()).log(Level.SEVERE, "Something went wrong in add-resources", ex);
             report.setMessage(localStrings.getLocalString("add.resources.failed", 
-                                                "add-resources <{0}> failed", xmlFileName));
+                                                "add-resources <{0}> failed", xmlFile.getName()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             //Need to fix, doesn't show the error from exception, though it writes in the log
             report.setFailureCause(ex);
