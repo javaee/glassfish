@@ -98,7 +98,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  * @author Harpreet Singh, monzillo
  */
 public final class EJBSecurityManager
-         extends SecurityManagerFactory implements SecurityManager {
+         /*extends SecurityManagerFactory*/ implements SecurityManager {
 
     private static Logger _logger = null;
 

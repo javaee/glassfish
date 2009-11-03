@@ -43,9 +43,11 @@ import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
 import java.util.logging.*;
+import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
+import java.util.Collection;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.OpsParams;
 /** 
@@ -336,11 +338,62 @@ public class SecurityUtil{
         return rvalue;
     }
 
+    /**
+     * create pseudo module context id, and make sure it is unique, by
+     * chacking it against the names of all the other modules in the app.
+     * @param ejbDesc
+     * @return
+     */
+    private static String createUniquePseudoModuleID(EjbBundleDescriptor ejbDesc) {
+
+        Application app = ejbDesc.getApplication();
+        Collection<WebBundleDescriptor> webModules = app.getWebBundleDescriptors();
+        Collection<EjbBundleDescriptor> ejbModules = app.getEjbBundleDescriptors();
+
+        String moduleName = ejbDesc.getUniqueFriendlyId();
+        String pseudonym;
+        int uniquifier = 0;
+        boolean unique;
+        do {
+            unique = true;
+            pseudonym = moduleName +
+                    (uniquifier == 0 ? "_internal" : "_internal_" + uniquifier);
+            if (webModules != null) {
+                for (WebBundleDescriptor w : webModules) {
+                    if (pseudonym.equals(w.getUniqueFriendlyId())) {
+                        unique = false;
+                        break;
+                    }
+                }
+            }
+            if (unique && ejbModules != null) {
+                for (EjbBundleDescriptor e : ejbModules) {
+                   if (pseudonym.equals(e.getUniqueFriendlyId())) {
+                        unique = false;
+                        break;
+                    }
+                }
+            }
+            uniquifier += 1;
+            
+        } while (!unique);
+
+        return app.getRegistrationName() + "/" + pseudonym;
+    }
+
     public static String getContextID(EjbBundleDescriptor ejbBundleDesc) {
         String cid = null;
         if (ejbBundleDesc != null) {
-            cid = ejbBundleDesc.getApplication().getRegistrationName() +
+            /* detect special case of EJBs embedded in a war,
+             * and make sure psuedo policy context id is unique within app
+             */
+            Object root = ejbBundleDesc.getModuleDescriptor().getDescriptor();
+            if( (root != ejbBundleDesc) && (root instanceof WebBundleDescriptor ) ) {
+                cid = createUniquePseudoModuleID(ejbBundleDesc);
+            } else {
+                cid = ejbBundleDesc.getApplication().getRegistrationName() +
                     '/' + ejbBundleDesc.getUniqueFriendlyId();
+            }
         }
         return cid;
     }

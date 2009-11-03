@@ -983,7 +983,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
         WebSecurityManager secMgr = getWebSecurityManager(false);
 
-        if (secMgr != null && secMgr.hasNoConstrainedResources()) {
+        if (secMgr != null && secMgr.hasNoConstrainedResources()&&
+ 	    !isSecurityExtensionEnabled()) {
             return null;
         }
 
@@ -1454,8 +1455,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
         this.appID = app.getRegistrationName();
         // helper are set until setVirtualServer is invoked
-
-        configureSecurity(webDesc, isSystemApp);
+        //handled in SecurityDeployer now.
+        //configureSecurity(webDesc, isSystemApp);
     }
 
     /**

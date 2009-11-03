@@ -166,7 +166,10 @@ public class PolicyLoader{
                     }
                     java.security.Policy policy = (java.security.Policy)obj;
                     java.security.Policy.setPolicy(policy);
-                    //TODO: causing ClassCircularity error when SM ON.
+                    //TODO: causing ClassCircularity error when SM ON and
+                    //deployment use library feature and ApplibClassLoader
+                    //it is likely a problem caused by the way classloading is done
+                    //in this case.
                     if (System.getSecurityManager() == null) {
                         policy.refresh();
                     }

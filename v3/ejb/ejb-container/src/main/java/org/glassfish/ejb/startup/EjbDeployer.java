@@ -278,8 +278,10 @@ public class EjbDeployer
         policyLoader.loadPolicy();
         if (bundle != null) {
             for (EjbDescriptor desc : bundle.getEjbs()) {
-                //create security manager for each EJB but don't register
-                this.ejbSecManagerFactory.createManager(desc, false);
+                 /* create and register security manager for each EJB
+                  * WHEN THIS CODE EXECUTED ONLY ON DAS, REGISTRATION WAS NOT DONE
+                  */
+                this.ejbSecManagerFactory.createManager(desc, true);
             }
         }
 
