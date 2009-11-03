@@ -34,6 +34,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.Async;
 import org.glassfish.api.Startup;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -56,8 +57,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 @Service
 @Scoped(Singleton.class)
-@Async
-public class DynamicReloadService implements ConfigListener, Startup, PostConstruct, PreDestroy {
+public class DynamicReloadService implements ConfigListener, PostStartup, PostConstruct, PreDestroy {
 
     @Inject
     DasConfig activeDasConfig;
@@ -83,11 +83,6 @@ public class DynamicReloadService implements ConfigListener, Startup, PostConstr
             );
 
     public DynamicReloadService() {
-    }
-
-    public Lifecycle getLifecycle() {
-        // This service stays running for the life of the app server, hence SERVER.
-        return Lifecycle.SERVER;
     }
 
     public void postConstruct() {

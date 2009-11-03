@@ -44,15 +44,15 @@ import javax.management.MBeanServer;
 
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.internal.api.*;
 
 /**
     Factory for the MBeanServer.  Required so that HK2 can find an MBeanServer
     for modules doing @Inject MBeanServer.
  */
 @Service
-@Async
 @FactoryFor(MBeanServer.class)
-public final class MBeanServerFactory implements Factory, Startup {
+public final class MBeanServerFactory implements Factory, PostStartup {
     private static void debug( final String s ) { System.out.println(s); }
     
     private final MBeanServer     mMBeanServer;
@@ -84,7 +84,6 @@ public final class MBeanServerFactory implements Factory, Startup {
         return mMBeanServer;
     }
     
-    public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }
 }
 
 

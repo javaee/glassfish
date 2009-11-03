@@ -65,8 +65,7 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.PostStartup;
 import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -220,30 +219,20 @@ public class AppServerStartup implements ModuleStartup {
         }
         // run the startup services
         final Collection<Inhabitant<? extends Startup>> startups = habitat.getInhabitants(Startup.class);
-        Future<?> result = executor.submit(new Runnable() {
-            public void run() {
-                for (final Inhabitant<? extends Startup> i : startups) {
-                    try
-                    {
-                        if (i.type().getAnnotation(Async.class)!=null) {
-                            //logger.fine("Runs " + i.get() + "asynchronously");
-                            i.get();
-                        }
-                    }
-                    catch (Throwable e)
-                    {
-                        logger.log(Level.SEVERE, "Error processing " + i.typeName(), e);
-                    }
-                }
-            }
-        });
+        PriorityQueue<Inhabitant<? extends Startup>> startupSvcs;
+        startupSvcs = new PriorityQueue<Inhabitant<? extends Startup>>(startups.size(), getInhabitantComparator());
+        startupSvcs.addAll(startups);
 
         boolean shutdownRequested=false;
         ArrayList<Future<Result<Thread>>> futures = new ArrayList<Future<Result<Thread>>>();
-        for (final Inhabitant<? extends Startup> i : startups) {
+        while (!startupSvcs.isEmpty()) {
+            final Inhabitant<? extends Startup> i=startupSvcs.poll();
             if (i.type().getAnnotation(Async.class)==null) {
                 long start = System.currentTimeMillis();
                 try {
+                    if (logger.isLoggable(level)) {
+                        logger.log(level, "Running Startup services " + i.type());
+                    }
                     Startup startup = i.get();
                     if (logger.isLoggable(level)) {
                         logger.log(level, "Startup services finished" + startup);
@@ -282,12 +271,7 @@ public class AppServerStartup implements ModuleStartup {
         }
         catch(Exception e) {
 		}
-        // wait for async services
-        try {
-            result.get(1000, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            // do nothing, we are probably shutting down
-        }
+
         if (logger.isLoggable(level)) {
             for (Map.Entry<Class, Long> service : servicesTiming.entrySet()) {
                 logger.info("Service : " + service.getKey() + " took " + service.getValue() + " ms");
@@ -383,19 +367,29 @@ public class AppServerStartup implements ModuleStartup {
         events.send(new Event(EventTypes.PREPARE_SHUTDOWN), false);
 
         try {
-            for (Inhabitant<? extends PostStartup> svc : habitat.getInhabitants(PostStartup.class)) {
-                if (svc.isInstantiated()) {
-                    try {
-                        svc.release();
-                    } catch(Throwable e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
 
-            for (Inhabitant<? extends Startup> svc : habitat.getInhabitants(Startup.class)) {
+            // Startup and PostStartup are merged acoording to their priority level and released
+            Collection<Inhabitant<? extends Startup>> startups = habitat.getInhabitants(Startup.class);
+            Collection<Inhabitant<? extends PostStartup>> postStartups = habitat.getInhabitants(PostStartup.class);
+
+            PriorityQueue<Inhabitant<?>> mergedStartup = new PriorityQueue<Inhabitant<?>>(
+                    startups.size()+postStartups.size(), getInhabitantComparator());
+            mergedStartup.addAll(postStartups);
+            mergedStartup.addAll(startups);
+
+            // run startup services in reversed order.
+            List<Inhabitant<?>> services = new ArrayList<Inhabitant<?>>();
+            while (!mergedStartup.isEmpty()) {
+                services.add(mergedStartup.poll());
+            }
+            Collections.reverse(services);
+
+            for (Inhabitant<?> svc : services) {
                 if (svc.isInstantiated()) {
                     try {
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine("Releasing services " + svc.type());
+                        }
                         svc.release();
                     } catch(Throwable e) {
                         e.printStackTrace();
@@ -437,5 +431,22 @@ public class AppServerStartup implements ModuleStartup {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private Comparator<Inhabitant<?>> getInhabitantComparator() {
+        return new Comparator<Inhabitant<?>>() {
+            public int compare(Inhabitant<?> o1, Inhabitant<?> o2) {
+                int o1level = (o1.type().getAnnotation(Priority.class)!=null?
+                        o1.type().getAnnotation(Priority.class).value():5);
+                int o2level = (o2.type().getAnnotation(Priority.class)!=null?
+                        o2.type().getAnnotation(Priority.class).value():5);
+                if (o1level==o2level) {
+                    return 0;
+                } else if (o1level<o2level) {
+                    return -1;
+                } else return 1;
+            }
+
+        };
     }
 }

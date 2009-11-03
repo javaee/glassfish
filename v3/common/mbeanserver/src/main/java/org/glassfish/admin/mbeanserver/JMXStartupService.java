@@ -68,15 +68,14 @@ import javax.management.JMException;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import org.glassfish.internal.api.AdminAccessController;
+import org.glassfish.internal.api.*;
 
 /**
 Responsible for creating the {@link BootAMXMBean}, and starting JMXConnectors,
 which will initialize (boot) AMX when a connection arrives.
  */
 @Service
-@Async
-public final class JMXStartupService implements Startup, PostConstruct
+public final class JMXStartupService implements PostStartup, PostConstruct
 {
     private static void debug(final String s)
     {
@@ -340,11 +339,6 @@ public final class JMXStartupService implements Startup, PostConstruct
         return urls.toArray(new JMXServiceURL[urls.size()]);
     }
 
-
-    public Startup.Lifecycle getLifecycle()
-    {
-        return Startup.Lifecycle.SERVER;
-    }
 }
 
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.glassfish.api.Async;
 import org.glassfish.api.Startup;
+import org.glassfish.internal.api.*;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
@@ -18,8 +19,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * are applications deployed since the actual service has ORB dependency.
  */
 @Service
-@Async
-public class TransactionRecoveryWrapper implements Startup, PostConstruct {
+public class TransactionRecoveryWrapper implements PostStartup, PostConstruct {
 
     @Inject
     Applications applications;
@@ -32,9 +32,5 @@ public class TransactionRecoveryWrapper implements Startup, PostConstruct {
         if (apps!=null && apps.size()>0) {
             habitat.getByContract(ResourceRecoveryManager.class);
         }
-    }
-
-    public Lifecycle getLifecycle() {
-        return Lifecycle.START;
     }
 }

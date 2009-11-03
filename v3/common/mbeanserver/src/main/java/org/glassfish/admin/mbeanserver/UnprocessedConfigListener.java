@@ -45,6 +45,7 @@ import java.beans.PropertyChangeEvent;
 
 import org.glassfish.api.Startup;
 import org.glassfish.api.Async;
+import org.glassfish.internal.api.*;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -54,8 +55,7 @@ import java.util.Collections;
 Listens for unprocessed config changes
  */
 @Service
-@Async
-public final class UnprocessedConfigListener implements Startup, PostConstruct, TransactionListener
+public final class UnprocessedConfigListener implements PostStartup, PostConstruct, TransactionListener
 {
     private static void debug(final String s)
     {
@@ -75,11 +75,6 @@ public final class UnprocessedConfigListener implements Startup, PostConstruct, 
     public void postConstruct()
     {
         mTransactions.addTransactionsListener(this);
-    }
-
-    public Startup.Lifecycle getLifecycle()
-    {
-        return Startup.Lifecycle.SERVER;
     }
 
     public void transactionCommited(final List<PropertyChangeEvent> changes)

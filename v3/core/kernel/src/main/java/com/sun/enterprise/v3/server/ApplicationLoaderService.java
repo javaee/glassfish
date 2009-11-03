@@ -55,8 +55,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.api.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
 import java.io.File;
@@ -77,6 +76,7 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
  *
  * @author Jerome Dochez
  */
+@Priority(8) // low priority , should be started last
 @Service(name="ApplicationLoaderService")
 public class ApplicationLoaderService implements Startup, PreDestroy, PostConstruct {
 
