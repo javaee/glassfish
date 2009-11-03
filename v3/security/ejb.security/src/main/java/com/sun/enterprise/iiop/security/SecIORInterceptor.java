@@ -188,7 +188,7 @@ public class SecIORInterceptor extends org.omg.CORBA.LocalObject
                     return Integer.parseInt(ilisten.getPort());
                 }
             } else if (mech.equalsIgnoreCase("SSL_MUTUALAUTH")) {
-                if (ilisten.getSecurityEnabled().equalsIgnoreCase("true") && ilisten.getSsl().getClientAuthEnabled().equalsIgnoreCase("true")) {
+                if (ilisten.getSecurityEnabled().equalsIgnoreCase("true") && ilisten.getSsl() != null && ilisten.getSsl().getClientAuthEnabled().equalsIgnoreCase("true")) {
                     return Integer.parseInt(ilisten.getPort());
                 }
             } else if (!ilisten.getSecurityEnabled().equalsIgnoreCase("true")) {
