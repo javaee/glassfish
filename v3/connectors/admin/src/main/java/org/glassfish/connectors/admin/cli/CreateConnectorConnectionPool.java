@@ -124,6 +124,12 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Param(name="maxconnectionusagecount", optional=true)
     String maxconnectionusagecount = "0";
 
+    @Param(optional=true, defaultValue="false")
+    Boolean ping;
+
+    @Param(optional=true, defaultValue="true")
+    Boolean pooling;
+
     @Param(name="validateatmostonceperiod", optional=true)
     String validateatmostonceperiod;
 
@@ -185,6 +191,8 @@ public class CreateConnectorConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
         attrList.put(ResourceConstants.CONNECTOR_CONNECTION_POOL_NAME, poolname);
         attrList.put(ResourceConstants.CONN_TRANSACTION_SUPPORT, transactionsupport);
+        attrList.put(ResourceConstants.PING, ping.toString());
+        attrList.put(ResourceConstants.POOLING, pooling.toString());
 
         ResourceStatus rs;
 

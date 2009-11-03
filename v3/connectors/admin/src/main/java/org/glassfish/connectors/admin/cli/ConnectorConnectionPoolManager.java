@@ -110,6 +110,8 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
     private String associateWithThread = Boolean.FALSE.toString();
     private String matchConnections = Boolean.FALSE.toString();
     private String maxConnectionUsageCount = "0";
+    private String ping = Boolean.FALSE.toString();
+    private String pooling = Boolean.TRUE.toString();
     private String transactionSupport = null;
 
     private String description = null;
@@ -206,6 +208,8 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
                                     connectionCreationRetryAttempts);
                     newResource.setAssociateWithThread(
                                     associateWithThread);
+                    newResource.setPooling(pooling);
+                    newResource.setPing(ping);
                     if (transactionSupport != null) {
                         newResource.setTransactionSupport(transactionSupport);
                     }
@@ -266,6 +270,8 @@ public class ConnectorConnectionPoolManager implements ResourceManager{
         maxConnectionUsageCount = (String) attrList.get(MAX_CONNECTION_USAGE_COUNT);
         description = (String) attrList.get(DESCRIPTION);
         poolname = (String) attrList.get(CONNECTOR_CONNECTION_POOL_NAME);
+        pooling = (String) attrList.get(POOLING);
+        ping = (String) attrList.get(PING);
         transactionSupport = (String) attrList.get(CONN_TRANSACTION_SUPPORT);
     }
     
