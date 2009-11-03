@@ -127,7 +127,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                             logger.log(Level.INFO, e.getMessage(),e );
                         }
                     } else {
-                        logger.severe("Originally deployed application at "+ location + " not found");
+                        logger.warning("Originally deployed application at "+ location + " not found");
                     }
                 }
             }
@@ -136,9 +136,14 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
         }
 
         if (source == null) {
-            report.setMessage(
-                "Cannot get source archive for undeployment"); 
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            logger.fine("Cannot get source archive for undeployment"); 
+            // remove the application from the domain.xml so at least server is 
+            // in a consistent state
+            try {
+                deployment.unregisterAppFromDomainXML(name);
+            } catch(TransactionFailure e) {
+                logger.warning("Module " + name + " not found in configuration");
+            }
             return;
         }
 
