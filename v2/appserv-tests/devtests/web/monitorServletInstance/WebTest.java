@@ -88,29 +88,29 @@ public class WebTest {
 
     public void doTest() {
         try {
-            long appReqCount1 = getValue("test/requestcount", "RequestCount", "Count");
+            long appReqCount1 = getValue("test/requestcount", "RequestCount", "count");
             System.out.println("app request count: " + appReqCount1);
-            long processTime1 = getValue("test/processingtime", "ProcessingTime", "LastSampleTime");
+            long processTime1 = getValue("test/processingtime", "ProcessingTime", "lastsampletime");
             System.out.println("app process time: " + processTime1);
 
             String testResult = invokeURL("http://" + host + ":" + port + contextRoot + "/test");
             System.out.println(testResult);
             
-            long appReqCount2 = getValue("test/requestcount", "RequestCount", "Count");
+            long appReqCount2 = getValue("test/requestcount", "RequestCount", "count");
             System.out.println("app request count: " + appReqCount2);
-            long processTime2 = getValue("test/processingtime", "ProcessingTime", "LastSampleTime");
+            long processTime2 = getValue("test/processingtime", "ProcessingTime", "lastsampletime");
             System.out.println("app process time: " + processTime2);
 
             boolean ok1 = (EXPECTED.equals(testResult) &&
                     (appReqCount1 >= 0 && appReqCount2 == (appReqCount1 + 1)) &&
                     (processTime2 > 0));
 
-            long appErrorCount1 = getValue("badrequest/errorcount", "ErrorCount", "Count");
+            long appErrorCount1 = getValue("badrequest/errorcount", "ErrorCount", "count");
             System.out.println("app error count: " + appErrorCount1);
 
             invokeURL("http://" + host + ":" + port + contextRoot + "/badrequest");
             
-            long appErrorCount2 = getValue("badrequest/errorcount", "ErrorCount", "Count");
+            long appErrorCount2 = getValue("badrequest/errorcount", "ErrorCount", "count");
             System.out.println("app error count: " + appErrorCount2);
 
             boolean ok2 = (appErrorCount1 >= 0 && appErrorCount2 == (appErrorCount1 + 1));

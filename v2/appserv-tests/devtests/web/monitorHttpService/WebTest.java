@@ -177,7 +177,7 @@ public class WebTest {
             NodeList nlist = doc.getDocumentElement().getElementsByTagName(countName);
             if (nlist != null && nlist.getLength() > 0) {
                 Element element = (Element) nlist.item(0);
-                String countStr = element.getAttribute("Count");
+                String countStr = element.getAttribute("count");
                 if (countStr != null) {
                     count = Integer.parseInt(countStr);
                 }
