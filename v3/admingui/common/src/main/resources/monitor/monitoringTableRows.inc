@@ -35,21 +35,21 @@
 -->
 <!-- web/monitor/monitoringTableRows.inc -->
 <!-- used in web/monitor/monitoringStatsPage.jsf -->
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="Name" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" rowHeader="$boolean{false}" id="col2">
             <staticText id="col1Name" value="#{td.value.Name}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="Value" rowHeader="$boolean{false}" id="col3">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" rowHeader="$boolean{false}" id="col3">
             <staticText  id="col2Value" value="#{td.value.Value}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.startTimeCol}" sort="StartTime" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col4">
+        <sun:tableColumn headerText="$resource{web.monitoring.startTimeCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col4">
             <staticText  id="col3Value" value="#{td.value.StartTime}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.lastTimeCol}" sort="LastTime" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col5">
+        <sun:tableColumn headerText="$resource{web.monitoring.lastTimeCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col5">
             <staticText  id="col4Value" value="#{td.value.LastTime}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.DetailsCol}" sort="Details" rowHeader="$boolean{false}" id="col6">
+        <sun:tableColumn headerText="$resource{web.monitoring.DetailsCol}" rowHeader="$boolean{false}" id="col6">
             <staticText  id="col5Value" value="#{td.value.Details}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.DescCol}" sort="Description" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col7">
+        <sun:tableColumn headerText="$resource{web.monitoring.DescCol}" nowrap="$boolean{true}" rowHeader="$boolean{false}" id="col7">
             <staticText  id="col5Value" value="#{td.value.Description}" />
         </sun:tableColumn>
