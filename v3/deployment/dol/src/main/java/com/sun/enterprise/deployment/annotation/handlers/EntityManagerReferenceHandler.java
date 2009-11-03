@@ -95,7 +95,7 @@ public class EntityManagerReferenceHandler
             String msg = localStrings.getLocalString(
                 "enterprise.deployment.annotation.handlers.invalidaehandler",
                 "Invalid annotation symbol found for this type of class.");
-            log(Level.SEVERE, ainfo, msg);
+            log(Level.WARNING, ainfo, msg);
             return getDefaultProcessedResult();
         }
         PersistenceContext emRefAn = (PersistenceContext)ainfo.getAnnotation();
