@@ -49,7 +49,7 @@ import org.jvnet.hk2.component.PreDestroy;
 public class EarClassLoader extends ASURLClassLoader
 {
 
-    private final List<ClassLoaderHolder> delegates = new LinkedList<ClassLoaderHolder>();
+    private List<ClassLoaderHolder> moduleClassLoaders = new LinkedList<ClassLoaderHolder>();
     boolean isPreDestroyCalled = false;
 
     public EarClassLoader(ClassLoader classLoader) {
@@ -57,11 +57,11 @@ public class EarClassLoader extends ASURLClassLoader
     }
 
     public void addModuleClassLoader(String moduleName, ClassLoader cl) {
-        delegates.add(new ClassLoaderHolder(moduleName, cl));
+        moduleClassLoaders.add(new ClassLoaderHolder(moduleName, cl));
     }
 
     public ClassLoader getModuleClassLoader(String moduleName) {
-        for (ClassLoaderHolder clh : delegates) {
+        for (ClassLoaderHolder clh : moduleClassLoaders) {
             if (moduleName.equals(clh.moduleName)) {
                 return clh.loader;
             }
@@ -76,7 +76,7 @@ public class EarClassLoader extends ASURLClassLoader
         }
 
         try {
-            for (ClassLoaderHolder clh : delegates) {
+            for (ClassLoaderHolder clh : moduleClassLoaders) {
                 // destroy all the module classloaders
                 if ( !(clh.loader instanceof EarLibClassLoader) &&  
                      !(clh.loader instanceof EarClassLoader)) {
@@ -94,6 +94,8 @@ public class EarClassLoader extends ASURLClassLoader
  
             // now destroy the EarLibClassLoader
             PreDestroy.class.cast(this.getParent().getParent()).preDestroy();
+
+            moduleClassLoaders = null;
         } catch (Exception e) {
             // ignore, the class loader does not need to be explicitely stopped.
         }
@@ -109,5 +111,10 @@ public class EarClassLoader extends ASURLClassLoader
             this.loader = loader;
             this.moduleName = moduleName;
         }
+    }
+
+    @Override
+    protected String getClassLoaderName() {
+        return "EarClassLoader";
     }
 }

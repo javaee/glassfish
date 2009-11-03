@@ -786,6 +786,7 @@ public class ApplicationLifecycle implements Deployment {
         }
         
         appRegistry.remove(appName);
+        info = null;
     }
 
     // register application information in domain.xml

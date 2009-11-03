@@ -467,6 +467,9 @@ public class EarDeployer implements Deployer, PostConstruct {
                     @Override
                     public ClassLoader getClassLoader() {
                         try {
+                            if (context.getClassLoader() == null) { 
+                                return null;
+                            }
                             EarClassLoader appCl = EarClassLoader.class.cast(context.getClassLoader());
                             if (((ExtendedDeploymentContext)context).
                                 getPhase() == Phase.PREPARE) {

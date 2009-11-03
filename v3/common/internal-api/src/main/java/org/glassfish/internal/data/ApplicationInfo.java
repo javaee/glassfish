@@ -33,6 +33,7 @@ import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.component.PreDestroy;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -270,6 +271,31 @@ public class ApplicationInfo extends ModuleInfo {
             if (events!=null) {
                 events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_UNLOADED, this), false);
             }
+
+            // all modules have been unloaded, clean the module class loaders
+            for (ModuleInfo module : getModuleInfos()) {
+                if (module.getClassLoaders() != null) {
+                    for (ClassLoader cloader : module.getClassLoaders()) {
+                        try {
+                            PreDestroy.class.cast(cloader).preDestroy();
+                        } catch (Exception e) {
+                            // ignore, the class loader does not need to be 
+                            // explicitely stopped or already stopped
+                        }
+                    }
+                    module.cleanClassLoaders();
+                }
+            }
+            // also clean the app level classloader if it's not already
+            // cleaned
+            try {
+                PreDestroy.class.cast(appClassLoader).preDestroy();
+            } catch (Exception e) {
+                // ignore, the class loader does not need to be
+                // explicitely stopped or already stopped
+            }
+            appClassLoader = null;
+
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
             context.setClassLoader(null);
@@ -305,6 +331,7 @@ public class ApplicationInfo extends ModuleInfo {
         super.clean(context);
         for (ModuleInfo info : modules) {
             info.clean(getSubContext(info,context));
+            info = null;
         }
         if (events!=null) {
             events.send(new EventListener.Event<DeploymentContext>(Deployment.APPLICATION_CLEANED, context), false);

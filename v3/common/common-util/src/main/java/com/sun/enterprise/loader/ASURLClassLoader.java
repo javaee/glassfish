@@ -765,6 +765,11 @@ public class ASURLClassLoader
         return bout.toByteArray();
     }
 
+
+    protected String getClassLoaderName() {
+        return "ASURLClassLoader";
+    }
+
     /**
      * Returns a string representation of this class loader.
      *
@@ -774,7 +779,7 @@ public class ASURLClassLoader
 
         StringBuffer buffer = new StringBuffer();
 
-        buffer.append("ASURLClassLoader : \n");
+        buffer.append(getClassLoaderName() + " : \n");
         if( doneCalled ) {
             buffer.append("doneCalled = true" + "\n");
             if( doneSnapshot != null ) {

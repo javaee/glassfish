@@ -52,4 +52,9 @@ public class EarLibClassLoader extends ASURLClassLoader
             addURL(url);
         }
     }
+
+    @Override
+    protected String getClassLoaderName() {
+        return "EarLibClassLoader";
+    }
 }

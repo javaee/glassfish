@@ -68,7 +68,6 @@ import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.Events;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -89,6 +88,8 @@ public class ModuleInfo {
     private Properties moduleProps;
     private boolean started=false;
     private ClassLoader moduleClassLoader;
+    private Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
+    
   
     public ModuleInfo(final Events events, String name, Collection<EngineRef> refs, 
         Properties moduleProps) {
@@ -108,6 +109,15 @@ public class ModuleInfo {
 
     protected Set<EngineRef> _getEngineRefs() {
         return engines;
+    }
+
+    public Set<ClassLoader> getClassLoaders() {
+        return classLoaders;
+    }
+
+    public void cleanClassLoaders() {
+        classLoaders = null; 
+        moduleClassLoader = null;
     }
 
     public void addMetaData(Object o) {
@@ -271,7 +281,6 @@ public class ModuleInfo {
 
     public void unload(ExtendedDeploymentContext context) {
 
-        Set<ClassLoader> classLoaders = new HashSet<ClassLoader>();
         for (EngineRef engine : _getEngineRefs()) {
             if (engine.getApplicationContainer()!=null && engine.getApplicationContainer().getClassLoader()!=null) {
                 classLoaders.add(engine.getApplicationContainer().getClassLoader());
@@ -289,14 +298,13 @@ public class ModuleInfo {
                 }
             }
         }
-        // all modules have been unloaded, clean the class loaders...
-        for (ClassLoader cloader : classLoaders) {
-            try {
-                PreDestroy.class.cast(cloader).preDestroy();
-            } catch (Exception e) {
-                // ignore, the class loader does not need to be explicitely stopped.
-            }
+
+        // add the module classloader to the predestroy list if it's not
+        // already there
+        if (classLoaders != null && moduleClassLoader != null) {
+            classLoaders.add(moduleClassLoader);
         }
+
         if (events!=null) {
             events.send(new Event<ModuleInfo>(Deployment.MODULE_UNLOADED, this), false);
         }
@@ -304,7 +312,6 @@ public class ModuleInfo {
     }
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
-        
         for (EngineRef ref : _getEngineRefs()) {
             ref.clean(context);
         }
