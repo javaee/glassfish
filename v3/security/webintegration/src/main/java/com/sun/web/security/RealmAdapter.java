@@ -1339,7 +1339,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     // inner class extends AuthenticatorBase such that session registration
     // of webtier can be invoked by RealmAdapter after authentication
     // by authentication module.
-    class AuthenticatorProxy extends AuthenticatorBase {
+    static class AuthenticatorProxy extends AuthenticatorBase {
 
         private AuthenticatorBase authBase;
         private Principal principal;
@@ -1375,7 +1375,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
     }
 
-    private class HttpMessageInfo implements MessageInfo {
+    private static class HttpMessageInfo implements MessageInfo {
 
         private Object request = null;
         private Object response = null;
