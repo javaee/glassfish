@@ -114,6 +114,11 @@ public class ListSubComponentsCommand implements AdminCommand {
         }
 
         ApplicationInfo appInfo = appRegistry.get(applicationName);
+        if (appInfo == null) {
+            report.setMessage(localStrings.getLocalString("application.not.enabled","Application {0} is not in an enabled state", applicationName));
+            return;
+        }
+
         com.sun.enterprise.deployment.Application app = appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
 
         List<String> subComponents = new ArrayList<String>();    
