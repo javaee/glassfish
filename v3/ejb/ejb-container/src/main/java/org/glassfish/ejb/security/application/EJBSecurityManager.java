@@ -66,14 +66,11 @@ import com.sun.enterprise.security.CachedPermission;
 import com.sun.enterprise.security.CachedPermissionImpl;
 import com.sun.enterprise.security.PermissionCache;
 import com.sun.enterprise.security.PermissionCacheFactory;
-import com.sun.enterprise.security.SecurityUtil;
 import java.util.logging.*;
 
 import com.sun.logging.LogDomains;
 import com.sun.ejb.EjbInvocation;
-import com.sun.ejb.Container;
 
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.SecurityUtil;
 import java.security.*;
 
@@ -81,12 +78,10 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.InvocationException;
 
-import com.sun.enterprise.security.factory.SecurityManagerFactory;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 /**
  * This class is used by the EJB server to manage security. All
@@ -100,7 +95,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 public final class EJBSecurityManager
          /*extends SecurityManagerFactory*/ implements SecurityManager {
 
-    private static Logger _logger = null;
+    private static final Logger _logger;
 
     static {
         _logger = LogDomains.getLogger(EJBSecurityManager.class, LogDomains.EJB_LOGGER);
@@ -111,12 +106,12 @@ public final class EJBSecurityManager
     private static final PolicyContextHandlerImpl pcHandlerImpl =
             (PolicyContextHandlerImpl) PolicyContextHandlerImpl.getInstance();
 
-    private SecurityRoleMapperFactory roleMapperFactory = null;
+    private final SecurityRoleMapperFactory roleMapperFactory;
             //SecurityRoleMapperFactoryMgr.getFactory();
 
-    private EjbDescriptor deploymentDescriptor = null;
+    private final EjbDescriptor deploymentDescriptor;
     // Objects required for Run-AS
-    private RunAsIdentityDescriptor runAs = null;
+    private final RunAsIdentityDescriptor runAs;
 
     // jacc related
     private static PolicyConfigurationFactory pcf = null;
@@ -137,24 +132,24 @@ public final class EJBSecurityManager
     // of the EJBSecurityManager class. The PD used in pre-dispatch
     // authorization decisions MUST not be constructed using a privileged
     // codesource (or else all pre-distpatch access decisions will be granted).
-    private Map cacheProtectionDomain =
+    private final Map cacheProtectionDomain =
             Collections.synchronizedMap(new WeakHashMap());
-    private Map protectionDomainCache =
+    private final Map protectionDomainCache =
             Collections.synchronizedMap(new WeakHashMap());
 
-    private Map accessControlContextCache =
+    private final Map accessControlContextCache =
             Collections.synchronizedMap(new WeakHashMap());
 
     private PermissionCache uncheckedMethodPermissionCache = null;
 
-    private Policy policy = null;
+    private final Policy policy;
 
-    private static CodeSource managerCodeSource =
+    private static final CodeSource managerCodeSource =
             EJBSecurityManager.class.getProtectionDomain().getCodeSource();
 
-    private InvocationManager invMgr;
-    private EJBSecurityManagerFactory ejbSFM = null;
-    private EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
+    private final InvocationManager invMgr;
+    private final EJBSecurityManagerFactory ejbSFM;
+    private final EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
     private static EjbSecurityStatsProvider ejbStatsProvider = null;
 
     /**
@@ -183,6 +178,8 @@ public final class EJBSecurityManager
                             " (" + runAs.getRoleName() + ")");
                 }
             }
+        } else {
+            runAs = null;
         }
 
         initialize();
