@@ -88,15 +88,18 @@ public class MethodExecutor implements java.io.Serializable {
                 method.invoke(obj, values);
             }
         } catch (IllegalAccessException iae) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", iae);
+            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", value);
+            _logger.log(Level.SEVERE, "", iae);
             String msg = sm.getString("me.access_denied", method.getName());
             throw new ResourceException(msg);
         } catch (IllegalArgumentException ie) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", ie);
+            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", value);
+            _logger.log(Level.SEVERE, "", ie);
             String msg = sm.getString("me.illegal_args", method.getName());
             throw new ResourceException(msg);
         } catch (InvocationTargetException ite) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", ite);
+            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", value);
+            _logger.log(Level.SEVERE, "", ite);
             String msg = sm.getString("me.access_denied", method.getName());
             throw new ResourceException(msg);
         }
@@ -129,15 +132,18 @@ public class MethodExecutor implements java.io.Serializable {
             }
             method.invoke(obj, actualValues);
         } catch (IllegalAccessException iae) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", iae);
+            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", values);
+            _logger.log(Level.SEVERE, "", iae);
             String msg = sm.getString("me.access_denied", method.getName());
             throw new ResourceException(msg);
         } catch (IllegalArgumentException ie) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", ie);
+            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", values);
+            _logger.log(Level.SEVERE, "", ie);
             String msg = sm.getString("me.illegal_args", method.getName());
             throw new ResourceException(msg);
         } catch (InvocationTargetException ite) {
-            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", ite);
+            _logger.log(Level.SEVERE, "jdbc.exc_jb_val", values);
+            _logger.log(Level.SEVERE, "", ite);
             String msg = sm.getString("me.access_denied", method.getName());
             throw new ResourceException(msg);
         }
