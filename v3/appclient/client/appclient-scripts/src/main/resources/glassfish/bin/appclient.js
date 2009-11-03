@@ -42,7 +42,10 @@ var envVars = wshShell.Environment("PROCESS");
 
 var pathSep = ";";
 
-var AS_INSTALL = envVars("AS_INSTALL");
+var prelim_AS_INSTALL = new String(envVars("AS_INSTALL"));
+var driveLetter = prelim_AS_INSTALL.substring(0,1).toUpperCase();
+var AS_INSTALL = driveLetter + prelim_AS_INSTALL.substring(1);
+
 var AS_INSTALL_MOD = AS_INSTALL + "\\modules";
 
 var builtinEndorsedDirSetting = AS_INSTALL + "\\lib\\endorsed" + pathSep +
