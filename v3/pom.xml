@@ -158,7 +158,7 @@
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.4</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
-        <v3-docs.version>3.0-b04</v3-docs.version>
+        <v3-docs.version>3.0-b05</v3-docs.version>
         <l10n.version>3.0-b69</l10n.version>
     </properties>
 
