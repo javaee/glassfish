@@ -38,6 +38,7 @@ package com.sun.enterprise.deployment.annotation.handlers;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import com.sun.enterprise.deployment.annotation.context.ManagedBeanContext;
+import com.sun.enterprise.deployment.util.TypeUtil;
 import org.glassfish.apf.*;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Service;
@@ -46,6 +47,7 @@ import javax.annotation.ManagedBean;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Method;
 
 import java.util.List;
@@ -121,15 +123,23 @@ public class ManagedBeanHandler extends AbstractHandler {
             }
         }
 
-        Method managedBeanAroundInvoke =
-            getMethodForMethodAnnotation(managedBeanClass, "javax.interceptor.AroundInvoke");
-        if( managedBeanAroundInvoke != null ) {
-            // TODO process bean class superclasses for AroundInvoke
-            LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
-            desc.setLifecycleCallbackClass(managedBeanClass.getName());
-            desc.setLifecycleCallbackMethod(managedBeanAroundInvoke.getName());
-            managedBeanDesc.addAroundInvokeDescriptor(desc);
+        Class nextIntClass = managedBeanClass;
+        while(nextIntClass != Object.class) {
+            Method managedBeanAroundInvoke =
+                getMethodForMethodAnnotation(nextIntClass, "javax.interceptor.AroundInvoke");
+
+            if( (managedBeanAroundInvoke != null) && !(methodOverridden(managedBeanAroundInvoke,
+                    nextIntClass, managedBeanClass)) ) {
+
+                LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
+                desc.setLifecycleCallbackClass(nextIntClass.getName());
+                desc.setLifecycleCallbackMethod(managedBeanAroundInvoke.getName());
+                managedBeanDesc.addAroundInvokeDescriptor(desc);
+            }
+
+            nextIntClass = nextIntClass.getSuperclass();
         }
+
 
         for(Method m : managedBeanClass.getMethods()) {
             Annotation ann = getMethodAnnotation(m, "javax.interceptor.Interceptors");
@@ -247,7 +257,8 @@ public class ManagedBeanHandler extends AbstractHandler {
         while(nextIntClass != Object.class) {
             Method interceptorAroundInvoke =
                 getMethodForMethodAnnotation(nextIntClass, "javax.interceptor.AroundInvoke");
-            if( interceptorAroundInvoke != null ) {
+            if( (interceptorAroundInvoke != null) && !(methodOverridden(interceptorAroundInvoke,
+                    nextIntClass, interceptorClass)) ) {
 
                 LifecycleCallbackDescriptor desc = new LifecycleCallbackDescriptor();
                 desc.setLifecycleCallbackClass(nextIntClass.getName());
@@ -296,5 +307,35 @@ public class ManagedBeanHandler extends AbstractHandler {
         return null;
     }
 
+
+    private boolean methodOverridden(Method m, Class declaringSuperClass, Class leafClass) {
+
+        Class nextClass = leafClass;
+        boolean overridden = false;
+
+        if( Modifier.isPrivate(m.getModifiers())) {
+            return false;
+        }
+
+        while((nextClass != declaringSuperClass) && (nextClass != Object.class)) {
+
+            for(Method nextMethod : nextClass.getDeclaredMethods()) {
+
+                if( !Modifier.isPrivate(nextMethod.getModifiers()) &&
+                    TypeUtil.sameMethodSignature(m, nextMethod) ) {
+                    overridden = true;
+                    break;
+                }
+            }
+
+            if( overridden ) {
+                break;
+            }
+
+            nextClass = nextClass.getSuperclass();
+        }
+
+        return overridden;
+    }
 
 }
