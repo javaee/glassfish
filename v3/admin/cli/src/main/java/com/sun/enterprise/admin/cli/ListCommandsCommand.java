@@ -143,15 +143,20 @@ public class ListCommandsCommand extends CLICommand {
      * Filter the command list to only those matching the patterns.
      */
     private String[] matchCommands(String[] commands) {
-        if (patterns.size() == 0)
-            return commands;
-
         // filter the commands
         List<String> matched = new ArrayList<String>();
-        for (String cmd : commands)
-            for (Pattern re : patterns)
-                if (re.matcher(cmd).find())
+        for (String cmd : commands) {
+            if (patterns.size() == 0) {
+                if (!cmd.startsWith("_"))
                     matched.add(cmd);
+            } else {
+                for (Pattern re : patterns)
+                    if (re.matcher(cmd).find())
+                        if (!cmd.startsWith("_") ||
+                                re.pattern().startsWith("_"))
+                            matched.add(cmd);
+            }
+        }
 
         return matched.toArray(new String[matched.size()]);
     }
