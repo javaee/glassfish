@@ -159,12 +159,12 @@ public final class RuntimeRootImpl extends AMXImplBase
     public List<Map<String, String>> getDeploymentConfigurations(final String appName)
     {
         final ApplicationInfo appInfo = appRegistry.get(appName);
-        if (appInfo == null)
-        {
-            throw new IllegalArgumentException(appName);
-        }
 
         final List<Map<String, String>> resultList = new ArrayList<Map<String, String>>();
+        if (appInfo == null)
+        {
+            return resultList;
+        }
         try
         {
             if (appInfo.getEngineRefs().size() > 0)
