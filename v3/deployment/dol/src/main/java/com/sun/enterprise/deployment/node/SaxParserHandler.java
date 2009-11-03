@@ -352,6 +352,9 @@ public class SaxParserHandler extends DefaultHandler {
             if (rootNodeClass==null) {
                 DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                         new Object[] {localName , " not supprted !"});                
+	        if (stopOnXMLErrors) {
+                    throw new IllegalArgumentException(localStrings.getLocalString("invalid.root.element", "{0} Element [{1}] is not a valid root element", new Object[]{errorReportingString, localName}));
+                }
             } else {
                 try {
                     node = (XMLNode) rootNodeClass.newInstance();
