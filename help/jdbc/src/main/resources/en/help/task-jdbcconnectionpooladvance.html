@@ -24,7 +24,7 @@ whenever a connection is created (not reused) in the pool.</b><p>Execution of th
 class names to specify that SQL statements executed by applications will be traced.</b><p>The listener classes must implement the <tt>org.glassfish.api.jdbc.SQLTraceListener</tt> interface. Use of listeners enables easy filtering
 of log messages for the SQL statements and helps administrators analyze the statements.</p></li>
 <li><b>Select the Wrap JDBC Objects Enabled checkbox for applications to get wrapped JDBC
-objects for <tt>Statement</tt>, <tt>PreparedStatement</tt>, <tt>CallableStatement</tt>, <tt>ResultSet</tt>, <tt>DatabaseMetaData</tt>. </b><p>This option is disabled by default.</p></li>
+objects for <tt>Statement</tt>, <tt>PreparedStatement</tt>, <tt>CallableStatement</tt>, <tt>ResultSet</tt>, <tt>DatabaseMetaData</tt>. </b><p>This option is enabled by default.</p></li>
 <li><b>Select the Pooling checkbox to enable connection pooling for the pool.</b><p>This option is enabled by default.</p></li>
 <li><b>In the Validate At Most Once field, type the amount of time,
 in seconds, after which a connection is validated at most once.</b><p>This will help reduce the number of validation requests by a connection. The
