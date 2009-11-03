@@ -333,7 +333,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
         // apply default from default-web.xml to web.xml
         WebBundleDescriptor defaultWebBundleDescriptor = getPlainDefaultWebXmlBundleDescriptor();
         if (defaultWebBundleDescriptor != null) {
-            descriptor.addWebBundleDescriptor(defaultWebBundleDescriptor);
+            descriptor.addDefaultWebBundleDescriptor(defaultWebBundleDescriptor);
         }
     }
 

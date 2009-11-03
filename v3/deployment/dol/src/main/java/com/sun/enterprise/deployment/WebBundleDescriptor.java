@@ -153,6 +153,21 @@ public class WebBundleDescriptor extends BundleDescriptor
      * @param webBundleDescriptor
      */
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
+        getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
+        addCommonWebBundleDescriptor(webBundleDescriptor);
+    }
+
+    public void addDefaultWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
+        if (getWelcomeFilesSet().size() == 0) {
+            getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
+        }
+        addCommonWebBundleDescriptor(webBundleDescriptor);
+    }
+
+    /**
+     * This method combines all except welcome file set for two webBundleDescriptors.
+     */
+    private void addCommonWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         super.addBundleDescriptor(webBundleDescriptor);
 
         for (WebComponentDescriptor webComponentDesc :webBundleDescriptor.getWebComponentDescriptors())
@@ -195,8 +210,6 @@ public class WebBundleDescriptor extends BundleDescriptor
         for (MimeMapping mimeMap : webBundleDescriptor.getMimeMappingsSet()) {
             addMimeMapping(mimeMap);
         }
-
-        getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
 
         // do not call getErrorPageDescriptorsSet.addAll() as there is special overriding rule
         for (ErrorPageDescriptor errPageDesc : webBundleDescriptor.getErrorPageDescriptorsSet()) {
