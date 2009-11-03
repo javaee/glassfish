@@ -182,12 +182,24 @@ public class WebAppHandlers {
         for(AMXProxy oneModule: modules.values()){
             Map oneRow = new HashMap();
             List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
-            oneRow.put("moduleName", oneModule.getName());
-            oneRow.put("name", " --- ");
-            oneRow.put("type", " --- ");
+            String moduleName = oneModule.getName();
+            oneRow.put("moduleName", moduleName);
+            oneRow.put("name", " ----------- ");
+            oneRow.put("type", " ----------- ");
             oneRow.put("hasEndpoint", false);
+            oneRow.put("hasLaunch", false);
+            oneRow.put("sniffers", snifferList.toString());
+            Application application = V3AMX.getInstance().getApplication(appName);
+            if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(application)){
+                String launchLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
+                if (!GuiUtil.isEmpty(launchLink)){
+                    oneRow.put("hasLaunch", true);
+                    String ctxRoot = calContextRoot(V3AMX.getInstance().getRuntime().getContextRoot(appName, moduleName));
+                    oneRow.put("launchLink", launchLink +  ctxRoot);
+                }
+            }
             result.add(oneRow);
-            getSubComponentDetail(appName, oneModule.getName(), snifferList, result);
+            getSubComponentDetail(appName, moduleName, snifferList, result);
         }
         handlerCtx.setOutputValue("result", result);
     }
@@ -225,6 +237,8 @@ public class WebAppHandlers {
             oneRow.put("moduleName", moduleName);
             oneRow.put("name", cName);
             oneRow.put("type", sMap.get(cName));
+            oneRow.put("hasLaunch", false);
+            oneRow.put("sniffers", "");
             if (snifferList.contains("webservices")){
                 oneRow.put("hasEndpoint", (findEndpointInfo(appName, cName).size()>0) );
             }else{

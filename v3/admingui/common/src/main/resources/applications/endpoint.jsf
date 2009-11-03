@@ -55,6 +55,8 @@
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18nc.endpoint.PageTitle}" helpText="$resource{i18nc.endpoint.PageTitleHelp}">
+
+        <!--
         <sun:button id="testButton" style="margin-left: 8pt"  primary="#{true}"
             text="$resource{i18nc.endpoint.testButton}"
             //disabled="#{pageSession.valueMap['disableTester']}"
@@ -62,6 +64,7 @@
             disabled="#{false}"
             onClick="javascript:var win=window.open('#{pageSession.valueMap['testLink']}','_blank');win.focus(); return false;"
          />
+        -->
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="backButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{true}">
@@ -79,6 +82,24 @@
                 <sun:hyperlink id="appName" text="#{pageSession.valueMap['appName']}"
                         url="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}"/>
             </sun:property>
+
+            <sun:property id="tester"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.tester}" >
+                <sun:hyperlink id="tester"  text="#{pageSession.valueMap['tester']}"
+                    onClick="javascript:
+                    var tester = window.open('#{pageSession.valueMap['testLink']}','_blank'); tester.focus(); return false;"
+                />
+
+            </sun:property>
+
+
+            <sun:property id="wsdl"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.wsdl}" >
+                <sun:staticText id="wsdl" rendered="!#{pageSession.valueMap['hasWsdlLink']}" text="#{pageSession.valueMap['wsdl']}"/>
+                <sun:hyperlink id="wsdllink" rendered="#{pageSession.valueMap['hasWsdlLink']}" text="#{pageSession.valueMap['wsdl']}"
+                    onClick="javascript:
+                    var wsdlWin = window.open('#{pageSession.valueMap['wsdlLink']}','_blank'); wsdlWin.focus(); return false;"
+                />
+            </sun:property>
+
             <sun:property id="endpointName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.endpointName}" >
                 <sun:staticText id="endpointName" text="#{pageSession.valueMap['endpointName']}"/>
             </sun:property>
@@ -106,23 +127,11 @@
                 <sun:staticText id="namespace" text="#{pageSession.valueMap['namespace']}"/>
             </sun:property>
 
-            <!--
-            <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.name}" >
-                <sun:staticText id="name" text="#{pageSession.valueMap['name']}"/>
-            </sun:property>
+            // <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.name}" >
+               // <sun:staticText id="name" text="#{pageSession.valueMap['name']}"/>
+            // </sun:property>
             
-            <sun:property id="tester"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.tester}" >
-                <sun:staticText id="tester" text="#{pageSession.valueMap['tester']}"/>
-            </sun:property>
-            -->
-
-            <sun:property id="wsdl"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.wsdl}" >
-                <sun:staticText id="wsdl" rendered="!#{pageSession.valueMap['hasWsdlLink']}" text="#{pageSession.valueMap['wsdl']}"/>
-                <sun:hyperlink id="wsdllink" rendered="#{pageSession.valueMap['hasWsdlLink']}" text="$resource{i18nc.endpoint.viewWsdl}"
-                    onClick="javascript:
-                    var wsdlWin = window.open('#{pageSession.valueMap['wsdlLink']}','_blank'); wsdlWin.focus(); return false;"
-                />
-            </sun:property>
+            
 
             <sun:property id="description"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.endpoint.description}" >
                 <sun:staticText id="description" text="#{pageSession.valueMap['description']}"/>

@@ -52,6 +52,10 @@ println("sectionDetail =  $attribute{sectionDetail}");
             <staticText id="nameCol" value="#{td.value.moduleName}" />
         </sun:tableColumn>
 
+        <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}"  sort="sniffers"  rowHeader="$boolean{true}" id="colsnif">
+            <staticText id="sniffer" value="#{td.value.sniffers}" />
+        </sun:tableColumn>
+
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" sort="name" rowHeader="$boolean{true}" id="col1">
             <staticText id="nameCol" value="#{td.value.name}" />
         </sun:tableColumn>
@@ -61,8 +65,11 @@ println("sectionDetail =  $attribute{sectionDetail}");
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
-            <sun:hyperlink id="link" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
+            <sun:hyperlink id="endpointLink" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
                 url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&subComponentName=#{td.value.name}" />
+            <sun:hyperlink id="launchLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
+                onClick="window.open('#{td.value.launchLink}','_blank','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); "
+            />
         </sun:tableColumn>
 
     </sun:tableRowGroup>
