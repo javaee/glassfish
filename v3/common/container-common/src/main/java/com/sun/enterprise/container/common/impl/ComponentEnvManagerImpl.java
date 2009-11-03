@@ -39,6 +39,7 @@ package com.sun.enterprise.container.common.impl;
 import com.sun.enterprise.container.common.spi.EjbNamingReferenceManager;
 import com.sun.enterprise.container.common.spi.WebServiceReferenceManager;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.container.common.spi.util.CallFlowAgent;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
@@ -72,6 +73,7 @@ import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
 import javax.validation.ValidatorFactory;
+import javax.transaction.TransactionManager;
 
 @Service
 public class ComponentEnvManagerImpl
@@ -99,6 +101,11 @@ public class ComponentEnvManagerImpl
     @Inject
     ComponentNamingUtil componentNamingUtil;
 
+    @Inject
+    transient private CallFlowAgent callFlowAgent;
+
+    @Inject
+    transient private TransactionManager txManager;
 
     @Inject
     private ProcessEnvironment processEnv;
@@ -550,7 +557,7 @@ public class ComponentEnvManagerImpl
 
              String name = descriptorToLogicalJndiName(next);
              FactoryForEntityManagerWrapper value =
-                new FactoryForEntityManagerWrapper(next, habitat);
+                new FactoryForEntityManagerWrapper(next, this);
             jndiBindings.add(new CompEnvBinding(name, value));
          }
 
@@ -808,15 +815,16 @@ public class ComponentEnvManagerImpl
         implements NamingObjectProxy {
 
         private final EntityManagerReferenceDescriptor refDesc;
-        private final EntityManagerWrapper emWrapper;
+        private final ComponentEnvManager compEnvMgr;
 
         FactoryForEntityManagerWrapper(EntityManagerReferenceDescriptor refDesc,
-            Habitat habitat) {
+            ComponentEnvManager compEnvMgr) {
             this.refDesc = refDesc;
-            emWrapper = habitat.getComponent(EntityManagerWrapper.class);
+            this.compEnvMgr = compEnvMgr;
         }
 
         public Object create(Context ctx) {
+            EntityManagerWrapper emWrapper = new EntityManagerWrapper(txManager, invMgr, compEnvMgr, callFlowAgent);
             emWrapper.initializeEMWrapper(refDesc.getUnitName(),
                     refDesc.getPersistenceContextType(),
                     refDesc.getProperties());

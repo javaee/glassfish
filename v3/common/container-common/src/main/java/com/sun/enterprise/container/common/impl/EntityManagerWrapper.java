@@ -69,8 +69,6 @@ import java.util.logging.Logger;
  *
  * @author Kenneth Saks
  */
-@Service
-@Scoped(PerLookup.class)
 public class EntityManagerWrapper implements EntityManager, Serializable {
 
     static Logger _logger=LogDomains.getLogger(EntityManagerWrapper.class, LogDomains.UTIL_LOGGER);
@@ -85,10 +83,8 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
 
     transient private EntityManagerFactory entityManagerFactory;
 
-    @Inject
     transient private TransactionManager txManager;
 
-    @Inject
     transient private InvocationManager invMgr;
     
     // Only used to cache entity manager with EXTENDED persistence context
@@ -97,13 +93,16 @@ public class EntityManagerWrapper implements EntityManager, Serializable {
     // set and cleared after each non-tx, non EXTENDED call to _getDelegate()
     transient private EntityManager nonTxEntityManager;
 
-    @Inject
     transient private ComponentEnvManager compEnvMgr;
 
-    @Inject
     transient private CallFlowAgent callFlowAgent;
 
-    public EntityManagerWrapper() {
+    public EntityManagerWrapper(TransactionManager txManager, InvocationManager invMgr,
+                                ComponentEnvManager compEnvMgr, CallFlowAgent callFlowAgent) {
+        this.txManager = txManager;
+        this.invMgr = invMgr;
+        this.compEnvMgr = compEnvMgr;
+        this.callFlowAgent = callFlowAgent;
     }
 
     public void initializeEMWrapper(String unitName,
