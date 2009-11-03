@@ -36,7 +36,7 @@
 
 .helpMenuBox {
     position: fixed;
-    width: 400px;
+    width: 315px;
     float: left;
     height: 100%;
     overflow: auto;
@@ -44,7 +44,7 @@
 }
 .helpContentBox {
     position: fixed;
-    left: 410px;
+    left: 320px;
     height: 100%;
     overflow: auto;
 }
