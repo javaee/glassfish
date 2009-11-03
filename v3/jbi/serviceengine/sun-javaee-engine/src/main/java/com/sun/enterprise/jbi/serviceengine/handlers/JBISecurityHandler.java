@@ -38,6 +38,7 @@ package com.sun.enterprise.jbi.serviceengine.handlers;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.jbi.serviceengine.comm.MessageExchangeTransport;
 
+import javax.jbi.messaging.MessageExchange;
 import javax.security.auth.Subject;
 import javax.jbi.messaging.NormalizedMessage;
 
@@ -56,6 +57,13 @@ public class JBISecurityHandler implements JBIHandler {
         NormalizedMessage msg = meTransport.getMessage();
         if(msg == null) return;
 
+        MessageExchange me = meTransport.getMessageExchange();
+        if(me.getRole().equals(MessageExchange.Role.PROVIDER) &&
+                msg.getProperty(SECURITY_PROPERTY) != null) {
+            //clear the security context set by us while processing the incoming message
+            SecurityContext.setUnauthenticatedContext();
+        }
+        
         msg.setProperty(SECURITY_PROPERTY, subject);
     }
 

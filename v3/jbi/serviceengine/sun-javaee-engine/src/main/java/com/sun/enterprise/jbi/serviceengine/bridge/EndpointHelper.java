@@ -146,16 +146,17 @@ public class EndpointHelper {
                 String implClass = (ejbType)?webServiceDesc.getTieClassName():
                                             webServiceDesc.getServletImplClass();
                 String contextRoot = null;
+                com.sun.enterprise.web.WebModule webModule = null;
                 if(!ejbType) {
                     contextRoot =
                             webServiceDesc.getWebComponentImpl().
                             getWebBundleDescriptor().getContextRoot();
                     relativeURI = contextRoot + relativeURI;
+                    EndpointInfoCollector epInfoCollector =
+                            ServiceEngineRuntimeHelper.getRuntime().getEndpointInfoCollector();
+                    webModule = epInfoCollector.getWebModule(webServiceDesc);
                 }
-                EndpointInfoCollector epInfoCollector =
-                        ServiceEngineRuntimeHelper.getRuntime().getEndpointInfoCollector();
-                com.sun.enterprise.web.WebModule webModule =
-                        epInfoCollector.getWebModule(webServiceDesc);
+
                 ServiceEngineEndpoint seEndpoint =
                         new ServiceEngineEndpoint(webServiceDesc,
                             webModule,
