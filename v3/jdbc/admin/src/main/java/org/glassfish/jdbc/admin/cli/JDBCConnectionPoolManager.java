@@ -107,7 +107,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
     private String lazyConnectionEnlistment = Boolean.FALSE.toString();
     private String lazyConnectionAssociation = Boolean.FALSE.toString();
     private String associateWithThread = Boolean.FALSE.toString();
-    private String associatewiththreadconnectionscount = "1";
+    //private String associatewiththreadconnectionscount = "1";
     private String matchConnections = Boolean.FALSE.toString();
     private String maxConnectionUsageCount = "0";
     private String ping = Boolean.FALSE.toString();
@@ -303,7 +303,7 @@ public class JDBCConnectionPoolManager implements ResourceManager{
         validationclassname = (String) attrList.get(VALIDATION_CLASSNAME);
         initsql = (String) attrList.get(INIT_SQL);
         sqltracelisteners = (String) attrList.get(SQL_TRACE_LISTENERS);
-        associatewiththreadconnectionscount = (String) attrList.get(ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT);
+        //associatewiththreadconnectionscount = (String) attrList.get(ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT);
         pooling = (String) attrList.get(POOLING);
         ping = (String) attrList.get(PING);
         driverclassname = (String) attrList.get(DRIVER_CLASSNAME);

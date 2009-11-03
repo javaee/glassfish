@@ -145,8 +145,8 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="associatewiththread", optional=true, defaultValue="false")
     Boolean associatewiththread;
 
-    @Param(optional=true, defaultValue="1")
-    String associatewiththreadconnectionscount;
+    //@Param(optional=true, defaultValue="1")
+    //String associatewiththreadconnectionscount;
 
     @Param(optional=true)
     String driverclassname;
@@ -232,7 +232,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.LAZY_CONNECTION_ASSOCIATION, lazyconnectionassociation.toString());
         attrList.put(ResourceConstants.LAZY_CONNECTION_ENLISTMENT, lazyconnectionenlistment.toString());
         attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD, associatewiththread.toString());
-        attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT, associatewiththreadconnectionscount);
+        //attrList.put(ResourceConstants.ASSOCIATE_WITH_THREAD_CONNECTIONS_COUNT, associatewiththreadconnectionscount);
         attrList.put(ResourceConstants.MATCH_CONNECTIONS, matchconnections.toString());
         attrList.put(ResourceConstants.MAX_CONNECTION_USAGE_COUNT, maxconnectionusagecount);
         attrList.put(ResourceConstants.PING, ping.toString());
