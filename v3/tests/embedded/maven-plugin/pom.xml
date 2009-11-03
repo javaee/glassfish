@@ -53,10 +53,13 @@
     <modules>
         <module>applicationDispatcher</module>
         <module>dirListing</module>
+        <module>filterURIMapping</module>
         <module>getRequestURI</module>
         <module>index</module>
-        <module>standalonewar</module>
-        <!--module>scattered</module-->
+        <module>jmxUndeployEvent</module>
         <module>queryString</module>
+        <!--module>scattered</module-->
+        <module>sessionDestroyed</module>
+        <module>standalonewar</module>
     </modules>
 </project>
