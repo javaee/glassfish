@@ -136,8 +136,8 @@
         <webservices.version>2.0-b25</webservices.version>
         <woodstox.version>3.2.1-RC1</woodstox.version>
         <jaxb.version>2.2-promoted-b61</jaxb.version>
-        <javax-persistence-api.version>2.0.0-M11</javax-persistence-api.version>
-        <eclipselink.version>2.0.0-M11</eclipselink.version>
+        <javax-persistence-api.version>2.0.0-M12</javax-persistence-api.version>
+        <eclipselink.version>2.0.0-M12</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
