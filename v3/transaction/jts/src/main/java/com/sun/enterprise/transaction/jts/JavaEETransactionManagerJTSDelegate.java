@@ -110,6 +110,7 @@ public class JavaEETransactionManagerJTSDelegate
     private boolean lao = true;
     private final static ReadWriteLock lock = new ReadWriteLock();
     private static JavaEETransactionManagerJTSDelegate instance = null;
+    private volatile TransactionManager transactionManagerImpl = null;
 
     public JavaEETransactionManagerJTSDelegate() {
         globalTransactions = new Hashtable();
@@ -336,7 +337,10 @@ public class JavaEETransactionManagerJTSDelegate
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: resume");
 
-        tmLocal.get().resume(tx);
+        if (transactionManagerImpl != null) {
+            setTransactionManager();
+            tmLocal.get().resume(tx);
+        }
     }
 
     public void removeTransaction(Transaction tx) {
@@ -354,7 +358,7 @@ public class JavaEETransactionManagerJTSDelegate
 
     public TransactionInternal startJTSTx(JavaEETransaction tran, boolean isAssociatedTimeout) 
             throws RollbackException, IllegalStateException, SystemException {
-        initTransactionManager();
+        setTransactionManager();
 
         JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
         try {
@@ -379,23 +383,23 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public void recover(XAResource[] resourceList) {
-        initTransactionManager();
+        setTransactionManager();
         TransactionManagerImpl.recover(
                 Collections.enumeration(Arrays.asList(resourceList)));
     }
 
     public void release(Xid xid) throws WorkException {
-        initTransactionManager();
+        setTransactionManager();
         TransactionManagerImpl.release(xid);
     }
 
     public void recreate(Xid xid, long timeout) throws WorkException {
-        initTransactionManager();
+        setTransactionManager();
         TransactionManagerImpl.recreate(xid, timeout);
     }
 
     public XATerminator getXATerminator() {
-        initTransactionManager();
+        setTransactionManager();
         return TransactionManagerImpl.getXATerminator();
     }
 
@@ -413,12 +417,15 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
-    private void initTransactionManager() {
+    private void setTransactionManager() {
         if (_logger.isLoggable(Level.FINE))
-            _logger.log(Level.FINE,"TM: initTransactionManager: tm=" + tmLocal.get());
+            _logger.log(Level.FINE,"TM: setTransactionManager: tm=" + tmLocal.get());
+
+        if (transactionManagerImpl == null) 
+           transactionManagerImpl = TransactionManagerImpl.getTransactionManagerImpl();
 
         if (tmLocal.get() == null)
-            tmLocal.set(TransactionManagerImpl.getTransactionManagerImpl());
+            tmLocal.set(transactionManagerImpl);
     }
 
     public XAResourceWrapper getXAResourceWrapper(String clName) {
@@ -576,7 +583,7 @@ public class JavaEETransactionManagerJTSDelegate
     }
 
     public void initXA() {
-        initTransactionManager();
+        setTransactionManager();
     }
 
     private static class ReadWriteLock implements Lock {
