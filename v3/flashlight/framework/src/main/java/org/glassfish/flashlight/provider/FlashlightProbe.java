@@ -115,10 +115,13 @@ public class FlashlightProbe
             if (logger.isLoggable(Level.FINEST))
                 printd("Adding an Invoker that does not exist: " + invoker.getId() +   " $$$$$$$$$$$$$");
         }
-        if (logger.isLoggable(Level.FINEST))
+        if (logger.isLoggable(Level.FINEST)) {
             printd("Total invokers = " + invokers.size());
+        }
         listenerEnabled.set(true);
         firstTransform = false;
+
+        initInvokerList();
         return isFirst;
     }
 
@@ -133,24 +136,25 @@ public class FlashlightProbe
             if (logger.isLoggable(Level.FINEST))
                 printd("Failed to remove an invoker that does not exist: " + invoker.getId() +  "  %%%%%%%%%");
         }
-        if (logger.isLoggable(Level.FINEST))
+        if (logger.isLoggable(Level.FINEST)) {
             printd("Total invokers = " + invokers.size());
-
-        listenerEnabled.set(!invokers.isEmpty());
+        }
         
+        listenerEnabled.set(!invokers.isEmpty());
+
+        initInvokerList();
         return listenerEnabled.get();
     }
 
     public void fireProbe(Object[] params) {
-        if(!listenerEnabled.get())
+        if(!listenerEnabled.get()) {
             return;
+        }
 
-        Set<Map.Entry<Integer, ProbeClientInvoker>> entries = invokers.entrySet();
-        
-        for (Map.Entry<Integer, ProbeClientInvoker> entry : entries) {
-            ProbeClientInvoker invoker = entry.getValue();
-            if(invoker != null)
+        for (ProbeClientInvoker invoker : invokerList) {
+            if(invoker != null) {
                 invoker.invoke(params);
+            }
         }
     }
 
@@ -242,6 +246,18 @@ public class FlashlightProbe
         return hidden;
     }
 
+    private void initInvokerList() {
+        Set<Map.Entry<Integer, ProbeClientInvoker>> entries = invokers.entrySet();
+
+        List<ProbeClientInvoker> invList = new ArrayList(2);
+        for (Map.Entry<Integer, ProbeClientInvoker> entry : entries) {
+            ProbeClientInvoker invoker = entry.getValue();
+            invList.add(invoker);
+        }
+
+        invokerList = invList;
+    }
+
     private void printd(String pstring) {
         logger.log(Level.FINEST, pstring);
     }
@@ -261,7 +277,7 @@ public class FlashlightProbe
     private String probeProviderName;
     private String[] probeParamNames;
     private Class[] paramTypes;
-    //private List<ProbeClientInvoker> invokerList = new ArrayList(2);
+    private volatile List<ProbeClientInvoker> invokerList = new ArrayList(2);
     private String providerJavaMethodName;
     private AtomicBoolean listenerEnabled = new AtomicBoolean(false);
     private String probeDesc;
