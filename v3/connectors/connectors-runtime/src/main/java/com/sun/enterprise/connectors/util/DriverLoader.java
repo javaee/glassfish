@@ -235,14 +235,21 @@ public class DriverLoader implements ConnectorConstants {
     private boolean isResType(Class cls, String resType) {
         boolean isResType = false;
         if (cls != null) {
-            Class[] interfaces = cls.getInterfaces();
-            if (interfaces.length != 0) {
-                for (int n = 0; n < interfaces.length; n++) {
-                    String i = interfaces[n].getName();
-                    if (resType.equals(i)) {
-                        isResType = true;
-                        break;
-                    }
+            if("javax.sql.DataSource".equals(resType)) {
+                if(javax.sql.DataSource.class.isAssignableFrom(cls)) {
+                    isResType = true;
+                }
+            } else if("javax.sql.ConnectionPoolDataSource".equals(resType)) {
+                if(javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(cls)) {
+                    isResType = true;
+                }
+            } else if("javax.sql.XADataSource".equals(resType)) {
+                if(javax.sql.XADataSource.class.isAssignableFrom(cls)) {
+                    isResType = true;
+                }
+            } else if("java.sql.Driver".equals(resType)) {
+                if(java.sql.Driver.class.isAssignableFrom(cls)) {
+                    isResType = true;
                 }
             }
         }
