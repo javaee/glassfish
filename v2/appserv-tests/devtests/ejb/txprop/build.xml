@@ -13,10 +13,7 @@
 
     <target name="all">
         <antcall target="cmttimeout"/>
-
-	<!-- needs getTimerService() fix 
         <antcall target="simple"/>
-	-->
     </target>
 
     <target name="cmttimeout">
