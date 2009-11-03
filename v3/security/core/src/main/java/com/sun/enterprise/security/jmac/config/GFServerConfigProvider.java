@@ -204,7 +204,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
     /**
      * Instantiate+initialize module class
      */
-    protected static ModuleInfo createModuleInfo(Entry entry,
+    static ModuleInfo createModuleInfo(Entry entry,
             CallbackHandler handler, String type, Map properties)
             throws AuthException {
         try {
@@ -309,7 +309,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 	} 
     }
 
-    protected Entry getEntry(String intercept,
+    Entry getEntry(String intercept,
             String id, MessagePolicy requestPolicy,
             MessagePolicy responsePolicy, String type) {
 
@@ -1058,7 +1058,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
         private Map map;
         boolean managesSession = false;
 
-        protected GFServerAuthContext(GFServerAuthConfig config, 
+        GFServerAuthContext(GFServerAuthConfig config, 
                                       ServerAuthModule module, Map map) {
             this.config = config;
             this.module = module;
@@ -1066,7 +1066,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
             this.map = map;
         }
   
-        protected GFServerAuthContext(GFServerAuthConfig config, 
+        GFServerAuthContext(GFServerAuthConfig config, 
                 com.sun.enterprise.security.jauth.ServerAuthModule module,
                 Map map) {
             this.config = config;
@@ -1205,7 +1205,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
         private com.sun.enterprise.security.jauth.ClientAuthModule oldModule;
         private Map map;
 
-        protected GFClientAuthContext(GFClientAuthConfig config, 
+        GFClientAuthContext(GFClientAuthConfig config, 
                                       ClientAuthModule module, Map map) {
             this.config = config;
             this.module = module;
@@ -1213,7 +1213,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
             this.map = map;
         }
 
-        protected GFClientAuthContext(GFClientAuthConfig config, 
+        GFClientAuthContext(GFClientAuthConfig config, 
 	com.sun.enterprise.security.jauth.ClientAuthModule module, Map map) {
             this.config = config;
             this.module = null;

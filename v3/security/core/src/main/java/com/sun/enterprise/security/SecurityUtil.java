@@ -400,7 +400,7 @@ public class SecurityUtil{
      public static String getContextID(WebBundleDescriptor wbd) {
         String cid = null;
         if (wbd != null ) {
-            String moduleId = wbd.getUniqueFriendlyId();
+            //String moduleId = wbd.getUniqueFriendlyId();
             cid = wbd.getApplication().getRegistrationName() +
                 '/' + wbd.getUniqueFriendlyId();
         }

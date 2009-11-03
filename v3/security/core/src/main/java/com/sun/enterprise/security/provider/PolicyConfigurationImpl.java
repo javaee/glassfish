@@ -47,14 +47,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.lang.UnsupportedOperationException;
 import java.lang.reflect.Constructor;
 
 import java.security.*;
 import javax.security.auth.Subject;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 
 import java.util.logging.*;
 import sun.security.provider.PolicyParser;
@@ -124,7 +122,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 
     // policy file mod times 
     private long[] lastModTimes = new long[2];
-    private  Object refreshLock = new Object();
+    private final  Object refreshLock = new Object();
     private  String repository = null;
     private  Permission setPolicyPermission = null;
     private  PolicyConfigurationFactoryImpl fact=null;
@@ -1017,7 +1015,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 
 	    if (otherLinkSet == null) {
                 String defMsg="Linked policy configuration ("+otherId+") does not exist";
-                String msg = localStrings.getLocalString("pc.invalid_link_target",defMsg, new Object []{otherId});
+                //String msg = localStrings.getLocalString("pc.invalid_link_target",defMsg, new Object []{otherId});
 		logger.log(Level.SEVERE,"pc.invalid_link_target",otherId);
 		throw new RuntimeException(defMsg);
 	    } else {

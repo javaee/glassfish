@@ -39,8 +39,8 @@ package com.sun.enterprise.security.auth.login;
 import java.util.logging.Level;
 
 import com.sun.enterprise.security.auth.login.common.LoginException;
-import com.sun.enterprise.security.auth.login.PasswordLoginModule;
 import com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm;
+import java.util.Arrays;
 
 
 /**
@@ -78,7 +78,7 @@ public class JDBCLoginModule extends PasswordLoginModule {
 
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("JDBC login succeeded for: " + _username
-                + " groups:" + grpList);
+                + " groups:" + Arrays.toString(grpList));
         }
 
         //make a copy of groupList to pass to LoginModule. This copy is the one

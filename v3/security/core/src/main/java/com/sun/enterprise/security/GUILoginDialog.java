@@ -45,7 +45,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.logging.*;
 import com.sun.logging.*;
-import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -126,8 +125,8 @@ class PassphraseDialog extends JDialog
 
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(PassphraseDialog.class);
-    String	username = new String();
-    String	passphrase = new String();
+    String username = "";
+    String passphrase = "";
 
     private JPasswordField keystorePassword;
     private JLabel lbl;
@@ -412,8 +411,8 @@ class CertificateDialog extends JDialog
     private JButton	cancelButton;
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(CertificateDialog.class);
-    String	username = new String();
-    String	passphrase = new String();
+    String username = "";
+    String passphrase = "";
 
     /**
      * Create a dialog box with a frame and title.
@@ -487,7 +486,7 @@ class CertificateDialog extends JDialog
 		// System.out.println("OK Action");
 		//_logger.log(Level.FINE,"OK Action");
 		username = userField.getText();
-		int index = certList.getSelectedIndex();
+		//int index = certList.getSelectedIndex();
 
 		if((username.trim().length() > 0) &&
 		   (passphrase.trim().length() > 0)) {

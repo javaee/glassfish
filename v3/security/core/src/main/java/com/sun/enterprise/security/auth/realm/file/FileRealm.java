@@ -49,8 +49,6 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import com.sun.enterprise.security.common.Util;
-import java.util.logging.Logger;
-import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.SharedSecureRandom;
 import org.jvnet.hk2.annotations.Service;
 
@@ -101,8 +99,8 @@ final public class FileRealm extends IASRealm
     private static final int SALT_SIZE=8;
     
     // Contains cache of keyfile data
-    private Map userTable;  // user=>FileRealmUser
-    private Hashtable groupSizeMap; // maps of groups with value cardinality of group
+    private Map<String,FileRealmUser> userTable;  // user=>FileRealmUser
+    private Hashtable<String,Integer> groupSizeMap; // maps of groups with value cardinality of group
 
     private boolean constructed = false;
     
@@ -351,7 +349,7 @@ final public class FileRealm extends IASRealm
      */
     public String[] authenticate(String user, String password)
     {
-        FileRealmUser ud = (FileRealmUser)userTable.get(user);
+        FileRealmUser ud = userTable.get(user);
         if (ud == null) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("No such user: [" + user + "]");
@@ -652,7 +650,7 @@ final public class FileRealm extends IASRealm
         }
 
         
-        FileRealmUser oldUser = (FileRealmUser)userTable.get(name);
+        FileRealmUser oldUser = userTable.get(name);
         assert (oldUser != null);
         
                                 // create user using new name
@@ -714,13 +712,8 @@ final public class FileRealm extends IASRealm
             try {
                 out = new FileOutputStream(filename);
 
-                Iterator names = userTable.keySet().iterator();
-                while (names.hasNext()) {
-                
-                    String name = (String)names.next();
-                    FileRealmUser ud = (FileRealmUser)userTable.get(name);
-
-                    String entry = encodeUser(name, ud);
+                for (Map.Entry<String, FileRealmUser> uval : userTable.entrySet()) {
+                    String entry = encodeUser(uval.getKey(), uval.getValue());
                     out.write(entry.getBytes());
                 }
             } catch (IOException e) {
@@ -754,10 +747,9 @@ final public class FileRealm extends IASRealm
     private void addGroupNames(String[] groupList) {
         if (groupList != null) {
             for (int i=0; i < groupList.length; i++) {
-                Integer groupSize = (Integer)groupSizeMap.get(groupList[i]);
-                groupSizeMap.put(groupList[i],
-                    (groupSize != null) ?
-                    new Integer(groupSize.intValue() + 1): new Integer(1));
+                Integer groupSize = groupSizeMap.get(groupList[i]);
+                groupSizeMap.put(groupList[i],Integer.valueOf((groupSize != null) ?
+                    (groupSize.intValue() + 1): 1));
             }
         }
     }
@@ -769,11 +761,11 @@ final public class FileRealm extends IASRealm
     private void reduceGroups(String[] groupList) {
         if (groupList != null) {
             for (int i=0; i < groupList.length; i++) {
-                Integer groupSize = (Integer)groupSizeMap.get(groupList[i]);
+                Integer groupSize = groupSizeMap.get(groupList[i]);
                 if (groupSize != null) {
                     int gpSize = groupSize.intValue() - 1;
                     if (gpSize > 0) {
-                        groupSizeMap.put(groupList[i], new Integer(gpSize));
+                        groupSizeMap.put(groupList[i], Integer.valueOf(gpSize));
                     } else {
                         groupSizeMap.remove(groupList[i]);
                     }
@@ -816,8 +808,8 @@ final public class FileRealm extends IASRealm
             }
         }
 
-        userTable = new Hashtable();
-        groupSizeMap = new Hashtable();
+        userTable = new Hashtable<String, FileRealmUser>();
+        groupSizeMap = new Hashtable<String, Integer>();
         BufferedReader input = null;
         
         try {
@@ -933,8 +925,8 @@ final public class FileRealm extends IASRealm
                 String g = gst.nextToken();
                 membership.add(g);
                 Integer groupSize = (Integer)newGroupSizeMap.get(g);
-                newGroupSizeMap.put(g, (groupSize != null) ?
-                    new Integer(groupSize.intValue() + 1) : new Integer(1));
+                newGroupSizeMap.put(g, Integer.valueOf((groupSize != null) ?
+                    (groupSize.intValue() + 1) : 1));
             }
         }
         ud.setGroups(membership);

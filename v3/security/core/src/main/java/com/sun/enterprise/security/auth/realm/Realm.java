@@ -176,10 +176,7 @@ public abstract class Realm implements Comparable {
         throws BadRealmException
     {
         //Register the realm provider
-        if(realmStatsProvier == null) {
-            realmStatsProvier = new RealmStatsProvider();
-            StatsProviderManager.register("security", PluginPoint.SERVER, "security/realm",realmStatsProvier);
-        }
+        registerRealmStatsProvier();
         
         Realm realmClass = _getInstance(name);
         if(realmClass == null) {
@@ -187,7 +184,19 @@ public abstract class Realm implements Comparable {
         }
         return realmClass;
     }
-    
+
+    private static void registerRealmStatsProvier() {
+        if (realmStatsProvier == null) {
+            getRealmStatsProvier();
+            StatsProviderManager.register("security", PluginPoint.SERVER, "security/realm", realmStatsProvier);
+        }
+    }
+
+    public static synchronized void getRealmStatsProvier(){
+        if(realmStatsProvier == null){
+            realmStatsProvier = new RealmStatsProvider();
+        }
+    }
 
     /**
      * Instantiate a Realm with the given name, loading properties from

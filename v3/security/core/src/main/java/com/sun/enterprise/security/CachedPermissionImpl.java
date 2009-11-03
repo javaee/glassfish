@@ -46,7 +46,6 @@ public class CachedPermissionImpl extends Object implements CachedPermission {
 
     PermissionCache permissionCache;
     Permission permission;
-    boolean granted;
     Epoch epoch;
 
     public CachedPermissionImpl(PermissionCache c, Permission p) {
@@ -74,7 +73,7 @@ public class CachedPermissionImpl extends Object implements CachedPermission {
 
     // used to hold last result obtained from cache and cache epoch.
     // epoch is used by PermissionCache to determine when result is out of date.
-    class Epoch {
+    static class Epoch {
 
 	int epoch;
 	boolean granted;

@@ -858,7 +858,7 @@ public class PolicyParser {
      * version 1.19, 05/21/98
      */
 
-    public static class GrantEntry {
+    public static class GrantEntry implements Cloneable {
 
 	public String signedBy;
 	public String codeBase;
@@ -1208,7 +1208,7 @@ public class PolicyParser {
 	    super("line " + line + ": " + msg);
 	    MessageFormat form = new MessageFormat
 		(ResourcesMgr.getString("line number: msg"));
-	    Object[] source = {new Integer(line), msg};
+	    Object[] source = {Integer.valueOf(line), msg};
 	    i18nMessage = form.format(source);
 	}
 
@@ -1217,7 +1217,7 @@ public class PolicyParser {
 		"], found [" + actual + "]");
 	    MessageFormat form = new MessageFormat(ResourcesMgr.getString
 		("line number: expected [expect], found [actual]"));
-	    Object[] source = {new Integer(line), expect, actual};
+	    Object[] source = {Integer.valueOf(line), expect, actual};
 	    i18nMessage = form.format(source);
 	}
 

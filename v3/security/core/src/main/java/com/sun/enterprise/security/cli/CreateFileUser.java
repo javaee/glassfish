@@ -51,13 +51,11 @@ import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
-import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.common.Util;
 
@@ -192,6 +190,7 @@ public class CreateFileUser implements AdminCommand {
                 "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
@@ -200,6 +199,7 @@ public class CreateFileUser implements AdminCommand {
                 "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         }
         
         // now adding user

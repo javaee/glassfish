@@ -112,7 +112,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
     private static Logger _logger =
             LogDomains.getLogger(RoleMapper.class, LogDomains.SECURITY_LOGGER);
 
-    private SecurityService secService = null;
+    private transient SecurityService secService = null;
     
     RoleMapper(String appName) {
         this.appName = appName;
@@ -674,7 +674,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
 
     class DefaultRoleToSubjectMapping extends HashMap {
 
-        private HashMap roleMap = new HashMap();
+        private final HashMap roleMap = new HashMap();
 
         DefaultRoleToSubjectMapping() {
             super();
@@ -684,7 +684,7 @@ public class RoleMapper implements Serializable, SecurityRoleMapper {
             try {
                 Class clazz = Class.forName(defaultP2RMappingClassName);
                 Class[] argClasses = new Class[]{String.class};
-                Object[] arg = new Object[]{new String(roleName)};
+                Object[] arg = new Object[]{roleName};
                 Constructor c = clazz.getConstructor(argClasses);
                 Principal principal = (Principal) c.newInstance(arg);
                 return principal;

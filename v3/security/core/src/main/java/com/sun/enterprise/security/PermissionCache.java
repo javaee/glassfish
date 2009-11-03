@@ -265,7 +265,7 @@ public class PermissionCache extends Object {
 		setPolicyContextID(this.pcID);
 	    }
 		
-	    pc = this.policy.getPermissions(this.codesource);
+	    pc = policy.getPermissions(this.codesource);
 	} catch(Exception ex) {
 	    _logger.log(Level.SEVERE,"JACC: Unexpected security exception on access decision"
 			, ex);
@@ -306,8 +306,8 @@ public class PermissionCache extends Object {
 		}
 		if (classMatch) {
 		    if (this.name != null) {
-			String name = i.getName();
-			if (name != null && this.name.equals(name)) {
+			String iName = i.getName();
+			if (iName != null && this.name.equals(iName)) {
 			    nextCache.add(i);
 			}
 		    } else {
@@ -333,7 +333,7 @@ public class PermissionCache extends Object {
 	}
     }
     
-    public boolean checkPermission(Permission p, Epoch e) {
+    boolean checkPermission(Permission p, Epoch e) {
  	return checkCache(p,e);
     }
   

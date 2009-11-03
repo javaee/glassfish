@@ -37,16 +37,13 @@
 package com.sun.enterprise.security.provider;
 
 import java.io.*;
- import java.lang.RuntimePermission;
  import java.lang.reflect.*;
- import java.lang.ref.*;
  import java.net.URL;
  import java.net.URI;
  import java.util.*;
  import java.util.Enumeration;
  import java.util.List;
  import java.util.StringTokenizer;
- import java.util.PropertyPermission;
  import java.util.ArrayList;
  import java.util.ListIterator;
  import java.util.WeakHashMap;
@@ -74,7 +71,6 @@ import java.io.*;
  import javax.sound.sampled.AudioPermission;
  import javax.net.ssl.SSLPermission;
  */
- import com.sun.enterprise.security.provider.PolicyUtil;
  import sun.security.provider.SystemIdentity;
  import sun.security.provider.SystemSigner;
  import sun.security.util.PropertyExpander;

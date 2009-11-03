@@ -37,7 +37,6 @@
 package com.sun.enterprise.security.web.integration;
 
 import com.sun.enterprise.security.web.*;
-import com.sun.enterprise.security.*;
 import java.util.*;
 import javax.security.jacc.PolicyConfiguration;
 import javax.security.jacc.WebResourcePermission;
@@ -51,7 +50,6 @@ import java.security.Permissions;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.web.*;
-import com.sun.enterprise.security.acl.*;
 /**
  * This class is used for generating Web permissions based on the 
  * deployment descriptor.
@@ -127,20 +125,20 @@ public class WebPermissionUtil {
 
       Set<Role> roleSet = wbd.getRoles();
 
-      HashMap qpMap = new HashMap();
+      HashMap<String, MapValue> qpMap = new HashMap();
 
       // bootstrap the map with the default pattern;
       qpMap.put("/", new MapValue("/"));
 
       //Enumerate over security constraints
-      Enumeration esc = wbd.getSecurityConstraints(); 
+      Enumeration<SecurityConstraint> esc = wbd.getSecurityConstraints();
       while (esc.hasMoreElements()) {
 	  
 	  if (logger.isLoggable(Level.FINE)){
 	      logger.log(Level.FINE,"JACC: constraint translation: begin parsing security constraint");
 	  }
 
-	  SecurityConstraint sc = (SecurityConstraint) esc.nextElement();
+	  SecurityConstraint sc = esc.nextElement();
 	  AuthorizationConstraint ac = sc.getAuthorizationConstraint();
 	  UserDataConstraint udc = sc.getUserDataConstraint();
 
@@ -163,17 +161,16 @@ public class WebPermissionUtil {
 		  }
 
 		  // determine if pattern is already in map
-		  MapValue mValue = (MapValue) qpMap.get(url);
+		  MapValue mValue = qpMap.get(url);
 
 		  // apply new patterns to map
 		  if (mValue == null) {
 		      mValue = new MapValue(url);
 
 		      //Iterate over patterns in map
-		      Iterator it = qpMap.keySet().iterator(); 
-		      while (it.hasNext()) {
+		      for(Map.Entry<String, MapValue> qpVal:qpMap.entrySet()) {
 
-			  String otherUrl = (String) it.next();
+			  String otherUrl = qpVal.getKey();
 
 			  int otherUrlType = patternType(otherUrl);
 			  switch(patternType(url)) {
@@ -202,13 +199,11 @@ public class WebPermissionUtil {
 			  
 				  else if (otherUrlType == PT_PREFIX &&
 					   implies(otherUrl,url))
-				      ((MapValue) qpMap.get(otherUrl)).
-					  addQualifier(url);
+				      qpVal.getValue().addQualifier(url);
 				  
 				  else if (otherUrlType == PT_EXTENSION ||
 				       otherUrlType == PT_DEFAULT)
-				      ((MapValue) qpMap.get(otherUrl)).
-					  addQualifier(url);
+				      qpVal.getValue().addQualifier(url);
 				  break;
 
 			      // if the new pattern is an extension pattern,
@@ -226,8 +221,7 @@ public class WebPermissionUtil {
 				      mValue.addQualifier(otherUrl);
 
 				  else if (otherUrlType == PT_DEFAULT)
-				      ((MapValue) qpMap.get(otherUrl)).
-					  addQualifier(url); 
+				      qpVal.getValue().addQualifier(url);
 				  break;
 
 			      // if the new pattern is the default pattern
@@ -247,11 +241,9 @@ public class WebPermissionUtil {
 				  if ((otherUrlType == PT_PREFIX || 
 				       otherUrlType == PT_EXTENSION) &&
 				      implies(otherUrl,url))
-				      ((MapValue) qpMap.get(otherUrl)).
-					  addQualifier(url); 
+				      qpVal.getValue().addQualifier(url);
 				  else if (otherUrlType == PT_DEFAULT)
-				      ((MapValue) qpMap.get(otherUrl)).
-					  addQualifier(url);
+				      qpVal.getValue().addQualifier(url);
 				  break;
 			  }
 		      }
@@ -338,7 +330,7 @@ public class WebPermissionUtil {
 		
     static void handleRoles(HashMap<String,Permissions> map, MapValue m, 
 			    String name) {
-	HashMap rMap = m.getRoleMap();
+	HashMap<String,BitSet> rMap = m.getRoleMap();
 	List<String> roleList = null;
 	// handle the roles for the omitted methods
 	if (!m.otherConstraint.isExcluded() && m.otherConstraint.isAuthConstrained()) {
@@ -346,7 +338,7 @@ public class WebPermissionUtil {
 	    for (String roleName : roleList) {
          	BitSet methods = m.getMethodSet();
 		//reduce ommissions for explicit methods granted to role  
-		BitSet roleMethods = (BitSet) rMap.get(roleName);
+		BitSet roleMethods = rMap.get(roleName);
 		if (roleMethods != null) {
 		    methods.andNot(roleMethods);
 		}
@@ -360,11 +352,10 @@ public class WebPermissionUtil {
 	//handle explicit methods, skip roles that were handled above 
 	BitSet methods = m.getMethodSet();
 	if (!methods.isEmpty()) {
-	    Iterator rit = rMap.keySet().iterator();
-	    while (rit.hasNext()) {
-		String roleName = (String) rit.next();
+	    for (Map.Entry<String,BitSet> rval:rMap.entrySet()) {
+		String roleName = rval.getKey();
 		if (roleList == null || !roleList.contains(roleName)) {
-		    BitSet roleMethods = (BitSet) rMap.get(roleName);
+		    BitSet roleMethods = rval.getValue();
 		    if (!roleMethods.isEmpty()) {
 			String actions = MethodValue.getActions(roleMethods);
 		    	addToRoleMap(map,roleName,new WebResourcePermission(name,actions));
@@ -525,10 +516,9 @@ public class WebPermissionUtil {
 
 	pc.addToUncheckedPolicy(unchecked);
 
-	Iterator<String> rit = roleMap.keySet().iterator();
-	while (rit.hasNext()) {
-	    String role = rit.next();
-	    Permissions pCollection = roleMap.get(role);
+	for (Map.Entry<String,Permissions> rVal : roleMap.entrySet()) {
+	    String role = rVal.getKey();
+	    Permissions pCollection = rVal.getValue();
 	    pc.addToRole(role,pCollection);
 
 	    if (logger.isLoggable(Level.FINE)){
@@ -650,22 +640,22 @@ class ConstraintValue {
     };
 
     static int ConnectTypeNone = 1;
-    static HashMap connectHash = new HashMap();
+    static HashMap<String, Integer> connectHash = new HashMap<String, Integer>();
     static 
     {
 	for (int i=0; i<connectKeys.length; i++)
-	    connectHash.put(connectKeys[i], new Integer(1<<i));
+	    connectHash.put(connectKeys[i], Integer.valueOf(1<<i));
     };
 
     boolean excluded;
     boolean ignoreRoleList;
-    List<String> roleList;
+    final List<String> roleList = new ArrayList<String>();
     int connectSet;
 
     ConstraintValue() {
 	excluded = false;
 	ignoreRoleList = false;
-	roleList = new ArrayList<String>();
+	//roleList = new ArrayList<String>();
 	connectSet = 0;
     }
 	
@@ -692,7 +682,7 @@ class ConstraintValue {
     void addConnectType(String guarantee) {
 	int b = ConnectTypeNone;
 	if (guarantee != null) {
-	    Integer bit = (Integer) connectHash.get(guarantee);
+	    Integer bit = connectHash.get(guarantee);
 	    if (bit == null) 
 		throw new IllegalArgumentException
 		    ("constraint translation error-illegal trx guarantee");
@@ -771,7 +761,7 @@ class ConstraintValue {
     void setValue(ConstraintValue constraint) {
 	excluded = constraint.excluded;
 	ignoreRoleList = constraint.ignoreRoleList;
-	roleList = new ArrayList<String>();
+	roleList.clear();
 	Iterator rit = constraint.roleList.iterator();
 	while(rit.hasNext()) {
 	    String role = (String) rit.next();
@@ -781,15 +771,15 @@ class ConstraintValue {
     }
 
     public String toString() {
-	String roles =" roles: ";
+	StringBuilder roles =new StringBuilder(" roles: ");
 	Iterator rit = roleList.iterator();
 	while(rit.hasNext()) {
-	    roles += (" " + (String) rit.next());
+	    roles.append(" ").append((String) rit.next());
 	}
-	String transports = "transports: ";
+	StringBuilder transports = new StringBuilder("transports: ");
 	for (int i=0; i<connectKeys.length; i++) {
 	    if (isConnectAllowed(1<<i)) {
-		transports += (" " + connectKeys[i]);
+		transports.append(" ").append(connectKeys[i]);
 	    }
 	}
 	return " ConstraintValue ( " + 
@@ -800,7 +790,7 @@ class ConstraintValue {
 
 class MethodValue extends ConstraintValue {
 
-    private static ArrayList<String> methodNames = new ArrayList();
+    private static final ArrayList<String> methodNames = new ArrayList();
 
     int index;
 
@@ -897,7 +887,7 @@ class MapValue {
 
     StringBuffer urlPatternSpec;
 
-    HashMap<String,MethodValue> methodValues = 
+    final HashMap<String,MethodValue> methodValues =
         new HashMap<String,MethodValue>();
 
     ConstraintValue otherConstraint; 
@@ -907,7 +897,6 @@ class MapValue {
 	this.patternLength = urlPattern.length();
 	this.irrelevantByQualifier = false;
 	this.urlPatternSpec = new StringBuffer(urlPattern);
-	this.methodValues = new HashMap();
 	otherConstraint = new ConstraintValue();
     } 
 
@@ -937,21 +926,19 @@ class MapValue {
     }
 
     BitSet getExcludedMethods() {
-	BitSet methodSet = new BitSet();
+        BitSet methodSet = new BitSet();
 
-	synchronized(methodValues) {
+        synchronized (methodValues) {
 
-	    Collection<MethodValue> values = methodValues.values();
-	    Iterator it = values.iterator();
+            Collection<MethodValue> values = methodValues.values();
 
-	    while (it.hasNext()) {
-		MethodValue v = (MethodValue) it.next();
-		if (v.isExcluded()) {
-		    methodSet.set(v.index);
-		}
-	    }
-	}
-	return methodSet;
+            for (MethodValue v : values) {
+                if (v.isExcluded()) {
+                    methodSet.set(v.index);
+                }
+            }
+        }
+        return methodSet;
     }
 
     BitSet getNoAuthMethods() {
@@ -960,10 +947,7 @@ class MapValue {
 	synchronized(methodValues) {
 
 	    Collection<MethodValue> values = methodValues.values();
-	    Iterator it = values.iterator();
-
-	    while (it.hasNext()) {
-		MethodValue v = (MethodValue) it.next();
+	    for(MethodValue v : values){
 		if (!v.isAuthConstrained()) {
 		    methodSet.set(v.index);
 		}
@@ -973,129 +957,107 @@ class MapValue {
     }
 
     BitSet getAuthConstrainedMethods() {
-	BitSet methodSet = new BitSet();
+        BitSet methodSet = new BitSet();
 
-	synchronized(methodValues) {
+        synchronized (methodValues) {
 
-	    Collection<MethodValue> values = methodValues.values();
-	    Iterator it = values.iterator();
+            Collection<MethodValue> values = methodValues.values();
 
-	    while (it.hasNext()) {
-		MethodValue v = (MethodValue) it.next();
-		if (v.isAuthConstrained()) {
-		    methodSet.set(v.index);
-		}
-	    }
-	}
-	return methodSet;
+            for (MethodValue v : values) {
+                if (v.isAuthConstrained()) {
+                    methodSet.set(v.index);
+                }
+            }
+        }
+        return methodSet;
     }
 
     BitSet getTransportConstrainedMethods() {
-	BitSet methodSet = new BitSet();
+        BitSet methodSet = new BitSet();
 
-	synchronized(methodValues) {
+        synchronized (methodValues) {
 
-	    Collection<MethodValue> values = methodValues.values();
-	    Iterator it = values.iterator();
+            Collection<MethodValue> values = methodValues.values();
 
-	    while (it.hasNext()) {
-		MethodValue v = (MethodValue) it.next();
-		if (v.isTransportConstrained()) {
-		    methodSet.set(v.index);
-		}
-	    }
-	}
-	return methodSet;
+            for (MethodValue v : values) {
+                if (v.isTransportConstrained()) {
+                    methodSet.set(v.index);
+                }
+            }
+        }
+        return methodSet;
     }
 
     /**
      * Map of methods allowed per role
      */
-    HashMap getRoleMap() {
-	HashMap roleMap = new HashMap();
+    HashMap<String,BitSet> getRoleMap() {
+        HashMap<String,BitSet> roleMap = new HashMap<String,BitSet>();
 
-	synchronized(methodValues) {
+        synchronized (methodValues) {
 
-	    Collection<MethodValue> values = methodValues.values();
+            Collection<MethodValue> values = methodValues.values();
 
-	    Iterator it = values.iterator();
-	    while (it.hasNext()) {
+            for (MethodValue v : values) {
+                if (!v.isExcluded() && v.isAuthConstrained()) {
+                    for (String role : v.roleList) {
+                        BitSet methodSet = roleMap.get(role);
 
-		MethodValue v = (MethodValue) it.next();
-		
-		if (!v.isExcluded() && v.isAuthConstrained()) {
+                        if (methodSet == null) {
+                            methodSet = new BitSet();
+                            roleMap.put(role, methodSet);
+                        }
 
-		    Iterator rit = v.roleList.iterator();
-		    while(rit.hasNext()) {
+                        methodSet.set(v.index);
+                    }
+                }
+            }
+        }
 
-			String role = (String) rit.next();
-			BitSet methodSet = (BitSet) roleMap.get(role);
-
-			if (methodSet == null) {
-			    methodSet = new BitSet();
-			    roleMap.put(role,methodSet);
-			}
-
-			methodSet.set(v.index);
-		    }
-		}
-	    }
-	}
-
-	return roleMap;
+        return roleMap;
     }
 
     BitSet getConnectMap(int cType) {
-	BitSet methodSet = new BitSet();
+        BitSet methodSet = new BitSet();
 
-	synchronized(methodValues) {
+        synchronized (methodValues) {
 
-	    Collection<MethodValue> values = methodValues.values();
-	    Iterator it = values.iterator();
+            Collection<MethodValue> values = methodValues.values();
+            for (MethodValue v : values) {
+                /*
+                 * NOTE WELL: prior version of this method
+                 * could not be called during constraint parsing
+                 * because it finalized the connectSet when its
+                 * value was 0 (indicating any connection, until
+                 * some specific bit is set)
+                 *
+                if (v.connectSet == 0) {
+                v.connectSet = MethodValue.connectTypeNone;
+                }
 
-	    while (it.hasNext()) {
+                 */
 
-		MethodValue v = (MethodValue) it.next();
+                if (v.isConnectAllowed(cType)) {
+                    methodSet.set(v.index);
+                }
+            }
+        }
 
-		/* 
-		 * NOTE WELL: prior version of this method 
-		 * could not be called during constraint parsing
-		 * because it finalized the connectSet when its 
-		 * value was 0 (indicating any connection, until
-		 * some specific bit is set)
-		 *
-		    if (v.connectSet == 0) {
-		        v.connectSet = MethodValue.connectTypeNone;
-		    }
-
-		*/
-
-		if (v.isConnectAllowed(cType)) {
-		    methodSet.set(v.index);
-		}
-	    }
-	}
-
-	return methodSet;
+        return methodSet;
     }
 
     BitSet getMethodSet() {
-	BitSet methodSet = new BitSet();
+        BitSet methodSet = new BitSet();
 
-	synchronized(methodValues) {
+        synchronized (methodValues) {
 
-	    Collection<MethodValue> values = methodValues.values();
-	    Iterator it = values.iterator();
+            Collection<MethodValue> values = methodValues.values();
+            for (MethodValue v : values) {
+                methodSet.set(v.index);
+            }
+        }
 
-	    while (it.hasNext()) {
-
-		MethodValue v = (MethodValue) it.next();
-		methodSet.set(v.index);
-
-	    }
-	}
-
-	return methodSet;
+        return methodSet;
     }
 
     void setMethodOutcomes(Set<Role> roleSet,

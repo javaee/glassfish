@@ -1,6 +1,5 @@
 -exportcontents: \
                         com.iplanet.ias.security.auth.login; \
-                        com.sun.appserv.security.api; \
                         com.sun.enterprise.security; \
                         com.sun.enterprise.security.jauth; \
                         com.sun.enterprise.security.audit; \
@@ -28,8 +27,7 @@
                         com.sun.enterprise.security.common; \
                         com.sun.logging.enterprise.system.core.security; \
                         com.sun.enterprise.security.ssl; \
-                        com.sun.enterprise.server.pluggable; \
-                        com.sun.enterprise.security.jacc.provider; version=${project.osgi.version}
+                        com.sun.enterprise.server.pluggable; version=${project.osgi.version}
 Bundle-NativeCode: \
         libsolsparcauth.so ; \
         osname=SunOS ; \

@@ -600,7 +600,7 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
     //XXX need to update persistent state and notify effected listeners
     private static boolean _unRegister(String regisID) {
 	boolean rvalue = false;
-	RegistrationContext rc = null;;
+	RegistrationContext rc = null;
         List<RegistrationListener> listeners = null;
         String[] dIds = decomposeRegisID(regisID);
         wLock.lock();

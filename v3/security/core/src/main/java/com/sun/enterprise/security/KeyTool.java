@@ -38,7 +38,6 @@ package com.sun.enterprise.security;
 import java.security.Security;
 import java.security.Provider;
 
-import sun.security.tools.*;
 import java.io.*;
 import java.util.*;
 import java.security.cert.*;
@@ -153,11 +152,14 @@ public final class KeyTool {
 		// Can't do much... too bad.
 	        _logger.log(Level.SEVERE,
                             "java_security.KeyStore_load_exception",ce);
-	    }
-	    if(pkcsFis != null)
-		pkcsFis.close();
-	    if (jksFis != null)
-		jksFis.close ();
+	    }finally{
+                if (pkcsFis != null) {
+                    pkcsFis.close();
+                }
+                if (jksFis != null) {
+                    jksFis.close();
+                }
+            }
         }
     }   
     /**

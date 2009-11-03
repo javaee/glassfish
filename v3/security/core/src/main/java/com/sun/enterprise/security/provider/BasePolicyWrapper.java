@@ -583,7 +583,7 @@ public class BasePolicyWrapper extends java.security.Policy {
 			    // ignore. 
 			}
 			if (overrideAll) {
-			    return new Long(sum);
+			    return Long.valueOf(sum);
 			}
 		    }
 		}
@@ -633,7 +633,7 @@ public class BasePolicyWrapper extends java.security.Policy {
 		    }
 		    n++;
 		}
-		return new Long(sum);
+		return Long.valueOf(sum);
 	    }
 	});
 	return l.longValue();

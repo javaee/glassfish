@@ -75,7 +75,7 @@ public final class RegStoreFileParser {
     private static final String DESCRIPTION = "description";
     private static final String [] INDENT = { "", "  ", "    " };
     
-    private File confFile;
+    private final File confFile;
     private List<EntryInfo> entries;
     
     /*
@@ -88,8 +88,8 @@ public final class RegStoreFileParser {
      * file always (true) or only if it's needed (false).
      */
     RegStoreFileParser(String pathParent, String pathChild, boolean create) {
+        confFile = new File(pathParent, pathChild);
         try {
-            confFile = new File(pathParent, pathChild);
             if (confFile.exists()) {
                 loadEntries();
             } else {
@@ -290,8 +290,8 @@ public final class RegStoreFileParser {
         out.println(INDENT[i] + info.getClassName());
         Map<String, String> props = info.getProperties();
         if (props != null) {
-            for (String key : props.keySet()) {
-                out.println(INDENT[i] + key + SEP + props.get(key));
+            for (Map.Entry<String,String> val : props.entrySet()) {
+                out.println(INDENT[i] + val.getKey() + SEP + val.getValue());
             }
         }
         out.println(INDENT[--i] + "}");

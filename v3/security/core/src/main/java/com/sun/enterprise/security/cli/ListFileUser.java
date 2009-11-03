@@ -158,6 +158,7 @@ public class ListFileUser implements AdminCommand {
                 "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         } catch(NoSuchRealmException e) {
             report.setMessage(
                 localStrings.getLocalString(
@@ -166,6 +167,7 @@ public class ListFileUser implements AdminCommand {
                 "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
+            return;
         }
 
         try {

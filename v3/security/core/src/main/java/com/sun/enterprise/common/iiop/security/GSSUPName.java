@@ -76,14 +76,12 @@ public class GSSUPName {
      */
     public GSSUPName(byte[] GSSExportedName)
     {
-        StringBuffer    strbuf = new StringBuffer("");
-        StringTokenizer strtok;
         int             realm_index = 0 ; // start of realm 
         int             user_index  = -1 ; // start of user
         String expname = "";
         String name_value = "" ;
         String name_scope = "" ;
-        byte[] exportedname = {} ;
+        byte[] exportedname = null ;
 
         gssUtils = Util.getDefaultHabitat().getComponent(GSSUtilsContract.class);
         assert(gssUtils != null);
@@ -148,7 +146,7 @@ public class GSSUPName {
 
         if ((name_value.length() > 0) && (at_index != -1)) {
 	    // remove the ESCAPE_CHAR from the username
-            strbuf = new StringBuffer("");
+            StringBuilder strbuf = new StringBuilder("");
             int starti = 0  ; // start index
             int endi   = 0  ; // end index
 
@@ -173,7 +171,7 @@ public class GSSUPName {
     public byte[] getExportedName() {
 
         byte[] expname = {} ;
-        byte[] expname_utf8 = {} ;
+        byte[] expname_utf8 = null ;
         StringTokenizer strtok ;
 
 	if(_logger.isLoggable(Level.FINE)) {

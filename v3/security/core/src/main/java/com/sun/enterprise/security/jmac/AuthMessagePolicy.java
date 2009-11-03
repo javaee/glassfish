@@ -226,46 +226,46 @@ public class AuthMessagePolicy {
 	MessagePolicy responsePolicy = null;
 
         if (binding != null) {
-            ArrayList msgSecDescs = null;
+            ArrayList<MessageSecurityDescriptor> msgSecDescs = null;
             String layer = binding.getAttributeValue
                 (MessageSecurityBindingDescriptor.AUTH_LAYER);
             if (SOAP.equals(layer)) {
                 msgSecDescs = binding.getMessageSecurityDescriptors();
             }
 
-            if (onePolicy) {
-                if (msgSecDescs.size() > 0) {
-                    MessageSecurityDescriptor msd =
-                        (MessageSecurityDescriptor)msgSecDescs.get(0);
-                    requestPolicy = getMessagePolicy(
-                        msd.getRequestProtectionDescriptor());
-                    responsePolicy = getMessagePolicy(
-                        msd.getResponseProtectionDescriptor());
-                }
-            } else { // try to match
-                MessageSecurityDescriptor matchMsd = null;
-                for (int i = 0; i < msgSecDescs.size(); i++) {
-                    MessageSecurityDescriptor msd = 
-                        (MessageSecurityDescriptor) msgSecDescs.get(i);
-                    ArrayList msgDescs = msd.getMessageDescriptors();
-                    for (int j = i + 1; j < msgDescs.size(); j++) {
-                        //XXX don't know how to get JavaMethod from operation
-                        MessageDescriptor msgDesc =
-                                (MessageDescriptor)msgDescs.get(j); 
-                        String opName = msgDesc.getOperationName();
-                        if ((opName == null && matchMsd == null)) {
-                            matchMsd = msd;
-                        } else if (opName != null && opName.equals(operation)) {
-                            matchMsd = msd;
-                            break;
-                        }
-                    }
-
-                    if (matchMsd != null) {
+            if(msgSecDescs != null) {
+                if (onePolicy) {
+                    if (msgSecDescs.size() > 0) {
+                        MessageSecurityDescriptor msd = msgSecDescs.get(0);
                         requestPolicy = getMessagePolicy(
-                            matchMsd.getRequestProtectionDescriptor());
+                                msd.getRequestProtectionDescriptor());
                         responsePolicy = getMessagePolicy(
-                            matchMsd.getResponseProtectionDescriptor());
+                                msd.getResponseProtectionDescriptor());
+                    }
+                } else { // try to match
+                    MessageSecurityDescriptor matchMsd = null;
+                    for (int i = 0; i < msgSecDescs.size(); i++) {
+                        MessageSecurityDescriptor msd = msgSecDescs.get(i);
+                        ArrayList msgDescs = msd.getMessageDescriptors();
+                        for (int j = i + 1; j < msgDescs.size(); j++) {
+                            //XXX don't know how to get JavaMethod from operation
+                            MessageDescriptor msgDesc =
+                                    (MessageDescriptor) msgDescs.get(j);
+                            String opName = msgDesc.getOperationName();
+                            if ((opName == null && matchMsd == null)) {
+                                matchMsd = msd;
+                            } else if (opName != null && opName.equals(operation)) {
+                                matchMsd = msd;
+                                break;
+                            }
+                        }
+
+                        if (matchMsd != null) {
+                            requestPolicy = getMessagePolicy(
+                                    matchMsd.getRequestProtectionDescriptor());
+                            responsePolicy = getMessagePolicy(
+                                    matchMsd.getResponseProtectionDescriptor());
+                        }
                     }
                 }
             }
@@ -389,10 +389,10 @@ public class AuthMessagePolicy {
             pd2.getAttributeValue(ProtectionDescriptor.AUTH_RECIPIENT);
         
         boolean sameAuthSource =
-            (authSource1 == null && authSource2 == null) &&
+            (authSource1 == null && authSource2 == null) ||
             (authSource1 != null && authSource1.equals(authSource2));
         boolean sameAuthRecipient =
-            (authRecipient1 == null && authRecipient2 == null) &&
+            (authRecipient1 == null && authRecipient2 == null) ||
             (authRecipient1 != null && authRecipient1.equals(authRecipient2));
 
         return sameAuthSource && sameAuthRecipient;

@@ -57,7 +57,6 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
 
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
 import com.sun.enterprise.security.jmac.WebServicesDelegate;
-import com.sun.enterprise.security.jmac.config.HandlerContext;
 import org.glassfish.internal.api.Globals;
 
 
@@ -263,7 +262,7 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
         return null;
     }
 
-    private class ConfigData {
+    private static class ConfigData {
 
 	private AuthConfigProvider provider; 
 	private AuthConfig sConfig; 
@@ -295,7 +294,7 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
     //Adding extra inner class because specializing the Linstener Impl class would 
     //make the GF 196 implementation Non-Replaceable.
     // This class would hold a RegistrationListener within.
-    public class AuthConfigRegistrationWrapper {
+    public static class AuthConfigRegistrationWrapper {
         
         private String layer;
         private String appCtxt;
@@ -328,8 +327,8 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
         }
         
         public void disable() {
+            this.wLock.lock();
             try {
-                this.wLock.lock();
                 setEnabled(false);
             } finally {
                 data = null;
@@ -391,11 +390,11 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
             this.jmacProviderRegisID = jmacProviderRegisID;
         }
         
-        public ConfigData getConfigData() {
+        private ConfigData getConfigData() {
             return data;
         }
         
-        public void setConfigData(ConfigData data) {
+        private void setConfigData(ConfigData data) {
             this.data = data;
         }
          

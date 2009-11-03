@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.web.integration;
 
-import com.sun.enterprise.security.web.integration.WebPrincipal;
 import org.glassfish.internal.api.ServerContext;
 import java.security.*;
 import java.util.Set;
@@ -66,7 +65,6 @@ import com.sun.enterprise.config.serverbeans.*;
 //V3:Commented import com.sun.enterprise.server.ApplicationServer;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 //import org.apache.catalina.Globals;
 import com.sun.enterprise.security.SecurityRoleMapperFactoryGen;
 import com.sun.enterprise.security.SecurityServicesUtil;
@@ -195,8 +193,7 @@ public class WebSecurityManager  {
    }
       
     private void initialise(String appName) throws PolicyContextException {
-        pcf = getPolicyFactory();
-        AuditManager auditManager = SecurityServicesUtil.getInstance().getAuditManager();
+        getPolicyFactory();
         CODEBASE = removeSpaces(CONTEXT_ID) ;
         //V3:Commented if(VirtualServer.ADMIN_VS.equals(getVirtualServers(appName))){
            if(Constants.ADMIN_VS.equals(getVirtualServers(appName))){
@@ -621,19 +618,19 @@ public class WebSecurityManager  {
     }
 
     private String principalSetToString(Set principalSet) {
- 	String result = null;
+ 	StringBuilder result = null;
  	if (principalSet != null) {
  	    Principal[] principals = 
  		(Principal []) principalSet.toArray(new Principal[0]);
  	    for (int i =0; i<principals.length; i++) {
  		if (i == 0) {
- 		    result = principals[i].toString();
+ 		    result = new StringBuilder(principals[i].toString());
  		} else {
- 		    result = result + ", "+ new String(principals[i].toString());
+ 		    result.append(", ").append(principals[i].toString());
  		}
  	    }
  	}
- 	return result;
+        return ((result != null) ? result.toString() : null);
     }
     
     /*V3:Commented, replacement code copied from web-container VirtualServer.java

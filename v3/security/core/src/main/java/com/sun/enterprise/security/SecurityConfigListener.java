@@ -59,7 +59,6 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import javax.security.auth.login.Configuration;
 import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 /**
@@ -77,9 +76,6 @@ public class SecurityConfigListener implements ConfigListener, PostConstruct {
     private Logger logger;
     
     @Inject
-    private Habitat habitat;
-
-    @Inject
     private AuthRealm[] realms;
     
     @Inject
@@ -91,12 +87,8 @@ public class SecurityConfigListener implements ConfigListener, PostConstruct {
     @Inject
     private MessageSecurityConfig[] messageSecConfigs; 
     
-    private String defaultP2R=null;
-    private String anonRole = null;
     private String auditEnabled = null;
-    private String auditModulesAttr = null;
     private String defaultRealm = null;
-    private String jaccAttr = null;
 
     public SecurityConfigListener() {
         
@@ -304,12 +296,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         //used from securityService instance available
         //even defaultPrincipal and defaultPrincipalPassword is directly being
         //read from securityService.
-        defaultP2R=securityService.getActivateDefaultPrincipalToRoleMapping();
-        anonRole = securityService.getAnonymousRole();
-        jaccAttr = securityService.getJacc();
-        
         auditEnabled = securityService.getAuditEnabled();
-        auditModulesAttr = securityService.getAuditModules();
         defaultRealm = securityService.getDefaultRealm();
         
     }

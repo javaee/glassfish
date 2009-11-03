@@ -690,7 +690,7 @@ class ConfigFile extends AuthConfig {
 	}
     }
 
-    private class DelegatingHandler implements CallbackHandler {
+    private static class DelegatingHandler implements CallbackHandler {
 
 	CallbackHandler handler;
 

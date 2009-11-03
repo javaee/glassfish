@@ -38,17 +38,12 @@ package com.sun.enterprise.security.auth.realm;
 
 import com.sun.enterprise.security.auth.digest.impl.DigestProcessor;
 import com.sun.enterprise.security.auth.digest.api.Password;
-import com.sun.enterprise.security.auth.digest.impl.KeyDigestAlgoParamImpl;
 import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.digest.api.Key;
-import com.sun.enterprise.security.auth.digest.api.NestedDigestAlgoParam;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.AlgorithmParameterSpec;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import static com.sun.enterprise.security.auth.digest.api.Constants.*;
 
 /**
@@ -73,14 +68,12 @@ public abstract class DigestRealmBase extends IASRealm implements DigestRealm {
     }
 
 
-    private class DigestValidatorImpl extends DigestProcessor {
+    private static class DigestValidatorImpl extends DigestProcessor {
 
-        private Realm realm = null;
         private DigestAlgorithmParameter data = null;
         private DigestAlgorithmParameter clientResponse = null;
         private DigestAlgorithmParameter key = null;
         private String algorithm = "MD5";
-        private String realmName = null;
         
 
         DigestValidatorImpl() {

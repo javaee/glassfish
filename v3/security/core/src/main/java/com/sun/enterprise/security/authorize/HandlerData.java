@@ -41,9 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.sun.enterprise.security.PermissionCacheFactory;
 import com.sun.enterprise.security.SecurityContext;
-import com.sun.enterprise.security.jmac.WebServicesDelegate;
 import org.glassfish.api.invocation.ComponentInvocation;
-import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -82,7 +80,7 @@ public class HandlerData {
 	    return SecurityContext.getCurrent().getSubject();
 	} else if (PolicyContextHandlerImpl.REUSE.equalsIgnoreCase(key)) {
             PermissionCacheFactory.resetCaches();
-            return new Integer(0);
+            return Integer.valueOf(0);
         }
 
         if (inv == null) {

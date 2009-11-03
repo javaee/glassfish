@@ -25,16 +25,12 @@ package com.sun.enterprise.security.auth.digest.impl;
 
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
 import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.StringTokenizer;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 import static com.sun.enterprise.security.auth.digest.api.Constants.*;
 
 
@@ -54,7 +50,6 @@ public final class HttpDigestParamGenerator extends DigestParameterGenerator {
     private String qop = null;
     private String uri = null;
     private String response = null;
-    private String opaque = null;
     private String method = null;
     private byte[] entityBody = null;
     private String algorithm = "MD5";
@@ -207,7 +202,7 @@ public final class HttpDigestParamGenerator extends DigestParameterGenerator {
         } else if (quotedString.length() > 2) {
             return quotedString.substring(1, quotedString.length() - 1);
         } else {
-            return new String();
+            return "";
         }
     }
 }
