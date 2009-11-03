@@ -280,29 +280,82 @@ public abstract class CLICommand implements PostConstruct {
     public String getUsage() {
         StringBuilder usageText = new StringBuilder();
         usageText.append(strings.get("Usage", strings.get("Usage.asadmin")));
-        // could include all the asadmin options like this...
-        //addOptionUsage(ProgramOptions.getValidOptions(), usageText);
         usageText.append(" ");
         usageText.append(getName());
-        usageText.append(" ");
-        addOptionUsage(usageOptions(), usageText);
+        int len = usageText.length();
+        StringBuilder optText = new StringBuilder();
+        String lsep = System.getProperty("line.separator");
+        for (ValidOption opt : usageOptions()) {
+            optText.setLength(0);
+            final String optName = opt.getName();
+            // do not want to display password as an option
+            if (opt.getType().equals("PASSWORD"))
+                continue;
+            boolean optional = opt.isValueRequired() != ValidOption.REQUIRED;
+            String defValue = opt.getDefaultValue();
+            if (optional)
+                optText.append("[");
+            if (opt.hasShortName()) {
+                Vector<String> sn = opt.getShortNames(); // XXX - why Vector?
+                optText.append('-').append(sn.get(0)).append('|');
+            }
+            optText.append("--").append(optName);
 
+            if (opt.getType().equals("BOOLEAN")) {
+                // canonicalize default value
+                if (ok(defValue) && Boolean.parseBoolean(defValue))
+                    defValue = "true";
+                else
+                    defValue = "false";
+                optText.append("[=<").append(optName);
+                optText.append(strings.get("Usage.default", defValue));
+                optText.append(">]");
+            } else {    // STRING or FILE
+                if (ok(defValue)) {
+                    optText.append(" <").append(optName);
+                    optText.append(strings.get("Usage.default", defValue));
+                    optText.append('>');
+                } else
+                    optText.append(" <").append(optName).append('>');
+            }
+            if (optional)
+                optText.append("]");
+
+            if (len + 1 + optText.length() > 80) {
+                usageText.append(lsep).append('\t');
+                len = 8;
+            } else {
+                usageText.append(' ');
+                len++;
+            }
+            usageText.append(optText);
+            len += optText.length();
+        }
+
+        optText.setLength(0);
         String opname = operandName;
         if (!ok(opname))
             opname = "operand";
         if (operandMax > 0) {
             if (operandMin == 0) {
-                usageText.append("[").append(opname);
+                optText.append("[").append(opname);
                 if (operandMax > 1)
-                    usageText.append(" ...");
-                usageText.append("] ");
+                    optText.append(" ...");
+                optText.append("]");
             } else {
-                usageText.append(opname);
+                optText.append(opname);
                 if (operandMax > 1)
-                    usageText.append(" ...");
-                usageText.append(" ");
+                    optText.append(" ...");
             }
         }
+        if (len + 1 + optText.length() > 80) {
+            usageText.append(lsep).append('\t');
+            len = 8;
+        } else {
+            usageText.append(' ');
+            len++;
+        }
+        usageText.append(optText);
         return usageText.toString();
     }
 
@@ -314,41 +367,6 @@ public abstract class CLICommand implements PostConstruct {
      */
     protected Set<ValidOption> usageOptions() {
         return commandOpts;
-    }
-
-    private void addOptionUsage(Set<ValidOption> options,
-                                StringBuilder usageText) {
-        for (ValidOption opt : options) {
-            final String optName = opt.getName();
-            // do not want to display password as an option
-            if (opt.getType().equals("PASSWORD"))
-                continue;
-            boolean optional = opt.isValueRequired() != ValidOption.REQUIRED;
-            String defValue = opt.getDefaultValue();
-            if (optional)
-                usageText.append("[");
-            if (opt.hasShortName()) {
-                Vector<String> sn = opt.getShortNames(); // XXX - why Vector?
-                usageText.append('-').append(sn.get(0)).append('|');
-            }
-            usageText.append("--").append(optName);
-
-            if (opt.getType().equals("BOOLEAN")) {
-                if (ok(defValue) && Boolean.parseBoolean(defValue))
-                    usageText.append("=").append("true");
-                else
-                    usageText.append("=").append("false");
-            } else {    // STRING or FILE
-                if (ok(defValue))
-                    usageText.append(" ").append(defValue);
-                else
-                    usageText.append(" <").append(optName).append('>');
-            }
-            if (optional)
-                usageText.append("] ");
-            else
-                usageText.append(" ");
-        }
     }
 
     /**
