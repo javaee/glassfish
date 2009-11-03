@@ -171,16 +171,15 @@ public class LoginCommand extends CLICommand {
      */
     private void saveLogin(String host, final int port, 
                            final String user, final String passwd) {
-        LoginInfo login = null;
+        if (!ok(host))
+            host = "localhost";
         // to avoid putting commas in the port number (e.g., "4,848")...
         String sport = Integer.toString(port);
         try {
             // By definition, the host name will default to "localhost" and 
             // entry is overwritten
             final LoginInfoStore store = LoginInfoStoreFactory.getStore(null);
-            if (host == null || host.equals(""))
-                host = "localhost";
-            login = new LoginInfo(host, port, user, passwd);
+            final LoginInfo login = new LoginInfo(host, port, user, passwd);
             if (store.exists(login.getHost(), login.getPort())) {
                 // Let the user know that the user has chosen to overwrite the 
                 // login information. This is non-interactive, on purpose
@@ -192,7 +191,7 @@ public class LoginCommand extends CLICommand {
                 user, login.getHost(), sport, store.getName()));
         } catch (final Exception e) {
             logger.printWarning(
-                strings.get("LoginInfoNotStored", login.getHost(), sport));
+                strings.get("LoginInfoNotStored", host, sport));
             if (logger.isDebug()) {
                 logger.printExceptionStackTrace(e);
             }
