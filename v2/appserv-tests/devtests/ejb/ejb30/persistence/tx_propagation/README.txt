@@ -1,1 +1,1 @@
-This test requires DerbyPool to be changed to use XA.
+This test creates it's own jdbc pool to use XA.

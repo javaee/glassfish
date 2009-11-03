@@ -2,8 +2,11 @@ package com.sun.s1asdev.ejb.ejb30.persistence.tx_propagation.client;
 
 import java.io.*;
 import java.util.*;
+import java.sql.*;
 import javax.ejb.EJB;
 import javax.transaction.UserTransaction;
+import javax.annotation.Resource;
+import javax.sql.DataSource;
 import com.sun.s1asdev.ejb.ejb30.persistence.tx_propagation.*;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
@@ -14,6 +17,8 @@ public class Client {
         new SimpleReporterAdapter("appserv-tests");
 
     private String personName;
+
+    private static @Resource(mappedName="jdbc/xa") DataSource ds;
 
     public static void main (String[] args) {
 
@@ -38,6 +43,9 @@ public class Client {
 
     public void doTest(boolean commit) {
 
+        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement s = null;
         try {
             
             System.err.println("I am in client");
@@ -49,6 +57,11 @@ public class Client {
             utx.begin();
             System.err.println("utx.begin called ");
             
+            connection = ds.getConnection();
+            s = connection.prepareStatement("insert into EJB30_PERSISTENCE_EEM_INJECTION_PERSON values('1', '1')");
+            s.execute();
+            System.err.println("inserted 1,1 into table ");
+
             Map<String, Boolean> map = sful.doTests();
             if (commit) {
                 System.err.println("calling utx.commit ");
@@ -67,9 +80,27 @@ public class Client {
                 stat.addStatus("local " + testName,
                         (result) ? stat.PASS : stat.FAIL);
             }
+
         } catch(Exception e) {
             e.printStackTrace();
             stat.addStatus("local main" , stat.FAIL);
+        } finally {
+
+            try {
+                if (rs != null)
+                    rs.close();
+            } catch (Exception e) { }
+
+            try {
+                if (s != null)
+                    s.close();
+            } catch (Exception e) { }
+
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (Exception e) { }
+
         }
 
     	return;
