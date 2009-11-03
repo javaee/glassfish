@@ -68,8 +68,8 @@
         <staticText id="resType"  value="#{td.value.ResType}" />
     </sun:tableColumn>
     
-    <sun:tableColumn headerText="#{extraInfoHeader}" sort="DatasourceClassname"   rowHeader="$boolean{true}" id="col3">
-        <staticText id="datasourceClassname"  value="#{td.value.DatasourceClassname}" />
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colClassname}"  rowHeader="$boolean{true}" id="col3">
+        <staticText id="datasourceClassname"  value="#{td.value.DatasourceClassname}#{td.value.DriverClassname}" />
     </sun:tableColumn>  
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">

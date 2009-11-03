@@ -58,8 +58,6 @@
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
         setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
-        setPageSessionAttribute(key="extraInfoHeader" value="$resource{i18njdbc.resourcesTable.colDatasource}");
-
         />
     </event>
 #include "/common/shared/restart.inc"        
