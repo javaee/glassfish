@@ -53,7 +53,7 @@
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
 
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="convertToFalseList" value={"IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
+        setPageSessionAttribute(key="convertToFalseList" value={"Ping" "IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
 
         //set the following for including buttons.inc

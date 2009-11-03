@@ -53,15 +53,13 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         updateProxyProperties(propertyList="#{wizardPoolProperties}" TableList=>$attribute{tableList});
-        setPageSessionAttribute(key="convertToFalseList" value={"FailAllConnections" "IsConnectionValidationRequired"});
+        setPageSessionAttribute(key="convertToFalseList" value={"Ping" "FailAllConnections" "IsConnectionValidationRequired"});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-        println("========== #{sessionScope.wizardMap}")
-
     />
     </event>
 #include "/common/shared/restart.inc"
