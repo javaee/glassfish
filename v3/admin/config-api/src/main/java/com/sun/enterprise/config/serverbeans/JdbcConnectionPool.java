@@ -828,7 +828,7 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false", dataType=Boolean.class)
+    @Attribute (defaultValue="true", dataType=Boolean.class)
     String getWrapJdbcObjects();
 
     /**
