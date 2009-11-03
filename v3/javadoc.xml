@@ -215,7 +215,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsf.download" description="Download JSF" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
-          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.0.0-b17"/>
+          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.0.1"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -233,8 +233,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsp.download" description="Download JSP" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsp">
-          <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.1.3-b03"/>
-          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.1.3-b15"/>
+          <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.1.3-b06"/>
+          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.1.3-b19"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -307,8 +307,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="mq.download" description="Download MQ" depends="initialize.maven" >
       <artifact:dependencies filesetId="dependency.fileset" sourcesFilesetId="sources.dependency.mq" >
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4-015" classifier="sources" type="zip"/>
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4-015" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.1-004" classifier="sources" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.1-004" type="zip"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -331,7 +331,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="eclipse-persistence.download" description="Download Eclipse Persistence source" depends="initialize.maven" > 
       <artifact:dependencies sourcesFilesetId="sources.dependency.eclipse-persistence">
-          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.0-M7"/>
+          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.0-M12"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
