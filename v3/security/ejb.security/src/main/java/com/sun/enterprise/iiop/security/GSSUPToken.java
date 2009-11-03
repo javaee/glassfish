@@ -136,7 +136,7 @@ public class GSSUPToken {
         }
 
         try {
-            String _name_ = new String(pwdcred.getUser()); 
+            String _name_ = pwdcred.getUser(); 
             // if username is of type user@sun.com, realm - foo
             // do the following
             // create user\\@sun.com
@@ -163,7 +163,7 @@ public class GSSUPToken {
                 // cannot use StringBuffer, as StringBuffer eats away a \
                 _name_ = _name_ + DELIMITER + realm; 
             }
-            name_utf8 = _name_.toString().getBytes("UTF8");
+            name_utf8 = _name_.getBytes("UTF8");
             password_utf8 = pwdcred.getPassword().getBytes("UTF8");
         } catch (Exception e) {
             _logger.log(Level.SEVERE,"iiop.password_exception",e);
@@ -209,13 +209,13 @@ public class GSSUPToken {
     private GSSUPToken(ORB orb, Codec codec, byte[] authtok)
 	throws SecurityMechanismException
     {
-        byte[] name_utf8      = {};  // username  in UTF8 format
-        byte[] password_utf8  = {};  // password  in UTF8 format
-        byte[] target_name    = {} ; // target name 
+        byte[] name_utf8      = null;  // username  in UTF8 format
+        byte[] password_utf8  = null;  // password  in UTF8 format
+        byte[] target_name    = null; // target name
         String username = "";
         String userpwd  = "";
         String realm    = "";
-        byte[] encoded_token = {} ;
+        byte[] encoded_token = null ;
 
        if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "IIOP:Going to construct a GSSUPToken:");

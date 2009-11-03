@@ -136,7 +136,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
 	}
         if (credset.size() != 1) {
 	    if(_logger.isLoggable(Level.SEVERE)) 
-		_logger.log(Level.SEVERE,"iiop.multiple_credset",new java.lang.Object[]{new Integer(credset.size()),clsname});
+		_logger.log(Level.SEVERE,"iiop.multiple_credset",new java.lang.Object[]{Integer.valueOf(credset.size()),clsname});
             throw new SecurityException(
 		localStrings.getLocalString("secclientreqinterceptor.inv_credlist_size",
 		                            "Credential list size is not 1."));
@@ -183,15 +183,15 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
         IdentityToken idtok   = null;
 
         DerOutputStream dos = new DerOutputStream();
-        DerValue[]  derval  = {} ; // DER encoding buffer
-        byte[] cdrval ;            // CDR encoding buffer
+        DerValue[]  derval  = null ; // DER encoding buffer
+        //byte[] cdrval ;            // CDR encoding buffer
         Any  any = orb.create_any();
         idtok = new IdentityToken();
   
         if (X500Name.class.isAssignableFrom(cls)) {
                 _logger.log(Level.FINE,"Constructing an X500 DN Identity Token");
-            X500Name name = (X500Name) cred;
-            name.encode(dos);  // ASN.1 encoding
+            X500Name credname = (X500Name) cred;
+            credname.encode(dos);  // ASN.1 encoding
             X501DistinguishedNameHelper.insert(any, dos.toByteArray());
 
             /* IdentityToken with CDR encoded X501 name */
@@ -254,7 +254,7 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
         byte[] cAuthenticationToken   = {} ;
 
         /* CDR encoded Security Attribute Service element */
-        byte[] cdr_encoded_saselm     = {} ;
+        byte[] cdr_encoded_saselm     = null;
 
         java.lang.Object  cred = null ; // A single JAAS credential
 
