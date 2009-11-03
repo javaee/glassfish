@@ -96,6 +96,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     public static final String FIXED_ADMIN_REALM_NAME = "admin-realm";
     public static final String ORIG_ADMIN_REALM_NAME  = "admin-realm-original";
 
+    @Override
     public void execute(AdminCommandContext context) {
         ActionReport rep = context.getActionReport();
         StringBuilder sb = new StringBuilder();
@@ -145,7 +146,8 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
             }
         }
         //following things should happen transactionally - TODO replace SingleConfigCode by ConfigCode ...
-        renameRealm(sb, getAdminRealm(asc.getSecurityService()), getNewRealmName(asc.getSecurityService()));
+        //createBackupRealm(sb, getAdminRealm(asc.getSecurityService()), getNewRealmName(asc.getSecurityService()));
+        deleteRealm(asc.getSecurityService(), sb);
         createRealm(asc.getSecurityService(), sb);
         configureAdminService(asc.getAdminService());
         //configure(asc.getSecurityService(), asc.getAdminService(), sb);
@@ -174,6 +176,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     private void configureAdminService(AdminService as) throws PropertyVetoException, TransactionFailure {
         SingleConfigCode<AdminService> scc = new SingleConfigCode<AdminService>() {
+            @Override
             public Object run(AdminService as) {
                 try {
                     as.setAuthRealmName(FIXED_ADMIN_REALM_NAME);  //just in case ...
@@ -189,6 +192,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
 
     private void createRealm(SecurityService ss, final StringBuilder sb) throws TransactionFailure {
         SingleConfigCode<SecurityService> scc = new SingleConfigCode<SecurityService>() {
+            @Override
             public Object run(SecurityService ss) throws PropertyVetoException, TransactionFailure {
                 AuthRealm ldapr = createLDAPRealm(ss);
                 ss.getAuthRealm().add(ldapr);
@@ -199,8 +203,27 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         ConfigSupport.apply(scc, ss);
     }
 
-    private void renameRealm(final StringBuilder sb, AuthRealm realm, final String to) throws PropertyVetoException, TransactionFailure {
+    // delete and create a new realm to replace it in a single transaction
+    private void deleteRealm(SecurityService ss, final StringBuilder sb) throws TransactionFailure {
+        SingleConfigCode<SecurityService> scc = new SingleConfigCode<SecurityService>() {
+            @Override
+            public Object run(SecurityService ss) throws PropertyVetoException, TransactionFailure {
+                AuthRealm oldAdminRealm = getAdminRealm(ss);
+                ss.getAuthRealm().remove(oldAdminRealm);
+                appendNL(sb,"...");
+                //AuthRealm ldapr = createLDAPRealm(ss);
+                //ss.getAuthRealm().add(ldapr);
+                //appendNL(sb,lsm.getString("ldap.realm.setup", FIXED_ADMIN_REALM_NAME));
+                return true;
+            }
+        };
+        ConfigSupport.apply(scc, ss);
+    }
+
+    // this had been called renameRealm, but in the SecurityConfigListener, the method authRealmUpdated actually does a create...
+    private void createBackupRealm(final StringBuilder sb, AuthRealm realm, final String to) throws PropertyVetoException, TransactionFailure {
         SingleConfigCode<AuthRealm> scc = new SingleConfigCode<AuthRealm>() {
+            @Override
             public Object run(AuthRealm realm) throws PropertyVetoException, TransactionFailure {
                 appendNL(sb, lsm.getString("config.to.ldap", FIXED_ADMIN_REALM_NAME, to));
                 realm.setName(to);
