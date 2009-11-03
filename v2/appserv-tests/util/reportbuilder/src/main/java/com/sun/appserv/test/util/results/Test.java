@@ -9,8 +9,8 @@ package com.sun.appserv.test.util.results;
  @Last Modified : By Justin Lee on 10/05/2009
  */
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Test {
     private String id;
@@ -20,7 +20,7 @@ public class Test {
     private String statusDescription = ReporterConstants.OPTIONAL;
     private String expected;
     private String actual;
-    private List<TestCase> testCases = new ArrayList<TestCase>();
+    private Map<String, TestCase> testCases = new LinkedHashMap<String, TestCase>();
 
     public Test() {
     }
@@ -85,12 +85,17 @@ public class Test {
         return actual;
     }
 
-    public List<TestCase> getTestCases() {
+    public Map<String, TestCase> getTestCases() {
         return testCases;
     }
 
     public void addTestCase(TestCase testCase) {
-        testCases.add(testCase);
+        if(testCases.get(testCase.getName()) == null) {
+            testCases.put(testCase.getName(), testCase);
+        } else {
+            testCase.setName(testCase.getName() + " -- DUPLICATE");
+            testCases.put(testCase.getName() + " -- DUPLICATE", testCase);
+        }
     }
 
     @Override
@@ -131,12 +136,18 @@ public class Test {
         }
         if (!testCases.isEmpty()) {
             buffer.append("<testcases>\n");
-            for (TestCase myTestCase : testCases) {
+            for (TestCase myTestCase : testCases.values()) {
                 buffer.append(myTestCase.toXml());
             }
             buffer.append("</testcases>\n");
         }
         buffer.append("</test>\n");
         return buffer.toString();
+    }
+
+    public void merge(final Test test) {
+        for (TestCase testCase : test.getTestCases().values()) {
+            addTestCase(testCase);
+        }
     }
 }

@@ -1,13 +1,12 @@
 package com.sun.appserv.test.util.results;
 
-import java.io.PrintWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 public class ReportHandler {
     int pass;
@@ -20,10 +19,8 @@ public class ReportHandler {
     private StringBuilder detail = new StringBuilder();
     private StringBuilder summary = new StringBuilder();
     private PrintWriter writer;
-    private File output;
 
     public ReportHandler(final File file) throws FileNotFoundException {
-        output = file;
         writer = new PrintWriter(file);
     }
 
@@ -44,10 +41,11 @@ public class ReportHandler {
                 + row(null, "td", "Testsuite Name", suite.getName())
                 + row(null, "td", "Testsuite Description", suite.getDescription())
                 + row(null, "th", "Name", "Status"));
-        for (Test test : suite.getTests()) {
-            for (TestCase testCase : test.getTestCases()) {
+        for (Test test : suite.getTests().values()) {
+            for (TestCase testCase : test.getTestCases().values()) {
                 final String status = testCase.getStatus();
-                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(), cell(status.replaceAll("_", ""), 1, status)));
+                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
+                    cell(status.replaceAll("_", ""), 1, status)));
             }
         }
         return table
@@ -60,14 +58,16 @@ public class ReportHandler {
     }
 
     private String buildSummary(final TestSuite suite) {
-        for (Test test : suite.getTests()) {
-            for (TestCase testCase : test.getTestCases()) {
+        for (Test test : suite.getTests().values()) {
+            for (TestCase testCase : test.getTestCases().values()) {
                 process(suite, testCase);
             }
         }
-        String url = String.format("<a href=\"javascript:showHide('table%s')\">%s</a>", suite.number, suite.getId());
-        return String.format("<tr class=\"%s\"><td width=\"50%%\">%s</td>%s%s%s</tr>", resultCssClass(suite),
-            url + buildDetail(suite), cell("pass", suite.pass, suite.pass), cell("fail", suite.fail, suite.fail),
+        return String.format("<tr class=\"%s\"><td width=\"50%%\">%s</td>%s%s%s</tr>",
+            resultCssClass(suite),
+            String.format("<a href=\"javascript:showHide('table%s')\">%s</a>", suite.number, suite.getId()) + suite.toHtml(),
+            cell("pass", suite.pass, suite.pass),
+            cell("fail", suite.fail, suite.fail),
             cell("didnotrun", suite.didNotRun, suite.didNotRun));
     }
 
@@ -75,10 +75,10 @@ public class ReportHandler {
         StringBuilder css = new StringBuilder();
         if (suite.pass != 0) {
             css.append("pass ");
-        } 
+        }
         if (suite.fail != 0) {
             css.append("fail ");
-        } 
+        }
         if (suite.didNotRun != 0) {
             css.append("didnotrun ");
         }
@@ -121,7 +121,7 @@ public class ReportHandler {
                 + "\n</body>"
                 + "\n</html>\n"
             , readFile("TestResults.js"), readFile("TestResults.css"), header(), date,
-                config == null ? "" : config.toHtml(), testSuiteSummary(), detailedResults()));
+            config == null ? "" : config.toHtml(), testSuiteSummary(), detailedResults()));
         writer.flush();
         writer.close();
     }
@@ -132,7 +132,7 @@ public class ReportHandler {
             final InputStream stream = getClass().getClassLoader().getResourceAsStream(name);
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
             try {
-                while(reader.ready()) {
+                while (reader.ready()) {
                     builder.append(reader.readLine() + "\n");
                 }
             } finally {
@@ -165,13 +165,13 @@ public class ReportHandler {
             + row(null, "th", "Item", "Total", "Pass", "Fail", "Did Not Run")
             + row(null, "td", "Test Suites", suiteCount, "", "", "")
             + String.format("<tr><td>Test Cases</td><td>%s</td>%s%s%s</tr>",
-                testCaseCount, cell("pass", pass, passCell), cell("fail", fail, failCell),
-                cell("didnotrun", didNotRun, didntCell))
+            testCaseCount, cell("pass", pass, passCell), cell("fail", fail, failCell),
+            cell("didnotrun", didNotRun, didntCell))
             + "</table></form>";
     }
 
-    private String cell(final String klass, final int count, final Object content) {
-        return String.format("<td%s>%s</td>", count > 0 ? " class=\""+ klass + "\"" : "", content);
+    public static String cell(final String klass, final int count, final Object content) {
+        return String.format("<td%s>%s</td>", count > 0 ? " class=\"" + klass + "\"" : "", content);
     }
 
     private String checkbox(final int count, final boolean selected, final String affected) {

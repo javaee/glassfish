@@ -81,11 +81,10 @@ public class WebTest {
     private void run() {
         stat.addDescription("Unit test for GlassFish Issue 6447");
         try {
+            testName = TEST_ROOT_NAME + "-" + run;
             if ("first".equals(run)) {
-                testName = TEST_ROOT_NAME + "-first";
                 createSession();
             } else {
-                testName = TEST_ROOT_NAME + "-second";
                 checkForSession();
             }
         } catch (Exception ex) {
@@ -130,8 +129,7 @@ public class WebTest {
 
     private String readSessionID() throws IOException {
         FileInputStream fis = new FileInputStream(JSESSIONID);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-        return br.readLine();
+        return new BufferedReader(new InputStreamReader(fis)).readLine();
     }
 
     private void saveSessionID(Socket sock) throws Exception {

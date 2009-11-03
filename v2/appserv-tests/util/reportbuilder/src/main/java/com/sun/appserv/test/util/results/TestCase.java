@@ -59,6 +59,10 @@ public class TestCase {
         return name;
     }
 
+    public void setName(final String value) {
+        name = value;
+    }
+
     public String getDescription() {
         return description;
     }

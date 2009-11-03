@@ -5,19 +5,20 @@ package com.sun.appserv.test.util.results;
 */
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Stack;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
+import java.util.TreeMap;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -35,6 +36,7 @@ public class HtmlReportProducer {
     private StringBuilder buffer = new StringBuilder();
     private File input;
     private ReportHandler handler;
+    private Map<String, TestSuite> suites = new TreeMap<String, TestSuite>();
 
     public HtmlReportProducer(String inputFile) throws FileNotFoundException {
         input = new File(generateValidReport(inputFile));
@@ -56,13 +58,31 @@ public class HtmlReportProducer {
                         map();
                     }
                 } else if (event.isEndElement()) {
-                    print("end event = " + event);
-                    final Runnable runnable = getHandler(event);
-                    if (runnable != null && !context.isEmpty()) {
-                        handler.process(pop());
+                    if (getHandler(event) != null && !context.isEmpty()) {
+//                        handler.process(pop());
+                        Object obj = pop();
+                        if (obj instanceof TestSuite) {
+                            TestSuite suite = (TestSuite) obj;
+                            if (suites.get(suite.getName()) != null) {
+                                suites.get(suite.getName()).merge(suite);
+                            } else {
+                                suites.put(suite.getName(), suite);
+                            }
+                        } else if (obj instanceof Test) {
+                            pop();
+                            ((TestSuite) context.peek()).addTest((Test) obj);
+                            tests();
+                        } else if (obj instanceof TestCase) {
+                            pop();
+                            ((Test) context.peek()).addTestCase((TestCase) obj);
+                            testcases();
+                        }
                     }
                 }
                 nextEvent();
+            }
+            for (TestSuite testSuite : suites.values()) {
+                handler.process(testSuite);
             }
             handler.printHtml();
             line();
@@ -129,7 +149,7 @@ public class HtmlReportProducer {
     private XMLEvent nextEvent() {
         try {
             event = reader.nextEvent();
-            print("next event = " + event);
+            print("next event = " + event.toString().trim());
             return event;
         } catch (XMLStreamException e) {
             handle(e);
@@ -137,7 +157,7 @@ public class HtmlReportProducer {
         }
     }
 
-    private void print(final String s) {
+    private void print(final Object s) {
         if (print) {
             System.out.println(s);
         }
@@ -166,13 +186,19 @@ public class HtmlReportProducer {
     }
 
     private Object pop() {
-        print("popping " + context.peek());
-        return context.pop();
+        Object top = context.pop();
+        print("popping " + top);
+//        ListIterator<Object> it = context.listIterator(context.size());
+//        while(it.hasPrevious()) {
+//            print("on stack: " + it.previous());
+//        }
+        return top;
     }
 
     void date() {
         try {
             handler.date = nextEvent().asCharacters().getData();
+            print("reading date " + handler.date);
             push(handler.date);
         } catch (Exception e) {
             handle(e);
@@ -192,25 +218,21 @@ public class HtmlReportProducer {
     }
 
     void tests() {
-        print("=> suite.tests");
-        push(((TestSuite) context.peek()).getTests());
+        push("=> suite.tests");
+//        push(((TestSuite) context.peek()).getTests());
     }
 
     void test() {
-        Test test = new Test();
-        ((List) context.peek()).add(test);
-        push(test);
+        push(new Test());
     }
 
     void testcases() {
-        print("=> test.testcases");
-        push(((Test) context.peek()).getTestCases());
+        push("=> test.testcases");
+//        push(((Test) context.peek()).getTestCases());
     }
 
     void testcase() {
-        TestCase test = new TestCase();
-        ((List) context.peek()).add(test);
-        push(test);
+        push(new TestCase());
     }
 
     private Runnable getHandler(final XMLEvent event) {
@@ -230,7 +252,7 @@ public class HtmlReportProducer {
                 }
             };
         } catch (NoSuchMethodException e) {
-            print(String.format("No handler for %s at %d:%d", name, getLineNumber(), getColumn()));
+            print(String.format("No handler for %s at (%d:%d)", name, getLineNumber(), getColumn()));
         }
         return null;
     }
@@ -276,7 +298,7 @@ public class HtmlReportProducer {
                     + "<machineName>%s</machineName>"
                     + "</configuration>"
                     + "<testsuites>",
-                    new Date(), System.getProperty("os.name"),System.getProperty("os.version"),
+                    new Date(), System.getProperty("os.name"), System.getProperty("os.version"),
                     System.getProperty("java.version"), machineName);
                 fout.write(extraXML.getBytes());
                 byte[] bytes = new byte[49152];

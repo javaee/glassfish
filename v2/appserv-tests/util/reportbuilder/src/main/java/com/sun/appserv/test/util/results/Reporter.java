@@ -1,4 +1,5 @@
 package com.sun.appserv.test.util.results;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -274,7 +275,8 @@ public class Reporter extends Thread implements Serializable {
     }
 
     private Test findTest(final String testId, final TestSuite suite) {
-        for (Test test : suite.getTests()) {
+//        Test test = suite.getTests().get(testId);
+        for (Test test : suite.getTests().values()) {
             if (testId.trim().equals(test.getId())) {
                 return test;
             }
@@ -286,14 +288,17 @@ public class Reporter extends Thread implements Serializable {
     }
 
     private TestCase findTestCase(final String testCaseId, final Test test, final TestSuite suite) {
-        for (TestCase testCase : test.getTestCases()) {
+//        TestCase testCase = test.getTestCases().get(testCaseId);
+        for (TestCase testCase : test.getTestCases().values()) {
             if (testCase.getId().equals(testCaseId.trim())) {
                 return testCase;
             }
         }
+//        if (testCase == null) {
         System.err.println(String.format("ERROR: setTestCaseStatus might have called without addTestCase."
             + "  Given %s::%s::%s\ntest case: %s", suite.getId(), test.getId(), testCaseId, test.getTestCases()));
         Thread.dumpStack();
+//        }
         return null;
     }
 
