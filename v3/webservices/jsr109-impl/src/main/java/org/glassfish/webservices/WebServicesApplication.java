@@ -19,9 +19,11 @@ import java.util.Iterator;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URL;
 
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.util.WebServerInfo;
 import org.jvnet.hk2.component.Habitat;
 
 
@@ -36,7 +38,7 @@ import org.jvnet.hk2.component.Habitat;
 
 public class WebServicesApplication implements ApplicationContainer {
 
-    private Collection<String> contextRoots;
+    private ArrayList<EjbEndpoint> ejbendpoints;
 
     private com.sun.grizzly.tcp.Adapter adapter;
 
@@ -62,7 +64,7 @@ public class WebServicesApplication implements ApplicationContainer {
         this.deploymentCtx = context;
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
-        this.contextRoots = getContextRoots();
+        this.ejbendpoints = getEjbEndpoints();
         this.adapter = (com.sun.grizzly.tcp.Adapter) new EjbWSAdapter();
         this.config = config;
         this.habitat = habitat;
@@ -79,28 +81,31 @@ public class WebServicesApplication implements ApplicationContainer {
         try {
             app = deploymentCtx.getModuleMetaData(Application.class);
            if (!isJAXWSbasedApp(app)) {
-                Iterator<String> iter = contextRoots.iterator();
-                String contextRoot = null;
+                Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
+                EjbEndpoint ejbendpoint = null;
                 while(iter.hasNext()) {
-                    contextRoot = iter.next();
-                    dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
+                   ejbendpoint = iter.next();
+                   String contextRoot = ejbendpoint.contextRoot;
 
-                    logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
-                      app.getAppName(),
-                      //                                                                 vvvvv TODO
-                      new WsUtil().getWebServerInfoForDAS().getWebServerRootURL(false).toString() + contextRoot)
-                    );
-                }
+                   dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
+                   logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
+                               app.getAppName(),
+
+                               new WsUtil().getWebServerInfoForDAS().getWebServerRootURL(ejbendpoint.isSecure).toString() + contextRoot)
+                       );
+               }
             }
         } catch (EndpointRegistrationException e) {
-            logger.log(Level.SEVERE,  "Error in registering the endpoint",e);
+            logger.log(Level.SEVERE,  format(rb.getString("error.registering.endpoint"),e.toString()));
         }
         return true;
     }
 
 
-    private Collection<String> getContextRoots() {
-        contextRoots = new ArrayList<String>();
+    private ArrayList<EjbEndpoint> getEjbEndpoints() {
+        ejbendpoints = new ArrayList<EjbEndpoint>();
+        WsUtil wsutil = new WsUtil();
+        EjbEndpoint ejbendpoint = null;
         Application app = deploymentCtx.getModuleMetaData(Application.class);
         if (!isJAXWSbasedApp(app)) {
             Set<BundleDescriptor> bundles = app.getBundleDescriptors();
@@ -110,26 +115,31 @@ public class WebServicesApplication implements ApplicationContainer {
 
                     for (WebServiceEndpoint endpoint:ws.getEndpoints() ){
                         //Only add for ejb based endpoints
-                        if (endpoint.implementedByEjbComponent())
-                            contextRoots.add(endpoint.getEndpointAddressUri())  ;
+                        if (endpoint.implementedByEjbComponent()) {
+                            ejbendpoint = new EjbEndpoint(endpoint.getEndpointAddressUri(),endpoint.isSecure()) ;
+                            ejbendpoints.add(ejbendpoint) ;
+                        }
                     }
                 }
             }
         }
 
-        return contextRoots;
+
+        return ejbendpoints;
     }
 
     public boolean stop(ApplicationContext stopContext) {
         try {
-            Iterator<String> iter = contextRoots.iterator();
+            Iterator<EjbEndpoint> iter = ejbendpoints.iterator();
             String contextRoot = null;
+            EjbEndpoint endpoint = null;
             while(iter.hasNext()) {
-                contextRoot = iter.next();
+                endpoint = iter.next();
+                contextRoot = endpoint.contextRoot;
                 dispatcher.unregisterEndpoint(contextRoot);
             }
         } catch (EndpointRegistrationException e) {
-            logger.log(Level.SEVERE,  "Error in unregistering the endpoint",e);
+            logger.log(Level.SEVERE,  format(rb.getString("error.unregistering.endpoint"),e.toString()));
             return false;
         }
         return true;
@@ -165,6 +175,17 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private String format(String key, String ... values){
         return MessageFormat.format(key, (Object[]) values);
+    }
+
+    class EjbEndpoint {
+        private final String contextRoot;
+
+        private boolean isSecure;
+
+        EjbEndpoint(String contextRoot,boolean secure){
+            this.contextRoot = contextRoot;
+            this.isSecure = secure;
+        }
     }
 
 }
