@@ -7,11 +7,17 @@ Use is subject to License Terms  -->
 
 <a name="task-integratejdbcdriver"></a><h4>To Integrate a JDBC Driver</h4><a name="indexterm-3"></a><p>A driver supporting the JDBC API (JDBC driver) translates the JDBC calls of
 an application into the protocol of the database server.</p><ul>
-<li><b>To integrate the JDBC driver into an administrative domain, do either of the
-following:</b><ul>
+<li><b>To integrate the JDBC driver into an Enterprise Server domain, do either of
+the following:</b><ul>
 <li><b>Make the driver accessible to the common class loader.</b><ol style="list-style-type: lower-alpha">
 <li><b>Copy the JAR and ZIP files of the driver into the <i>domain-dir</i><tt>/lib</tt>
-directory; or copy the class files into the <i>domain-dir</i><tt>/lib/ext</tt> directory.</b></li>
+directory.</b>
+<hr><p><b>Note - </b>There is one exception to this rule. If you are using the
+Oracle JDBC driver and you wish to take advantage of the EclipseLink extensions
+that are available for use with Oracle databases, you must place the JAR
+files for the Oracle JDBC driver in the <i>domain-dir</i><tt>/lib/ext</tt> directory.</p>
+<hr>
+</li>
 <li><b>Restart the domain.</b></li></ol></li>
 <li><b>Make the driver accessible to the system class loader.</b><ol style="list-style-type: lower-alpha">
 <li><b>In the navigation tree, expand the Configuration node.</b></li>

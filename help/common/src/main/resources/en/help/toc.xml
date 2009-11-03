@@ -25,6 +25,7 @@
         <tocitem target="task-appdeployruby" text="To Deploy a Ruby Application" expand="false"></tocitem>
         <tocitem target="task-appedit" text="To Edit a Deployed Application" expand="false"></tocitem>
         <tocitem target="task-appviewdesc" text="To View Descriptors of an Application" expand="false"></tocitem>
+        <tocitem target="task-endpoint" text="To View Endpoint Information for a Web Service" expand="false"></tocitem>
         <tocitem target="task-applaunch" text="To Launch an Application" expand="false"></tocitem>
         <tocitem target="task-appredeploy" text="To Redeploy a Deployed Application" expand="false"></tocitem>
         <tocitem target="task-apprestart" text="To Restart a Deployed Application" expand="false"></tocitem></tocitem>
@@ -109,6 +110,7 @@
         <tocitem target="ref-applications" text="Applications" expand="false"></tocitem>
         <tocitem target="ref-appedit" text="Edit Application" expand="false"></tocitem>
         <tocitem target="ref-webapp-editdd" text="Module Descriptors" expand="false"></tocitem>
+        <tocitem target="ref-endpoint" text="Web Service Endpoint Information" expand="false"></tocitem>
         <tocitem target="ref-uploaddev" text="Deploy Applications or Modules" expand="false"></tocitem>
         <tocitem target="ref-redeploy" text="Redeploy Applications or Modules" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-lifecyclemodules" text="Lifecycle Modules" expand="false">

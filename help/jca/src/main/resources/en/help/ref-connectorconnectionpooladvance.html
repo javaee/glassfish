@@ -17,6 +17,8 @@ connector connection pool.</p><p>The Edit Advanced Attributes page contains the 
 <dd><p>The number of attempts that will be made if there is a failure in creating a new connection. A value of 0 indicates that no attempts will be made to create the connection again. The default value is 0.</p></dd>
 <dt>Retry Interval</dt>
 <dd><p>The interval, in seconds, between two attempts to create a connection. This attribute is used only if the value of Creation Retry Attempts is greater than 0. The default value is 10 seconds.</p></dd>
+<dt>Pooling</dt>
+<dd><p>Enables connection pooling for the pool. This option is enabled by default.</p></dd>
 <dt>Lazy Association</dt>
 <dd><p>If this option is selected, connections will be lazily associated when an operation is performed on them. The connections are disassociated when the transaction is completed and a component method ends, which helps reuse of the physical connections. This option is disabled by default.</p></dd>
 <dt>Lazy Connection Enlistment</dt>

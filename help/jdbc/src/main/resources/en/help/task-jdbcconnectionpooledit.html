@@ -10,10 +10,18 @@ Use is subject to License Terms  -->
 <li><b>Under the Resources node, expand the JDBC node.</b></li>
 <li><b>Under the JDBC node, select the Connection Pools node.</b><p>The Connection Pools page opens.</p></li>
 <li><b>Click the name of the connection pool that you are editing.</b><p>The Edit Connection Pool page opens.</p></li>
-<li><b>From the Resource Type drop-down list, select a resource type.</b><p>Choices include <tt>javax.sql.DataSource</tt> (local transactions only), <tt>javax.sql.XADataSource</tt> (global transactions), and <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions,
-possible performance improvements).</p></li>
+<li><b>From the Resource Type drop-down list, select a resource type.</b><p>Choices include <tt>javax.sql.DataSource</tt> (local transactions only), <tt>javax.sql.XADataSource</tt> (global transactions), and <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions, possible performance
+improvements).</p></li>
 <li><b>In the Datasource Classname field, type the name of the vendor-specific class that
-implements the <tt>DataSource</tt> and/or <tt>XADataSource</tt> APIs.</b><p>This class is in the JDBC driver.</p></li>
+implements the <tt>DataSource</tt>, <tt>ConnectionPoolDataSource</tt>, or <tt>XADataSource</tt> API.</b><p>If you selected one of the datasource resource types, this field is usually
+filled in automatically with the class name associated with the resource type and database
+vendor you chose. If you selected the <tt>java.sql.Driver</tt> resource type, this field is
+disabled.</p></li>
+<li><b>In the Driver Classname field, type the name of the vendor-specific class that
+implements the <tt>java.sql.Driver</tt> API.</b><p>If you selected the <tt>java.sql.Driver</tt> resource type, this field is usually filled in
+automatically with the class name associated with the driver and database vendor you
+chose. If you selected one of the datasource resource types, this field is
+disabled.</p></li>
 <li><b>Select the Ping Enabled checkbox to automatically ping the pool during pool creation
 or reconfiguration to identify and warn of any erroneous attribute values.</b><p>This option is disabled by default.</p></li>
 <li><b>In the Description field, type a short description for the connection pool.</b></li>

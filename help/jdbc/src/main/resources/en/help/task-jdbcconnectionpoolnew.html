@@ -10,7 +10,7 @@ aspects of a connection to a specific database.</p><h6>Before You Begin</h6><p>T
 supporting the JDBC API (JDBC driver). See <a href="task-integratejdbcdriver.html">To Integrate a JDBC Driver</a>.</p><p>The following information is required to create the JDBC connection pool. Gather this
 information before proceeding:</p>
 <ul><li><p>Database vendor name</p></li>
-<li><p>Resource type, such as <tt>javax.sql.DataSource</tt> (local transactions only), <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions, possible performance improvements), and <tt>javax.sql.XADataSource</tt> (global transactions)</p></li>
+<li><p>Resource type, such as <tt>javax.sql.DataSource</tt> (local transactions only), <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions, possible performance improvements), <tt>javax.sql.XADataSource</tt> (global transactions), and <tt>java.sql.Driver</tt></p></li>
 <li><p>Data source class name</p></li>
 <li><p>Required properties, such as the database name (URL), user name, and password</p></li></ul>
 <ol>
@@ -22,13 +22,20 @@ from the Connection Pools page, click New to create a new connection pool.</p>
 <hr>
 </li>
 <li><b>In the Name field, type a name for the new connection pool.</b><p>This is a required field.</p></li>
-<li><b>From the Resource Type drop-down list, select a resource type.</b><p>Choices include <tt>javax.sql.XADataSource</tt> (global transactions), <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions, possible performance improvements),  and <tt>javax.sql.DataSource</tt>
-(local transactions only).</p></li>
+<li><b>From the Resource Type drop-down list, select a resource type.</b><p>Choices include <tt>javax.sql.XADataSource</tt> (global transactions), <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions, possible performance improvements), <tt>javax.sql.DataSource</tt> (local transactions
+only), and <tt>java.sql.Driver</tt>.</p></li>
 <li><b>From the Database Vendor drop-down list, select a database vendor.</b></li>
 <li><b>Click Next.</b><p>The New JDBC Connection Pool (Step 2 of 2) page opens.</p></li>
 <li><b>In the Datasource Classname field, type the name of the vendor-specific class that
-implements the <tt>DataSource</tt> and/or <tt>XADataSource</tt> APIs.</b><p>This field is usually filled in automatically with the class name associated with
-the resource type and database vendor you chose.</p></li>
+implements the <tt>DataSource</tt>, <tt>ConnectionPoolDataSource</tt>, or <tt>XADataSource</tt> API.</b><p>If you selected one of the datasource resource types, this field is usually
+filled in automatically with the class name associated with the resource type and database
+vendor you chose. If you selected the <tt>java.sql.Driver</tt> resource type, this field is
+disabled.</p></li>
+<li><b>In the Driver Classname field, type the name of the vendor-specific class that
+implements the <tt>java.sql.Driver</tt> API.</b><p>If you selected the <tt>java.sql.Driver</tt> resource type, this field is usually filled in
+automatically with the class name associated with the driver and database vendor you
+chose. If you selected one of the datasource resource types, this field is
+disabled.</p></li>
 <li><b>Select the Ping Enabled checkbox to automatically ping the pool during pool creation
 or reconfiguration to identify and warn of any erroneous attribute values.</b><p>This option is disabled by default.</p></li>
 <li><b>In the Description field, type a short description for the connection pool.</b></li>

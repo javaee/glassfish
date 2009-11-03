@@ -34,7 +34,9 @@
     <indexitem target="ref-webapp-editdd" text="viewing deployment descriptors (reference)"></indexitem>
     <indexitem target="task-appviewdesc" text="viewing deployment descriptors (task)"></indexitem>
     <indexitem target="ref-appmonitoringdata" text="viewing monitoring data (reference)"></indexitem>
-    <indexitem target="task-appmonitoringdata" text="viewing monitoring data (task)"></indexitem></indexitem>
+    <indexitem target="task-appmonitoringdata" text="viewing monitoring data (task)"></indexitem>
+    <indexitem target="ref-endpoint" text="viewing web service endpoint information (reference)"></indexitem>
+    <indexitem target="task-endpoint" text="viewing web service endpoint information (task)"></indexitem></indexitem>
  <indexitem text="audit modules">
     <indexitem target="ref-auditmodulenew" text="creating (reference)"></indexitem>
     <indexitem target="task-auditmodulenew" text="creating (task)"></indexitem>
@@ -83,6 +85,9 @@
  <indexitem text="EJB jars">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-appdeployejb" text="deploying (task)"></indexitem></indexitem>
+ <indexitem text="endpoints">
+    <indexitem target="ref-endpoint" text="viewing information (reference)"></indexitem>
+    <indexitem target="task-endpoint" text="viewing information (task)"></indexitem></indexitem>
  <indexitem text="enterprise applications">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-deployentapp" text="deploying (task)"></indexitem></indexitem>
@@ -266,6 +271,9 @@
     <indexitem target="task-servermonitoringdata" text="viewing monitoring data (task)"></indexitem></indexitem>
  <indexitem text="web applications">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
-    <indexitem target="task-appdeployweb" text="deploying (task)"></indexitem>
+    <indexitem target="task-appdeployweb" text="deploying (task)"></indexitem></indexitem>
+ <indexitem text="web services">
+    <indexitem target="ref-endpoint" text="viewing endpoint information (reference)"></indexitem>
+    <indexitem target="task-endpoint" text="viewing endpoint information (task)"></indexitem>
 </indexitem>
 </index>

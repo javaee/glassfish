@@ -7,9 +7,9 @@ Use is subject to License Terms  -->
 <a name="indexterm-22"></a><p>Use the New JDBC Connection Pool (Step 2 of 2) page to
 create a new JDBC connection pool.</p><p>The New JDBC Connection Pool (Step 2 of 2) page contains the
 following options.</p><dl><dt>Datasource Classname</dt>
-<dd><p>The vendor-specific class name that implements the DataSource or XADataSource APIs. This field is usually filled in automatically with the class name associated with the resource type and database vendor you chose.</p></dd>
+<dd><p>The vendor-specific class name that implements the <tt>DataSource</tt>, <tt>ConnectionPoolDataSource</tt>, or <tt>XADataSource</tt> API. If you selected one of the datasource resource types, this field is usually filled in automatically with the class name associated with the resource type and database vendor you chose. If you selected the <tt>java.sql.Driver</tt> resource type, this field is disabled.</p></dd>
 <dt>Driver Classname</dt>
-<dd><p>The vendor-supplied JDBC driver class name. This driver must implement the <tt>java.sql.Driver</tt> interface. The driver classname is a read-only field.</p></dd>
+<dd><p>The vendor-supplied JDBC driver class name. If you selected the <tt>java.sql.Driver</tt> resource type, this field is usually filled in automatically with the class name associated with the driver and database vendor you chose. If you selected one of the datasource resource types, this field is disabled.</p></dd>
 <dt>Ping</dt>
 <dd><p>If this option is selected, the pool will be pinged automatically during pool creation or reconfiguration to identify and warn of any erroneous attribute values. This option is disabled by default.</p></dd>
 <dt>Description</dt>
