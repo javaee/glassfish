@@ -45,83 +45,26 @@ println("sectionDetail =  $attribute{sectionDetail}");
 
 <sun:table id="subcomponents"  title="$resource{i18n.ComponentTable.tableTitle}" style="padding: 10pt; width:95%" >
     <!beforeCreate
-        getSubComponentsNew(appName="#{appName}"  result="#{requestScope.listOfSection}"
-        has2="#{requestScope.has2}"  has3="#{requestScope.has3}");
+        getSubComponentsNew(appName="#{appName}"  result="#{requestScope.listOfRows}");
     />
+     <sun:tableRowGroup id="rowGroup1"  data={"$attribute{listOfRows}"} sourceVar="td">
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colModule}" sort="moduleName" rowHeader="$boolean{true}" id="colModule">
+            <staticText id="nameCol" value="#{td.value.moduleName}" />
+        </sun:tableColumn>
 
-<!--
-   <foreach key="subComp" list="#{requestScope.listOfSection}">
-
-  <sun:tableRowGroup id="group" data={"#{subComp['sectionDetail']}"}  sourceVar="td" headerText="#{subComp['sectionTitle']}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="No subComponents">
-        <!beforeCreate
-            println("==============#{subComp['sectionTitle']}");
-            println("==============#{subComp['sectionDetail']}");
-        />
--->
-
-     <sun:tableRowGroup id="group" data={"$attribute{sectionDetail0}"}  sourceVar="td" headerText="$attribute{sectionTitle0}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="No subComponents">
-        <!beforeCreate
-            setAttribute(key="sectionTitle0", value="#{listOfSection[0].sectionTitle}");
-            setAttribute(key="sectionDetail0", value="#{listOfSection[0].sectionDetail}");
-        />
-
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" sort="name" rowHeader="$boolean{false}" id="col1">
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" sort="name" rowHeader="$boolean{true}" id="col1">
             <staticText id="nameCol" value="#{td.value.name}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" sort="type" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" sort="type" rowHeader="$boolean{true}" id="col2">
             <staticText id="typeCol" value="#{td.value.type}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{false}" id="col3">
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
             <sun:hyperlink id="link" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
                 url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&subComponentName=#{td.value.name}" />
         </sun:tableColumn>
 
     </sun:tableRowGroup>
-
-    <sun:tableRowGroup id="group2" rendered="$attribute{has2}" data={"$attribute{sectionDetail2}"}  sourceVar="td" headerText="$attribute{sectionTitle2}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="No subComponents">
-        <!beforeCreate
-            setAttribute(key="sectionTitle2", value="#{listOfSection[1].sectionTitle}");
-            setAttribute(key="sectionDetail2", value="#{listOfSection[1].sectionDetail}");
-        />
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" sort="name" rowHeader="$boolean{false}" id="col1">
-            <staticText id="nameCol" value="#{td.value.name}" />
-        </sun:tableColumn>
-
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" sort="type" rowHeader="$boolean{false}" id="col2">
-            <staticText id="typeCol" value="#{td.value.type}" />
-        </sun:tableColumn>
-
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{false}" id="col3">
-            <sun:hyperlink id="link" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
-                url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&subComponentName=#{td.value.name}" />
-        </sun:tableColumn>
-    </sun:tableRowGroup>
-
-    <sun:tableRowGroup id="group3" rendered="$attribute{has3}" data={"$attribute{sectionDetail3}"}  sourceVar="td" headerText="$attribute{sectionTitle3}"
-        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="No subComponents">
-        <!beforeCreate
-            setAttribute(key="sectionTitle3", value="#{listOfSection[2].sectionTitle}");
-            setAttribute(key="sectionDetail3", value="#{listOfSection[2].sectionDetail}");
-        />
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" sort="name" rowHeader="$boolean{false}" id="col1">
-            <staticText id="nameCol" value="#{td.value.name}" />
-        </sun:tableColumn>
-
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" sort="type" rowHeader="$boolean{false}" id="col2">
-            <staticText id="typeCol" value="#{td.value.type}" />
-        </sun:tableColumn>
-
-        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{false}" id="col3">
-            <sun:hyperlink id="link" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
-                url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&subComponentName=#{td.value.name}" />
-        </sun:tableColumn>
-    </sun:tableRowGroup>
-  //</foreach>
-
 </sun:table>
 "<br /><br />

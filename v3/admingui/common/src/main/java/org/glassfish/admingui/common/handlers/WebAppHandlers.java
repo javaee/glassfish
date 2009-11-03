@@ -174,25 +174,22 @@ public class WebAppHandlers {
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true)},
         output = {
-            @HandlerOutput(name = "result", type = java.util.List.class),
-            @HandlerOutput(name = "has2", type = Boolean.class),
-            @HandlerOutput(name = "has3", type = Boolean.class)})
+            @HandlerOutput(name = "result", type = java.util.List.class)})
     public static void getSubComponentsNew(HandlerContext handlerCtx) {
         List result = new ArrayList();
         String appName = (String) handlerCtx.getInputValue("appName");
         Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
         for(AMXProxy oneModule: modules.values()){
-            Map oneSection = new HashMap();
+            Map oneRow = new HashMap();
             List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
-            List<Map> sectionDetail = getSubComponentDetail(appName, oneModule.getName(), snifferList);
-            oneSection.put("sectionTitle", oneModule.getName());  // + " : " + snifferList.toString());
-            oneSection.put("sectionDetail", sectionDetail);
-            result.add(oneSection);
+            oneRow.put("moduleName", oneModule.getName());
+            oneRow.put("name", " --- ");
+            oneRow.put("type", " --- ");
+            oneRow.put("hasEndpoint", false);
+            result.add(oneRow);
+            getSubComponentDetail(appName, oneModule.getName(), snifferList, result);
         }
-
         handlerCtx.setOutputValue("result", result);
-        handlerCtx.setOutputValue("has2", (result.size()>1)? true: false);
-        handlerCtx.setOutputValue("has3", (result.size()>2)? true: false);
     }
 
 
@@ -221,11 +218,11 @@ public class WebAppHandlers {
     }
 
 
-    private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList){
+    private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList, List<Map> result){
         Map<String, String> sMap = V3AMX.getInstance().getRuntime().getSubComponentsOfModule(appName, moduleName);
-        List result = new ArrayList();
         for(String cName: sMap.keySet()){
             Map oneRow = new HashMap();
+            oneRow.put("moduleName", moduleName);
             oneRow.put("name", cName);
             oneRow.put("type", sMap.get(cName));
             if (snifferList.contains("webservices")){
@@ -237,7 +234,6 @@ public class WebAppHandlers {
         }
         return result;
     }
-
 
 
     //This method will have to be modified once the webservice endpoint info is de-coupled from monitoring framework.
