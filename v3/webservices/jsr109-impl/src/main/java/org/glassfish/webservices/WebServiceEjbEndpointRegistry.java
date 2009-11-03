@@ -54,6 +54,8 @@ import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 import org.glassfish.api.container.RequestDispatcher;
 
+import javax.xml.ws.WebServiceException;
+
 
 /**
  * This class acts as a registry of all the webservice EJB end points
@@ -94,23 +96,25 @@ public class WebServiceEjbEndpointRegistry implements WSEjbEndpointRegistry {
     public void registerEndpoint(WebServiceEndpoint webserviceEndpoint,
                                   EjbEndpointFacade ejbContainer,
                                   Object servant, Class tieClass)  {
-        String ctxtRoot;
+        String ctxtRoot = null;
         EjbRuntimeEndpointInfo endpoint = createEjbEndpointInfo(webserviceEndpoint, ejbContainer,servant,tieClass);
         synchronized(webServiceEjbEndpoints) {
             String uriRaw = endpoint.getEndpointAddressUri();
-            String uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
-            if (webServiceEjbEndpoints.containsKey(uri)) {
-                logger.log(Level.SEVERE,
-                        format(rb.getString("enterprise.webservice.duplicateService"),
-                        uri));
-            }
-            webServiceEjbEndpoints.put(uri, endpoint);
-            regenerateEjbContextRoots();
-            ctxtRoot = getContextRootForUri(uri);
-            if(adapterListMap.get(ctxtRoot) == null) {
-                ServletAdapterList list = new ServletAdapterList();
-                adapterListMap.put(ctxtRoot, list);
-            }
+            if (uriRaw != null ) {
+                String uri = (uriRaw.charAt(0)=='/') ? uriRaw.substring(1) : uriRaw;
+                if (webServiceEjbEndpoints.containsKey(uri)) {
+                    logger.log(Level.SEVERE,
+                            format(rb.getString("enterprise.webservice.duplicateService"),
+                                    uri));
+                }
+                webServiceEjbEndpoints.put(uri, endpoint);
+                regenerateEjbContextRoots();
+                ctxtRoot = getContextRootForUri(uri);
+                if(adapterListMap.get(ctxtRoot) == null) {
+                    ServletAdapterList list = new ServletAdapterList();
+                    adapterListMap.put(ctxtRoot, list);
+                }
+            } else throw new WebServiceException(rb.getString("ejb.endpointuri.error"));
         }
 
         
