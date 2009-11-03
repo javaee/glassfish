@@ -40,7 +40,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.externalResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Jmail:externalResources','/full/jmailTreeNode.jsf','Jmail:externalResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jndi:externalResources','/full/jmailTreeNode.jsf','jndi:externalResources');"
 >
 <!define name="content">
     <event>

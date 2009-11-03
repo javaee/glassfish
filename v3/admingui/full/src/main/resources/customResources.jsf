@@ -42,7 +42,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.customResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Jmail:customResources','/full/jmailTreeNode.jsf','Jmail:customResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jndi:customResources','/full/jmailTreeNode.jsf','jndi:customResources');"
 >
 
 <!define name="content">
