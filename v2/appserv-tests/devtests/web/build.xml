@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="471"/>
+    <property name="TOTAL_EXPECTED" value="472"/>
 
     &commonSetup;
     &commonBuild;
@@ -192,6 +192,7 @@
         <ant dir="requestDispatcherForwardHEADRequest" target="all"/>
         <ant dir="requestDispatcherMultipleForward" target="all"/>
         <ant dir="requestDispatcherForwardNonHttp" target="all"/>
+        <ant dir="requestDispatcherIncludeNonHttp" target="all"/>
         <ant dir="multibyteValue" target="all"/>
         <ant dir="multiByteGETQueryParamSetCharEncoding" target="all"/>
         <ant dir="multiByteGETQueryParamDefaultCharset" target="all"/>
