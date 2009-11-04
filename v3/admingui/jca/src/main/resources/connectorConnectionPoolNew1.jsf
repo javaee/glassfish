@@ -115,7 +115,7 @@
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="resAdapterChoosen" value="#{click.selected}")
                                     setAttribute(key="fromStep1" value="#{true}")
-                                    gf.gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
+                                    gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
                                 />
                                 </sun:dropDown>
                             </sun:property>

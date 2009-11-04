@@ -71,13 +71,13 @@
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="resAdapter" value="#{click.selected}");
                     setAttribute(key="reload" value="#{true}" );
-                    //gf.gf.navigate works only for new page & not for edit page
+                    //gf.navigate works only for new page & not for edit page
                     //conversely gf.redirect works only for edit page & not new page
                     //needs more investigation - same scenario in component below too
                     if(!#{edit}){
                         getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
-                        gf.gf.navigate(page="#{selfPage}");
+                        gf.navigate(page="#{selfPage}");
                     }
                     if(#{edit}){
                         getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
@@ -99,7 +99,7 @@
                     if(!#{edit}){
                         getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
-                        gf.gf.navigate(page="#{selfPage}");
+                        gf.navigate(page="#{selfPage}");
                     }
                     if(#{edit}){
                         getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});

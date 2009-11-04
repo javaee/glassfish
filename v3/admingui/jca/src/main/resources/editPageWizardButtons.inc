@@ -44,7 +44,7 @@
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
                     setAttribute(key="fromStep2" value="#{true}")
-                    gf.gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf")
+                    gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf")
         
                  />
             </sun:button>
