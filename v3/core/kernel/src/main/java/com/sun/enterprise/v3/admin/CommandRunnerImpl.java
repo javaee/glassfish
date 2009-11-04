@@ -834,6 +834,12 @@ public class CommandRunnerImpl implements CommandRunner {
                 validOption = pModel.isParamId(key);
                 if (validOption)
                     break;
+                if (pModel.getParam().password()) {
+                    validOption = pModel.isParamId(
+                        ASADMIN_CMD_PREFIX + key.toUpperCase(Locale.ENGLISH));
+                    if (validOption)
+                        break;
+                }
             }
             if (!validOption) {
                 throw new ComponentException(" Invalid option: " + key);
