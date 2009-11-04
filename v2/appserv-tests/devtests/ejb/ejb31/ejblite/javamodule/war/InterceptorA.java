@@ -12,7 +12,7 @@ import javax.interceptor.InvocationContext;
 import javax.interceptor.AroundInvoke;
 
 
-public class InterceptorA {
+public class InterceptorA extends InterceptorSuper {
 
     @EJB StatelessBean s;
     @Resource ORB orb;
@@ -25,8 +25,8 @@ public class InterceptorA {
 
 
     @AroundInvoke
-    private Object roundInvoke(InvocationContext c) throws Exception {
-	System.out.println("In InterceptorA::aroundInvoke() ");
+    public Object roundInvoke(InvocationContext c) throws Exception {
+	System.out.println("In InterceptorA::roundInvoke() ");
 	if( c.getParameters().length > 0 ) {
 	    System.out.println("param 1 = " + c.getParameters()[0]);
 	}

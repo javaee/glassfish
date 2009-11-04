@@ -8,7 +8,7 @@ import java.util.Map;
 
 import javax.ejb.EJBException;
 
-public class InterceptorB {
+public class InterceptorB extends InterceptorSuper {
 
     @PostConstruct
     private void init(InvocationContext c) throws Exception {
@@ -16,9 +16,13 @@ public class InterceptorB {
 	c.proceed();
     }
 
+    @Override
+	public Object roundInvoke(InvocationContext c) throws Exception {
+	throw new RuntimeException("Should not reach here");
+    }
 
     @AroundInvoke
-    private Object roundInvoke(InvocationContext c) throws Exception {
+    private Object aroundInvoke(InvocationContext c) throws Exception {
 	System.out.println("In InterceptorB::aroundInvoke() ");
 	c.getContextData().put("foo", "bar");
 	Object returnValue = c.proceed();
