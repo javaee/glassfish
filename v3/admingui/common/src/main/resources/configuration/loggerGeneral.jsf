@@ -73,9 +73,11 @@
                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['useSystemLogging']}" selectedValue="true" />
            </sun:property> 
 
+        <!-- commented out for now.
            <sun:property id="logtoConsole"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogtoConsole}" helpText="$resource{i18nc.log.LogtoConsoleHelp}">
                 <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['logtoConsole']}"  selectedValue="true" />
            </sun:property>
+        -->
 
            <sun:property id="logFileProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.LogFile}" helpText="$resource{i18nc.log.LogFileHelp}">
                 <sun:textField id="LogFile" columns="$int{70}" text="#{pageSession.valueMap['file']}"/>
