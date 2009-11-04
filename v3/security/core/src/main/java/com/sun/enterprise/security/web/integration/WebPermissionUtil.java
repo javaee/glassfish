@@ -447,6 +447,26 @@ public class WebPermissionUtil {
 	}
     }
 
+    /**
+     * Remove All Policy Statements from Configuration
+     * config must be in open state when this method is called
+     * @param pc
+     * @param wbd
+     * @throws javax.security.jacc.PolicyContextException
+     */
+    public static void removePolicyStatements(PolicyConfiguration pc,
+            WebBundleDescriptor wbd)
+            throws javax.security.jacc.PolicyContextException {
+
+        pc.removeUncheckedPolicy();
+        pc.removeExcludedPolicy();
+
+        Set<Role> roleSet = wbd.getRoles();
+        for (Role r : roleSet) {
+            pc.removeRole(r.getName());
+        }
+    }
+    
     public static void processConstraints(WebBundleDescriptor wbd,
 					  PolicyConfiguration pc)
     throws javax.security.jacc.PolicyContextException 

@@ -412,7 +412,8 @@ public interface PolicyConfiguration {
 
    /**
     * Used to remove a role and all its permissions from this
-    * PolicyConfiguration.
+    * PolicyConfiguration. This method has no effect on the links
+    * between this PolicyConfiguration and others.
     * <P>
     * @param roleName the name of the Role to remove from this 
     * PolicyConfiguration.
@@ -437,7 +438,8 @@ public interface PolicyConfiguration {
 
    /**
     * Used to remove any unchecked policy statements from this 
-    * PolicyConfiguration.
+    * PolicyConfiguration. This method has no effect on the links
+    * between this PolicyConfiguration and others.
     *
     * @throws java.lang.SecurityException
     * if called by an AccessControlContext that has not been
@@ -460,7 +462,8 @@ public interface PolicyConfiguration {
 
    /**
     * Used to remove any excluded policy statements from this
-    * PolicyConfiguration.
+    * PolicyConfiguration. This method has no effect on the links
+    * between this PolicyConfiguration and others.
     *
     * @throws java.lang.SecurityException
     * if called by an AccessControlContext that has not been

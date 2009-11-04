@@ -170,9 +170,10 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 if (remove) {
                     String cid = SecurityUtil.getContextID(webBD);
                     WebSecurityManager wsm = wsmf.getManager(cid, null, true);
-                    if (wsm != null) {
-                        wsm.destroy();
-                    }
+//                    if (wsm != null) {
+//                        wsm.destroy();
+//                    }
+                     WebSecurityManager.removePolicyStatements(cid,webBD);
                 }
                 wsmf.createManager(webBD, true, serverContext);
             }

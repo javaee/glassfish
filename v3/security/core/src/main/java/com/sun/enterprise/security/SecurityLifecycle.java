@@ -134,8 +134,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
             if (Util.isEmbeddedServer()) {
                 System.setProperty("java.security.auth.login.config", Util.writeConfigFileToTempDir("login.conf").getAbsolutePath());
                 System.setProperty("java.security.policy", Util.writeConfigFileToTempDir("server.policy").getAbsolutePath());
-                
-                
             }
             
             // security manager is set here so that it can be accessed from

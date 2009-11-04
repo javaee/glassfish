@@ -395,17 +395,24 @@ public class WebSecurityManager  {
         return policy.implies(prdm, perm);
     }    
 
-    
-    private synchronized PolicyConfigurationFactory getPolicyFactory() 
+
+    private  PolicyConfigurationFactory getPolicyFactory() throws PolicyContextException {
+        if (pcf != null) {
+            return pcf;
+        }
+        return _getPolicyFactory();
+    }
+
+    private synchronized PolicyConfigurationFactory _getPolicyFactory()
 	throws PolicyContextException {
     	if (pcf == null) {
             try {
 		pcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 	    } catch(ClassNotFoundException cnfe){
-		logger.severe("jaccfactory.notfound");
+		logger.log(Level.SEVERE,"jaccfactory.notfound", cnfe);
 		throw new PolicyContextException(cnfe);
 	    } catch(PolicyContextException pce){
-		logger.severe("jaccfactory.notfound");
+		logger.log(Level.SEVERE,"jaccfactory.notfound", pce);
 		throw pce;
 	    }
 	}
@@ -555,7 +562,37 @@ public class WebSecurityManager  {
         probeProvider.policyDestructionEndedEvent(this.getAppId());
         wsmf.getManager(CONTEXT_ID,null,true);
     }
-   
+
+     public static void removePolicyStatements(String cid,WebBundleDescriptor wbd)
+            throws PolicyContextException {
+        PolicyConfigurationFactory factory;
+        try {
+            factory = PolicyConfigurationFactory.getPolicyConfigurationFactory();
+        } catch(ClassNotFoundException cnfe){
+            logger.log(Level.SEVERE, "jaccfactory.notfound", cnfe);
+            throw new PolicyContextException(cnfe);
+	} catch(PolicyContextException pce){
+            logger.log(Level.SEVERE, "jaccfactory.notfound", pce);
+            throw pce;
+	}
+
+        if (cid == null) {
+            cid = WebSecurityManager.getContextID(wbd);
+            if (cid == null) {
+                return;
+            }
+        }
+
+        boolean wasInService = factory.inService(cid);
+        PolicyConfiguration config = factory.getPolicyConfiguration(cid,false);
+	WebPermissionUtil.removePolicyStatements(config,wbd);
+
+        // refresh policy if the context was in service
+	if (wasInService) {
+            Policy.getPolicy().refresh();
+	}
+    }
+
     private static String setPolicyContext(final String ctxID) throws Throwable {
 	String old = PolicyContext.getContextID();
 	if (old != ctxID && 
