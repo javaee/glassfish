@@ -1937,7 +1937,8 @@ admingui.ajax = {
 	}
 	this.respTarget = respTarget;
 	var params = {
-	    execute: '@this',
+	    // I need to do this by default so all form values get processed.
+	    execute: '@all',
 	    bare: true,
 	    render: '@all',
 	    onComplete: admingui.ajax.handleResponse
@@ -2256,6 +2257,8 @@ admingui.woodstock = {
 	var args = {};
 	var linkId = hyperlink.id;
 	args[linkId + "_submittedField"] = linkId;
+	/*
+	 * Not needed we're executing everything anyway
 	var idx = linkId.indexOf('row');
 	if (idx > 0) {
 	    idx = linkId.indexOf(':', idx + 3);
@@ -2266,6 +2269,7 @@ admingui.woodstock = {
 		args['execute'] = '@all';//linkId.substring(0, idx);
 	    }
 	}
+	*/
 
         //params are name value pairs but all one big string array
         //so params[0] and params[1] form the name and value of the first param
