@@ -220,12 +220,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.ws</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
             <optional>true</optional>
@@ -280,7 +274,7 @@
 	<dependency>
 	    <groupId>org.glassfish</groupId>
 	    <artifactId>bean-validator</artifactId>
-            <version>3.0-JBoss-4.0.0.Beta1-b01</version>
+            <version>3.0-JBoss-4.0.1_03</version>
             <optional>true</optional>
         </dependency>
         <dependency>
