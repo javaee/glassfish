@@ -40,8 +40,16 @@ import javax.servlet.http.*;
 
 public class EmptyStringTarget extends HttpServlet {
 
-    public void service(ServletRequest req, ServletResponse res)
+    public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+        if (!"/".equals(req.getPathInfo())) {
+            throw new ServletException("Wrong pathInfo, expected: \"/\", " +
+                "received: " + req.getPathInfo());
+        }
+        if (!"".equals(req.getServletPath())) {
+            throw new ServletException("Wrong servletPath, expected: \"\", " +
+                "received: " + req.getServletPath());
+        }
         res.getWriter().println("Hello World from empty string URL pattern");
     }
 }
