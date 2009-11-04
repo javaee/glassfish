@@ -11,6 +11,7 @@ import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 
 import javax.xml.namespace.QName;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 109 and sun-jaxws.xml style deployed endpoint's info.
@@ -65,6 +66,8 @@ public class DeployedEndpointData extends StatisticImpl {
     @Description("Deployment Type: 109 or RI")
     public final String deploymentType;
 
+    private Map<String, String> infoMap = new HashMap<String, String>();
+
     // 109 deployed endpoint
     public DeployedEndpointData(String path, Application app, WebServiceEndpoint endpoint) {
         super(path, "", "");
@@ -105,25 +108,22 @@ public class DeployedEndpointData extends StatisticImpl {
     }
 
     @Override
-    public Map getStaticAsMap() {
-        return statMap;
+    public Map<String, String> getStaticAsMap() {
+        return infoMap;
     }
 
     private void fillStatMap() {
-        Map m = super.getStaticAsMap();
-
-        m.put("appName", appName);
-        m.put("endpointName", endpointName);
-        m.put("namespace", namespace);
-        m.put("serviceName", serviceName);
-        m.put("portName", portName);
-        m.put("implClass", implClass);
-        m.put("address", address);
-        m.put("wsdl", wsdl);
-        m.put("tester", tester);
-        m.put("implType", implType);
-        m.put("deploymentType", deploymentType);
-
+        infoMap.put("appName", appName);
+        infoMap.put("endpointName", endpointName);
+        infoMap.put("namespace", namespace);
+        infoMap.put("serviceName", serviceName);
+        infoMap.put("portName", portName);
+        infoMap.put("implClass", implClass);
+        infoMap.put("address", address);
+        infoMap.put("wsdl", wsdl);
+        infoMap.put("tester", tester);
+        infoMap.put("implType", implType);
+        infoMap.put("deploymentType", deploymentType);
     }
 
 }

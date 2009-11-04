@@ -7,16 +7,10 @@ import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.Statistic;
 import org.glassfish.external.statistics.Stats;
-import org.glassfish.gmbal.Description;
-import org.glassfish.gmbal.AMXMetadata;
-import org.glassfish.gmbal.ManagedAttribute;
-import org.glassfish.gmbal.ManagedData;
-import org.glassfish.gmbal.ManagedObject;
+import org.glassfish.gmbal.*;
 
 import javax.servlet.ServletContext;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -34,29 +28,55 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WebServiceStatsProvider {
 
     // path (context path+url-pattern) --> deployed data
-    private final ConcurrentHashMap<String, DeployedEndpointData> endpoints =
-            new ConcurrentHashMap<String, DeployedEndpointData>();
+    private final Map<String, DeployedEndpointData> endpoints =
+            new HashMap<String, DeployedEndpointData>();
+
+    // appName --> module name --> endpoint name --> deployed data
+    private final Map<String, Map<String, Map<String, DeployedEndpointData>>> oneONine =
+        new HashMap<String, Map<String, Map<String, DeployedEndpointData>>>();
 
     // 109 endpoint deployment
     @ProbeListener("glassfish:webservices:deployment-109:deploy")
-    public void eeDeploy(@ProbeParam("app")Application app,
+    public synchronized void eeDeploy(@ProbeParam("app")Application app,
                        @ProbeParam("endpoint")WebServiceEndpoint endpoint) {
+
+        // path (context path+url-pattern) --> deployed data
         String path = endpoint.getEndpointAddressPath();
-        if (!endpoints.containsKey(path)) {
-            DeployedEndpointData data = new DeployedEndpointData(path, app, endpoint);
+        DeployedEndpointData data = endpoints.get(path);
+        if (data == null) {
+            data = new DeployedEndpointData(path, app, endpoint);
             endpoints.put(path, data);
+        }
+
+        // store as appName --> module name --> endpoint name --> deployed data
+        String appName = app.getAppName();
+        String moduleName = endpoint.getBundleDescriptor().getModuleName();
+        String endpointName = endpoint.getEndpointName();
+        Map<String, Map<String, DeployedEndpointData>> module = oneONine.get(appName);
+        if (module == null) {
+            module = new ConcurrentHashMap<String, Map<String, DeployedEndpointData>>();
+            oneONine.put(appName, module);
+        }
+        Map<String, DeployedEndpointData> moduleData = module.get(moduleName);
+        if (moduleData == null) {
+            moduleData = new ConcurrentHashMap<String, DeployedEndpointData>();
+            module.put(moduleName, moduleData);
+        }
+        DeployedEndpointData endpointData = moduleData.get(endpointName);
+        if (endpointData == null) {
+            moduleData.put(endpointName, data);
         }
     }
 
     // 109 enpoint undeployment
     @ProbeListener("glassfish:webservices:deployment-109:undeploy")
-    public void eeUndeploy(@ProbeParam("path")String path) {
+    public synchronized void eeUndeploy(@ProbeParam("path")String path) {
         endpoints.remove(path);
     }
 
     // sun-jaxws.xml deployment
     @ProbeListener("glassfish:webservices:deployment-ri:deploy")
-    public void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
+    public synchronized void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         String path = adapter.getServletContext().getContextPath()+adapter.getValidPath();
         if (!endpoints.containsKey(path)) {
             DeployedEndpointData data = new DeployedEndpointData(path, adapter);
@@ -66,7 +86,7 @@ public class WebServiceStatsProvider {
 
     // sun-jaxws.xml undeployment
     @ProbeListener("glassfish:webservices:deployment-ri:undeploy")
-    public void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
+    public synchronized void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         ServletContext ctxt = adapter.getServletContext();
         String name = ctxt.getContextPath()+adapter.getValidPath();
         endpoints.remove(name);
@@ -76,8 +96,26 @@ public class WebServiceStatsProvider {
     // implementing "Stats"
     @ManagedAttribute
     @Description("Deployed Web Service Endpoints")
-    public MyStats getEndpoints() {
+    public synchronized MyStats getEndpoints() {
         return new MyStats(endpoints);
+    }
+
+    // Returns all the 109 endpoints in a given application's module
+    @ManagedOperation
+    public synchronized List<Map<String, String>> get109Endpoints(String appName, String moduleName) {
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+
+        Map<String, Map<String, DeployedEndpointData>> app = oneONine.get(appName);
+        if (app != null) {
+            Map<String, DeployedEndpointData> module=  app.get(moduleName);
+            if (module != null) {
+                for(DeployedEndpointData data : module.values()) {
+                    list.add(data.getStaticAsMap());
+                }
+            }
+        }
+        
+        return list;
     }
 
     @ManagedData
