@@ -89,6 +89,8 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             
     private final HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
 
+    private String version;
+
     /**
      * Are we running multiple {@ Adapter} or {@link GrizzlyAdapter}
      */
@@ -99,6 +101,11 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         this.grizzlyService = grizzlyService;
         this.habitat = grizzlyService.habitat;
         logger = GrizzlyEmbeddedHttp.logger();
+
+        version = System.getProperty("product.name");
+        if (version == null) {
+            version = Version.getVersion();
+        }
     }
 
     /**
@@ -354,7 +361,9 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
         chunk.setBytes(errorBody, 0, errorBody.length);
         res.setContentLength(errorBody.length);
         res.setContentType("text/html");
-        res.addHeader("Server", Version.getVersion());
+        if (!version.isEmpty()){
+            res.addHeader("Server", version);
+        }
         res.sendHeaders();
         res.doWrite(chunk);
     }
