@@ -131,10 +131,13 @@ switchTab: function(tabElement, toShow, toHide) {
 		    </ui:event>
 	    </dynamicTreeNode>
 
-	"</div>
-	"<div id="helpContent" class="helpContentBox">
-	"
-	"</div>
+<f:verbatim>
+	</div>
+    <div id="outer" class="helpContentBox">
+	<div id="helpContent">
+	</div>
+    </div>
+</f:verbatim>
     </sun:body>
 
 <!-- 

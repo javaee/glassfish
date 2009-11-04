@@ -36,15 +36,21 @@
 
 .helpMenuBox {
     position: fixed;
-    width: 315px;
+    width: 320px;
     float: left;
     height: 100%;
     overflow: auto;
     border-right: 3px ridge #666;
+    z-index: 100; 
 }
 .helpContentBox {
     position: fixed;
-    left: 320px;
     height: 100%;
+    width: 100%;
     overflow: auto;
+    z-index: 50; 
+}
+
+.helpContentBox #helpContent {
+    margin-left: 326px;
 }
