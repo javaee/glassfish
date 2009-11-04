@@ -92,7 +92,7 @@
 	</sun:head>
 
 	<sun:body styleClass="yui-skin-sam" 
-		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);#{guiOnLoad};#{guiTemplateOnLoad};">
+		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);admingui.ajax.processElement(window, document.getElementById('content'), false);#{guiOnLoad};#{guiTemplateOnLoad};">
 "	    <div class="yui-skin-sam"><div id="gfLayoutTop"><div class="header_main">
 //                "<a class="skip" href="#navigation" alt="Skip masthead" title="Skip masthead">Skip Masthead</a>
 			<sun:form id="af" prependId="false">
@@ -120,13 +120,13 @@
 "		<div id="gfLayoutCenter">
 		    <!-- Content -->
                     "<a class="skip" name="contentArea">Content Area</a>
-"		    <div id="content" style="padding-left: 5px; padding-right: 5px;">
+		    <sun:markup tag="div" id="content" style="padding-left: 5px; padding-right: 5px;">
 			<!insert name="guiTemplateContent1">
 			    <!insert name="content">
 "				<h1>Please wait.... loading.</h1>
 			    </insert>
 			</insert>
-"		    </div>
+		    </sun:markup>
 "		</div>
 
 /*
