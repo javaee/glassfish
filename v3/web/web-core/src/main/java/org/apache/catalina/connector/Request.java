@@ -81,7 +81,6 @@ import javax.security.auth.Subject;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.sun.grizzly.util.WorkerThread;
 import com.sun.grizzly.util.buf.B2CConverter;
 // START CR 6309511
 import com.sun.grizzly.util.buf.ByteChunk;
@@ -130,6 +129,7 @@ import com.sun.enterprise.security.integration.RealmInitializer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.security.PrivilegedAction;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.deploy.LoginConfig;
 
@@ -1818,7 +1818,7 @@ public class Request
             throw new ServletException("Internal error: Context null");
         }
 
-        AuthenticatorBase authBase = (AuthenticatorBase) context.getAuthenticator();
+        final AuthenticatorBase authBase = (AuthenticatorBase) context.getAuthenticator();
 
         if (authBase == null) {
             throw new ServletException("Internal error: Authenticator null");
@@ -1839,13 +1839,26 @@ public class Request
             //JSR196 module is present
             alreadyCalled[0] = 1;
             try {
-                Realm realm = context.getRealm();
+                final Realm realm = context.getRealm();
+                final Request req = this;
                 if (realm == null) {
                     throw new ServletException("Internal error: realm null");
                 }
                 try {
-                    return realm.invokeAuthenticateDelegate(this, (HttpResponse) getResponse(),
-                            context, (AuthenticatorBase) authBase, true);
+                    if (Globals.IS_SECURITY_ENABLED) {
+                        Boolean ret = (Boolean) AccessController.doPrivileged(new PrivilegedAction() {
+                            public java.lang.Object run() {
+                                try {
+                                    return new Boolean(realm.invokeAuthenticateDelegate(req, (HttpResponse) getResponse(), context, (AuthenticatorBase) authBase, true));
+                                } catch (IOException ex) {
+                                    throw new RuntimeException("Exception thrown while attempting to authenticate", ex);
+                                }
+                            }
+                        });
+                        return ret.booleanValue();
+                    } else {
+                        return realm.invokeAuthenticateDelegate(req, (HttpResponse) getResponse(), context, (AuthenticatorBase) authBase, true);
+                    }
 
                 } catch (Exception ex) {
                     throw new ServletException("Exception thrown while attempting to authenticate", ex);
@@ -1859,7 +1872,7 @@ public class Request
     }
 
     @Override
-    public void login(String username, String password)
+    public void login(final String username, final String password)
             throws ServletException {
 
         if (getUserPrincipal() != null) {
@@ -1874,7 +1887,7 @@ public class Request
 
         LoginConfig loginConfig = context.getLoginConfig();
         String authMethod = (loginConfig != null) ? loginConfig.getAuthMethod() : "";
-        Realm realm = context.getRealm();
+        final Realm realm = context.getRealm();
         if (realm == null) {
             return;
         }
@@ -1886,7 +1899,16 @@ public class Request
                         "Required is BASIC or FORM, but found  " + authMethod);
 
             }
-            Principal webPrincipal = realm.authenticate(username, password);
+            Principal webPrincipal = null;
+            if (Globals.IS_SECURITY_ENABLED) {
+                webPrincipal = (Principal) AccessController.doPrivileged(new PrivilegedAction() {
+                    public java.lang.Object run() {
+                        return realm.authenticate(username, password);
+                    }
+                });
+            } else {
+                webPrincipal = realm.authenticate(username, password);
+            }
             if (webPrincipal == null) {
                 throw new ServletException(
                         "Failed login while attempting to authenticate " +
