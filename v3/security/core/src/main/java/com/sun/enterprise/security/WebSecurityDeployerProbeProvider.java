@@ -45,7 +45,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 public class WebSecurityDeployerProbeProvider {
 
     //Commenting the TimeStatistics related probes to be implemented later
-    /* @Probe(name = "webDeploymentStartedEvent")
+    /*@Probe(name = "webDeploymentStartedEvent")
     public void webDeploymentStartedEvent(
             @ProbeParam("appName") String appName) {
     }
@@ -53,19 +53,19 @@ public class WebSecurityDeployerProbeProvider {
     @Probe(name = "webDeploymentEndedEvent")
     public void webDeploymentEndedEvent(
             @ProbeParam("appName") String appName) {
-    }
+    }*/
 
-    @Probe(name = "policyGenerationStartedEvent")
-    public void policyGenerationStartedEvent(
+    @Probe(name = "policyCreationStartedEvent")
+    public void policyCreationStartedEvent(
             @ProbeParam("appName") String appName) {
     }
 
-    @Probe(name = "policyGenerationEndedEvent")
-    public void policyGenerationEndedEvent(
+    @Probe(name = "policyCreationEndedEvent")
+    public void policyCreationEndedEvent(
             @ProbeParam("appName") String appName) {
     }
 
-    @Probe(name = "webUndeploymentStartedEvent")
+    /*@Probe(name = "webUndeploymentStartedEvent")
     public void webUndeploymentStartedEvent(
             @ProbeParam("appName") String appName) {
     }
@@ -73,25 +73,45 @@ public class WebSecurityDeployerProbeProvider {
     @Probe(name = "webUndeploymentEndedEvent")
     public void webUndeploymentEndedEvent(
             @ProbeParam("appName") String appName) {
-    }
-
-    @Probe(name = "policyRemovalStartedEvent")
-    public void policyRemovalStartedEvent(
-            @ProbeParam("appName") String appName) {
-    }
-
-    @Probe(name = "policyRemovalEndedEvent")
-    public void policyRemovalEndedEvent(
-            @ProbeParam("appName") String appName) {
     }*/
+
+    @Probe(name = "policyDestructionStartedEvent")
+    public void policyDestructionStartedEvent(
+            @ProbeParam("appName") String appName) {
+    }
+
+    @Probe(name = "policyDestructionEndedEvent")
+    public void policyDestructionEndedEvent(
+            @ProbeParam("appName") String appName) {
+    }
 
     @Probe(name = "securityManagerCreationEvent")
     public void securityManagerCreationEvent(
             @ProbeParam("appName") String appName) {
     }
 
+    @Probe(name = "securityManagerCreationStartedEvent")
+    public void securityManagerCreationStartedEvent(
+            @ProbeParam("appName") String appName) {
+    }
+
+    @Probe(name = "securityManagerCreationEndedEvent")
+    public void securityManagerCreationEndedEvent(
+            @ProbeParam("appName") String appName) {
+    }
+
     @Probe(name = "securityManagerDestructionEvent")
     public void securityManagerDestructionEvent(
+            @ProbeParam("appName") String appName) {
+    }
+
+    @Probe(name = "securityManagerDestructionStartedEvent")
+    public void securityManagerDestructionStartedEvent(
+            @ProbeParam("appName") String appName) {
+    }
+
+    @Probe(name = "securityManagerDestructionEndedEvent")
+    public void securityManagerDestructionEndedEvent(
             @ProbeParam("appName") String appName) {
     }
 

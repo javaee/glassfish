@@ -47,20 +47,47 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 @ProbeProvider(moduleProviderName="glassfish",moduleName="security", probeProviderName="ejb")
 public class EjbSecurityProbeProvider {
     
-    @Probe(name="ejbSMCreationEvent")
-    public void ejbSMCreationEvent(
+    @Probe(name="securityManagerCreationEvent")
+    public void securityManagerCreationEvent(
+            @ProbeParam("appName") String appName){}
+
+    @Probe(name="securityManagerCreationStartedEvent")
+    public void securityManagerCreationStartedEvent(
+            @ProbeParam("appName") String appName){}
+
+    @Probe(name="securityManagerCreationEndedEvent")
+    public void securityManagerCreationEndedEvent(
             @ProbeParam("appName") String appName){}
     
-    @Probe(name="ejbSMDestructionEvent")
-    public void ejbSMDestructionEvent(
+    @Probe(name="securityManagerDestructionEvent")
+    public void securityManagerDestructionEvent(
+            @ProbeParam("appName") String appName
+            ) {}
+
+    @Probe(name="securityManagerDestructionStartedEvent")
+    public void securityManagerDestructionStartedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
+
+    @Probe(name="securityManagerDestructionEndedEvent")
+    public void securityManagerDestructionEndedEvent(
             @ProbeParam("appName") String appName
             ) {}
    
     
-    @Probe(name="ejbPCDestructionEvent")
-    public void ejbPCDestructionEvent(
+    @Probe(name="policyDestructionEvent")
+    public void policyDestructionEvent(
             @ProbeParam("contextId") String contextId
             ) {}
-    
+
+    @Probe(name="policyDestructionStartedEvent")
+    public void policyDestructionStartedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
+
+    @Probe(name="policyDestructionEndedEvent")
+    public void policyDestructionEndedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
     
 }

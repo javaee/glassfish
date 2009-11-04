@@ -930,7 +930,9 @@ public final class EJBSecurityManager
             getPolicyFactory().getPolicyConfiguration(this.contextId, true);
 
             if (wasInService) {
-                probeProvider.ejbPCDestructionEvent(contextId);
+                probeProvider.policyDestructionStartedEvent(ejbName);
+                probeProvider.policyDestructionEvent(contextId);
+                probeProvider.policyDestructionEndedEvent(ejbName);
                 policy.refresh();
                 PermissionCacheFactory.removePermissionCache(uncheckedMethodPermissionCache);
                 uncheckedMethodPermissionCache = null;
@@ -943,7 +945,9 @@ public final class EJBSecurityManager
             _logger.log(Level.WARNING, msg, pce);
         }
         ejbSFM.getManager(contextId,ejbName,true);
-        probeProvider.ejbSMDestructionEvent(ejbName);
+        probeProvider.securityManagerDestructionStartedEvent(ejbName);
+        probeProvider.securityManagerDestructionEvent(ejbName);
+        probeProvider.securityManagerDestructionEndedEvent(ejbName);
     }
 
     /**

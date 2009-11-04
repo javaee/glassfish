@@ -44,8 +44,18 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 @ProbeProvider(moduleProviderName="glassfish",moduleName="security", probeProviderName="ejbpolicy")
 public class EjbSecurityPolicyProbeProvider {
 
-    @Probe(name="ejbPCCreationEvent")
-    public void ejbPCCreationEvent(
+    @Probe(name="policyCreationEvent")
+    public void policyCreationEvent(
             @ProbeParam("contextId") String contextId ) {}
+
+    @Probe(name = "policyCreationStartedEvent")
+    public void policyCreationStartedEvent(
+            @ProbeParam("appName") String appName) {
+    }
+
+    @Probe(name = "policyCreationEndedEvent")
+    public void policyCreationEndedEvent(
+            @ProbeParam("appName") String appName) {
+    }
     
 }

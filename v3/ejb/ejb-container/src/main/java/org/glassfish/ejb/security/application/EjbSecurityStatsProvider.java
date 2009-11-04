@@ -80,27 +80,27 @@ public class EjbSecurityStatsProvider {
 
 
 
-   @ProbeListener("glassfish:security:ejb:ejbSMCreationEvent")
-    public void ejbSMCreationEvent(@ProbeParam("appName")String appName){
+   @ProbeListener("glassfish:security:ejb:securityManagerCreationEvent")
+    public void securityManagerCreationEvent(@ProbeParam("appName")String appName){
        //deploymentTime.setStartTime(System.currentTimeMillis());
        ejbSMCount.increment();
     }
 
-    @ProbeListener("glassfish:security:ejb:ejbSMDestructionEvent")
-    public void ejbSMDestructionEvent(@ProbeParam("appName")String appName){
+    @ProbeListener("glassfish:security:ejb:securityManagerDestructionEvent")
+    public void securityManagerDestructionEvent(@ProbeParam("appName")String appName){
       ejbSMCount.decrement();
     }
 
 
 
-    @ProbeListener("glassfish:security:ejbpolicy:ejbPCCreationEvent")
-    public void ejbPCCreationEvent(@ProbeParam("contextId")String contextId){
+    @ProbeListener("glassfish:security:ejbpolicy:policyCreationEvent")
+    public void policyCreationEvent(@ProbeParam("contextId")String contextId){
         ejbPCCount.increment();
 
     }
 
-    @ProbeListener("glassfish:security:ejb:ejbPCDestructionEvent")
-    public void ejbPCDestructionEvent(@ProbeParam("contextId")String contextId){
+    @ProbeListener("glassfish:security:ejb:policyDestructionEvent")
+    public void policyDestructionEvent(@ProbeParam("contextId")String contextId){
        ejbPCCount.decrement();
     }
 

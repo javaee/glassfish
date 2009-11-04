@@ -203,7 +203,9 @@ public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
             try {
                 manager = new EJBSecurityManager(ejbDesc, this.invMgr, this);
                 if (register) {
-                    probeProvider.ejbSMCreationEvent(ejbName);
+                    probeProvider.securityManagerCreationStartedEvent(ejbName);
+                    probeProvider.securityManagerCreationEvent(ejbName);
+                    probeProvider.securityManagerCreationEndedEvent(ejbName);
                     String appName = ejbDesc.getApplication().getRegistrationName();
                     addManagerToApp(ctxId, ejbName, appName, manager);
                 }
