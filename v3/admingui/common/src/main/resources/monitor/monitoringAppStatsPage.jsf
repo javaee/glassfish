@@ -85,7 +85,7 @@
                         setAttribute(key="monitorList" value="#{monitorList}");
                         setAttribute(key="cVal" value="#{cVal}");
                         setAttribute(key="componentList" value="#{componentList}");
-                        navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
+                        gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
                     />              
                     </sun:button>
                 </sun:panelGroup>
@@ -103,7 +103,7 @@
                                     setAttribute(key="cVal" value="#{cVal}");
                                     setAttribute(key="componentList" value="#{componentList}");
                                     setAttribute(key="monitorList" value="#{monitorList}");
-                                    navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
+                                    gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
                                 />
                 </sun:dropDown>
                 "&nbsp;&nbsp;&nbsp;&nbsp;
@@ -114,7 +114,7 @@
                                     setAttribute(key="viewVal" value="#{viewVal}");
                                     setAttribute(key="componentList" value="#{componentList}");
                                     setAttribute(key="monitorList" value="#{monitorList}");
-                                    navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
+                                    gf.navigate(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
                                 />
                                 <!afterCreate
                                     getClientId(component="$this{component}" clientId=>$page{dropDownId});

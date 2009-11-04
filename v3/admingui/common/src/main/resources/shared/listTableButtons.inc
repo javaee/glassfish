@@ -5,7 +5,7 @@
         />
 
         <sun:button id="newButton" text="$resource{i18n.button.New}" >
-            <!command redirect(page="#{pageSession.createLink}") />
+            <!command gf.redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
         <!insert name="deleteButton">
@@ -22,7 +22,7 @@
             if (#{pageSession.additionalDeleteHandler}){
                 gf.invokeHandler(handler="#{pageSession.additionalDeleteHandler}", args="#{pageSession.additionalDeleteHandlerArgs}" );
             }
-            redirect(page="#{pageSession.listLink}");
+            gf.redirect(page="#{pageSession.listLink}");
         />
         </sun:button>
         </insert>

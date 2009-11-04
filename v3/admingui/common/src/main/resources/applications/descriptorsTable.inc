@@ -52,7 +52,7 @@
                     //setSessionAttribute(key="descriptorForDisplay" value="#{td.value.ddContent}")
                     urlencode(value="#{td.value.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModName}");
                     urlencode(value="#{td.value.ddPath}" encoding="UTF-8" result="#{pageSession.encodedDdPath}");
-                    redirect(page="#{request.contextPath}/common/applications/viewDD.jsf?appName=#{pageSession.encodedAppName}&moduleName=#{pageSession.encodedModName}&ddPath=#{pageSession.encodedDdPath}");
+                    gf.redirect(page="#{request.contextPath}/common/applications/viewDD.jsf?appName=#{pageSession.encodedAppName}&moduleName=#{pageSession.encodedModName}&ddPath=#{pageSession.encodedDdPath}");
                 />
             </sun:hyperlink>
         </sun:tableColumn>

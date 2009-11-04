@@ -65,7 +65,7 @@
                       { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                         else {return false;} " >
                  <!command
-                    redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/shutdown.jsf");
+                    gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/shutdown.jsf");
              />
             </sun:button>
 
@@ -74,7 +74,7 @@
                       { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
                         else {return false;} " >
                  <!command
-                    redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
+                    gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
              />
             </sun:button>
 
@@ -91,12 +91,12 @@
             />
             <sun:button id="upgradeProfile" text="$resource{i18n.button.upgradeProfile}" primary="#{false}" disabled="#{disableUpgrade}">
                 <!command
-                    redirect(page="upgradeProfile.jsf");
+                    gf.redirect(page="upgradeProfile.jsf");
                 />
             </sun:button>
             <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
                 <!command
-                redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
+                gf.redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
                 />
             </sun:button>
             -->

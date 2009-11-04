@@ -68,7 +68,7 @@
               appType = "#{pageSession.appType}"
               propertyList="$attribute{newList}"
         );
-       redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+       gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
     />
 </sun:button>
 
@@ -76,6 +76,6 @@
     onClick="admingui.ajax.loadPage({url:'#{request.contextPath}/#{cancelPage}?name=$pageSession{target}'}); return false;">
 //    <!command
 //        println("cancel");
-//        navigate(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");
+//        gf.navigate(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");
 //    />
 </sun:button>

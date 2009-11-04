@@ -250,7 +250,7 @@
                             screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
                             country="#{country}", companyName="#{companyName}" accountStatus="#{accountGroup}"
                             newProxy="#{newProxy}" newPort="#{newPort}" );
-                         redirect("support.jsf");
+                         gf.redirect("support.jsf");
                          />
                     </sun:button>
                 </sun:panelGroup>

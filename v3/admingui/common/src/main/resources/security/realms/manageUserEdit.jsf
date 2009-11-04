@@ -85,7 +85,7 @@
                         </sun:button>
                         <sun:button id="cancelButton" text="$resource{i18n.button.Back}" immediate="$boolean{true}" primary="#{false}" >
                            <!command
-                            redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
+                            gf.redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
                             />                        
                         </sun:button>
                     </sun:panelGroup>

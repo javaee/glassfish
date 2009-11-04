@@ -45,7 +45,7 @@
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setProxyProperties(objectNameStr="#{requestScope.objName}", propertyList="$attribute{newList}", systemProp="#{false}" );
                     prepareSuccessfulMsg();
-                    redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -54,12 +54,12 @@
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveMsgProviderInfo(edit="false" attrMap="#{pageSession.valueMap}" objName="#{requestScope.objName}" propList="$attribute{newList}" )
-                    redirect(page="#{pageSession.parentPage}");
+                    gf.redirect(page="#{pageSession.parentPage}");
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{pageSession.cancelPage}");
+                    gf.redirect(page="#{pageSession.cancelPage}");
                 />
             </sun:button>
         </sun:panelGroup>

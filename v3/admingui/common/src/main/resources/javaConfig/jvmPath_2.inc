@@ -60,13 +60,13 @@
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}");
                     prepareSuccessfulMsg();
-                    redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
 
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
+                    gf.redirect(page="#{parentPage}?configName=#{configName}");
                 />
             </sun:button>
         </sun:panelGroup>

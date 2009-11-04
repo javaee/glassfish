@@ -48,7 +48,7 @@
                 edit="#{edit}"
             );
             prepareSuccessfulMsg();
-            redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
     </sun:button>
 
@@ -63,12 +63,12 @@
                 propList="${newList}"
                 edit="#{edit}"
             );
-            redirect(page="#{parentPage}")
+            gf.redirect(page="#{parentPage}")
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            redirect(page="#{parentPage}")
+            gf.redirect(page="#{parentPage}")
         />
   </sun:button>
 </sun:panelGroup>

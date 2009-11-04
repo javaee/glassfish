@@ -40,14 +40,14 @@
     <sun:tab id="jmxConnectorEdit" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.jmxConnectorLabel}" toolTip="$resource{i18n.edJmxConnector.jmxConnectorLabel} Tab" >
         <!command
             setSessionAttribute(key="jmxConnectorTab" value="jmxConnectorEdit");
-            redirect(page="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?configName=#{pageSession.configName}");
+            gf.redirect(page="#{request.contextPath}/common/configuration/jmxConnectorEdit.jsf?configName=#{pageSession.configName}");
         /> 
     </sun:tab>
 
     <sun:tab id="jmxSSLEdit" immediate="$boolean{true}" text="$resource{i18n.edJmxConnector.sslSettingsLabel}" toolTip="$resource{i18n.edJmxConnector.sslSettingsLabel} Tab" >
         <!command
             setSessionAttribute(key="jmxConnectorTab" value="jmxSSLEdit");
-            redirect(page="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf?configName=#{pageSession.configName}");
+            gf.redirect(page="#{request.contextPath}/common/configuration/jmxSSLEdit.jsf?configName=#{pageSession.configName}");
         /> 
     </sun:tab>
 </sun:tabSet>

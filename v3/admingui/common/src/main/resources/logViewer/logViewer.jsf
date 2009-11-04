@@ -110,7 +110,7 @@
             <!command         
                 getUIComponent("propertyForm:propertyContentPage:propertySheet:advanced:LoggerProp:logger" component=>$session{listbox});
                 getUIComponentProperty(component="$session{listbox}", name="value", value=>$session{logentries});
-                navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
+                gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
                 setAttribute(key="hasResults" value="true" );
             />
         </sun:button>
@@ -127,7 +127,7 @@
             <!command                
                 getUIComponent("propertyForm:propertyContentPage:propertySheet:advanced:LoggerProp:logger" component=>$session{listbox});
                 getUIComponentProperty(component="$session{listbox}", name="value", value=>$session{logentries});
-                navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
+                gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
                 setAttribute(key="hasResults" value="true" );
              />
         </sun:button>
@@ -148,7 +148,7 @@
                     
                     setSessionAttribute(key="showAdvanced" value="#{true}");
                     setAttribute(key="hasResults" value="no" );
-                    navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
+                    gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
                  />
                  </sun:hyperlink> 
                  <sun:hyperlink rendered="#{showAdvanced}" id="basiclink" text="$resource{i18nc.logViewer.basicSearch}">
@@ -156,7 +156,7 @@
                     
                     setSessionAttribute(key="showAdvanced" value="#{false}");
                     setAttribute(key="hasResults" value="no" );
-                    navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
+                    gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
                  />
                  </sun:hyperlink>                    
 <sun:hidden id="dateDisabledHidden" value="#{dateDisabled}" />                    
@@ -320,7 +320,7 @@
             <!command 
                 setAttribute(key="afterRecord" value="#{false}");
                 setAttribute(key="fromRecord" value="#{first}");
-                navigate(page="/logViewer/logViewer.jsf");
+                gf.navigate(page="/logViewer/logViewer.jsf");
             />
             </sun:button>
             "&nbsp;&nbsp;&nbsp;
@@ -330,7 +330,7 @@
             <!command 
                 setAttribute(key="afterRecord" value="#{true}");                
                 setAttribute(key="fromRecord" value="#{last}");
-                navigate(page="/logViewer/logViewer.jsf");
+                gf.navigate(page="/logViewer/logViewer.jsf");
             />
             </sun:button>            
          </sun:panelGroup>

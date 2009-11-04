@@ -49,7 +49,7 @@
                 propList="${newList}"
                 edit="#{true}"
             );
-            redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />    
     </sun:button>
 
@@ -65,12 +65,12 @@
                 propList="${newList}"
                 edit="#{false}"
             );            
-            redirect(page="#{parentPage}?configName=#{configName}")
+            gf.redirect(page="#{parentPage}?configName=#{configName}")
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            redirect(page="#{parentPage}?configName=#{configName}")
+            gf.redirect(page="#{parentPage}?configName=#{configName}")
         />
   </sun:button>
 

@@ -66,12 +66,12 @@
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     createMsgSecurity(attrMap="#{pageSession.valueMap}" providerObjName="#{pageSession.providerObjName}" propList="$attribute{newList}")
-                    redirect(page="#{pageSession.parentPage}?configName=#{configName}")
+                    gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
+                    gf.redirect(page="#{parentPage}?configName=#{configName}");
                 />
             </sun:button>
         </sun:panelGroup>

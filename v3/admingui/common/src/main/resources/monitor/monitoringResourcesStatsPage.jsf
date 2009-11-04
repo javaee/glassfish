@@ -69,7 +69,7 @@
                     <!command
                         setAttribute(key="viewVal" value="#{viewVal}");
                         setAttribute(key="monitorList" value="#{monitorList}");
-                        navigate(page="#{request.contextPath}/common/monitor/monitoringResourcesStatsPage.jsf");
+                        gf.navigate(page="#{request.contextPath}/common/monitor/monitoringResourcesStatsPage.jsf");
                     />              
                     </sun:button>
                 </sun:panelGroup>
@@ -84,7 +84,7 @@
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="viewVal" value="#{click.selected}");
                                     setAttribute(key="monitorList" value="#{monitorList}");
-                                    navigate(page="#{request.contextPath}/common/monitor/monitoringResourcesStatsPage.jsf");
+                                    gf.navigate(page="#{request.contextPath}/common/monitor/monitoringResourcesStatsPage.jsf");
                                 />
                 </sun:dropDown>                
                     "<br /><br />

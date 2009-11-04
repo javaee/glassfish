@@ -50,7 +50,7 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
         <sun:button id="deployButton" text="$resource{i18n.button.New}" primary="#{true}">
-                <!command redirect(page="#{pageSession.nextPageLink}") />
+                <!command gf.redirect(page="#{pageSession.nextPageLink}") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
@@ -61,7 +61,7 @@
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr2}", type="#{pageSession.childType2}", selectedRows="${selectedRows}");
-                navigate(page="#{listPageLink}");
+                gf.navigate(page="#{listPageLink}");
             />
          </sun:button>
         <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
@@ -70,7 +70,7 @@
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 changeLifecycleStatus(selectedRows="${selectedRows}"  enabled="#{true}")
-                navigate(page="#{listPageLink}");
+                gf.navigate(page="#{listPageLink}");
             />
             </sun:button>
         <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
@@ -79,7 +79,7 @@
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 changeLifecycleStatus(selectedRows="${selectedRows}"  enabled="#{false}")
-                navigate(page="#{listPageLink}");
+                gf.navigate(page="#{listPageLink}");
             />
         </sun:button>
      </sun:panelGroup>

@@ -44,7 +44,7 @@
         //test the app still exists.
         proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
         if (! #{requestScope.exist}){
-            redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
         }
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
         getApplicationType(appName="#{pageSession.appName}" appType="#{pageSession.appType}")

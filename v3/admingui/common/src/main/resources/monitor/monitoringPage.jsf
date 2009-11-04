@@ -75,7 +75,7 @@
                         onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                     );
                     prepareSuccessfulMsg();
-                    redirect(page="#{request.contextPath}/common/monitor/monitoringPage.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                    gf.redirect(page="#{request.contextPath}/common/monitor/monitoringPage.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
         </sun:panelGroup>

@@ -46,7 +46,7 @@
         //test is the app is still available.
         proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
         if (! #{requestScope.exist}){
-            redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
         }
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
@@ -96,12 +96,12 @@
                     restartApplication(appName="#{pageSession.appName}");
                 }
                 prepareSuccessfulMsg();
-                redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
           />
           </sun:button>
           <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
             <!command
-                redirect(page="#{request.contextPath}/applications/applications.jsf");
+                gf.redirect(page="#{request.contextPath}/applications/applications.jsf");
             />
         </sun:button>
     </sun:panelGroup>

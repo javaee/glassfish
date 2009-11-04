@@ -67,7 +67,7 @@
                     <sun:panelGroup id="topButtons">
                         <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{false}">
                             <!command
-                            redirect(page="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
+                            gf.redirect(page="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
                             />
                         </sun:button>
 
@@ -99,7 +99,7 @@
                         />
                         <sun:button id="newButton" text="$resource{i18n.button.New}" >
                             <!command
-                                redirect(page="#{request.contextPath}/common/security/realms/manageUserNew.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
+                                gf.redirect(page="#{request.contextPath}/common/security/realms/manageUserNew.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
                             />
                         </sun:button>
 
@@ -112,7 +112,7 @@
                         getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                         removeUser(Realm="#{pageSession.Name}", selectedRows="${selectedRows}");
-                        redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                        gf.redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                         />
                     </sun:button>
                     </sun:panelGroup>

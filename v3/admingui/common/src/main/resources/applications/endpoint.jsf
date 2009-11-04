@@ -69,7 +69,7 @@
             <sun:panelGroup id="topButtons">
                 <sun:button id="backButton" immediate="#{true}" text="$resource{i18n.button.Back}" primary="#{true}">
                     <!command
-                    redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}");
+                    gf.redirect(page="#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.encodedAppName}");
                     />
                 </sun:button>
             </sun:panelGroup>

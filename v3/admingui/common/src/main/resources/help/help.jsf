@@ -38,7 +38,7 @@
 <ui:event type="initPage">
     if ("!#{pageSession.newVR}") {
 	createDefaultViewRoot(viewRoot="#{requestScope.newVR}");
-	navigate("#{requestScope.newVR}");
+	gf.navigate("#{requestScope.newVR}");
     }
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 </ui:event>

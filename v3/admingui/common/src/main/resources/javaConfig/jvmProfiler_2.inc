@@ -56,7 +56,7 @@
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveJvmOptionValues(objectNameStr="amx:pp=/domain/configs/config[server-config]/java-config,type=profiler" options="$attribute{newList}");    
                     //prepareSuccessfulMsg();
-                    redirect(page="#{selfPage}?configName=#{pageSession.configName}");
+                    gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}");
                 />
             </sun:button>
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -73,7 +73,7 @@
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveJvmOptionValues(objectNameStr="#{pageSession.profilerObjectNameStr}" options="$attribute{newList}");
                 prepareSuccessfulMsg();
-                redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
 
@@ -83,7 +83,7 @@
                     else {return false;} " >
                 <!command
                     deleteChild(objectNameStr="#{pageSession.parentObjectNameStr}" type="profiler")
-                    redirect(page="#{selfPage}?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{selfPage}?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
 

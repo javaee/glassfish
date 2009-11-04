@@ -57,7 +57,7 @@
                 <sun:button id="closeButton" text="$resource{i18n.button.Back}" primary="#{true}">
                     <!command
                         //setSessionAttribute(key="descriptorForDisplay" value="")
-                        redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
+                        gf.redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
                     />
                 </sun:button>
             </sun:panelGroup>
@@ -92,7 +92,7 @@
             <sun:button id="closeButton2" text="$resource{i18n.button.Back}" primary="#{true}">
                 <!command
                     //setSessionAttribute(key="descriptorForDisplay" value="")
-                    redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
+                    gf.redirect(page="#{request.contextPath}/common/applications/webDDEdit.jsf?appName=#{pageSession.encodedAppName}");
                 />
             </sun:button>
         </sun:panelGroup>

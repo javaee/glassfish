@@ -70,10 +70,10 @@
                 setRegistrationRemindLater();
                 setCookie(key="appServerRegistrationRemindLaterCookie" value="true" maxAge="1296000");
                 if(! $session{supportCluster}){
-                    redirect("#{request.contextPath}/common/commonTask.jsf");
+                    gf.redirect("#{request.contextPath}/common/commonTask.jsf");
                 }
                 if($session{supportCluster}){
-                    redirect("clusterCommonTask.jsf");
+                    gf.redirect("clusterCommonTask.jsf");
                 }
             />
         </h:commandButton>
@@ -81,10 +81,10 @@
             <!command
                 setRegistrationDontAsk();
                 if(! $session{supportCluster}){
-                    redirect("#{request.contextPath}/common/commonTask.jsf");
+                    gf.redirect("#{request.contextPath}/common/commonTask.jsf");
                 }
                 if($session{supportCluster}){
-                    redirect("clusterCommonTask.jsf");
+                    gf.redirect("clusterCommonTask.jsf");
                 }
             />
         </h:commandButton>
@@ -92,10 +92,10 @@
 	    <!command
 		setSessionAttribute(key="dontAskRegistrationInThisSession" value="true");
 		if(! $session{supportCluster}){
-                    redirect("#{request.contextPath}/common/commonTask.jsf");
+                    gf.redirect("#{request.contextPath}/common/commonTask.jsf");
                 }
                 if($session{supportCluster}){
-                    redirect("clusterCommonTask.jsf");
+                    gf.redirect("clusterCommonTask.jsf");
                 }
 	    />
 	    </h:commandButton>

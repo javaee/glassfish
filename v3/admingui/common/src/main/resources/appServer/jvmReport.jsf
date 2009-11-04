@@ -83,7 +83,7 @@
                                         setAttribute(key="viewVal" value="#{click.selected}")
                                         setAttribute(key="instanceName" value="#{instanceName}")
                                         setAttribute(key="pageTitle" value="#{pageTitle}")
-                                        navigate(page="#{request.contextPath}/common/appServer/jvmReport.jsf");
+                                        gf.navigate(page="#{request.contextPath}/common/appServer/jvmReport.jsf");
                                     />
                                 </sun:dropDown>
                             </sun:property>                          

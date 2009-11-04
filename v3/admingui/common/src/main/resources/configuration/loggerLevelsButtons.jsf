@@ -42,7 +42,7 @@
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
                     updateLoggerLevels(allRows="#{requestScope.allRows}")
                     prepareSuccessfulMsg();
-                    redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
         </sun:panelGroup>

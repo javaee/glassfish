@@ -69,7 +69,7 @@
                     text="$resource{i18n.button.Restart}"
                     toolTip="$resource{i18n.restart.tooltip}">
                     //<!command
-                    //    redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
+                    //    gf.redirect("#{facesContext.externalContext.requestContextPath}/common/appServer/restart-2.jsf");
                     ///>
                 </sun:button>
             </sun:title>

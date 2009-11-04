@@ -59,7 +59,7 @@
                 <!command
                     saveLoggingAttributes(attrs="#{pageSession.valueMap}");
                     prepareSuccessfulMsg();
-                    redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
         </sun:panelGroup>

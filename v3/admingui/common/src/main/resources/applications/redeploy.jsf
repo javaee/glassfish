@@ -46,7 +46,7 @@
         //test the app still exists.
         proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
         if (! #{requestScope.exist}){
-            redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
         }
         createMap(result="#{pageSession.deployMap}")
         mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");
@@ -82,14 +82,14 @@
                     setAttribute(key="filePath", value="#{dirPath}");
                 }
                 redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" deployMap="#{pageSession.deployMap}" convertToFalse="#{pageSession.convertToFalse}");
-                redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
         </sun:button>
         <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
             onClick="admingui.ajax.loadPage({url:'{request.contextPath}/common/applications/applications.jsf'}); return false;">
         //    <!command
         //        println("cancel");
-        //        navigate(page="{request.contextPath}/common/applications/applications.jsf");
+        //        gf.navigate(page="{request.contextPath}/common/applications/applications.jsf");
         //    />
         </sun:button>
     </sun:panelGroup>
