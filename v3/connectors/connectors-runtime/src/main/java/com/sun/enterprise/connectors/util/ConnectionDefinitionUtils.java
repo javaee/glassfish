@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors.util;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -167,9 +168,17 @@ public class ConnectionDefinitionUtils {
 	 */
     public static Map<String, Object> getConnectionDefinitionPropertiesAndDefaults(String connectionDefinitionClassName, 
             String resType) {
+        TreeMap hm= new TreeMap();
+        if(connectionDefinitionClassName == null || ("").equals(connectionDefinitionClassName)) {
+            if(resType != null && resType.equals(ConnectorConstants.JAVA_SQL_DRIVER)) {
+                addDefaultJDBCDriverProperties(hm);
+            } else {
+                addDefaultJDBCProperties(hm);
+            }
+            return hm;            
+        }
         Set s= getConnectionDefinitionProperties(connectionDefinitionClassName);
-	TreeMap hm= new TreeMap();
-        Class connectionDefinitionClass;
+	Class connectionDefinitionClass;
         try {
             connectionDefinitionClass=
                 ConnectorRuntime.getRuntime().getConnectorClassLoader().loadClass(connectionDefinitionClassName);
