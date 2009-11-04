@@ -53,6 +53,8 @@ import javax.naming.NamingException;
 import java.util.logging.Level;
 import java.util.Set;
 import java.util.List;
+import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.concurrent.*;
 
 import org.jvnet.hk2.config.types.Property;
@@ -120,18 +122,17 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 String descriptorJNDIName = ConnectorAdminServiceUtils.
                         getReservePrefixedJNDINameForDescriptor(moduleName);
 
-                _logger.fine("ResourceAdapterAdminServiceImpl :: destroyActiveRA "
-                        + moduleName + " removing descriptor " + descriptorJNDIName);
-
                 _runtime.getNamingManager().getInitialContext().unbind(descriptorJNDIName);
 
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.finest("ResourceAdapterAdminServiceImpl :: destroyActiveRA "
+                        + moduleName + " removed descriptor " + descriptorJNDIName);
+                }
+
             } catch (NamingException ne) {
-                ConnectorRuntimeException cre =
-                        new ConnectorRuntimeException("Failed to remove connector descriptor from JNDI");
-                cre.initCause(ne);
-                _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_jndi_removal_failure", moduleName);
-                _logger.log(Level.SEVERE, "", cre);
-                throw cre;
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.log(Level.FINEST, "rardeployment.connector_descriptor_jndi_removal_failure", moduleName);
+                }
             }
         }
     }
@@ -371,7 +372,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
             }
             return _registry.removeActiveResourceAdapter(moduleName);
         }
-        return false;
+        return true;
     }
 
     /**
@@ -394,8 +395,43 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         ActiveResourceAdapter[] resourceAdapters =
                 ConnectorRegistry.getInstance().getAllActiveResourceAdapters();
 
+        //stop system-rars after stopping all other rars.
+        Set<ActiveResourceAdapter> systemRAs = new HashSet<ActiveResourceAdapter>();
+        List<Future> rarExitStatusList = new ArrayList<Future>();
+
         for (ActiveResourceAdapter resourceAdapter : resourceAdapters) {
-            stopActiveResourceAdapter(resourceAdapter.getModuleName());
+            if(!ConnectorsUtil.belongsToSystemRA(resourceAdapter.getModuleName())){
+                RAShutdownHandler handler = new RAShutdownHandler(resourceAdapter.getModuleName());
+                rarExitStatusList.add(execService.submit(handler));
+            }else{
+                systemRAs.add(resourceAdapter);
+            }
+        }
+
+        for(Future future: rarExitStatusList){
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                //ignore as the child task will log any failures
+            } catch (ExecutionException e) {
+                //ignore as the child task will log any failures
+            }
+        }
+        rarExitStatusList.clear();
+
+        for(ActiveResourceAdapter resourceAdapter : systemRAs){
+            RAShutdownHandler handler = new RAShutdownHandler(resourceAdapter.getModuleName());
+            rarExitStatusList.add(execService.submit(handler));
+        }
+
+        for(Future future: rarExitStatusList){
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                //ignore as the child task will log any failures
+            } catch (ExecutionException e) {
+                //ignore as the child task will log any failures
+            }
         }
     }
 
@@ -535,6 +571,17 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         public void run() {
             _logger.log(Level.FINE, "Calling RA [ " + ra.getModuleName() + " ] shutdown ");
             this.ra.destroy();
+        }
+    }
+
+    private class RAShutdownHandler implements Runnable {
+        private String moduleName;
+
+        public RAShutdownHandler(String moduleName){
+            this.moduleName = moduleName;
+        }
+        public void run(){
+            stopActiveResourceAdapter(moduleName);     
         }
     }
 }
