@@ -91,7 +91,7 @@
                     <fork>true</fork>
                     <archive>
                         <manifestEntries>
-                            <probe-provider-class-names>org.glassfish.webservices.monitoring.Deployment109ProbeProvider</probe-provider-class-names>
+                            <probe-provider-class-names>org.glassfish.webservices.monitoring.Deployment109ProbeProvider,org.glassfish.webservices.JAXWSServlet</probe-provider-class-names>
                         </manifestEntries>
                     </archive>
                 </configuration>

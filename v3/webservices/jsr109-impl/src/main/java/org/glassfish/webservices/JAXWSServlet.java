@@ -72,11 +72,15 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.external.probe.provider.annotations.Probe;
+import org.glassfish.external.probe.provider.annotations.ProbeParam;
+import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 
 /**
  * The JAX-WS dispatcher servlet.
  *
  */
+@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="109")
 public class JAXWSServlet extends HttpServlet {
 
     private static Logger logger = LogDomains.getLogger(JAXWSServlet.class,LogDomains.WEBSERVICES_LOGGER);
@@ -124,13 +128,14 @@ public class JAXWSServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException {
-
+        startedEvent(endpoint.getEndpointAddressPath());
         if (("Tester".equalsIgnoreCase(request.getQueryString())) &&
                 (!(HTTPBinding.HTTP_BINDING.equals(endpoint.getProtocolBinding())))) {
             Endpoint endpt = wsEngine_.getEndpoint(request.getServletPath());
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
                 WebServiceTesterServlet.invoke(request, response,
                         endpt.getDescriptor());
+                endedEvent();
                 return;
             }
         }
@@ -149,9 +154,19 @@ public class JAXWSServlet extends HttpServlet {
             se.initCause(t);
             throw se;
         }
+        endedEvent();
     }
 
+    @Probe(name="startedEvent")
+    private void startedEvent(
+            @ProbeParam("endpointAddress") String endpointAddress) {
 
+    }
+
+    @Probe(name="endedEvent")
+    private void endedEvent() {
+
+    }
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
