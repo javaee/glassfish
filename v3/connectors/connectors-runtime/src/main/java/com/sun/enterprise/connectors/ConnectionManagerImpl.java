@@ -39,6 +39,7 @@ import com.sun.appserv.connectors.internal.spi.ConnectionManager;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -329,8 +330,14 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     */
     public void initialize() throws ConnectorRuntimeException {
 
-        //TODO V3 getting mcf not needed ?
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+
+        if(runtime.getEnvironment() == ConnectorConstants.NON_ACC_CLIENT){
+            jndiName = ConnectorsUtil.getPMJndiName(jndiName);
+        }
+
+        //TODO V3 getting mcf not needed ?
+
         ManagedConnectionFactory mcf = runtime.obtainManagedConnectionFactory(poolName);
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         PoolMetaData pmd = registry.getPoolMetaData(poolName);

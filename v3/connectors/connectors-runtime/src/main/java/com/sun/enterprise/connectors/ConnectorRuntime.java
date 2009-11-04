@@ -712,9 +712,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         //process environment
         if (processEnvironment.getProcessType().isServer()){
             environment = SERVER;
-        }else if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC) ||
-                processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Other)) {
+        }else if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC)) {
             environment = CLIENT;
+        }else if(processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Other)){
+            environment = NON_ACC_CLIENT;
         }
     }
 

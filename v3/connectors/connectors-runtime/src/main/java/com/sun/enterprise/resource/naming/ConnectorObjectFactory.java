@@ -94,7 +94,8 @@ public class ConnectorObjectFactory implements ObjectFactory {
             String moduleName  = (String) ref.get(1).getContent();
 
 
-        if (getRuntime().getEnvironment() == ConnectorRuntime.CLIENT) {
+        if (getRuntime().getEnvironment() == ConnectorRuntime.CLIENT ||
+                getRuntime().getEnvironment() == ConnectorRuntime.NON_ACC_CLIENT) {
             ConnectorDescriptor connectorDescriptor = null;
 
             String descriptorJNDIName = ConnectorAdminServiceUtils.
