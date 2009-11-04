@@ -126,6 +126,10 @@
                         getClientId(component="$this{component}" clientId=>$page{portId});
                         />
                         <sun:textField id="port"  columns="$int{8}" text="#{requestScope.port}" required="#{false}" />
+                        "</br>
+                    </sun:property>
+                    <sun:property  >
+                        <sun:label text=""/>
                     </sun:property>
                     
                     <!--  Info for creating new account -->
@@ -204,14 +208,14 @@
                         <sun:label text=""/>
                     </sun:property>
                     
-                    <sun:property id="newProxy" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.proxy}"  helpText="$resource{i18nc.reg.proxyHelp}" >                           
+                    <sun:property id="newProxy" visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.proxy}"  helpText="$resource{i18nc.reg.proxyHelp}" >
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{newProxyId});
                         />
                         <sun:textField id="newProxy" columns="$int{40}" text="#{requestScope.newProxy}" required="#{false}" />
                     </sun:property>
                     
-                    <sun:property id="newPort" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">                           
+                    <sun:property id="newPort" visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">
                         <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{newPortId});
                         />
