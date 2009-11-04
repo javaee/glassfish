@@ -40,6 +40,10 @@ class DTraceMethodFinder {
     Method matchMethod() {
         String metname = probe.getProviderJavaMethodName();
 
+        if(probe.isHidden())
+            throw new RuntimeException(localStrings.getLocalString("dtrace_cantfind",
+                            "The probe is  hidden.  DTrace will ignore it.", metname));
+
         for(Method m : targetClass.getMethods()) {
             if(!m.getName().equals(metname))
                 continue;
