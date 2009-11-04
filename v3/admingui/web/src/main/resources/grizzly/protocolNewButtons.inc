@@ -56,12 +56,12 @@
                         convertToFalse={"Enabled"},
                          );
 
-                redirect(page="#{parentPage}?configName=#{configName}")
+                gf.redirect(page="#{parentPage}?configName=#{configName}")
             />
         </sun:button>
         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
             <!command
-                redirect(page="#{parentPage}?configName=#{configName}");
+                gf.redirect(page="#{parentPage}?configName=#{configName}");
             />
         </sun:button>
     </sun:panelGroup>

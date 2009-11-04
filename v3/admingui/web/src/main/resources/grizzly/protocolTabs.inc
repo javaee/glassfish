@@ -40,25 +40,25 @@
     <sun:tab id="protocolGeneral" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.protocolTab}" toolTip="$resource{i18n_web.grizzly.protocolTab} Tab" >
         <!command
         setSessionAttribute(key="protocolTabs" value="protocolGeneral");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
+        gf.redirect(page="#{request.contextPath}/web/grizzly/protocolEdit.jsf?configName=#{configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
     <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" toolTip="$resource{i18n_web.grizzly.sslTab} Tab" >
         <!command
         setSessionAttribute(key="protocolTabs" value="sslTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?configName=#{configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
+        gf.redirect(page="#{request.contextPath}/web/grizzly/protocolSSLEdit.jsf?configName=#{configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
     <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" toolTip="$resource{i18n_web.grizzly.httpTab} Tab" >
         <!command
         setSessionAttribute(key="protocolTabs" value="httpTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolHttp.jsf?configName=#{pageSession.configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
+        gf.redirect(page="#{request.contextPath}/web/grizzly/protocolHttp.jsf?configName=#{pageSession.configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
     <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" toolTip="$resource{i18n_web.grizzly.fileCacheTab} Tab" >
         <!command
         setSessionAttribute(key="protocolTabs" value="fileCacheTab");
-        redirect(page="#{request.contextPath}/web/grizzly/protocolFileCache.jsf?configName=#{configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
+        gf.redirect(page="#{request.contextPath}/web/grizzly/protocolFileCache.jsf?configName=#{configName}&name=#{pageSession.encodedName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
 

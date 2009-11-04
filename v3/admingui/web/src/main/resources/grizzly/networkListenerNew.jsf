@@ -71,12 +71,12 @@
                 onClick="if ( checkRequired()) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} ">
                 <!command
                     createNetworkListener(attrMap="#{pageSession.valueMap}")
-                    redirect(page="#{pageSession.parentPage}?configName=#{configName}")
+                    gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}?configName=#{configName}");
+                    gf.redirect(page="#{parentPage}?configName=#{configName}");
                 />
             </sun:button>
         </sun:panelGroup>

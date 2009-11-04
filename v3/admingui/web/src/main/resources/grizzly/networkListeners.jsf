@@ -57,7 +57,7 @@
         getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
         deleteNetworkListeners(selectedRows="${selectedRows}");
-        redirect(page="#{pageSession.listLink}");
+        gf.redirect(page="#{pageSession.listLink}");
     />
     </sun:button>
 </define>
