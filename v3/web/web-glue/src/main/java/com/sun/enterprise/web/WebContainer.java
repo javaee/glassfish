@@ -107,6 +107,7 @@ import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.web.TldProvider;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -359,6 +360,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private InvocationManager invocationMgr;
 
+    private Collection<TldProvider> tldProviders;
+
     /**
      * Static initialization
      */
@@ -376,6 +379,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         injectionMgr = habitat.getByContract(InjectionManager.class);
         invocationMgr = habitat.getByContract(InvocationManager.class);
+        tldProviders = habitat.getAllByContract(TldProvider.class);
 
         //createMonitoringConfig();
         createStatsProviders();
@@ -452,8 +456,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                         ioe);
         }
 
-        _embedded = new EmbeddedWebContainer(_serverContext, this,
-                                             logServiceFile, logLevel, logHandler);
+        _embedded = new EmbeddedWebContainer(this, logServiceFile,
+            logLevel, logHandler);
 
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -638,6 +642,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return isShutdown;
     }
 
+    Collection<TldProvider> getTldProviders() {
+        return tldProviders;
+    }
+     
     /**
      * Gets the probe provider for servlet related events.
      */

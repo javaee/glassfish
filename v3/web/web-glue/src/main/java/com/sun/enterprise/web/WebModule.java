@@ -38,8 +38,7 @@ package com.sun.enterprise.web;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -100,6 +99,7 @@ import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.jasper.servlet.JspServlet;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.web.TldProvider;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -521,7 +521,8 @@ public class WebModule extends PwcWebModule {
             hasStarted = false;
         }
 
-        if (webBundleDescriptor != null && webBundleDescriptor.getServiceReferenceDescriptors() != null) {
+        if (webBundleDescriptor != null &&
+                webBundleDescriptor.getServiceReferenceDescriptors() != null) {
             for (Object obj: webBundleDescriptor.getServiceReferenceDescriptors()) {
             }
         }
@@ -535,6 +536,44 @@ public class WebModule extends PwcWebModule {
         super.contextListenerStart();
         webContainer.afterServletContextInitializedEvent(
             getWebBundleDescriptor());
+    }
+
+    @Override
+    protected void callServletContainerInitializers()
+            throws LifecycleException {
+        super.callServletContainerInitializers();
+        if (!isJsfApplication() && !contextListeners.isEmpty()) {
+            /* 
+             * Remove any JSF related ServletContextListeners from
+             * non-JSF apps.
+             * This can be done reliably only after all
+             * ServletContainerInitializers have been invoked, because
+             * system-wide ServletContainerInitializers may be invoked in
+             * any order, and it is only after JSF's FacesInitializer has
+             * been invoked that isJsfApplication(), which checks for the
+             * existence of a mapping to the FacesServlet in the app, may
+             * be used reliably because such mapping would have been added
+             * by JSF's FacesInitializer. See also IT 10223
+             */
+            ArrayList<ServletContextListener> listeners =
+                (ArrayList<ServletContextListener>) contextListeners.clone();
+            String listenerClassName = null;
+            for (ServletContextListener listener : listeners) {
+                if (listener instanceof
+                        StandardContext.RestrictedServletContextListener) {
+                    listenerClassName = ((StandardContext.RestrictedServletContextListener) listener).getNestedListener().getClass().getName();
+                } else {
+                    listenerClassName = listener.getClass().getName();
+                }
+                /*
+                 * TBD: Retrieve listener class name from JSF's TldProvider
+                 */
+                if ("com.sun.faces.config.ConfigureListener".equals(
+                        listenerClassName)) {
+                    contextListeners.remove(listener);
+                }
+            }
+        }
     }
 
     /**

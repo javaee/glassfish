@@ -53,7 +53,6 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.glassfish.api.web.TldProvider;
-import org.glassfish.internal.api.ServerContext;
 
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
@@ -99,7 +98,7 @@ final class WebModuleListener
      */
     private File explodedLocation;
     
-    private ServerContext serverContext;
+    private WebContainer webContainer;
 
     /**
      * Constructor.
@@ -108,10 +107,10 @@ final class WebModuleListener
      * @param explodedLocation The location where this web module is exploded
      * @param wbd descriptor for this module.
      */
-    public WebModuleListener(ServerContext serverContext,
+    public WebModuleListener(WebContainer webContainer,
                              File explodedLocation,
                              WebBundleDescriptor wbd) {
-        this.serverContext = serverContext;
+        this.webContainer = webContainer;
         this.wbd = wbd;
         this.explodedLocation = explodedLocation;
     }
@@ -163,8 +162,7 @@ final class WebModuleListener
     private void configureJsp(WebModule webModule) {
         // Find tld URI and set it to ServletContext attribute
         Collection<TldProvider> tldProviders =
-                serverContext.getDefaultHabitat().getAllByContract(
-                TldProvider.class);
+            webContainer.getTldProviders();
         Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
         for (TldProvider tldProvider : tldProviders) {
             // Skip any JSF related TLDs for non-JSF apps
@@ -204,7 +202,7 @@ final class WebModuleListener
         // set habitat for jsf injection
         webModule.getServletContext().setAttribute(
                 Constants.HABITAT_ATTRIBUTE,
-                serverContext.getDefaultHabitat());
+                webContainer.getServerContext().getDefaultHabitat());
 
         SunWebApp bean = webModule.getIasWebAppConfigBean();
 
@@ -243,7 +241,8 @@ final class WebModuleListener
 
         // START SJSAS 6311155
         String sysClassPath = ASClassLoaderUtil.getModuleClassPath(
-            serverContext.getDefaultHabitat(), webModule.getID(), null
+            webContainer.getServerContext().getDefaultHabitat(),
+            webModule.getID(), null
         );
         // If the configuration flag usMyFaces is set, remove jsf-api.jar
         // and jsf-impl.jar from the system class path

@@ -99,8 +99,7 @@ public final class EmbeddedWebContainer extends Embedded {
  
     // ------------------------------------------------------------ Constructor
 
-    public EmbeddedWebContainer(ServerContext serverContext,
-                                WebContainer webContainer,
+    public EmbeddedWebContainer(WebContainer webContainer,
                                 String logServiceFile,
                                 String logLevel,
                                 FileLoggerHandler logHandler) {
@@ -110,7 +109,7 @@ public final class EmbeddedWebContainer extends Embedded {
         this.logServiceFile = logServiceFile;
         this.logLevel = logLevel;
         this.logHandler = logHandler;
-        this.serverContext = serverContext;
+        this.serverContext = webContainer.getServerContext();
         habitat = serverContext.getDefaultHabitat();
         webContainerFeatureFactory = habitat.getByContract(
                 WebContainerFeatureFactory.class);
@@ -212,7 +211,7 @@ public final class EmbeddedWebContainer extends Embedded {
         context.addLifecycleListener(config);
 
         // TODO: should any of those become WebModuleDecorator, too?
-        context.addLifecycleListener(new WebModuleListener(serverContext,
+        context.addLifecycleListener(new WebModuleListener(webContainer,
                 location, wmInfo.getDescriptor()));
 
         context.addContainerListener(
