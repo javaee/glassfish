@@ -3380,13 +3380,15 @@ public abstract class BaseContainer
                                           ejbOptionalLocalBusinessHomeIntf);
                     }
 
-                    if( !hasLocalBusinessView ) {
-                        // Add dummy local business interface remove method so that internal
-                        // container remove operations will work.
-                        addInvocationInfo(this.ejbIntfMethods[EJBLocalObject_remove],
-                                MethodDescriptor.EJB_LOCAL,
-                                javax.ejb.EJBLocalObject.class);                 
-                    }
+
+                }
+
+                if( !hasLocalHomeView ) {
+                    // Add dummy local business interface remove method so that internal
+                    // container remove operations will work.  (needed for internal 299 contract)
+                    addInvocationInfo(this.ejbIntfMethods[EJBLocalObject_remove],
+                            MethodDescriptor.EJB_LOCAL,
+                            javax.ejb.EJBLocalObject.class);
                 }
             }
 

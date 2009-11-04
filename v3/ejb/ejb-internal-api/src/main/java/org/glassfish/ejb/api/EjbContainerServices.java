@@ -63,4 +63,6 @@ public interface EjbContainerServices {
 
     public boolean isRemoved(Object ejbRef);
 
+    public boolean isEjbManagedObject(Object ejbDesc, Class c);
+
 }

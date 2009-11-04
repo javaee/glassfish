@@ -49,12 +49,17 @@ import java.lang.reflect.InvocationHandler;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import com.sun.ejb.EJBUtils;
+
 import javax.ejb.NoSuchEJBException;
 import javax.ejb.EJBException;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.logging.LogDomains;
+
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -240,6 +245,30 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
         }
 
         return (localObj != null) ?  localObj.getDelegate() : null;
+    }
+
+    public boolean isEjbManagedObject(Object desc, Class c) {
+
+        String className = c.getName();
+
+        EjbDescriptor ejbDesc = (EjbDescriptor) desc;
+
+        Set<String> ejbManagedObjectClassNames = new HashSet<String>();
+        ejbManagedObjectClassNames.add(ejbDesc.getEjbClassName());
+        ejbManagedObjectClassNames.addAll(ejbDesc.getInterceptorClassNames());
+
+        Set<String> serializableClassNames = new HashSet<String>();
+
+        for(String next : ejbManagedObjectClassNames) {
+            // Add the serializable sub-class version of each name as well
+            serializableClassNames.add(EJBUtils.getGeneratedSerializableClassName(next));
+        }
+
+        boolean isEjbManagedObject = ejbManagedObjectClassNames.contains(className) ||
+                serializableClassNames.contains(className);
+
+        return isEjbManagedObject;
+
     }
 
 }

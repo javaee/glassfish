@@ -40,6 +40,7 @@ import org.jboss.weld.injection.spi.InjectionServices;
 import org.jboss.weld.injection.spi.InjectionContext;
 
 import org.glassfish.internal.api.Globals;
+import org.glassfish.ejb.api.EjbContainerServices;
 import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
@@ -71,6 +72,8 @@ public class InjectionServicesImpl implements InjectionServices {
             Habitat h = Globals.getDefaultHabitat();
             ComponentEnvManager compEnvManager = (ComponentEnvManager) h.getByContract(ComponentEnvManager.class);
 
+            EjbContainerServices containerServices = h.getByContract(EjbContainerServices.class);
+
             JndiNameEnvironment componentEnv = compEnvManager.getCurrentJndiNameEnvironment();
 
             ManagedBeanDescriptor mbDesc = null;
@@ -90,25 +93,27 @@ public class InjectionServicesImpl implements InjectionServices {
             if( componentEnv instanceof EjbDescriptor ) {
 
                 EjbDescriptor ejbDesc = (EjbDescriptor) componentEnv;
-                // If it's an ejb bean class or interceptor, no special treatment needed.
-                if( !ejbDesc.getInterceptorClassNames().contains(targetClass) &&
-                    !ejbDesc.getEjbClassName().equals(targetClass) ) {
+
+                if( !containerServices.isEjbManagedObject(ejbDesc, target.getClass())) {
 
                     BundleDescriptor topLevelBundle = (BundleDescriptor)
                             ejbDesc.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
 
                     if( topLevelBundle instanceof WebBundleDescriptor ) {
 
+                        // If this is taking place within the context of an ejb packaged in a
+                        // .war, we can always just use the single .war-level component env
                         injectionEnv = (WebBundleDescriptor) topLevelBundle;
 
                     } else {
 
+                        // Check if it's a @ManagedBean class within an ejb-jar.  In that case,
+                        // special handling is needed to locate the EE env dependencies
                         mbDesc = ejbDesc.getEjbBundleDescriptor().getManagedBeanByBeanClass(targetClass);
 
                         if( mbDesc == null ) {
                             injectionEnv = ejbDesc.getEjbBundleDescriptor();
                         }
-
                     }
                 }
 
@@ -117,7 +122,17 @@ public class InjectionServicesImpl implements InjectionServices {
             if( mbDesc != null ) {
                 injectionManager.injectInstance(target, mbDesc.getGlobalJndiName(), false);
             } else {
-                injectionManager.injectInstance(target, injectionEnv, false);
+                if( injectionEnv instanceof EjbBundleDescriptor ) {
+
+                    // CDI-style managed bean that doesn't have @ManagedBean annotation but
+                    // is injected within the context of an ejb.  Need to explicitly
+                    // set the environment of the ejb bundle.
+                    injectionManager.injectInstance(target, compEnvManager.getComponentEnvId(injectionEnv)
+                        ,false);
+
+                } else {
+                    injectionManager.injectInstance(target, injectionEnv, false);
+                }
             }
 
             injectionContext.proceed();
