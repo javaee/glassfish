@@ -637,25 +637,34 @@ public class MonitoringHandlers {
     }
 
     public static List getAllEjbComps(String appname, String type, String state) {
-        List ejblist = new ArrayList();
+        //List ejblist = new ArrayList();
         List menuList = new ArrayList();
         List bstate = getEjbComps(appname, type, "");
         if (!bstate.isEmpty()) {
-            ejblist.addAll(bstate);
-            List bcache = getEjbComps(appname, "bean-cache-mon", (String) bstate.get(0));
-            List bpool = getEjbComps(appname, "bean-pool-mon", (String) bstate.get(0));
-            List timers = getEjbComps(appname, "ejb-timed-object-mon", (String) bstate.get(0));
-            if (!bcache.isEmpty()) {
-                ejblist.addAll(bcache);
+            ListIterator bi = bstate.listIterator();
+            while (bi.hasNext() && bi.hasNext()) {
+                List ejblist = new ArrayList();
+                String name = (String) bi.next();
+                ejblist.add(name);
+                List bcache = getEjbComps(appname, "bean-cache-mon", name);
+                List bpool = getEjbComps(appname, "bean-pool-mon", name);
+                List timers = getEjbComps(appname, "ejb-timed-object-mon", name);
+                if (!bcache.isEmpty()) {
+                    ejblist.addAll(bcache);
+                }
+                if (!bpool.isEmpty() && bpool.size() > 0) {
+                    ejblist.addAll(bpool);
+                }
+                if (!timers.isEmpty()) {
+                    ejblist.addAll(timers);
+                }
+                if(!ejblist.isEmpty()){
+                    menuList.add(ejblist);
+                }
             }
-            if (!bpool.isEmpty() && bpool.size() > 0) {
-                ejblist.addAll(bpool);
-            }
-            if (!timers.isEmpty()) {
-                ejblist.addAll(timers);
-            }
+
         }
-        return ejblist;
+        return menuList;
     }
 
     public static List getEjbComps(String name, String type, String ejbstate) {

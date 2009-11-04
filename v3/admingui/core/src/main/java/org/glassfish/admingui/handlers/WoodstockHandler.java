@@ -463,44 +463,34 @@ public class WoodstockHandler {
                     }
                 }
             }
-            if(MonitoringHandlers.doesAppProxyExist(appname, "stateful-session-bean-mon")){
-
-                List<String> sfullSession = MonitoringHandlers.getAllEjbComps(appname, "stateful-session-bean-mon", "");
+            if (MonitoringHandlers.doesAppProxyExist(appname, "stateful-session-bean-mon")) {
+                List<String> sfullSession = getEJBComponentsMenuOptions(appname, "stateful-session-bean-mon");
                 if (!sfullSession.isEmpty()) {
-                    OptionGroup menuOptions = getMenuOptions(sfullSession, (String) sfullSession.get(0), "", true);
-                    menuList.add(menuOptions);
-                    List sfullBeanMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) sfullSession.get(0));
-                    if (!sfullBeanMethods.isEmpty()) {
-                        OptionGroup bmmenuOptions = getMenuOptions(sfullBeanMethods, "bean-methods", (String) sfullSession.get(0), true);
-                        menuList.add(bmmenuOptions);
-                    }
+                    menuList.addAll(sfullSession);
                 }
-
             }
-            if(MonitoringHandlers.doesAppProxyExist(appname, "stateless-session-bean-mon")) {
-                List slessSession = MonitoringHandlers.getAllEjbComps(appname, "stateless-session-bean-mon", "");
+            if (MonitoringHandlers.doesAppProxyExist(appname, "stateless-session-bean-mon")) {
+                List<String> slessSession = getEJBComponentsMenuOptions(appname, "stateless-session-bean-mon");
                 if (!slessSession.isEmpty()) {
-                    OptionGroup menuOptions = getMenuOptions(slessSession, (String) slessSession.get(0), "", true);
-                    menuList.add(menuOptions);
-                    List slessBeanMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) slessSession.get(0));
-                    if (!slessBeanMethods.isEmpty()) {
-                        OptionGroup bmmenuOptions = getMenuOptions(slessBeanMethods, "bean-methods", (String) slessSession.get(0), true);
-                        menuList.add(bmmenuOptions);
-                    }
-
+                    menuList.addAll(slessSession);
                 }
             }
-            if(MonitoringHandlers.doesAppProxyExist(appname, "message-driven-bean-mon")) {
-                List mdbs = MonitoringHandlers.getAllEjbComps(appname, "message-driven-bean-mon", "");
+            if (MonitoringHandlers.doesAppProxyExist(appname, "message-driven-bean-mon")) {
+                List<String> mdbs = getEJBComponentsMenuOptions(appname, "message-driven-bean-mon");
                 if (!mdbs.isEmpty()) {
-                    OptionGroup menuOptions = getMenuOptions(mdbs, (String) mdbs.get(0), "", true);
-                    menuList.add(menuOptions);
-                    List mdbsMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String)mdbs.get(0));
-                    if (!mdbsMethods.isEmpty()) {
-                        OptionGroup bmmenuOptions = getMenuOptions(mdbsMethods, "bean-methods", (String) mdbs.get(0), true);
-                        menuList.add(bmmenuOptions);
-                    }
-
+                    menuList.addAll(mdbs);
+                }
+            }
+            if (MonitoringHandlers.doesAppProxyExist(appname, "singleton-bean-mon")) {
+                List<String> sbs = getEJBComponentsMenuOptions(appname, "singleton-bean-mon");
+                if (!sbs.isEmpty()) {
+                    menuList.addAll(sbs);
+                }
+            }
+            if (MonitoringHandlers.doesAppProxyExist(appname, "entity-bean-mon")) {
+                List ebs = getEJBComponentsMenuOptions(appname, "entity-bean-mon");
+                if (!ebs.isEmpty()) {
+                    menuList.addAll(ebs);
                 }
             }
         }
@@ -509,8 +499,28 @@ public class WoodstockHandler {
 
         handlerCtx.setOutputValue("ComponentList", jumpMenuOptions);
     }
+    
+    private static List getEJBComponentsMenuOptions(String appname, String ejbtype) {
+        List menuList = new ArrayList();
+        List ebs = MonitoringHandlers.getAllEjbComps(appname, ejbtype, "");
+        if (!ebs.isEmpty()) {
+            ListIterator li = ebs.listIterator();
+            while (li.hasNext() && li.hasNext()) {
+                List comps = (List) li.next();
+                OptionGroup menuOptions = getMenuOptions(comps, (String) comps.get(0), "", true);
+                menuList.add(menuOptions);
+                List ebsMethods = MonitoringHandlers.getEjbComps(appname, "bean-method-mon", (String) comps.get(0));
+                if (!ebsMethods.isEmpty()) {
+                    OptionGroup bmmenuOptions = getMenuOptions(ebsMethods, "bean-methods", (String) comps.get(0), true);
+                    menuList.add(bmmenuOptions);
+                }
+            }
+        }
+        return menuList;
 
-        private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
+    }
+
+    private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
         ArrayList nList = new ArrayList();
         Option[] groupedOptions3 = new Option[0];
         Collections.sort(values);
