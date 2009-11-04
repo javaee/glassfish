@@ -40,6 +40,13 @@ own identifying information: Portions Copyright [yyyy]
        
        <stage-module-jars graphid="all-modules" />
        <stage-distribution-fragments graphid="all-modules" />
+       
+       <!-- brute force cleanup at this point, need to look into extended ant
+           plugin and fix the issue at the source -->
+           
+       <delete file="target/stage/${install.dir.name}/glassfish/modules/mail.jar" failonerror="false"/>
+       <delete file="target/stage/${install.dir.name}/glassfish/modules/activation.jar" failonerror="false" />
+       
        <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/endorsed"/>
 
       <move file="target/stage/${install.dir.name}/glassfish/modules/jaxb-api-osgi.jar" todir="target/stage/${install.dir.name}/glassfish/modules/endorsed" failonerror="false"/>
