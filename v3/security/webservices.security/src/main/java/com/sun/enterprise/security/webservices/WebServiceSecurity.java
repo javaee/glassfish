@@ -59,8 +59,8 @@ import com.sun.logging.*;
 import java.util.logging.*;
 
 import com.sun.enterprise.deployment.WebServiceEndpoint;
-import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.jmac.provider.SOAPAuthParam;
+import org.glassfish.internal.api.Globals;
 
 /**
  *
@@ -85,8 +85,10 @@ public class WebServiceSecurity {
     private static final String SHARED_SERVER_STATE = 
         "com.sun.enterprise.security.jauth.ServerHashMap";
 
-    private WebServiceSecurity () {
-        auditManager = SecurityServicesUtil.getInstance().getAuditManager();;
+    static  {
+        if (Globals.getDefaultHabitat() != null) {
+            auditManager = Globals.get(AuditManager.class);
+        }
     }
     
     // when called by jaxrpc SystemHandlerDelegate
@@ -290,7 +292,7 @@ public class WebServiceSecurity {
     (javax.xml.rpc.handler.soap.SOAPMessageContext context, 
     WebServiceEndpoint endpoint, boolean status) {
 
-	if (auditManager.isAuditOn()) {
+	if ((auditManager != null) && auditManager.isAuditOn()) {
 
 	    // TODO: replace the string literal with the correct constant
 	    // MessageContextProperties.HTTP_SERVLET_REQUEST);
