@@ -10,5 +10,6 @@
     if(!selected) {
         enableComponent('#{enlistId}', 'text'); 
     }
+    }
     </script>
 </f:verbatim>   
