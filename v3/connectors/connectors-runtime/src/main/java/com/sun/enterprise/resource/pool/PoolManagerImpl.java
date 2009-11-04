@@ -638,12 +638,18 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      * @param poolName
      * @throws com.sun.appserv.connectors.internal.api.PoolingException
      */
-    public void flushConnectionPool(String poolName) throws PoolingException {
+    public boolean flushConnectionPool(String poolName) throws PoolingException {
+        boolean result = false;
         ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
         
         if(pool != null) {
-            pool.flushConnectionPool();
+            result = pool.flushConnectionPool();
+        } else {
+            _logger.log(Level.WARNING, "poolmgr.flush_noop_pool_not_initialized", poolName);
+            throw new PoolingException("Flush Connection Pool for pool " + 
+                    poolName + " failed. Please see server.log for more details.");            
         }
+        return result;
     }
 
     /**

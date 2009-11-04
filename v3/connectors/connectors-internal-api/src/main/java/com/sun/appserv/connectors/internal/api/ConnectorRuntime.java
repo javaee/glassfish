@@ -550,7 +550,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @param poolName connection pool name
      * @throws ConnectorRuntimeException
      */
-    public void flushConnectionPool(String poolName) throws ConnectorRuntimeException;
+    public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException;
     
     /**
      * Get Validation table names list for the database that the jdbc 
@@ -561,7 +561,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @throws javax.naming.NamingException
      */
     public Set<String> getValidationTableNames(String poolName) 
-            throws ResourceException, NamingException;
+            throws ResourceException;
 
      /**
      * Fetch the DataSource/Driver implementation class names for a particular 

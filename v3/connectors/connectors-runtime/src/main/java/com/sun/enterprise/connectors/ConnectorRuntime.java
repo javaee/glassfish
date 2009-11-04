@@ -1164,8 +1164,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @param poolName
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
      */
-    public void flushConnectionPool(String poolName) throws ConnectorRuntimeException {
-        ccPoolAdmService.flushConnectionPool(poolName);
+    public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException {
+        return ccPoolAdmService.flushConnectionPool(poolName);
     }
 
     /**
@@ -1176,7 +1176,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws javax.resource.ResourceException
      * @throws javax.naming.NamingException
      */        
-    public Set<String> getValidationTableNames(String poolName) throws ResourceException, NamingException {
+    public Set<String> getValidationTableNames(String poolName) throws ResourceException {
         return jdbcAdminService.getValidationTableNames(poolName);
     }
 

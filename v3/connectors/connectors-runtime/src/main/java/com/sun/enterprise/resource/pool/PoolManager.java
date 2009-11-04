@@ -77,7 +77,7 @@ public interface PoolManager extends TransactedPoolManager {
      * @param poolName
      * @throws com.sun.appserv.connectors.internal.api.PoolingException
      */
-    public void flushConnectionPool(String poolName) throws PoolingException;
+    public boolean flushConnectionPool(String poolName) throws PoolingException;
 
     //Get status of pool
     public PoolStatus getPoolStatus(String poolName);

@@ -444,9 +444,9 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         try
         {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
-            connRuntime.flushConnectionPool(poolName);
-            result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, true);
-        }
+            boolean flushStatus = connRuntime.flushConnectionPool(poolName);
+            result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, flushStatus);    
+        }            
         catch (ConnectorRuntimeException ex)
         {
             result.put(ConnectorRuntimeAPIProvider.FLUSH_CONNECTION_POOL_KEY, false);

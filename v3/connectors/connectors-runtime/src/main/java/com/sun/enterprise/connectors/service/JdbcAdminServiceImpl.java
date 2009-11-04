@@ -101,7 +101,7 @@ public class JdbcAdminServiceImpl extends ConnectorService {
      * @throws javax.naming.NamingException
      */
     public Set<String> getValidationTableNames(String poolName)
-            throws ResourceException, NamingException {
+            throws ResourceException {
         ManagedConnectionFactory mcf = ccPoolAdmService.getManagedConnectionFactory(poolName);
         final Subject defaultSubject = ccPoolAdmService.getDefaultSubject(poolName, mcf, null);
         ManagedConnection mc = null;
@@ -114,6 +114,9 @@ public class JdbcAdminServiceImpl extends ConnectorService {
             }
             return getValidationTableNames(con,
                     getDefaultDatabaseName(poolName, mcf));
+        } catch(Exception re) {
+            _logger.log(Level.WARNING, "pool.get_validation_table_names_failure", re.getMessage());
+            throw new ResourceException(re);
         } finally {
             try {
                 if(mc != null) {

@@ -1414,11 +1414,11 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @param poolName
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
      */
-    public void flushConnectionPool(String poolName) throws ConnectorRuntimeException {
+    public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException {
         PoolManager poolMgr = _runtime.getPoolManager();
         try {
-            poolMgr.flushConnectionPool( poolName );
-        } catch (PoolingException ex) {            
+            return poolMgr.flushConnectionPool( poolName );
+        } catch (PoolingException ex) {
             throw new ConnectorRuntimeException(ex.getMessage());
         }
     }

@@ -160,7 +160,7 @@ public interface ResourcePool {
      * Flush Connection pool by reinitializing the connections 
      * established in the pool.
      */
-    public void flushConnectionPool() throws PoolingException;
+    public boolean flushConnectionPool() throws PoolingException;
 
 }
 

@@ -134,7 +134,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     protected ResourceAllocator allocator;
 
     private boolean selfManaged_;
-
+    
     
     public ConnectionPool(String poolName) throws PoolingException {
         this.name = poolName;
@@ -1192,17 +1192,33 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * 
      * @throws com.sun.appserv.connectors.internal.api.PoolingException
      */
-    public synchronized void flushConnectionPool() throws PoolingException {
+    public synchronized boolean flushConnectionPool() throws PoolingException {
 
         logFine("Flush Connection Pool entered");        
-        if (poolInitialized) {
-            killExtraResources(ds.getResourcesSize());
+        
+        if(!poolInitialized) {
+            _logger.log(Level.WARNING, "poolmgr.flush_noop_pool_not_initialized", getPoolName());
+            throw new PoolingException("Flush Connection Pool failed for " +
+                    getPoolName() +
+                    ". Please see server.log for more details.");
         }
-        if(poolInitialized) {
-            increaseSteadyPoolSize(steadyPoolSize);
-        }
+        
+        try {        
+            if (poolInitialized) {
+                killExtraResources(ds.getResourcesSize());
+            }
 
+            if (poolInitialized) {
+                increaseSteadyPoolSize(steadyPoolSize);
+            }
+        } catch(PoolingException ex) {
+            _logger.log(Level.WARNING, "pool.flush_pool_failure", 
+                    new Object[] {getPoolName(), ex.getMessage()});
+            throw ex;
+        }
         logFine("Flush Connection Pool done");        
+            
+        return true;
     }
     
     /**
