@@ -53,7 +53,7 @@
             setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
         prepareSuccessfulMsg();
-        redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+        gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
     />
 </sun:button>
 <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -78,11 +78,11 @@
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
             setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
         }
-        redirect(page="#{parentPage}")
+        gf.redirect(page="#{parentPage}")
     />
 </sun:button>
 <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
     <!command
-        redirect(page="#{parentPage}");
+        gf.redirect(page="#{parentPage}");
     />
 </sun:button>

@@ -39,12 +39,12 @@
     <sun:tab id="mdbSettingsTab" immediate="$boolean{v}" text="$resource{i18n_ejbLite.ejbContainer.mdbSettingsTab}" toolTip="$resource{i18n_ejbLite.ejbContainer.mdbSettingsTab} Tab" >
         <!command
             setSessionAttribute(key="ejbContainerTabs" value="mdbSettingsTab");
-            redirect(page="#{request.contextPath}/ejb/configuration/ejbContainerMDBSettings.jsf?configName=#{configName}");
+            gf.redirect(page="#{request.contextPath}/ejb/configuration/ejbContainerMDBSettings.jsf?configName=#{configName}");
 	/>    
     </sun:tab>    
     <sun:tab id="ejbTimerTab" immediate="$boolean{true}" text="$resource{i18n_ejbLite.ejbContainer.ejbTimerTab}" toolTip="$resource{i18n_ejbLite.ejbContainer.ejbTimerTab} Tab" >
         <!command
             setSessionAttribute(key="ejbContainerTabs" value="ejbTimerTab");
-            redirect(page="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{configName}");
+            gf.redirect(page="#{request.contextPath}/ejb/configuration/ejbContainerTimerService.jsf?configName=#{configName}");
 	/>    
     </sun:tab>        

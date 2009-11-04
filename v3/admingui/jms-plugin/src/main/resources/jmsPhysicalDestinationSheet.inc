@@ -4,18 +4,18 @@
      <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
         <!command
             createPhysicalDestination(name="#{name}", type="#{type}", attributes="#{pageSession.valueMap}");
-            redirect(page="#{pageSession.parentPage}");
+            gf.redirect(page="#{pageSession.parentPage}");
         />
     </sun:button>
      <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
         <!command
             updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
-            redirect(page="#{pageSession.parentPage}");
+            gf.redirect(page="#{pageSession.parentPage}");
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            redirect(page="#{pageSession.parentPage}");
+            gf.redirect(page="#{pageSession.parentPage}");
         />
   </sun:button>
 

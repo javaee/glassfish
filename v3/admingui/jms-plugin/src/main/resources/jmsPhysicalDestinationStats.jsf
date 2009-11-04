@@ -60,7 +60,7 @@
                 <sun:panelGroup id="topButtons">
                     <sun:button id="topOK" text="$resource{i18n.button.OK}">
                         <!command
-                            redirect(page="#{pageSession.parentPage}");
+                            gf.redirect(page="#{pageSession.parentPage}");
                         />
                     </sun:button>
                 </sun:panelGroup>
@@ -97,7 +97,7 @@
                 <sun:panelGroup id="bottomButtons">
                     <sun:button id="bottomOK" text="$resource{i18n.button.OK}">
                         <!command
-                            redirect(page="#{pageSession.parentPage}");
+                            gf.redirect(page="#{pageSession.parentPage}");
                         />
                     </sun:button>
                 </sun:panelGroup>

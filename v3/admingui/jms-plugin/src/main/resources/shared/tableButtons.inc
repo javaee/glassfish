@@ -1,7 +1,7 @@
 <!facet actionsTop>
      <sun:panelGroup id="topActionsGroup1">
         <sun:button id="newButton" text="$resource{i18n.button.New}" >
-            <!command redirect(page="#{pageSession.createLink}") />
+            <!command gf.redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
         <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{isConnPage}"
@@ -16,7 +16,7 @@
                 setAttribute(key="selectedRows" value="${selectedRows}");
 
 
-                redirect(page="#{pageSession.listLink}");
+                gf.redirect(page="#{pageSession.listLink}");
             />
         </sun:button>
 
@@ -28,7 +28,7 @@
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 deleteChildren(objectNameStr="amx:pp=/domain/servers,type=server,name=server", type="resource-ref", selectedRows="${selectedRows}");
-                redirect(page="#{pageSession.listLink}");
+                gf.redirect(page="#{pageSession.listLink}");
             />
         </sun:button>
 
@@ -38,7 +38,7 @@
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="true");
                 setAttribute(key="selectedRows" value="${selectedRows}");
-                redirect(page="#{pageSession.listLink}");
+                gf.redirect(page="#{pageSession.listLink}");
             />
         </sun:button>
 
@@ -48,7 +48,7 @@
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 updateStatus(resType="#{pageSession.childType}", selectedRows="${selectedRows}", enabled="false");
                 setAttribute(key="selectedRows" value="${selectedRows}");
-                redirect(page="#{pageSession.listLink}");
+                gf.redirect(page="#{pageSession.listLink}");
             />
         </sun:button>
      </sun:panelGroup>

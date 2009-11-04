@@ -69,7 +69,7 @@
 
         <sun:button id="backButton" text="$resource{i18n.button.Back}" >
             <!command
-                redirect(page="#{fromPage}");
+                gf.redirect(page="#{fromPage}");
             />
         </sun:button>
 </sun:panelGroup>

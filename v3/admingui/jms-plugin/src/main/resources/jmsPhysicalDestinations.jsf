@@ -62,7 +62,7 @@
             <!facet actionsTop>
                  <sun:panelGroup id="topActionsGroup1">
                     <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                        <!command redirect(page="/jms/jmsPhysicalDestinationNew.jsf"); /*?name=#{targetName}&actualLink=#{actualLink}");*/ />
+                        <!command gf.redirect(page="/jms/jmsPhysicalDestinationNew.jsf"); /*?name=#{targetName}&actualLink=#{actualLink}");*/ />
                     </sun:button>
 
                     <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
@@ -75,7 +75,7 @@
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                         deleteJMSDest(selectedRows="${selectedRows}");
                         setAttribute(key="selectedRows" value="${selectedRows}");
-                        redirect(page="#{pageSession.selfPage}");
+                        gf.redirect(page="#{pageSession.selfPage}");
                     />
                     </sun:button>
                     <sun:button id="flushButton" text="$resource{i18n.button.Flush}" primary="#{false}" >
@@ -84,7 +84,7 @@
                             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
                             flushJMSDestination(selectedRows="${selectedRows}");
                             prepareAlertMsg(summary="$resource{i18njms.jmsPhysDestinations.flushed}", type="success");
-                            redirect(page="#{pageSession.selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
+                            gf.redirect(page="#{pageSession.selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}");
                         />
                     </sun:button>
                  </sun:panelGroup>

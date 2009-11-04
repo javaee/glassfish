@@ -67,7 +67,7 @@
                     updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
                     prepareAlertMsg(summary="#{successMsg}" type="success");
                     setApplicationAttribute(key="restartNeeded" value="#{true}");
-                    redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    gf.redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 }
             />
             "<pre><font size="2" />
@@ -89,7 +89,7 @@
             <!command
                 updateCenterProcess(selectedRows="$pageSession{selectedRows}" action="#{action}" );
                 prepareAlertMsg(summary="#{successMsg}" type="success");
-                redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{fromPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
         </sun:button>
         <sun:button id="declineButton" text="$resource{i18n.button.Decline}" >
@@ -97,7 +97,7 @@
                 getClientId(component="$this{component}" clientId="#{pageSession.declineButtonId}");
             />
             <!command
-                redirect(page="#{fromPage}");
+                gf.redirect(page="#{fromPage}");
             />
         </sun:button>
         "</div>  

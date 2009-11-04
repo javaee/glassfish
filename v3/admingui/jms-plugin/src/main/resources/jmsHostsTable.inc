@@ -46,7 +46,7 @@
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
-                <!command redirect(page="#{createLink}?configName=#{configName}"); />
+                <!command gf.redirect(page="#{createLink}?configName=#{configName}"); />
             </sun:button>
               
             <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
@@ -60,7 +60,7 @@
                 //deleteConfig(ConfigName="#{configName}", Type="#{type}", selectedRows="${selectedRows}");
                 deleteChildren(objectNameStr="#{pageSession.parentObjectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
                 setAttribute(key="selectedRows" value="${selectedRows}");
-                redirect(page="#{listPageLink}?configName=#{configName}");
+                gf.redirect(page="#{listPageLink}?configName=#{configName}");
             />            
             </sun:button>
             

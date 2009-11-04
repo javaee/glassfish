@@ -40,7 +40,7 @@
     <sun:tab id="ejbSettingsTab" immediate="$boolean{true}" text="$resource{i18n_ejbLite.ejbContainer.ejbSettingsTab}" toolTip="$resource{i18n_ejbLite.ejbContainer.ejbSettingsTab} Tab" >
         <!command
             setSessionAttribute(key="ejbContainerTabs" value="ejbSettingsTab");
-            redirect(page="#{request.contextPath}/ejb-lite/configuration/ejbContainerGeneral.jsf?configName=#{configName}");
+            gf.redirect(page="#{request.contextPath}/ejb-lite/configuration/ejbContainerGeneral.jsf?configName=#{configName}");
         />       
     </sun:tab>
 </sun:tabSet>

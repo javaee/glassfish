@@ -39,25 +39,25 @@
         <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}" toolTip="$resource{i18nUC.updateCenter.AddOnTab} Tab">
             <!command
                 setSessionAttribute(key="ucTabs" value="addOn");
-                redirect(page="#{request.contextPath}/updateCenter/addOn.jsf");
+                gf.redirect(page="#{request.contextPath}/updateCenter/addOn.jsf");
             />
         </sun:tab>
         <sun:tab id="update" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.UpdateTab}" toolTip="$resource{i18nUC.updateCenter.UpdateTab} Tab">
             <!command
                 setSessionAttribute(key="ucTabs" value="update");
-                redirect(page="#{request.contextPath}/updateCenter/update.jsf");
+                gf.redirect(page="#{request.contextPath}/updateCenter/update.jsf");
             />
         </sun:tab>
         <sun:tab id="installed" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.InstalledTab}" toolTip="$resource{i18nUC.updateCenter.InstalledTab} Tab" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="installed");
-                    redirect(page="#{request.contextPath}/updateCenter/installed.jsf");
+                    gf.redirect(page="#{request.contextPath}/updateCenter/installed.jsf");
                 />       
         </sun:tab>
         <sun:tab id="config" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.ConfigTab}" toolTip="$resource{i18nUC.updateCenter.ConfigTab} Tab" >
                 <!command
                     setSessionAttribute(key="ucTabs" value="config");
-                    redirect(page="#{request.contextPath}/updateCenter/ucConfig.jsf");
+                    gf.redirect(page="#{request.contextPath}/updateCenter/ucConfig.jsf");
                 />       
         </sun:tab>
         

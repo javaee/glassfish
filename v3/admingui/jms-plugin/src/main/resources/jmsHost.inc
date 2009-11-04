@@ -53,7 +53,7 @@
                 <!command
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}");
                     prepareSuccessfulMsg();
-                    redirect(page="jmsHosts.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}")
+                    gf.redirect(page="jmsHosts.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}")
                 />
             </sun:button>
 
@@ -69,12 +69,12 @@
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}");
                     prepareSuccessfulMsg();
-                    redirect(page="jmsHosts.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}")
+                    gf.redirect(page="jmsHosts.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&configName=#{configName}")
                     />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
                 <!command
-                    redirect(page="jmsHosts.jsf?configName=#{configName}");
+                    gf.redirect(page="jmsHosts.jsf?configName=#{configName}");
                     />
             </sun:button>
 

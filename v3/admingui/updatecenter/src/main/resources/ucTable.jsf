@@ -60,7 +60,7 @@
                 setAttribute(key="fromPage" value="#{fromPage}");
                 setAttribute(key="action" value="#{action}");
                 setAttribute(key="successMsg" value="#{successMsg}");
-                navigate(page="#{request.contextPath}/updateCenter/acceptLicense.jsf");
+                gf.navigate(page="#{request.contextPath}/updateCenter/acceptLicense.jsf");
             />
             </sun:button>
             <h:panelGroup rendered="#{applicationScope.restartNeeded == true}">
