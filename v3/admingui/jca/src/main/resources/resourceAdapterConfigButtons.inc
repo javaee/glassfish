@@ -54,7 +54,7 @@
                     setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
                 }
                 prepareSuccessfulMsg();
-                redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -79,14 +79,14 @@
                     }
                     if (#{pageSession.showSuccessfulMsg}){
                         prepareSuccessfulMsg();
-                        redirect(page="#{pageSession.parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.encodedName}&configName=#{pageSession.configName}");
+                        gf.redirect(page="#{pageSession.parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.encodedName}&configName=#{pageSession.configName}");
                     }
-                    redirect(page="#{pageSession.parentPage}?configName=#{configName}")
+                    gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}");
+                    gf.redirect(page="#{parentPage}");
                 />
             </sun:button>
         </sun:panelGroup>

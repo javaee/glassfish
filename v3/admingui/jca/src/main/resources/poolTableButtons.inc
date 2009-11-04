@@ -8,7 +8,7 @@
                 setSessionAttribute(key="valueMap" value="#{null}")
                 setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                redirect(page="#{pageSession.createLink}") 
+                gf.redirect(page="#{pageSession.createLink}") 
             />
         </sun:button>
 
@@ -27,7 +27,7 @@
                 deleteChildren(objectNameStr="#{pageSession.objectNameStr}", type="#{pageSession.childType}", selectedRows="${selectedRows}");
             } 
             setAttribute(key="selectedRows" value="${selectedRows}");
-            redirect(page="#{pageSession.listLink}");
+            gf.redirect(page="#{pageSession.listLink}");
         />
         </sun:button>
      </sun:panelGroup>

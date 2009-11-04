@@ -44,7 +44,7 @@
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
                     setAttribute(key="fromStep2" value="#{true}")
-                    navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf")
+                    gf.gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf")
         
                  />
             </sun:button>
@@ -64,7 +64,7 @@
                     setSessionAttribute(key="wizardMap" value="#{null}")
                     setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                     setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                    redirect(page="#{parentPage}")
+                    gf.redirect(page="#{parentPage}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
@@ -72,7 +72,7 @@
                     setSessionAttribute(key="wizardMap" value="#{null}")
                     setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                     setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                    redirect(page="#{parentPage}");
+                    gf.redirect(page="#{parentPage}");
                 />
             </sun:button>
         </sun:panelGroup>

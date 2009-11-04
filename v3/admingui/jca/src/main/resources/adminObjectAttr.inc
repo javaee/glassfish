@@ -71,18 +71,18 @@
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="resAdapter" value="#{click.selected}");
                     setAttribute(key="reload" value="#{true}" );
-                    //navigate works only for new page & not for edit page
-                    //conversely redirect works only for edit page & not new page
+                    //gf.gf.navigate works only for new page & not for edit page
+                    //conversely gf.redirect works only for edit page & not new page
                     //needs more investigation - same scenario in component below too
                     if(!#{edit}){
                         getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
-                        navigate(page="#{selfPage}");
+                        gf.gf.navigate(page="#{selfPage}");
                     }
                     if(#{edit}){
                         getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="value", value=>$attribute{nameChosen});
-                        redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resAdapter=#{resAdapter}");
+                        gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resAdapter=#{resAdapter}");
                     }
                  />
            </sun:dropDown>
@@ -99,12 +99,12 @@
                     if(!#{edit}){
                         getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
-                        navigate(page="#{selfPage}");
+                        gf.gf.navigate(page="#{selfPage}");
                     }
                     if(#{edit}){
                         getUIComponent(clientId="#{nameId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="value", value=>$attribute{nameChosen});
-                        redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resType=#{resType}&resAdapter=$attribute{resAdapter}");
+                        gf.redirect(page="#{selfPage}&reload=#{reload}&name=$attribute{nameChosen}&resType=#{resType}&resAdapter=$attribute{resAdapter}");
                     }
                 />
             </sun:dropDown>

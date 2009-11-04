@@ -81,7 +81,7 @@
                             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
                             <!command
                                 updateConnectorConnectionPoolWizard();
-                                redirect(page="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf")
+                                gf.redirect(page="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf")
                             />
                         </sun:button>
                         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
@@ -89,7 +89,7 @@
                                 setSessionAttribute(key="wizardMap" value="#{null}")
                                 setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                                redirect(page="#{request.contextPath}/jca/connectorConnectionPools.jsf")
+                                gf.redirect(page="#{request.contextPath}/jca/connectorConnectionPools.jsf")
                             />
                         </sun:button>
                     </sun:panelGroup>
@@ -115,7 +115,7 @@
                                     setAttribute(key="click" value="$this{component}");
                                     setAttribute(key="resAdapterChoosen" value="#{click.selected}")
                                     setAttribute(key="fromStep1" value="#{true}")
-                                    navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
+                                    gf.gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf");
                                 />
                                 </sun:dropDown>
                             </sun:property>

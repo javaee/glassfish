@@ -63,7 +63,7 @@
                     }
                 }
                 prepareSuccessfulMsg();
-                redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -96,12 +96,12 @@
                                 result => $attribute{objStr2});
                         }
                     }
-                    redirect(page="#{pageSession.parentPage}")
+                    gf.redirect(page="#{pageSession.parentPage}")
                 />
             </sun:button>
             <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                 <!command
-                    redirect(page="#{parentPage}");
+                    gf.redirect(page="#{parentPage}");
                 />
             </sun:button>
         </sun:panelGroup>
