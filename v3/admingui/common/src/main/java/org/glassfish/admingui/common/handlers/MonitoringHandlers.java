@@ -345,7 +345,14 @@ public class MonitoringHandlers {
                                 if (cds.containsKey("count")) {
                                     val = cds.get("count") + " " + unit;
                                 } else if (cds.containsKey("current")) {
-                                    val = cds.get("current");
+                                    if (name.equals("transaction-service")) {
+                                        String str = (String) cds.get("current");
+                                        String formatStr = formatActiveIdsForDisplay(str);
+                                        if(!formatStr.isEmpty() && !formatStr.equals(""))
+                                            val = formatStr;
+                                    } else {
+                                        val = cds.get("current");
+                                    }
                                 } else {
                                     val = "--";
                                 }
@@ -671,6 +678,44 @@ public class MonitoringHandlers {
             }
         }
         return comps;
+    }
+        private static String formatActiveIdsForDisplay(String str) {
+        String values = " ";
+        String[] strArray = str.split("%%%EOL%%%");
+        if (strArray != null && strArray.length > 0) {
+            values = values + "<table>";
+            for (String s : (String[]) strArray) {
+                if (s.startsWith("Transaction")) {
+                    String sh = s.replaceFirst(" ", "_");
+                    String[] strHeaders = sh.split(" ");
+                    if (strHeaders != null && strHeaders.length > 0) {
+                        values = values + "<tr>";
+                        for (String h : (String[]) strHeaders) {
+                            if (!h.isEmpty()) {
+                                values = values + "<td>" + h + "</td>";
+                            }
+
+                        }
+                        values = values + "</tr>";
+                    }
+                } else {
+                    String[] strData = s.split(" ");
+                    if (strData != null && strData.length > 0) {
+                        values = values + "<tr>";
+                        for (String d : (String[]) strData) {
+                            if (!d.isEmpty()) {
+                                values = values + "<td>" + d + "</td>";
+                            }
+
+                        }
+                        values = values + "</tr>";
+                    }
+
+                }
+            }
+            values = values + "</table>";
+        }
+        return values;
     }
       
     final private static List<String> levels= new ArrayList();

@@ -393,7 +393,6 @@ public class WoodstockHandler {
         String firstItem = null;
         String title = null;
         if (aList != null) {
-            //Collections.sort(aList);
             ListIterator al = aList.listIterator();
             while (al.hasNext()) {
                 ArrayList moduleList = new ArrayList();
@@ -401,7 +400,6 @@ public class WoodstockHandler {
                 Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
                 for (AMXProxy oneModule : modules.values()) {
                     String moduleName = oneModule.getName();
-                    //if (moduleName.endsWith(".war") || moduleName.endsWith(".jar")) {
                         boolean hasSfullStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateful-session-bean-mon");
                         boolean hasSlessStats = MonitoringHandlers.doesAppProxyExist(moduleName, "stateless-session-bean-mon");
                         boolean hasWebStats = MonitoringHandlers.doesAppProxyExist(moduleName, "servlet-instance-mon");
@@ -412,17 +410,20 @@ public class WoodstockHandler {
                         if (hasSfullStats || hasSlessStats || hasWebStats || hasMdbStats || hasPoolStats || hasCacheStats || hasMethodStats) {
                             moduleList.add(moduleName);
                         }
-                    //}
                 }
                if (moduleList.isEmpty()) {
                     menuList.add(new Option(appName, appName));
+                    if (firstItem == null) {
+                        firstItem = appName;
+                    }
                 } else {
                     OptionGroup menuOptions = getMenuOptions(moduleList, appName, "", false);
                     menuList.add(menuOptions);
+                    if (firstItem == null){
+                        firstItem = (String)moduleList.get(0);
+                    }
                 }
-                if (firstItem == null) {
-                    firstItem = appName;
-                }
+                
           }
         }
 
@@ -461,7 +462,8 @@ public class WoodstockHandler {
                         }
                     }
                 }
-            } else {
+            }
+            if(MonitoringHandlers.doesAppProxyExist(appname, "stateful-session-bean-mon")){
 
                 List<String> sfullSession = MonitoringHandlers.getAllEjbComps(appname, "stateful-session-bean-mon", "");
                 if (!sfullSession.isEmpty()) {
@@ -474,7 +476,8 @@ public class WoodstockHandler {
                     }
                 }
 
-
+            }
+            if(MonitoringHandlers.doesAppProxyExist(appname, "stateless-session-bean-mon")) {
                 List slessSession = MonitoringHandlers.getAllEjbComps(appname, "stateless-session-bean-mon", "");
                 if (!slessSession.isEmpty()) {
                     OptionGroup menuOptions = getMenuOptions(slessSession, (String) slessSession.get(0), "", true);
@@ -486,7 +489,8 @@ public class WoodstockHandler {
                     }
 
                 }
-
+            }
+            if(MonitoringHandlers.doesAppProxyExist(appname, "message-driven-bean-mon")) {
                 List mdbs = MonitoringHandlers.getAllEjbComps(appname, "message-driven-bean-mon", "");
                 if (!mdbs.isEmpty()) {
                     OptionGroup menuOptions = getMenuOptions(mdbs, (String) mdbs.get(0), "", true);
@@ -498,9 +502,7 @@ public class WoodstockHandler {
                     }
 
                 }
-
             }
-
         }
         // Add Menu Options.
         jumpMenuOptions = (Option[]) menuList.toArray(new Option[menuList.size()]);
