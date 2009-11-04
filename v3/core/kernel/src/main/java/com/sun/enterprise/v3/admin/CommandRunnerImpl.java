@@ -398,7 +398,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
     /**
      * Get the Param name.  First it checks if the annotated Param
-     * includes a the name, if not then get the name from the field.
+     * includes a name, if not then get the name from the field.
      *
      * @param - Param class annotation
      * @annotated - annotated element
@@ -446,6 +446,17 @@ public class CommandRunnerImpl implements CommandRunner {
             // check for shortName
             paramValueStr = parameters.getOne(param.shortName());
         }
+
+        /*
+         * If we still don't have a value, and it's a password parameter,
+         * try using the simple name of the parameter (instead of the
+         * "AS_ADMIN_" name).  This makes it easier to pass password
+         * parameters when using the local CommandRunner API, e.g., for
+         * embedded use.
+         */
+        if (paramValueStr == null && param.password())
+            paramValueStr = getParameterValue(parameters, param.name(), true);
+
         // if paramValueStr is still null, then check to
         // see if the defaultValue is defined
         if (paramValueStr == null) {
