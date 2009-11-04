@@ -84,7 +84,7 @@ public class DeploymentImpl implements Deployment {
     private final List<BeanDeploymentArchive> beanDeploymentArchives;
     private Collection<EjbDescriptor> ejbs;
 
-    private Map<String, BeanDeploymentArchive> archiveToBeanDeploymentArchive;
+    private Map<String, BeanDeploymentArchive> idToBeanDeploymentArchive;
 
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
@@ -94,7 +94,7 @@ public class DeploymentImpl implements Deployment {
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.archive = archive;
         this.ejbs = ejbs;
-        this.archiveToBeanDeploymentArchive = new HashMap<String, BeanDeploymentArchive>();
+        this.idToBeanDeploymentArchive = new HashMap<String, BeanDeploymentArchive>();
         scan();
     }
 
@@ -118,15 +118,18 @@ public class DeploymentImpl implements Deployment {
 
         // If the BDA was not found for the Class, create one and add it
 
-        String archiveId = archive.getURI().getPath();
         List<Class<?>> wClasses = new ArrayList<Class<?>>();
         List<URL> wUrls = new ArrayList<URL>();
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
         wClasses.add(beanClass);
-        BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(archiveId, wbClasses, wbUrls, ejbs);
-        beanDeploymentArchives.add(beanDeploymentArchive);
-        archiveToBeanDeploymentArchive.put(archiveId, beanDeploymentArchive);
-        return beanDeploymentArchive;
+        BeanDeploymentArchive newBda = new BeanDeploymentArchiveImpl(beanClass.getName(), wbClasses, wbUrls, ejbs);
+        lIter = beanDeploymentArchives.listIterator();
+        while (lIter.hasNext()) {
+            BeanDeploymentArchive bda = lIter.next();
+            bda.getBeanDeploymentArchives().add(newBda);
+        }
+        idToBeanDeploymentArchive.put(beanClass.getName(), newBda);
+        return newBda;
     }
 
     public ServiceRegistry getServices() {
@@ -145,12 +148,12 @@ public class DeploymentImpl implements Deployment {
     }
 
     public BeanDeploymentArchive getBeanDeploymentArchiveForArchive(String archiveId) {
-        return archiveToBeanDeploymentArchive.get(archiveId);
+        return idToBeanDeploymentArchive.get(archiveId);
     }  
 
     public List<BeanDeploymentArchive> getWarBeanDeploymentArchives() {
         List<BeanDeploymentArchive> warBDAs = new ArrayList<BeanDeploymentArchive>(); 
-        Set<Map.Entry<String, BeanDeploymentArchive>> set = archiveToBeanDeploymentArchive.entrySet();
+        Set<Map.Entry<String, BeanDeploymentArchive>> set = idToBeanDeploymentArchive.entrySet();
         for (Map.Entry<String, BeanDeploymentArchive> me : set) {
             if (me.getKey().endsWith(EXPLODED_WAR_SUFFIX)) {
                 warBDAs.add(me.getValue());
@@ -161,7 +164,7 @@ public class DeploymentImpl implements Deployment {
      
     public List<BeanDeploymentArchive> getJarBeanDeploymentArchives() {
         List<BeanDeploymentArchive> jarBDAs = new ArrayList<BeanDeploymentArchive>();
-        Set<Map.Entry<String, BeanDeploymentArchive>> set = archiveToBeanDeploymentArchive.entrySet();
+        Set<Map.Entry<String, BeanDeploymentArchive>> set = idToBeanDeploymentArchive.entrySet();
         for (Map.Entry<String, BeanDeploymentArchive> me : set) {
             if (me.getKey().endsWith(EXPLODED_JAR_SUFFIX)) {
                 jarBDAs.add(me.getValue());
@@ -227,7 +230,7 @@ public class DeploymentImpl implements Deployment {
 
         String archiveId = archive.getURI().getPath();
         BeanDeploymentArchive beanDeploymentArchive = new BeanDeploymentArchiveImpl(archiveId, wbClasses, wbUrls, ejbs);
-        archiveToBeanDeploymentArchive.put(archiveId, beanDeploymentArchive);
+        idToBeanDeploymentArchive.put(archiveId, beanDeploymentArchive);
         beanDeploymentArchives.add(beanDeploymentArchive);
     }
 
