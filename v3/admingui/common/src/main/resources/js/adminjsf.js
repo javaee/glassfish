@@ -20,24 +20,26 @@ function showAlert(msg) {
 
 
 function submitAndDisable(button, msg, target) {
-    button.className="Btn2Dis_sun4"; // the LH styleClass for disabled buttons.
-    button.disabled=true;
-    var oldaction = button.form.action;
-    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
-    button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
+    disableBtnComponent(button.id);
     button.value=msg;
+    var oldtarget = button.form.target;
     if (target) {
-	var oldtarget = button.form.target;
 	button.form.target = target;
 	if (target === "_top") {
 	    // In this case we want the non-ajax behavior
+	    var oldaction = button.form.action;
+	    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
+	    button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
 	    button.form.submit();
 	    button.form.target = oldtarget;
+	    button.form.action = oldaction;
 	    return false;
 	}
     }
-    admingui.ajax.submitFormAjax(button.form);
-    button.form.action = oldaction;
+    button.form.target = oldtarget;
+    var args = {};
+    args[button.id] = button.id;
+    admingui.ajax.postAjaxRequest(button, args);
     return false; 
 }
 
@@ -1655,11 +1657,12 @@ function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
 }
 
 function reloadHeaderFrame() {
-// FIXME: We no longer use frames
-       parent.parent.frames["header"].location.reload();
+    // FIXME:
+    //alert('reload');
 }
 
 admingui.deploy = {
+    // FIXME: similar functions are defined in uploadJS.inc :(
     uploadInit: function(dirPathId, oldRestartFlag, newRestartFlag, dirSelectBtnId, filSelectBtnId, fileuploadId) {
             //
             //We need to set a timeout to delay the call to getTextElement inside disable component.
@@ -1823,8 +1826,7 @@ admingui.table = {
     changeButtons : function (buttons,tableId){
         try {
             var table = document.getElementById(tableId);// + ":_table");
-            var selections =
-                table.getAllSelectedRowsCount();
+            var selections = table.getAllSelectedRowsCount();
             var disabled = (selections > 0) ? false : true;
             for (count=0; count < buttons.length; count++) {
                 var element = document.getElementById(buttons[count]);
@@ -1838,16 +1840,6 @@ admingui.table = {
         }
     },
 
-    /*
-    getAllSelectedRowsCount : function (table) {
-        inputs = admingui.util.findNodes(table, function (el) {
-            var hit = (el instanceof HTMLInputElement) && (el.type=="checkbox") && (el.id.indexOf(":select") == el.id.length -7) && (el.checked == true) ;
-            return hit;
-        });
-        return (inputs) ? inputs.length : 0;
-    },
-    */
-
     initAllRows : function (tableId) {
         var table = document.getElementById(tableId);
         table.initAllRows();
@@ -1857,28 +1849,59 @@ admingui.table = {
 admingui.ajax = {
     lastPageLoaded : '',
 
+    getXMLHttpRequestObject: function() {
+	var reqObj = null;
+	if (window.XMLHttpRequest && !(window.ActiveXObject)) {
+	    reqObj = new XMLHttpRequest();
+	} else if (window.ActiveXObject) {
+	    try {
+		reqObj = new ActiveXObject("Msxml2.XMLHTTP");
+	    } catch (ex) {
+		reqObj = new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	}
+	return reqObj;
+    },
+
+    get: function(url, targetId, callback) {
+	var req = admingui.ajax.getXMLHttpRequestObject();
+	if (req) {
+	    req.targetId = targetId;
+	    req.onreadystatechange =
+		function() {
+		    if (req.readyState == 4) {
+			callback(req, url);
+			/*
+			// Make a tempoary elemnt to contain the help content
+			var tmpDiv = document.createElement("div");
+			tmpDiv.innerHTML = req.responseText;
+
+			// Fix URLs in the help content...
+			admingui.help.fixHelpURLs(url, tmpDiv);
+
+			// Show the help content...
+			targetNode.innerHTML = tmpDiv.innerHTML;
+			*/
+		    }
+		};
+	    req.open("GET", url, true);
+	    req.send("");
+	}
+    },
+
     loadPage : function (args) {
         var url = admingui.ajax.modifyUrl(args.url);
-        args.lastPage = document.getElementById(admingui.nav.TREE_ID).getSelectedTreeNode
+        //args.lastPage = document.getElementById(admingui.nav.TREE_ID).getSelectedTreeNode;
+	admingui.util.log("Loading " + url + " via ajax.");
 
-        admingui.util.log("Loading " + url + " via ajax.");
-        var oldOnClick = args.oldOnClickHandler;
+	// Make cursor spin...
+	document.body.style.cursor = 'wait';
 
-        var callback = {
-            success : admingui.ajax.processPageAjax,
-            failure : function(o) {
-                document.body.style.cursor = 'auto';
-                alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
-            },
-            argument : args
-        };
-        // Make cursor spin...
-        document.body.style.cursor = 'wait';
-        YAHOO.util.Connect.resetDefaultHeaders();
-        YAHOO.util.Connect.asyncRequest('GET', url, callback, null);
-        if (typeof oldOnClick == 'function') {
-            admingui.util.log(oldOnClick);
-//                oldOnClick();
+	// Make request
+	admingui.ajax.get(url, "content", admingui.ajax.defaultGetCallback);
+	if (typeof oldOnClick == 'function') {
+	    admingui.util.log('Skipping onclick...' + oldOnClick);
+//          oldOnClick();
         }
         return false;
     },
@@ -1908,39 +1931,138 @@ admingui.ajax = {
         admingui.nav.selectTreeNodeWithURL(o.argument.url);
     },
 
-    submitFormAjax : function (form) {
-        var url = admingui.ajax.modifyUrl(form.action);
-        admingui.util.log ("***** Submitting form to:  " + url);
-        admingui.ajax.updateCurrentPageLink(url);
-        var callback = {
-            success : admingui.ajax.processPageAjax,
-            failure : function(o) {
-                alert ("Error (" + o.status + ") loading " + url + ":  " + o.statusText);
-            },
-            upload  : admingui.ajax.processPageAjax,
-            argument : {url: url, target: document.getElementById('content'), oldOnClickHandler: null}
-        };
-        YAHOO.util.Connect.setForm(form, admingui.ajax.uploadingFiles(form));
-        YAHOO.util.Connect.asyncRequest('POST', url, callback);
+    postAjaxRequest : function (component, args, respTarget) {
+	if ((respTarget === null) || (respTarget === 'undefined')) {
+	    respTarget = 'content';
+	}
+	this.respTarget = respTarget;
+	var params = {
+	    execute: '@this',
+	    bare: true,
+	    render: '@all',
+	    onComplete: admingui.ajax.handleResponse
+	};
+	if ((args !== null) && (typeof(args) !== 'undefined')) {
+	    for (var name in args) {
+		params[name] = args[name];
+	    }
+	}
+	jsf.ajax.request(component, null, params);
+    },
+
+    defaultGetCallback: function(xmlReq, target, url) {
+        var contentNode = target;
+	if (typeof(contentNode) === 'string') {
+            contentNode = document.getElementById(contentNode);
+	}
+        if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
+            contentNode = document.getElementById("content");
+        }
+
+	// FIXME: These 2 functions (should) only need be replaced after FPR...
+        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+
+        contentNode.innerHTML = xmlReq.responseText;
+
+        var contextObj = {};
+	admingui.ajax.processElement(contextObj, contentNode, true);
+        admingui.ajax.processScripts(contextObj);
+
+	// Restore cursor
+	document.body.style.cursor = 'auto';
+
+	// Tree select code??  FIXME: broken...
+    },
+
+    /**
+     *	This function handles JSF2 Ajax responses.  It is expected that the
+     *	response will replace the innerHTML of an element rather than the whole
+     *	page.  If the content contains JSF2 markup, it will attempt to use the
+     *	content defined in the javax.faces.ViewRoot "update" element.  It will
+     *	also attempt to update the ViewState.  If this is not found in the
+     *	response, it will try to use the entire response for the value of
+     *	innerHTML.
+     */
+    handleResponse : function () {
+	admingui.ajax.fixQue(this.que);
+        //admingui.ajax.updateCurrentPageLink(o.argument.url);  <-- find a better way to get the viewId
+        var contentNode = this.respTarget;
+        if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
+            contentNode = document.getElementById("content");
+        }
+	var result = this.xmlReq.responseText;
+	var len = (result.length > 200) ? 200 : result.length;
+	var testString = result.substring(0, len);
+	var viewState = null;
+	if (testString.indexOf("<changes>") > 0) {
+	    // We have a JSF response... if id="javax.faces.ViewRoot", handle it
+	    var idx = testString.indexOf('id="javax.faces.ViewRoot"');
+	    if (idx > 0) {
+		try {
+		    var nodes = this.xmlReq.responseXML.getElementsByTagName("partial-response")[0].childNodes[0].childNodes;
+		    for (var cnt=0; cnt<nodes.length; cnt++) {
+			var node = nodes[cnt];
+			if (node.getAttribute('id') === 'javax.faces.ViewRoot') {
+			    result = node.textContent;
+			}
+			if (node.getAttribute('id') === 'javax.faces.ViewState') {
+			    // NOTE: see jsf.ajax.doUpdate for more info....
+			    viewState = node.firstChild;
+			}
+		    }
+		} catch (ex) {
+		    admingui.util.log("***** Unable to parse XML:  " + ex);
+		}
+	    }
+	}
+        contentNode.innerHTML = result;
+	if (viewState != null) {
+	    var form = document.getElementById(this.context.formid);
+	    if (!form) {
+		admingui.util.log("***** Unable to find form! " + this.context.formid);
+		return;
+	    }
+	    var field = form.elements['javax.faces.ViewState'];
+	    if (typeof(field) === 'undefined') {
+		field = document.createElement("input");
+		field.type = "hidden";
+		field.name = "javax.faces.ViewState";
+		field.id = "javax.faces.ViewState";
+		form.appendChild(field);
+	    }
+	    field.value = viewState.nodeValue;
+	}
+
+	// FIXME: These 2 functions (should) only need be replaced after FPR...
+        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+        var contextObj = {};
+	admingui.ajax.processElement(contextObj, contentNode, true);
+        admingui.ajax.processScripts(contextObj);
+
+	// Restore cursor
+	document.body.style.cursor = 'auto';
+
+	// Tree select code??  FIXME: broken...
+	/* 
+        var node = o.argument.sourceNode;
+        if (typeof node != 'undefined') {
+            admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
+        }
+	*/
+    },
+
+    fixQue: function(que) {
+	while (!que.isEmpty()) {
+	    // dump everything for now...
+	    que.dequeue();
+	}
     },
 
     updateCurrentPageLink : function (url) {
         admingui.ajax.lastPageLoaded = url;
         //document.getElementById("currentPageLink").href = url;
-    },
-
-    uploadingFiles : function(form) {
-        var uploading = false;
-        for (var i = 0; i < form.elements.length; i++) {
-            if (form.elements[i].nodeName == 'INPUT') {
-                if (form.elements[i].type == 'file') {
-                    uploading = true;
-                    break;
-                }
-            }
-        }
-
-        return uploading;
     },
 
     processElement : function (context, node, queueScripts) {
@@ -1969,6 +2091,18 @@ admingui.ajax = {
                     };
                 }
             }
+        } else if (node.nodeName == 'INPUT') {
+	    if (((node.type == 'submit') || (node.type == 'image'))
+		    && ((node.onclick === null) || (typeof(node.onclick) === 'undefined') || (node.onclick == ''))) {
+		// Submit button w/o any JS, make it a partial page submit
+		node.onclick = function() {
+			var args = {};
+			args[node.id] = node.id;
+			admingui.ajax.postAjaxRequest(this, args);
+			return false;
+		    };
+	    }
+	    /*
         } else if (node.nodeName == 'FORM') {
             admingui.util.log("***** form action:  " + node.action);
             if (node.target == '') {
@@ -1977,6 +2111,7 @@ admingui.ajax = {
                     return false;
                 };
             }
+	    */
         } else if (node.nodeName == 'TITLE') {
 	    recurse = false;
             document.title = node.text;
@@ -2115,72 +2250,74 @@ admingui.ajax = {
 
 admingui.woodstock = {
     hyperLinkSubmit: function(hyperlink, formId, params) {
+        var form = document.getElementById(formId);
+
+	// Add any extra args that are necessary...
+	var args = {};
+	var linkId = hyperlink.id;
+	args[linkId + "_submittedField"] = linkId;
+	var idx = linkId.indexOf('row');
+	if (idx > 0) {
+	    idx = linkId.indexOf(':', idx + 3);
+	    if (idx > 0) {
+		// We have a "*row*:" in the id name, backup the execute id to
+		// the row portion to ensure an entire table gets executed,
+		// otherwise it might not get executed at all.
+		args['execute'] = '@all';//linkId.substring(0, idx);
+	    }
+	}
+
         //params are name value pairs but all one big string array
         //so params[0] and params[1] form the name and value of the first param
-        var form = document.getElementById(formId);
-        //var oldTarget = theForm.target;
-        //var oldAction = theForm.action;
-        //theForm.action += "&" + hyperlink.id + "_submittedField="+hyperlink.id;
-	var oldaction = form.action;
-        form.action = //admingui.ajax.lastPageLoaded +
-            admingui.ajax.modifyUrl(form.action) + "&" + hyperlink.id + "_submittedField="+hyperlink.id;
         if (params != null) {
-            for (var i = 0; i < params.length; i++) {
-                form.action +="&" + params[i] + "=" + params[i+1];
-                i++;
+            for (var i = 0; i < params.length; i+=2) {
+		args[params[i]] = params[i+1];
             }
         }
+
+	// Check target
 	var oldtarget = form.target;
         if (hyperlink.target != "") {
             form.target = hyperlink.target;
         }
-        admingui.ajax.submitFormAjax(form);
+        admingui.ajax.postAjaxRequest(hyperlink, args);
 
-	// Retore form action
+	// Retore form
 	form.target = oldtarget;
-	form.action = oldaction;
 
         return false;
     },
 
-    dropDownChanged: function(elementId) {
-        var jumpDropdown = webui.suntheme.dropDown.getSelectElement(elementId);
-        var form = jumpDropdown;
-        while(form != null) {
-            form = form.parentNode;
-            if(form.tagName == "FORM") {
-                break;
-            }
-        }
-        if(form != null) {
-            var submitterFieldId = elementId + "_submitter";
-            document.getElementById(submitterFieldId).value = "true";
+    dropDownChanged: function(jumpDropdown) {
+	if (typeof(element) === "string") {
+	    jumpDropdown = webui.suntheme.dropDown.getSelectElement(jumpDropdown);
+	}
 
-            var listItem = jumpDropdown.options;
-            for (var cntr=0; cntr < listItem.length; ++cntr) {
-                if (listItem[cntr].className ==
-                            webui.suntheme.props.jumpDropDown.optionSeparatorClassName
-                        || listItem[cntr].className ==
-                            webui.suntheme.props.jumpDropDown.optionGroupClassName) {
-                    continue;
-                } else if (listItem[cntr].disabled) {
-                    // Regardless if the option is currently selected or not,
-                    // the disabled option style should be used when the option
-                    // is disabled. So, check for the disabled item first.
-                    // See CR 6317842.
-                    listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionDisabledClassName;
-                } else if (listItem[cntr].selected) {
-                    listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionSelectedClassName;
-                } else {
-                    listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
-                }
-            }
-	    var oldaction = form.action;
-            form.action = //admingui.ajax.lastPageLoaded;
-                admingui.ajax.modifyUrl(form.action);
-            admingui.ajax.submitFormAjax(form);
-	    form.action = oldaction;
-        }
+	// Force WS "submitter" flag to true
+	var submitterFieldId = jumpDropdown.parentNode.id + "_submitter";
+	document.getElementById(submitterFieldId).value = "true";
+
+// FIXME: Not sure why the following is done...
+	var listItem = jumpDropdown.options;
+	for (var cntr=0; cntr < listItem.length; ++cntr) {
+	    if (listItem[cntr].className ==
+			webui.suntheme.props.jumpDropDown.optionSeparatorClassName
+		    || listItem[cntr].className ==
+			webui.suntheme.props.jumpDropDown.optionGroupClassName) {
+		continue;
+	    } else if (listItem[cntr].disabled) {
+		// Regardless if the option is currently selected or not,
+		// the disabled option style should be used when the option
+		// is disabled. So, check for the disabled item first.
+		// See CR 6317842.
+		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionDisabledClassName;
+	    } else if (listItem[cntr].selected) {
+		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionSelectedClassName;
+	    } else {
+		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
+	    }
+	}
+	admingui.ajax.postAjaxRequest(jumpDropdown.parentNode);
         return false;
     },
 

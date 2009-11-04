@@ -45,30 +45,31 @@
 
 package org.glassfish.admingui.common.handlers;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Map;
-import java.util.List;
-
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
+import com.sun.jsftemplating.el.PageSessionResolver;
+import com.sun.jsftemplating.handlers.NavigationHandlers;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import com.sun.jsftemplating.util.Util;
 
 import java.io.IOException;
-import javax.faces.context.ExternalContext;
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
-
-
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.MiscUtil;
 import org.glassfish.admingui.common.util.V3AMX;
-import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMXUtil;
-
 
 
 public class CommonHandlers {
@@ -213,9 +214,7 @@ public class CommonHandlers {
      */
     @Handler(id="logout")
     public static void logout(HandlerContext handlerCtx) {
-	ExternalContext extContext = handlerCtx.getFacesContext().getExternalContext();
-	HttpServletRequest request = (HttpServletRequest) extContext.getRequest();
-	request.getSession().invalidate();
+	handlerCtx.getFacesContext().getExternalContext().invalidateSession();
     }
 
     /**
@@ -434,27 +433,60 @@ public class CommonHandlers {
     }
     
     /**
+     *	<p> This handler is different than JSFT's default navigate handler in
+     *	    that it forces the request to NOT be a "partial request".  The
+     *	    effect is that no wrapping of the response will be done.  This is
+     *	    normally done in JSF2 in order to work with the jsf.js JS code
+     *	    that handles the response.  In the Admin Console, we typically do
+     *	    not use this JS, so this is not desirable behavior.</p>
+     *
+     *	<p> Input value: "page" -- Type: <code>Object</code> (should be a
+     *	    <code>String</code> or a <code>UIViewRoot</code>).</p>
+     *
+     *	<p> See JSFTemplating's built-in navigate handler for more info.</p>
+     *
+     *	@param	context	The {@link HandlerContext}.
+     */
+    @Handler(id="gf.navigate",
+	input={
+	    @HandlerInput(name="page", type=Object.class, required=true)
+	})
+    public static void navigate(HandlerContext context) {
+	context.getFacesContext().getPartialViewContext().setPartialRequest(false);
+	NavigationHandlers.navigate(context);
+    }
+
+    /**
      *	<p> This handler redirects to the given page.</p>
      *
      *	<p> Input value: "page" -- Type: <code>String</code></p>
      *
      *	@param	context	The {@link HandlerContext}.
      */
-    @Handler(id="redirect",
+    @Handler(id="gf.redirect",
 	input={
 	    @HandlerInput(name="page", type=String.class, required=true)
 	})
     public static void redirect(HandlerContext context) {
 	String page = (String) context.getInputValue("page");
 	FacesContext ctx = context.getFacesContext();
+	page = handleBareAttribute(ctx, page);
+	//if (ctx.getPartialViewContext().isPartialRequest()) {
+	    // FIXME: I should be able to call setPartialRequest(false),
+	    // FIXME: however, isAjaxRequest will still return true, and the
+	    // FIXME: following line will not work correctly (it'll wrap it in
+	    // FIXME: <xml> stuff and send it to the client):
+	    // FIXME:   ctx.getExternalContext().redirect(page);
+	    // FIXME: Work-a-round: call servlet api's directly
+	//}
 	try {
-            page = handleBareAttribute(page);
-	    ctx.getExternalContext().redirect(page);
-	    ctx.responseComplete();
+	    // FIXME: Should be: ctx.getExternalContext().redirect(page);  See FIXME above.
+	    ((HttpServletResponse) ctx.getExternalContext().getResponse()).sendRedirect(page);
 	} catch (IOException ex) {
 	    throw new RuntimeException(
-		"Unable to navigate to page '" + page + "'!", ex);
+		"Unable to redirect to page '" + page + "'!", ex);
 	}
+	ctx.responseComplete();
     }
 
     /**
@@ -463,13 +495,18 @@ public class CommonHandlers {
      * @param url
      * @return
      */
-    private static String handleBareAttribute(String url) {
-        String request = (String)FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("bare");
-        Boolean page = (Boolean)FacesContext.getCurrentInstance().getViewRoot().getAttributes().get("bare");
-        if ("true".equalsIgnoreCase(request) || Boolean.TRUE.equals(page)) {
-            url = addQueryStringParam((String) url, "bare", "true");
-        }
-        return url;
+    private static String handleBareAttribute(FacesContext ctx, String url) {
+        String request = (String) ctx.getExternalContext().getRequestParameterMap().get("bare");
+	if (!"true".equalsIgnoreCase(request)) {
+	    // Get the Page Session Map
+	    Map<String, Serializable> map =
+		PageSessionResolver.getPageSession(ctx, null);
+	    Object pageSessionValue = map.get("bare");
+	    if (!Boolean.TRUE.equals(pageSessionValue)) {
+		return url;
+	    }
+	}
+        return addQueryStringParam(url, "bare", "true");
     }
 
     /**

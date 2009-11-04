@@ -105,7 +105,7 @@
             onClick="window.open('#{td.value.launchLink}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); "
          >
         <!command
-            redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
         </sun:hyperlink>
 
@@ -128,7 +128,7 @@
             <!command
                 prepareSuccessfulMsg();
                 restartApplication(appName="#{td.value.name}");
-                redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
         </sun:hyperlink>
         

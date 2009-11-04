@@ -53,7 +53,7 @@
         if (! #{requestScope.dPage}){
             mapGet(Map="#{requestScope.editMap}"  Key="other"  Value="#{requestScope.dPage}")
         }
-        redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
+        gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
      />
     </event>
 </define>

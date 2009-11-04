@@ -41,7 +41,8 @@
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
         <sun:button id="deployButton" text="$resource{i18n.button.Deploy}" primary="#{true}">
-                <!command redirect(page="#{pageSession.nextPageLink}") />
+                <!command
+		    gf.redirect(page="#{pageSession.nextPageLink}") />
         </sun:button>
         <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
@@ -51,7 +52,7 @@
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 undeploy(selectedRows="${selectedRows}" );
-                navigate(page="#{listPageLink}");
+                gf.navigate(page="#{listPageLink}");
             />
          </sun:button>
         <sun:button id="button2" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}"
@@ -60,7 +61,7 @@
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 changeAppStatus(selectedRows="${selectedRows}"  enabled="#{true}")
-                navigate(page="#{listPageLink}");
+                gf.navigate(page="#{listPageLink}");
             />
             </sun:button>
         <sun:button id="button3" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}"
@@ -69,7 +70,7 @@
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
                 changeAppStatus(selectedRows="${selectedRows}"  enabled="#{false}")
-                navigate(page="#{listPageLink}");
+                gf.navigate(page="#{listPageLink}");
             />
         </sun:button>
 
@@ -80,12 +81,11 @@
            url="#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/table/actions_separator.gif"
         />
 
-       <sun:dropDown id="filter"  selected="#{filterValue}" label="$resource{i18n.common.filterDropDown}" submitForm="#{true}" immediate="#{true}"
-                values="${filters}"  labels="${filters}">
+       <sun:dropDown id="filter"  selected="#{filterValue}" label="$resource{i18n.common.filterDropDown}" submitForm="true" immediate="true" values="${filters}" labels="${filters}" onChange="return admingui.woodstock.dropDownChanged(this);">
             <!command
                 setAttribute(key="click" value="$this{component}");
                 setAttribute(key="filterValue" value="#{click.selected}");
-                redirect(page="#{request.contextPath}/common/applications/applications.jsf?serverName=#{serverName}&filterValue=${filterValue}" );
+                gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?serverName=#{serverName}&filterValue=${filterValue}" );
             />
         </sun:dropDown>
 
