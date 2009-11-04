@@ -603,6 +603,13 @@ public class Server {
                     Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server destruction",e);
                 }
             }
+            Ports ports = habitat.getComponent(Ports.class);
+            if (ports != null) {
+                Collection<Port> coll = ports.getPorts();
+                for (Port port:coll) {
+                    port.close();
+                }
+            }
         } finally {
             fileSystem.get().preDestroy();
         }
