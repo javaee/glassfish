@@ -252,6 +252,14 @@ public interface ConnectorConstants {
           false : true;
     
     public static final int DEFAULT_RESOURCE_ADAPTER_SHUTDOWN_TIMEOUT = 30;
+    
+    public String JAVAX_SQL_DATASOURCE = "javax.sql.DataSource";
+    
+    public String JAVAX_SQL_CONNECTION_POOL_DATASOURCE = "javax.sql.ConnectionPoolDataSource";
+    
+    public String JAVAX_SQL_XA_DATASOURCE = "javax.sql.XADataSource";
+    
+    public String JAVA_SQL_DRIVER = "java.sql.Driver";
 
    /**
      * Property value for defining NoTransaction transaction-support in

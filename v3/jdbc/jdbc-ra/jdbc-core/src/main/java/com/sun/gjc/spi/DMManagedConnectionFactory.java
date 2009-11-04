@@ -97,7 +97,7 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
         PasswordCredential pc = SecurityUtils.getPasswordCredential(this, subject, cxRequestInfo);
 
         try {
-            Thread.currentThread().getContextClassLoader().loadClass(spec.getDetail(DataSourceSpec.CLASSNAME));
+            Class.forName(spec.getDetail(DataSourceSpec.CLASSNAME));
         } catch (ClassNotFoundException cnfe) {
             _logger.log(Level.SEVERE, "jdbc.exc_cnfe", cnfe);
             throw new ResourceException("The driver could not be loaded: " + spec.getDetail(DataSourceSpec.CLASSNAME));
@@ -131,6 +131,9 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
             if (cxRequestInfo != null) {
                 driverProps.setProperty("user", pc.getUserName());
                 driverProps.setProperty("password", new String(pc.getPassword()));
+            } else {
+                driverProps.setProperty("user", spec.getDetail(DataSourceSpec.USERNAME));
+                driverProps.setProperty("password", spec.getDetail(DataSourceSpec.PASSWORD));
             }
 
             dsConn = DriverManager.getConnection(spec.getDetail(DataSourceSpec.URL), driverProps);

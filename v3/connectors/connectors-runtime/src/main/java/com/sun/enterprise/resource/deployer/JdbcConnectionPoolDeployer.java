@@ -188,12 +188,19 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
         ArrayList propList = new ArrayList();
 
-        propList.add(new ConnectorConfigProperty ("ClassName",
-                adminPool.getDatasourceClassname() == null ? "" :
+        if(ConnectorConstants.JAVA_SQL_DRIVER.equals(adminPool.getResType())) {
+            propList.add(new ConnectorConfigProperty ("ClassName",
+                    adminPool.getDriverClassname() == null ? "" :
+                        adminPool.getDriverClassname(),
+                        "The driver class name",
+                        "java.lang.String"));
+        } else {
+            propList.add(new ConnectorConfigProperty ("ClassName",
+                    adminPool.getDatasourceClassname() == null ? "" :
                         adminPool.getDatasourceClassname(),
-                "The datasource class name",
-                "java.lang.String"));
-
+                        "The datasource class name",
+                        "java.lang.String"));
+        }
 
         propList.add(new ConnectorConfigProperty ("ConnectionValidationRequired",
                 adminPool.getIsConnectionValidationRequired() + "",

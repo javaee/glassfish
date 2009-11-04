@@ -160,15 +160,24 @@ public class ResourcesUtil {
     public String getRANameofJdbcConnectionPool(JdbcConnectionPool pool) {
         String dsRAName = ConnectorConstants.JDBCDATASOURCE_RA_NAME;
 
-        if (pool.getResType() == null || pool.getDatasourceClassname() == null) {
+        if (pool.getResType() == null || (pool.getDatasourceClassname() == null && 
+                pool.getDriverClassname() == null)) {
             return dsRAName;
         }
         Class dsClass = null;
 
-        try {
-            dsClass = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
-        } catch (ClassNotFoundException cnfe) {
-            return dsRAName;
+        if(pool.getDatasourceClassname() != null) {
+            try {
+                dsClass = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
+            } catch (ClassNotFoundException cnfe) {
+                return dsRAName;
+            }
+        } else if(pool.getDriverClassname() != null) {
+            try {
+                dsClass = ClassLoadingUtility.loadClass(pool.getDriverClassname());
+            } catch (ClassNotFoundException cnfe) {
+                return dsRAName;
+            }            
         }
 
         //check if its XA
