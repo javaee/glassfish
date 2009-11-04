@@ -36,34 +36,25 @@
 -->
 <!-- jdbc/jdbcConnectionPoolEditButtons.inc -->
 
-<sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
-   <!command
-    prepareSuccessfulMsg();
-    saveJdbcConnectionPool(
-        jndiName = "#{jndiName}"
-        datasourceClassname = "#{datasourceClassname}"
-        resType = "#{resType}"
-        description= "#{description}"
-        steadyPoolSize = "#{steadyPoolSize}"
-        maxPoolSize = "#{maxPoolSize}"
-        poolResizeQuantity = "#{poolResizeQuantity}"
-        idleTimeoutInSeconds = "#{idleTimeoutInSeconds}"
-        maxWaitTimeInMillis = "#{maxWaitTimeInMillis}"
-        isConnectionValidationRequired = "#{isConnectionValidationRequired}"
-        connectionValidationMethod = "#{connectionValidationMethod}"
-        validationTableName = "#{validationTableName}"
-        failAllConnections = "#{failAllConnections}"
-        allowNonComponentCallers = "#{allowNonComponentCallers}"
-        nonTransactionalConnections = "#{nonTransactionalConnections}"
-        transactionIsolationLevel = "#{transactionIsolationLevel}"
-        isIsolationLevelGuaranteed = "#{isIsolationLevelGuaranteed}"
-    );
-    setAttribute(key="name" value="$pageSession{jndiName}");
-    />
-</sun:button>
-<sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
-        <!command
-            gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPools.jsf");
-        />
-    </sun:button>
+<!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                <!command
+                    saveJdbcConnectionPool(objectNameStr="#{pageSession.objectNameStr}"
+                        attrs="#{pageSession.valueMap}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
+                        convertToFalse="#{pageSession.convertToFalseList}"
+                        onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                    );
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    gf.redirect(page="#{parentPage}?configName=#{configName}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+</facet>

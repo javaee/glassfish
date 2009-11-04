@@ -139,8 +139,7 @@ public class JdbcTempHandler {
                     result.add(iter.next());
                 }
             } else if(tn.get(REASON_FAILED_KEY) != null) {
-               GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), tn.get(REASON_FAILED_KEY).toString());
-
+                GuiUtil.getLogger().warning(tn.get(REASON_FAILED_KEY).toString());
             }
             handlerCtx.setOutputValue("result", result);
         }
@@ -281,6 +280,68 @@ public class JdbcTempHandler {
         }
 
     }
+
+    /*
+     * Save the attributes of the proxy.
+     */
+    @Handler(id = "saveJdbcConnectionPool",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "attrs", type = Map.class),
+            @HandlerInput(name = "skipAttrs", type = List.class),
+            @HandlerInput(name = "convertToFalse", type = List.class),
+            @HandlerInput(name = "onlyUseAttrs", type = List.class)})
+    public static void saveJdbcConnectionPool(HandlerContext handlerCtx) {
+        try {
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            Map attrs = (Map) handlerCtx.getInputValue("attrs");
+
+            String resourceType = (String) attrs.get("ResType");
+            if(resourceType.equals("java.sql.Driver")) {
+                attrs.put("DatasourceClassname", "");
+            } else {
+                attrs.put("DriverClassname", "");
+            }
+           
+            List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
+            if (skipAttrs != null) {
+                for (String sk : skipAttrs) {
+                    if (attrs.keySet().contains(sk)) {
+                        attrs.remove(sk);
+                    }
+                }
+            }
+
+            List<String> onlyUseAttrs = (List) handlerCtx.getInputValue("onlyUseAttrs");
+            if (onlyUseAttrs != null) {
+                Map newAttrs = new HashMap();
+                for (String key : onlyUseAttrs) {
+                    if (attrs.keySet().contains(key)) {
+                        newAttrs.put(key, attrs.get(key));
+                    }
+                }
+                attrs = newAttrs;
+            }
+
+
+            List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
+            if (convertToFalse != null) {
+                for (String sk : convertToFalse) {
+                    if (attrs.keySet().contains(sk)) {
+                        if (attrs.get(sk) == null) {
+                            attrs.remove(sk);
+                            attrs.put(sk, "false");
+                        }
+                    }
+                }
+            }
+
+           V3AMX.setAttributes(objectNameStr, attrs);
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     //public static final  String SET_KEY = "SetKey";
     //public static final  String BOOLEAN_KEY = "BooleanKey";

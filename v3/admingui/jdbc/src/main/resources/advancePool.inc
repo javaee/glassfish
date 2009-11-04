@@ -148,7 +148,9 @@
                     getClientId(component="$this{component}" clientId=>$page{tableTextField});
                 />
                 <!beforeCreate
-                    getTableNames(name="#{pageSession.Name}" result="#{pageSession.tableNameList}");
+                    if(#{pageSession.valueMap['IsConnectionValidationRequired']}){
+                        getTableNames(name="#{pageSession.Name}" result="#{pageSession.tableNameList}");
+                    }
                 />
             </sun:dropDown>
         </sun:property>

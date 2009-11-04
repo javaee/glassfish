@@ -79,12 +79,12 @@
                         />
                     </sun:button>
                                      
-#include "/common/shared/editPageButtons_2.inc"
+#include "/jdbc/jdbcConnectionPoolEditButtons.inc"
                 </sun:title>
 #include "/jdbc/poolPropertyEdit.inc"
 
        <sun:title>
-#include "/common/shared/editPageBottomButtons.inc"
+#include "/jdbc/jdbcConnectionPoolEditButtons.inc"
      </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolEdit}" />
             </sun:form>
