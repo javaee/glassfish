@@ -673,7 +673,7 @@ public class StandardContext
 
     private boolean sessionCookieConfigInitialized = false;
 
-    private ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
+    protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
         new ConcurrentHashMap<String, ServletRegistrationImpl>();
 
     private ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
