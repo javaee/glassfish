@@ -16,20 +16,32 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
  */
 @ProbeProvider (moduleProviderName="glassfish", moduleName="kernel", probeProviderName="PPTester")
 public class PPTester {
-    @Probe(name="method1")
+    /*
+     @Probe(name="method1")
     public void method1(String s, int i) {
         print("HELLO FROM PPTester.method1  ARgs:" + s + ", " + i);
     }
 
     @Probe(name="method2")
-     public void method2(String s23, int x, int y, Date date) {
-        print("HELLO FROM PPTester.method2!  Date=" + date);
+     public void method2(String s23, int x, int y) {
+        print("HELLO FROM PPTester.method2!  y=" + y);
      }
 
     @Probe(name="method3")
      public void method3(String s){
         print("HELLO FROM PPTester.method3!  My Arg ==>" + s);
      }
+    */
+
+    @Probe (name = "overload")
+    public void overload(int i) {
+        print("Hello from PPTester.overload[int], arg=" + i);
+    }
+
+    @Probe (name = "overload")
+    public void overload(String s) {
+        print("Hello from PPTester.overload[String], arg=" + s);
+    }
 
     private static void print(String s) {
         if(!quiet)

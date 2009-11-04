@@ -58,7 +58,7 @@ import org.jvnet.hk2.component.Singleton;
  */
 
 @Service(name = "mon-test")
-@Scoped(Singleton.class)
+@Scoped(PerLookup.class)
 
 public class MonTest implements AdminCommand, PostConstruct{
     @Inject
@@ -75,27 +75,33 @@ public class MonTest implements AdminCommand, PostConstruct{
 
     public void execute(AdminCommandContext context) {
         int howmany = 10;
+        
         msg = "";
+        fire1=fire2=fire3=0;
+        start = System.nanoTime();
         try { howmany = Integer.parseInt(howmanyString); } 
         catch(Exception e) { /*ignore*/ }
 
         final ActionReport report = context.getActionReport();
 
         try {
+
+            if(ppt == null || listenerOK == false ) {
+                throw new RuntimeException("Registration/Listener Error");
+            }
+
             for(int i = 0; i  < howmany; i++) {
                 int which = randy.nextInt(3) + 1;
 
                 switch(which) {
-                    case 1: fire1(); break;
-                    case 2: fire2(); break;
-                    case 3: fire3(); break;
+                    case 1: fire4(); break;
+                    case 2: fire5(); break;
+                    case 3: fire4(); break;
                 }
             }
 
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            msg = "Monitoring Test Here!";
-            msg += "howmany= " + howmany;
-            report.setMessage(msg);
+            report.setMessage(createMessage());
         }
         catch(Exception e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -106,23 +112,52 @@ public class MonTest implements AdminCommand, PostConstruct{
             howmanyString = "10";
         }
     }
-
+/*
     private void fire1() {
         ppt.method1("xxx", 50);
-        msg += "fire1\n";
+        ++fire1;
     }
 
     private void fire2() {
-        ppt.method2("xxx", 2, 3, new Date());
-        msg += "fire2\n";
+        ppt.method2("xxx", 2, 3);
+        ++fire2;
     }
     private void fire3() {
-         ppt.method3("xxx");
-        msg += "fire3\n";
+        ppt.method3("xxx");
+        ++fire3;
+    }
+ * */
+    
+    private void fire4() {
+        if(ppt != null) {
+            ppt.overload(50);
+            ++fire4;
+        }
     }
 
+    private void fire5() {
+        if(ppt != null) {
+            ppt.overload("fire5!!");
+            ++fire5;
+        }
+    }
+
+    private String createMessage() {
+        long time = System.nanoTime() - start;
+        time /= 1000;   // microseconds
+
+        return "mon-test successful with these calls:" +
+        "method1 fired " + fire1 + "times\n" +
+        "method2 fired " + fire2 + "times\n" +
+        "method3 fired " + fire3 + "times\n" +
+        "method4 fired " + fire4 + "times\n" +
+        "method5 fired " + fire5 + "times\n" +
+         "\n*** Time = " + time + " microseconds ***";
+    }
     @Override
     public void postConstruct() {
+        randy = new Random(System.nanoTime());
+
         try {
             ppt = probeProviderFactory.getProbeProvider(PPTester.class);
             System.out.println("SUCCESS!!  Created PPTester instance!!!");
@@ -130,22 +165,29 @@ public class MonTest implements AdminCommand, PostConstruct{
         catch(Exception e) {
             System.out.println(StringUtils.getStackTrace(e));
             System.out.println("@@@@@@ ERROR registering listener @@@@@@@");
+            return;
         }
-
         try {
             listenerRegistrar.registerListener(new PPListener());
+            listenerOK = true;
         }
+
         catch(Exception e) {
             System.out.println(StringUtils.getStackTrace(e));
             System.out.println("@@@@@@ ERROR registering listener @@@@@@@");
-
         }
-        
-        randy = new Random(System.nanoTime());
     }
 
     private PPTester ppt = null;
     private Random randy;
+    private static boolean listenerOK = false;
+
     String msg;
+    int fire1;
+    int fire2;
+    int fire3;
+    int fire4;
+    int fire5;
+    long start;
 }
 

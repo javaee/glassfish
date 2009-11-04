@@ -14,19 +14,33 @@ import org.glassfish.external.probe.provider.annotations.ProbeParam;
  * @author bnevins
  */
 public class PPListener {
+    /*
     @ProbeListener("glassfish:kernel:PPTester:method1")
     public void listen1(String s, int i) {
         print("@@@@@@@@@@@@@@@@@@@  PPTester Listener 1   @@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     @ProbeListener("glassfish:kernel:PPTester:method2")
-    public void listen2(String s23, int x, int y, Date date) {
-        print("@@@@@@@@@@@@@@@@@@@  PPTester Listener 2  Date=" + date + " @@@@@@@@@@@@@@@@@@@@@@@");
+    public void listen2(String s23, int x, int y) {
+        print("@@@@@@@@@@@@@@@@@@@  PPTester Listener 2  y=" + y + " @@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     @ProbeListener("glassfish:kernel:PPTester:method3")
     public void listen3(String s) {
         print("@@@@@@@@@@@@@@@@@@@  PPTester Listener 3   @@@@@@@@@@@@@@@@@@@@@@@");
+    }
+
+     */
+
+
+    @ProbeListener("glassfish:kernel:PPTester:overload")
+    public void listenOverload(int i) {
+        print("@@@@@@@@@@@@@@@@@@@  PPTester Listener Overload(int)   @@@@@@@@@@@@@@@@@@@@@@@");
+    }
+
+    @ProbeListener("glassfish:kernel:PPTester:overload")
+    public void listenOverload(String s) {
+        print("@@@@@@@@@@@@@@@@@@@  PPTester Listener Overload(String)   @@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     private static void print(String s) {
