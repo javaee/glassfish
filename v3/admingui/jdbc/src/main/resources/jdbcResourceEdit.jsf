@@ -57,7 +57,6 @@
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
-    setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
     setPageSessionAttribute(key="showCancelButton" value="#{true}" );
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
@@ -81,7 +80,7 @@
                 getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server" childType="resource-ref"  valueMap="#{pageSession.valueMap2}")
             />
         </sun:button>
-#include "/common/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons_2.inc"
     </sun:title>
     "<br><br>
     
