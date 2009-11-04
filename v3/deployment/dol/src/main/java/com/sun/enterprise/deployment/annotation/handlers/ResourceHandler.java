@@ -446,7 +446,9 @@ public class ResourceHandler extends AbstractResourceHandler {
                                       String logicalName, Resource annotation){
 
         desc.setName(logicalName);
-        desc.setDescription(annotation.description());
+        if (desc.getDescription() == null || desc.getDescription().length() == 0) {
+            desc.setDescription(annotation.description());
+        }
         
         if( dependencyType == DependencyType.ENV_ENTRY ) {
 

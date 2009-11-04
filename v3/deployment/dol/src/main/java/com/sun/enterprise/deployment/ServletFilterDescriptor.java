@@ -110,6 +110,10 @@ public class ServletFilterDescriptor
 	return n;
     }
 
+    public boolean hasSetDisplayName() {
+        return (displayName != null && displayName.length() > 0);
+    }
+
     /** set filter name */
     public void setName(String filterName) {
         this.filterName = filterName;

@@ -212,8 +212,13 @@ public class WebServletHandler extends AbstractWebHandler {
         }
 
         if (webCompDesc.getDescription() == null ||
-                webCompDesc.getDescription().length() > 0) {
+                webCompDesc.getDescription().length() == 0) {
             webCompDesc.setDescription(webServletAn.description());
+        }
+
+        if (webCompDesc.getDisplayName() == null ||
+                webCompDesc.getDisplayName().length() == 0) {
+            webCompDesc.setDisplayName(webServletAn.displayName());
         }
 
         if (webCompDesc.isAsyncSupported() == null) {

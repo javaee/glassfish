@@ -114,10 +114,10 @@ public class WebFilterHandler extends AbstractWebHandler {
             filterName = filterClass.getName();
         }
 
-        ServletFilter servletFilterDesc = null;
+        ServletFilterDescriptor servletFilterDesc = null;
         for (ServletFilter sfDesc : webBundleDesc.getServletFilters()) {
             if (filterName.equals(sfDesc.getName())) {
-                servletFilterDesc = sfDesc;
+                servletFilterDesc = (ServletFilterDescriptor)sfDesc;
                 break;
             }
         }
@@ -141,10 +141,12 @@ public class WebFilterHandler extends AbstractWebHandler {
         }
 
         servletFilterDesc.setClassName(filterClass.getName());
-        if (servletFilterDesc.getDescription() == null) {
+        if (servletFilterDesc.getDescription() == null ||
+                servletFilterDesc.getDescription().length() == 0) {
+
             servletFilterDesc.setDescription(webFilterAn.description());
         }
-        if (servletFilterDesc.getDisplayName() == null) {
+        if (servletFilterDesc.hasSetDisplayName()) {
             servletFilterDesc.setDisplayName(webFilterAn.displayName());
         }
 
