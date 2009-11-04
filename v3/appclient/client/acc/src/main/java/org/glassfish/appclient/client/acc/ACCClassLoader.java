@@ -39,9 +39,6 @@
 
 package org.glassfish.appclient.client.acc;
 
-import com.sun.enterprise.glassfish.bootstrap.ASMainStatic;
-import com.sun.enterprise.glassfish.bootstrap.MaskingClassLoader;
-import com.sun.logging.LogDomains;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +51,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -70,8 +66,6 @@ public class ACCClassLoader extends URLClassLoader {
     private static ACCClassLoader instance = null;
 
     private ACCClassLoader shadow = null;
-
-    private static Logger logger = LogDomains.getLogger(ACCClassLoader.class, LogDomains.ACC_LOGGER);
 
     private boolean shouldTransform = false;
     
@@ -111,20 +105,8 @@ public class ACCClassLoader extends URLClassLoader {
          * this constructor.
          */
         super(userClassPath(),
-                maskedGFSystemClassLoader(parent, logger));
+                new ACCClassLoader(GFSystemClassPath(), parent.getParent()));
         instance = this;
-    }
-
-    public static ClassLoader maskedGFSystemClassLoader(
-            final ClassLoader originalParent,
-            final Logger logger) {
-        final File installRoot = new File(installRoot());
-        final ClassLoader maskingCL = ASMainStatic.getMaskingClassLoader(
-                originalParent.getParent(), installRoot, logger,
-                false);
-        final ClassLoader GFSystemClassLoader = new ACCClassLoader(
-                GFSystemClassPath(), maskingCL);
-        return GFSystemClassLoader;
     }
 
     private static URL[] userClassPath() {
@@ -161,11 +143,6 @@ public class ACCClassLoader extends URLClassLoader {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    private static URI installRoot() {
-        final URI gfModulesURI = GFSystemURI();
-        return gfModulesURI.resolve("../").normalize();
     }
 
     private static List<URL> classPathToURLs(final String classPath) {
@@ -225,11 +202,7 @@ public class ACCClassLoader extends URLClassLoader {
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         if ( ! shouldTransform) {
-            try {
-                return super.findClass(name);
-            } catch (ClassNotFoundException cnfe) {
-                throw cnfe;
-            }
+            return super.findClass(name);
         }
         final ACCClassLoader s = shadow();
         final Class<?> c = s.findClassUnshadowed(name);
