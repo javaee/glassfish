@@ -127,7 +127,7 @@ public final class MessageBeanContextImpl
 
     public boolean isCallerInRole(String roleRef) {
         if ( roleRef == null )
-            throw new IllegalArgumentException("Argument is null");
+            throw new IllegalStateException("Argument is null");
 
         checkAccessToCallerSecurity();
 
@@ -147,7 +147,7 @@ public final class MessageBeanContextImpl
         RoleReference rr = ejbd.getRoleReferenceByName(roleRef);
 
         if ( rr == null ) {
-            throw new IllegalArgumentException(
+            throw new IllegalStateException(
                 "No mapping available for role reference " + roleRef);
         }
 
