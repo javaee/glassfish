@@ -1,5 +1,8 @@
+# See issue 8474 for com.sun.ejb.portable: this is needed so that the ORB can unmarshal
+# HandleImpl.
 -exportcontents: \
                         com.sun.ejb; \
+                        com.sun.ejb.portable; \
                         com.sun.ejb.containers; \
                         com.sun.ejb.spi.io; \
                         com.sun.ejb.spi.container; \
