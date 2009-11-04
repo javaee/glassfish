@@ -152,6 +152,24 @@
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
     </sun:tableRowGroup>
+    <sun:tableRowGroup id="entityBeanAppStats" rendered="#{hasStatsEntityBean}" data={"$attribute{EntityBeanStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EntityBean} : #{viewVal}/#{cVal} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="entity-bean-mon" name="#{mbName}", result=>$attribute{EntityBeanStatsList}  hasStats=>$attribute{hasStatsEntityBean});
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+    <sun:tableRowGroup id="singletonBeanAppStats" rendered="#{hasStatsSingletonBean}" data={"$attribute{SingletonBeanStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.SingletonBean} : #{viewVal}/#{cVal} "
+        groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+        <!beforeCreate
+            getStatsbyTypeName(type="singleton-bean-mon" name="#{mbName}", result=>$attribute{SingletonBeanStatsList}  hasStats=>$attribute{hasStatsSingletonBean});
+         />
+
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
     <sun:tableRowGroup id="ejbAppStats" rendered="#{hasStatsEJBApp}" data={"$attribute{EJBAppStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.EJB} : #{viewVal}/#{cVal} "
         groupToggleButton="$boolean{true}" collapsed="$boolean{false}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
         <!beforeCreate
