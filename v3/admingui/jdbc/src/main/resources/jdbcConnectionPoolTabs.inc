@@ -39,19 +39,19 @@
         <sun:tab id="general" immediate="$boolean{true}" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.General} Tab" >
                 <!command
                     setSessionAttribute(key="jdbcPoolTabs" value="general");
-                    redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
+                    gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf?name=#{pageSession.encodedName}");
                 />       
         </sun:tab>
         <sun:tab id="advanceTab" immediate="$boolean{true}" text="$resource{i18n.common.Advanced}" toolTip="$resource{i18n.common.Advanced} Tab">
             <!command
                 setSessionAttribute(key="jdbcPoolTabs" value="advanceTab");
-                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf?name=#{pageSession.encodedName}");
+                gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolAdvance.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
         <sun:tab id="propertyTab" immediate="$boolean{true}" text="$resource{i18n.common.AdditonalProperties}" toolTip="$resource{i18n.common.AdditonalProperties} Tab">
             <!command
                 setSessionAttribute(key="jdbcPoolTabs" value="propertyTab");
-                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
+                gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
             />
         </sun:tab>
 </sun:tabSet>

@@ -92,7 +92,7 @@
                         convertToFalse="#{pageSession.convertToFalseList}"
                     );
                 prepareSuccessfulMsg();
-                redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
         </sun:panelGroup>
@@ -116,7 +116,7 @@
             convertToFalse="#{pageSession.convertToFalseList}"
             );
             prepareSuccessfulMsg();
-            redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+            gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
         </sun:button>
     </sun:panelGroup>

@@ -45,7 +45,7 @@
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
                     setAttribute(key="fromStep2" value="#{true}")
-                    navigate(page="#{request.contextPath}/jdbc/#{step1Page}");
+                    gf.navigate(page="#{request.contextPath}/jdbc/#{step1Page}");
         />
     </sun:button>
 
@@ -67,11 +67,11 @@
             if ("#{wizardMap['Ping']}") {
                 pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}");
                 setSessionAttribute(key="wizardMap" value="#{null}")
-                redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             }
             if ("!#{wizardMap['Ping']}") {
                 setSessionAttribute(key="wizardMap" value="#{null}")
-                redirect(page="#{parentPage}");
+                gf.redirect(page="#{parentPage}");
             }
         />    
     </sun:button>
@@ -80,7 +80,7 @@
             setSessionAttribute(key="wizardMap" value="#{null}")
             setSessionAttribute(key="wizardPoolExtra" value="#{null}")
             setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-            redirect(page="#{parentPage}");
+            gf.redirect(page="#{parentPage}");
         />    
     </sun:button>
   </sun:panelGroup>

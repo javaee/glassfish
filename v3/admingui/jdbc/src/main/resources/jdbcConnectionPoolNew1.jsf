@@ -65,7 +65,7 @@
                             onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
                             <!command
                                 updateJDBCPoolWizardStep1();
-                                redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolNew2.jsf?fromStep2=false")
+                                gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolNew2.jsf?fromStep2=false")
                             />
                         </sun:button>
                         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" > 
@@ -73,7 +73,7 @@
                                 setSessionAttribute(key="wizardMap" value="#{null}")
                                 setSessionAttribute(key="wizardPoolExtra" value="#{null}")
                                 setSessionAttribute(key="wizardPoolProperties" value="#{null}")
-                                redirect(page="#{parentPage}");
+                                gf.redirect(page="#{parentPage}");
                             />
                         </sun:button>
                     </sun:panelGroup>
