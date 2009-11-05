@@ -348,7 +348,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     /**
      * Create File objects corresponding to instance root and domain.xml location.
      */
-    private Result getLocations(Map<?, ?> properties) {
+    private Result getLocations(Map<?, ?> properties) throws EJBException {
         Result rs = null;
         String installed_root_location = null;
         String instance_root_location = null;
@@ -403,12 +403,20 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     }
                     File domain_file = getValidFile(domain_file_location);
                     if (domain_file != null) {
-                        DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);
-                        File temp_domain_file = dxf.transform();
+                        File temp_domain_file = null;
+                        try {
+                            DomainXmlTransformer dxf = new DomainXmlTransformer(domain_file, _logger);
+                            temp_domain_file = dxf.transform();
+                        } catch (Exception e) {
+                            throw new EJBException(localStrings.getString(
+                                    "ejb.embedded.exception_creating_temporary_domain_xml_file"), e);
+                        }
+
                         if (temp_domain_file != null) {
                             domain_file = temp_domain_file;
                         } else {
-                            _logger.log(Level.SEVERE, "ejb.embedded.failed_create_temporary_domain_xml_file");
+                            throw new EJBException(localStrings.getString(
+                                    "ejb.embedded.failed_create_temporary_domain_xml_file"));
                         }
                         rs = new Result(installed_root, domain_file);
                     }
