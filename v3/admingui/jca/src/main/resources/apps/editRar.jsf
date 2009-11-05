@@ -33,13 +33,16 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!-- editEjb.jsf -->
+<!-- editRar.jsf -->
 
 <!initPage
+    setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jca/apps/editRar.jsf")
+    setPageSessionAttribute(key="hasPageTitleHelp" value="#{true}")
+    setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njca.rar.editPageTitleHelp}")
 />
 
 <!composition template="/common/applications/appEdit.layout"   >
