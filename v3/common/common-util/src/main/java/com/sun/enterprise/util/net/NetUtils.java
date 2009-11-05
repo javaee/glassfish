@@ -67,6 +67,14 @@ import java.io.*;
 
 public class NetUtils {
 
+    private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
+
+    private static void printd(String string) {
+        if(asDebug) {
+            System.out.println(string);
+        }
+    }
+
     public enum PortAvailability { illegalNumber, noPermission, inUse, unknown, OK };
     
     private NetUtils() {
@@ -359,15 +367,48 @@ public class NetUtils {
     }
 
     private static boolean isPortFreeServer(int port) {
+        // check 3 different ip-port combinations.
+        // Amazingly I have seen all 3 possibilities -- so just checking on 0.0.0.0
+        // is not good enough.
+        // Usually it is the 0.0.0.0 -- but JMS (default:7676)
+        // only returns false from the "localhost":port combination.
+        // We want to be aggressively disqualifying ports rather than the other
+        // way around
+
         try {
-            ServerSocket ss = new ServerSocket(port);
+            byte[] allZero = new byte[] { 0,0,0,0 };
+            InetAddress add=InetAddress.getByAddress(allZero);
+
+            if(isPortFreeServer(port, add) == false)
+                return false;   // return immediately on "not-free"
+
+            add = InetAddress.getLocalHost();
+
+            if(isPortFreeServer(port, add) == false)
+                return false;   // return immediately on "not-free"
+
+            add = InetAddress.getByName("localhost");
+
+            return isPortFreeServer(port, add);
+        }
+        catch(Exception e) {
+            // If we can't get an IP address then we can't check
+            return false;
+        }
+
+    }
+    private static boolean isPortFreeServer(int port, InetAddress add) {
+        try {
+            ServerSocket ss = new ServerSocket(port, 100, add);
             ss.close();
+
+            printd(add.toString() + " : " + port + " --> FREE");
             return true;
         } catch (Exception e) {
+            printd(add.toString() + " : " + port + " --> IN USE");
             return false;
         }
     }
-
     /**
     Gets a free port at the time of call to this method.
     The logic leverages the built in java.net.ServerSocket implementation
