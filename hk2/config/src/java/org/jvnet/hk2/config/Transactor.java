@@ -68,7 +68,7 @@ public interface Transactor {
 	 *
 	 * @return true if the trsaction commiting would be successful
 	 */
-    public boolean canCommit(Transaction t);
+    public boolean canCommit(Transaction t) throws TransactionFailure;
 
 	/**
 	 * Commit this Transaction.
