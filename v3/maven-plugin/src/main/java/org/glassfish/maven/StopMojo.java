@@ -60,6 +60,9 @@ public class StopMojo extends AbstractMojo  {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         Server server = Server.getServer(serverID);
+        if (server ==  null) {
+            throw new MojoExecutionException("Embedded Server[" + serverID + "] not running" );
+        }
 
         try {
             server.stop();
@@ -67,5 +70,4 @@ public class StopMojo extends AbstractMojo  {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }
     }
-
 }

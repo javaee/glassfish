@@ -103,22 +103,23 @@ public class RunScatteredArchive extends AbstractDeployMojo{
             }
 
             DeployCommandParameters dp = new DeployCommandParameters(f);
-            dp.name = name;
-            dp.contextroot = contextRoot;
+            if (name != null)
+                dp.name = name;
+            if (contextroot != null)
+                dp.contextroot = contextroot;
 
             while(true) {
-                deployer.deploy(builder.buildWar(), dp);
+                String appName = deployer.deploy(builder.buildWar(), dp);
 
-                System.out.println("Deployed Application " + name
-                        + " contextroot is " + contextRoot);
+                System.out.println("Deployed Application " + appName);
                 System.out.println("");
-                System.out.println("Hit ENTER to redeploy " + name
+                System.out.println("Hit ENTER to redeploy " + appName
                         + " X to exit");
                 // wait for enter
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 if (str.equalsIgnoreCase("X"))
                     break;
-                deployer.undeploy(name, null);
+                deployer.undeploy(appName, null);
             }
         } catch (Exception e) {
            throw new MojoExecutionException(e.getMessage(), e);

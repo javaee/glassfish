@@ -79,15 +79,12 @@ public class RunWarMojo extends AbstractDeployMojo {
             configureDeployCommandParameters(cmdParams);
 
             while(true) {
-                deployer.deploy(deployArchive, cmdParams);
-                System.out.println("Deployed Application " + name + "[" + app + "]"
-                        + " contextroot is " + contextRoot);
-                System.out.println("Hit ENTER to redeploy " + name + "[" + app + "]"
-                        + " X to exit");
+                String appName = deployer.deploy(deployArchive, cmdParams);
+                System.out.println("Hit ENTER to redeploy, X to exit");
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
                 if (str.equalsIgnoreCase("X"))
                     break;
-                deployer.undeploy(name, null);
+                deployer.undeploy(appName, null);
             }
         } catch(Exception e) {
            throw new MojoExecutionException(e.getMessage(),e);

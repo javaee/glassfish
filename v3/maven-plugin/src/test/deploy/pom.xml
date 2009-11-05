@@ -55,7 +55,6 @@
           <goalPrefix>glassfish</goalPrefix>
           <app>test.war</app>
           <port>8080</port> 
-         <name>test</name>
        </configuration>
   
        <executions>

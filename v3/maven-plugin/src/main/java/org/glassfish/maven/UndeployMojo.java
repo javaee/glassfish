@@ -64,6 +64,9 @@ public class UndeployMojo extends AbstractMojo  {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         Server server = Server.getServer(serverID);
+        if (server ==  null) {
+            throw new MojoExecutionException("Embedded Server[" + serverID + "] not running" );
+        }
 
         try {
             EmbeddedDeployer deployer = server.getDeployer();

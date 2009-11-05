@@ -61,7 +61,9 @@ public class DeployMojo extends AbstractDeployMojo  {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         Server server = Server.getServer(serverID);
-
+        if (server ==  null) {
+            throw new MojoExecutionException("Embedded Server[" + serverID + "] not running" );
+        }
         File deployArchive = new File(app);
         if (!deployArchive.exists()) {
             throw new MojoExecutionException ("", new java.io.FileNotFoundException(app));
