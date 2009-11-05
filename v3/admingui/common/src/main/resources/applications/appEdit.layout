@@ -55,8 +55,13 @@
 
         getProxyProperties(objectNameStr="#{pageSession.objectNameStr}"  result="#{pageSession.propMap}");
 
-        setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
-        setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
+        if (! #{pageSession.hasPageTitle}){
+            setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
+        }
+
+        if (! #{pageSession.hasPageTitleHelp}){
+            setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
+        }
         setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     />
