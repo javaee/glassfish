@@ -11,7 +11,6 @@ import org.glassfish.gmbal.*;
 
 import javax.servlet.ServletContext;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -31,9 +30,72 @@ public class WebServiceStatsProvider {
     private final Map<String, DeployedEndpointData> endpoints =
             new HashMap<String, DeployedEndpointData>();
 
-    // appName --> module name --> endpoint name --> deployed data
-    private final Map<String, Map<String, Map<String, DeployedEndpointData>>> oneONine =
-        new HashMap<String, Map<String, Map<String, DeployedEndpointData>>>();
+    // 109 Servlet Endpoints
+    private final Map<Servlet109Endpoint, DeployedEndpointData> servletEndpoints =
+            new HashMap<Servlet109Endpoint, DeployedEndpointData>();
+
+    // 109 EJB Endpoints
+    private final Map<EJB109Endpoint, DeployedEndpointData> ejbEndpoints =
+            new HashMap<EJB109Endpoint, DeployedEndpointData>();
+
+    // Only RI endpoints
+    private final Map<String, DeployedEndpointData> riEndpoints =
+            new HashMap<String, DeployedEndpointData>();
+
+    private static class Servlet109Endpoint {
+        final String appName;
+        final String moduleName;
+        final String servletLink;
+
+        Servlet109Endpoint(String appName, String moduleName, String servletLink) {
+            this.appName = appName;
+            this.moduleName = moduleName;
+            this.servletLink = servletLink;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Servlet109Endpoint) {
+                Servlet109Endpoint other = (Servlet109Endpoint)obj;
+                if (appName.equals(other.appName) && moduleName.equals(other.moduleName) && servletLink.equals(other.servletLink))
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return appName.hashCode()+moduleName.hashCode()+servletLink.hashCode();
+        }
+
+    }
+
+    private static class EJB109Endpoint {
+        final String appName;
+        final String moduleName;
+        final String ejbLink;
+
+        EJB109Endpoint(String appName, String moduleName, String ejbLink) {
+            this.appName = appName;
+            this.moduleName = moduleName;
+            this.ejbLink = ejbLink;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof EJB109Endpoint) {
+                EJB109Endpoint other = (EJB109Endpoint)obj;
+                if (appName.equals(other.appName) && moduleName.equals(other.moduleName) && ejbLink.equals(other.ejbLink))
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return appName.hashCode()+moduleName.hashCode()+ejbLink.hashCode();
+        }
+    }
 
     // 109 endpoint deployment
     @ProbeListener("glassfish:webservices:deployment-109:deploy")
@@ -48,23 +110,23 @@ public class WebServiceStatsProvider {
             endpoints.put(path, data);
         }
 
-        // store as appName --> module name --> endpoint name --> deployed data
+        // store in servletEndpoints, ejbEndpoints
         String appName = app.getAppName();
         String moduleName = endpoint.getBundleDescriptor().getModuleName();
         String endpointName = endpoint.getEndpointName();
-        Map<String, Map<String, DeployedEndpointData>> module = oneONine.get(appName);
-        if (module == null) {
-            module = new ConcurrentHashMap<String, Map<String, DeployedEndpointData>>();
-            oneONine.put(appName, module);
-        }
-        Map<String, DeployedEndpointData> moduleData = module.get(moduleName);
-        if (moduleData == null) {
-            moduleData = new ConcurrentHashMap<String, DeployedEndpointData>();
-            module.put(moduleName, moduleData);
-        }
-        DeployedEndpointData endpointData = moduleData.get(endpointName);
-        if (endpointData == null) {
-            moduleData.put(endpointName, data);
+        if (endpoint.getWebComponentLink() != null) {
+            Servlet109Endpoint se = new Servlet109Endpoint(appName, moduleName, endpoint.getWebComponentLink());
+            if (!servletEndpoints.containsKey(se)) {
+                servletEndpoints.put(se, data);
+            }
+        } else if (endpoint.getEjbLink() != null) {
+            EJB109Endpoint ee = new EJB109Endpoint(appName, moduleName, endpoint.getEjbLink());
+            if (!ejbEndpoints.containsKey(ee)) {
+                ejbEndpoints.put(ee, data);
+            }
+        } else {
+            throw new RuntimeException("Both servlet-link and ejb-link are null for appName="
+                    +appName+" moduleName="+moduleName+" endpointName="+endpointName);
         }
     }
 
@@ -72,6 +134,8 @@ public class WebServiceStatsProvider {
     @ProbeListener("glassfish:webservices:deployment-109:undeploy")
     public synchronized void eeUndeploy(@ProbeParam("path")String path) {
         endpoints.remove(path);
+
+        // TODO remove from servletEndpoints, ejbEndpoints
     }
 
     // sun-jaxws.xml deployment
@@ -100,22 +164,26 @@ public class WebServiceStatsProvider {
         return new MyStats(endpoints);
     }
 
-    // Returns all the 109 endpoints in a given application's module
+    // Returns the 109 servlet endpoint for appName+moduleName+servletLink
     @ManagedOperation
-    public synchronized List<Map<String, String>> get109Endpoints(String appName, String moduleName) {
-        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+    public synchronized Map<String, String> getServlet109Endpoint(String appName, String moduleName, String servletLink) {
+        Servlet109Endpoint endpoint = new Servlet109Endpoint(appName, moduleName, servletLink);
+        DeployedEndpointData data = servletEndpoints.get(endpoint);
+        return (data == null) ? Collections.<String, String>emptyMap() : data.getStaticAsMap();
+    }
 
-        Map<String, Map<String, DeployedEndpointData>> app = oneONine.get(appName);
-        if (app != null) {
-            Map<String, DeployedEndpointData> module=  app.get(moduleName);
-            if (module != null) {
-                for(DeployedEndpointData data : module.values()) {
-                    list.add(data.getStaticAsMap());
-                }
-            }
-        }
-        
-        return list;
+    // Returns all the 109 EJB endpoint for appName+moduleName+ejbLink
+    @ManagedOperation
+    public synchronized Map<String, String> getEjb109Endpoint(String appName, String moduleName, String ejbLink) {
+        EJB109Endpoint endpoint = new EJB109Endpoint(appName, moduleName, ejbLink);
+        DeployedEndpointData data = ejbEndpoints.get(endpoint);
+        return (data == null) ? Collections.<String, String>emptyMap() : data.getStaticAsMap();
+    }
+
+    // Returns all the RI endpoints for context root
+    @ManagedOperation
+    public synchronized List<Map<String, String>> getRiEndpoint(String contextPath) {
+        return null; // TODO
     }
 
     @ManagedData
