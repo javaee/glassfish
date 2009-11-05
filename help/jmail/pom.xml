@@ -6,7 +6,7 @@
         <version>3.0-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.admingui</groupId>
-    <artifactId>console-jmail-plugin-help</artifactId>
+    <artifactId>console-common-full-plugin-help</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Administration Console JavaMailSystem Help Content</name>
     <description>Online help content for the console-jmail-plugin bundle.</description>
