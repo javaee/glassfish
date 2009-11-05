@@ -74,8 +74,13 @@ admingui.help = {
 	if ((node.nodeType == 1) && (node.nodeName == "A")) {
 	    var relPath = node.getAttribute("href");
 	    if (relPath) {
-		node.href = "javascript:admingui.help.showHelpPage('"
-		    + baseURL + "/../" + relPath + "', 'helpContent');";
+		if (relPath.indexOf("://") === -1) {
+		    node.href = "javascript:admingui.help.showHelpPage('"
+			+ baseURL + "/../" + relPath + "', 'helpContent');";
+		} else if ((node.target == null) || (node.target == "")
+			|| (typeof(node.target) === 'undefined')) {
+		    node.target = "_blank";
+		}
 	    }
 	} else {
 	    // Not a href, so walk its children
