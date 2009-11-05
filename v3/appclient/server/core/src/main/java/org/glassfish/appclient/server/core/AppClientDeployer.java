@@ -46,11 +46,7 @@ import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
-import java.beans.PropertyChangeEvent;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.logging.Logger;
@@ -59,6 +55,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.jvnet.hk2.annotations.Inject;
@@ -67,9 +64,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.UnprocessedChangeEvent;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * AppClient module deployer.
@@ -177,6 +171,9 @@ public class AppClientDeployer
 
     @Inject
     private Habitat habitat;
+
+    @Inject
+    private ASJarSigner jarSigner;
 
     @Inject(name="server-config") // for now
     Config config;
@@ -287,7 +284,9 @@ public class AppClientDeployer
             AppClientDeployerHelper.newInstance(
                 dc,
                 archivist,
-                clientModuleLoader);
+                clientModuleLoader,
+                habitat,
+                jarSigner);
         dc.addTransientAppMetaData(HELPER_KEY_NAME + moduleURI(dc), h.proxy());
         return h;
     }

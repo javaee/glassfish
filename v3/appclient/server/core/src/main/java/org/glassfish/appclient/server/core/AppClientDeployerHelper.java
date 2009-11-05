@@ -49,7 +49,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -57,9 +59,14 @@ import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
+import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.deployment.common.DownloadableArtifacts;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Encapsulates the details of generating the required JAR file(s),
@@ -95,7 +102,9 @@ public abstract class AppClientDeployerHelper {
     static AppClientDeployerHelper newInstance(
             final DeploymentContext dc,
             final AppClientArchivist archivist,
-            final ClassLoader gfClientModuleLoader) throws IOException {
+            final ClassLoader gfClientModuleLoader,
+            final Habitat habitat,
+            final ASJarSigner jarSigner) throws IOException {
         ApplicationClientDescriptor bundleDesc = dc.getModuleMetaData(ApplicationClientDescriptor.class);
         Application application = bundleDesc.getApplication();
         boolean insideEar = ! application.isVirtual();
@@ -105,7 +114,9 @@ public abstract class AppClientDeployerHelper {
                                     bundleDesc,
                                     archivist,
                                     gfClientModuleLoader,
-                                    application)
+                                    application,
+                                    habitat,
+                                    jarSigner)
                           : new StandaloneAppClientDeployerHelper(
                                     dc,
                                     bundleDesc,
@@ -225,6 +236,14 @@ public abstract class AppClientDeployerHelper {
 
     protected abstract String PUScanTargets();
 
+    public abstract void createAndAddLibraryJNLPs(final AppClientDeployerHelper helper,
+            final TokenHelper tHelper, final Map<String,DynamicContent> dynamicContent)
+            throws IOException;
+    
+    public Map<String,Map<URI,StaticContent>> signingAliasToJar() {
+        return Collections.EMPTY_MAP;
+    }
+
     public final DeploymentContext dc() {
         return dc;
     }
@@ -240,7 +259,7 @@ public abstract class AppClientDeployerHelper {
     public String clientName() {
         return clientName;
     }
-    
+
     /**
      * Returns a FixedContent object for the file, within the EAR, at the
      * specified relative location.

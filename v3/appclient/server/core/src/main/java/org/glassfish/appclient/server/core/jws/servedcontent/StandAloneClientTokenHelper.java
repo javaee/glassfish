@@ -52,7 +52,7 @@ public class StandAloneClientTokenHelper extends TokenHelper {
     }
 
     @Override
-    public String appLibraryExtension() {
+    public String appLibraryExtensions() {
         return "";
     }
 

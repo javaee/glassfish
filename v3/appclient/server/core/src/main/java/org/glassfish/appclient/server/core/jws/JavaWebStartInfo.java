@@ -43,14 +43,11 @@ import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,8 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.container.EndpointRegistrationException;
@@ -122,7 +117,8 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private TokenHelper tHelper;
 
-    private Logger logger;
+    private static Logger logger = LogDomains.getLogger(AppClientServerApplication.class,
+                LogDomains.ACC_LOGGER);
 
     private VendorInfo vendorInfo;
 
@@ -131,19 +127,15 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private static final String JNLP_MIME_TYPE = "application/x-java-jnlp-file";
 
-    private static final String DOC_TEMPLATE_PREFIX = "/org/glassfish/appclient/server/core/jws/templates/";
+    public static final String DOC_TEMPLATE_PREFIX = "/org/glassfish/appclient/server/core/jws/templates/";
 
     private static final String MAIN_DOCUMENT_TEMPLATE =
             DOC_TEMPLATE_PREFIX + "appclientMainDocumentTemplate.jnlp";
     private static final String CLIENT_DOCUMENT_TEMPLATE =
             DOC_TEMPLATE_PREFIX + "appclientClientDocumentTemplate.jnlp";
-
-        //, "appclientClientDocumentTemplate.jnlp"
-        //, "appclientClientFacadeDocumentTemplate.jnlp"
-
     private static final String MAIN_IMAGE_XML_PROPERTY_NAME =
             "appclient.main.information.images";
-    private static final String APP_LIBRARY_EXTENSION_PROPERTY_NAME = "app.library.extension";
+    public static final String APP_LIBRARY_EXTENSION_PROPERTY_NAME = "app.library.extension";
     private static final String APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME =
             "appclient.main.class.arguments";
     private static final String CLIENT_FACADE_JAR_PATH_PROPERTY_NAME =
@@ -223,8 +215,7 @@ public class JavaWebStartInfo implements ConfigListener {
         this.acServerApp = acServerApp;
         helper = acServerApp.helper();
         acDesc = acServerApp.getDescriptor();
-        this.logger = LogDomains.getLogger(AppClientServerApplication.class,
-                LogDomains.ACC_LOGGER);
+        
         dc = acServerApp.dc();
         isJWSEligible = acDesc.getJavaWebStartAccessDescriptor().isEligible();
         isJWSEnabledAtApp = isJWSEnabled(dc.getAppProps());
@@ -475,21 +466,9 @@ public class JavaWebStartInfo implements ConfigListener {
          */
         prepareImageInfo(staticContent);
 
-        /*
-         * Make sure that all the EAR-level JARs that this client refers to
-         * are represented as content as well.  This could result in a JAR
-         * referenced from multiple clients being added more than once, but
-         * these library JARs are recorded in a set so each appears at most once.
-         */
-        for (FullAndPartURIs artifact : helper.earLevelDownloads()) {
-            final String uriString = artifact.getPart().toASCIIString();
-            /*
-             * The EAR-level downloads include the unsigned client JAR(s).  If
-             * we've generated a signed copy and added it to the static content
-             * do not overwrite that entry.
-             */
-            if ( ! staticContent.containsKey(uriString)) {
-                staticContent.put(uriString, new FixedContent(new File(artifact.getFull())));
+        for (Map.Entry<String,Map<URI,StaticContent>> signedEntry : helper.signingAliasToJar().entrySet()) {
+            for (Map.Entry<URI,StaticContent> contentEntry : signedEntry.getValue().entrySet()) {
+                staticContent.put(contentEntry.getKey().toASCIIString(), contentEntry.getValue());
             }
         }
     }
@@ -500,7 +479,7 @@ public class JavaWebStartInfo implements ConfigListener {
             final AutoSignedContent signedContent =
                     jwsAdapterManager.appLevelSignedSystemContent(
                         signedContentFromApp.getRelativePath(),
-                        jwsAdapterManager.signingAlias(dc));
+                        JWSAdapterManager.signingAlias(dc));
             recordStaticContent(content, signedContent,
                     signedContentFromApp.getRelativePathURI(),
                     signedContentFromApp.getTokenName());
@@ -540,7 +519,7 @@ public class JavaWebStartInfo implements ConfigListener {
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
                 signedFile,
-                jwsAdapterManager.signingAlias(dc),
+                JWSAdapterManager.signingAlias(dc),
                 jarSigner);
         recordStaticContent(content, signedJarContent, uriForLookup, tokenName);
     }
@@ -563,6 +542,20 @@ public class JavaWebStartInfo implements ConfigListener {
                 uriStringForLookup + "; content = " + newContent.toString());
     }
 
+    public static URI relativeURIForProvidedOrGeneratedAppFile(
+            final DeploymentContext dc, final URI absURI, AppClientDeployerHelper helper) {
+        URI possiblyRelativeURI = rootForSignedFilesInApp(dc).relativize(absURI);
+        if ( ! possiblyRelativeURI.isAbsolute()) {
+            return possiblyRelativeURI;
+        }
+
+        return helper.URIWithinAppDir(dc, absURI);
+    }
+    
+    private static URI rootForSignedFilesInApp(final DeploymentContext dc) {
+        return new File(dc.getScratchDir("xml"), "signed/").toURI();
+    }
+    
     private File signedFileForGeneratedAppFile(final File unsignedFile) {
         /*
          * Signed files at the app level go in
@@ -581,8 +574,15 @@ public class JavaWebStartInfo implements ConfigListener {
         return new File(signedFileURI);
     }
     
-    private File signedFileForProvidedAppFile(final File unsignedFile) {
-        /*
+    public File signedFileForProvidedAppFile(final File unsignedFile) {
+        return signedFileForProvidedAppFile(helper.appClientURIWithinApp(dc),
+                unsignedFile, helper, dc);
+    }
+
+    public static File signedFileForProvidedAppFile(final URI relURI, 
+            final File unsignedFile,
+            final AppClientDeployerHelper helper,
+            final DeploymentContext dc) {    /*
          * Place a signed file for a developer-provided file at
          * 
          * generated/xml/(appName)/signed/(path-within-app-of-unsigned-file)
@@ -591,12 +591,14 @@ public class JavaWebStartInfo implements ConfigListener {
          */
         final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
         rootForSignedFilesInApp.mkdirs();
-        final URI signedFileURI = rootForSignedFilesInApp.toURI().
-                resolve(helper.appClientURIWithinApp(dc));
+        final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(relURI);
+        
         return new File(signedFileURI);
     }
 
     private void initClientDynamicContent() throws IOException {
+
+        helper.createAndAddLibraryJNLPs(helper, tHelper, dynamicContent);
 
         tHelper.setProperty(APP_CLIENT_MAIN_CLASS_ARGUMENTS_PROPERTY_NAME, "");
 
@@ -610,7 +612,19 @@ public class JavaWebStartInfo implements ConfigListener {
          * can launch the app client by specifying only the context root.
          */
         createAndAddDynamicContentFromTemplateText(dynamicContent, "", mainDocument);
-        createAndAddDynamicContent(dynamicContent, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
+        createAndAddDynamicContent(
+                dynamicContent, tHelper.clientJNLP(), CLIENT_DOCUMENT_TEMPLATE);
+
+    }
+
+    public static void createAndAddDynamicContent(
+            final TokenHelper tHelper,
+            final Map<String,DynamicContent> content,
+            final String uriStringForContent,
+            final String uriStringForTemplate) throws IOException {
+        createAndAddDynamicContentFromTemplateText(
+                tHelper, content, uriStringForContent,
+                textFromURL(uriStringForTemplate));
     }
 
     private void createAndAddDynamicContent(
@@ -623,6 +637,15 @@ public class JavaWebStartInfo implements ConfigListener {
     }
 
     private void createAndAddDynamicContentFromTemplateText(
+            final Map<String,DynamicContent> content,
+            final String uriStringForContent,
+            final String templateText) throws IOException {
+        createAndAddDynamicContentFromTemplateText(tHelper,
+                content, uriStringForContent, templateText);
+    }
+
+    private static void createAndAddDynamicContentFromTemplateText(
+            final TokenHelper tHelper,
             final Map<String,DynamicContent> content,
             final String uriStringForContent,
             final String templateText) throws IOException {
@@ -646,7 +669,6 @@ public class JavaWebStartInfo implements ConfigListener {
      * developer-provided sun-application-client.xml descriptor.
      */
     private void prepareImageInfo(final Map<String,StaticContent> staticContent) throws IOException {
-        StringBuilder result = new StringBuilder();
 
         /*
          * Deployment has already expanded the app client module into a

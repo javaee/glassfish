@@ -46,13 +46,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -103,6 +106,9 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         copyOriginalAppClientJAR(dc());
     }
 
+    @Override
+    public void createAndAddLibraryJNLPs(AppClientDeployerHelper helper, TokenHelper tHelper, Map<String, DynamicContent> dynamicContent) {
+    }
 
     @Override
     public FixedContent fixedContentWithinEAR(String uriString) {

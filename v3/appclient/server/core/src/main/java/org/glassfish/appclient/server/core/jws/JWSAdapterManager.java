@@ -113,6 +113,9 @@ public class JWSAdapterManager implements PostConstruct {
     @Inject
     private ExtensionFileManager extensionFileManager;
 
+//    @Inject
+//    private Applications apps;
+
     private static final String LINE_SEP = System.getProperty("line.separator");
 
     private static final List<String> DO_NOT_SERVE_LIST =
@@ -147,6 +150,7 @@ public class JWSAdapterManager implements PostConstruct {
     private File umbrellaRoot;
     private File domainLevelSignedJARsRoot;
 
+    @Override
     public void postConstruct() {
         installRootURI = serverContext.getInstallRoot().toURI();
         logger = LogDomains.getLogger(AppClientDeployer.class, LogDomains.ACC_LOGGER);
@@ -156,17 +160,17 @@ public class JWSAdapterManager implements PostConstruct {
         domainLevelSignedJARsRoot = new File(serverEnv.getDomainRoot(), JWS_SIGNED_SYSTEM_JARS_ROOT);
     }
 
-    public String signingAlias(final DeploymentContext dc) {
+    public static String signingAlias(final DeploymentContext dc) {
         return chooseAlias(dc);
     }
 
-    private String chooseAlias(final DeploymentContext dc) {
+    private static String chooseAlias(final DeploymentContext dc) {
         final String userSpecifiedAlias;
         return ((userSpecifiedAlias = extractUserProvidedAlias(dc)) != null)
                 ? userSpecifiedAlias : DEFAULT_SIGNING_ALIAS;
     }
 
-    private String extractUserProvidedAlias(final DeploymentContext dc) {
+    private static String extractUserProvidedAlias(final DeploymentContext dc) {
         return dc.getAppProps().getProperty(SIGNING_ALIAS_PROPERTY_NAME);
     }
 
@@ -177,10 +181,10 @@ public class JWSAdapterManager implements PostConstruct {
             final List<String> systemJARRelativeURIs = new ArrayList<String>();
 
             final Map<String,StaticContent> staticSystemContent =
-                    initStaticContent(systemJARRelativeURIs);
+                    initStaticSystemContent(systemJARRelativeURIs);
 
             final Map<String,DynamicContent> dynamicSystemContent =
-                    initDynamicContent(systemJARRelativeURIs);
+                    initDynamicSystemContent(systemJARRelativeURIs);
 
             AppClientHTTPAdapter sysAdapter = new AppClientHTTPAdapter(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
@@ -206,7 +210,7 @@ public class JWSAdapterManager implements PostConstruct {
         }
     }
 
-    private Map<String,StaticContent> initStaticContent(final List<String> systemJARRelativeURIs) throws IOException {
+    private Map<String,StaticContent> initStaticSystemContent(final List<String> systemJARRelativeURIs) throws IOException {
         /*
          * This method builds the static content for the "system" Grizzly
          * adapter which serves files from the installation, as opposed to
@@ -281,7 +285,7 @@ public class JWSAdapterManager implements PostConstruct {
                 ext.getFile().getName();
     }
 
-    private Map<String,DynamicContent> initDynamicContent(final List<String> systemJARRelativeURIs) throws IOException {
+    private Map<String,DynamicContent> initDynamicSystemContent(final List<String> systemJARRelativeURIs) throws IOException {
         final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
         final String template = JavaWebStartInfo.textFromURL(
                 "/org/glassfish/appclient/server/core/jws/templates/systemJarsDocumentTemplate.jnlp");
@@ -420,6 +424,20 @@ public class JWSAdapterManager implements PostConstruct {
         return adapter;
     }
 
+//    public String userFriendlyContextRoot(final String appName,
+//            final String uriToAppClientWithinEAR) {
+//
+//    }
+//
+//    public String userFriendlyContextRoot(final String appName) {
+//        final Application app = apps.getModule(Application.class, appName);
+//        if (app == null) {
+//            throw new IllegalArgumentException(appName);
+//        }
+//
+//        final Properties appProps = app.getDeployProperties();
+//
+//    }
     static String userFriendlyContextRoot(final AppClientServerApplication contributor) {
 
         String ufContextRoot = NamingConventions.defaultUserFriendlyContextRoot(
@@ -481,6 +499,7 @@ public class JWSAdapterManager implements PostConstruct {
             final File unsignedFile = new File(umbrellaRoot, relativePathToSystemJar);
             final File signedFile = new File(domainLevelSignedJARsRoot, key);
             result = new AutoSignedContent(unsignedFile, signedFile, alias, jarSigner);
+            appLevelSignedSystemContent.put(key, result);
         }
         return result;
     }

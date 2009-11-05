@@ -49,7 +49,9 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -61,21 +63,40 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.appclient.server.core.jws.JWSAdapterManager;
+import org.glassfish.appclient.server.core.jws.JavaWebStartInfo;
+import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
+import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
+import org.jvnet.hk2.component.Habitat;
 
 public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     private static final String V2_COMPATIBILITY = "v2";
 
-    private Set<FullAndPartURIs> libraryAndClassPathJARs = new HashSet<FullAndPartURIs>();
+    private final static String LIBRARY_SECURITY_PROPERTY_NAME = "library.security";
+    private final static String LIBRARY_JARS_PROPERTY_NAME = "library.jars";
+    private final static String LIBRARY_JNLP_PATH_PROPERTY_NAME = "library.jnlp.path";
+
+    private static final String LIBRARY_DOCUMENT_TEMPLATE =
+            JavaWebStartInfo.DOC_TEMPLATE_PREFIX + "libraryJarsDocumentTemplate.jnlp";
+
 
     private StringBuilder classPathForFacade = new StringBuilder();
     private StringBuilder PUScanTargetsForFacade = new StringBuilder();
 
     private final URI earURI;
+
+    private final ASJarSigner jarSigner;
+
+    private ApplicationSignedJARManager signedJARManager;
+
+    private StringBuilder libExtensionElementsForMainDocument = null;
 
     private static Logger logger = LogDomains.getLogger(NestedAppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
@@ -88,6 +109,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private final Set<FullAndPartURIs> clientLevelDownloads = new HashSet<FullAndPartURIs>();
     private final Set<FullAndPartURIs> earLevelDownloads = new HashSet<FullAndPartURIs>();
 
+    private final Habitat habitat;
+
     /** recognizes expanded directory names for submodules */
     private static final Pattern submoduleURIPattern = Pattern.compile("(.*)_([wcrj]ar)$");
 
@@ -96,8 +119,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final Application application) throws IOException {
+            final Application application,
+            final Habitat habitat,
+            final ASJarSigner jarSigner) throws IOException {
         super(dc, bundleDesc, archivist, gfClientModuleClassLoader, application);
+        this.habitat = habitat;
+        this.jarSigner = jarSigner;
         earURI = dc.getSource().getParentArchive().getURI();
         processDependencies();
     }
@@ -107,8 +134,84 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         return new FixedContent(new File(earDirUserURI(dc()).resolve(uriString)));
     }
 
+    public String appLibraryExtensions() {
+        return (libExtensionElementsForMainDocument == null ? 
+            "" : libExtensionElementsForMainDocument.toString());
+    }
+
+    @Override
+    public Map<String,Map<URI,StaticContent>> signingAliasToJar() {
+        return signedJARManager.aliasToContent();
+    }
+
+
+    @Override
+    public void createAndAddLibraryJNLPs(final AppClientDeployerHelper helper,
+            final TokenHelper tHelper, final Map<String,DynamicContent> dynamicContent) throws IOException {
+
+
+        /*
+         * For each group of like-signed library JARs create a separate JNLP for
+         * the group and add it to the dynamic content for the client.  Also
+         * build up a property to hold the full list of such generated JNLPs
+         * so it can be substituted into the generated client JNLP below.
+         */
+
+        libExtensionElementsForMainDocument = new StringBuilder();
+
+        for (Map.Entry<String,Map<URI,StaticContent>> aliasToContentEntry : signingAliasToJar().entrySet()) {
+            final String alias = aliasToContentEntry.getKey();
+            final Map<URI,StaticContent> libURIs = aliasToContentEntry.getValue();
+
+            tHelper.setProperty(LIBRARY_SECURITY_PROPERTY_NAME, librarySecurity(alias));
+            tHelper.setProperty(LIBRARY_JNLP_PATH_PROPERTY_NAME, libJNLPRelPath(alias));
+            final StringBuilder libJarElements = new StringBuilder();
+
+            for (Map.Entry<URI,StaticContent> entry : libURIs.entrySet()) {
+                final URI uri = entry.getKey();
+                libJarElements.append("<jar href=\"" + libJARRelPath(uri) + "\"/>");
+            }
+            tHelper.setProperty(LIBRARY_JARS_PROPERTY_NAME, libJarElements.toString());
+
+            JavaWebStartInfo.createAndAddDynamicContent(
+                    tHelper, dynamicContent, libJNLPRelPath(alias),
+                LIBRARY_DOCUMENT_TEMPLATE);
+            
+            libExtensionElementsForMainDocument.append(extensionElement(alias, libJNLPRelPath(alias)));
+        }
+        
+        tHelper.setProperty(JavaWebStartInfo.APP_LIBRARY_EXTENSION_PROPERTY_NAME,
+                libExtensionElementsForMainDocument.toString());
+    }
+
+    private String libJARRelPath(final URI absURI) {
+        return JavaWebStartInfo.relativeURIForProvidedOrGeneratedAppFile(dc(), absURI, this).toASCIIString();
+    }
+
+    private String extensionElement(final String alias, final String libURIText) {
+        return "<extension name=\"libJars" + (alias == null ? "" : "-" + alias) +
+                "\" href=\"" + libURIText + "\"/>";
+    }
+
+    private String librarySecurity(final String alias) {
+        return (alias == null ? "" : "<security><all-permissions/></security>");
+    }
+
+    private String libJNLPRelPath(final String alias) {
+        return "___lib/client-libs" + (alias == null ? "" : "-" + alias) + ".jnlp";
+    }
 
     private void processDependencies() throws IOException {
+
+
+        signedJARManager = new ApplicationSignedJARManager(
+                JWSAdapterManager.signingAlias(dc()),
+                jarSigner,
+                habitat,
+                dc(),
+                this,
+                earURI,
+                earDirUserURI(dc()));
 
         /*
          * Init the class path for the facade so it refers to the developer's app client,
@@ -152,7 +255,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 URI.create(appClientURIWithinEAR),
                 earLevelDownloads,
                 dependencyURIsProcessed,
-                appClientURI);
+                appClientURI,
+                false /* isDependencyALibrary */);
 
         /*
          * Now incorporate the library JARs and, if v2 compatibility is chosen,
@@ -211,6 +315,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         addJARsFromDir(cpForFacade, puScanTargets, dependencyURIsProcessed,
                 new File(earURI),
                 new FileFilter() {
+            @Override
                     public boolean accept(final File pathname) {
                         return pathname.getName().endsWith(".jar") && ! pathname.isDirectory()
                                 && ! submoduleURIs.contains(earURI.relativize(pathname.toURI()));
@@ -249,6 +354,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             addJARsFromDir(cpForFacade, puScanTargets, dependencyURIsProcessed,
                 new File(new File(earURI), libDir),
                 new FileFilter() {
+                @Override
                     public boolean accept(File pathname) {
                         return pathname.getName().endsWith(".jar") && ! pathname.isDirectory();
                     }
@@ -297,7 +403,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * and any JARs or directories it depends on.
          */
         processDependencies(earURI, fileURIForJAR, earLevelDownloads, dependencyURIsProcessed,
-                jarURIForFacade);
+                jarURIForFacade, true /* isDependencyALibrary */);
     }
 
     /**
@@ -324,7 +430,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final URI dependencyURI,
             final Set<FullAndPartURIs> downloads,
             final Set<URI> dependencyURIsProcessed,
-            final URI containingJARURI) throws IOException {
+            final URI containingJARURI,
+            final boolean isDependencyALibrary) throws IOException {
 
         if (dependencyURIsProcessed.contains(dependencyURI)) {
             return;
@@ -404,7 +511,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         } else {
             processDependentJAR(dependentFile, baseURI, 
                     dependencyURI, dependencyFileURI, dependencyURIsProcessed, 
-                    downloads, containingJARURI);
+                    downloads, containingJARURI, isDependencyALibrary);
         }
         
     }
@@ -413,7 +520,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final File dependentDirFile,
             final URI baseURI,
             final Set<URI> dependencyURIsProcessed,
-            final Set<FullAndPartURIs> downloads) {
+            final Set<FullAndPartURIs> downloads) throws IOException {
         
         /*
          * Iterate through this directory and its subdirectories, marking
@@ -424,6 +531,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 processDependentDirectory(f, baseURI, dependencyURIsProcessed, downloads);
             } else {
                 URI dependencyFileURI = f.toURI();
+                signedJARManager.addJAR(f.toURI());
                 DownloadableArtifacts.FullAndPartURIs fileDependency = new FullAndPartURIs(dependencyFileURI,
                     earDirUserURI(dc()).resolve(earURI.relativize(dependencyFileURI)));
                 downloads.add(fileDependency);
@@ -437,7 +545,8 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final URI dependencyFileURI,
             final Set<URI> dependencyURIsProcessed,
             final Set<FullAndPartURIs> downloads,
-            final URI containingJARURI
+            final URI containingJARURI,
+            final boolean isDependencyALibrary
             ) throws IOException {
 
         /*
@@ -473,6 +582,9 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * the result so far once more, this time against the download
          * directory on the client system.
          */
+        if (isDependencyALibrary) {
+            signedJARManager.addJAR(dependencyFileURI);
+        }
         DownloadableArtifacts.FullAndPartURIs jarFileDependency = new FullAndPartURIs(dependencyFileURI,
                 earDirUserURI(dc()).resolve(earURI.relativize(baseURI.resolve(dependencyURI))));
 
@@ -504,7 +616,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                     if ( ! dependencyURIsProcessed.contains(eltURI)) {
                         processDependencies(dependencyFileURI, URI.create(elt),
                                 downloads, dependencyURIsProcessed,
-                                containingJARURI);
+                                containingJARURI, true /* isDependencyALibrary */);
                     }
                 }
             }

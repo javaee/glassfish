@@ -68,10 +68,10 @@ public class SimpleDynamicContentImpl extends Content.Adapter implements Dynamic
 
     private Instance getOrCreateInstance(final Properties tokenValues,
             final boolean createIfAbsent) {
-        if (instance == null && createIfAbsent) {
+//        if (instance == null && createIfAbsent) {
             instance = new DynamicContent.InstanceAdapter(
                     Util.replaceTokens(template, tokenValues));
-        }
+//        }
         return instance;
     }
 

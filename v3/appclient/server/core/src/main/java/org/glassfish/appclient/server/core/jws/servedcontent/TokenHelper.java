@@ -43,7 +43,9 @@ import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.util.Properties;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
+import org.glassfish.appclient.server.core.NestedAppClientDeployerHelper;
 import org.glassfish.appclient.server.core.StandaloneAppClientDeployerHelper;
+import org.glassfish.appclient.server.core.jws.JavaWebStartInfo;
 import org.glassfish.appclient.server.core.jws.JavaWebStartInfo.VendorInfo;
 import org.glassfish.appclient.server.core.jws.NamingConventions;
 
@@ -69,7 +71,7 @@ public abstract class TokenHelper {
         if (dHelper instanceof StandaloneAppClientDeployerHelper) {
             tHelper = new StandAloneClientTokenHelper(dHelper);
         } else {
-            tHelper = new NestedClientTokenHelper(dHelper);
+            tHelper = new NestedClientTokenHelper((NestedAppClientDeployerHelper)dHelper);
         }
         tHelper.vendorInfo = vendorInfo;
 
@@ -113,7 +115,7 @@ public abstract class TokenHelper {
         return NamingConventions.systemJNLPURI();
     }
 
-    public abstract String appLibraryExtension();
+    public abstract String appLibraryExtensions();
 
     /**
      * Returns the relative path from the app's context root to its
@@ -160,7 +162,7 @@ public abstract class TokenHelper {
         t.setProperty("system.jnlp", systemJNLP());
 //        t.setProperty("client.facade.jnlp.path", clientFacadeJNLP());
         t.setProperty("client.jnlp.path", clientJNLP());
-        t.setProperty("app.library.extension", appLibraryExtension());
+        t.setProperty(JavaWebStartInfo.APP_LIBRARY_EXTENSION_PROPERTY_NAME, appLibraryExtensions());
         t.setProperty("anchor.subpath", anchorSubpath());
         t.setProperty("dyn", dyn());
 
