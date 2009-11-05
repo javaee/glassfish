@@ -59,6 +59,7 @@ import org.glassfish.api.admin.RestRedirect;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import com.sun.enterprise.config.serverbeans.customvalidators.JdbcSteadyMaxPoolSizes;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -77,6 +78,7 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
+@JdbcSteadyMaxPoolSizes
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-connection-pool"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-connection-pool")
