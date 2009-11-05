@@ -68,6 +68,11 @@
     var component = document.getElementById("#{pageSession.factoryClassTextId}");
     component.value = factoryMap[selected];
  }
+ function updateFactoryClassOnClick() {
+    var classDD = document.getElementById("#{pageSession.classnameDropdownId}");
+    var component = document.getElementById("#{pageSession.factoryClassTextId}");
+    component.value = factoryMap[classDD.value];
+ }
 </script>
 </f:verbatim>
 

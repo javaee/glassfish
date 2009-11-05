@@ -195,14 +195,12 @@ public class JndiHandlers {
             String entry = (String) handlerCtx.getInputValue("entries");
             String option = (String) handlerCtx.getInputValue("classnameOption");
             Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
-        
             String restype = "";
-                if(option.equals("predefine")){
-                    restype = entry;
-                } else {
-                    restype =  attrMap.get("classnameInput");
-                }
-            
+            if (option.equals("predefine")) {
+                restype = attrMap.get("classname");
+            } else {
+                restype = attrMap.get("classnameInput");
+            }
             handlerCtx.setOutputValue("resType", restype);
         } 
 

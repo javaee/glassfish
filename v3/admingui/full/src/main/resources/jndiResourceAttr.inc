@@ -53,10 +53,10 @@
         </sun:property> 
 
         <sun:property id="cp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njmail.jndiResource.resTypeHelp}<br /><br />">                           
-                <sun:radioButton id="optA"  name="classnameOption" selected="#{classnameOption}" selectedValue="predefine" 
-                    onClick="enableClassnameFields('predefine'); "
-                />                              
-                <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{pageSession.valueMap['ResType']}" 
+                <sun:radioButton id="optA"  name="classnameOption" selected="$pageSession{classnameOption}" selectedValue="predefine"
+                    onClick="enableClassnameFields('predefine'); updateFactoryClassOnClick();"
+                />
+                <sun:dropDown id="Classname" labels="$pageSession{builtInEntries}"  values="$pageSession{builtInEntries}"  selected="#{attrMap.classname}"
                     disabled="#{!attrMap.predefinedClassname}" onChange="updateFactoryClass(this.value);" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameDropdownId});
@@ -66,9 +66,9 @@
                 </sun:dropDown>
                 "<br /><br />
 
-                <sun:radioButton id="optB"  name="classnameOption" selected="#{classnameOption}" selectedValue="input"
+                <sun:radioButton id="optB"  name="classnameOption" selected="$pageSession{classnameOption}" selectedValue="input"
                     onClick="javascript: enableClassnameFields('input');"
-                />                                 
+                />
                 <sun:textField id="ClassnameText" text="#{attrMap.classnameInput}" columns="$int{70}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{classnameTextId});
