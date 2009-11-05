@@ -177,7 +177,7 @@
 	<echo message="Assembling templates jar"/>
 
 	<jar jarfile="${component.lib.home}/templates.jar" update="true" basedir="${component.classes.dir}/templates"
-		includes="glassfish/lib/install/templates/resources/jdbc/*"> 
+		includes="glassfish/lib/install/templates/resources/jdbc/*, glassfish/lib/install/databases/dbvendormapping/*"> 
 	</jar>
 
 	<delete dir="${component.classes.dir}"/>

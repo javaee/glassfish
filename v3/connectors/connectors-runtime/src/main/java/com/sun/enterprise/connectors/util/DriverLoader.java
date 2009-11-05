@@ -7,6 +7,7 @@ import com.sun.logging.LogDomains;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,9 +16,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.Vector;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -42,7 +46,51 @@ public class DriverLoader implements ConnectorConstants {
     private static final String SERVICES_DRIVER_IMPL_NAME = "META-INF/services/java.sql.Driver";
     private static final String DATABASE_VENDOR_DERBY = "DERBY";
     private static final String DATABASE_VENDOR_JAVADB = "JAVADB";
+    private static final String DBVENDOR_MAPPINGS_ROOT = 
+            System.getProperty(ConnectorConstants.INSTALL_ROOT) + File.separator + 
+            "lib" + File.separator + "install" + File.separator + "databases" +
+            File.separator + "dbvendormapping" + File.separator;
+    private final String DS_PROPERTIES = "ds.properties";
+    private final String CPDS_PROPERTIES = "cpds.properties";
+    private final String XADS_PROPERTIES = "xads.properties";
+    private final String DRIVER_PROPERTIES = "driver.properties";
 
+
+    private String getImplClassNameFromMapping(String dbVendor, String resType) {
+        File mappingFile = null;
+        Properties fileProperties = new Properties();
+        
+        if(ConnectorConstants.JAVAX_SQL_DATASOURCE.equals(resType)) {
+            mappingFile = new File(DBVENDOR_MAPPINGS_ROOT + DS_PROPERTIES);
+        } else if(ConnectorConstants.JAVAX_SQL_XA_DATASOURCE.equals(resType)) {
+            mappingFile = new File(DBVENDOR_MAPPINGS_ROOT + XADS_PROPERTIES);
+        } else if(ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE.equals(resType)) {
+            mappingFile = new File(DBVENDOR_MAPPINGS_ROOT + CPDS_PROPERTIES);
+        } else if(ConnectorConstants.JAVA_SQL_DRIVER.equals(resType)) {
+            mappingFile = new File(DBVENDOR_MAPPINGS_ROOT + DRIVER_PROPERTIES);
+        }
+        
+        
+        if (mappingFile != null && mappingFile.exists()) {
+            try {
+
+                FileInputStream fis = new FileInputStream(mappingFile);
+                try {
+                    fileProperties.load(fis);
+                } finally {
+                    fis.close();
+                }
+            } catch (IOException ioe) {
+                logger.fine("IO Exception during properties load : " +
+                        mappingFile.getAbsolutePath());
+            }
+        } else {
+            logger.fine("File not found : " + mappingFile.getAbsolutePath());
+        }
+        return fileProperties.getProperty(
+                dbVendor.toUpperCase().trim().replaceAll(" ", ""));
+    }
+    
     /**
      * Gets a set of driver or datasource classnames for the particular vendor.
      * Loads the jdbc driver, introspects the jdbc driver jar and gets the 
@@ -53,6 +101,15 @@ public class DriverLoader implements ConnectorConstants {
         //Map of all jar files with the set of driver implementations. every file
         // that is a jdbc jar will have a set of driver impls.
         Set<String> implClassNames = new TreeSet<String>();
+        
+        //Get from the pre-populated list. This is done for common dbvendor names
+        String implClass = getImplClassNameFromMapping(dbVendor, resType); 
+        
+        if(implClass != null) {
+            implClassNames.add(implClass);
+            return implClassNames;
+        }
+        
         List<File> jarFileLocations = getJdbcDriverLocations();
         Set<File> allJars = new HashSet<File>();
         
@@ -148,6 +205,25 @@ public class DriverLoader implements ConnectorConstants {
         }
         //Could be one or many depending on the connection definition class name 
         return implClassNames;
+    }
+
+    /**
+     * Get the library locations corresponding to the ext directories mentioned
+     * as part of the jvm-options.
+     */
+    private Vector getLibExtDirs() {
+        String extDirStr = System.getProperty("java.ext.dirs");
+        logger.log(Level.FINE, "lib/ext dirs : " + extDirStr);
+        
+        Vector extDirs = new Vector();
+        StringTokenizer st = new StringTokenizer(extDirStr, File.pathSeparator);
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            logger.log(Level.FINE,"Ext Dir : " + token);
+            extDirs.addElement(token);
+        }
+       
+        return extDirs;
     }
 
     /**
@@ -345,6 +421,10 @@ public class DriverLoader implements ConnectorConstants {
         jarFileLocations.add(getLocation(SystemPropertyConstants.DERBY_ROOT_PROPERTY));
         jarFileLocations.add(getLocation(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
         jarFileLocations.add(getLocation(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY));
+        Vector extLibDirs = getLibExtDirs();       
+        for(int i=0; i<extLibDirs.size(); i++) {
+            jarFileLocations.add(new File( (String) extLibDirs.elementAt(i) ));
+        }
         return jarFileLocations;
     }
 
