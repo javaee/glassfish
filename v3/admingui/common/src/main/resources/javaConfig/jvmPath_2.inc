@@ -40,8 +40,7 @@
 <sun:title id="propertyContentPage" title="$resource{i18nc.jvm.PathSettingsTitle}" helpText="$resource{i18nc.jvm.PathSettingsPageHelp}" >
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}">
                 <!command
                     formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
                     mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");

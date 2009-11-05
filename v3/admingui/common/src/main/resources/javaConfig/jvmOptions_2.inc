@@ -42,8 +42,7 @@
                 helpText="$resource{i18nc.jvmOptions.PageHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" >
                 <!command
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
