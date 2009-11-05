@@ -49,10 +49,7 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
             />
             <sun:button id="button1" text="#{buttonText}" disabled="#{true}" primary="#{true}" style="margin-top: 5px; margin-left: 5px;"
-                    onClick="if ( getConfirm(this,'#{confirmMsg}') )
-                        { return submitAndDisable(this, '$resource{i18n.button.Processing}');} 
-                        else {return false;}"
-            > 
+                onClick="if (getConfirm(this,'#{confirmMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 getUIComponent(clientId="$pageSession{rowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
@@ -66,7 +63,7 @@
             <h:panelGroup rendered="#{applicationScope.restartNeeded == true}">
 <f:verbatim>
             <input type="button" class="Btn1_sun4" id="restartButton" value="$resource{i18n.button.Restart}" title="$resource{i18n.restart.tooltip}"
-                        onclick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) { window.location = '#{request.contextPath}/common/appServer/restart-2.jsf';}; return false;"/>
+                onclick="if (getConfirm(this, '$resource{i18n.msg.JS.confirmRestartInstance}')) { window.location = '#{request.contextPath}/common/appServer/restart-2.jsf';}; return false;"/>
 </f:verbatim>
             </h:panelGroup>
          </sun:panelGroup>

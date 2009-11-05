@@ -57,10 +57,8 @@
  <sun:title id="propertyContentPage" title="$resource{i18nUC.updateCenter.ConfigPageTitle}" helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}" >
   <!facet pageButtonsTop>
      <sun:panelGroup id="topButtons">
-        <sun:button id="button" text="$resource{i18n.button.Save}" 
-            onClick="if (validateProxyField()){ 
-                return submitAndDisable(this, '$resource{i18n.button.Processing}'); } 
-                else{ return false;}" onKeyPress="javascript: return true;" > 
+        <sun:button id="button" text="$resource{i18n.button.Save}"
+            onClick="if (validateProxyField()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 prepareSuccessfulMsg();
                 setProxyInfo(connection="#{proxyGroup}", host="#{host}", port="#{port}");
