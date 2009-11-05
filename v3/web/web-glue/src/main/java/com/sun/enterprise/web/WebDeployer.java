@@ -23,7 +23,10 @@
 
 package com.sun.enterprise.web;
 
-
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.logging.*;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -31,6 +34,7 @@ import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.logging.LogDomains;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.JAXRPCCodeGenFacade;
@@ -48,10 +52,6 @@ import org.glassfish.web.jsp.JSPCompiler;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DeploymentProperties;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.io.File;
-
 /**
  * Web module deployer.
  *
@@ -61,6 +61,10 @@ import java.io.File;
 @Service
 public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
+    private static final Logger logger = LogDomains.getLogger(
+            WebDeployer.class, LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = logger.getResourceBundle();
     
     @Inject
     ServerContext sc;
@@ -139,19 +143,18 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
 
     private WebModuleConfig loadWebModuleConfig(DeploymentContext dc) {
         
-        WebModuleConfig wmInfo = null;
+        WebModuleConfig wmInfo = new WebModuleConfig();
         
         try {
             DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-
-            wmInfo = new WebModuleConfig();
-            
             wmInfo.setDescriptor(dc.getModuleMetaData(WebBundleDescriptor.class));
             wmInfo.setVirtualServers(params.virtualservers);
             wmInfo.setLocation(dc.getSourceDir());
             wmInfo.setObjectType(dc.getAppProps().getProperty(ServerTags.OBJECT_TYPE));
         } catch (Exception ex) {
-            dc.getLogger().log(Level.WARNING, "loadWebModuleConfig", ex);
+            String msg = rb.getString("webdeployer.loadWebModuleConfig");
+            msg = MessageFormat.format(msg, wmInfo.getName());
+            logger.log(Level.WARNING, msg, ex);
         }
         
         return wmInfo;
@@ -232,7 +235,9 @@ public class WebDeployer extends JavaEEDeployer<WebContainer, WebApplication>{
                         DeployCommandParameters.class).libraries)); 
             JSPCompiler.compile(inDir, outDir, wbd, classpath.toString(), sc);
         } catch (DeploymentException de) {
-            dc.getLogger().log(Level.SEVERE, "Error compiling JSP", de);
+            String msg = rb.getString("webdeployer.jspc");
+            msg = MessageFormat.format(msg, wbd.getApplication().getName());
+            logger.log(Level.SEVERE, msg, de);
             throw de;
         }
     }
