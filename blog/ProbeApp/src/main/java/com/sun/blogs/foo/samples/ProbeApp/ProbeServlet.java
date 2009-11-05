@@ -18,6 +18,7 @@ import org.glassfish.flashlight.provider.ProbeProviderFactory;
 @ProbeProvider (moduleProviderName="fooblog", moduleName="samples", probeProviderName="ProbeServlet")
 
 public class ProbeServlet extends HttpServlet {
+
     @Resource
     private ProbeProviderFactory probeProviderFactory;
 
@@ -59,6 +60,7 @@ public class ProbeServlet extends HttpServlet {
             throw new ServletException("ProbeClientMediator was not injected.");
 
         try {
+			// need to get the probe provider registered before the listener!
             probeProviderFactory.getProbeProvider(getClass());
             listenerRegistrar.registerListener(new MyProbeListener());
         }
