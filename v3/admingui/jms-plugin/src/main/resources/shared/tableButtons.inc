@@ -5,8 +5,7 @@
         </sun:button>
 
         <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{isConnPage}"
-            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') ) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} "
-        >
+            onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
@@ -21,8 +20,7 @@
         </sun:button>
 
         <sun:button id="deleteDestButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{!isConnPage}"
-            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') ) { return submitAndDisable(this, '$resource{i18n.button.Processing}');} else {return false;} "
-        >
+            onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
