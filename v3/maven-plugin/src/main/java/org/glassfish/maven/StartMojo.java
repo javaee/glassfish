@@ -60,6 +60,7 @@ public class StartMojo extends AbstractServerMojo {
 
 
             server.addContainer(type);
+            server.start();
         } catch (Exception ex) {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }
