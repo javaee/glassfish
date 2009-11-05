@@ -38,7 +38,7 @@
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                 updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                 mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
@@ -70,7 +70,7 @@
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     updateJndiResourceAttrs(attrMap="#{attrMap}", entries="#{pageSession.valueMap['ResType']}", classnameOption="#{classnameOption}", resType="#{requestScope.resType}" );
                     mapPut(map="#{pageSession.valueMap}" key="ResType" value="#{requestScope.resType}")   
