@@ -42,6 +42,10 @@ import org.osgi.framework.BundleContext;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+
 /**
  * This is a bundle activator which is responsible for initializing
  * the SingletonProvider in Weld. It sets different SingletonProvider
@@ -65,10 +69,27 @@ public class WeldActivator implements BundleActivator
         }
         SingletonProvider.initialize(earSupport ?
                 new ACLSingletonProvider() : new TCCLSingletonProvider());
+        javassist.util.proxy.ProxyFactory.classLoaderProvider = new GlassFishClassLoaderProvider();
+        System.out.println("javassist.util.proxy.ProxyFactory.classLoaderProvider = " + javassist.util.proxy.ProxyFactory.classLoaderProvider);
     }
 
     public void stop(BundleContext context) throws Exception
     {
         SingletonProvider.reset();
+    }
+
+    private static class GlassFishClassLoaderProvider implements javassist.util.proxy.ProxyFactory.ClassLoaderProvider {
+        public java.lang.ClassLoader get(javassist.util.proxy.ProxyFactory proxyFactory) {
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    public ClassLoader run() {
+                        return Thread.currentThread().getContextClassLoader();
+                    }
+                });
+            } else {
+                return Thread.currentThread().getContextClassLoader();
+            }
+        }
     }
 }
