@@ -119,7 +119,6 @@
                                 />
                                 </sun:dropDown>
                             </sun:property>
-                            
                                
                             <sun:property id="connectionDefProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" helpText="$resource{i18njca.connectorConnectionPool.connectionDefinitionNameHelp}">
                                 <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{wizardPoolExtra.ConnectionDefinitionName}"  labels="$attribute{connectionDefinitions}" />

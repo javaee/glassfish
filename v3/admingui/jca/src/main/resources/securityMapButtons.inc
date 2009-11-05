@@ -43,12 +43,6 @@
                 convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
                 mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
                 mapPut(map="#{pageSession.valueMap}" key="Principal" value="#{principalsSA}")
-                if(#{pageSession.hasRadioButtons}){
-                    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
-                        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
-                    }
-
-                }
                 if(#{pageSession.hasPropertySheet}){
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"

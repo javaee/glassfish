@@ -93,7 +93,7 @@
             </sun:title>
 #include "/jca/connectorSecurityMapAttr.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help_jca.connectorSecurityMapNew}" />
+	<sun:hidden id="helpKey" value="$resource{help_jca.connectorSecurityMapEdit}" />
             </sun:form>
     "<br/><br/>
 #include "/jca/securityMapjs.inc"

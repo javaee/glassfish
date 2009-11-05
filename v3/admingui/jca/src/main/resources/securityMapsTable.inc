@@ -80,7 +80,7 @@
 
     <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}"
-            url="#{pageSession.editLink}?name=#{td.value.Name}" />
+            url="#{pageSession.editLink}&mapName=#{td.value.Name}" />
     </sun:tableColumn>
   </sun:tableRowGroup>
 
