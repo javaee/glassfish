@@ -4043,6 +4043,13 @@ public abstract class BaseContainer
             
                 setUndeployedState();
 
+                try {
+                   destroyTimers();
+                } catch(Exception e) {
+                    _logger.log(Level.FINE, "Error destroying timers for " +
+                                ejbDescriptor.getName(), e);
+                }
+
                 // Shutdown with undeploy
                 doConcreteContainerShutdown(true);
 
@@ -4117,13 +4124,6 @@ public abstract class BaseContainer
 
         } catch(Exception e) {
             _logger.log(Level.FINE, "Error unregistering ejb endpoint for " +
-                        ejbDescriptor.getName(), e);
-        }
-
-        try {
-           destroyTimers();
-        } catch(Exception e) {
-            _logger.log(Level.FINE, "Error destroying timers for " +
                         ejbDescriptor.getName(), e);
         }
 
