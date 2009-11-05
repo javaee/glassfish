@@ -1,4 +1,4 @@
-/*
+    /*
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -68,11 +68,6 @@ public class PendingConfigBeans implements CageBuilder, PostConstruct, Transacti
 {
     @Inject
     Transactions transactions;
-
-    protected static void debug(final String s)
-    {
-        System.out.println(s);
-    }
 
     private final LinkedBlockingQueue<PendingConfigBeanJob> mJobs = new LinkedBlockingQueue<PendingConfigBeanJob>();
 
