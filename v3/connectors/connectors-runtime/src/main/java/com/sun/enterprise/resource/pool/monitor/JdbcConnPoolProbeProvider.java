@@ -199,7 +199,7 @@ public class JdbcConnPoolProbeProvider extends ConnectionPoolProbeProvider {
     @Override
     public void connectionCreatedEvent(@ProbeParam("poolName") String poolName) { }
     
-    @Probe(name="toString")
+    @Probe(name="toString", hidden=true)
     @Override
     public void toString(@ProbeParam("poolName") String poolName,
             @ProbeParam("stackTrace") StringBuffer stackTrace) { }
