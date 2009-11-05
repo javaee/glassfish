@@ -37,7 +37,7 @@
 <!facet pageButtonsTop>
 <sun:panelGroup id="topButtons">
      <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
-        onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
@@ -53,7 +53,7 @@
     </sun:button>
 
     <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); ">
+            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
