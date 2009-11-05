@@ -72,7 +72,7 @@
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="saveButton" text="$resource{i18n.button.Save}" 
-                            onClick=" if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) return checkPSW(); return false;" >
+                            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkPSW()){submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                            <!command
                                 prepareSuccessfulMsg();
                                 saveUser(
