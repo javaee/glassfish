@@ -256,13 +256,14 @@ public class ConnectorsHandlers {
 
         if (value != null && value.indexOf(",") != -1) {
             str = GuiUtil.stringToArray(value, ",");
-        } else {
+        } 
+        else {
             str = new String[1];
             str[0] = value;
         }
         
-        if(edit.equals("true"))
-            emptyVal = new String[1];
+//        if(edit.equals("true"))
+//            emptyVal = new String[1];
         handlerCtx.setOutputValue("principalsSA", (usePrincipals)? str : emptyVal);
         handlerCtx.setOutputValue("usersSA", (usePrincipals)? emptyVal : str);
 
