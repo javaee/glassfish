@@ -38,7 +38,7 @@
 #Text Link: # b9d2e9
 #Background: # 5382a1 
 
-<sun:markup rendered="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; margin: auto;  display: none; font-family:Arial, Helvetica, sans-serif;">
+<sun:markup rendered="true" foo="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; margin: auto;  display: none; font-family:Arial, Helvetica, sans-serif;">
     <!beforeCreate
         setAttribute(key="contextRoot" value="#{request.contextPath}");
     />
@@ -60,45 +60,17 @@
 		<div style="text-align: center;">
     </f:verbatim>
         <h:commandButton value="$resource{i18n.button.register}" styleClass="Btn1_sun4"
-            onclick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.loadPage({url:'#{request.contextPath}/common/sysnet/#{registrationNodePage}.jsf'}); return false;"
+            onclick="admingui.ajax.loadPage({url:'#{request.contextPath}/common/sysnet/#{registrationNodePage}.jsf'}); return false;"
             onkeypress="javascript: return false;">
         </h:commandButton>
         <h:commandButton value="$resource{i18n.button.regRemind}" styleClass="Btn2_sun4"
-            onclick="document.getElementById('${popupId}').style.visibility='hidden';" primary="#{false}"
+            onclick="document.getElementById('${popupId}').style.visibility='hidden'; setCookie('appServerRegistrationRemindLaterCookie', 'true', 14); admingui.ajax.invoke('setRegistrationRemindLater', {}); return false;"
+	    primary="#{false}"
             onkeypress="javascript: return true;">
-            <!command
-                setRegistrationRemindLater();
-                setCookie(key="appServerRegistrationRemindLaterCookie" value="true" maxAge="1296000");
-                if(! $session{supportCluster}){
-                    gf.redirect("#{request.contextPath}/common/commonTask.jsf");
-                }
-                if($session{supportCluster}){
-                    gf.redirect("clusterCommonTask.jsf");
-                }
-            />
         </h:commandButton>
-        <h:commandButton value="$resource{i18n.button.regNever}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden';" primary1="#{false}" onkeypress="javascript: return true;">
-            <!command
-                setRegistrationDontAsk();
-                if(! $session{supportCluster}){
-                    gf.redirect("#{request.contextPath}/common/commonTask.jsf");
-                }
-                if($session{supportCluster}){
-                    gf.redirect("clusterCommonTask.jsf");
-                }
-            />
+        <h:commandButton value="$resource{i18n.button.regNever}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.invoke('setRegistrationDontAsk', {}); return false;" primary="false" onkeypress="javascript: return true;">
         </h:commandButton>
-	<h:commandButton value="$resource{i18n.button.Cancel}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden'; " primary1="#{false}"  onkeypress="javascript: return true;">
-	    <!command
-		setSessionAttribute(key="dontAskRegistrationInThisSession" value="true");
-		if(! $session{supportCluster}){
-                    gf.redirect("#{request.contextPath}/common/commonTask.jsf");
-                }
-                if($session{supportCluster}){
-                    gf.redirect("clusterCommonTask.jsf");
-                }
-	    />
-	    </h:commandButton>
+	<h:commandButton value="$resource{i18n.button.Cancel}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.invoke('setSessionAttribute', {key:'dontAskRegistrationInThisSession', value:'true'}); return false;" primary="false"  onkeypress="javascript: return true;" />
 	"</div>
 
     <sun:script>
