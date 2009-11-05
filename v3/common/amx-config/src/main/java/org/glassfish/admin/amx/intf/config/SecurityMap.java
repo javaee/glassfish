@@ -49,17 +49,11 @@ public interface SecurityMap
         extends ConfigElement
 {
 
-    public String[] getPrincipalNames();
+    public String[] getPrincipal();
+    public void setPrincipal(String[] names);
 
-    public void createPrincipal(String name);
-
-    public void removePrincipal(String name);
-
-    public String[] getUserGroupNames();
-
-    public void createUserGroup(String name);
-
-    public void removeUserGroup(String name);
+    public String[] getUserGroup();
+    public void setUserGroup(String[] names);
 
     public BackendPrincipal getBackendPrincipal();
 }

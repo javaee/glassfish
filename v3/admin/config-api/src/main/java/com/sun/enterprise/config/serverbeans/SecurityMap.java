@@ -105,6 +105,9 @@ public interface SecurityMap extends ConfigBeanProxy, Injectable  {
      */
     @Element
     public List<String> getPrincipal();
+    
+    void setPrincipal(List<String> principals) throws PropertyVetoException;
+
 
     /**
      * get the list of user-groups to be mapped to backend principal
@@ -112,5 +115,6 @@ public interface SecurityMap extends ConfigBeanProxy, Injectable  {
      */
     @Element
     public List<String> getUserGroup();
-
+    
+    void setUserGroup(List<String> userGroups) throws PropertyVetoException;
 }

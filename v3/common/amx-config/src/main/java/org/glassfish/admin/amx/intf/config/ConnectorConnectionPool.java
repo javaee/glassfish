@@ -64,12 +64,12 @@ public interface ConnectorConnectionPool
     be returned is to be validated by the container.
      */
     
-    public String getConnectionValidationRequired();
+    public String getIsConnectionValidationRequired();
 
     /**
     See {@link #getConnectionValidationRequired}.
      */
-    public void setConnectionValidationRequired(final String required);
+    public void setIsConnectionValidationRequired(final String required);
 
     /**
     Unique name, identifying one connection-definition in a
@@ -286,13 +286,13 @@ public interface ConnectorConnectionPool
     @since AppServer 9.1
      */
     
-    String getValidateAtMostOncePeriodInSeconds();
+    String getValidateAtmostOncePeriodInSeconds();
 
     /**
     @see #getValidateAtMostOncePeriodInSeconds
     @since AppServer 9.1
      */
-    void setValidateAtMostOncePeriodInSeconds(String seconds);
+    void setValidateAtmostOncePeriodInSeconds(String seconds);
 
     /**
     lazy-connection-enlistment (String)<br>
