@@ -537,20 +537,27 @@ public class PluginHandlers {
         output={@HandlerOutput(name="pluginId",type=String.class)}
     )
     public static void getPluginIdFromViewId(HandlerContext handlerCtx) {
-        String viewId = (String)handlerCtx.getInputValue("viewId");
+        String viewId = (String) handlerCtx.getInputValue("viewId");
         if (viewId == null) {
             return;
         }
         ConsolePluginService cps = getPluginService(handlerCtx.getFacesContext());
+        String pluginId = "";
         int next = viewId.indexOf("/", 1);
-        String pluginId = viewId.substring(viewId.startsWith("/") ? 1 : 0, next);
-        String resource = viewId.substring(next);
+        if (next > -1) {
+            pluginId = viewId.substring(0, next);
+            String resource = viewId.substring(next);
 
-        ClassLoader cl = cps.getModuleClassLoader(pluginId);
-        URL url = null;
-        if (cl != null) {
-            url = cl.getResource(resource);
+            if (pluginId.startsWith("/")) {
+                pluginId = pluginId.substring(1);
+            }
+
+            ClassLoader cl = cps.getModuleClassLoader(pluginId);
+            URL url = null;
+            if (cl != null) {
+                url = cl.getResource(resource);
+            }
         }
-        handlerCtx.setOutputValue("pluginId", (url != null) ? pluginId : "");
+        handlerCtx.setOutputValue("pluginId", pluginId);
     }
 }
