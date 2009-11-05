@@ -250,12 +250,29 @@ public class FlashlightProbeClientMediator
                                     "Probe is not registered: {0}", probeString);
                 throw new RuntimeException(errStr);
             }
-            
+            else if(alreadyAdded(mp, probe)) {
+                String errStr = localStrings.getLocalString("overload_error",
+                        "The listener class, {0}, has two or more methods sharing the same \n" +
+                        "Probe ID ({1})This is illegal.  Every ID must be unique.",
+                        listenerClass.getName(), probeString);
+                throw new RuntimeException(errStr);
+            }
+
             mp.add(new MethodProbe(method, probe));
         }
         
         return mp;
     }
+
+    private static boolean alreadyAdded(List<MethodProbe> mps, FlashlightProbe probe) {
+        for(MethodProbe mp : mps) {
+            if(mp.probe == probe) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void submit2BTrace(byte [] bArr) {
         try {
