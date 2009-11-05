@@ -395,24 +395,23 @@ public class WebSecurityManager  {
         return policy.implies(prdm, perm);
     }    
 
-
-    private  PolicyConfigurationFactory getPolicyFactory() throws PolicyContextException {
+    private PolicyConfigurationFactory getPolicyFactory() throws PolicyContextException {
         if (pcf != null) {
             return pcf;
         }
         return _getPolicyFactory();
     }
-
+    
     private synchronized PolicyConfigurationFactory _getPolicyFactory()
 	throws PolicyContextException {
     	if (pcf == null) {
             try {
 		pcf = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 	    } catch(ClassNotFoundException cnfe){
-		logger.log(Level.SEVERE,"jaccfactory.notfound", cnfe);
+		logger.severe("jaccfactory.notfound");
 		throw new PolicyContextException(cnfe);
 	    } catch(PolicyContextException pce){
-		logger.log(Level.SEVERE,"jaccfactory.notfound", pce);
+		logger.severe("jaccfactory.notfound");
 		throw pce;
 	    }
 	}
@@ -552,45 +551,33 @@ public class WebSecurityManager  {
         getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,true);
         if (wasInService) {
             policy.refresh();
-            PermissionCacheFactory.removePermissionCache
-		(uncheckedPermissionCache);
-            uncheckedPermissionCache = null;
         }
+        PermissionCacheFactory.removePermissionCache(uncheckedPermissionCache);
+        uncheckedPermissionCache = null;
         SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory().removeAppNameForContext(CONTEXT_ID);
-        probeProvider.policyDestructionStartedEvent(this.getAppId());
         probeProvider.policyConfigurationDestructionEvent(CONTEXT_ID);
-        probeProvider.policyDestructionEndedEvent(this.getAppId());
         wsmf.getManager(CONTEXT_ID,null,true);
     }
 
-     public static void removePolicyStatements(String cid,WebBundleDescriptor wbd)
-            throws PolicyContextException {
-        PolicyConfigurationFactory factory;
-        try {
-            factory = PolicyConfigurationFactory.getPolicyConfigurationFactory();
-        } catch(ClassNotFoundException cnfe){
-            logger.log(Level.SEVERE, "jaccfactory.notfound", cnfe);
-            throw new PolicyContextException(cnfe);
-	} catch(PolicyContextException pce){
-            logger.log(Level.SEVERE, "jaccfactory.notfound", pce);
-            throw pce;
-	}
-
-        if (cid == null) {
-            cid = WebSecurityManager.getContextID(wbd);
-            if (cid == null) {
-                return;
-            }
-        }
-
-        boolean wasInService = factory.inService(cid);
-        PolicyConfiguration config = factory.getPolicyConfiguration(cid,false);
+   /**
+    * Analogous to destroy, except does not remove links from Policy Context,
+    * and does not remove context_id from role mapper factory. Used to support
+    * Policy Changes that occur via ServletContextListener.
+    *
+    * @throws PolicyContextException
+    */
+    public void release() throws PolicyContextException {
+        boolean wasInService = getPolicyFactory().inService(CONTEXT_ID);
+        PolicyConfiguration config =
+            getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,false);
 	WebPermissionUtil.removePolicyStatements(config,wbd);
-
         // refresh policy if the context was in service
 	if (wasInService) {
             Policy.getPolicy().refresh();
 	}
+        PermissionCacheFactory.removePermissionCache(uncheckedPermissionCache);
+        uncheckedPermissionCache = null;
+        wsmf.getManager(CONTEXT_ID,null,true);
     }
 
     private static String setPolicyContext(final String ctxID) throws Throwable {
