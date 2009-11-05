@@ -2293,13 +2293,23 @@ admingui.woodstock = {
     },
 
     dropDownChanged: function(jumpDropdown) {
-	if (typeof(element) === "string") {
+	if (typeof(jumpDropdown) === "string") {
 	    jumpDropdown = webui.suntheme.dropDown.getSelectElement(jumpDropdown);
 	}
 
 	// Force WS "submitter" flag to true
-	var submitterFieldId = jumpDropdown.parentNode.id + "_submitter";
-	document.getElementById(submitterFieldId).value = "true";
+	var submitterFieldId = jumpDropdown.id + "_submitter";
+	var submitterField = document.getElementById(submitterFieldId);
+	if (!submitterField) {
+	    submitterFieldId = jumpDropdown.parentNode.id + "_submitter";
+	    submitterField = document.getElementById(submitterFieldId);
+	    if (!submitterField) {
+		admingui.util.log("Unable to find dropDown submitter for: "
+		    + jumpDropdown.id);
+		return false;
+	    }
+	}
+	submitterField.value = "true";
 
 // FIXME: Not sure why the following is done...
 	var listItem = jumpDropdown.options;
