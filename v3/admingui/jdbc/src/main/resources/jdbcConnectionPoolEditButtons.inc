@@ -39,7 +39,7 @@
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     saveJdbcConnectionPool(objectNameStr="#{pageSession.objectNameStr}"
                         attrs="#{pageSession.valueMap}"

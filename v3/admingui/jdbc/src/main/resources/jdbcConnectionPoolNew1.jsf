@@ -62,7 +62,7 @@
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="nextButton" text="$resource{i18n.button.Next}"  
-                            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
                                 updateJDBCPoolWizardStep1();
                                 gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolNew2.jsf?fromStep2=false")

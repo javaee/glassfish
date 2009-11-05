@@ -69,7 +69,7 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitle}" 
                 helpText="$resource{i18njdbc.jdbcConnectionPool.propertyPageTitleHelp}">
-#include "/common/shared/editPageButtons.inc"
+#include "/common/shared/editPageButtons_2.inc"
     </sun:title>
     "<br><br>
 #include "/common/shared/propertyDescTable.inc"

@@ -39,20 +39,18 @@
   <sun:panelGroup id="topButtons">
     <sun:button id="previousButton" primary="#{false}"
         text="$resource{i18n.button.Previous}"
-        onClick='javascript: document.getElementById("form2:validate").value="false"; ' >
+        onClick="document.getElementById('form2:validate').value='false'; return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
-                    setAttribute(key="fromStep2" value="#{true}")
-                    gf.navigate(page="#{request.contextPath}/jdbc/#{step1Page}");
+            getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+            setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
+            setAttribute(key="fromStep2" value="#{true}")
+            gf.navigate(page="#{request.contextPath}/jdbc/#{step1Page}");
         />
     </sun:button>
 
     <sun:button id="finishButton" text="$resource{i18n.button.Finish}"
-        onClick="javascript: document.getElementById('form2:validate').value='true'; 
-                return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); "
-        > 
+        onClick="document.getElementById('form2:validate').value='true'; if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
        <!command
             updateJdbcConnectionPoolWizardStep2();
             createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"

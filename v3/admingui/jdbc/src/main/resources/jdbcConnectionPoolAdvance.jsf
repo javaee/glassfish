@@ -80,9 +80,7 @@
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
-                                return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');} 
-                                return false;"  >
+                    onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                 if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
                                     setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
@@ -104,9 +102,7 @@
     <!facet pageButtonsBottom >
     <sun:panelGroup id="topButtons">
         <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-            onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}')){
-                return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}');}
-                return false;"  >
+            onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
                     setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
