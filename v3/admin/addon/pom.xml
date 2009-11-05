@@ -69,11 +69,5 @@
           <artifactId>config-api</artifactId>
           <version>${project.version}</version>
       </dependency>
-        <dependency>
-            <!-- junit is main dependency inside tests -->
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-        </dependency>
     </dependencies>
 </project>

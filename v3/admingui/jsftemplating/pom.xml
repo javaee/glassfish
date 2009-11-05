@@ -123,8 +123,7 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-            <version>${jsftemplating.version}</version>
-	        <scope>optional</scope>
+            <scope>optional</scope>
         </dependency>
     </dependencies>
 </project>

@@ -123,25 +123,21 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-            <version>${jsftemplating.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating-dt</artifactId>
-            <version>${jsftemplating.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-api</artifactId>
-            <version>${jsf-api.version}</version>
 	    <scope>provided</scope>
         </dependency>
         <dependency>

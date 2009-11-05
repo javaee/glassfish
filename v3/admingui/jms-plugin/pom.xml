@@ -122,7 +122,6 @@
             <groupId>com.sun.messaging.mq</groupId>
             <artifactId>imqjmx</artifactId>
             <scope>provided</scope>
-            <version>4.3</version>
         </dependency>
     </dependencies>
 </project>

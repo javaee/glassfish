@@ -104,7 +104,6 @@
         <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
-            <version>1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
