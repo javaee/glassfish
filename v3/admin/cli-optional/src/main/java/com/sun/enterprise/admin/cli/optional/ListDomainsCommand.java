@@ -147,9 +147,19 @@ public final class ListDomainsCommand extends LocalDomainCommand {
             programOpts.setPort(adminPorts.iterator().next());
             boolean status =
                 isThisDAS(SmartFile.sanitize(li.getInstanceRootDir()));
-            if (status)
+            if (status) {
+                try {
+                    RemoteCommand cmd =
+                        new RemoteCommand("_get-restart-required",
+                                            programOpts, env);
+                    String restartRequired =
+                        cmd.executeAndReturnOutput("_get-restart-required");
+                    if (Boolean.parseBoolean(restartRequired.trim()))
+                        return strings.get("list.domains.StatusRestartRequired");
+                } catch (Exception ex) {
+                }
                 return strings.get("list.domains.StatusRunning");
-            else
+            } else
                 return strings.get("list.domains.StatusNotRunning");
         } catch (GFLauncherException gf) {
             logger.printExceptionStackTrace(gf);
