@@ -78,7 +78,7 @@
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="nextButton" text="$resource{i18n.button.Next}" 
-                            onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " > 
+                            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
                                 updateConnectorConnectionPoolWizard();
                                 gf.redirect(page="#{request.contextPath}/jca/connectorConnectionPoolNew2.jsf")

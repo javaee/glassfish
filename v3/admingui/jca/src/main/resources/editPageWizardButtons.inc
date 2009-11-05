@@ -49,7 +49,7 @@
                  />
             </sun:button>
             <sun:button id="finishButton" rendered="#{!edit}" text="$resource{i18n.button.Finish}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     updateConnectorConnectionPoolWizardStep2();
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"

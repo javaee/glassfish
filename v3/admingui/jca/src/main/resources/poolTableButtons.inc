@@ -13,10 +13,7 @@
         </sun:button>
 
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
-            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
-            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-            else {return false;} "
-        >
+            onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});

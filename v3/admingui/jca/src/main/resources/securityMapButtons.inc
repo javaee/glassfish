@@ -38,7 +38,7 @@
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                 convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
                 mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
@@ -67,7 +67,7 @@
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                 convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
                 if($attribute{usersSA}){
