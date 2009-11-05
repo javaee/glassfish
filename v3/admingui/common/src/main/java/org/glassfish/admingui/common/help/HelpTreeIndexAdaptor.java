@@ -317,17 +317,19 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
 	return factory;
     }
 
+    /**
+     *	<p> Comparator class for {@link IndexItem}s.  Uses "text" for
+     *	    comparison, ignoring case.</p>
+     */
     private static class IndexItemComparator implements Comparator<IndexItem> {
-
         @Override
         public int compare(IndexItem x, IndexItem y) {
             int result = 0;
-
             if (null != x && null != y) {
                 if (!x.equals(y)) {
                     String xText = x.getText(), yText = y.getText();
                     if (null != xText && null != yText) {
-                        result = xText.compareTo(yText);
+                        result = xText.compareToIgnoreCase(yText);
                     }
                 }
             } else {
@@ -342,11 +344,7 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
                     }
                 }
             }
-
             return result;
         }
-
     }
-
-
 }

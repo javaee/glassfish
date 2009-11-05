@@ -313,18 +313,19 @@ public class HelpTreeAdaptor extends TreeAdaptorBase {
 	return factory;
     }
 
-
+    /**
+     *	<p> Comparator class for {@link TOCItems}.  Uses "text" for comparison,
+     *	    ignoring case.</p>
+     */
     private static class TOCItemComparator implements Comparator<TOCItem> {
-
         @Override
         public int compare(TOCItem x, TOCItem y) {
             int result = 0;
-
             if (null != x && null != y) {
                 if (!x.equals(y)) {
                     String xText = x.getText(), yText = y.getText();
                     if (null != xText && null != yText) {
-                        result = xText.compareTo(yText);
+                        result = xText.compareToIgnoreCase(yText);
                     }
                 }
             } else {
@@ -339,11 +340,7 @@ public class HelpTreeAdaptor extends TreeAdaptorBase {
                     }
                 }
             }
-
             return result;
         }
-
     }
-
-
 }
