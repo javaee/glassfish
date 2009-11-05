@@ -79,6 +79,7 @@ public interface EmbeddedDeployer {
 
     /**
      * Deploys a file or directory to the servers passing the deployment command parameters
+     * Starts the server if it is not started yet.
      *
      * @param archive archive or directory of the application
      * @param params deployment command parameters

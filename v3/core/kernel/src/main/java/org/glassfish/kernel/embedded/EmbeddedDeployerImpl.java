@@ -42,10 +42,8 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
-import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.UndeployCommandParameters;
@@ -152,6 +150,13 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
     }
 
     public String deploy(ReadableArchive archive, DeployCommandParameters params) {
+
+        // ensure server is started. start it if not started.
+        try {
+            server.start();
+        } catch (LifecycleException e) {
+            throw new RuntimeException(e);
+        }
 
         ActionReport report = new PlainTextActionReporter();
         if (params==null) {

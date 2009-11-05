@@ -53,5 +53,6 @@
     	<module>web-all</module>
         <module>web-api</module>
         <module>web-war</module>
+        <module>servlet</module>
     </modules>
 </project>

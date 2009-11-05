@@ -73,6 +73,7 @@ public class EmbeddedTest {
 
     static Port http=null;
     static Server server = null;
+    static EmbeddedAdminContainer ctr =null;
 
     @BeforeClass
     public static void setup() {
@@ -101,24 +102,15 @@ public class EmbeddedTest {
         for (NetworkListener nl : cnl) {
             System.out.println("Network listener " + nl.getPort());
         }
+        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
+        server.addContainer(ContainerBuilder.Type.all);
+        ctr = server.addContainer(server.createConfig(AdminInfo.class));
+
     }
 
-    @Test
-    public void testJpa() throws LifecycleException {
-        server.addContainer(ContainerBuilder.Type.jpa);
-        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
-        for (EmbeddedContainer c : server.getContainers()) {
-            sniffers.addAll(c.getSniffers());
-        }
-        System.out.println("Sniffer size "  + sniffers.size());
-        for (Sniffer sniffer : sniffers) {
-            System.out.println("Registered Sniffer " + sniffer.getModuleType());
-        }
-    }
 
     @Test
     public void testAll() throws LifecycleException {
-        server.addContainer(ContainerBuilder.Type.all);
         Set<Sniffer> sniffers = new HashSet<Sniffer>();
         for (EmbeddedContainer c : server.getContainers()) {
             sniffers.addAll(c.getSniffers());
@@ -132,7 +124,6 @@ public class EmbeddedTest {
     @Test
     public void testEjb() throws LifecycleException {
 
-        server.addContainer(server.createConfig(ContainerBuilder.Type.ejb));
         EmbeddedDeployer deployer = server.getDeployer();
 
         URL source = SampleEjb.class.getClassLoader().getResource("org/glassfish/distributions/test/ejb/SampleEjb.class");
@@ -165,9 +156,6 @@ public class EmbeddedTest {
     @Test
     public void testWeb() throws Exception {
         System.out.println("Starting Web " + server);
-        ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-        System.out.println("builder is " + b);
-        server.addContainer(b);
         EmbeddedDeployer deployer = server.getDeployer();
         System.out.println("Added Web");
 
@@ -212,7 +200,6 @@ public class EmbeddedTest {
 
     @Test
     public void commandTest() {
-        EmbeddedAdminContainer ctr = server.addContainer(server.createConfig(AdminInfo.class));
         CommandExecution ce = ctr.execute("list-modules", new CommandParameters());
         try {
             ce.getActionReport().writeReport(System.out);

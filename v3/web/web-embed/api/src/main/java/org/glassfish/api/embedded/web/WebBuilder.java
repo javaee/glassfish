@@ -55,6 +55,9 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    Server  server;
     
     URL     defaultWebXml;
     File    docRoot;
@@ -88,6 +91,9 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
     }
 
     public File getDocRootDir() {
+        if (docRoot==null) {
+            return new File(server.getFileSystem().instanceRoot, "docroot");
+        }
         return docRoot;
     }
 

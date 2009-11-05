@@ -39,9 +39,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.*;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.ActionReport;
@@ -156,19 +154,51 @@ public class PortImpl implements Port {
         return name;
     }
 
-    private boolean existsListener(String listenerName) {
-        // FIX this to check if listenerName exists
+    private boolean existsListener(String lName) {
+        for (NetworkListener nl : config.getNetworkListeners().getNetworkListener()) {
+            if (nl.getName().equals(lName)) {
+                return true;
+            }
+        }
         return false;
     }
 
     public void close() {
-        final List<NetworkListener> list = config.getNetworkListeners().getNetworkListener();
-        for (NetworkListener listener : list) {
-            if (listener.getName().equals(listenerName)) {
-                list.remove(listener);
-                break;
-            }
+        try {
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy[] params) throws PropertyVetoException, TransactionFailure {
+                    final NetworkListeners nt = (NetworkListeners) params[0];
+                    final VirtualServer vs = (VirtualServer) params[1];
+                    final Protocols protocols = (Protocols) params[2];
+
+                    List<Protocol> protos = protocols.getProtocol();
+                    for (Protocol proto : protos) {
+                        if (proto.getName().equals(listenerName))  {
+                            protos.remove(proto);
+                            break;
+                        }
+                    }
+
+                    final List<NetworkListener> list = nt.getNetworkListener();
+                    for (NetworkListener listener : list) {
+                        if (listener.getName().equals(listenerName)) {
+                            list.remove(listener);
+                            break;
+                        }
+                    }
+                    String regex = listenerName + ",?";
+                    String lss = vs.getNetworkListeners();
+                    vs.setNetworkListeners(lss.replaceAll(regex, ""));
+                    return null;
+                }
+            }, config.getNetworkListeners(),
+               httpService.getVirtualServerByName(defaultVirtualServer),
+               config.getProtocols());
+        } catch(TransactionFailure tf) {
+            tf.printStackTrace();
+            throw new RuntimeException(tf);
         }
+
         ports.remove(this);
     }
 

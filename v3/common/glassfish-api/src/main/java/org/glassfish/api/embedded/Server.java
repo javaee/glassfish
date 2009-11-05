@@ -586,6 +586,14 @@ public class Server {
                     c.started=false;
                 }
             }
+
+            Ports ports = habitat.getComponent(Ports.class);
+            if (ports != null) {
+                Collection<Port> coll = ports.getPorts();
+                for (Port port:coll) {
+                    port.close();
+                }
+            }
             ModuleStartup ms = habitat.getComponent(ModuleStartup.class, habitat.DEFAULT_NAME);
             if (ms!=null) {
                 ms.stop();
@@ -601,13 +609,6 @@ public class Server {
                     lifecycle.destruction(this);
                 } catch(Exception e) {
                     Logger.getAnonymousLogger().log(Level.WARNING,"Exception while notifying of embedded server destruction",e);
-                }
-            }
-            Ports ports = habitat.getComponent(Ports.class);
-            if (ports != null) {
-                Collection<Port> coll = ports.getPorts();
-                for (Port port:coll) {
-                    port.close();
                 }
             }
         } finally {
