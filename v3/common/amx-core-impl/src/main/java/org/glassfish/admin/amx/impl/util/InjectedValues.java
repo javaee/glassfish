@@ -44,7 +44,7 @@ import org.glassfish.api.Async;
 import javax.management.MBeanServer;
 import org.glassfish.server.ServerEnvironmentImpl;
 
-import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
+import org.glassfish.internal.config.UnprocessedConfigListener;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.ModulesRegistry;
 

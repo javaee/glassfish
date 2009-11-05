@@ -58,7 +58,7 @@ import org.glassfish.admin.amx.impl.mbean.AMXImplBase;
 import org.glassfish.admin.amx.intf.config.Domain;
 import org.jvnet.hk2.config.*;
 
-import org.glassfish.admin.mbeanserver.UnprocessedConfigListener;
+import org.glassfish.internal.config.UnprocessedConfigListener;
 
 /**
 
