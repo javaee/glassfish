@@ -15,6 +15,23 @@
             parentId="resources"
             content="raconfigTreeNode.jsf"
     />
+
+    <integration-point
+            id="jca_connectorService"
+            type="org.glassfish.admingui:navNode"
+            priority="750"
+            parentId="configuration"
+            content="pluginTreeNodeConnectorService.jsf"
+    />
+
+    <integration-point
+            id="jca_connectorServiceLink"
+            type="org.glassfish.admingui:configuration"
+            priority="750"
+            parentId="propSheetSection"
+            content="connectorServiceConfigLink.jsf"
+    />
+
     <integration-point
                 id="jcaResourceLink"
                 parentId="propSheetSection"
