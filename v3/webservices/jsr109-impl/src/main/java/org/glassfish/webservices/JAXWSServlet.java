@@ -47,7 +47,6 @@ import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.api.server.Invoker;
 import com.sun.xml.ws.api.server.SDDocumentSource;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.developer.Stateful;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapterList;
 import org.glassfish.webservices.monitoring.Endpoint;
@@ -75,7 +74,7 @@ import java.util.logging.Logger;
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
-
+import com.sun.xml.ws.api.server.InstanceResolver;
 /**
  * The JAX-WS dispatcher servlet.
  *
@@ -380,18 +379,16 @@ public class JAXWSServlet extends HttpServlet {
         wsu.configureJAXWSServiceHandlers(endpoint, givenBinding,
                 binding);
 
-        // Create the jaxws2.1 invoker and use this
-        Invoker inv;
-        if (serviceEndpointClass.getAnnotation(Stateful.class) == null) {
+        // See if it is configured with JAX-WS extension InstanceResolver annotation like
+        // @com.sun.xml.ws.developer.servlet.HttpSessionScope or @com.sun.xml.ws.developer.Stateful 
+        InstanceResolver ir = InstanceResolver.createFromInstanceResolverAnnotation(serviceEndpointClass);
+        //TODO - Implement 109 StatefulInstanceResolver ??
+        if ( ir == null) {
             //use our own InstanceResolver that does not call @PostConstuct method before
             //@Resource injections have happened.
-            inv = (new InstanceResolverImpl(serviceEndpointClass)).createInvoker();
-        } else {
-            //let JAX-WS handle the Stateful WebService case
-            //TODO - Implement 109 StatefulInstanceResolver
-            inv = null;
+            ir = new InstanceResolverImpl(serviceEndpointClass);
         }
-
+        Invoker inv = ir.createInvoker();
 
         WSEndpoint wsep = WSEndpoint.create(
                 serviceEndpointClass, // The endpoint class
