@@ -8,7 +8,7 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import javax.validation.Constraint;
-import javax.validation.Payload;
+import javax.validation.ConstraintPayload; 
 /**
  * User-defined constraint to check if an attribute is a valid Java class name
  * The class name can be a fully qualified classname inlcuding its package name
@@ -23,5 +23,5 @@ import javax.validation.Payload;
 public @interface JavaClassName {
     String message() default "must be a valid Java Class Name";
     Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+    Class<? extends ConstraintPayload>[] payload() default {}; 
 }
