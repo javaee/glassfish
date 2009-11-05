@@ -127,16 +127,16 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
                         listSecurityMapNames(sm, mp);
                     }
                 } else {
-                    // map name is not null, print the map details if verbose is true...
+                    // map name is not null, verbose is redundant when security map is specified
                     for (SecurityMap sm : securityMaps) {
                         if (sm.getName().equals(securityMap)) {
-                            if (verbose) {
+                            //if (verbose) {
                                 listSecurityMapDetails(sm, mp);
                                 break;
-                            } else {
-                                listSecurityMapNames(sm, mp);
-                                break;
-                            }
+                            //} else {
+                            //    listSecurityMapNames(sm, mp);
+                            //    break;
+                            //}
                         }
                     }
                 }
@@ -166,24 +166,48 @@ public class ListConnectorSecurityMaps extends ConnectorSecurityMap implements A
         List<String> groupList = sm.getUserGroup();
         BackendPrincipal bp = sm.getBackendPrincipal();
 
+        final ActionReport.MessagePart partSM = mp.addChild();
+        partSM.setMessage(sm.getName());
+
+        final ActionReport.MessagePart partPG = partSM.addChild();
+        if (!principalList.isEmpty()) {
+            partPG.setMessage(localStrings.getLocalString(
+                    "list.connector.security.maps.principals","\tPrincipal(s)"));
+        }
+        if (!groupList.isEmpty()) {
+            partPG.setMessage(localStrings.getLocalString(
+                    "list.connector.security.maps.groups","\tUser Group(s)"));
+        }
+
         for (String principal : principalList) {
-            final ActionReport.MessagePart part = mp.addChild();
-            part.setMessage(localStrings.getLocalString(
+            final ActionReport.MessagePart partP = partPG.addChild();
+            partP.setMessage(localStrings.getLocalString(
                     "list.connector.security.maps.eisPrincipal",
-                    "{0}: EIS principal={1}", sm.getName(), principal));
+                    "\t\t"+principal, principal));
         }
 
         for (String group : groupList) {
-            final ActionReport.MessagePart part = mp.addChild();
-            part.setMessage(localStrings.getLocalString(
+            final ActionReport.MessagePart partG = partPG.addChild();
+            partG.setMessage(localStrings.getLocalString(
                     "list.connector.security.maps.eisGroup",
-                    "{0}: EIS user group={1}", sm.getName(), group));
+                    "\t\t"+group, group));
         }
 
-        final ActionReport.MessagePart part = mp.addChild();
-            part.setMessage(localStrings.getLocalString(
+        final ActionReport.MessagePart partBP = partPG.addChild();
+            partBP.setMessage(localStrings.getLocalString(
                     "list.connector.security.maps.backendPrincipal",
-                    "{0}: backend username={1}, password={2}",
-                    sm.getName(), bp.getUserName(), bp.getPassword()));
+                    "\t"+"Backend Principal"));
+        final ActionReport.MessagePart partBPU = partBP.addChild();
+            partBPU.setMessage(localStrings.getLocalString(
+                    "list.connector.security.maps.username",
+                    "\t\t"+"User Name = "+bp.getUserName(), bp.getUserName()));
+            
+        if (bp.getPassword() != null && !bp.getPassword().isEmpty()) {
+            final ActionReport.MessagePart partBPP = partBP.addChild();
+                partBPP.setMessage(localStrings.getLocalString(
+                        "list.connector.security.maps.password",
+                        "\t\t"+"Password = "+bp.getPassword(), bp.getPassword()));
+        }
+        
     }
 }
