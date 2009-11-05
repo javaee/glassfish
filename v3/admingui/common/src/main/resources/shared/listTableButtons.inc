@@ -8,7 +8,7 @@
             <!command gf.redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
-        <!insert name="deleteButton">
+        <!insert name="listTableDeleteButton">
         <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
             onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
             { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
