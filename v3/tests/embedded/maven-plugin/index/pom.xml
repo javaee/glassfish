@@ -56,7 +56,7 @@
         <plugins>
             <plugin>
                 <groupId>org.glassfish</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
                 <configuration>
                     <serverID>embedded</serverID>
                 </configuration>
@@ -89,7 +89,7 @@
             </plugin>
             <plugin>
                 <groupId>org.glassfish</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                     <serverID>embedded</serverID>

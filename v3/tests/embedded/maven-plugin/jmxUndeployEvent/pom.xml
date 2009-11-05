@@ -73,7 +73,7 @@
             </plugin>  
             <plugin>
                 <groupId>org.glassfish</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                     <app>target/jmxUndeployEvent.war</app>
@@ -112,7 +112,7 @@
             </plugin>
             <plugin>
                 <groupId>org.glassfish</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
                 <configuration>
                     <goalPrefix>glassfish</goalPrefix>
                      <name>test</name>
