@@ -16,13 +16,12 @@ import com.sun.enterprise.deployment.Application;
 public class Deployment109ProbeProvider {
 
     @Probe(name="deploy", hidden=true)
-    public void deploy(@ProbeParam("app") Application app,
-                       @ProbeParam("endpoint") WebServiceEndpoint endpoint) {
+    public void deploy(@ProbeParam("endpoint") WebServiceEndpoint endpoint) {
         // intentionally left empty.
     }
 
     @Probe(name="undeploy", hidden=true)
-    public void undeploy(@ProbeParam("path")String path) {
+    public void undeploy(@ProbeParam("endpoint")WebServiceEndpoint endpoint) {
         // intentionally left empty.
     }
     

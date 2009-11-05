@@ -39,8 +39,8 @@ public class WebServiceStatsProvider {
             new HashMap<EJB109Endpoint, DeployedEndpointData>();
 
     // Only RI endpoints
-    private final Map<String, DeployedEndpointData> riEndpoints =
-            new HashMap<String, DeployedEndpointData>();
+    private final Map<String, List<DeployedEndpointData>> riEndpoints =
+            new HashMap<String, List<DeployedEndpointData>>();
 
     private static class Servlet109Endpoint {
         final String appName;
@@ -99,8 +99,8 @@ public class WebServiceStatsProvider {
 
     // 109 endpoint deployment
     @ProbeListener("glassfish:webservices:deployment-109:deploy")
-    public synchronized void eeDeploy(@ProbeParam("app")Application app,
-                       @ProbeParam("endpoint")WebServiceEndpoint endpoint) {
+    public synchronized void eeDeploy(@ProbeParam("endpoint")WebServiceEndpoint endpoint) {
+        Application app = endpoint.getBundleDescriptor().getApplication();
 
         // path (context path+url-pattern) --> deployed data
         String path = endpoint.getEndpointAddressPath();
@@ -132,20 +132,46 @@ public class WebServiceStatsProvider {
 
     // 109 enpoint undeployment
     @ProbeListener("glassfish:webservices:deployment-109:undeploy")
-    public synchronized void eeUndeploy(@ProbeParam("path")String path) {
+    public synchronized void eeUndeploy(@ProbeParam("endpoint")WebServiceEndpoint endpoint) {
+
+        // path (context path+url-pattern) --> deployed data
+        String path = endpoint.getEndpointAddressPath();
         endpoints.remove(path);
 
-        // TODO remove from servletEndpoints, ejbEndpoints
+        // remove from servletEndpoints, ejbEndpoints
+        Application app = endpoint.getBundleDescriptor().getApplication();
+        String appName = app.getAppName();
+        String moduleName = endpoint.getBundleDescriptor().getModuleName();
+        String endpointName = endpoint.getEndpointName();
+        if (endpoint.getWebComponentLink() != null) {
+            Servlet109Endpoint se = new Servlet109Endpoint(appName, moduleName, endpoint.getWebComponentLink());
+            servletEndpoints.remove(se);
+        } else if (endpoint.getEjbLink() != null) {
+            EJB109Endpoint ee = new EJB109Endpoint(appName, moduleName, endpoint.getEjbLink());
+            ejbEndpoints.remove(ee);
+        } else {
+            throw new RuntimeException("Both servlet-link and ejb-link are null for appName="
+                    +appName+" moduleName="+moduleName+" endpointName="+endpointName);
+        }
     }
 
     // sun-jaxws.xml deployment
     @ProbeListener("glassfish:webservices:deployment-ri:deploy")
     public synchronized void riDeploy(@ProbeParam("adapter")ServletAdapter adapter) {
-        String path = adapter.getServletContext().getContextPath()+adapter.getValidPath();
-        if (!endpoints.containsKey(path)) {
-            DeployedEndpointData data = new DeployedEndpointData(path, adapter);
+        String contextPath = adapter.getServletContext().getContextPath();
+        String path = contextPath+adapter.getValidPath();
+        DeployedEndpointData data = endpoints.get(path);
+        if (data == null) {
+            data = new DeployedEndpointData(path, adapter);
             endpoints.put(path, data);
         }
+
+        List<DeployedEndpointData> ri = riEndpoints.get(contextPath);
+        if (ri == null) {
+            ri = new ArrayList<DeployedEndpointData>();
+            riEndpoints.put(contextPath, ri);
+        }
+        ri.add(data);
     }
 
     // sun-jaxws.xml undeployment
@@ -153,7 +179,16 @@ public class WebServiceStatsProvider {
     public synchronized void riUndeploy(@ProbeParam("adapter")ServletAdapter adapter) {
         ServletContext ctxt = adapter.getServletContext();
         String name = ctxt.getContextPath()+adapter.getValidPath();
-        endpoints.remove(name);
+        DeployedEndpointData data = endpoints.remove(name);
+
+        String contextPath = adapter.getServletContext().getContextPath();
+        List<DeployedEndpointData> ri = riEndpoints.get(contextPath);
+        if (ri != null) {
+            ri.remove(data);
+            if (ri.isEmpty()) {
+                riEndpoints.remove(contextPath);
+            }
+        }
     }
 
     // admin CLI doesn't pick-up Collection<DeployedEndpointData>. Hence
@@ -183,7 +218,14 @@ public class WebServiceStatsProvider {
     // Returns all the RI endpoints for context root
     @ManagedOperation
     public synchronized List<Map<String, String>> getRiEndpoint(String contextPath) {
-        return null; // TODO
+        List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+        List<DeployedEndpointData> ri = riEndpoints.get(contextPath);
+        if (ri != null) {
+            for(DeployedEndpointData de : ri) {
+                list.add(de.getStaticAsMap());
+            }
+        }
+        return list;
     }
 
     @ManagedData

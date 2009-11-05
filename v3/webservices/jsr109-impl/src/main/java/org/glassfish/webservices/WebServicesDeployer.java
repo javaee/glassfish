@@ -716,7 +716,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                probe.undeploy(endpoint.getEndpointAddressPath());
+                probe.undeploy(endpoint);
                 if (notifier != null) {
                     notifier.notifyUndeployed(endpoint);
                 }
@@ -744,7 +744,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                probe.deploy(app, endpoint);
+                probe.deploy(endpoint);
             }
         }
 
