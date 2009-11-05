@@ -531,4 +531,26 @@ public class PluginHandlers {
 	// Set the content to output...
 	handlerCtx.setOutputValue("pluginPage", urlContents);
     }
+
+    @Handler(id="getPluginIdFromViewId",
+        input={@HandlerInput(name="viewId",type=String.class,required=true)},
+        output={@HandlerOutput(name="pluginId",type=String.class)}
+    )
+    public static void getPluginIdFromViewId(HandlerContext handlerCtx) {
+        String viewId = (String)handlerCtx.getInputValue("viewId");
+        if (viewId == null) {
+            return;
+        }
+        ConsolePluginService cps = getPluginService(handlerCtx.getFacesContext());
+        int next = viewId.indexOf("/", 1);
+        String pluginId = viewId.substring(viewId.startsWith("/") ? 1 : 0, next);
+        String resource = viewId.substring(next);
+
+        ClassLoader cl = cps.getModuleClassLoader(pluginId);
+        URL url = null;
+        if (cl != null) {
+            url = cl.getResource(resource);
+        }
+        handlerCtx.setOutputValue("pluginId", (url != null) ? pluginId : "");
+    }
 }

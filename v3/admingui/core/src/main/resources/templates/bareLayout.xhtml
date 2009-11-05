@@ -5,6 +5,7 @@
     if(!$session{supportCluster}) {
 	setPageSessionAttribute(key="configName" value="server-config");
     }
+    getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
 </ui:event>
 
 // Need to write the title so it is updated in the browser.
@@ -15,6 +16,8 @@
     if (index > -1) {
         window.location = loc.substring(0, index);
     }
+    admingui.help.pluginId = '#{pluginId}';
+    admingui.help.locale = '#{view.locale.language}';
 </script>
 </f:verbatim>
 "<title>#{guiTitle}</title>

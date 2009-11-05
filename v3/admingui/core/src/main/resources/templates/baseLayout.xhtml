@@ -2,6 +2,7 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
     getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
+    getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
 </ui:event>
 
 <sun:page>
@@ -60,9 +61,9 @@
 		.yui-skin-sam .yui-layout .yui-layout-unit-center div.yui-layout-bd {background-color: #FFF;}
 		.yui-layout-unit-top .yui-layout-bd { background-color: #5b87a4; }
 		.yui-skin-sam .yui-layout .yui-layout-unit-top div.yui-layout-bd { background-color: #5b87a4; }
-		.yui-layout-hd h2 {background: #7595AB url(/theme/com/sun/webui/jsf/suntheme/images/masthead/masthead_button.gif) repeat-x scroll center bottom;}
+		.yui-layout-hd h2 {background-image: url(#{request.contextPath}/theme/com/sun/webui/jsf/suntheme/images/masthead/masthead_button.gif);}
 		.yui-skin-sam .yui-layout { background-color: #ffffff;}
-
+                .yui-skin-sam .yui-layout .yui-layout-clip { background-color:#FFFFFF;}
 
 		.tagDiv {padding: 10px;}
 		.tagDiv .tagList {padding: 10px;}
@@ -87,7 +88,9 @@
                      left: -999em;
                      width: 990em;
                 }
-	    </style>
+
+
+            </style>
 	    </f:verbatim>
 	</sun:head>
 
@@ -239,7 +242,10 @@
 */
 
 <f:verbatim>
-	var layout = new YAHOO.widget.Layout({
+        admingui.help.pluginId = '#{pluginId}';
+        admingui.help.locale = '#{view.locale.language}';
+
+        var layout = new YAHOO.widget.Layout({
 	   units: [
 	       { position : 'top', body : 'gfLayoutTop', height : 115, scroll : false, gutter1 : '5px', resize : false, collapse : false},
 	       { position : 'left', body : 'gfLayoutLeft', width : 250, scroll : true, gutter1 : '5px', resize : true, header : 'Tree', collapse : true},

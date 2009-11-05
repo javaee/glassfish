@@ -51,6 +51,7 @@
                     popup.style.visibility='visible';
                 }
             }
+            admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
         </f:verbatim>
     </sun:script>
     "<div style="min-height: 500px; overflow: auto;">

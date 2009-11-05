@@ -838,6 +838,21 @@ admingui.nav = {
      *	This function selects a treeNode matching the given URL.
      */
     selectTreeNodeWithURL: function(url) {
+//        var strip = function(needle, haystack) {
+//            if (typeof haystack == 'undefined') {
+//                return haystack;
+//            }
+//            if (haystack.indexOf(needle) > -1) {
+//                haystack = haystack.replace(needle, "");
+//            }
+//            return haystack;
+//        }
+        var location = window.location;
+        var base = location.protocol + "//" + location.host;
+        url = url.replace("?bare=true", "");
+        url = url.replace("&bare=true", "");
+        url = url.replace(base, "");
+        
         var tree = document.getElementById(admingui.nav.TREE_ID);
         var matches = admingui.util.findNodes(tree, admingui.nav.matchURL, url);
         if (matches) {
@@ -946,6 +961,9 @@ admingui.nav = {
 };
 
 admingui.help = {
+    pluginId : null,
+    locale : null,
+
     launchHelp: function(url) {
 	var helpLink = "/common/help/help.jsf";
 	var helpKeys = admingui.util.findNodes(document,
@@ -959,7 +977,9 @@ admingui.help = {
 	    },
 	    "helpKey");
 	if (!(helpKeys === null)) {
-	    helpLink = helpLink + "?contextRef=" + helpKeys[0].value;
+            var prefix = "/resource/" + admingui.help.pluginId + "/" + admingui.help.locale + "/help/";
+
+	    helpLink = helpLink + "?contextRef=" + prefix + helpKeys[0].value;
 	}
 	admingui.help.openHelpWindow(helpLink);
     },
@@ -1870,7 +1890,7 @@ admingui.ajax = {
 	    req.onreadystatechange =
 		function() {
 		    if (req.readyState == 4) {
-			callback(req, url);
+			callback(req, targetId, url);
 			/*
 			// Make a tempoary elemnt to contain the help content
 			var tmpDiv = document.createElement("div");
@@ -1967,13 +1987,13 @@ admingui.ajax = {
         contentNode.innerHTML = xmlReq.responseText;
 
         var contextObj = {};
-	admingui.ajax.processElement(contextObj, contentNode, true);
+        admingui.ajax.processElement(contextObj, contentNode, true);
         admingui.ajax.processScripts(contextObj);
 
 	// Restore cursor
-	document.body.style.cursor = 'auto';
+        document.body.style.cursor = 'auto';
 
-	// Tree select code??  FIXME: broken...
+        admingui.nav.selectTreeNodeWithURL(url);
     },
 
     /**
@@ -2240,7 +2260,7 @@ admingui.ajax = {
 		    });
 	    }
 	} else {
-	    alert('JSF2+ Ajax Missing!');
+	    alert('JSF 2 Ajax Missing!');
 	}
     },
 
@@ -2342,30 +2362,30 @@ admingui.woodstock = {
     }
 }
 
-    var globalEvalNextScript = function(scriptQueue) {
-	if (typeof(scriptQueue) === "undefined") {
-	    // Nothing to do...
-	    return;
-	}
-	var node = scriptQueue.shift();
-	if (typeof(node) == 'undefined') {
-	    // Nothing to do...
-	    return;
-	}
-	if (node.src === "") {
-	    // use text...
-	    globalEval(node.text);
-	    globalEvalNextScript(scriptQueue);
-	} else {
-	    // Get via Ajax
-	    admingui.ajax.getResource(node.src, function(result) {globalEval(result);globalEvalNextScript(scriptQueue);} );
-	    // This gets a relative URL vs. a full URL with http://... needed
-	    // when we properly serve resources w/ rlubke's recent fix that
-	    // will be integrated soon.  We need to handle the response
-	    // differently also.
-	    //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
-	}
+var globalEvalNextScript = function(scriptQueue) {
+    if (typeof(scriptQueue) === "undefined") {
+        // Nothing to do...
+        return;
     }
+    var node = scriptQueue.shift();
+    if (typeof(node) == 'undefined') {
+        // Nothing to do...
+        return;
+    }
+    if (node.src === "") {
+        // use text...
+        globalEval(node.text);
+        globalEvalNextScript(scriptQueue);
+    } else {
+        // Get via Ajax
+        admingui.ajax.getResource(node.src, function(result) {globalEval(result);globalEvalNextScript(scriptQueue);} );
+        // This gets a relative URL vs. a full URL with http://... needed
+        // when we properly serve resources w/ rlubke's recent fix that
+        // will be integrated soon.  We need to handle the response
+        // differently also.
+        //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
+    }
+}
 
 var globalEval = function(src) {
     if (window.execScript) {

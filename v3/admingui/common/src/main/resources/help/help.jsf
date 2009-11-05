@@ -50,15 +50,13 @@
 <f:verbatim>
 <script type="text/javascript">
 function loadHelpPageFromContextRef(contextRef, targetNode) {
-	if (typeof contextRef == 'undefined' || contextRef === "") {
-	    contextRef = "docinfo.html";
-	}
-        // Derive the prefix somehow
-        var prefix = "/resource/common/en/help/";
-        contextRef = prefix + contextRef;
-	admingui.help.showHelpPage(contextRef, targetNode);
-        admingui.help.nav.selectTreeNodeWithURL(contextRef);
-        
+    if (typeof contextRef == 'undefined' || contextRef === "") {
+        contextRef = "docinfo.html";
+    }
+    // Derive the prefix somehow
+    //contextRef = prefix + contextRef;
+    admingui.help.showHelpPage(contextRef, targetNode);
+    admingui.help.nav.selectTreeNodeWithURL(contextRef);
 }
 
 admingui.tab = {
