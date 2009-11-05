@@ -37,10 +37,7 @@ package org.glassfish.api.embedded;
 
 import org.glassfish.api.deployment.archive.ReadableArchiveAdapter;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.FileInputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -105,6 +102,9 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
          * @return itself
          */
         public Builder resources(File resources) {
+            if (!resources.exists()) {
+                throw new IllegalArgumentException(resources.getAbsolutePath() + " not found");
+            }
             this.resources = resources;
             return this;
         }
@@ -120,6 +120,9 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
          * @return itself
          */
         public Builder addMetadata(File metadata) {
+            if (!metadata.exists()) {
+                throw new IllegalArgumentException(metadata.getAbsolutePath() + " not found");
+            }
             return addMetadata(metadata.getName(), metadata);
         }
 
@@ -136,6 +139,9 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
          * @return itself
          */
         public Builder addMetadata(String name, File metadata) {
+            if (!metadata.exists()) {
+                throw new IllegalArgumentException(metadata.getAbsolutePath() + " not found");
+            }            
             this.metadata.put(name, metadata);
             return this;
         }
