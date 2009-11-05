@@ -39,6 +39,7 @@ package com.sun.enterprise.web;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -123,6 +124,7 @@ public class AdHocContextValve implements GlassFishValve {
                             msg,
                             new Object[] { hreq.getServletPath() });
                 response.setDetailMessage(msg);
+                LOGGER.log(Level.FINE, msg, t);
                 return END_PIPELINE;
             } finally {
                 if (adHocServlet != null) {
