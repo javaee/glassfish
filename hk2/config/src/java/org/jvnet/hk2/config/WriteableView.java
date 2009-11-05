@@ -43,12 +43,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.util.*;
 
+import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
 import javax.validation.metadata.BeanDescriptor;
+import javax.validation.metadata.ConstraintDescriptor;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
@@ -88,12 +90,21 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+        if (method.getName().equals("hashCode"))
+            return super.hashCode();
+        
+        if (method.getName().equals("equals"))
+            return super.equals(args[0]);
+
         if(method.getAnnotation(DuckTyped.class)!=null) {
             return bean.invokeDuckMethod(method,proxy,args);
-        }        
+        }
+        
         ConfigModel.Property property = bean.model.toProperty(method);
+
         if(property==null)
-            throw new IllegalArgumentException("No corresponding property found for method: "+method);
+             throw new IllegalArgumentException(
+                "No corresponding property found for method: "+method);
 
         if(args==null || args.length==0) {
             // getter, maybe one of our changed properties
@@ -256,7 +267,27 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
      *          one passed during the join(Transaction t) call.
      * @return true if the trsaction commiting would be successful
      */
-    public synchronized boolean canCommit(Transaction t) {
+    public synchronized boolean canCommit(Transaction t) throws TransactionFailure {
+        
+        Set constraintViolations =
+            beanValidator.validate(this.getProxy(this.getProxyType()));
+
+        if (constraintViolations != null) {
+            Iterator it = constraintViolations.iterator();
+            boolean violated = false;
+            String msg = "Constraints for this bean " +
+                   "violated. \n Message = ";
+            while (it.hasNext()) {
+                violated = true;
+                ConstraintViolation cv = (ConstraintViolation) it.next();
+                msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
+            }
+            if (violated) {
+                bean.getLock().unlock();
+                throw new TransactionFailure(msg);
+            }
+        }
+        
         return currentTx==t;
     }
 
@@ -597,13 +628,9 @@ private class ProtectedList extends AbstractList {
             validateDataType(al, value.toString());
         }
 
-        // Next check for other non-dataType annotations expressed as
-        // BV annotations
-        BeanDescriptor bd =
-            beanValidator.getConstraintsForClass(bean.getProxyType());
-
-        Set constraintViolations = beanValidator.validateValue(
-            bean.getProxyType(), toCamelCase(property.xmlName()), value);
+        Set constraintViolations =
+            beanValidator.validateValue(
+                bean.getProxyType(), toCamelCase(property.xmlName()), value);
 
         if (constraintViolations != null) {
             Iterator it = constraintViolations.iterator();
@@ -616,10 +643,9 @@ private class ProtectedList extends AbstractList {
                 msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
             }
             if (violated) {
-                System.out.println(msg); // todo: needs to be removed
                 throw new ValidationException(msg);
             }
-        }               
+        }
     }
 
     private void validateDataType(ConfigModel.AttributeLeaf al, String value)
