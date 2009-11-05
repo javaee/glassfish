@@ -36,7 +36,7 @@
 
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-	setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="#{pageSession.tableTitle}" >
 <!define name="content">
@@ -51,9 +51,12 @@
                 attrName="AuthRealmName" value="#{pageSession.authRealm}" )
     if ("#{pageSession.Name}=#{pageSession.authRealm}"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageAdminUsers.TableTitle}")
+            setPageSessionAttribute(key="helpKey", value="$resource{help_common.manageAdminUsers}" )
+            
         }
         if ("!(#{pageSession.Name}=#{pageSession.authRealm})"){
             setPageSessionAttribute(key="tableTitle", value="$resource{i18nc.manageUsers.TableTitle}")
+            setPageSessionAttribute(key="helpKey", value="$resource{help_common.manageUsers}" )
         }
     />
     </event>
@@ -140,7 +143,7 @@
                     </sun:tableColumn>
                 </sun:tableRowGroup>
                 </sun:table>
-                <sun:hidden id="helpKey" value="$resource{help_common.manageUsers}" />
+                <sun:hidden id="helpKey" value="#{pageSession.helpKey}" />
             </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 
