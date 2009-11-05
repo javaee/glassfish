@@ -122,7 +122,7 @@ public class DeploymentImpl implements Deployment {
         List<URL> wUrls = new ArrayList<URL>();
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
         wClasses.add(beanClass);
-        BeanDeploymentArchive newBda = new BeanDeploymentArchiveImpl(beanClass.getName(), wbClasses, wbUrls, ejbs);
+        BeanDeploymentArchive newBda = new BeanDeploymentArchiveImpl(beanClass.getName(), wClasses, wUrls, ejbs);
         lIter = beanDeploymentArchives.listIterator();
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
