@@ -54,7 +54,7 @@
         </sun:button>
 
         <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+                    onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
                 mapPut(map="#{pageSession.valueMap}" key="Ssl3TlsCiphers" value="#{requestScope.ciphers}")

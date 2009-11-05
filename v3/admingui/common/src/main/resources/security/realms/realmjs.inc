@@ -64,7 +64,8 @@
     }
  }
 
- function checkClassname(){ 
+ function checkClassname(){
+alert('in checkClassname');
     var opt = getSelectedValueFromForm(document.forms['form1'], 'classnameOption');
     if (opt == 'predefine'){ 
         type = getSelectElement('#{classnameDropdownId}').value; 

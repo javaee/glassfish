@@ -36,8 +36,8 @@
 
 
 <sun:panelGroup id="topButtons">
-     <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" 
-        onClick="return checkClassname()" >
+     <sun:button id="saveButton" rendered="#{edit}" text="XXXX$resource{i18n.button.Save}"
+        onClick="if (checkClassname()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
@@ -54,7 +54,7 @@
     </sun:button>
 
     <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"  
-        onClick="return checkClassname()" >
+        onClick="if (checkClassname()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
