@@ -86,7 +86,6 @@
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerEditPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerEditPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
                 </sun:title>
-                    "<br><br>
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
 
