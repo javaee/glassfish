@@ -38,7 +38,7 @@
 #Text Link: # b9d2e9
 #Background: # 5382a1 
 
-<sun:markup rendered="true" foo="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; margin: auto;  display: none; font-family:Arial, Helvetica, sans-serif;">
+<sun:markup rendered="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; margin: auto;  display: none; font-family:Arial, Helvetica, sans-serif;">
     <!beforeCreate
         setAttribute(key="contextRoot" value="#{request.contextPath}");
     />
