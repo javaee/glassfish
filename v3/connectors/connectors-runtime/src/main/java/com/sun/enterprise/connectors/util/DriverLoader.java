@@ -12,6 +12,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -46,6 +47,8 @@ public class DriverLoader implements ConnectorConstants {
     private static final String SERVICES_DRIVER_IMPL_NAME = "META-INF/services/java.sql.Driver";
     private static final String DATABASE_VENDOR_DERBY = "DERBY";
     private static final String DATABASE_VENDOR_JAVADB = "JAVADB";
+    private static final String DATABASE_VENDOR_MSSQLSERVER = "MICROSOFTSQLSERVER";
+    private static final String DATABASE_VENDOR_SQLSERVER = "SQLSERVER";
     private static final String DBVENDOR_MAPPINGS_ROOT = 
             System.getProperty(ConnectorConstants.INSTALL_ROOT) + File.separator + 
             "lib" + File.separator + "install" + File.separator + "databases" +
@@ -88,7 +91,7 @@ public class DriverLoader implements ConnectorConstants {
             logger.fine("File not found : " + mappingFile.getAbsolutePath());
         }
         return fileProperties.getProperty(
-                dbVendor.toUpperCase().trim().replaceAll(" ", ""));
+                dbVendor.toUpperCase());
     }
     
     /**
@@ -101,13 +104,14 @@ public class DriverLoader implements ConnectorConstants {
         //Map of all jar files with the set of driver implementations. every file
         // that is a jdbc jar will have a set of driver impls.
         Set<String> implClassNames = new TreeSet<String>();
+        Set<String> allImplClassNames = new TreeSet<String>();
         
         //Get from the pre-populated list. This is done for common dbvendor names
         String implClass = getImplClassNameFromMapping(dbVendor, resType); 
         
         if(implClass != null) {
-            implClassNames.add(implClass);
-            return implClassNames;
+            allImplClassNames.add(implClass);
+            return allImplClassNames;
         }
         
         List<File> jarFileLocations = getJdbcDriverLocations();
@@ -125,19 +129,28 @@ public class DriverLoader implements ConnectorConstants {
         for (File file : allJars) {
             if (file.isFile()) {
                 //Introspect jar and get classnames.
-                if(dbVendor!= null && dbVendor.equalsIgnoreCase(DATABASE_VENDOR_JAVADB)) {
-                    implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_DERBY);
-                } else {
-                    implClassNames = introspectAndLoadJar(file, resType, dbVendor);
+                if(dbVendor != null) {
+                    //This is to remove spaces from the database vendor names 
+                    dbVendor = dbVendor.trim().replaceAll(" ", "");
+                    if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_JAVADB)) {
+                        implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_DERBY);
+                    } else if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_MSSQLSERVER)) {
+                        implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_SQLSERVER);
+                    } else {
+                        implClassNames = introspectAndLoadJar(file, resType, dbVendor);
+                    }
                 }
                 //Found the impl classnames for the particular dbVendor. 
                 //Hence no need to search in other jar files.
                 if(!implClassNames.isEmpty()) {
-                    break;
+                    for(String className : implClassNames) {
+                        allImplClassNames.add(className);
+                    }
                 }
             }
         }        
-        return implClassNames;
+
+        return allImplClassNames;
     }
 
     private Set<String> getImplClassesByIteration(File f, String resType, String dbVendor) {
@@ -162,7 +175,7 @@ public class DriverLoader implements ConnectorConstants {
                             if (implClass != null) {
                                 if (isLoaded(implClass, resType)) {
                                     //Add to the implClassNames only if vendor name matches.
-                                    if(isVendorSpecific(f, dbVendor)) {
+                                    if(isVendorSpecific(f, dbVendor, implClass)) {
                                         implClassNames.add(implClass);
                                     }
                                 }
@@ -174,18 +187,17 @@ public class DriverLoader implements ConnectorConstants {
                     if (entry.endsWith(".class")) {
                         //Read from metainf file for all jdbc40 drivers and resType
                         //java.sql.Driver.TODO : this should go outside .class check.
-                        //If no implClass has been identified so far
-                        if (implClassNames.isEmpty()) {
-                            //might have Driver/DataSource strings in it.
-                           if(entry.indexOf("DataSource") != -1 || entry.indexOf("Driver") != -1) {
-                                implClass = getClassName(entry);
-                                if(implClass != null) {
-                                    if (isLoaded(implClass, resType)) {
-                                        if (isVendorSpecific(f, dbVendor)) {
-                                            implClassNames.add(implClass);
-                                        }
+                        //TODO : Some classnames might not have these strings
+                        //in their classname. Logic should be flexible in such cases.
+                        if (entry.toUpperCase().indexOf("DATASOURCE") != -1 || 
+                                entry.toUpperCase().indexOf("DRIVER") != -1) {
+                            implClass = getClassName(entry);
+                            if (implClass != null) {
+                                if (isLoaded(implClass, resType)) {
+                                    if (isVendorSpecific(f, dbVendor, implClass)) {
+                                        implClassNames.add(implClass);
                                     }
-                                }                                
+                                }
                             }
                         }
                     }
@@ -238,6 +250,11 @@ public class DriverLoader implements ConnectorConstants {
        
         return getImplClassesByIteration(f, resType, dbVendor);
                 
+    }
+
+    private boolean isNotAbstract(Class cls) {
+        int modifier = cls.getModifiers();
+        return !Modifier.isAbstract(modifier);
     }
 
     /**
@@ -313,19 +330,19 @@ public class DriverLoader implements ConnectorConstants {
         if (cls != null) {
             if("javax.sql.DataSource".equals(resType)) {
                 if(javax.sql.DataSource.class.isAssignableFrom(cls)) {
-                    isResType = true;
+                    isResType = isNotAbstract(cls);
                 }
             } else if("javax.sql.ConnectionPoolDataSource".equals(resType)) {
                 if(javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(cls)) {
-                    isResType = true;
+                    isResType = isNotAbstract(cls);
                 }
             } else if("javax.sql.XADataSource".equals(resType)) {
                 if(javax.sql.XADataSource.class.isAssignableFrom(cls)) {
-                    isResType = true;
+                    isResType = isNotAbstract(cls);
                 }
             } else if("java.sql.Driver".equals(resType)) {
                 if(java.sql.Driver.class.isAssignableFrom(cls)) {
-                    isResType = true;
+                    isResType = isNotAbstract(cls);
                 }
             }
         }
@@ -377,40 +394,22 @@ public class DriverLoader implements ConnectorConstants {
         return classname;
     }
 
-    private boolean isVendorSpecific(File f, String dbVendor) {
+    private boolean isVendorSpecific(File f, String dbVendor, String className) {
         //File could be a jdbc jar file or a normal jar file
         boolean isVendorSpecific = false;
-        String vendor = null;
-        JarFile jarFile = null;
-        try {
-            jarFile = new JarFile(f);
-            Manifest manifest = jarFile.getManifest();
-            Attributes mainAttributes = manifest.getMainAttributes();
-            vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR.toString());
-            if (vendor == null) {
-                vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR_ID.toString());
+        String vendor = getVendorFromManifest(f);
+        
+        if (vendor == null) {
+            //might have to do this part by going through the class names or some other method.
+            //dbVendor might be used in this portion
+            if (isVendorSpecific(dbVendor, className)) {
+                isVendorSpecific = true;
             }
-            if(vendor == null) {
-                //might have to do this part by going through the class names or some other method.
-                //dbVendor might be used in this portion
-                if(isVendorSpecificByIteration(dbVendor, f)){
-                    isVendorSpecific = true;
-                }
-            } else {
-                if(vendor.equalsIgnoreCase(dbVendor) || vendor.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1) {
-                    isVendorSpecific = true;
-                }
-            }
-        } catch (IOException ex) {
-            logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
-        } finally {
-            if (jarFile != null) {
-                try {
-                    jarFile.close();
-                } catch (IOException ex) {
-                    logger.log(Level.FINE, "Exception while closing JarFile '"
-                            + jarFile.getName() + "' :", ex);
-                }
+        } else {
+            //Got from Manifest file.
+            if (vendor.equalsIgnoreCase(dbVendor) || 
+                    vendor.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1) {
+                isVendorSpecific = true;
             }
         }
         return isVendorSpecific;
@@ -442,71 +441,32 @@ public class DriverLoader implements ConnectorConstants {
     }
 
     /**
-     * Utility method that checks if a jar file is vendor specific by iteration.
+     * Utility method that checks if a classname is vendor specific.
      * This method is used for jar files that do not have a manifest file to 
      * look up the classname.
      * @param dbVendor
      * @param f
      * @return true if f is vendor specific.
      */
-    private boolean isVendorSpecificByIteration(String dbVendor, File f) {
-        JarFile jarFile = null;
-        boolean isVendorSpecific = false;
-        try {
-            jarFile = new JarFile(f);
-            Enumeration e = jarFile.entries();
-            for (; e.hasMoreElements();) {
-                ZipEntry entry = (ZipEntry) e.nextElement();
-                if (entry != null) {
-                    String classname = entry.getName();
-                    if (classname.endsWith(".class")) {        
-                        //classname usually contains the dbVendor string
-                        if(classname.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1) {
-                            isVendorSpecific = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (IOException ex) {
-            logger.log(Level.WARNING, "Exception while introspecting jdbc jar file " +
-                    "for driver/datasource classname introspection : ", ex);
-        } finally {
-            if (jarFile != null) {
-                try {
-                    jarFile.close();
-                } catch (IOException ex) {
-                    logger.log(Level.FINE, "Exception while closing JarFile '"
-                            + jarFile.getName() + "' :", ex);
-                }
-            }
-        }
-
-        return isVendorSpecific;
+    private boolean isVendorSpecific(String dbVendor, String className) {
+        return className.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1;
     }
 
     /**
-     * Find if the specific file is a db vendor specific jar file. 
-     * Methods to find : 1. read manifest entries for implementation vendor
-     * 2. if manifest not found, then iterate thru the jar file for classes and
-     * find if the classnames have the dbvendor name in them. This is just an 
-     * approximation to find if the jar file would match the dbvendor chosen.
+     * Get a vendor name from a Manifest entry in the file.
      * @param f
-     * @param dbVendor
-     * @return
+     * @return null if no manifest entry found.
      */
-    private boolean isVendorSpecificByManifest(File f, String dbVendor) {
-        boolean isVendorSpecific = false;
+    private String getVendorFromManifest(File f) {
+        String vendor = null;
         JarFile jarFile = null;
         try {
             jarFile = new JarFile(f);
             Manifest manifest = jarFile.getManifest();
             Attributes mainAttributes = manifest.getMainAttributes();
-            String implVendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION.toString());
-            if(implVendor != null) {
-                if(implVendor.toUpperCase().indexOf(dbVendor.toUpperCase()) != -1) {
-                    isVendorSpecific = true;
-                }
+            vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR.toString());
+            if (vendor == null) {
+                vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR_ID.toString());
             }
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
@@ -520,7 +480,6 @@ public class DriverLoader implements ConnectorConstants {
                 }
             }
         }
-
-        return isVendorSpecific;
+        return vendor;
     }
 }
