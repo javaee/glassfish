@@ -213,7 +213,7 @@ public class V3AMX {
                 if (skipAttr.contains(key))
                     continue;
                 Object val = attrMap.get(key);
-                if ((val != null) && (!(val instanceof String)) && (!(val instanceof Boolean))){
+                if ((val != null) && (!(val instanceof String)) && (!(val instanceof Boolean)) && (!(val instanceof String[]))){
                     //skip any element.
                     continue;
                 }
@@ -227,8 +227,12 @@ public class V3AMX {
                  */
                 if ((val != null) && (val instanceof String) && (val.equals(""))){
                     val=null;
+                }else
+                // need to support String[] case,eg connector security map UserGroup/Principals
+                if ((val != null) && (val instanceof Boolean)){
+                    val = val.toString();
                 }
-                Attribute attr = new Attribute(key, (val==null)?  (String)val  : val.toString());
+                Attribute attr = new Attribute(key, (val==null)?  (String)val  : val);
                 attrList.add(attr);
             }
             setAttributes(objectName, attrList);
