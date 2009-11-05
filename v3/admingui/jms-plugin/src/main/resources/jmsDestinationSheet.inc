@@ -20,7 +20,7 @@
         </sun:property>
 
         <sun:property id="resTypeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
-            <sun:dropDown id="resType" selected="#{pageSession.valueMap['ResType']}" labels={"" "javax.jms.Topic"  "javax.jms.Queue"}  required="#{true}"/>
+            <sun:dropDown id="resType" selected="#{pageSession.valueMap['ResType']}" labels={"javax.jms.Topic"  "javax.jms.Queue"}  required="#{true}"/>
         </sun:property>
 
         <sun:property id="descProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}">

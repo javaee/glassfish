@@ -35,7 +35,7 @@
 -->
 
 <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-        onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
     <!command
         if(#{pageSession.hasPropertySheet}){
             saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
@@ -57,7 +57,7 @@
     />
 </sun:button>
 <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-        onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >s
+        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
     <!command
         // Create connector-resource
         // Update the connector-resource with the Name specified on the connector-connection-pool

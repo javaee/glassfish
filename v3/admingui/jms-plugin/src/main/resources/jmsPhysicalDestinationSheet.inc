@@ -1,13 +1,15 @@
 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
     <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
-     <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+     <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}"
+            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             createPhysicalDestination(name="#{name}", type="#{type}", attributes="#{pageSession.valueMap}");
             gf.redirect(page="#{pageSession.parentPage}");
         />
     </sun:button>
-     <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Save}" onClick="return guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'); " >
+     <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
             updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
             gf.redirect(page="#{pageSession.parentPage}");
@@ -33,10 +35,10 @@
         <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.type}">
             <h:outputText id="TypeStatic" rendered="#{edit}" value="#{pageSession.destType}"/>
             <h:inputHidden rendered="#{edit}" value="#{pageSession.destType}" />
-            <sun:dropDown id="type" rendered="#{!edit}" labels={" " "javax.jms.Topic" "javax.jms.Queue"} values={" " "t" "q"} selected="#{type}" styleClass="required" required="#{true}"/>
+            <sun:dropDown id="type" rendered="#{!edit}" labels={"javax.jms.Topic" "javax.jms.Queue"} values={"t" "q"} selected="#{type}" />
         </sun:property>
 
-        <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumMsgs}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumMsgsHelp}" >
+        <sun:property labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumMsgs}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumMsgsHelp}" >
             <sun:textField id="maxNumMsgs" text="#{pageSession.valueMap['MaxNumMsgs']}" columns="$int{6}"/>
         </sun:property>
         <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxBytesPerMsg}" helpText="$resource{i18njms.jmsPhysDestinations.MaxBytesPerMsgHelp}" >
@@ -59,10 +61,10 @@
         <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.MaxNumBackupConsumers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumBackupConsumersHelp}" >
             <sun:textField id="maxNumBackupConsumers" text="#{pageSession.valueMap['MaxNumBackupConsumers']}" columns="$int{6}"/>
         </sun:property>
-        <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimit}" helpText="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimitHelp}" >
+        <sun:property labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimit}" helpText="$resource{i18njms.jmsPhysDestinations.ConsumerFlowLimitHelp}" >
             <sun:textField id="consumerFlowLimit" text="#{pageSession.valueMap['ConsumerFlowLimit']}" columns="$int{6}"/>
         </sun:property>
-        <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferred}" helpText="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferredHelp}" >
+        <sun:property labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" rendered="#{pageSesssion.destType != 'topic'" label="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferred}" helpText="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferredHelp}" >
             <sun:dropDown id="localDeliveryPreferred" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['LocalDeliveryPreferred']}" selectedValue="true"/>
         </sun:property>
         <sun:property labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.UseDMQ}" helpText="$resource{i18njms.jmsPhysDestinations.UseDMQHelp}" >

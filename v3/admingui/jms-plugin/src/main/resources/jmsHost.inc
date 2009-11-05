@@ -44,12 +44,7 @@
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-             onClick=" if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
-                    if  ( checkPSW() ){
-                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
-                    }
-                  }
-                  return false; " >
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkPSW()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}");
                     prepareSuccessfulMsg();
@@ -58,13 +53,7 @@
             </sun:button>
 
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}" 
-                        onClick=" if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
-                    if  ( checkPSW() ){
-                        return submitAndDisable(this, '$resource{i18n.button.Processing}');
-                    }
-                  }
-                  return false; " >
-
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkPSW()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}");

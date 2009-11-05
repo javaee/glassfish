@@ -58,7 +58,7 @@
         <sun:title title="#{pageTitle}">
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
-                    <sun:button id="topOK" text="$resource{i18n.button.OK}">
+                    <sun:button id="topOK" text="$resource{i18n.button.Back}">
                         <!command
                             gf.redirect(page="#{pageSession.parentPage}");
                         />

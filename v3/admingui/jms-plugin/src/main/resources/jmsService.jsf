@@ -76,7 +76,8 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njms.jms.Title}" helpText="$resource{i18njms.jms.PageHelp}">
 #include "/common/shared/editPageButtons.inc"
-                    <sun:button id="pingButton" text="$resource{i18njms.jms.Ping}" >
+                    <sun:button id="pingButton" text="$resource{i18njms.jms.Ping}"
+                        onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
                         <!command
                             prepareSuccessfulMsg();
                             createMap(result="#{attrs}");

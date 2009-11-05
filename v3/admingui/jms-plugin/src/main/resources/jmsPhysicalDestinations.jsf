@@ -66,10 +66,7 @@
                     </sun:button>
 
                     <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
-                        onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmDeletePhysicalDestinations}') )
-                        { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-                        else {return false;}"
-                    >
+                            onClick="if (getConfirm(this,'$resource{i18n.msg.JS.confirmDeletePhysicalDestinations}') ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                     <!command
                         getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
@@ -78,7 +75,8 @@
                         gf.redirect(page="#{pageSession.selfPage}");
                     />
                     </sun:button>
-                    <sun:button id="flushButton" text="$resource{i18n.button.Flush}" primary="#{false}" >
+                    <sun:button id="flushButton" text="$resource{i18n.button.Flush}" primary="#{false}"
+                        onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
                         <!command
                             getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
