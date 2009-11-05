@@ -36,6 +36,8 @@
 
 package org.glassfish.webservices.transport.tcp;
 
+import com.sun.enterprise.web.WebComponentInvocation;
+import com.sun.enterprise.web.WebModule;
 import com.sun.istack.NotNull;
 import com.sun.xml.ws.api.server.Adapter;
 import com.sun.xml.ws.transport.tcp.resources.MessagesMessages;
@@ -46,6 +48,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.webservices.AdapterInvocationInfo;
 import org.glassfish.webservices.EjbRuntimeEndpointInfo;
 import org.glassfish.webservices.JAXWSAdapterRegistry;
 
@@ -69,6 +73,7 @@ public final class WSTCPAdapterRegistryImpl implements WSTCPAdapterRegistry {
         return instance;
     }
 
+    @Override
     public TCPAdapter getTarget(@NotNull final WSTCPURI requestURI) {
         // path should have format like "/context-root/url-pattern", where context-root and url-pattern could be /xxxx/yyyy/zzzz
 
@@ -117,25 +122,30 @@ public final class WSTCPAdapterRegistryImpl implements WSTCPAdapterRegistry {
 
     private TCPAdapter createWSAdapter(@NotNull final String wsPath,
             @NotNull final WSEndpointDescriptor wsEndpointDescriptor) throws Exception {
-        Adapter adapter;
         if (wsEndpointDescriptor.isEJB()) {
-            final EjbRuntimeEndpointInfo ejbEndPtInfo = (EjbRuntimeEndpointInfo) AppServRegistry.getWSEjbEndpointRegistry().
+            final EjbRuntimeEndpointInfo ejbEndPtInfo = (EjbRuntimeEndpointInfo) V3Module.getWSEjbEndpointRegistry().
                     getEjbWebServiceEndpoint(wsEndpointDescriptor.getURI(), "POST", null);
-            adapter = (Adapter) ejbEndPtInfo.prepareInvocation(true);
+            final AdapterInvocationInfo adapterInfo =
+                    (AdapterInvocationInfo) ejbEndPtInfo.prepareInvocation(true);
+
+            return new Ejb109Adapter(wsEndpointDescriptor.getWSServiceName().toString(),
+                    wsPath, adapterInfo.getAdapter().getEndpoint(),
+                    new ServletFakeArtifactSet(wsEndpointDescriptor.getRequestURL(), wsEndpointDescriptor.getUrlPattern()),
+                    ejbEndPtInfo, adapterInfo);
         } else {
             final String uri = wsEndpointDescriptor.getURI();
-            adapter = JAXWSAdapterRegistry.getInstance().getAdapter(wsEndpointDescriptor.getContextRoot(), uri, uri);
-        }
+            final Adapter adapter =
+                    JAXWSAdapterRegistry.getInstance().getAdapter(wsEndpointDescriptor.getContextRoot(), uri, uri);
 
-//@TODO implement checkAdapterSupportsTCP
-//        checkAdapterSupportsTCP(adapter);
-        final TCPAdapter tcpAdapter = new TCP109Adapter(wsEndpointDescriptor.getWSServiceName().toString(),
+            final WebModule webModule = AppServRegistry.getWebModule(wsEndpointDescriptor.getWSServiceEndpoint());
+            final ComponentInvocation invocation = new WebComponentInvocation(webModule);
+
+            return new Web109Adapter(wsEndpointDescriptor.getWSServiceName().toString(),
                 wsPath,
                 adapter.getEndpoint(),
                 new ServletFakeArtifactSet(wsEndpointDescriptor.getRequestURL(), wsEndpointDescriptor.getUrlPattern()),
-                wsEndpointDescriptor.isEJB());
-
-        return tcpAdapter;
+                invocation);
+        }
     }
 
     protected static class RegistryRecord {

@@ -36,65 +36,35 @@
 
 package org.glassfish.webservices.transport.tcp;
 
-import com.sun.istack.NotNull;
-import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.WSEndpoint;
-import com.sun.xml.ws.transport.tcp.util.ChannelContext;
-import com.sun.xml.ws.transport.tcp.server.TCPAdapter;
-import com.sun.xml.ws.transport.tcp.util.WSTCPException;
-import java.io.IOException;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
 
 /**
- * General SOAP/TCP WebService Adapter for GFv3
- * 
+ * Non EJB SOAP/TCP WebService Adapter for GFv3
+ *
  * @author Alexey Stashok
  */
-public abstract class TCP109Adapter extends TCPAdapter {
-
-    /**
-     * Currently 109 deployed WS's pipeline relies on Servlet request and response
-     * attributes. So its temporary workaround to make 109 work with TCP
-     */
-    private final ServletFakeArtifactSet servletFakeArtifactSet;
-    private final boolean isEJB;
-
-    public TCP109Adapter(
-            @NotNull final String name,
-            @NotNull final String urlPattern,
-            @NotNull final WSEndpoint endpoint,
-            @NotNull final ServletFakeArtifactSet servletFakeArtifactSet,
-            final boolean isEJB) {
-        super(name, urlPattern, endpoint);
-        this.servletFakeArtifactSet = servletFakeArtifactSet;
-        this.isEJB = isEJB;
+public class Web109Adapter extends TCP109Adapter {
+    private final ComponentInvocation invocation;
+    
+    public Web109Adapter(String name, String urlPattern, WSEndpoint endpoint,
+            ServletFakeArtifactSet servletFakeArtifactSet,
+            ComponentInvocation invocation) {
+        super(name, urlPattern, endpoint, servletFakeArtifactSet, false);
+        this.invocation = invocation;
     }
-
 
     @Override
-    public void handle(@NotNull final ChannelContext channelContext) throws IOException, WSTCPException {
-        try {
-            beforeHandle();
-            super.handle(channelContext);
-        } finally {
-            postHandle();
-        }
+    protected void beforeHandle() {
+        final InvocationManager invocationMgr = V3Module.getInvocationManager();
+        invocationMgr.preInvoke(invocation);
     }
-
-    protected abstract void beforeHandle();
-
-    protected abstract void postHandle();
 
     @Override
-    protected TCPAdapter.TCPToolkit createToolkit() {
-        return new TCP109Toolkit();
+    protected void postHandle() {
+        final InvocationManager invocationMgr = V3Module.getInvocationManager();
+        invocationMgr.postInvoke(invocation);
     }
 
-    final class TCP109Toolkit extends TCPAdapter.TCPToolkit {
-        // if its Adapter from 109 deployed WS - add fake Servlet artifacts
-        @Override
-        public void addCustomPacketSattellites(@NotNull final Packet packet) {
-            super.addCustomPacketSattellites(packet);
-            packet.addSatellite(servletFakeArtifactSet);
-        }
-    }
 }

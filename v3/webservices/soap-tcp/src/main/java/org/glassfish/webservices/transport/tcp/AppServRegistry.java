@@ -36,16 +36,23 @@
 
 package org.glassfish.webservices.transport.tcp;
 
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.web.WebApplication;
+import com.sun.enterprise.web.WebModule;
 import com.sun.xml.ws.transport.tcp.resources.MessagesMessages;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.ejb.spi.WSEjbEndpointRegistry;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.EngineRef;
+import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.webservices.EjbRuntimeEndpointInfo;
-import org.glassfish.webservices.WebServiceEjbEndpointRegistry;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngine;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
@@ -59,7 +66,6 @@ public final class AppServRegistry {
 
     private static final AppServRegistry instance = new AppServRegistry();
     
-
     public static AppServRegistry getInstance() {
         return instance;
     }
@@ -93,7 +99,7 @@ public final class AppServRegistry {
         EjbRuntimeEndpointInfo endpointInfo = null;
 
         if (wsEndpointDescriptor.isEJB()) {
-            endpointInfo = (EjbRuntimeEndpointInfo) getWSEjbEndpointRegistry().
+            endpointInfo = (EjbRuntimeEndpointInfo) V3Module.getWSEjbEndpointRegistry().
                     getEjbWebServiceEndpoint(wsEndpointDescriptor.getURI(), "POST", null);
         }
 
@@ -199,8 +205,46 @@ public final class AppServRegistry {
         return true;
     }
 
-    static WebServiceEjbEndpointRegistry getWSEjbEndpointRegistry() {
-        return (WebServiceEjbEndpointRegistry) org.glassfish.internal.api.Globals.getDefaultHabitat().getComponent(
-                    WSEjbEndpointRegistry.class);
+    /*
+     * This function is called once for every endpoint registration.
+     * and the WebModule corresponding to that endpoint is stored.
+     */
+    static WebModule getWebModule(WebServiceEndpoint wsep) {
+        ApplicationRegistry appRegistry = org.glassfish.internal.api.Globals.getDefaultHabitat().getComponent(ApplicationRegistry.class);
+        String appName = wsep.getBundleDescriptor().getApplication().getAppName();
+        ApplicationInfo appInfo = appRegistry.get(appName);
+
+        WebApplication webApp = null;
+        if (appInfo != null) {
+            Collection<ModuleInfo> moduleInfos = appInfo.getModuleInfos();
+            Set<EngineRef> engineRefs = null;
+            WebBundleDescriptor requiredWbd = (WebBundleDescriptor) wsep.getBundleDescriptor();
+            for (ModuleInfo moduleInfo : moduleInfos) {
+                engineRefs = moduleInfo.getEngineRefs();
+                for (EngineRef engineRef : engineRefs) {
+                    if (engineRef.getApplicationContainer() instanceof WebApplication) {
+                        webApp = (WebApplication) engineRef.getApplicationContainer();
+                        WebBundleDescriptor wbd = webApp.getDescriptor();
+                        if (wbd.equals(requiredWbd)) {
+                            break; //WebApp corresponding to wsep is found.
+                        } else {
+                            webApp = null;
+                        }
+                    }
+                }
+            }
+        }
+        //get the required WebModule from the webApp.
+        if (webApp != null) {
+            String requiredModule = ((WebBundleDescriptor) wsep.getBundleDescriptor()).getModuleName();
+            Set<WebModule> webModules = webApp.getWebModules();
+            for(WebModule wm : webModules) {
+                if(wm.getModuleName().equalsIgnoreCase(requiredModule)) {
+                    return wm;
+                }
+            }
+        }
+
+        return null;
     }
 }
