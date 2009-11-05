@@ -70,6 +70,7 @@
         getStatsbyTypeName(type="jruby-container-mon" name="containers/jruby/applications", result=>$attribute{jRubyStatsList}  hasStats=>$attribute{hasStatsJPS});
         getStatsbyTypeName(type="CorbaInboundConnectionCacheImpl" name="orb/transport/connectioncache/inbound", result=>$attribute{ORBInStatsList}  hasStats=>$attribute{hasStatsORBIn});
         getStatsbyTypeName(type="CorbaOutboundConnectionCacheImpl" name="orb/transport/connectioncache/outbound", result=>$attribute{ORBOutStatsList}  hasStats=>$attribute{hasStatsORBOut});
+        getStatsbyTypeName(type="connector-service-mon" name="jms-service/work-management", result=>$attribute{JMSStatsList}  hasStats=>$attribute{hasStatsJMS});
         }
         if(#{viewVal}){
             setAttribute(key="hasStatsJVMThread" value="#{false}");
@@ -91,6 +92,7 @@
             setAttribute(key="hasStatsJPS" value="#{false}");
             setAttribute(key="hasStatsORBIn" value="#{false}");
             setAttribute(key="hasStatsORBOut" value="#{false}");
+            setAttribute(key="hasStatsJMS" value="#{false}");
         }
     />
 </event>
@@ -307,6 +309,11 @@
         "<br/>
     </sun:tableRowGroup>
      <sun:tableRowGroup id="webSecurity" rendered="#{hasStatsWSD}" data={"$attribute{webSecurityStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.webSecurityStats}"
+            groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
+#include "/common/monitor/monitoringTableRows.inc"
+        "<br/>
+    </sun:tableRowGroup>
+     <sun:tableRowGroup id="jms" rendered="#{hasStatsJMS}" data={"$attribute{JMSStatsList}"}  sourceVar="td" headerText="$resource{web.monitoring.jmsStats}"
             groupToggleButton="$boolean{true}" collapsed="$boolean{true}" aboveColumnHeader="$boolean{true}" emptyDataMsg="$resource{web.monitoring.webContainer.NoStats}">
 #include "/common/monitor/monitoringTableRows.inc"
         "<br/>
