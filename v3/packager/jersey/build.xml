@@ -34,7 +34,7 @@ own identifying information: Portions Copyright [yyyy]
 	       <antcall target="pack.compression" />
 	</if>
            		   
-       <zip file="target/jersey.zip" basedir="target/stage" excludes="**/jersey-core_proto.py, **/LICENSE.txt">
+	<zip file="target/jersey.zip" basedir="target/stage" excludes="**/jersey-core_proto.py, **/LICENSE.txt, **/third-party-license-readme.txt">
        </zip>
 
        <attachArtifact file="target/jersey.zip"/> 
