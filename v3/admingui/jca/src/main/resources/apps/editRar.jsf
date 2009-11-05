@@ -42,7 +42,9 @@
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jca/apps/editRar.jsf")
     setPageSessionAttribute(key="hasPageTitleHelp" value="#{true}")
+    setPageSessionAttribute(key="hasPageTitle" value="#{true}")
     setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njca.rar.editPageTitleHelp}")
+    setPageSessionAttribute(key="pageTitle" value="$resource{i18njca.rar.editPageTitle}")
 />
 
 <!composition template="/common/applications/appEdit.layout"   >
