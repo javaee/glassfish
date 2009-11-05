@@ -102,6 +102,14 @@
         "<br/><br/><br/>
         </sun:property>
 
+        <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
+            <sun:textField id="port" columns="$int{20}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['Port']}"  />
+        </sun:property>
+
+        <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">
+            <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['Address']}"  />
+        </sun:property>
+
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Enabled']}" selectedValue="true" />
         </sun:property>
@@ -112,14 +120,6 @@
 
         <sun:property id="JkEnabled"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.JkEnabled}" helpText="$resource{i18n_web.grizzly.networkListener.JkEnabledHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['JkEnabled']}" selectedValue="true" />
-        </sun:property>
-
-        <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
-            <sun:textField id="port" columns="$int{20}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['Port']}"  />
-        </sun:property>
-
-        <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">
-            <sun:textField id="addr" columns="$int{20}" text="#{pageSession.valueMap['Address']}"  />
         </sun:property>
 
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
