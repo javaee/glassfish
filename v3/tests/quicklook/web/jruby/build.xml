@@ -4,7 +4,7 @@
 
 <property file="build.properties"/>
 <property file="${ws.root}/build.properties"/>
-<property name="JRUBY_HOME" value="${jruby_path}/jruby"/>
+<property name="JRUBY_HOME" value="${glassfish.home}/jruby"/>
 <property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
  
 <description>Builds, tests, and runs the JRuby Applications</description>
@@ -25,7 +25,7 @@
 </target>
 
 <target name="setup-jruby" depends="setJRubyCon" unless="local.jruby.present">
-   <unzip src="${jruby_path}/${jruby-all.version}/jruby-all-${jruby-all.version}-${jruby-all.classifier}.zip" dest="${jruby_path}"/>
+   <unzip src="${jruby_path}/${jruby-all.version}/jruby-all-${jruby-all.version}-${jruby-all.classifier}.zip" dest="${glassfish.home}"/>
    <chmod dir="${JRUBY_HOME}/bin" perm="ugo+rx" 
        includes="**/*"/>
 </target>
