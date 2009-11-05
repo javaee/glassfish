@@ -122,10 +122,10 @@ public class JdbcConnPoolStatsProvider {
             "numConnNotSuccessfullyMatched", StatisticImpl.UNIT_COUNT,
             "Number of connections rejected during matching");
     private CountStatisticImpl totalConnRequestWaitTime = new CountStatisticImpl(
-            "totalConnRequestWaitTime", StatisticImpl.UNIT_COUNT,
+            "totalConnRequestWaitTime", StatisticImpl.UNIT_MILLISECOND,
             "Total wait time per successful connection request");
     private CountStatisticImpl averageConnWaitTime = new CountStatisticImpl(
-            "averageConnWaitTime", StatisticImpl.UNIT_COUNT,
+            "averageConnWaitTime", StatisticImpl.UNIT_MILLISECOND,
             "Average wait-time-duration per successful connection request");
     private CountStatisticImpl waitQueueLength = new CountStatisticImpl(
             "waitQueueLength", StatisticImpl.UNIT_COUNT, 
