@@ -253,13 +253,12 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct{
                         String f = s.replace("${com.sun.aas.instanceRoot}",instanceRoot );
                         s = f;
                         m.put(key, s);
-                        break;
                     }
-                }
+                } else {
 
-                //System.out.println("Debug "+key+ " " + props.getProperty(key));
-        	    m.put(key, props.getProperty(key));
-                
+                    //System.out.println("Debug "+key+ " " + props.getProperty(key));
+        	        m.put(key, props.getProperty(key));
+                }
 			}
 
 //			closePropFile();
