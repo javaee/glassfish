@@ -237,7 +237,13 @@ public class JaxRpcRICodegen extends ModuleContentLinker
 
             if( codegenRequired ) {
                 ModelInfo modelInfo = createModelInfo(serviceRef);
-                String args[] = createJaxrpcCompileArgs(false);
+
+                /*
+                 * If clients exist, force regeneration so that the
+                 * ClientArtifactsManager is populated. Issue 10612.
+                 */
+                String args[] = createJaxrpcCompileArgs(
+                    false, hasWebServiceClients);
 
                 CompileTool wscompile =
                         rpcFactory.createCompileTool(System.out, "wscompile");
@@ -605,12 +611,15 @@ public class JaxRpcRICodegen extends ModuleContentLinker
     // dummy file for jax-rpc wscompile bug
     File dummyConfigFile=null;
 
-    private String[] createJaxrpcCompileArgs(boolean generateTies)
-            throws IOException
-    {
+    private String[] createJaxrpcCompileArgs(boolean generateTies,
+        boolean forceRegen) throws IOException {
+        
         int numJaxrpcArgs = 11;
         if (logger.isLoggable(Level.FINE) ) {
             numJaxrpcArgs = 16;
+        }
+        if (forceRegen) {
+            numJaxrpcArgs--;
         }
 
         // If we need to run wscompile more than once per .ear or
@@ -662,8 +671,10 @@ public class JaxRpcRICodegen extends ModuleContentLinker
         jaxrpcArgs[jaxrpcCnt++] = generateTies ? "-gen:server" : "-gen:client";
 
         // Prevent wscompile from regenerating portable classes that are
-        // already packaged within the deployed application. 
-        jaxrpcArgs[jaxrpcCnt++] = "-f:donotoverride";
+        // already packaged within the deployed application.
+        if (!forceRegen) {
+            jaxrpcArgs[jaxrpcCnt++] = "-f:donotoverride";
+        }
 
         if( infix != null ) {
             jaxrpcArgs[jaxrpcCnt++] = "-f:infix:" + infix;
@@ -760,7 +771,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
                     new Object[] {webService.getName()}));
         }
         ModelInfo modelInfo = createModelInfo(webService);
-        String args[] = createJaxrpcCompileArgs(true);
+        String args[] = createJaxrpcCompileArgs(true, false);
 
         CompileTool wscompile =
                 rpcFactory.createCompileTool(System.out, "wscompile");
