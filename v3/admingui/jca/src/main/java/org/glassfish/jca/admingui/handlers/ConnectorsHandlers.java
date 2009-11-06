@@ -262,8 +262,8 @@ public class ConnectorsHandlers {
             str[0] = value;
         }
         
-//        if(edit.equals("true"))
-//            emptyVal = new String[1];
+        if(edit.equals("true"))
+            emptyVal = new String[0];
         handlerCtx.setOutputValue("principalsSA", (usePrincipals)? str : emptyVal);
         handlerCtx.setOutputValue("usersSA", (usePrincipals)? emptyVal : str);
 
