@@ -49,7 +49,7 @@ public class MyListener implements ServletContextListener {
      * @param sce The servlet context event
      */
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("XXXX MyListener.contextInitialized");
+        System.out.println("MyListener.contextInitialized");
         try {
             ServletContext sc = sce.getServletContext();
 
@@ -70,6 +70,29 @@ public class MyListener implements ServletContextListener {
             ServletSecurityElement servletSecurityElement =
                 new ServletSecurityElement(constraint, methodConstraints);
             sr.setServletSecurity(servletSecurityElement);
+
+
+            Class<NewServlet2> servletCl2 = (Class<NewServlet2>)Class.forName("NewServlet2");
+            NewServlet2 servlet2 = sc.createServlet(servletCl2);
+            servlet2.setMyParameter("myServletParamValue2");
+            ServletRegistration.Dynamic sr2 = (ServletRegistration.Dynamic)sc.addServlet("NewServlet2", servlet2);
+            sr2.setInitParameter("servletInitParamName", "servletInitParamValue2");
+            sr2.addMapping("/newServlet2");
+
+
+            NewServlet2 servlet2_1 = sc.createServlet(servletCl2);
+            servlet2_1.setMyParameter("myServletParamValue2");
+            ServletRegistration.Dynamic sr2_1 = (ServletRegistration.Dynamic)sc.addServlet("NewServlet2_1", servlet2_1);
+            sr2_1.setInitParameter("servletInitParamName", "servletInitParamValue2");
+            HttpConstraintElement constraint2_1 = new HttpConstraintElement(TransportGuarantee.NONE, "javaee");
+            List<HttpMethodConstraintElement> methodConstraint2_1 = new ArrayList<HttpMethodConstraintElement>();
+            methodConstraint2_1.add(new HttpMethodConstraintElement("GET",
+                    new HttpConstraintElement(EmptyRoleSemantic.DENY)));
+            methodConstraint2_1.add(new HttpMethodConstraintElement("TRACE"));
+            ServletSecurityElement servletSecurityElement2_1 =
+                new ServletSecurityElement(constraint2_1, methodConstraint2_1);
+            sr2_1.setServletSecurity(servletSecurityElement2_1);
+            sr2_1.addMapping("/newServlet2_1");
 
         } catch (Exception e) {
             sce.getServletContext().log("Error during contextInitialized");

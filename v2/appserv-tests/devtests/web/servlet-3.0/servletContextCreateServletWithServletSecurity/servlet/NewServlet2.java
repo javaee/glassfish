@@ -37,11 +37,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.HttpConstraint;
+import javax.servlet.annotation.HttpMethodConstraint;
+import javax.servlet.annotation.ServletSecurity;
+import javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class NewServlet extends HttpServlet {
+@ServletSecurity(value=@HttpConstraint(rolesAllowed={ "javaee" }),
+    httpMethodConstraints={ @HttpMethodConstraint("GET"),
+        @HttpMethodConstraint(value="TRACE", emptyRoleSemantic=ServletSecurity.EmptyRoleSemantic.DENY) })
+public class NewServlet2 extends HttpServlet {
     private String initParamValue;
     private String myParamValue;
 
@@ -53,30 +60,30 @@ public class NewServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        if (!"myServletParamValue".equals(myParamValue)) {
+        if (!"myServletParamValue2".equals(myParamValue)) {
             throw new ServletException("Wrong servlet instance");
         }
 
-        if (!"servletInitParamValue".equals(initParamValue)) {
+        if (!"servletInitParamValue2".equals(initParamValue)) {
             throw new ServletException("Missing servlet init param");
         }
 
         PrintWriter writer = res.getWriter();
-        writer.write("g:Hello");
+        writer.write("g2:Hello");
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("p:Hello, " + req.getRemoteUser() + "\n");
+        writer.write("p2:Hello, " + req.getRemoteUser() + "\n");
     }
 
     protected void doTrace(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("t:Hello, " + req.getRemoteUser() + "\n");
+        writer.write("t2:Hello, " + req.getRemoteUser() + "\n");
     }
 
     public void setMyParameter(String value) {
