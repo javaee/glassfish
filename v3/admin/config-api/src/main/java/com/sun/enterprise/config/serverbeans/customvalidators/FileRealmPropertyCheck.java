@@ -15,7 +15,7 @@ import javax.validation.ConstraintPayload;
 @Documented
 @Constraint(validatedBy = FileRealmPropertyCheckValidator.class)
 public @interface FileRealmPropertyCheck {
-    String message() default "file and jass-context have to be specified for FileRealm";
+    String message() default "file and jaas-context have to be specified for FileRealm";
     Class<?>[] groups() default {};
     Class<? extends ConstraintPayload>[] payload() default {};
 }
