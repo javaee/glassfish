@@ -132,8 +132,14 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                 driverProps.setProperty("user", pc.getUserName());
                 driverProps.setProperty("password", new String(pc.getPassword()));
             } else {
-                driverProps.setProperty("user", spec.getDetail(DataSourceSpec.USERNAME));
-                driverProps.setProperty("password", spec.getDetail(DataSourceSpec.PASSWORD));
+                String user = spec.getDetail(DataSourceSpec.USERNAME);
+                String password = spec.getDetail(DataSourceSpec.PASSWORD);
+                if(user != null) {
+                    driverProps.setProperty("user", user);
+                }
+                if(password != null) {
+                    driverProps.setProperty("password", password);
+                }
             }
 
             dsConn = DriverManager.getConnection(spec.getDetail(DataSourceSpec.URL), driverProps);
