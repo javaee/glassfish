@@ -59,10 +59,10 @@ public class StatelessSessionBeanStatsProvider extends EjbMonitoringStatsProvide
 
     private StatelessSessionContainer delegate;
 
-    public StatelessSessionBeanStatsProvider(StatelessSessionContainer delegate, 
+    public StatelessSessionBeanStatsProvider(StatelessSessionContainer delegate, long beanId,
             String appName, String moduleName, String beanName) {
 
-        super(appName, moduleName, beanName);
+        super(beanId, appName, moduleName, beanName);
         this.delegate = delegate;
 
         long now = System.currentTimeMillis();

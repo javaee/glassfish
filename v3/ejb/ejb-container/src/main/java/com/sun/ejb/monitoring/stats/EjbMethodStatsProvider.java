@@ -121,6 +121,10 @@ public class EjbMethodStatsProvider {
         return executionStat;
     }
 
+    public String getStringifiedMethodName() {
+        return mname;
+    }
+
     void registered() {
         registered = true;
     }

@@ -86,15 +86,18 @@ public class NonBlockingPool
     private int		  resizeTaskCount;
     private int		  timerTaskCount;
 
+    private long beanId;
+
     protected NonBlockingPool() {
     }
 
-    public NonBlockingPool(String poolName, ObjectFactory factory, 
+    public NonBlockingPool(long beanId, String poolName, ObjectFactory factory, 
         int steadyPoolSize, int resizeQuantity,
         int maxPoolSize, int idleTimeoutInSeconds, 
         ClassLoader loader)
     {
         this.poolName = poolName;
+        this.beanId = beanId;
     	initializePool(factory, steadyPoolSize, resizeQuantity, maxPoolSize,
                        idleTimeoutInSeconds, loader);
     }
@@ -182,7 +185,7 @@ public class NonBlockingPool
                 if ((maintainSteadySize) && (addedResizeTask == false)) {
                     toAddResizeTask = addedResizeTask = true;
                 }
-                poolProbeNotifier.ejbObjectAddedEvent(appName, modName, ejbName); 
+                poolProbeNotifier.ejbObjectAddedEvent(beanId, appName, modName, ejbName);
                 createdCount++;	//hope that everything will be OK.
             }
         }
@@ -199,7 +202,7 @@ public class NonBlockingPool
             return factory.create(param);
         } catch (RuntimeException th) {
             synchronized (list) {
-                poolProbeNotifier.ejbObjectAddFailedEvent(appName, modName, ejbName); 
+                poolProbeNotifier.ejbObjectAddFailedEvent(beanId, appName, modName, ejbName);
                 createdCount--;
             }
             throw th;
@@ -238,7 +241,7 @@ public class NonBlockingPool
                 list.add(object);
                 return;
             } else {
-                poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
+                poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
                 destroyedCount++;
             }
         }
@@ -260,7 +263,7 @@ public class NonBlockingPool
      */
     public void destroyObject(Object object) {
     	synchronized (list) {
-            poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
+            poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
             destroyedCount++;
     	}
         
@@ -293,7 +296,7 @@ public class NonBlockingPool
     	synchronized (list) {
             for (int i=0; i<sz; i++) {
                 list.add(instances.get(i));
-                poolProbeNotifier.ejbObjectAddedEvent(appName, modName, ejbName); 
+                poolProbeNotifier.ejbObjectAddedEvent(beanId, appName, modName, ejbName);
             }
             createdCount += sz;
     	}
@@ -345,7 +348,7 @@ public class NonBlockingPool
             Object[] array = list.toArray();
             for (int i=0; i<array.length; i++) {
                 try {
-                    poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
+                    poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
                     destroyedCount++;
                     try {
                         factory.destroy(array[i]);
@@ -380,7 +383,7 @@ public class NonBlockingPool
             int size = list.size();
             for (int i=0; (i<count) && (size > 0); i++) {
                 removeList.add(list.remove(--size));
-                poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
+                poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
                 destroyedCount++;
             }
         }
@@ -469,7 +472,7 @@ public class NonBlockingPool
                         EJBContextImpl ctx = (EJBContextImpl) list.get(0);
                         if (ctx.getLastTimeUsed() <= allowedIdleTime) {
                             removeList.add(list.remove(0));
-                            poolProbeNotifier.ejbObjectDestroyedEvent(appName, modName, ejbName);
+                            poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
                             destroyedCount++;
                         } else {
                             break;

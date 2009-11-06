@@ -70,11 +70,11 @@ public class BoundedPool
     
     protected int previousSize = 0;
     
-    public BoundedPool(ObjectFactory factory, int steadyPoolSize, 
+    public BoundedPool(ObjectFactory factory, long beanId, int steadyPoolSize,
         int resizeQuantity, int maxPoolsize, long maxWaitTimeInMillis, 
         int idleTimeoutInSeconds, ClassLoader loader)
     {
-    	super(factory, steadyPoolSize, resizeQuantity, maxPoolsize,
+    	super(factory, beanId, steadyPoolSize, resizeQuantity, maxPoolsize,
               maxWaitTimeInMillis, idleTimeoutInSeconds, loader);
         super.poolName="BoundedPool";
     }

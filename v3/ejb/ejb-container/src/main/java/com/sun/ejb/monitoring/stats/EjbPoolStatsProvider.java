@@ -35,7 +35,6 @@
  */
 package com.sun.ejb.monitoring.stats;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.ejb.containers.EjbContainerUtilImpl;
@@ -81,11 +80,14 @@ public class EjbPoolStatsProvider {
     private String beanName = null;
     private boolean registered = false;
     private AbstractPool delegate;
+    private long beanId;
 
-    public EjbPoolStatsProvider(AbstractPool delegate, String appName, 
+    public EjbPoolStatsProvider(AbstractPool delegate,
+            long beanId, String appName,
             String moduleName, String beanName) {
 
         this.delegate = delegate;
+        this.beanId = beanId;
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
@@ -153,10 +155,11 @@ public class EjbPoolStatsProvider {
 
     @ProbeListener("glassfish:ejb:pool:objectAddedEvent")
     public void ejbObjectAddedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             createdStat.increment();
         } else {
             logWrongEvent(appName, modName, ejbName);
@@ -165,10 +168,11 @@ public class EjbPoolStatsProvider {
 
     @ProbeListener("glassfish:ejb:pool:objectAddFailedEvent")
     public void ejbObjectAddFailedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             createdStat.decrement();
         } else {
             logWrongEvent(appName, modName, ejbName);
@@ -177,34 +181,16 @@ public class EjbPoolStatsProvider {
 
     @ProbeListener("glassfish:ejb:pool:objectDestroyedEvent")
     public void ejbObjectDestroyedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             destroyedStat.increment();
         } else {
             logWrongEvent(appName, modName, ejbName);
         }
     }
-
-    private boolean isValidRequest(String appName, String moduleName,
-            String beanName) {
-        if ((this.appName == null && appName != null)
-                || (this.appName != null && !this.appName.equals(appName))) {
-            return false;
-        }
-        if ((this.moduleName == null && moduleName != null)
-                || (this.moduleName != null && !this.moduleName.equals(moduleName))) {
-            return false;
-        }
-        if ((this.beanName == null && beanName != null)
-                || (this.beanName != null && !this.beanName.equals(beanName))) {
-            return false;
-        }
-
-        return true;
-    }
-  
 
     private void logWrongEvent(String appName, String moduleName,
             String beanName) {

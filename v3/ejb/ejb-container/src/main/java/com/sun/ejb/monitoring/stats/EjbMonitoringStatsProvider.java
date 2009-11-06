@@ -36,15 +36,11 @@
 package com.sun.ejb.monitoring.stats;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.external.statistics.*;
 import org.glassfish.external.statistics.impl.*;
@@ -57,18 +53,19 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
  * to collect and display the data.
  *
  * @author Marina Vatkina
+ * @author Mahesh Kannan
  */
 // @AMXMetadata and @ManagedObject should NOT be added here on this base class.
 // Need to be added to derived classes to define the individual types.
 public abstract class EjbMonitoringStatsProvider {
 
-    private Map<String, EjbMethodStatsProvider> methodMonitorMap = 
-            new HashMap<String, EjbMethodStatsProvider>();
+    Map<Method, EjbMethodStatsProvider> methodMonitorMap;
 
     String appName = null;
     String moduleName = null;
     String beanName = null;
     boolean registered = false;
+    protected long beanId;
 
     private CountStatisticImpl createStat = new CountStatisticImpl("CreateCount", 
             "count", "Number of times EJB create method is called");
@@ -78,37 +75,50 @@ public abstract class EjbMonitoringStatsProvider {
 
     static final Logger _logger = EjbContainerUtilImpl.getInstance().getLogger();
 
-    public EjbMonitoringStatsProvider(String appName, String moduleName, 
+    public EjbMonitoringStatsProvider(long beanId, String appName, String moduleName,
             String beanName) {
+        this.beanId = beanId;
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
     }
 
-    public void addMethods(String appName, String moduleName, 
+    public void addMethods(long beanId, String appName, String moduleName,
             String beanName, Method[] methods) {
-        if (isValidRequest(appName, moduleName, beanName)) {
+
+        Map<String, EjbMethodStatsProvider> tempMap = new HashMap<String, EjbMethodStatsProvider>();
+        int bucketSz = (methods.length == 0) ? 16 : methods.length << 1;
+        methodMonitorMap = new HashMap<Method, EjbMethodStatsProvider>(bucketSz);
+
+        if (this.beanId == beanId) {
             for (Method m : methods) {
                 String mname = EjbMonitoringUtils.stringify(m);
-                if (methodMonitorMap.get(mname) == null) {
-                    // Use 1 monitor for all methods that represent the same method in the bean
-                    EjbMethodStatsProvider monitor = new EjbMethodStatsProvider(mname);
-                    methodMonitorMap.put(mname, monitor);
+                EjbMethodStatsProvider monitor = tempMap.get(mname);
+                if (monitor == null) {
+                    monitor = new EjbMethodStatsProvider(mname);
+                    tempMap.put(mname, monitor);
                 }
+                methodMonitorMap.put(m, monitor);
             }
+
+            _logger.log(Level.FINE, "[EJBMonitoringStatsProvider] : "
+                    + appName + ":" + moduleName + ":" + beanName + ":" + methodMonitorMap.size());
         }
     }
 
     public void register() {
         String beanSubTreeNode = EjbMonitoringUtils.registerComponent(
                 appName, moduleName, beanName, this);
-        if ( beanSubTreeNode != null) {
+        if (beanSubTreeNode != null) {
             registered = true;
-            for ( String mname : methodMonitorMap.keySet()) {
-                EjbMethodStatsProvider monitor = methodMonitorMap.get(mname);
-                String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode, mname, monitor);
-                if (node != null) {
-                    monitor.registered();
+            for (Method m : methodMonitorMap.keySet()) {
+                EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
+                if (!monitor.isRegistered()) {
+                    String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode,
+                            monitor.getStringifiedMethodName(), monitor);
+                    if (node != null) {
+                        monitor.registered();
+                    }
                 }
             }
         }
@@ -118,7 +128,7 @@ public abstract class EjbMonitoringStatsProvider {
         if (registered) {
             registered = false;
             StatsProviderManager.unregister(this);
-            for ( EjbMethodStatsProvider monitor : methodMonitorMap.values()) {
+            for ( EjbMethodStatsProvider monitor : (Set<EjbMethodStatsProvider>) methodMonitorMap.values()) {
                 if (monitor.isRegistered()) {
                     monitor.unregistered();
                     StatsProviderManager.unregister(monitor);
@@ -129,14 +139,14 @@ public abstract class EjbMonitoringStatsProvider {
 
     @ProbeListener("glassfish:ejb:bean:methodStartEvent")
     public void ejbMethodStartEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName,
             @ProbeParam("method") Method method) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("ejbMethodStartEvent", method);
-            EjbMethodStatsProvider monitor = methodMonitorMap.get(
-                    EjbMonitoringUtils.stringify(method));
+            EjbMethodStatsProvider monitor = (EjbMethodStatsProvider) methodMonitorMap.get(method);
             if (monitor != null) {
                 monitor.methodStart();
             }
@@ -145,15 +155,15 @@ public abstract class EjbMonitoringStatsProvider {
 
     @ProbeListener("glassfish:ejb:bean:methodEndEvent")
     public void ejbMethodEndEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName,
             @ProbeParam("exception") Throwable exception,
             @ProbeParam("method") Method method) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("ejbMethodEndEvent", method);
-            EjbMethodStatsProvider monitor = methodMonitorMap.get(
-                   EjbMonitoringUtils.stringify(method));
+            EjbMethodStatsProvider monitor = (EjbMethodStatsProvider) methodMonitorMap.get(method);
             if (monitor != null) {
                 monitor.methodEnd((exception == null));
             }
@@ -162,10 +172,11 @@ public abstract class EjbMonitoringStatsProvider {
 
     @ProbeListener("glassfish:ejb:bean:beanCreatedEvent")
     public void ejbBeanCreatedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("ejbBeanCreatedEvent");
             createStat.increment();
         }
@@ -173,10 +184,11 @@ public abstract class EjbMonitoringStatsProvider {
 
     @ProbeListener("glassfish:ejb:bean:beanDestroyedEvent")
     public void ejbBeanDestroyedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("ejbBeanDestroyedEvent");
             removeStat.increment();
         }
@@ -184,20 +196,23 @@ public abstract class EjbMonitoringStatsProvider {
 
     @ProbeListener("glassfish:ejb:bean:beanActivatedEvent")
     public void ejbBeanActivatedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        //if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("ejbBeanActivatedEvent");
         }
     }
 
     @ProbeListener("glassfish:ejb:bean:beanPassivatedEvent")
     public void ejbBeanPassivatedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("ejbBeanPassivatedEvent");
         }
     }
@@ -212,24 +227,6 @@ public abstract class EjbMonitoringStatsProvider {
     @Description( "Number of times EJB remove method is called")
     public CountStatistic getRemoveCount() {
         return removeStat.getStatistic();
-    }
-
-    boolean isValidRequest(String appName, String moduleName,
-            String beanName) {
-        if ((this.appName == null && appName != null)
-                || (this.appName != null && !this.appName.equals(appName))) {
-            return false;
-        }
-        if ((this.moduleName == null && moduleName != null)
-                || (this.moduleName != null && !this.moduleName.equals(moduleName))) {
-            return false;
-        }
-        if ((this.beanName == null && beanName != null)
-                || (this.beanName != null && !this.beanName.equals(beanName))) {
-            return false;
-        }
-
-        return true;
     }
 
     void log(String mname, String provider) {

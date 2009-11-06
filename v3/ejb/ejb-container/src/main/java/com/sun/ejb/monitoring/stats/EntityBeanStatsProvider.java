@@ -60,10 +60,10 @@ public class EntityBeanStatsProvider extends EjbMonitoringStatsProvider {
 
     private EntityContainer delegate;
 
-    public EntityBeanStatsProvider(EntityContainer delegate, String appName, 
+    public EntityBeanStatsProvider(EntityContainer delegate, long beanId, String appName,
             String moduleName, String beanName) {
 
-        super(appName, moduleName, beanName);
+        super(beanId, appName, moduleName, beanName);
         this.delegate = delegate;
 
         long now = System.currentTimeMillis();

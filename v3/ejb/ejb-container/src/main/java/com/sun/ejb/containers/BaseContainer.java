@@ -3966,35 +3966,35 @@ public abstract class BaseContainer
     }
      
     final void onEnteringContainer() {
-        ejbProbeNotifier.ejbContainerEnteringEvent(
+        ejbProbeNotifier.ejbContainerEnteringEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName, 
                 containerInfo.ejbName);
         //callFlowAgent.startTime(ContainerTypeOrApplicationType.EJB_CONTAINER);
     }
 
     final void onLeavingContainer() {
-        ejbProbeNotifier.ejbContainerLeavingEvent(
+        ejbProbeNotifier.ejbContainerLeavingEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName, 
                 containerInfo.ejbName);
         //callFlowAgent.endTime();
     }
 
-    final void onEjbMethodStart() {
-        ejbProbeNotifier.ejbMethodStartEvent(
+    final void onEjbMethodStart(Method method) {
+        ejbProbeNotifier.ejbMethodStartEvent(getContainerId(),
                 callFlowInfo.getApplicationName(),
                 callFlowInfo.getModuleName(),
                 callFlowInfo.getComponentName(),
-                callFlowInfo.getMethod());
+                method);
         //callFlowAgent.ejbMethodStart(callFlowInfo);
     }
     
-    final void onEjbMethodEnd() {
-        ejbProbeNotifier.ejbMethodEndEvent(
+    final void onEjbMethodEnd(Method method, Throwable th) {
+        ejbProbeNotifier.ejbMethodEndEvent(getContainerId(),
                 callFlowInfo.getApplicationName(),
                 callFlowInfo.getModuleName(),
                 callFlowInfo.getComponentName(),
-                callFlowInfo.getException(),
-                callFlowInfo.getMethod());
+                th,
+                method);
         //callFlowAgent.ejbMethodEnd(callFlowInfo);
     }
     
@@ -4002,7 +4002,7 @@ public abstract class BaseContainer
             Object[] params, com.sun.enterprise.security.SecurityManager mgr)
             throws Throwable {
         try {
-            onEjbMethodStart();
+            onEjbMethodStart(inv.method);
             if (inv.useFastPath) {
                 return inv.getBeanMethod().invoke(inv.ejb, inv.methodParams);
             } else {
@@ -4017,7 +4017,7 @@ public abstract class BaseContainer
             inv.exception = c;
             throw c;
         } finally {
-            onEjbMethodEnd();
+            onEjbMethodEnd(inv.method, inv.exception);
         }
     }
     
@@ -5171,13 +5171,13 @@ public abstract class BaseContainer
         Object result = null;
         if (interceptorManager.hasInterceptors()) {
             try {
-                onEjbMethodStart();
+                onEjbMethodStart(inv.method);
                 result = interceptorManager.intercept(inv.getInterceptorChain(), inv);
             } catch(Throwable t) {
                 inv.exception = t;
                 throw new InvocationTargetException(t);
             } finally {
-                onEjbMethodEnd();
+                onEjbMethodEnd(inv.method,  inv.exception);
             }
         } else { // invoke() has the same exc. semantics as Method.invoke
             result = this.invokeTargetBeanMethod(inv.getBeanMethod(), inv, inv.ejb,
@@ -5267,7 +5267,7 @@ public abstract class BaseContainer
 	    this.ejbMethodStatsManager = registryMediator.getEJBMethodStatsManager();
 
             ejbProbeListener = getMonitoringStatsProvider(appName, modName, ejbName);
-            ejbProbeListener.addMethods(appName, modName, ejbName, getMonitoringMethodsArray());
+            ejbProbeListener.addMethods(getContainerId(), appName, modName, ejbName, getMonitoringMethodsArray());
             ejbProbeListener.register();
 
 	    _logger.log(Level.FINE, "Created MonitoringRegistryMediator: appName: "

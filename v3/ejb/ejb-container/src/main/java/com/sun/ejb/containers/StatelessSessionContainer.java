@@ -187,7 +187,7 @@ public class StatelessSessionContainer
 
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
-        return new StatelessSessionBeanStatsProvider(this, appName, modName, ejbName);
+        return new StatelessSessionBeanStatsProvider(this, getContainerId(), appName, modName, ejbName);
     }
 
     protected void initializeHome()
@@ -206,7 +206,7 @@ public class StatelessSessionContainer
                 // connect the EJBObject to the ProtocolManager 
                 // (creates the stub 
                 // too). Note: cant do this in constructor above because 
-                // containerId is not set at that time.
+                // beanId is not set at that time.
                 theEJBStub = (EJBObject) 
                     remoteHomeRefFactory.createRemoteReference
                        (statelessInstanceKey);
@@ -265,7 +265,7 @@ public class StatelessSessionContainer
         }
 
         poolProp = new PoolProperties();
-        pool= new NonBlockingPool(ejbDescriptor.getName(),
+        pool= new NonBlockingPool(getContainerId(), ejbDescriptor.getName(),
            sessionCtxFactory, poolProp.steadyPoolSize,
            poolProp.poolResizeQuantity, poolProp.maxPoolSize,
            poolProp.poolIdleTimeoutInSeconds, loader);
@@ -278,7 +278,7 @@ public class StatelessSessionContainer
         super.populateMethodMonitorMap();
 
         poolProbeListener = new EjbPoolStatsProvider(pool,
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         poolProbeListener.register();
 
@@ -294,7 +294,7 @@ public class StatelessSessionContainer
         // No access check since this is an internal operation.
 
 	ejbProbeNotifier.ejbBeanCreatedEvent(
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
 
         return theRemoteBusinessObjectImpl;
@@ -317,7 +317,7 @@ public class StatelessSessionContainer
         }
         */
 	ejbProbeNotifier.ejbBeanCreatedEvent(
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
 
         // For stateless EJBs, EJB2.0 Section 7.8 says that 
@@ -373,7 +373,7 @@ public class StatelessSessionContainer
             authorizeRemoteMethod(BaseContainer.EJBObject_remove);
         }
 	ejbProbeNotifier.ejbBeanDestroyedEvent(
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
     }
 

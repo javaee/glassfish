@@ -35,10 +35,6 @@
  */
 package com.sun.ejb.monitoring.stats;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.external.statistics.*;
 import org.glassfish.external.statistics.impl.*;
@@ -56,9 +52,9 @@ public class MessageDrivenBeanStatsProvider extends EjbMonitoringStatsProvider {
     private CountStatisticImpl messageCount = new CountStatisticImpl("MessageCount",
             "count", "Number of messages received for a message-driven bean");
 
-    public MessageDrivenBeanStatsProvider(String appName, String moduleName, 
+    public MessageDrivenBeanStatsProvider(long beanId, String appName, String moduleName,
             String beanName) {
-        super(appName, moduleName, beanName);
+        super(beanId, appName, moduleName, beanName);
     }
 
     @ManagedAttribute(id="messagecount")
@@ -69,10 +65,11 @@ public class MessageDrivenBeanStatsProvider extends EjbMonitoringStatsProvider {
 
     @ProbeListener("glassfish:ejb:bean:messageDeliveredEvent")
     public void messageDeliveredEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {
-        if (isValidRequest(appName, modName, ejbName)) {
+        if (this.beanId == beanId) {
             log ("messageDeliveredEvent", "MessageDrivenBeanStatsProvider");
             messageCount.increment();
         }

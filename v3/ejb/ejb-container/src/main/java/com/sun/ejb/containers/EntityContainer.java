@@ -377,7 +377,7 @@ public class EntityContainer
         
         super.initializeHome();
 
-        entityCtxPool = new NonBlockingPool(ejbDescriptor.getName(),
+        entityCtxPool = new NonBlockingPool(getContainerId(), ejbDescriptor.getName(),
         	entityCtxFactory, poolProp.steadyPoolSize,
             poolProp.poolResizeQuantity, poolProp.maxPoolSize,
             poolProp.poolIdleTimeoutInSeconds, loader);
@@ -407,7 +407,7 @@ public class EntityContainer
             cacheProbeListener.register();
 	}
         poolProbeListener = new EjbPoolStatsProvider(entityCtxPool, 
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         poolProbeListener.register();
         _logger.log(Level.FINE, "[Entity Container] registered monitorable");
@@ -415,7 +415,7 @@ public class EntityContainer
 
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
-        return new EntityBeanStatsProvider(this, appName, modName, ejbName);
+        return new EntityBeanStatsProvider(this, getContainerId(), appName, modName, ejbName);
     }
     
     public void onReady() {
@@ -744,7 +744,7 @@ public class EntityContainer
      */
     protected void preCreate(EjbInvocation inv, EntityContextImpl context) {
 	ejbProbeNotifier.ejbBeanCreatedEvent(
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
     }
     
@@ -1091,7 +1091,7 @@ public class EntityContainer
     {
         try {
 	    ejbProbeNotifier.ejbBeanDestroyedEvent(
-                    containerInfo.appName, containerInfo.modName,
+                    getContainerId(), containerInfo.appName, containerInfo.modName,
                     containerInfo.ejbName);
             // Note: if there are concurrent invocations/transactions in
             // progress for this ejbObject, they will be serialized along with

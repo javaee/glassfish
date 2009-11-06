@@ -355,7 +355,7 @@ public final class StatefulSessionContainer
 
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
-        return new StatefulSessionBeanStatsProvider(this, appName, modName, ejbName);
+        return new StatefulSessionBeanStatsProvider(this, getContainerId(), appName, modName, ejbName);
     }
 
 
@@ -720,7 +720,7 @@ public final class StatefulSessionContainer
             }
         }
 
-        ejbProbeNotifier.ejbBeanCreatedEvent(
+        ejbProbeNotifier.ejbBeanCreatedEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         incrementMethodReadyStat();
@@ -979,7 +979,7 @@ public final class StatefulSessionContainer
         // because EJBObjectImpl.remove() called preInvoke().
 
         try {
-            ejbProbeNotifier.ejbBeanDestroyedEvent(
+            ejbProbeNotifier.ejbBeanDestroyedEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
             SessionContextImpl sc = (SessionContextImpl) inv.context;
@@ -3005,14 +3005,14 @@ public final class StatefulSessionContainer
 
     public void incrementMethodReadyStat() {
         statMethodReadyCount++;
-        ejbProbeNotifier.methodReadyAddEvent(
+        ejbProbeNotifier.methodReadyAddEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
     }
 
     public void decrementMethodReadyStat() {
         statMethodReadyCount--;
-        ejbProbeNotifier.methodReadyRemoveEvent(
+        ejbProbeNotifier.methodReadyRemoveEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
     }

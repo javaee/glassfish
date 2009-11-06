@@ -50,18 +50,21 @@ public class EjbMonitoringProbeProvider {
 
     @Probe(name="containerEnteringEvent")
     public void ejbContainerEnteringEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="containerLeavingEvent")
     public void ejbContainerLeavingEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="methodStartEvent", hidden=true)
     public void ejbMethodStartEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName,
@@ -69,6 +72,7 @@ public class EjbMonitoringProbeProvider {
 
     @Probe(name="methodEndEvent", hidden=true)
     public void ejbMethodEndEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName,
@@ -77,42 +81,49 @@ public class EjbMonitoringProbeProvider {
 
     @Probe(name="beanCreatedEvent")
     public void ejbBeanCreatedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="beanDestroyedEvent")
     public void ejbBeanDestroyedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="beanActivatedEvent")
     public void ejbBeanActivatedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="beanPassivatedEvent")
     public void ejbBeanPassivatedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="messageDeliveredEvent")
     public void messageDeliveredEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="methodReadyAddEvent")
     public void methodReadyAddEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="methodReadyRemoveEvent")
     public void methodReadyRemoveEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}

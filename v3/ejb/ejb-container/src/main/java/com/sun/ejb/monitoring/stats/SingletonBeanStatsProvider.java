@@ -46,8 +46,8 @@ import org.glassfish.gmbal.*;
 @ManagedObject
 public class SingletonBeanStatsProvider extends EjbMonitoringStatsProvider {
 
-    public SingletonBeanStatsProvider(String appName, 
+    public SingletonBeanStatsProvider(long beanId, String appName,
             String moduleName, String beanName) {
-        super(appName, moduleName, beanName);
+        super(beanId, appName, moduleName, beanName);
     }
 }

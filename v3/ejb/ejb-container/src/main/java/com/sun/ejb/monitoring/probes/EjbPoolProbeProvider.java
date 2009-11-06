@@ -50,18 +50,21 @@ public class EjbPoolProbeProvider {
 
     @Probe(name="objectAddedEvent")
     public void ejbObjectAddedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="objectAddFailedEvent")
     public void ejbObjectAddFailedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
     @Probe(name="objectDestroyedEvent")
     public void ejbObjectDestroyedEvent(
+            @ProbeParam("beanId") long beanId,
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}

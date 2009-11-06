@@ -220,7 +220,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 		super.registerMonitorableComponents();
 		super.populateMethodMonitorMap(msgListenerMethods);
                 poolProbeListener = new EjbPoolStatsProvider(messageBeanPool_,
-                        containerInfo.appName, containerInfo.modName,
+                        getContainerId(), containerInfo.appName, containerInfo.modName,
                         containerInfo.ejbName);
                 poolProbeListener.register();
 		// TODO registryMediator.registerProvider(messageBeanPool_);
@@ -230,7 +230,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
-        return new MessageDrivenBeanStatsProvider(appName, modName, ejbName);
+        return new MessageDrivenBeanStatsProvider(getContainerId(), appName, modName, ejbName);
     }
 
     protected void initializeHome()
@@ -300,7 +300,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 		// The protocol manager implementation enforces a limit
 		// on message bean resources independent of the pool.
 		ObjectFactory objFactory = new MessageBeanContextFactory();
-		messageBeanPool_ = new NonBlockingPool(appEJBName_, objFactory,
+		messageBeanPool_ = new NonBlockingPool(getContainerId(), appEJBName_, objFactory,
 				beanPoolDesc_.getSteadyPoolSize(), beanPoolDesc_
 						.getPoolResizeQuantity(), beanPoolDesc_
 						.getMaxPoolSize(), beanPoolDesc_
@@ -507,7 +507,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 							beanContext);
 
                     cleanupInstance(beanContext);
-					ejbProbeNotifier.ejbBeanDestroyedEvent(
+					ejbProbeNotifier.ejbBeanDestroyedEvent(getContainerId(),
                                                 containerInfo.appName, containerInfo.modName,
                                                 containerInfo.ejbName);
 				} catch (Throwable t) {
@@ -708,7 +708,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 			// Call ejbCreate OR @PostConstruct on the bean.
 			interceptorManager.intercept(CallbackType.POST_CONSTRUCT, context);
 
-			ejbProbeNotifier.ejbBeanCreatedEvent(
+			ejbProbeNotifier.ejbBeanCreatedEvent(getContainerId(),
                                 containerInfo.appName, containerInfo.modName,
                                 containerInfo.ejbName);
 
@@ -1201,7 +1201,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 				success = true;
 
 				// TODO: Check if Tx existed / committed
-                                ejbProbeNotifier.messageDeliveredEvent(
+                                ejbProbeNotifier.messageDeliveredEvent(getContainerId(),
                                         containerInfo.appName, containerInfo.modName,
                                         containerInfo.ejbName);
 

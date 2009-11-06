@@ -294,7 +294,7 @@ public abstract class AbstractSingletonContainer
     protected EjbMonitoringStatsProvider getMonitoringStatsProvider(
             String appName, String modName, String ejbName) {
         // TODO - which stats provider to use?
-        return new SingletonBeanStatsProvider(appName, modName, ejbName);
+        return new SingletonBeanStatsProvider(getContainerId(), appName, modName, ejbName);
     }
 
     public void onReady() {
@@ -305,7 +305,7 @@ public abstract class AbstractSingletonContainer
     {
         // No access check since this is an internal operation.
 
-	    ejbProbeNotifier.ejbBeanCreatedEvent(
+	    ejbProbeNotifier.ejbBeanCreatedEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
 
