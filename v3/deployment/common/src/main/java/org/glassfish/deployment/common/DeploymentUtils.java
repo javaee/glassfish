@@ -199,7 +199,7 @@ public class DeploymentUtils {
         if (FileUtils.safeIsDirectory(new File(appRootPath, moduleUri))) {
             return moduleUri;
         } else {
-            return FileUtils.makeFriendlyFilename(moduleUri);
+            return FileUtils.makeFriendlyFilenameExtension(moduleUri);
         }
     }
 
