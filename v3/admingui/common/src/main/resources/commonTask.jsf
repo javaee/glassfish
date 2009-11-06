@@ -91,7 +91,7 @@
                 text="$resource{i18n.commonTasks.task.deployEAR}"
                 toolTip="$resource{i18n.commonTasks.task.deployEAR.toolTip}"
                 infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html"
-                onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:applications:applications','#{request.contextPath}/common/applications/upload.jsf?appType=webApp&cancelPage=#{request.contextPath}/common/homePage.jsf');">
+                onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:applications:applications','#{request.contextPath}/common/applications/upload.jsf?appType=webApp&cancelPage=#{request.contextPath}/common/commonTask.jsf');">
             </sun:commonTask>
         </sun:commonTasksGroup>
           <sun:commonTasksGroup id="monitoring"  title="$resource{i18n.commonTasks.group.Monitoring}" />
