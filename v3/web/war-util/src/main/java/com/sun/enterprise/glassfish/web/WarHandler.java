@@ -66,7 +66,7 @@ import com.sun.logging.LogDomains;
  *
  * @author Jerome Dochez
  */
-@Service
+@Service(name="war")
 public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler {
     private static XMLInputFactory xmlIf = null;
 

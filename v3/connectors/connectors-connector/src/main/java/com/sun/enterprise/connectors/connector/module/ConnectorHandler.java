@@ -36,6 +36,7 @@
 package com.sun.enterprise.connectors.connector.module;
 
 import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.Application;
 import com.sun.appserv.connectors.internal.api.ConnectorsClassLoaderUtil;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
@@ -63,7 +64,7 @@ import java.util.logging.Level;
  *
  * @author Jagadish Ramu 
  */
-@Service
+@Service(name="connector")
 public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveHandler {
 
     @Inject
@@ -86,7 +87,7 @@ public class ConnectorHandler extends AbstractArchiveHandler implements ArchiveH
      */
     public boolean handles(ReadableArchive archive) throws IOException {
         boolean handles =  DeploymentUtils.isRAR(archive);
-        if (!handles) {
+        if (!handles && (archive instanceof FileArchive)) {
             GenericAnnotationDetector detector =
                 new GenericAnnotationDetector(connectorAnnotations);
             handles = detector.hasAnnotationInArchive(archive);

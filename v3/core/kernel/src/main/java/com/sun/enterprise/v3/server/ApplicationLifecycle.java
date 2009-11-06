@@ -155,13 +155,27 @@ public class ApplicationLifecycle implements Deployment {
             }
         }
 
+        // re-order the list so the ConnectorHandler gets picked up last 
+        // before the default
+        // this will avoid un-necessary annotation scanning in some cases
+        LinkedList<ArchiveHandler> handlerList = new LinkedList<ArchiveHandler>();
         for (ArchiveHandler handler : habitat.getAllByContract(ArchiveHandler.class)) {
             if (!(handler instanceof CompositeHandler) && !"DEFAULT".equals(handler.getClass().getAnnotation(Service.class).name())) {
-                if (handler.handles(archive)) {
-                    return handler;
+                if ("connector".equals(handler.getClass().getAnnotation(
+                    Service.class).name())) {
+                    handlerList.addLast(handler);
+                } else {
+                    handlerList.addFirst(handler);
                 }
             }
         }
+
+        for (ArchiveHandler handler : handlerList) {
+            if (handler.handles(archive)) {
+                return handler;
+            }
+        }
+
         return habitat.getComponent(ArchiveHandler.class, "DEFAULT");
     }
 

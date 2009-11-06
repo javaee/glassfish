@@ -148,7 +148,12 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                             moduleUri);
                         continue;
                     }
-                    ArchiveHandler subHandler = deployment.getArchiveHandler(subArchive);
+                    // optimize performance by retrieving the archive handler
+                    // based on module type first
+                    ArchiveHandler subHandler = getArchiveHandlerFromModuleType(md.getModuleType());
+                    if (subHandler == null) {
+                        subHandler = deployment.getArchiveHandler(subArchive);
+                    }
                     context.getModuleArchiveHandlers().put(
                         moduleUri, subHandler);
                     if (subHandler!=null) {
@@ -238,7 +243,10 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     ArchiveHandler handler = 
                         context.getModuleArchiveHandlers().get(moduleUri);
                     if (handler == null) {
-                        handler = deployment.getArchiveHandler(sub);
+                        handler = getArchiveHandlerFromModuleType(md.getModuleType());
+                        if (handler == null) {
+                            handler = deployment.getArchiveHandler(sub);
+                        }
                         context.getModuleArchiveHandlers().put(
                             moduleUri, handler);
                     }
@@ -345,6 +353,22 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
             throw new RuntimeException(strings.get("errReadMetadata"));
         }
         return holder;
+    }
+
+    // get archive handler from module type
+    // performance optimization so we don't need to retrieve archive handler
+    // the normal way which might involve annotation scanning
+    private ArchiveHandler getArchiveHandlerFromModuleType(XModuleType type) {
+        if (type.equals(XModuleType.WAR)) {
+            return habitat.getComponent(ArchiveHandler.class, "war");
+        } else if (type.equals(XModuleType.RAR)) {
+            return habitat.getComponent(ArchiveHandler.class, "connector");
+        } else if (type.equals(XModuleType.EJB) || 
+            type.equals(XModuleType.CAR)) {
+            return habitat.getComponent(ArchiveHandler.class, "DEFAULT");
+        } else {
+            return null;
+        }
     }
 
     private class SunApplicationXmlParser {
