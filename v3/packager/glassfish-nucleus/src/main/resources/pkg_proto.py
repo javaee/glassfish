@@ -64,7 +64,6 @@ pkg = {
                         "glassfish/config/asenv.bat" : { "preserve" : "renamenew"},
                         "glassfish/config/asadminenv.conf" : { "preserve" : "renamenew"},
                         "glassfish/config/glassfish.container" : { "preserve" : "renamenew"},
-                        "glassfish/config/client-jnlp-config.properties" : {},
                         "glassfish/osgi/equinox/configuration/config.ini" : { "preserve" : "renamenew"},
                       },
     "licenses"      : {
