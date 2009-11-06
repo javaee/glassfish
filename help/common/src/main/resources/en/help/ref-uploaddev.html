@@ -4,7 +4,7 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uploaddev"></a><h4>Deploy Applications or Modules</h4>
-<a name="indexterm-159"></a><a name="indexterm-160"></a><a name="indexterm-161"></a><a name="indexterm-162"></a><a name="indexterm-163"></a><a name="indexterm-164"></a><a name="indexterm-165"></a><a name="indexterm-166"></a><a name="indexterm-167"></a><a name="indexterm-168"></a><a name="indexterm-169"></a><a name="indexterm-170"></a><a name="indexterm-171"></a><a name="indexterm-172"></a><p>Use the Deploy Applications or Modules page to deploy an application.</p><p>The Deploy Applications or Modules page contains the following options for all applications.
+<a name="indexterm-163"></a><a name="indexterm-164"></a><a name="indexterm-165"></a><a name="indexterm-166"></a><a name="indexterm-167"></a><a name="indexterm-168"></a><a name="indexterm-169"></a><a name="indexterm-170"></a><a name="indexterm-171"></a><a name="indexterm-172"></a><a name="indexterm-173"></a><a name="indexterm-174"></a><a name="indexterm-175"></a><a name="indexterm-176"></a><p>Use the Deploy Applications or Modules page to deploy an application.</p><p>The Deploy Applications or Modules page contains the following options for all applications.
 Additional options appear only after you specify the Location field for the application.</p><dl><dt>Location</dt>
 <dd><p>The location of the archive for the application that you are deploying.</p><p>The following options specify from where the archive is accessible and whether the archive is a file or a directory.</p><dl><dt>Packaged File to Be Uploaded to the Server</dt>
 <dd><p>The archive is in a file that resides on or is accessible from the client machine.</p><p>The client machine is the host on which you are viewing the Administration Console through a browser.</p></dd>
@@ -140,6 +140,24 @@ Additional options appear only after you specify the Location field for the appl
 <p>This property only affects frameworks being launched where the thread safety cannot be automatically determined. Setting this value to <tt>true</tt> does not cause an auto-detected Rails 2.1.<i>x</i> application to be launched in thread-safe mode, nor can it be used to force a thread-safe framework to start in pooled mode.</p></dd>
 <dt>Virtual Servers</dt>
 <dd><p>The virtual servers associated with this application.</p></dd>
+<dt>Description</dt>
+<dd><p>A description of the application.</p></dd>
+</dl>
+<h5>Additional Options for Applications of Type Other</h5>
+<p>If the application type is Other, the following options appear.</p><dl><dt>Application Name</dt>
+<dd><p>The name of the application.</p></dd>
+<dt>Virtual Servers</dt>
+<dd><p>The virtual servers associated with this application.</p></dd>
+<dt>Status</dt>
+<dd><p>If this option is selected, the application is enabled. This option is selected by default.</p></dd>
+<dt>Precompile JSPs</dt>
+<dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p></dd>
+<dt>Run Verifier</dt>
+<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p></dd>
+<dt>Force Redeploy</dt>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p></dd>
+<dt>Libraries</dt>
+<dd><p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <tt></tt><i>domain-dir</i><tt>/lib/applibs</tt>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <tt></tt><i>domain-dir</i><tt></tt>. The libraries are made available to the application in the order in which they are specified.</p></dd>
 <dt>Description</dt>
 <dd><p>A description of the application.</p></dd>
 </dl>

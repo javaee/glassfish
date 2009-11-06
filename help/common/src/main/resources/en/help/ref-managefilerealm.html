@@ -4,14 +4,9 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-managefilerealm"></a><h4>File Users</h4>
-<a name="indexterm-200"></a><p>Manage <tt>file</tt> realm users with the Administration Console. Users and groups in the
-<tt>file</tt> realm are listed in the key file, whose location is specified by
-the <tt>file</tt> property.</p>
-<hr><p><b>Note - </b>It is also possible to use these steps to add users to
-any file realm, including the <tt>admin-realm</tt>. Simply substitute the name of the target realm
-in place of the <tt>file</tt> realm referenced in this section.</p>
-<hr>
-<p>A user in the <tt>file</tt> realm can belong to a <b>Java group</b>, a
+<a name="indexterm-204"></a><p>Use the File Users page to manage <tt>file</tt> realm users. Users and groups
+in the <tt>file</tt> realm are listed in the key file, whose location is
+specified by the <tt>file</tt> property.</p><p>A user in the <tt>file</tt> realm can belong to a <b>Java group</b>, a
 category of users classified by common traits. For example, customers of an e-commerce
 application might belong to the <tt>CUSTOMER</tt> group, but the big spenders would belong
 to the <tt>PREFERRED</tt> group. Categorizing users into groups makes it easier to control
@@ -25,4 +20,20 @@ realm. For each user, the following information is provided:</p><dl><dt>User ID<
 <dt>Group List</dt>
 <dd><p>The groups to which the user belongs.</p></dd>
 </dl>
+<p>The File Users table also contains the following options.</p><dl><dt>New</dt>
+<dd><p>Button to create a new user.</p></dd>
+<dt>Delete</dt>
+<dd><p>Button to delete one or more selected users.</p></dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><a href="task-fileuserscreate.html">To Add a User to the File Realm</a></p></li>
+<li><p><a href="task-fileusersedit.html">To Edit File Realm User Information</a></p></li>
+<li><p><a href="task-fileusersdelete.html">To Delete a User from the File Realm</a></p></li></ul>
+<h5>Related <tt>asadmin</tt> Commands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/820-7701/list-file-users-1?a=view"><tt>list-file-users</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/create-file-user-1?a=view"><tt>create-file-user</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/update-file-user-1?a=view"><tt>update-file-user</tt>(1)</a></p></li>
+<li><p><a href="http://docs.sun.com/doc/820-7701/delete-file-user-1?a=view"><tt>delete-file-user</tt>(1)</a></p></li></ul>
 

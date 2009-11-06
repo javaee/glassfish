@@ -18,8 +18,19 @@
         <tocitem target="ref-resources" text="Resources" expand="false"></tocitem>
         <tocitem target="ref-group-jdbc" text="JDBC" expand="false">
             <tocitem target="ref-jdbc" text="JDBC" expand="false"></tocitem>
-            <tocitem target="ref-group-jdbcresources" text="JDBC Resources" expand="false"></tocitem>
-            <tocitem target="ref-group-jdbcconnectionpools" text="Connection Pools" expand="false"></tocitem>
+            <tocitem target="ref-group-jdbcresources" text="JDBC Resources" expand="false">
+                <tocitem target="ref-jdbcresources" text="JDBC Resources" expand="false"></tocitem>
+                <tocitem target="ref-jdbcresourcenew" text="New JDBC Resource" expand="false"></tocitem>
+                <tocitem target="ref-jdbcresourceedit" text="Edit JDBC Resource" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-jdbcconnectionpools" text="Connection Pools" expand="false">
+                <tocitem target="ref-jdbcconnectionpools" text="Connection Pools" expand="false"></tocitem>
+                <tocitem target="ref-jdbcconnectionpoolnew1" text="New JDBC Connection Pool (Step 1 of 2)" expand="false"></tocitem>
+                <tocitem target="ref-jdbcconnectionpoolnew2" text="New JDBC Connection Pool (Step 2 of 2)" expand="false"></tocitem>
+                <tocitem target="ref-jdbcconnectionpooledittab" text="Edit Connection Pool" expand="false"></tocitem>
+                <tocitem target="ref-jdbcconnpooladvanceattrtab" text="Edit Connection Pool Advanced Attributes" expand="false"></tocitem>
+                <tocitem target="ref-jdbcconnpoolproptab" text="Edit Connection Pool Properties" expand="false"></tocitem>
+                <tocitem target="ref-jdbc-properties" text="Properties Specific to JDBC Connection Pools" expand="false"></tocitem>
+</tocitem>
 </tocitem>
 </tocitem>
 </tocitem>

@@ -11,8 +11,6 @@ Use is subject to License Terms  -->
 <li><b>Select the Write to System Log Enabled checkbox to send logging output to
 the <tt>syslog</tt> facility in addition to the server log.</b><p>This feature is available on Solaris and Linux systems only. This option is
 disabled by default.</p></li>
-<li><b>Select the Log to Console Enabled checkbox to create a console window on
-the Windows operating system for standard error output.</b><p>This option is disabled by default.</p></li>
 <li><b>In the Log File field, type an alternative name or location for the
 server log file.</b><p>The default location is <tt>glassfish/domains/domain1/logs/server.log</tt>.</p></li>
 <li><b>In the Log Handler field, type the absolute class name of a
@@ -34,8 +32,9 @@ it reaches the size specified in the File Rotation Limit field.</p>
 the size limit specified by the File Rotation Limit field.</p>
 <hr>
 </li>
-<li><b>Click Save.</b></li>
-<li><b>Stop and restart the Enterprise Server.</b></li></ol><h6>See Also</h6>
+<li><b>In the Flush Frequency field, type the maximum number of messages to be
+written from the queue to the server log at a time.</b><p>The default value is 1.</p></li>
+<li><b>Click Save.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p></li>
 <li><p><a href="task-logviewer.html">To View the Server Log</a></p></li></ul>
 

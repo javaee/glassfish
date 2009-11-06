@@ -56,6 +56,10 @@
         <tocitem target="task-fileuserscreate" text="To Add a User to the File Realm" expand="false"></tocitem>
         <tocitem target="task-fileusersedit" text="To Edit File Realm User Information" expand="false"></tocitem>
         <tocitem target="task-fileusersdelete" text="To Delete a User from the File Realm" expand="false"></tocitem></tocitem>
+    <tocitem target="task-group-manageadminrealmusers" text="Managing Admin Realm Users" expand="false">
+        <tocitem target="task-adminuserscreate" text="To Add a User to the Admin Realm" expand="false"></tocitem>
+        <tocitem target="task-adminusersedit" text="To Edit Admin Realm User Information" expand="false"></tocitem>
+        <tocitem target="task-adminusersdelete" text="To Delete a User from the Admin Realm" expand="false"></tocitem></tocitem>
     <tocitem target="task-group-auditevents" text="Auditing Enterprise Server Events" expand="false">
         <tocitem target="task-auditmodulenew" text="To Create an Audit Module" expand="false"></tocitem>
         <tocitem target="task-auditmoduleedit" text="To Edit an Audit Module" expand="false"></tocitem>
@@ -103,9 +107,10 @@
         <tocitem target="ref-setadminpassword" text="New Administrator Password" expand="false"></tocitem>
         <tocitem target="ref-systemproperties" text="System Properties" expand="false"></tocitem>
         <tocitem target="ref-preconfiguredprops" text="Predefined System Properties" expand="false"></tocitem>
-        <tocitem target="ref-appmonitoringdata" text="Application Monitoring" expand="false"></tocitem>
-        <tocitem target="ref-servermonitoringdata" text="Server Monitoring" expand="false"></tocitem>
-        <tocitem target="ref-resourcemonitoringdata" text="Resource Monitoring" expand="false"></tocitem></tocitem>
+        <tocitem target="gentextid-4695" text="Monitor" expand="false">
+            <tocitem target="ref-appmonitoringdata" text="Application Monitoring" expand="false"></tocitem>
+            <tocitem target="ref-servermonitoringdata" text="Server Monitoring" expand="false"></tocitem>
+            <tocitem target="ref-resourcemonitoringdata" text="Resource Monitoring" expand="false"></tocitem></tocitem></tocitem>
     <tocitem target="ref-group-applications" text="Applications" expand="false">
         <tocitem target="ref-applications" text="Applications" expand="false"></tocitem>
         <tocitem target="ref-appedit" text="Edit Application" expand="false"></tocitem>
@@ -129,10 +134,38 @@
             <tocitem target="ref-eelogginglevels" text="Module Log Levels" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-security" text="Security" expand="false">
             <tocitem target="ref-security" text="Security" expand="false"></tocitem>
-            <tocitem target="ref-group-realms" text="Realms" expand="false"></tocitem>
-            <tocitem target="ref-group-auditmodules" text="Audit Modules" expand="false"></tocitem>
-            <tocitem target="ref-group-jaccproviders" text="JACC Providers" expand="false"></tocitem>
-            <tocitem target="ref-group-messagesecurity" text="Message Security" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-realms" text="Realms" expand="false">
+                <tocitem target="ref-realms" text="Realms" expand="false"></tocitem>
+                <tocitem target="ref-realmsnew" text="New Realm" expand="false"></tocitem>
+                <tocitem target="ref-realmedit" text="Edit Realm" expand="false"></tocitem>
+                <tocitem target="ref-editfile-adminrealm" text="Properties Specific to the FileRealm Class" expand="false"></tocitem>
+                <tocitem target="ref-editcertrealm" text="Properties Specific to the CertificateRealm Class" expand="false"></tocitem>
+                <tocitem target="ref-editjdbcrealm" text="Properties Specific to the JDBCRealm Class" expand="false"></tocitem>
+                <tocitem target="ref-ldaprealmprop" text="Properties Specific to the LDAPRealm Class" expand="false"></tocitem>
+                <tocitem target="ref-solarisrealmprop" text="Properties Specific to the SolarisRealm Class" expand="false"></tocitem>
+                <tocitem target="ref-managefilerealm" text="File Users" expand="false"></tocitem>
+                <tocitem target="ref-manageadminrealm" text="Admin Users" expand="false"></tocitem>
+                <tocitem target="ref-filerealmusernew" text="New File Realm User" expand="false"></tocitem>
+                <tocitem target="ref-filerealmuseredit" text="Edit File Realm User" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-auditmodules" text="Audit Modules" expand="false">
+                <tocitem target="ref-auditmodules" text="Audit Modules" expand="false"></tocitem>
+                <tocitem target="ref-auditmodulenew" text="New Audit Module" expand="false"></tocitem>
+                <tocitem target="ref-auditmoduleprop" text="Properties Specific to Audit Modules" expand="false"></tocitem>
+                <tocitem target="ref-auditmoduleedit" text="Edit Audit Module" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-jaccproviders" text="JACC Providers" expand="false">
+                <tocitem target="ref-jaccproviders" text="JACC Providers" expand="false"></tocitem>
+                <tocitem target="ref-jaccprovidernew" text="New JACC Provider" expand="false"></tocitem>
+                <tocitem target="ref-jaccproviderprop" text="Properties Specific to JACC Providers" expand="false"></tocitem>
+                <tocitem target="ref-jaccprovideredit" text="Edit JACC Provider" expand="false"></tocitem></tocitem>
+            <tocitem target="gentextid-7643" text="Message Security" expand="false">
+                <tocitem target="ref-messagesecurityconfig" text="Message Security Configurations" expand="false"></tocitem>
+                <tocitem target="ref-messagesecurityconfignew" text="New Message Security Configuration" expand="false"></tocitem>
+                <tocitem target="ref-messagesecurityconfigedit" text="Edit Message Security Configuration" expand="false"></tocitem>
+                <tocitem target="ref-messagesecurityproviderconfig" text="Provider Configurations" expand="false"></tocitem>
+                <tocitem target="ref-messagesecurityproviderconfignew" text="New Provider Configuration" expand="false"></tocitem>
+                <tocitem target="ref-messagesecurityproviderconfigprops" text="Properties Specific to Message Security Provider Configurations" expand="false"></tocitem>
+                <tocitem target="ref-messagesecurityproviderconfigedit" text="Edit Provider Configuration" expand="false"></tocitem>
+                <tocitem target="ref-configreq-respolicy" text="Request and Response Policy Configurations" expand="false"></tocitem></tocitem></tocitem>
         <tocitem target="ref-group-adminservice" text="Admin Service" expand="false">
             <tocitem target="ref-jmxconnectoredit" text="Edit JMX Connector" expand="false"></tocitem>
             <tocitem target="ref-jmxconnectorssledit" text="SSL" expand="false"></tocitem></tocitem>

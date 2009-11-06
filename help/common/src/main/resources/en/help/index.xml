@@ -3,6 +3,11 @@
  <indexitem text="add-on components">
     <indexitem target="ref-uc-addon" text="installing (reference)"></indexitem>
     <indexitem target="task-uc-addon" text="installing (task)"></indexitem></indexitem>
+ <indexitem text="admin realm">
+    <indexitem target="task-adminuserscreate" text="adding users (task)"></indexitem>
+    <indexitem target="task-adminusersdelete" text="deleting users"></indexitem>
+    <indexitem target="task-adminusersedit" text="editing users (task)"></indexitem>
+    <indexitem target="ref-manageadminrealm" text="viewing and configuring users"></indexitem></indexitem>
  <indexitem text="Admin Service, See JMX connector"></indexitem>
  <indexitem target="task-accessadmintools" text="administration tools, granting access"></indexitem>
  <indexitem text="administrator password">
@@ -217,6 +222,7 @@
     <indexitem target="task-systemproperties" text="system (task)"></indexitem></indexitem>
  <indexitem target="task-uc-set-proxy" text="proxy settings, configuring for Update Tool"></indexitem>
  <indexitem text="realms">
+    <indexitem text="See also admin realm"></indexitem>
     <indexitem text="See also file realm"></indexitem>
     <indexitem target="ref-realmsnew" text="creating (reference)"></indexitem>
     <indexitem target="task-realmnew" text="creating (task)"></indexitem>

@@ -38,7 +38,6 @@
     <indexitem target="ref-worksecuritymapnew" text="creating (reference)"></indexitem>
     <indexitem target="task-worksecuritymapnew" text="creating (task)"></indexitem>
     <indexitem target="task-worksecuritymapdelete" text="deleting"></indexitem>
-    <indexitem target="ref-worksecuritymapedit" text="editing (reference)"></indexitem>
     <indexitem target="task-worksecuritymapedit" text="editing (task)"></indexitem>
     <indexitem target="ref-worksecuritymaps" text="viewing and configuring"></indexitem></indexitem>
  <indexitem target="ref-connectors" text="connectors, concepts"></indexitem>
@@ -67,7 +66,6 @@
     <indexitem target="ref-worksecuritymapnew" text="creating (reference)"></indexitem>
     <indexitem target="task-worksecuritymapnew" text="creating (task)"></indexitem>
     <indexitem target="task-worksecuritymapdelete" text="deleting"></indexitem>
-    <indexitem target="ref-worksecuritymapedit" text="editing (reference)"></indexitem>
     <indexitem target="task-worksecuritymapedit" text="editing (task)"></indexitem>
     <indexitem target="ref-worksecuritymaps" text="viewing and configuring"></indexitem>
 </indexitem>

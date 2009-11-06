@@ -48,9 +48,21 @@
             <tocitem target="ref-virtualserveredit" text="Edit Virtual Server" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-networkconfig" text="Network Config" expand="false">
             <tocitem target="ref-networkconfig" text="Network Config" expand="false"></tocitem>
-            <tocitem target="ref-group-networklisteners" text="Network Listeners" expand="false"></tocitem>
-            <tocitem target="ref-group-protocols" text="Protocols" expand="false"></tocitem>
-            <tocitem target="ref-group-transports" text="Transports" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-networklisteners" text="Network Listeners" expand="false">
+                <tocitem target="ref-networklisteners" text="Network Listeners" expand="false"></tocitem>
+                <tocitem target="ref-networklistenernew" text="New Network Listener" expand="false"></tocitem>
+                <tocitem target="ref-networklisteneredit" text="Edit Network Listener" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-protocols" text="Protocols" expand="false">
+                <tocitem target="ref-protocols" text="Protocols" expand="false"></tocitem>
+                <tocitem target="ref-protocolnew" text="New Protocol" expand="false"></tocitem>
+                <tocitem target="ref-protocoledit" text="Edit Protocol" expand="false"></tocitem>
+                <tocitem target="ref-protocolssledit" text="SSL" expand="false"></tocitem>
+                <tocitem target="ref-protocolhttpedit" text="HTTP" expand="false"></tocitem>
+                <tocitem target="ref-protocolfilecacheedit" text="File Cache" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-transports" text="Transports" expand="false">
+                <tocitem target="ref-transports" text="Transports" expand="false"></tocitem>
+                <tocitem target="ref-transportnew" text="New Transport" expand="false"></tocitem>
+                <tocitem target="ref-transportedit" text="Edit Transport" expand="false"></tocitem></tocitem></tocitem>
         <tocitem target="ref-group-threadpools" text="Thread Pools" expand="false">
             <tocitem target="ref-threadpools" text="Thread Pools" expand="false"></tocitem>
             <tocitem target="ref-threadpoolnew" text="New Thread Pool" expand="false"></tocitem>

@@ -21,15 +21,29 @@
     <tocitem target="ref-group-resources" text="Resources" expand="false">
         <tocitem target="ref-group-jmsresources" text="JMS Resources" expand="false">
             <tocitem target="ref-jmsresources" text="JMS Resources" expand="false"></tocitem>
-            <tocitem target="ref-group-jmsconnectionfactories" text="JMS Connection Factories" expand="false"></tocitem>
-            <tocitem target="ref-group-jmsdestinationresources" text="JMS Destination Resources" expand="false"></tocitem></tocitem></tocitem>
+            <tocitem target="ref-group-jmsconnectionfactories" text="Connection Factories" expand="false">
+                <tocitem target="ref-jmsconnectionfactories" text="JMS Connection Factories" expand="false"></tocitem>
+                <tocitem target="ref-jmsconnectionnew" text="New JMS Connection Factory" expand="false"></tocitem>
+                <tocitem target="ref-jmsconnectionedit" text="Edit JMS Connection Factory" expand="false"></tocitem>
+                <tocitem target="ref-jmsconnectionproperties" text="Properties Specific to JMS Connection Factories" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-jmsdestinationresources" text="Destination Resources" expand="false">
+                <tocitem target="ref-jmsdestinationresources" text="JMS Destination Resources" expand="false"></tocitem>
+                <tocitem target="ref-jmsdestinationnew" text="New JMS Destination Resource" expand="false"></tocitem>
+                <tocitem target="ref-jmsdestinationedit" text="Edit JMS Destination Resource" expand="false"></tocitem></tocitem></tocitem></tocitem>
     <tocitem target="ref-group-configuration" text="Configuration" expand="false">
         <tocitem target="ref-group-jmsservice" text="Java Message Service" expand="false">
             <tocitem target="ref-jmsservice" text="JMS Service" expand="false"></tocitem>
             <tocitem target="ref-mqschemeservice" text="MQ Scheme and MQ Service Address Syntax" expand="false"></tocitem>
             <tocitem target="ref-jmsservice-additional-props" text="Properties Specific to the JMS Service" expand="false"></tocitem>
-            <tocitem target="ref-group-jmshosts" text="JMS Hosts" expand="false"></tocitem>
-            <tocitem target="ref-group-jmsphysicaldest" text="Physical Destinations" expand="false"></tocitem>
+            <tocitem target="ref-group-jmshosts" text="JMS Hosts" expand="false">
+                <tocitem target="ref-jmshosts" text="JMS Hosts" expand="false"></tocitem>
+                <tocitem target="ref-jmshostnew" text="New JMS Host" expand="false"></tocitem>
+                <tocitem target="ref-jmshostedit" text="Edit JMS Host" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-jmsphysicaldest" text="Physical Destinations" expand="false">
+                <tocitem target="ref-jmsphysicaldest" text="JMS Physical Destinations" expand="false"></tocitem>
+                <tocitem target="ref-jmsphysicaldestnew" text="New JMS Physical Destination" expand="false"></tocitem>
+                <tocitem target="ref-jmsphysicaldestedit" text="Edit JMS Physical Destination" expand="false"></tocitem>
+</tocitem>
 </tocitem>
 </tocitem>
 </tocitem>

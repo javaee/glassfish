@@ -20,8 +20,15 @@
             <tocitem target="ref-javamailsessionsedit" text="Edit JavaMail Session" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-jndi" text="JNDI" expand="false">
             <tocitem target="ref-jndi" text="JNDI" expand="false"></tocitem>
-            <tocitem target="ref-group-jndicustomresources" text="Custom Resources" expand="false"></tocitem>
-            <tocitem target="ref-group-jndiexternalresources" text="External Resources" expand="false"></tocitem>
+            <tocitem target="ref-group-jndicustomresources" text="Custom Resources" expand="false">
+                <tocitem target="ref-jndicustomresources" text="Custom Resources" expand="false"></tocitem>
+                <tocitem target="ref-jndicustomresourcenew" text="New Custom Resource" expand="false"></tocitem>
+                <tocitem target="ref-jndicustomresourceedit" text="Edit Custom Resource" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-group-jndiexternalresources" text="External Resources" expand="false">
+                <tocitem target="ref-jndiexternalresources" text="External Resources" expand="false"></tocitem>
+                <tocitem target="ref-jndiexternalresourcenew" text="New External Resource" expand="false"></tocitem>
+                <tocitem target="ref-jndiexternalresourceedit" text="Edit External Resource" expand="false"></tocitem>
+</tocitem>
 </tocitem>
 </tocitem>
 </tocitem>
