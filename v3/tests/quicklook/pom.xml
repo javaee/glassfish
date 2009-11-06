@@ -91,8 +91,11 @@
                                     <property name="glassfish.home" value="${glassfish.home}"/>
                         	</if>
                          	<if test="${test.gd.security}">
-                            	    <ant dir="." antfile="build.xml" target="all_gd_security"/>
+                            	  <ant dir="." antfile="build.xml" target="all_gd_security">
                                     <property name="glassfish.home" value="${glassfish.home}"/>
+                                    <property name="jruby-all.version" value="${jruby-all.version}"/>
+                                    <property name="jruby-all.classifier" value="${jruby-all.classifier}"/>
+                                  </ant>
                         	</if>
                          	<if test="${test.debug}">
                             	    <ant dir="." antfile="build.xml" target="dev_debug"/>

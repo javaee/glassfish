@@ -131,11 +131,11 @@
         <antcall target="stop-server"/>
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
-        <antcall target="build-deploy-gd-security"/>
+        <antcall target="build-deploy-gd"/>
         <antcall target="runtest">
-        <param name="testng.xml" value="testng/testng_gd_security.xml"/> </antcall>
+        <param name="testng.xml" value="testng/testng_gd.xml"/> </antcall>
         <antcall target="undeploy"/>
-        <antcall target="undeploy-gd-security"/>
+        <antcall target="undeploy-gd"/>
         <antcall target="quicklook-summary"/>
         <antcall target="remove-quicklook-policy-grants" />
         <antcall target="disable-security-manager"/>
@@ -191,15 +191,6 @@
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
     </target>
 
-    <target name="build-deploy-gd-security">
-        <echo message="Glassfish Distribution Build Deploy"/>
-        <ant dir="ejb/remoteview" target="build-deploy"/>
-        <ant dir="ejb/singleton" target="build-deploy"/>
-        <ant dir="ejb/cmp" target="build-deploy"/>
-        <ant dir="ejb/mdb" target="build"/>
-        <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
-    </target>
-    
     <target name="undeploy">
         <record name="undeploy.output" action="start"/>
         <ant dir="web/helloworld" target="undeploy"/>
@@ -225,13 +216,6 @@
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
     </target>
 
-    <target name="undeploy-gd-security">
-        <ant dir="ejb/singleton" target="undeploy"/>
-        <ant dir="ejb/remoteview" target="undeploy"/>
-        <ant dir="ejb/cmp" target="undeploy"/>
-        <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
-    </target>
-    
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
     <target name="clean">
         <delete dir="${basedir}/classes"/>

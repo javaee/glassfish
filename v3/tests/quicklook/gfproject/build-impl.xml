@@ -200,9 +200,6 @@
     <war destfile="${dist.dir}/${app.file.ext}" webxml="metadata/web.xml">
         <fileset dir="web/html"/>
         <fileset dir="web/jsp"/>
-        <!--<lib dir="thirdparty/libs">
-        <exclude name="jdbc1.jar"/>
-        </lib>-->
         <classes dir="${class.output}">        
             <include name="**/*.class"/>
 	    <include name="**/persistence.xml"/>
