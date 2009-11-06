@@ -57,7 +57,7 @@
     />
     </event>
 #include "/common/shared/restart.inc"
-
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:security:realms");</script>
 <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18nc.realm.PageTitle}"

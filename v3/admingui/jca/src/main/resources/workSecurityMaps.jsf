@@ -58,7 +58,8 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njca.workSecurityMaps.tableTitle}");
     />
     </event>
-#include "/common/shared/restart.inc"    
+#include "/common/shared/restart.inc"
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:Connectors:workSecurityMaps");</script>
 
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
