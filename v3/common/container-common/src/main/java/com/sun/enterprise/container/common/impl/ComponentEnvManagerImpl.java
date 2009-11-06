@@ -398,10 +398,7 @@ public class ComponentEnvManagerImpl
             String name = descriptorToLogicalJndiName(resourceRef);
             Object value = null;
             String physicalJndiName = resourceRef.getJndiName();
-            if (resourceRef.isMailResource()) {
-                value = new MailNamingObjectFactory(name,
-                    physicalJndiName, namingUtils);
-            } else if (resourceRef.isURLResource()) {
+            if (resourceRef.isURLResource()) {
                 Object obj = null;
                 try {
                    obj  = new java.net.URL(physicalJndiName);

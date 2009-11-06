@@ -46,6 +46,7 @@ package com.sun.enterprise.resource.deployer;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.resource.beans.MailResource;
+import com.sun.enterprise.resource.naming.SerializableObjectRefAddr;
 import com.sun.appserv.connectors.internal.api.JavaEEResource;
 
 import java.util.logging.Logger;
@@ -56,6 +57,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.deployment.MailConfiguration;
 import com.sun.enterprise.repository.ResourceProperty;
+import com.sun.enterprise.container.common.impl.MailNamingObjectFactory;
 import com.sun.appserv.connectors.internal.api.ResourcePropertyImpl;
 import com.sun.appserv.connectors.internal.spi.ResourceDeployer;
 
@@ -206,8 +208,13 @@ public class MailResourceDeployer extends GlobalResourceDeployer
 
             MailConfiguration config = new MailConfiguration(mailRes);
 
-            // Publish the objet
-            namingMgr.publishObject(bindName, config, true);
+            javax.naming.Reference ref = new javax.naming.Reference(javax.mail.Session.class.getName(),
+                    MailNamingObjectFactory.class.getName(),null);
+            SerializableObjectRefAddr serializableRefAddr = new SerializableObjectRefAddr("jndiName", config);
+            ref.add(serializableRefAddr);
+
+            // Publish the object
+            namingMgr.publishObject(bindName, ref, true);
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "mailrsrc.create_obj_error", bindName);
             _logger.log(Level.SEVERE, "mailrsrc.create_obj_error_excp", ex);

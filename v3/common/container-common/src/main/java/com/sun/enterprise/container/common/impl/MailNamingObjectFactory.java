@@ -38,52 +38,46 @@ package com.sun.enterprise.container.common.impl;
 
 import com.sun.enterprise.container.common.impl.mail.MailSessionAuthenticator;
 import com.sun.enterprise.deployment.MailConfiguration;
-import com.sun.enterprise.naming.spi.NamingObjectFactory;
-import com.sun.enterprise.naming.spi.NamingUtils;
-import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.naming.util.MailLogOutputStream;
+import com.sun.logging.LogDomains;
 
 import javax.naming.Context;
-import javax.naming.NamingException;
+import javax.naming.Name;
+import javax.naming.Reference;
+import javax.naming.spi.ObjectFactory;
 import java.io.PrintStream;
 import java.util.Properties;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-@Service
-public class MailNamingObjectFactory
-    implements NamingObjectFactory {
 
-    private String name;
+public class MailNamingObjectFactory implements ObjectFactory {
 
-    private String physicalJndiName;
+    private static Logger _logger = LogDomains.getLogger(MailNamingObjectFactory.class, LogDomains.JNDI_LOGGER);
 
-    private NamingUtils namingUtils;
-    
-    public MailNamingObjectFactory(String name, String physicalJndiName,
-                                    NamingUtils namingUtils) {
-        this.name = name;
-        this.physicalJndiName = physicalJndiName;
-
-        this.namingUtils = namingUtils;
+    public MailNamingObjectFactory() {
     }
 
-    public boolean isCreateResultCacheable() {
-        return false;
-    }
 
-    public Object create(Context ic)
-        throws NamingException {
-		MailConfiguration config =
-		    (MailConfiguration) ic.lookup(physicalJndiName);
+    public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment)
+            throws Exception {
+        Reference ref = (Reference) obj;
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"MailNamingObjectFactory: " + ref +
+                " Name:" + name);
+        }
+        MailConfiguration config = (MailConfiguration) ref.get(0).getContent();
 
-		// Note: javax.mail.Session is not serializable,
-		// but we need to get a new instance on every lookup.
-                Properties props = config.getMailProperties();
-		javax.mail.Session s = javax.mail.Session.getInstance(
-                        props, new MailSessionAuthenticator(props));
-                if("smtps".equals(props.getProperty("mail.transport.protocol"))) {
-                    s.setProtocolForAddress("rfc822", "smtps");
-                }
-		s.setDebugOut(new PrintStream(namingUtils.getMailLogOutputStream()));
-		s.setDebug(true);
+        // Note: javax.mail.Session is not serializable,
+        // but we need to get a new instance on every lookup.
+        Properties props = config.getMailProperties();
+        javax.mail.Session s = javax.mail.Session.getInstance(props, new MailSessionAuthenticator(props));
+        if("smtps".equals(props.getProperty("mail.transport.protocol"))) {
+            s.setProtocolForAddress("rfc822", "smtps");
+        }
+        s.setDebugOut(new PrintStream(new MailLogOutputStream()));
+        s.setDebug(true);
 
         return s;
     }
