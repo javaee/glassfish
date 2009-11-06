@@ -44,7 +44,6 @@
 <!define name="content">
     <sun:script>
         <f:verbatim>
-            setCookie('admingui.nav.lastTreeNodeSelected', '');
             function showWindow() {
                 var popup = document.getElementById("#{popupId}");
                 if (popup) {
