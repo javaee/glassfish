@@ -65,8 +65,8 @@ public class InvocationManagerImpl
     // dont need to be synchronized because each thread has its own ArrayList.
     private InheritableThreadLocal<InvocationArray<ComponentInvocation>> frames;
     
-    private Map<ComponentInvocationType,Collection<RegisteredComponentInvocationHandler>>  regCompInvHandlerMap
-            = new HashMap<ComponentInvocationType, Collection<RegisteredComponentInvocationHandler>>();
+    private Map<ComponentInvocationType,List<RegisteredComponentInvocationHandler>>  regCompInvHandlerMap
+            = new HashMap<ComponentInvocationType, List<RegisteredComponentInvocationHandler>>();
 
 
     @Inject
@@ -146,10 +146,10 @@ public class InvocationManagerImpl
         }
         
        
-        Collection<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
+        List<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
         if (setCIH != null) {
-            for (RegisteredComponentInvocationHandler handler : setCIH) {
-                handler.getComponentInvocationHandler().beforePreInvoke(invType, prevInv, inv);
+            for (int i=0;i<setCIH.size();i++) {
+                setCIH.get(i).getComponentInvocationHandler().beforePreInvoke(invType, prevInv, inv);
             }
         }
   
@@ -164,9 +164,9 @@ public class InvocationManagerImpl
         }
         
         if (setCIH != null) {
-            for (RegisteredComponentInvocationHandler handler : setCIH) {
-                handler.getComponentInvocationHandler().afterPreInvoke(invType, prevInv, inv);
-            }
+            for (int i=0;i<setCIH.size();i++) {
+                setCIH.get(i).getComponentInvocationHandler().afterPreInvoke(invType, prevInv, inv);
+            }            
         }
 
     }
@@ -198,10 +198,10 @@ public class InvocationManagerImpl
                 }
             }                       
 
-            Collection<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
+            List<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
             if (setCIH != null) {
-                for (RegisteredComponentInvocationHandler handler : setCIH) {
-                    handler.getComponentInvocationHandler().beforePostInvoke(invType, prevInv, curInv);
+                for (int i=0;i<setCIH.size();i++) {
+                    setCIH.get(i).getComponentInvocationHandler().beforePostInvoke(invType, prevInv, curInv);
                 }
             }
               
@@ -219,10 +219,10 @@ public class InvocationManagerImpl
             ComponentInvocationType invType = inv.getInvocationType();
             
 
-            Collection<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
+            List<RegisteredComponentInvocationHandler> setCIH = regCompInvHandlerMap.get(invType);
             if (setCIH != null) {
-                for (RegisteredComponentInvocationHandler handler : setCIH) {
-                    handler.getComponentInvocationHandler().afterPostInvoke(invType, prevInv, curInv);
+                for (int i=0;i<setCIH.size();i++) {
+                    setCIH.get(i).getComponentInvocationHandler().afterPostInvoke(invType, prevInv, curInv);
                 }
             }
 
@@ -287,7 +287,7 @@ public class InvocationManagerImpl
     }
 
     public void registerComponentInvocationHandler(ComponentInvocationType type, RegisteredComponentInvocationHandler handler) {
-        Collection<RegisteredComponentInvocationHandler> setRegCompInvHandlers = regCompInvHandlerMap.get(type);
+        List<RegisteredComponentInvocationHandler> setRegCompInvHandlers = regCompInvHandlerMap.get(type);
         if (setRegCompInvHandlers == null) {
             setRegCompInvHandlers = new ArrayList<RegisteredComponentInvocationHandler>();
         }
