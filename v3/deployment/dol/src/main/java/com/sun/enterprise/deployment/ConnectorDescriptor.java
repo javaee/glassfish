@@ -42,8 +42,6 @@ import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.DescriptorVisitor;
 import com.sun.enterprise.deployment.util.XModuleType;
 
-import javax.enterprise.deploy.shared.ModuleType;
-import javax.resource.spi.Connector;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
@@ -119,6 +117,8 @@ public class ConnectorDescriptor extends BundleDescriptor {
     //default resource names for this resource-adpater
     private Set<String> defaultResourceNames;
 
+    private transient Set<String> configPropertyProcessedClasses;
+
     public ConnectorDescriptor() {
         this.configProperties = new OrderedSet();
 	this.authMechanisms = new OrderedSet();
@@ -131,6 +131,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
 
     this.connectorAnnotations = new OrderedSet<AnnotationInfo>();
     this.configPropertyAnnotations = new HashMap<String, Set<AnnotationInfo>>();
+    this.configPropertyProcessedClasses = new HashSet<String>();
     this.defaultResourceNames = new OrderedSet<String>();
     }
 
@@ -942,6 +943,13 @@ public class ConnectorDescriptor extends BundleDescriptor {
         return configPropertyAnnotations;
     }
 
+    public Set<String> getConfigPropertyProcessedClasses(){
+        return configPropertyProcessedClasses;
+    }
+
+    public void addConfigPropertyProcessedClass(String className){
+        configPropertyProcessedClasses.add(className);
+    }
 
     /**
      * names of default resources created for this resource-adapter

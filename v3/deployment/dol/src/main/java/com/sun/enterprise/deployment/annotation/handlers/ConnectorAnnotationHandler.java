@@ -45,6 +45,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import javax.resource.spi.Connector;
 import javax.resource.spi.SecurityPermission;
 import javax.resource.spi.AuthenticationMechanism;
+import javax.resource.spi.TransactionSupport;
 import javax.resource.spi.work.WorkContext;
 import java.lang.annotation.Annotation;
 import java.util.Set;
@@ -153,8 +154,6 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
             desc.setLicenseDescriptor(ld);
         }
 
-        OutboundResourceAdapter ora = getOutbound(desc);
-
         AuthenticationMechanism[] auths = connector.authMechanisms();
         if (auths != null && auths.length > 0) {
             for (AuthenticationMechanism auth : auths) {
@@ -165,6 +164,7 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
                 // possible change could be with auth-mechanism's credential-interface for a particular
                 // auth-mechanism-type
                 boolean ignore = false;
+                OutboundResourceAdapter ora = getOutbound(desc);
                 Set ddAuthMechanisms = ora.getAuthMechanisms();
 
                 for (Object o : ddAuthMechanisms) {
@@ -188,11 +188,6 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
                 }
             }
         }
-
-        if (!ora.isReauthenticationSupportSet()) {
-            ora.setReauthenticationSupport(connector.reauthenticationSupport());
-        }
-
 
         // merge DD and annotation entries of security-permission
         SecurityPermission[] perms = connector.securityPermissions();
@@ -226,8 +221,23 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
             }
         }
 
-        if (!ora.isTransactionSupportSet()) {
-            ora.setTransactionSupport(connector.transactionSupport().toString());
+        //we should not create outbound resource adapter unless it is required.
+        //this is necessary as the default value processing in the annotation may
+        //result in outbound to be defined without any connection-definition which is an issue.
+
+        //if reauth is false, we can ignore it as default value in dol is also false.
+        if(connector.reauthenticationSupport()){
+            OutboundResourceAdapter ora = getOutbound(desc);
+            if(ora.isReauthenticationSupportSet()){
+                ora.setReauthenticationSupport(connector.reauthenticationSupport());
+            }
+        }
+        //if transaction-support is no-transaction, we can ignore it as default value in dol is also no-transaction.
+        if(!connector.transactionSupport().equals(TransactionSupport.TransactionSupportLevel.NoTransaction)){
+            OutboundResourceAdapter ora = getOutbound(desc);
+            if(!ora.isTransactionSupportSet()){
+                ora.setTransactionSupport(connector.transactionSupport().toString());
+            }
         }
 
         //merge the DD & annotation specified values of required-inflow-contexts
