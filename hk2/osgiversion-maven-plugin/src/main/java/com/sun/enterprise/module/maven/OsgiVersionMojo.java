@@ -51,6 +51,7 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
  * version. See {@link #dropVersionComponent}.
  *
  * @author Kohsuke Kawaguchi
+ * @author Sanjeeb.Sahoo@Sun.COM
  * @goal compute-osgi-version
  * @phase validate
  * @requiresProject
