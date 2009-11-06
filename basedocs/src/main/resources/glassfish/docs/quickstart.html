@@ -87,7 +87,7 @@ demonstrates key features of GlassFish server and enables
 you
 to quickly learn the basics. Step-by-step procedures introduce you to
 product features and enable
-you to learn about and use them immediately.</p>
+you to use them immediately.</p>
 <p>This guide assumes that you have already obtained and installed the
 GlassFish server v3 software. For more information about installing
 GlassFish server v3, see
@@ -355,7 +355,7 @@ domain.</p>
 <ul>
   <li><b>To start the default domain, use the <tt>start-domain</tt>
 command:</b>
-    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin start-domain</tt></b></pre>
+    <p><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin start-domain</tt></b></p>
     <p>The command starts the default domain, <tt>domain1</tt>.</p>
   </li>
 </ul>
@@ -364,11 +364,11 @@ command:</b>
 <ul>
   <li><b>To stop the default domain, use the <tt>asadmin stop-domain</tt>
 command:</b>
-    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin stop-domain</tt></b></pre>
+    <p><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin stop-domain</tt></b></p>
     <p>The command stops the default domain, <tt>domain1</tt>.</p>
     <hr>
     <p><b>Tip - </b>To determine whether a domain is running, use the <tt>asadmin
-list-domains</tt> command: <tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin
+list-domains</tt> command: <b><i>as-install</i></b><b><tt>/bin/asadmin
 list-domains</tt></b></p>
     <hr> </li>
 </ul>
@@ -397,17 +397,19 @@ the database server.</p>
 <ul>
   <li><b>Use the <tt>asadmin start-database</tt> command.</b>
     <p>The general form for the command is:</p>
-    <pre><i>as-install</i>/bin/asadmin start-database --dbhome <i>directory-path</i></pre>
+    <p><i>as-install</i><tt>/bin/asadmin start-database --dbhome</tt> <i>directory-path</i></p>
     <p>For example, to start the Java DB server from its default
 location:</p>
-    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin start-database --dbhome </tt><i>as-install-parent</i><tt>/javadb</tt></b></pre>
+    <p><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin
+start-database --dbhome </tt><i>as-install-parent</i><tt>/javadb</tt></b></p>
   </li>
 </ul>
 <a name="ggnez"></a>
 <h3>To Stop the Java DB Server</h3>
 <ul>
   <li><b>Use the <tt>asadmin stop-database</tt> command:</b>
-    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin stop-database</tt></b></pre>
+    <p><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin
+stop-database</tt></b></p>
   </li>
 </ul>
 <a name="ggllq"></a>
@@ -419,13 +421,13 @@ monitoring GlassFish server.</p>
 <h3>To Start the Administration Console</h3>
 <h4>Before You Begin</h4>
 <p>At least one GlassFish server domain must be started before you
-start the
+launch the
 Administration Console.</p>
 <ol>
   <li><b>To start the Administration Console, type the URL in your
 browser.</b>
     <p>The default URL for the Administration Console is:</p>
-    <pre><tt><b>http://localhost:4848</b></tt></pre>
+    <pre><b><tt>http://localhost:4848</tt></b></pre>
   </li>
   <li><b>If prompted, log in to the Administration Console.</b>
     <p>You will be prompted to log in if you chose to require an
@@ -451,7 +453,7 @@ are addressed here:</p>
     <p><a href="#ghgjj">Deploying an Application From the Command Line</a></p>
   </li>
   <li>
-    <p><a href="#ghgjn">Deploying an Application by Using the
+    <p><a href="#ghgjn">Deploying an Application Using the
 Administration Console</a></p>
   </li>
   <li>
@@ -487,13 +489,13 @@ started before you deploy the sample application.</p>
 <ol>
   <li><b>Use the <tt>asadmin deploy</tt> command.</b>
     <p>The general form for the command is:</p>
-    <pre><i>as-install</i>/bin/asadmin deploy <i>war-name</i></pre>
+    <p><i>as-install</i><tt>/bin/asadmin deploy</tt> <i>war-name</i></p>
     <p>To deploy the <tt>hello.war</tt> sample, the command is:</p>
     <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin deploy </tt><i>sample-dir</i><tt>/hello.war</tt></b></pre>
   </li>
   <li><b>Access the <tt>hello</tt> application by typing the following
 URL in your browser:</b>
-    <pre><tt><b>http://localhost:8080/hello</b></tt></pre>
+    <pre><b><tt>http://localhost:8080/hello</tt></b></pre>
     <p>The application's start page is displayed, and you are prompted
 to type your
 name.</p>
@@ -514,7 +516,8 @@ information about deploying applications from the command line.</p>
 <h4>To List Deployed Applications From the Command Line</h4>
 <ul>
   <li><b>Use the <tt>asadmin list-applications</tt> command:</b>
-    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin list-applications</tt></b></pre>
+    <p><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin
+list-applications</tt></b></p>
   </li>
 </ul>
 <a name="ggnbm"></a>
@@ -522,22 +525,23 @@ information about deploying applications from the command line.</p>
 <ul>
   <li><b>Use the <tt>asadmin undeploy</tt> command.</b>
     <p>The general form for the command is:</p>
-    <pre><i>as-install</i>/bin/asadmin undeploy <i>war-name</i></pre>
+    <p><i>as-install</i><tt>/bin/asadmin undeploy</tt> <i>war-name</i></p>
     <p>For <i>war-name</i>, use the literal <tt>hello</tt>, not the
 full <tt>hello.war</tt> name.</p>
     <p>For the <tt>hello.war</tt> example, the command is:</p>
-    <pre><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin undeploy hello</tt></b></pre>
+    <p><tt><b></b></tt><b><i>as-install</i><tt>/bin/asadmin undeploy
+hello</tt></b></p>
   </li>
 </ul>
 <h4>See Also</h4>
 <p>See <a href="http://docs.sun.com/doc/820-7701/undeploy-1?a=view"><tt>undeploy</tt>(1)</a>
 for more information about the <tt>undeploy</tt> command.</p>
 <a name="ghgjn"></a>
-<h3>Deploying an Application by Using the Administration Console</h3>
-<p>You can deploy applications from the graphical Administration
+<h3>Deploying an Application Using the Administration Console</h3>
+<p>You can deploy applications by using the graphical Administration
 Console.</p>
 <a name="ggnbn"></a>
-<h4>To Deploy the Sample Application From the Administration Console</h4>
+<h4>To Deploy the Sample Application Using the Administration Console</h4>
 <h4>Before You Begin</h4>
 <p>The sample application must be available before you start this task.
 To download
@@ -547,7 +551,7 @@ started before you deploy the sample application.</p>
 <ol>
   <li><b>Launch the Administration Console by typing the following URL
 in your browser:</b>
-    <pre><tt><b>http://localhost:4848</b></tt></pre>
+    <pre><b><tt>http://localhost:4848</tt></b></pre>
   </li>
   <li><b>Click the Applications node in the tree on the left.</b>
     <p>The Applications page is displayed.</p>
@@ -572,7 +576,7 @@ file, and click Open.</b>
 and click the <tt>Launch</tt>
 link to run the application.</b>
     <p>The default URL for the application is:</p>
-    <pre><tt><b>http://localhost:8080/hello/</b></tt></pre>
+    <pre><b><tt>http://localhost:8080/hello/</tt></b></pre>
   </li>
 </ol>
 <h4>See Also</h4>
@@ -583,20 +587,22 @@ information.</p>
 <ol>
   <li><b>Launch the Administration Console by typing the following URL
 in your browser:</b>
-    <pre><tt><b>http://localhost:4848</b></tt></pre>
+    <pre><b><tt>http://localhost:4848</tt></b></pre>
   </li>
   <li><b>Click the Applications node in the tree on the left.</b>
-    <p>The node expands to list deployed applications. The applications
+    <p>Expand the node to list deployed applications. Deployed
+applications
 are also listed in the
 table on the Applications page.</p>
   </li>
 </ol>
 <a name="ggneh"></a>
-<h4>To Undeploy the Sample Application From the Administration Console</h4>
+<h4>To Undeploy the Sample Application Using the Administration
+Console</h4>
 <ol>
   <li><b>Launch the Administration Console by typing the following URL
 in your browser:</b>
-    <pre><tt><b>http://localhost:4848</b></tt></pre>
+    <pre><b><tt>http://localhost:4848</tt></b></pre>
   </li>
   <li><b>Click the Applications node in the tree on the left.</b>
     <p>The Applications page is displayed.</p>
@@ -604,9 +610,9 @@ in your browser:</b>
   <li><b>Select the check box next to the <tt>hello</tt> sample
 application.</b></li>
   <li><b>Remove or disable the application.</b>
-  <ul>  
-  <li><b>To remove the application, click the Undeploy button.</b></li>
-  <li><b>To disable the application, click the Disable button.</b></li>
+    <ul>
+      <li><b>To remove the application, click the Undeploy button.</b></li>
+      <li><b>To disable the application, click the Disable button.</b></li>
     </ul>
   </li>
 </ol>
@@ -620,7 +626,7 @@ directory,
 where <i>domain-name</i> is the name of the domain for which you want
 to configure automatic deployment. For this example, use the default
 domain, <tt>domain1</tt>:</p>
-<pre><i>as-install</i>/domains/domain1/autodeploy</pre>
+<p><i>as-install</i><tt>/domains/domain1/autodeploy</tt></p>
 <a name="geyvj"></a>
 <h4>To Deploy the Sample Application Automatically</h4>
 <h4>Before You Begin</h4>
@@ -631,12 +637,12 @@ the sample, see <a href="#ghgis">Obtaining a Sample Application</a>.</p>
   <li><b>Copy the application WAR file to the <tt></tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy</tt>
 directory.</b>
     <p><tt><b>cp </b></tt><b><i>sample-dir</i><tt>/hello.war </tt><i>as-install</i><tt>/domains/</tt><i>domain-name</i><tt>/autodeploy</tt></b></p>
-    <p>Use <tt><b>copy</b></tt> instead of <tt><b>cp</b></tt> on
+    <p>Use <b><tt>copy</tt></b> instead of <b><tt>cp</tt></b> on
 Windows systems.</p>
     <p>GlassFish server automatically discovers and deploys the
 application. The default URL for the
 application is:</p>
-    <pre><tt><b>http://localhost:8080/hello/</b></tt></pre>
+    <pre><b><tt>http://localhost:8080/hello/</tt></b></pre>
   </li>
 </ul>
 <a name="ggncw"></a>
@@ -648,8 +654,8 @@ application is:</p>
   </li>
   <li><b>Use the <tt>rm</tt> command to undeploy and remove the
 application.</b>
-    <p><tt><b>rm hello.war</b></tt></p>
-    <p>Use <tt><b>del</b></tt> instead of <tt><b>rm</b></tt> on
+    <p><b><tt>rm hello.war</tt></b></p>
+    <p>Use <b><tt>del</tt></b> instead of <b><tt>rm</tt></b> on
 Windows systems.</p>
   </li>
 </ol>
@@ -662,13 +668,14 @@ installation. Update Tool
 can be accessed as a standalone graphical tool from the command line or
 as a browser-based graphical tool from the Administration Console. For
 more information about
-Update Tool, see the <a href="http://docs.sun.com/doc/820-7692"><i>Sun
+Update Tool and extending GlassFish server v3, see the <a
+ href="http://docs.sun.com/doc/820-7692"><i>Sun
 GlassFish Enterprise Server v3 Administration Guide</i></a>.</p>
 <a name="gjdfe"></a>
 <h3>To Access the Graphical Update Tool From the Command Line</h3>
 <ul>
   <li><b>Use the <tt>updatetool</tt> command:</b>
-    <pre><i>as-install-parent</i>/bin/updatetool</pre>
+    <p><b><i>as-install-parent</i><tt>/bin/updatetool</tt></b></p>
     <p>If Update Tool is not installed, you will be prompted to install
 it. Install the tool if desired, then use the <tt>updatetool</tt>
 command to start the
@@ -693,19 +700,19 @@ Administration Console.</p>
 <ol>
   <li><b>Launch the Administration Console by typing the following URL
 in your browser:</b>
-    <pre><tt><b>http://localhost:4848</b></tt></pre>
+    <pre><b><tt>http://localhost:4848</tt></b></pre>
   </li>
   <li><b>Click the Update Tool node in the tree on the left.</b></li>
 </ol>
 <h4>See Also</h4>
 <p>Refer to the Administration Console online help for additional
-information.</p>
-<p>Also see the <a href="http://docs.sun.com/doc/820-7690"><i>Sun
-GlassFish Enterprise Server v3 Installation Guide</i></a>.</p>
+information.<a href="http://docs.sun.com/doc/820-7690"><i><br>
+</i></a></p>
 <a name="ghgqg"></a>
 <h2>Removing GlassFish Server v3 Software</h2>
 <p>The following procedure describes how to remove the software using
-the command-line interface. For additional information about uninstalling the software, see the <a
+the command-line interface. For additional information about
+uninstalling the software, see the <a
  href="http://docs.sun.com/doc/820-7690"><i>Sun GlassFish Enterprise
 Server v3 Installation Guide</i></a>.</p>
 <a name="ggrkk"></a>
@@ -719,16 +726,17 @@ Java EE platform files bundled with the product. Stop all Update Tool
 processes,
 including the Notifier process. </p>
 <ol>
-  <li><b>Change to <i>as-install-parent</i>, the directory that
+  <li><b>Change to the <i>as-install-parent</i> directory, which
 contains
 the uninstallation program.</b></li>
-  <li><b>Run the uninstallation command.</b>
-    <ul>	
-      <li><b>UNIX, Linux, or Mac OS X systems: Type <tt><b>./uninstall.sh</b></tt></b><br> If necessary, grant execute permissions to the uninstall file before executing it: <tt>chmod +x ./uninstall.sh</tt>      
-      </li>	 	  
-      <li><b>Windows systems: Type <tt><b>uninstall.exe</b></tt></b></li>
+  <li><b>Run the uninstallation command and remove the software.</b>
+    <ul>
+      <li><b>UNIX, Linux, or Mac OS X systems: Type <tt>./uninstall.sh</tt></b><br>
+If necessary, grant execute permissions to the uninstall file before
+executing it: <tt>chmod +x ./uninstall.sh</tt> </li>
+      <li><b>Windows systems: Type <tt>uninstall.exe</tt></b></li>
     </ul>
-  </li>  
+  </li>
   <li><b>Not all files and directories are removed automatically.
 Examine the remaining contents and
 remove any files and directories that you do not want, including hidden
@@ -839,14 +847,14 @@ examples and instructions for creating applications with Java EE 6
 technologies, including Java Servlets, JavaServer Faces, Facelets,
 RESTful Web Services, Enterprise JavaBeans<sup>TM</sup>, Java
 Persistence API, Contexts and Dependency Injection for the Java EE
-platform, and more. The document is also available through Update Tool.
+platform, and more. The tutorial is also available through Update Tool.
     </p>
   </li>
   <li>
     <p><i>The Java EE 6 Tutorial, Volume II</i>: Advanced guide that
 builds on <i>The Java EE 6 Tutorial, Volume I</i> and contains
 advanced topics, additional technologies, and case studies. The
-document is available to registered users of GlassFish server.</p>
+tutorial is available to registered users of GlassFish server.</p>
   </li>
 </ul>
 <a name="gintm"></a>
