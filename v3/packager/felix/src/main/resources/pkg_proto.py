@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,12 @@ pkg = {
                         "pkg.description" : "Apache Felix is a community effort to implement the OSGi R4 Service Platform, which includes the OSGi framework and standard services, as well as providing and supporting other interesting OSGi-related technologies. For more information, see: http://felix.apache.org/site/index.html.",
                         "info.classification" : "OSGi Service Platform Release 4",
                       },
-    "dirtrees"      : [ "glassfish" ],
+    "dirtrees"      : { "glassfish/modules" : {},
+                        "glassfish/osgi/felix/bin" : {},
+                      },
+    "files"         : { "glassfish/osgi/felix/conf/config.properties" : { "preserve" : "renamenew"},
+                        "glassfish/osgi/felix/conf/system.properties" : { "preserve" : "renamenew"},
+                      },
     "licenses"      : {
                         "../../../../ApacheLicense.txt" : {"license" : "ApacheV2"},
                       }
