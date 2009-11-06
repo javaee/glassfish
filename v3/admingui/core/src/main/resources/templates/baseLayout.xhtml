@@ -88,7 +88,10 @@
                      left: -999em;
                      width: 990em;
                 }
-
+                #execResp {
+                    visibility:hidden;
+                    display:none;
+                }
 
             </style>
 	    </f:verbatim>
@@ -104,7 +107,7 @@
 				    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" depth="#{param.d}" values="#{requestScope.execResp}");
 				</ui:event>
 			    </h:commandButton>
-			    <h:inputText id="execResp" value="#{requestScope.execResp}" style="display:none;" />
+			    <h:inputText id="execResp" value="#{requestScope.execResp}" />
 
 			    <!-- Masthead Integration Point -->
 			    <ui:event type="afterCreate">
