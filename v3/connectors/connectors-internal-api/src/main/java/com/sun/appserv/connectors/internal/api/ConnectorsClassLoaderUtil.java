@@ -180,14 +180,18 @@ public class ConnectorsClassLoaderUtil {
 
                 String location = ConnectorsUtil.getSystemModuleLocation(rarName);
 
-                List<URI> libraries = new ArrayList<URI>();
-/*
+                List<URI> libraries ;
+
                 if (processEnv.getProcessType().isEmbedded()) {
                     libraries = new ArrayList<URI>();
                 } else {
-                    libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
+                    //needed as some system-rars (JAXR-RA) is not available in web-profile
+                    if(systemRarExists(location)){
+                        libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
+                    }else{
+                        libraries = new ArrayList<URI>(); 
+                    }
                 }
-*/
 
                 ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName, libraries);
                 classLoaders.add(ccf);
@@ -196,6 +200,20 @@ public class ConnectorsClassLoaderUtil {
         //}
         //return systemRARClassLoaders;
         return classLoaders;
+    }
+
+    private boolean systemRarExists(String location){
+        boolean result = false;
+        try{
+            File file = new File(location);
+            result = file.exists();
+        }catch(Exception e){
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.log(Level.FINEST, "Exception occurred while checking System RAR location " +
+                        ": [" + location + "]", e);
+            }
+        }
+        return result;
     }
 
     public ConnectorClassFinder getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException {
