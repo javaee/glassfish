@@ -305,7 +305,7 @@ public class GFServerConfigProvider implements AuthConfigProvider {
 	    Class c = Class.forName(className, true, loader);
 	    return c.newInstance();
 	} catch (Throwable t) {
-	    return new RuntimeException(t);
+	    throw new RuntimeException(t);
 	} 
     }
 

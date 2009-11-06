@@ -70,7 +70,7 @@ public class ConfigXMLParser implements ConfigParser {
     private Set<String> layersWithDefault = new HashSet<String>();
     private List<MessageSecurityConfig> msgSecConfigs = null;
 
-    ConfigXMLParser() throws IOException {
+    public ConfigXMLParser() throws IOException {
     }
 
     public void initialize(List<MessageSecurityConfig> msgConfigs) throws IOException {
