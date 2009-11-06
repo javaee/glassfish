@@ -75,7 +75,6 @@
      </sun:property>
      <sun:property id="maxCertLength"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.trustMaxCert}" helpText="$resource{i18n.ssl.trustMaxCertHelp}" >
         <sun:textField id="maxCertLength" columns="$int{20}" text="#{pageSession.valueMap['TrustMaxCertLengthBytes']}" />
-        <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Bytes}"/>
      </sun:property>
      <sun:property id="trustStore"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.trustStore}" helpText="$resource{i18n.ssl.trustStoreHelp}" >
         <sun:textField id="trustStore" columns="$int{20}" text="#{pageSession.valueMap['TrustStore']}" />
