@@ -34,6 +34,7 @@ public class ManifestProxy extends Manifest {
             Method met = cl.getClass().getMethod("findResources", String.class);
             Enumeration<URL> urls=null;
             try {
+                met.setAccessible(true);
                 urls = (Enumeration<URL>) met.invoke(cl, JarFile.MANIFEST_NAME);
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(ManifestProxy.class.getName()).log(Level.SEVERE, null, ex);
