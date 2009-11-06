@@ -83,9 +83,12 @@ import org.glassfish.appclient.client.acc.CommandLaunchInfo.ClientLaunchType;
 import org.glassfish.appclient.client.acc.TargetServerHelper;
 import org.glassfish.appclient.client.acc.UserError;
 import org.glassfish.appclient.client.acc.Util;
+import org.glassfish.appclient.client.acc.config.AuthRealm;
 import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.LogService;
+import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
+import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.jws.boot.LaunchSecurityHelper;
 import org.xml.sax.InputSource;
@@ -243,7 +246,7 @@ public class AppClientFacade {
          */
         final AppClientContainer.Builder builder =
                 createBuilder(targetServers,
-                    clientContainer.getLogService(),
+                    clientContainer,
                     appClientCommandArgs);
 
         /*
@@ -338,7 +341,7 @@ public class AppClientFacade {
 
     private static Builder createBuilder(
             final TargetServer[] targetServers,
-            final LogService logService,
+            final ClientContainer clientContainer,
             final AppclientCommandArguments appClientCommandArgs) throws IOException {
 
         Builder builder = AppClientContainer.newBuilder(targetServers);
@@ -350,7 +353,19 @@ public class AppClientFacade {
          * the ACC itself.
          */
         updateClientCredentials(builder, appClientCommandArgs);
-        builder.logger(new ACCLogger(logService));
+        final List<MessageSecurityConfig> msc = clientContainer.getMessageSecurityConfig();
+        if (msc != null) {
+            builder.getMessageSecurityConfig().addAll(clientContainer.getMessageSecurityConfig());
+        }
+        builder.logger(new ACCLogger(clientContainer.getLogService()));
+        final AuthRealm ar = clientContainer.getAuthRealm();
+        if (ar != null) {
+            builder.authRealm(ar.getClassname());
+        }
+        final List<Property> p = clientContainer.getProperty();
+        if (p != null) {
+            builder.containerProperties(p);
+        }
 
         return builder;
     }
