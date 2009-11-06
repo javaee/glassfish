@@ -36,7 +36,6 @@
 package com.sun.enterprise.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.AuthorizationConstraintImpl;
-import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.Role;
 import com.sun.enterprise.deployment.SecurityConstraintImpl;
 import com.sun.enterprise.deployment.UserDataConstraintImpl;
@@ -134,7 +133,7 @@ public class ServletSecurityHandler extends AbstractWebHandler {
             return getDefaultFailedResult();
         }
 
-        Set<String> urlPatterns = getNonOverridedUrlPatterns(webCompDesc);
+        Set<String> urlPatterns = getUrlPatternsWithoutSecurityConstraint(webCompDesc);
 
         if (urlPatterns != null && urlPatterns.size() > 0) {
             WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
@@ -146,7 +145,7 @@ public class ServletSecurityHandler extends AbstractWebHandler {
                     urlPatterns, httpConstraint.rolesAllowed(),
                     httpConstraint.value(),
                     httpConstraint.transportGuarantee(),
-                    null, MetadataSource.ANNOTATION);
+                    null);
 
             // we know there is one WebResourceCollection there
             WebResourceCollection webResColl =
@@ -162,7 +161,7 @@ public class ServletSecurityHandler extends AbstractWebHandler {
                         urlPatterns, httpMethodConstraint.rolesAllowed(),
                         httpMethodConstraint.emptyRoleSemantic(),
                         httpMethodConstraint.transportGuarantee(),
-                        httpMethod, MetadataSource.ANNOTATION);
+                        httpMethod);
 
                 //exclude this from the top level constraint
                 webResColl.addHttpMethodOmission(httpMethod);
@@ -178,9 +177,9 @@ public class ServletSecurityHandler extends AbstractWebHandler {
      * @param webCompDesc
      * @return a list of url String
      */
-    private Set<String> getNonOverridedUrlPatterns(WebComponentDescriptor webCompDesc) {
+    public static Set<String> getUrlPatternsWithoutSecurityConstraint(WebComponentDescriptor webCompDesc) {
 
-        Set<String> nonOverridedUrlPatterns = new HashSet<String>(webCompDesc.getUrlPatternsSet());
+        Set<String> urlPatternsWithoutSC = new HashSet<String>(webCompDesc.getUrlPatternsSet());
 
         WebBundleDescriptor webBundleDesc = webCompDesc.getWebBundleDescriptor();
         Set<String> urlPatterns = webCompDesc.getUrlPatternsSet();
@@ -189,11 +188,11 @@ public class ServletSecurityHandler extends AbstractWebHandler {
         while (eSecConstr.hasMoreElements()) {
             SecurityConstraint sc = eSecConstr.nextElement();
             for (WebResourceCollection wrc : sc.getWebResourceCollections()) {
-                nonOverridedUrlPatterns.removeAll(wrc.getUrlPatterns());
+                urlPatternsWithoutSC.removeAll(wrc.getUrlPatterns());
             }
         }
 
-        return nonOverridedUrlPatterns;
+        return urlPatternsWithoutSC;
     }
 
     public static SecurityConstraint createSecurityConstraint(
@@ -201,10 +200,9 @@ public class ServletSecurityHandler extends AbstractWebHandler {
             Set<String> urlPatterns, String[] rolesAllowed,
             EmptyRoleSemantic emptyRoleSemantic,
             TransportGuarantee transportGuarantee,
-            String httpMethod, MetadataSource metadataSource) {
+            String httpMethod) {
 
         SecurityConstraint securityConstraint = new SecurityConstraintImpl();
-        securityConstraint.setMetadataSource(metadataSource);
         WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
         securityConstraint.addWebResourceCollection(webResourceColl);
         for (String urlPattern : urlPatterns) {

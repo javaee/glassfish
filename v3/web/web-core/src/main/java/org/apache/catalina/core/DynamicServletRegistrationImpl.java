@@ -76,8 +76,7 @@ public class DynamicServletRegistrationImpl
     }
 
     public Set<String> setServletSecurity(ServletSecurityElement constraint) {
-        // TBD
-        return null;
+        return Collections.unmodifiableSet(Collections.EMPTY_SET);
     }
 
     public void setMultipartConfig(MultipartConfigElement mpConfig) {

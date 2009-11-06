@@ -54,7 +54,4 @@ public interface SecurityConstraint {
     public UserDataConstraint getUserDataConstraint();
     public void setUserDataConstraint(UserDataConstraint userDataConstraint);
 
-    public MetadataSource getMetadataSource();
-    public void setMetadataSource(MetadataSource metadataSource);
-
 }

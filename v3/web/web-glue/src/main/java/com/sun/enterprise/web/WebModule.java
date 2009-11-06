@@ -534,6 +534,13 @@ public class WebModule extends PwcWebModule {
     @Override
     protected void contextListenerStart() {
         super.contextListenerStart();
+        for (ServletRegistrationImpl srImpl : servletRegisMap.values()) {
+            if (srImpl instanceof DynamicWebServletRegistrationImpl) {
+                DynamicWebServletRegistrationImpl dwsrImpl =
+                    (DynamicWebServletRegistrationImpl)srImpl;
+                dwsrImpl.postProcessAnnotations();
+            }
+        }
         webContainer.afterServletContextInitializedEvent(
             getWebBundleDescriptor());
     }
@@ -2059,29 +2066,8 @@ public class WebModule extends PwcWebModule {
     void processServletSecurityElement(ServletSecurityElement servletSecurityElement,
             WebBundleDescriptor wbd, WebComponentDescriptor wcd) {
 
-        Set<String> urlPatterns = wcd.getUrlPatternsSet();
-
-        //remove collided security constraint from annotation
-        Iterator<SecurityConstraint> scIter = wbd.getSecurityConstraintsSet().iterator();
-        while (scIter.hasNext()) {
-            SecurityConstraint sc = scIter.next();
-            Iterator<WebResourceCollection> wrcIter = sc.getWebResourceCollections().iterator();
-            while (wrcIter.hasNext()) {
-                WebResourceCollection wrc = wrcIter.next();
-                if (sc.getMetadataSource() == MetadataSource.XML) {
-                    urlPatterns.removeAll(wrc.getUrlPatterns());
-                } else { // ANNOTATION or PROGRMMATIC
-                    wrc.getUrlPatterns().removeAll(urlPatterns);
-
-                    if (wrc.getUrlPatterns().size() == 0) {
-                        wrcIter.remove();
-                    }
-                }
-            }
-            if (sc.getWebResourceCollections().size() == 0) {
-                scIter.remove();
-            }
-        }
+        Set<String> urlPatterns =
+                ServletSecurityHandler.getUrlPatternsWithoutSecurityConstraint(wcd);
 
         if (urlPatterns.size() > 0) {
             SecurityConstraint securityConstraint =
@@ -2089,7 +2075,7 @@ public class WebModule extends PwcWebModule {
                     urlPatterns, servletSecurityElement.getRolesAllowed(),
                     servletSecurityElement.getEmptyRoleSemantic(),
                     servletSecurityElement.getTransportGuarantee(),
-                    null, MetadataSource.PROGRAMMATIC);
+                    null);
 
             //we know there is one WebResourceCollection there
             WebResourceCollection webResColl =
@@ -2101,7 +2087,7 @@ public class WebModule extends PwcWebModule {
                         urlPatterns, httpMethodConstraintElement.getRolesAllowed(),
                         httpMethodConstraintElement.getEmptyRoleSemantic(),
                         httpMethodConstraintElement.getTransportGuarantee(),
-                        httpMethod, MetadataSource.PROGRAMMATIC);
+                        httpMethod);
 
                 //exclude this from the top level constraint
                 webResColl.addHttpMethodOmission(httpMethod);
@@ -2186,6 +2172,9 @@ class DynamicWebServletRegistrationImpl
     private WebComponentDescriptor wcd;
     private WebModule webModule;
 
+    private String runAsRoleName = null;
+    private ServletSecurityElement servletSecurityElement = null;
+
     public DynamicWebServletRegistrationImpl(StandardWrapper wrapper, 
                                              WebModule webModule) {
         super(wrapper, webModule);
@@ -2225,11 +2214,11 @@ class DynamicWebServletRegistrationImpl
                         try {
                             clazz = ctx.getLoader().getClassLoader().loadClass(
                                 servletClassName);
-                            wrapper.setServletClass(clazz);
                         } catch(Exception ex) {
                             throw new IllegalArgumentException(ex);
                         }
                     }
+                    wrapper.setServletClass(clazz);
                 }
                 processServletAnnotations(clazz, wbd, wcd, wrapper);
             } else {
@@ -2263,23 +2252,18 @@ class DynamicWebServletRegistrationImpl
     @Override
     public void setRunAsRole(String roleName) {
         super.setRunAsRole(roleName);
-        /*
-         * Propagate the new run-as role to the underlying 
-         * WebBundleDescriptor provided by the deployment backend,
-         * so that corresponding security constraints may be calculated
-         * by the security subsystem, which uses the
-         * WebBundleDescriptor as its input
-         */
-        wbd.addRole(new Role(roleName));
-        RunAsIdentityDescriptor runAsDesc = new RunAsIdentityDescriptor();
-        runAsDesc.setRoleName(roleName);
-        wcd.setRunAsIdentity(runAsDesc);
+        // postpone processing as we can only setRunAsIdentity in WebComponentDescriptor once
+        this.runAsRoleName = roleName;
     }
 
     @Override
     public Set<String> setServletSecurity(ServletSecurityElement constraint) {
-        webModule.processServletSecurityElement(constraint, wbd, wcd);
-        return super.setServletSecurity(constraint);
+        this.servletSecurityElement = constraint;
+
+        Set<String> conflictUrls = new HashSet<String>(wcd.getUrlPatternsSet());
+        conflictUrls.removeAll(ServletSecurityHandler.getUrlPatternsWithoutSecurityConstraint(wcd));
+        conflictUrls.addAll(super.setServletSecurity(constraint));
+        return conflictUrls;
     }
 
     /**
@@ -2290,10 +2274,11 @@ class DynamicWebServletRegistrationImpl
     protected void setServletClassName(String className) {
         super.setServletClassName(className);
         try {
-            processServletAnnotations(
-                (Class <? extends Servlet>)
-                    ctx.getLoader().getClassLoader().loadClass(className),
-                wbd, wcd, wrapper);
+            Class <? extends Servlet> clazz =
+                    (Class <? extends Servlet>)
+                    ctx.getLoader().getClassLoader().loadClass(className);
+            super.setServletClass(clazz);
+            processServletAnnotations(clazz, wbd, wcd, wrapper);
         } catch(Exception ex) {
             throw new IllegalArgumentException(ex);
         }
@@ -2314,22 +2299,13 @@ class DynamicWebServletRegistrationImpl
             WebBundleDescriptor webBundleDescriptor,
             WebComponentDescriptor wcd, StandardWrapper wrapper) {
 
-        // Process RunAs annotation
-        if (clazz.isAnnotationPresent(RunAs.class)) {
-            RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
-            String roleName = runAs.value();
-            webBundleDescriptor.addRole(new Role(roleName));
-            RunAsIdentityDescriptor runAsDesc =
-                new RunAsIdentityDescriptor();
-            runAsDesc.setRoleName(roleName);
-            wcd.setRunAsIdentity(runAsDesc);
-        }
         // Process DeclareRoles annotation
         if (clazz.isAnnotationPresent(DeclareRoles.class)) {
             DeclareRoles declareRoles = (DeclareRoles)
                 clazz.getAnnotation(DeclareRoles.class);
             for (String roleName : declareRoles.value()) {
                 webBundleDescriptor.addRole(new Role(roleName));
+                webModule.declareRoles(roleName);
             }
         }
         // Process MultipartConfig annotation
@@ -2342,13 +2318,41 @@ class DynamicWebServletRegistrationImpl
             wrapper.setMultipartFileSizeThreshold(
                 mpConfig.fileSizeThreshold());
         }
-        // Process ServletSecurity annotation
-        if (clazz.isAnnotationPresent(ServletSecurity.class)) {
+    }
+
+    void postProcessAnnotations() {
+        // should not be null
+        Class<? extends Servlet> clazz = wrapper.getServletClass();
+
+        // Process RunAs
+        if (wcd.getRunAsIdentity() == null) {
+            String roleName = runAsRoleName;
+            if (roleName == null && clazz.isAnnotationPresent(RunAs.class)) {
+                RunAs runAs = (RunAs)clazz.getAnnotation(RunAs.class);
+                roleName = runAs.value();
+            }
+            if (roleName != null) {
+                super.setRunAsRole(roleName);
+
+                wbd.addRole(new Role(roleName));
+                RunAsIdentityDescriptor runAsDesc =
+                    new RunAsIdentityDescriptor();
+                runAsDesc.setRoleName(roleName);
+                wcd.setRunAsIdentity(runAsDesc);
+            }
+        }
+
+        // Process ServletSecurity
+        ServletSecurityElement ssElement = servletSecurityElement;
+        if (servletSecurityElement == null &&
+                clazz.isAnnotationPresent(ServletSecurity.class)) {
             ServletSecurity servletSecurity = (ServletSecurity)
                 clazz.getAnnotation(ServletSecurity.class);
+            ssElement = new ServletSecurityElement(servletSecurity);
+        }
+        if (ssElement != null) {
             webModule.processServletSecurityElement(
-                    new ServletSecurityElement(servletSecurity),
-                    webBundleDescriptor, wcd);
+                    ssElement, wbd, wcd);
         }
     }
 }
