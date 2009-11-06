@@ -120,6 +120,9 @@
                             attrs="#{pageSession.valueMap2}"
                             convertToFalse={"Enabled"} );
                     }
+                    if (#{pageSession.additionalSaveHandler}){
+                        gf.invokeHandler(handler="#{pageSession.additionalSaveHandler}", args="#{pageSession.additionalSaveHandlerArgs}" );
+                    }
                     if (#{pageSession.showSuccessfulMsg}){
                         prepareSuccessfulMsg();
                         gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
