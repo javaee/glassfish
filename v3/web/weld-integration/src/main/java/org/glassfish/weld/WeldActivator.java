@@ -47,18 +47,26 @@ import java.security.PrivilegedAction;
 
 
 /**
- * This is a bundle activator which is responsible for initializing
- * the SingletonProvider in Weld. It sets different SingletonProvider
+ * This is a bundle activator which is responsible for configuring Weld bundle to be used in GlassFish.
+ * As part of configuration, it configures the the SingletonProvider in Weld. It sets different SingletonProvider
  * for different profiles. e.g., in WebProfile, it sets
  * {@link org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider}, where as
  * for full-javaee profile, it uses {@link org.glassfish.weld.ACLSingletonProvider}.
  * It tests profile by testing existence of
  * {@link org.glassfish.javaee.full.deployment.EarClassLoader}.
  *
+ * As part of configuration of Weld, it also sets appropriate ClassLoaderProvider to be used by javassist.
+ * We rely on using TCL for javassist defined proxies because they can load not only application defined classes
+ * but also classes exported by any OSGi bundle as long as the operation is happening in the context of a Java EE app.
+ *
+ * It resets them in stop().
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class WeldActivator implements BundleActivator
 {
+    private javassist.util.proxy.ProxyFactory.ClassLoaderProvider oldCLP;
+
     public void start(BundleContext context) throws Exception
     {
         boolean earSupport = false;
@@ -69,6 +77,7 @@ public class WeldActivator implements BundleActivator
         }
         SingletonProvider.initialize(earSupport ?
                 new ACLSingletonProvider() : new TCCLSingletonProvider());
+        oldCLP = javassist.util.proxy.ProxyFactory.classLoaderProvider;
         javassist.util.proxy.ProxyFactory.classLoaderProvider = new GlassFishClassLoaderProvider();
         System.out.println("javassist.util.proxy.ProxyFactory.classLoaderProvider = " + javassist.util.proxy.ProxyFactory.classLoaderProvider);
     }
@@ -76,6 +85,7 @@ public class WeldActivator implements BundleActivator
     public void stop(BundleContext context) throws Exception
     {
         SingletonProvider.reset();
+        javassist.util.proxy.ProxyFactory.classLoaderProvider = oldCLP;
     }
 
     private static class GlassFishClassLoaderProvider implements javassist.util.proxy.ProxyFactory.ClassLoaderProvider {
