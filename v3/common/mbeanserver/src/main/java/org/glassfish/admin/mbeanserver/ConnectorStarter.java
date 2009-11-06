@@ -59,7 +59,7 @@ abstract class ConnectorStarter
     
     public String hostname()
     {
-        if ( mAddress.equals("") || mAddress.equals("0.0.0.0") || mAddress.equals("localhost") )
+        if ( mAddress.equals("") || mAddress.equals("0.0.0.0") )
         {
             return Util.localhost();
         }

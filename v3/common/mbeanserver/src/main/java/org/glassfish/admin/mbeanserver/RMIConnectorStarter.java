@@ -95,13 +95,20 @@ final class RMIConnectorStarter extends ConnectorStarter
         final boolean ENABLED = true;
         mBindToSingleIP = ENABLED && ! ( address.equals("0.0.0.0") || address.equals("") );
 
-        mServerSocketFactory = mBindToSingleIP ? new MyRMIServerSocketFactory( getAddress(address) ) : null;
-        mRegistry = startRegistry(mPort);
+        final InetAddress inetAddr = getAddress(address);
+        mServerSocketFactory = mBindToSingleIP ? new MyRMIServerSocketFactory( inetAddr ) : null;
+        mRegistry = startRegistry( address, mPort);
     }
     
     private static InetAddress getAddress(final String addrSpec) throws UnknownHostException
     {
-        final InetAddress addr = InetAddress.getByName(addrSpec);
+        String actual = addrSpec;
+        if ( addrSpec.equals("localhost" ) )
+        {
+            actual = "127.0.0.1";
+        }
+        
+        final InetAddress addr = InetAddress.getByName(actual);
         return addr;
     }
     
@@ -137,16 +144,17 @@ final class RMIConnectorStarter extends ConnectorStarter
         
         public ServerSocket	createServerSocket(int port) throws IOException
         {
+            //debug( "MyRMIServerSocketFactory.createServerSocket(): " + mAddress + " : " + port );
             final int backlog = 5;  // plenty
             final ServerSocket s = new ServerSocket(port, backlog, mAddress );
-            //System.out.println( "MyRMIServerSocketFactory.createServerSocket(): port " + port );
+            //debug( "MyRMIServerSocketFactory.createServerSocket(): " + mAddress + " : " + port );
             return s;
         }
         
         /** shouldn't be called */
         public Socket	createSocket(String host, int port) throws IOException
         {
-            //System.out.println( "MyRMIServerSocketFactory.createSocket(): " + host + ":" + port );
+            //debug( "MyRMIServerSocketFactory.createSocket(): " + host + " : " + port );
             throw new IllegalStateException("MyRMIServerSocketFactory.createSocket");
         }
     }
@@ -194,24 +202,29 @@ final class RMIConnectorStarter extends ConnectorStarter
             }
         }
     }
+    
+    private static void debug( final Object o )
+    {
+        System.out.println( "" + o );
+    }
 
-    private Registry startRegistry(final int port) {
+    private Registry startRegistry(final String addr, final int port) {
         Registry registry = null;
         
         if ( mBindToSingleIP ) {
             //System.out.println( RMI_HOSTNAME_PROP + " before: " + System.getProperty(RMI_HOSTNAME_PROP) );
-            final String saved = setupRMIHostname( mAddress );
+            final String saved = setupRMIHostname( addr );
             try {
-                Util.getLogger().info( "Binding RMI port to single IP address = " + System.getProperty(RMI_HOSTNAME_PROP) + ":" + port);
-                registry = _startRegistry(mPort);
+                Util.getLogger().info( "Binding RMI port to single IP address = " + System.getProperty(RMI_HOSTNAME_PROP) + ", port " + port);
+                registry = _startRegistry(port);
             }
             finally {
-                restoreRMIHostname(saved, mAddress);
+                restoreRMIHostname(saved, addr);
             }
         }
         else {
              Util.getLogger().info( "Binding RMI port to *:" + port );
-            registry = _startRegistry(mPort);
+            registry = _startRegistry(port);
         }
         return registry;
     }
