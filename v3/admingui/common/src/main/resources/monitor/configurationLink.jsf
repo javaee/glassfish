@@ -38,14 +38,14 @@
 
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n_web.tree.monitoring.tooltip}"
+        toolTip="$resource{i18nc.tree.monitoring.tooltip}"
         url="/common/monitor/monitoringPage.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/common/images/monitor.gif" />
-        <sun:staticText text="$resource{i18n_web.tree.monitoring}" />
+        <sun:staticText text="$resource{i18nc.tree.monitoring}" />
     </sun:hyperlink>
     <!beforeCreate
-        setResourceBundle(key="i18n_web" bundle="org.glassfish.common.admingui.Strings");
+        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
     />
 </sun:property>
 

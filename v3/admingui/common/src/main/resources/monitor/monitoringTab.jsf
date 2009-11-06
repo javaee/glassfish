@@ -1,6 +1,6 @@
-<sun:tab id="monitoring" immediate="true" text="$resource{i18n_web.monitoring}" toolTip="$resource{i18n_web.monitoring} Tab">
+<sun:tab id="monitoring" immediate="true" text="$resource{i18nc.monitoring}" toolTip="$resource{i18nc.monitoring} Tab">
     <!beforeCreate
-        setResourceBundle(key="i18n_web" bundle="org.glassfish.common.admingui.Strings");
+        setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
     />
     <!command
 	setSessionAttribute(key="serverInstTabs" value="monitoring");
