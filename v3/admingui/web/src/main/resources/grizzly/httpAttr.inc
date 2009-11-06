@@ -48,14 +48,8 @@
         </sun:property>
 
         <sun:property id="DefaultVirtServersProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.defVirtualServerLabel}" helpText="$resource{i18n_web.http.defVirtualServerLabelHelp}">
-            <sun:dropDown id="vs" selected="#{pageSession.httpMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" >
-            <!beforeCreate
-                getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
-                mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
-            />
-           </sun:dropDown>
+            <sun:dropDown id="vs" selected="#{pageSession.httpMap['DefaultVirtualServer']}" labels="$pageSession{vsList}"  values="$pageSession{vsList}" />
         </sun:property>
-
 
         <sun:property id="RedirectPortProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.redirectPortLabel}" helpText="$resource{i18n_web.http.redirectPortLabelHelp}" >
             <sun:textField id="RedirectPort" styleClass="port" columns="$int{20}" text="#{pageSession.httpMap['RedirectPort']}" />

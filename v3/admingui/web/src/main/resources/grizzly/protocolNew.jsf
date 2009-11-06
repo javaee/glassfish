@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -53,10 +53,11 @@
         setPageSessionAttribute(key="childType" value="protocol");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
 
-
+        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
         setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=admin-listener");
         setPageSessionAttribute(key="childType2" value="http");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.httpMap}")
+        mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
         setPageSessionAttribute(key="httpSectionTitle" value="$resource{i18n_web.grizzly.protocolNew.httpSectionTitle}");
 
         setPageSessionAttribute(key="fileCacheSectionTitle" value="$resource{i18n_web.grizzly.protocolNew.fileCacheSectionTitle}");

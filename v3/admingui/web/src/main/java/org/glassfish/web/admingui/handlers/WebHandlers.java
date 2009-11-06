@@ -51,6 +51,7 @@ import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.intf.config.VirtualServer;
 import org.glassfish.admin.amx.intf.config.grizzly.Http;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
@@ -93,7 +94,6 @@ public class WebHandlers {
         String protocolChoice = (String)attrMap.get("protocolChoice");
         String protocolName = "";
         String securityEnabled = attrMap.get("SecurityEnabled") ==null ? "false" : "true";
-
         // Take care protocol first.
         Map aMap = new HashMap();
         if ("create".equals(protocolChoice)){
@@ -126,8 +126,36 @@ public class WebHandlers {
 
         AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("network-listeners");
         amx.createChild("network-listener", nMap);
+
+        //get the virtual server and add this network listener to it.
+         Protocol protocol = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().getProtocols().getProtocol().get(protocolName);
+         if (protocol.getHttp() != null){
+             String vsName = (String) protocol.getHttp().getDefaultVirtualServer();
+             changeNetworkListenersInVS(vsName, (String) nMap.get("Name"),  true);
+         }
     }
 
+
+    private static void changeNetworkListenersInVS(String vsName, String listenerName, boolean addFlag){
+        //get the virtual server and add this network listener to it.
+        if (GuiUtil.isEmpty(vsName) || GuiUtil.isEmpty(listenerName)){
+            return;
+        }
+         VirtualServer vsProxy =  V3AMX.getInstance().getConfig("server-config").getHttpService().getVirtualServer().get(vsName);
+         List<String> listeners = GuiUtil.parseStringList(vsProxy.getNetworkListeners(), ",");
+         if (addFlag){
+             if (! listeners.contains(listenerName)){
+                 listeners.add(listenerName);
+             }
+         }else{
+             if (listeners.contains(listenerName)){
+                 listeners.remove(listenerName);
+             }
+         }
+         String ll = GuiUtil.listToString(listeners, ",");
+         vsProxy.setNetworkListeners(ll);
+    }
+    
 
      @Handler(id="findHttpProtocol",
         input={
@@ -186,6 +214,12 @@ public class WebHandlers {
                 Protocol protocol = listener.findProtocol();
                 List listenerList = findNetworkListeners(protocol);
                 nConfig.getNetworkListeners().removeChild("network-listener", listenerName);
+
+                //remove the network listener from the VS's attr list.
+                if (protocol.getHttp()!= null){
+                    changeNetworkListenersInVS(protocol.getHttp().getDefaultVirtualServer(), listenerName, false);
+                }
+
                 if (listenerList.size() == 1){
                     //this protocol is used only by this listener, test if this is also created by GUI.
                     if (protocol.getName().equals(listenerName+GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "grizzly.protocolExtension"))){
@@ -195,6 +229,33 @@ public class WebHandlers {
             }
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+
+    @Handler(id="updateNetworkListenerInVS",
+    input={
+        @HandlerInput(name = "previousVSName", type = String.class, required = true),
+        @HandlerInput(name = "protocolName", type = String.class, required = true)})
+    public static void updateNetworkListenerInVS(HandlerContext handlerCtx){
+
+        String previousVSName = (String) handlerCtx.getInputValue("previousVSName");
+        String protocolName = (String) handlerCtx.getInputValue("protocolName");
+        Protocol protocol = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().as(NetworkConfig.class).getProtocols().getProtocol().get(protocolName);
+        if (protocol.getHttp() == null){
+            // shouldn't get to this case.
+            return;
+        }
+        String newVSName = protocol.getHttp().getDefaultVirtualServer();
+        if (newVSName.equals(previousVSName)){
+            //the VS is not changed. no need to modify.
+            return;
+        }
+
+        List<NetworkListener> listenerList = findNetworkListeners(protocol);
+        for(NetworkListener one: listenerList){
+            changeNetworkListenersInVS(previousVSName, one.getName(), false);
+            changeNetworkListenersInVS(newVSName, one.getName(), true);
         }
     }
 
@@ -215,6 +276,9 @@ public class WebHandlers {
                 Protocol protocol = ps.get(protocolName);
                 List<NetworkListener> listenerList = findNetworkListeners(protocol);
                 for(NetworkListener one: listenerList){
+                    if (protocol.getHttp()!= null){
+                        changeNetworkListenersInVS(protocol.getHttp().getDefaultVirtualServer(), one.getName(), false);
+                    }
                     nConfig.getNetworkListeners().removeChild("network-listener", one.getName());
                 }
                 nConfig.getProtocols().removeChild("protocol", protocolName);
@@ -251,6 +315,4 @@ public class WebHandlers {
             nMap.put(key, defaultValue);
         }
     }
-
-
 }

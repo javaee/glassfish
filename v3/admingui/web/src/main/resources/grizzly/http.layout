@@ -55,13 +55,17 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=#{pageSession.Name}");
         setPageSessionAttribute(key="childType" value="http");
         proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
         if (#{requestScope.exist}){
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.httpMap}");
+            setPageSessionAttribute(key="previousVSName" value="#{pageSession.httpMap['DefaultVirtualServer']}" );
             setPageSessionAttribute(key="edit" value="#{true}" );
         }
         if (! #{requestScope.exist}){
             setPageSessionAttribute(key="edit" value="#{false}" )
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.httpMap}")
+            mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
+            setPageSessionAttribute(key="previousVSName" value="" );
         }
 
         setPageSessionAttribute(key="valueMap" value="#{pageSession.httpMap}");
@@ -74,6 +78,9 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+
+        setPageSessionAttribute(key="additionalSaveHandler" value="updateNetworkListenerInVS");
+        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="previousVSName:%23{pageSession.previousVSName},protocolName:%23{pageSession.protocolName}");
     />
     </event>
 #include "/common/shared/restart.inc"
