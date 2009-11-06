@@ -146,6 +146,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
                     WELD_DEPLOYMENT, DeploymentImpl.class);
                 deploymentImpl = buildDeploymentGraph(deploymentImpl);
+System.out.println(deploymentImpl.toString());
                 bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
                 bootstrap.startInitialization();
                 bootstrap.deployBeans();
@@ -327,12 +328,36 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     }
 
     private DeploymentImpl buildDeploymentGraph(DeploymentImpl deploymentImpl) {
+        List<BeanDeploymentArchive> jarBDAs = deploymentImpl.getJarBeanDeploymentArchives();
+        ListIterator jarIter = jarBDAs.listIterator();
+        while (jarIter.hasNext()) {
+            boolean modifiedArchive = false;
+            BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)jarIter.next();
+            ListIterator jarIter1 = jarBDAs.listIterator();
+            while (jarIter1.hasNext()) {
+                BeanDeploymentArchive jarBDA1 = (BeanDeploymentArchive)jarIter1.next();
+                if (jarBDA1.getId().equals(jarBDA.getId())) {
+                    continue;
+                }
+                jarBDA.getBeanDeploymentArchives().add(jarBDA1);
+                modifiedArchive = true;
+            }
+            if (modifiedArchive) {
+                int idx = deploymentImpl.getBeanDeploymentArchives().indexOf(jarBDA);
+                if (idx >= 0) {
+                    deploymentImpl.getBeanDeploymentArchives().remove(idx);
+                    deploymentImpl.getBeanDeploymentArchives().add(jarBDA);
+                }
+                modifiedArchive = false;
+            }
+        }            
+            
         List<BeanDeploymentArchive> warBDAs = deploymentImpl.getWarBeanDeploymentArchives();
         ListIterator lIter = warBDAs.listIterator();
         boolean modifiedArchive = false;
         while (lIter.hasNext()) {
             BeanDeploymentArchive warBDA = (BeanDeploymentArchive)lIter.next();
-            List<BeanDeploymentArchive> jarBDAs = deploymentImpl.getJarBeanDeploymentArchives();
+            jarBDAs = deploymentImpl.getJarBeanDeploymentArchives();
             ListIterator lIter1 = jarBDAs.listIterator();
             while (lIter1.hasNext()) {
                 BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)lIter1.next();
@@ -341,8 +366,10 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             }
             if (modifiedArchive) {
                 int idx = deploymentImpl.getBeanDeploymentArchives().indexOf(warBDA);
-                deploymentImpl.getBeanDeploymentArchives().remove(idx);
-                deploymentImpl.getBeanDeploymentArchives().add(warBDA);
+                if (idx >= 0) {
+                    deploymentImpl.getBeanDeploymentArchives().remove(idx);
+                    deploymentImpl.getBeanDeploymentArchives().add(warBDA);
+                }
                 modifiedArchive = false;
             }
         }

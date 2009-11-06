@@ -128,4 +128,15 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         return id;
     }
 
+    public String toString() {
+        String val = "ID: "+getId()+" CLASSES: "+getBeanClasses()+"\n"; 
+        Collection <BeanDeploymentArchive> bdas = getBeanDeploymentArchives();
+        Iterator iter = bdas.iterator();
+        while (iter.hasNext()) {
+            BeanDeploymentArchive bda = (BeanDeploymentArchive)iter.next();
+            val += "   ID: "+bda.getId()+" CLASSES: "+bda.getBeanClasses();
+        }
+        return val;
+    }
+
 }

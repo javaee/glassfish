@@ -270,4 +270,14 @@ public class DeploymentImpl implements Deployment {
         }
     }
 
+    public String toString() {
+        String val = null;
+        List<BeanDeploymentArchive> beanDeploymentArchives = getBeanDeploymentArchives();
+        ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator();        
+        while (lIter.hasNext()) {
+            BeanDeploymentArchive bda = lIter.next();
+            val += bda.toString(); 
+        }
+        return val;
+    }
 }
