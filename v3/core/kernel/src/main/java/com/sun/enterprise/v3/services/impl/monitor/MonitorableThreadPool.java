@@ -174,14 +174,14 @@ public class MonitorableThreadPool extends StatsThreadPool {
     @Override
     protected void onTaskQueued(Runnable task) {
         monitoring.getConnectionQueueProbeProvider().onTaskQueuedEvent(
-                monitoringId, task);
+                monitoringId, String.valueOf(task.hashCode()));
         super.onTaskQueued(task);
     }
 
     @Override
     protected void onTaskDequeued(Runnable task) {
         monitoring.getConnectionQueueProbeProvider().onTaskDequeuedEvent(
-                monitoringId, task);
+                monitoringId, String.valueOf(task.hashCode()));
         super.onTaskDequeued(task);
     }
 

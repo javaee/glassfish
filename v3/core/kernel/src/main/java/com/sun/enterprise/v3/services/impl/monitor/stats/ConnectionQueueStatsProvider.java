@@ -228,7 +228,7 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
     @ProbeListener("glassfish:kernel:connection-queue:onTaskQueuedEvent")
     public void onTaskQueuedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("task") Runnable task) {
+            @ProbeParam("task") String taskId) {
         if (name.equals(listenerName)) {
             final int queued = countQueuedAtomic.incrementAndGet();
             countQueued.setCount(queued);
@@ -252,7 +252,7 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
     @ProbeListener("glassfish:kernel:connection-queue:onTaskDequeuedEvent")
     public void onTaskDequeuedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("task") Runnable task) {
+            @ProbeParam("task") String taskId) {
         if (name.equals(listenerName)) {
             countQueued.setCount(countQueuedAtomic.decrementAndGet());
         }

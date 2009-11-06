@@ -50,7 +50,7 @@ public class KeepAliveProbeProvider {
     @Probe(name="setMaxCountRequestsEvent")
     public void setMaxCountRequestsEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("maxRequests") int max) {}
+            @ProbeParam("maxRequests") int maxRequests) {}
 
     @Probe(name="setTimeoutInSecondsEvent")
     public void setTimeoutInSecondsEvent(

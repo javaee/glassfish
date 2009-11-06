@@ -72,12 +72,12 @@ public class ConnectionQueueProbeProvider {
     @Probe(name = "onTaskQueuedEvent")
     public void onTaskQueuedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("task") Runnable task) {}
+            @ProbeParam("task") String taskId) {}
 
     @Probe(name = "onTaskDequeuedEvent")
     public void onTaskDequeuedEvent(
             @ProbeParam("listenerName") String listenerName,
-            @ProbeParam("task") Runnable task) {}
+            @ProbeParam("task") String taskId) {}
 
     @Probe(name = "onTaskQueueOverflowEvent")
     public void onTaskQueueOverflowEvent(
