@@ -38,6 +38,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.ResTypeConstraint;
 import java.util.List;
 
 import org.jvnet.hk2.config.Attribute;
@@ -79,6 +80,7 @@ import javax.validation.constraints.Pattern;
 
 @Configured
 @JdbcSteadyMaxPoolSizes
+@ResTypeConstraint        
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-connection-pool"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-connection-pool")
@@ -99,7 +101,6 @@ public interface JdbcConnectionPool extends ConfigBeanProxy, Injectable, Resourc
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getDatasourceClassname();
 
     /**

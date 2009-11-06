@@ -67,7 +67,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcConnectionPool.class);    
 
-    @Param(name="datasourceclassname")
+    @Param(name="datasourceclassname", optional=true)
     String datasourceclassname;
 
     @Param(optional=true, acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")

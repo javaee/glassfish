@@ -160,10 +160,6 @@ public class ResourcesUtil {
     public String getRANameofJdbcConnectionPool(JdbcConnectionPool pool) {
         String dsRAName = ConnectorConstants.JDBCDATASOURCE_RA_NAME;
 
-        if (pool.getResType() == null || (pool.getDatasourceClassname() == null && 
-                pool.getDriverClassname() == null)) {
-            return dsRAName;
-        }
         Class dsClass = null;
 
         if(pool.getDatasourceClassname() != null) {
