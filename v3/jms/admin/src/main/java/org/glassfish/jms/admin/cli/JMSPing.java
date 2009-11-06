@@ -150,7 +150,12 @@ public class JMSPing implements AdminCommand {
 
         Properties properties = new Properties();
         properties.put("imqDefaultUsername",userName);
-        properties.put("imqDefaultPassword",password);
+         if (isPasswordAlias(password)){
+                       //If the string is a password alias, it needs to be escapted with another pair of quotes...
+                       properties.put("imqDefaultPassword", "\"" + password + "\"");
+         }else
+             properties.put("imqDefaultPassword",password);
+
        //need to escape the addresslist property so that they get passed on correctly to the create-connector-connection-pool command
         properties.put("AddressList", "\"mq://"+host + ":"+ port +"\"");
 
@@ -166,6 +171,12 @@ public class JMSPing implements AdminCommand {
 
         commandRunner.getCommandInvocation("create-jms-resource", subReport).parameters(aoAttrList).execute();
 
+    }
+    private boolean isPasswordAlias(String password){
+        if (password != null && password.contains("${ALIAS"))
+            return true;
+
+        return false;
     }
 
     boolean pingConnectionPool(String tmpJMSResource) throws ResourceException
