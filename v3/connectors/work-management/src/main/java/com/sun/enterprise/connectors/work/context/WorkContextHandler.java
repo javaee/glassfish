@@ -217,32 +217,33 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
             }
 
             List<WorkContext> contexts = icp.getWorkContexts();
-            for (WorkContext ic : contexts) {
+            if (contexts != null) {
+                for (WorkContext ic : contexts) {
+                    WorkContextLifecycleListener listener = getListener(ic);
 
-                WorkContextLifecycleListener listener = getListener(ic);
-
-                //JSR-322-WORK-CONTEXT-REQ strict=false in the method below as the check has to be lenient.
-                if (isContextSupported(false, ic.getClass().getName())) {
-                    if (isUniqueSubmission(ic, validContexts)) {
-                        validContexts.add(ic);
+                    //JSR-322-WORK-CONTEXT-REQ strict=false in the method below as the check has to be lenient.
+                    if (isContextSupported(false, ic.getClass().getName())) {
+                        if (isUniqueSubmission(ic, validContexts)) {
+                            validContexts.add(ic);
+                        } else {
+                            //JSR-322-WORK-CONTEXT-REQ If a particular IC type is submitted twice,
+                            // container does not support it, fail work submission.
+                            WorkCompletedException wce = new WorkCompletedException();
+                            wce.setErrorCode(WorkContextErrorCodes.DUPLICATE_CONTEXTS);
+                            logger.log(Level.WARNING, "workcontext.duplicate_work_context", ic.getClass().getName());
+                            notifyContextSetupFailure(listener, WorkContextErrorCodes.DUPLICATE_CONTEXTS);
+                            throw wce;
+                        }
                     } else {
-                        //JSR-322-WORK-CONTEXT-REQ If a particular IC type is submitted twice,
-                        // container does not support it, fail work submission.
+                        //JSR-322-WORK-CONTEXT-REQ   unable to handle the work context or its generic type
+                        // (any of its super types) container does not support it, fail work submission.
                         WorkCompletedException wce = new WorkCompletedException();
-                        wce.setErrorCode(WorkContextErrorCodes.DUPLICATE_CONTEXTS);
-                        logger.log(Level.WARNING, "workcontext.duplicate_work_context", ic.getClass().getName());
-                        notifyContextSetupFailure(listener, WorkContextErrorCodes.DUPLICATE_CONTEXTS);
+                        Object params[] = {ic.getClass().getName(), wce};
+                        wce.setErrorCode(WorkContextErrorCodes.UNSUPPORTED_CONTEXT_TYPE);
+                        logger.log(Level.WARNING, "workcontext.cannot_handle_context", params);
+                        notifyContextSetupFailure(listener, WorkContextErrorCodes.UNSUPPORTED_CONTEXT_TYPE);
                         throw wce;
                     }
-                } else {
-                    //JSR-322-WORK-CONTEXT-REQ   unable to handle the work context or its generic type
-                    // (any of its super types) container does not support it, fail work submission.
-                    WorkCompletedException wce = new WorkCompletedException();
-                    Object params[] = {ic.getClass().getName(), wce};
-                    wce.setErrorCode(WorkContextErrorCodes.UNSUPPORTED_CONTEXT_TYPE);
-                    logger.log(Level.WARNING, "workcontext.cannot_handle_context", params);
-                    notifyContextSetupFailure(listener, WorkContextErrorCodes.UNSUPPORTED_CONTEXT_TYPE);
-                    throw wce;
                 }
             }
         }
@@ -612,10 +613,12 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
         if (work instanceof WorkContextProvider) {
             WorkContextProvider icp = (WorkContextProvider) work;
             List<WorkContext> icList = icp.getWorkContexts();
-            for (WorkContext ic : icList) {
-                if (ic instanceof TransactionContext) {
-                    ec = (TransactionContext) ic;
-                    break;
+            if(icList != null){
+                for (WorkContext ic : icList) {
+                    if (ic instanceof TransactionContext) {
+                        ec = (TransactionContext) ic;
+                        break;
+                    }
                 }
             }
         }
