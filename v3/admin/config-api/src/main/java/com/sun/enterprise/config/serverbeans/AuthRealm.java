@@ -51,6 +51,8 @@ import org.glassfish.api.admin.RestRedirect;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.FileRealmPropertyCheck;
+
 /**
  *
  */
@@ -60,6 +62,7 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
+@FileRealmPropertyCheck
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-auth-realm"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-auth-realm")
