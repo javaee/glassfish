@@ -35,8 +35,6 @@
  */
 package org.glassfish.javaee.full.deployment;
 
-import com.sun.enterprise.module.Module;
-import java.io.OutputStream;
 import org.glassfish.api.deployment.*;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Container;
@@ -44,7 +42,6 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.*;
@@ -60,10 +57,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -71,14 +65,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.IOException;
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DummyApplication;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * EarDeployer to deploy composite Java EE applications.
@@ -88,18 +76,12 @@ import org.jvnet.hk2.component.PostConstruct;
  */
 @Service
 @Scoped(PerLookup.class)
-public class EarDeployer implements Deployer, PostConstruct {
+public class EarDeployer implements Deployer {
 
 //    private static final Class GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS =
 //            org.glassfish.appclient.client.AppClientGroupFacade.class;
 // Currently using a string instead of a Class constant to avoid a circular
 // dependency.  
-    private static final String GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME =
-            "org.glassfish.appclient.client.AppClientGroupFacade";
-
-    private static final Attributes.Name GLASSFISH_APPCLIENT_GROUP = new Attributes.Name("GlassFish-AppClient-Group");
-    private static final String GF_CLIENT_MODULE_NAME = "org.glassfish.appclient.gf-client-module";
-
     @Inject
     Habitat habitat;
 
@@ -120,22 +102,6 @@ public class EarDeployer implements Deployer, PostConstruct {
 
     @Inject
     Events events;
-
-    @Inject
-    private DownloadableArtifacts artifacts;
-
-    @Inject
-    private ModulesRegistry modulesRegistry;
-
-    private ClassLoader gfClientModuleClassLoader;
-
-    public void postConstruct() {
-        for (Module module : modulesRegistry.getModules(GF_CLIENT_MODULE_NAME)) {
-            gfClientModuleClassLoader = module.getClassLoader();
-        }
-    }
-
-
 
     final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
@@ -190,125 +156,15 @@ public class EarDeployer implements Deployer, PostConstruct {
     }
 
     protected void generateArtifacts(final DeploymentContext context) throws DeploymentException {
-
         /*
-         * For EARs, currently only nested app clients will generate artifacts.
+         * The EAR-level app client artifact - the app client group facade -
+         * is generated the first time an app client facade is generated.  At
+         * that time all other deployers have run so any client artifacts
+         * they create will be available and can be packaged into the group
+         * facade.
          */
-
-        // In embedded mode, we don't process app clients so far.
-        if (habitat.getComponent(ProcessEnvironment.class).getProcessType().isEmbedded()) {
-            return;
-        }
-
-
-        final Application application = context.getModuleMetaData(Application.class);
-        final Collection<ModuleDescriptor<BundleDescriptor>> appClients =
-                application.getModuleDescriptorsByType(XModuleType.CAR);
-
-        final StringBuilder appClientGroupListSB = new StringBuilder();
-
-        /*
-        /*
-         * For each app client, get its facade's URI to include in the
-         * generated EAR facade's client group listing.
-         */
-        for (Iterator<ModuleDescriptor<BundleDescriptor>> it = appClients.iterator(); it.hasNext(); ) {
-            ModuleDescriptor<BundleDescriptor> md = it.next();
-            appClientGroupListSB.append((appClientGroupListSB.length() > 0) ? " " : "")
-                    .append(earDirUserURI(context)).append(appClientFacadeUserURI(md.getArchiveUri()));
-        }
-
-        try {
-            generateAndRecordEARFacade(
-                    context,
-                    application.getRegistrationName(),
-                    context.getScratchDir("xml"),
-                    generatedEARFacadeName(application.getRegistrationName()), appClientGroupListSB.toString());
-        } catch (Exception e) {
-            throw new DeploymentException(e);
-        }
-
-
     }
-
-    private String earDirUserURI(final DeploymentContext dc) {
-        final DeployCommandParameters deployParams = dc.getCommandParameters(DeployCommandParameters.class);
-        final String appName = deployParams.name();
-        return appName + "Client/";
-    }
-
-    private String appClientFacadeUserURI(String appClientModuleURIText) {
-        if (appClientModuleURIText.endsWith("_jar")) {
-            appClientModuleURIText = appClientModuleURIText.substring(0, appClientModuleURIText.lastIndexOf("_jar")) + ".jar";
-        }
-        final int dotJar = appClientModuleURIText.lastIndexOf(".jar");
-        String appClientFacadePath = appClientModuleURIText.substring(0, dotJar) + "Client.jar";
-        return appClientFacadePath;
-    }
-
-    public static String generatedEARFacadeName(final String earName) {
-        return generatedEARFacadePrefix(earName) + ".jar";
-    }
-
-    public static String generatedEARFacadePrefix(final String earName) {
-        return earName + "Client";
-    }
-
-    private void generateAndRecordEARFacade(
-            final DeploymentContext dc,
-            final String earName,
-            final File appScratchDir,
-            final String facadeFileName,
-            final String appClientGroupList) throws IOException {
-
-        File generatedJar = new File(appScratchDir, facadeFileName);
-        OutputJarArchive facadeArchive = new OutputJarArchive();
-        facadeArchive.create(generatedJar.toURI());
-
-        Manifest manifest = facadeArchive.getManifest();
-        Attributes mainAttrs = manifest.getMainAttributes();
-
-        mainAttrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        mainAttrs.put(Attributes.Name.MAIN_CLASS, GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME);
-        mainAttrs.put(GLASSFISH_APPCLIENT_GROUP, appClientGroupList);
-
-
-        //Now manifest is ready to be written into the facade jar
-        OutputStream os = facadeArchive.putNextEntry(JarFile.MANIFEST_NAME);
-        manifest.write(os);
-        facadeArchive.closeEntry();
-
-        final String mainClassResourceName =
-                GLASSFISH_APPCLIENT_GROUP_FACADE_CLASS_NAME.replace('.', '/') +
-                ".class";
-        os = facadeArchive.putNextEntry(mainClassResourceName);
-
-        try {
-            InputStream is = openByteCodeStream("/" + mainClassResourceName);
-            FileUtils.copyStream(is, os);
-            is.close();
-        } catch (Exception e) {
-            throw new DeploymentException(e);
-        }
-
-        Set<DownloadableArtifacts.FullAndPartURIs> downloads =
-                    new HashSet<DownloadableArtifacts.FullAndPartURIs>();
-        DownloadableArtifacts.FullAndPartURIs download =
-                new DownloadableArtifacts.FullAndPartURIs(
-                    generatedJar.toURI(), facadeFileName);
-        downloads.add(download);
-        artifacts.addArtifacts(earName, downloads);
-        dc.addTransientAppMetaData("earFacadeDownload", download);
-    }
-
-    protected InputStream openByteCodeStream(final String resourceName) throws IOException {
-        URL url = gfClientModuleClassLoader.getResource(resourceName);
-        if (url == null) {
-            throw new IllegalArgumentException(resourceName);
-        }
-        InputStream is = url.openStream();
-        return is;
-    }
+        
     
     private class CompositeApplicationInfo extends ApplicationInfo {
 

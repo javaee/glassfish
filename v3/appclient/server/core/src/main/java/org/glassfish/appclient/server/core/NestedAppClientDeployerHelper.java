@@ -48,8 +48,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +60,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -86,7 +87,6 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     private static final String LIBRARY_DOCUMENT_TEMPLATE =
             JavaWebStartInfo.DOC_TEMPLATE_PREFIX + "libraryJarsDocumentTemplate.jnlp";
 
-
     private StringBuilder classPathForFacade = new StringBuilder();
     private StringBuilder PUScanTargetsForFacade = new StringBuilder();
 
@@ -107,9 +107,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
      * app client's class path
      */
     private final Set<FullAndPartURIs> clientLevelDownloads = new HashSet<FullAndPartURIs>();
-    private final Set<FullAndPartURIs> earLevelDownloads = new HashSet<FullAndPartURIs>();
+    private Set<FullAndPartURIs> earLevelDownloads = null;
+    private final static String EAR_LEVEL_DOWNLOADS_KEY = "earLevelDownloads";
 
     private final Habitat habitat;
+
+    private final AppClientGroupFacadeGenerator groupFacadeGenerator;
 
     /** recognizes expanded directory names for submodules */
     private static final Pattern submoduleURIPattern = Pattern.compile("(.*)_([wcrj]ar)$");
@@ -122,12 +125,27 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             final Application application,
             final Habitat habitat,
             final ASJarSigner jarSigner) throws IOException {
-        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, application);
+        super(dc, bundleDesc, archivist, gfClientModuleClassLoader, application, habitat);
         this.habitat = habitat;
+        groupFacadeGenerator = habitat.getComponent(AppClientGroupFacadeGenerator.class);
         this.jarSigner = jarSigner;
         earURI = dc.getSource().getParentArchive().getURI();
         processDependencies();
     }
+
+    @Override
+    protected void prepareJARs() throws IOException, URISyntaxException {
+        super.prepareJARs();
+
+        // In embedded mode, we don't process app clients so far.
+        if (habitat.getComponent(ProcessEnvironment.class).getProcessType().isEmbedded()) {
+            return;
+        }
+
+        groupFacadeGenerator.run(this);
+
+    }
+
 
     @Override
     public FixedContent fixedContentWithinEAR(String uriString) {
@@ -184,6 +202,17 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 libExtensionElementsForMainDocument.toString());
     }
 
+    public Set<FullAndPartURIs> earLevelDownloads() {
+        if (earLevelDownloads == null) {
+            earLevelDownloads = dc().getTransientAppMetaData(EAR_LEVEL_DOWNLOADS_KEY, HashSet.class);
+            if (earLevelDownloads == null) {
+                earLevelDownloads = new HashSet<FullAndPartURIs>();
+                dc().addTransientAppMetaData(EAR_LEVEL_DOWNLOADS_KEY, earLevelDownloads);
+            }
+        }
+        return earLevelDownloads;
+    }
+
     private String libJARRelPath(final URI absURI) {
         return JavaWebStartInfo.relativeURIForProvidedOrGeneratedAppFile(dc(), absURI, this).toASCIIString();
     }
@@ -221,6 +250,16 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         classPathForFacade.append(appClientURI);
 
         /*
+         * Because the group facade contains generated stubs (if any), add the
+         * relative path to the group facade to the facade's Class-Path so those
+         * stubs will be accessible via the class path at runtime.
+         */
+
+        final URI groupFacadeURIRelativeToFacade =
+                facadeUserURI(dc()).relativize(relativeURIToGroupFacade());
+        classPathForFacade.append(" ").append(groupFacadeURIRelativeToFacade.toASCIIString());
+
+        /*
          * For a nested app client, the required downloads include the
          * developer's original app client JAR, the generated facade JAR,
          * the generated EAR-level facade, and
@@ -229,9 +268,6 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          *
          * If the user has selected compatibility with v2 behavior, then also
          * consider EJB submodules and JARs at the top level of the EAR.
-         *
-         * Note that the EAR deployer will add the EAR-level facade as a download
-         * for each of its submodule app clients.
          */
         clientLevelDownloads.add(new DownloadableArtifacts.FullAndPartURIs(
                 facadeServerURI(dc()),
@@ -253,7 +289,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         processDependencies(
                 earURI,
                 URI.create(appClientURIWithinEAR),
-                earLevelDownloads,
+                earLevelDownloads(),
                 dependencyURIsProcessed,
                 appClientURI,
                 false /* isDependencyALibrary */);
@@ -402,7 +438,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
          * Process this library JAR to record the need to download it
          * and any JARs or directories it depends on.
          */
-        processDependencies(earURI, fileURIForJAR, earLevelDownloads, dependencyURIsProcessed,
+        processDependencies(earURI, fileURIForJAR, earLevelDownloads(), dependencyURIsProcessed,
                 jarURIForFacade, true /* isDependencyALibrary */);
     }
 
@@ -672,11 +708,6 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
-    public Set<FullAndPartURIs> earLevelDownloads() {
-        return earLevelDownloads;
-    }
-
-    @Override
     protected Set<FullAndPartURIs> clientLevelDownloads() throws IOException {
         return clientLevelDownloads;
     }
@@ -708,6 +739,21 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     @Override
     public URI facadeUserURI(DeploymentContext dc) {
         return URI.create(appName(dc) + "Client/" + relativeFacadeURI(dc));
+    }
+
+    @Override
+    public URI groupFacadeUserURI(DeploymentContext dc) {
+        return relativeGroupFacadeURI(dc);
+    }
+
+    @Override
+    public URI groupFacadeServerURI(DeploymentContext dc) {
+        File genXMLDir = dc.getScratchDir("xml");
+        return genXMLDir.toURI().resolve(relativeGroupFacadeURI(dc));
+    }
+
+    private URI relativeGroupFacadeURI(DeploymentContext dc) {
+        return URI.create(appName(dc) + "Client.jar");
     }
 
     private URI relativeFacadeURI(DeploymentContext dc) {

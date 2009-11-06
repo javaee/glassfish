@@ -225,7 +225,7 @@ public class AppClientDeployer
         }
         appclientDesc.setClassLoader(dc.getClassLoader());
         AppClientDeployerHelper helper = savedHelper(dc);
-        helper.addGroupFacadeToEARDownloads();
+//        helper.addGroupFacadeToEARDownloads();
         final AppClientServerApplication newACServerApp = newACServerApp(dc, helper);
         appClientApps.add(newACServerApp);
         return newACServerApp;

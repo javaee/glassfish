@@ -142,6 +142,8 @@ public class JavaWebStartInfo implements ConfigListener {
             "client.facade.jar.path";
     private static final String CLIENT_JAR_PATH_PROPERTY_NAME =
             "client.jar.path";
+    private static final String GROUP_FACADE_PATH_PROPERTY_NAME =
+            "group.facade.jar.path";
 
 
     /**
@@ -443,6 +445,14 @@ public class JavaWebStartInfo implements ConfigListener {
                 helper.facadeUserURI(dc),
                 CLIENT_FACADE_JAR_PATH_PROPERTY_NAME);
 
+        if ( ! acDesc.isStandalone()) {
+            createAndAddSignedStaticContentFromGeneratedFile(
+                    staticContent,
+                    helper.groupFacadeServerURI(dc),
+                    helper.groupFacadeUserURI(dc),
+                    GROUP_FACADE_PATH_PROPERTY_NAME);
+        }
+        
         /*
          * Make sure that there are versions of gf-client.jar and gf-client-module.jar
          * that are signed by the same cert used to sign the facade JAR for

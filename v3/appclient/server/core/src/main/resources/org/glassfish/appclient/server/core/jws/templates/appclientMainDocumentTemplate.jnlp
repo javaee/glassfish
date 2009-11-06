@@ -66,6 +66,12 @@
             Start might support the splash screen in the JAR.
         -->
         <jar href="${client.facade.jar.path}" main="true" />
+        
+        <!--
+            If the client is part of an EAR then there will be an EAR-level
+            generated facade JAR file.
+        -->
+        ${group.facade.jar.element}
 
         <!--
             These next JARs will have been signed using the

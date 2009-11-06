@@ -57,6 +57,7 @@ public abstract class TokenHelper {
 
     private static final String AGENT_JAR = "gf-client.jar";
     private static final String DYN_PREFIX = "___dyn/";
+    private static final String GROUP_JAR_ELEMENT_PROPERTY_NAME = "group.facade.jar.element";
 
     private Properties tokens;
     protected final AppClientDeployerHelper dHelper;
@@ -206,6 +207,12 @@ public abstract class TokenHelper {
          */
         t.setProperty("appclient.main.information.images", iconElements(vendorInfo));
 
+        /*
+         * For clients in an EAR there will be an EAR-level generated group facade
+         * JAR to include in the downloaded files.
+         */
+        t.setProperty(GROUP_JAR_ELEMENT_PROPERTY_NAME,
+                "<jar href=\"" + dHelper.groupFacadeUserURI(dHelper.dc()) + "\"/>");
         setSystemJNLPTokens(t);
         return t;
 

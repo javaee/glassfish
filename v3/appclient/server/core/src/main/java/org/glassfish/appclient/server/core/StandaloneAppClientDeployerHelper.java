@@ -59,6 +59,7 @@ import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Encapsulates logic that is specific to stand-alone app client
@@ -77,9 +78,10 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final Application application) throws IOException {
+            final Application application,
+            final Habitat habitat) throws IOException {
         super(dc, bundleDesc, archivist, gfClientModuleClassLoader, 
-                application);
+                application, habitat);
     }
 
     /**
@@ -158,6 +160,18 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     public URI facadeUserURI(DeploymentContext dc) {
         return URI.create(facadeFileNameAndType(dc));
     }
+
+    @Override
+    public URI groupFacadeUserURI(DeploymentContext dc) {
+        return null;
+    }
+
+    @Override
+    public URI groupFacadeServerURI(DeploymentContext dc) {
+        return null;
+    }
+
+
 
     /**
      * Returns the URI for the developer's original app client JAR within the

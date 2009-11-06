@@ -40,22 +40,20 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -64,7 +62,6 @@ import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
-import org.glassfish.deployment.common.ClientArtifactsManager;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.jvnet.hk2.component.Habitat;
 
@@ -92,6 +89,8 @@ public abstract class AppClientDeployerHelper {
     private final ClassLoader gfClientModuleClassLoader;
 
     private final Application application;
+
+    private final Habitat habitat;
 
     /**
      * Returns the correct concrete implementation of Helper.
@@ -122,7 +121,8 @@ public abstract class AppClientDeployerHelper {
                                     bundleDesc,
                                     archivist,
                                     gfClientModuleLoader,
-                                    application));
+                                    application,
+                                    habitat));
     }
 
     protected AppClientDeployerHelper(
@@ -130,15 +130,16 @@ public abstract class AppClientDeployerHelper {
             final ApplicationClientDescriptor bundleDesc,
             final AppClientArchivist archivist,
             final ClassLoader gfClientModuleClassLoader,
-            final Application application) throws IOException {
+            final Application application,
+            final Habitat habitat) throws IOException {
         super();
         this.dc = dc;
         this.appClientDesc = bundleDesc;
         this.archivist = archivist;
+        this.habitat = habitat;
         this.gfClientModuleClassLoader = gfClientModuleClassLoader;
         this.appName = appClientDesc.getApplication().getRegistrationName();
         this.clientName = appClientDesc.getModuleDescriptor().getArchiveUri();
-
         this.application = application;
     }
 
@@ -158,6 +159,17 @@ public abstract class AppClientDeployerHelper {
      */
     public abstract URI facadeUserURI(DeploymentContext dc);
 
+    /**
+     * Returns the URI for the group facade JAR, relative to the download
+     * directory to which the user will fetch the relevant JARs (either
+     * as part of "deploy --retrieve" or "get-client-stubs."
+     * @param dc the deployment context for the current deployment
+     * @return
+     */
+    public abstract URI groupFacadeUserURI(DeploymentContext dc);
+
+    public abstract URI groupFacadeServerURI(DeploymentContext dc);
+    
     /**
      * Returns the file name (and type) for the facade, excluding any
      * directory information.
@@ -342,8 +354,8 @@ public abstract class AppClientDeployerHelper {
         facadeMainAttrs.put(AppClientArchivist.GLASSFISH_ANCHOR_DIR, anchorDirRelativeToClient());
         
         if ( ! appClientDesc.isStandalone()) {
-            final DownloadableArtifacts.FullAndPartURIs earFacadeDownload =
-                dc().getTransientAppMetaData("earFacadeDownload", DownloadableArtifacts.FullAndPartURIs.class);
+//            final DownloadableArtifacts.FullAndPartURIs earFacadeDownload =
+//                dc().getTransientAppMetaData("earFacadeDownload", DownloadableArtifacts.FullAndPartURIs.class);
 
             facadeMainAttrs.put(AppClientArchivist.GLASSFISH_GROUP_FACADE,
                     relativePathToGroupFacade());
@@ -360,6 +372,11 @@ public abstract class AppClientDeployerHelper {
         }
         return sb.toString();
     }
+
+    protected URI relativeURIToGroupFacade() {
+        return URI.create(relativePathToGroupFacade());
+    }
+    
     private String relativePathToGroupFacade() {
         final StringBuilder sb = new StringBuilder(anchorDirRelativeToClient());
         /*
@@ -376,6 +393,10 @@ public abstract class AppClientDeployerHelper {
     }
 
     protected void prepareJARs() throws IOException, URISyntaxException {
+        // In embedded mode, we don't process app clients so far.
+        if (habitat.getComponent(ProcessEnvironment.class).getProcessType().isEmbedded()) {
+            return;
+        }
         generateAppClientFacade();
     }
 
@@ -429,25 +450,7 @@ public abstract class AppClientDeployerHelper {
 
         copyMainClass(facadeArchive);
 
-        copyArtifactsFromOtherDeployers(facadeArchive, dc);
-
         facadeArchive.close();
-    }
-
-    private void copyArtifactsFromOtherDeployers(
-            final WritableArchive facadeArchive,
-            final DeploymentContext dc) throws IOException {
-        final ClientArtifactsManager artifacts = ClientArtifactsManager.get(dc);
-        for (DownloadableArtifacts.FullAndPartURIs artifact : artifacts.artifacts()) {
-            OutputStream os = facadeArchive.putNextEntry(artifact.getPart().toASCIIString());
-            InputStream is = new BufferedInputStream(new FileInputStream(new File(artifact.getFull())));
-            copyStream(is, os);
-            try {
-                is.close();
-                facadeArchive.closeEntry();
-            } catch (IOException ignore) {
-            }
-        }
     }
 
     private void copyClass(final WritableArchive facadeArchive,

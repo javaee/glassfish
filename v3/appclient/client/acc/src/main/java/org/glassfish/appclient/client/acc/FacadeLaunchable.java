@@ -353,7 +353,11 @@ public class FacadeLaunchable implements Launchable {
             }
             URI clientURI = clientFacadeURI.resolve(gfAppClient);
             ReadableArchive clientRA = af.openArchive(clientURI);
-
+            if ( ! clientRA.exists()) {
+                throw new UserError(MessageFormat.format(
+                        logger.getResourceBundle().getString("appclient.missingClient"),
+                        new File(clientRA.getURI().getSchemeSpecificPart()).getAbsolutePath()));
+            }
             AppClientArchivist facadeClientArchivist = getArchivist(habitat);
             MultiReadableArchive combinedRA = openCombinedReadableArchive(habitat, clientFacadeRA, clientRA);
             final ApplicationClientDescriptor facadeClientDescriptor = facadeClientArchivist.open(combinedRA);
@@ -365,7 +369,7 @@ public class FacadeLaunchable implements Launchable {
                 throw new UserError(MessageFormat.format(
                         logger.getResourceBundle().getString("appclient.noMFInFacade"),
                         clientRA instanceof FileArchive ? 1 : 0,
-                        new File(clientRA.getURI()).getAbsolutePath()));
+                        new File(clientRA.getURI().getSchemeSpecificPart()).getAbsolutePath()));
             }
             Attributes mainAttrs = clientMF.getMainAttributes();
             if (mainAttrs == null) {
