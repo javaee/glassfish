@@ -193,6 +193,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
                 !initSql.equals("")) {
         try {
                 stmt = actualConnection.prepareStatement(initSql);
+                _logger.log(Level.FINE, "jdbc.executing_init_sql", initSql);
                 stmt.execute();
             } catch (SQLException sqle) {
                 _logger.log(Level.WARNING, "jdbc.exc_init_sql_error", initSql);
@@ -208,7 +209,7 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
             }
             initSqlExecuted = true;
         }
-               
+        _logger.log(Level.FINE, "jdbc.execute_init_sql_end");       
     }
 
     private void tuneStatementCaching(int statementCacheSize, 

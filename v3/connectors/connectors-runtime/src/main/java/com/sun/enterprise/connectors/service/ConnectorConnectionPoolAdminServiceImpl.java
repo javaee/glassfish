@@ -322,7 +322,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             throws ConnectorRuntimeException {
 
         if (poolName == null) {
-            _logger.log(Level.WARNING, "Deletion of pool : poolName null.");
+            _logger.log(Level.WARNING, "ccp_adm.null_pool_name");
             String i18nMsg = localStrings.getString("ccp_adm.null_pool_name");
             throw new ConnectorRuntimeException(i18nMsg);
         }
