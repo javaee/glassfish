@@ -47,7 +47,6 @@ import javax.servlet.*;
 import javax.servlet.jsp.JspFactory;
 import com.sun.appserv.server.util.Version;
 import com.sun.common.util.logging.LoggingConfigImpl;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.DasConfig;
@@ -55,7 +54,6 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
@@ -73,18 +71,23 @@ import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.v3.services.impl.ContainerMapper;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.WebConfigListener;
+import com.sun.grizzly.config.ContextRootInfo;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.util.buf.MessageBytes;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.hk2.component.ConstructorWomb;
 import com.sun.logging.LogDomains;
+import java.net.BindException;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
@@ -780,6 +783,47 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             throw new IllegalArgumentException(msg);
         }
 
+        if (mapper == null) {
+            for (Mapper m : habitat.getAllByContract(Mapper.class)) {
+                if (m.getPort() == port) {
+                    mapper = m;
+                    break;
+                }
+            }
+        }
+
+        String defaultVS =  listener.findHttpProtocol().getHttp().getDefaultVirtualServer();
+        if (!defaultVS.equals(org.glassfish.api.web.Constants.ADMIN_VS)){
+            // Before we start a WebConnector, let's makes sure there is
+            // not another Container already listening on that port
+            MessageBytes host = MessageBytes.newInstance();
+            char[] c = defaultVS.toCharArray();
+            host.setChars(c, 0, c.length);
+
+            MessageBytes mb = MessageBytes.newInstance();
+            mb.setChars(new char[]{'/'}, 0, 1);
+
+            MappingData md = new MappingData();
+            try{
+                mapper.map(host,mb,md);
+            } catch (Exception e){
+                if (_logger.isLoggable(Level.FINE)){
+                    _logger.log(Level.FINE,"",e);
+                }
+            }
+
+            if (md.context != null && md.context instanceof ContextRootInfo){
+                ContextRootInfo r = (ContextRootInfo)md.context;
+                if (!(r.getAdapter() instanceof ContainerMapper)){
+                    new BindException("Port " + port +  " is already used by Container: "
+                            + r.getAdapter() +
+                            " and will not get started.").printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+
         /*
          * Create Connector. Connector is SSL-enabled if
          * 'security-enabled' attribute in <http-listener>
@@ -804,16 +848,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         connector = (WebConnector)_embedded.createConnector(
             address, port, isSecure);
 
-        if (mapper != null) {
-            connector.setMapper(mapper);
-        } else {
-            for (Mapper m : habitat.getAllByContract(Mapper.class)) {
-                if (m.getPort() == port) {
-                    connector.setMapper(m);
-                    break;
-                }
-            }
-        }
+        connector.setMapper(mapper);
+       
 
         _logger.info("Created HTTP listener " + listener.getName() +
                      " on port " + listener.getPort());
