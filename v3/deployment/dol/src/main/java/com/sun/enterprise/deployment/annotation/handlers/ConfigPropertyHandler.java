@@ -44,12 +44,16 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.IllegalStateException;
 import java.util.Set;
 import java.util.List;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
+import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.*;
 import org.jvnet.hk2.annotations.Service;
 
@@ -61,6 +65,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
 
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);
+
+    protected static Logger logger = AnnotationUtils.getLogger();
+
+    private static final String SUCCESS = "success";
 
     public Class<? extends Annotation> getAnnotationType() {
         return ConfigProperty.class;
@@ -74,78 +82,50 @@ public class ConfigPropertyHandler extends AbstractHandler {
 
             RarBundleContext rbc = (RarBundleContext) aeHandler;
             ConnectorDescriptor desc = rbc.getDescriptor();
+            handleConfigPropertyAnnotation(configProperty, element, desc);
+        } else {
+            return getFailureResult(element, "not a rar bundle context", true);
+        }
+        return getDefaultProcessedResult();
+    }
 
-            String defaultValue = configProperty.defaultValue();
+    public HandlerProcessingResult handleConfigPropertyAnnotation(
+            ConfigProperty configProperty, AnnotationInfo element, ConnectorDescriptor desc){
+                    String defaultValue = configProperty.defaultValue();
             String[] description = configProperty.description();
             boolean ignore = configProperty.ignore();
             boolean supportsDynamicUpdates = configProperty.supportsDynamicUpdates();
             boolean confidential = configProperty.confidential();
-            
+
             Class type = configProperty.type();
 
             if (element.getElementType().equals(ElementType.METHOD)) {
-
                 Method m = (Method) element.getAnnotatedElement();
+                String result = validateMethod(m, configProperty);
 
-                Class[] parameters = m.getParameterTypes();
-                Class propertyType;
-                if (parameters != null) {
-                    if (parameters.length == 1) {
-                        propertyType = parameters[0];
-                    } else {
-                        return getFailureResult(element, "more than one parameter for JavaBean setter method : " +
-                                "[" + m.getName() + " ] ", true);
-                    }
-                } else {
-                    return getFailureResult(element, "no parameters for JavaBean setter method : " +
-                            "[" + m.getName() + " ] ", true);
+                if(!result.equals(SUCCESS)){
+                    return getFailureResult(element, result, true);
                 }
 
-                if (type.equals(Object.class)) {
-                    type = propertyType;
-                } else {
-                    //check compatibility between annotation type and property-type
-                    if (!propertyType.isAssignableFrom(type)) {
-                        if(type.isPrimitive()){
-                            type = getWrapperClass(type.getName());
-                        }else if(propertyType.isPrimitive()){
-                            propertyType = getWrapperClass(propertyType.getName());
-                        }
-
-                        if(!propertyType.isAssignableFrom(type)){
-                            return getFailureResult(element, "annotation type [" + type + "] and property-type" +
-                                    " [" + propertyType + "] " +
-                                    "are not assignment compatible", true);
-                        }
-                    }
-                }
-
+                type = getType(configProperty, m.getParameterTypes()[0]);
                 //XXX: Siva: For now use the first provided description
                 String firstDesc = "";
-                if (description.length > 0){
-                    firstDesc = description[0];
-                }
+                if (description.length > 0) firstDesc = description[0];
                 ConnectorConfigProperty ep = getConfigProperty(defaultValue, firstDesc, ignore,
                         supportsDynamicUpdates, confidential, type, m.getName().substring(3));
 
-
-                Class declaringClass = m.getDeclaringClass();
-                handleConfigPropertyAnnotation(element, desc, ep, declaringClass);
+                handleConfigPropertyAnnotation(element, desc, ep, m.getDeclaringClass());
 
             } else if (element.getElementType().equals(ElementType.FIELD)) {
                 Field f = (Field) element.getAnnotatedElement();
-                Class c = f.getDeclaringClass();
-                Class returnType = f.getType();
-                if (type.equals(Object.class)) {
-                    type = returnType;
-                } else {
-                    //check compatibility between annotation type and return-type
-                    if (!returnType.isAssignableFrom(type)) {
-                        return getFailureResult(element, "annotation type [" + type + "] " +
-                                "and return-type [" + returnType + "] " +
-                                "are not assignment compatible", true);
-                    }
+                String result = validateField(f, configProperty);
+
+
+                if(!result.equals(SUCCESS)){
+                    return getFailureResult(element, result, true);
                 }
+
+                type = getType(configProperty, f.getType());
 
                 if(defaultValue == null || defaultValue.equals("")){
                     defaultValue = deriveDefaultValueOfField(f);
@@ -156,13 +136,8 @@ public class ConfigPropertyHandler extends AbstractHandler {
                 ConnectorConfigProperty ep = getConfigProperty(defaultValue,firstDesc, ignore,
                         supportsDynamicUpdates, confidential,  type, f.getName());
 
-                handleConfigPropertyAnnotation(element, desc, ep, c);
-
+                handleConfigPropertyAnnotation(element, desc, ep, f.getDeclaringClass());
             }
-
-        } else {
-            return getFailureResult(element, "not a rar bundle context", true);
-        }
         return getDefaultProcessedResult();
     }
 
@@ -188,7 +163,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
         }
     }
 
-    private String deriveDefaultValueOfField(Field f){
+    private static String deriveDefaultValueOfField(Field f){
         Class declaringClass = f.getDeclaringClass();
         String fieldName = f.getName();
         String value = null;
@@ -219,13 +194,13 @@ public class ConfigPropertyHandler extends AbstractHandler {
      * Returns camel-cased version of a propertyName. Used to construct
      * correct accessor and mutator method names for a give property.
      */
-    private String getCamelCasedPropertyName(String propertyName) {
+    private static String getCamelCasedPropertyName(String propertyName) {
         return propertyName.substring(0, 1).toUpperCase() +
                 propertyName.substring(1);
     }
 
 
-    private ConnectorConfigProperty getConfigProperty(String defaultValue, String description, boolean ignore,
+    private static ConnectorConfigProperty getConfigProperty(String defaultValue, String description, boolean ignore,
                                                       boolean supportsDynamicUpdates, boolean confidential,
                                                       Class type, String propertyName) {
         ConnectorConfigProperty ep = new ConnectorConfigProperty();
@@ -256,9 +231,8 @@ public class ConfigPropertyHandler extends AbstractHandler {
     private void handleConfigPropertyAnnotation(AnnotationInfo element, ConnectorDescriptor desc,
                                                 ConnectorConfigProperty ep, Class declaringClass) {
 
-        if (ResourceAdapter.class.isAssignableFrom(declaringClass)) {
-            //@Connector must be of type ResourceAdapter and hence the above check is sufficient to
-            //take care of JavaBean as well annotation
+        if (ResourceAdapter.class.isAssignableFrom(declaringClass)
+                || declaringClass.getAnnotation(Connector.class)!= null) {
             if(!processConnector(desc, ep, declaringClass)){
                 //need to book-keep the annotation for post-processing
                 desc.addConfigPropertyAnnotation(declaringClass.getName(), element);
@@ -321,6 +295,11 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     if (!(isConfigDefined(adminObject.getConfigProperties(), ep))) {
                         adminObject.addConfigProperty(ep);
                     }
+                    String uniqueName = adminObject.getAdminObjectInterface() + "_" + adminObject.getAdminObjectClass();
+                    if(!desc.getConfigPropertyProcessedClasses().contains(uniqueName)){
+                        processParent(declaringClass.getSuperclass(), adminObject.getConfigProperties());
+                        desc.addConfigPropertyProcessedClass(declaringClass.getName());
+                    }
                 }
             }
         }
@@ -332,6 +311,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
         if (adminObject != null) {
             if (!(isConfigDefined(adminObject.getConfigProperties(), ep))) {
                 adminObject.addConfigProperty(ep);
+            }
+            if(!desc.getConfigPropertyProcessedClasses().contains(adminObjectClass.getName())){
+                processParent(adminObjectClass.getSuperclass(), adminObject.getConfigProperties());
+                desc.addConfigPropertyProcessedClass(adminObjectClass.getName());
             }
         } else {
             // ideally adminObject should not be null as "@AdministeredObject" 
@@ -362,9 +345,14 @@ public class ConfigPropertyHandler extends AbstractHandler {
                         //that this activation-spec class may have been ignored if ra.xml is already defined with
                         //this particular message-listener-type. If so, we should not add config-property as they
                         // belong to a particular activation-spec class.
-                        if (ml.getActivationSpecClass().equals(declaringClass.getName()) &&
-                                !(isConfigDefined(ml.getConfigProperties(), ep))) {
-                            ml.addConfigProperty(ep);
+                        if (ml.getActivationSpecClass().equals(declaringClass.getName())){
+                            if(!(isConfigDefined(ml.getConfigProperties(), ep))) {
+                                ml.addConfigProperty(ep);
+                            }
+                            if(!desc.getConfigPropertyProcessedClasses().contains(declaringClass.getName())){
+                                processParent(declaringClass.getSuperclass(), ml.getConfigProperties());
+                                desc.addConfigPropertyProcessedClass(declaringClass.getName());
+                            }
                         }
                     }
                 }
@@ -377,6 +365,10 @@ public class ConfigPropertyHandler extends AbstractHandler {
                         if(ml.getActivationSpecClass().equals(declaringClass.getName())){
                             if (!(isConfigDefined(ml.getConfigProperties(), ep))) {
                                 ml.addConfigProperty(ep);
+                            }
+                            if(!desc.getConfigPropertyProcessedClasses().contains(declaringClass.getName())){
+                                processParent(declaringClass.getSuperclass(), ml.getConfigProperties());
+                                desc.addConfigPropertyProcessedClass(declaringClass.getName());
                             }
                         }
                     }
@@ -399,6 +391,13 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     if (!(isConfigDefined(cd.getConfigProperties(), ep))) {
                         cd.addConfigProperty(ep);
                     }
+                    //As same MCF class can be used for multiple connection-definitions
+                    //store it based on connection-factory-interface class which is the unique
+                    //identifier for a connection-definition
+                    if(!desc.getConfigPropertyProcessedClasses().contains(cd.getConnectionFactoryIntf())){
+                        processParent(declaringClass.getSuperclass(), cd.getConfigProperties());
+                        desc.addConfigPropertyProcessedClass(cd.getConnectionFactoryIntf());
+                    }
                 }
                 //ignore if connection-definition entry is not found as it is possible that
                 //ra.xml has a connection-definition with the same connection-factory class
@@ -414,7 +413,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
             // or
             // no clash between ra.xml and the annotation, actual annotation is considered
             // So, outbound-ra must have been defined either way.
-            getFailureResult(element, "Outbound RA is not yet defined", true);
+            getFailureResult(element, "Outbound RA is not defined", true);
         }
     }
 
@@ -428,11 +427,149 @@ public class ConfigPropertyHandler extends AbstractHandler {
             if (!(isConfigDefined(desc.getConfigProperties(), ep))) {
                 desc.addConfigProperty(ep);
             }
+            if(!desc.getConfigPropertyProcessedClasses().contains(declaringClass.getName())){
+                processParent(declaringClass.getSuperclass(), desc.getConfigProperties());
+                desc.addConfigPropertyProcessedClass(declaringClass.getName());
+            }
             //indicate that the config-property is processed
             return true;
         }else{
             //indicate that the config-property is not processed and need to be processed during post-processing
             return false;
+        }
+    }
+
+    private static String validateMethod(Method m, ConfigProperty property){
+
+        if(!m.getName().startsWith("set")){
+            return "not a standard JavaBean setter method : [" + m.getName() + " ] ";
+        }
+
+        int modifier = m.getModifiers();
+
+        //we are not restricting protected, default methods as potentially
+        //any of the sub-classes may broaden the accessibility.
+        if(Modifier.isPrivate(modifier)){
+            return "@ConfigProperty annotation on a " +
+                    "private setter method [ "+m.getName()+" ] " +
+                    "of class [ "+m.getDeclaringClass().getName()+" ]";
+        }
+
+        Class type = property.type();
+        Class[] parameters = m.getParameterTypes();
+        Class propertyType;
+        if (parameters != null) {
+            if (parameters.length == 1) {
+                propertyType = parameters[0];
+            } else {
+                return "more than one parameter for JavaBean setter method : [" + m.getName() + " ] ";
+            }
+        } else {
+            return "no parameters for JavaBean setter method :  [" + m.getName() + " ] ";
+        }
+        //check compatibility between annotation type and property-type
+
+        if (type.equals(Object.class)) {
+            type = propertyType;
+        }else if (!propertyType.isAssignableFrom(type)) {
+            if(type.isPrimitive()){
+                type = getWrapperClass(type.getName());
+            }else if(propertyType.isPrimitive()){
+                propertyType = getWrapperClass(propertyType.getName());
+            }
+
+            if(!propertyType.isAssignableFrom(type)){
+                return "annotation type [" + type + "] and property-type" +
+                        " [" + propertyType + "] " +
+                        "are not assignment compatible";
+            }
+        }
+        return SUCCESS;
+    }
+
+    private static Class getType( ConfigProperty property, Class type){
+        Class configPropertyType = property.type();
+
+        if (configPropertyType.equals(Object.class)) {
+            configPropertyType = type;
+        }
+        return configPropertyType;
+    }
+
+    private static String validateField(Field f, ConfigProperty property){
+
+        Class c = f.getDeclaringClass();
+        Class returnType = f.getType();
+        Class type = property.type();
+        if (type.equals(Object.class)) {
+            type = returnType;
+        } else {
+            //check compatibility between annotation type and return-type
+            if (!returnType.isAssignableFrom(type)) {
+                return "annotation type [" + type + "] " +
+                        "and return-type [" + returnType + "] " +
+                        "are not assignment compatible for @ConfigProperty in " +
+                        "field [ " + f.getName() + " ] of class [ " + c + " ]";
+            }
+        }
+        return SUCCESS;
+    }
+
+    public static void processParent(Class claz, Set configProperties) {
+
+        if(claz == null){
+            return;
+        }
+        //process the methods
+        Method[] methods = claz.getDeclaredMethods();
+        for (Method m : methods) {
+            ConfigProperty property = m.getAnnotation(ConfigProperty.class);
+            if (property != null) {
+                String result = validateMethod(m, property);
+                if (!result.equals(SUCCESS)) {
+                    throw new IllegalStateException(result);
+                }
+                String defaultValue = property.defaultValue();
+                processConfigProperty(configProperties, m.getName().substring(3), property, defaultValue);
+            }
+        }
+
+        //process the fields
+        Field[] fields = claz.getDeclaredFields();
+        for (Field f : fields) {
+            ConfigProperty property = f.getAnnotation(ConfigProperty.class);
+
+            if (property != null) {
+                String status = validateField(f, property);
+                if(!status.equals(SUCCESS)){
+                    throw new IllegalStateException(status);
+                }
+                String defaultValue = property.defaultValue();
+
+                if (defaultValue == null || defaultValue.equals("")) {
+                    defaultValue = deriveDefaultValueOfField(f);
+                }
+                processConfigProperty(configProperties, f.getName(), property, defaultValue);
+            }
+        }
+
+        //process its super-class
+        if (claz.getSuperclass() != null) {
+            processParent(claz.getSuperclass(), configProperties);
+        }
+    }
+
+    private static void processConfigProperty(Set configProperties, String propertyName,
+                                              ConfigProperty property, String defaultValue) {
+        String description = "";
+        if(property.description() != null && property.description().length > 0){
+            description = property.description()[0];
+        }
+        ConnectorConfigProperty ccp = getConfigProperty(defaultValue, description,
+                property.ignore(), property.supportsDynamicUpdates(), property.confidential(),
+                property.type(), propertyName);
+        if(!isConfigDefined(configProperties, ccp)){
+            configProperties.add(ccp);
         }
     }
 

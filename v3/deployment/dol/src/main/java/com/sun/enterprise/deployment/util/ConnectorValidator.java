@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.deployment.util;
 
-import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.handlers.ConnectorAnnotationHandler;
 import com.sun.enterprise.deployment.annotation.handlers.ConfigPropertyHandler;
 import com.sun.logging.LogDomains;
@@ -44,7 +44,6 @@ import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 
 import javax.resource.spi.Connector;
-import javax.resource.spi.ConfigProperty;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
@@ -100,12 +99,96 @@ public class ConnectorValidator implements ConnectorVisitor {
                 }
             }
         }
+
+        //check whether outbound is defined, if so, atleast one connection-definition must be present
+        if(descriptor.getOutBoundDefined()){
+            Set connectionDefinitions = descriptor.getOutboundResourceAdapter().getConnectionDefs();
+            if(connectionDefinitions.size() == 0){
+                throw new RuntimeException("Invalid connector descriptor for RAR [ "+descriptor.getName()+" ], when " +
+                        "outbound-resource-adapter is specified," +
+                        "atleast one connection-definition must be specified either via annotation or via descriptor");
+            }
+        }
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.log(Level.FINEST, descriptor.toString());
         }
 
+        processConfigProperties(descriptor);
+
         //processed all annotations, clear from book-keeping
         descriptor.getConnectorAnnotations().clear();
         descriptor.getAllConfigPropertyAnnotations().clear();
+        descriptor.getConfigPropertyProcessedClasses().clear();
+    }
+
+    /**
+     * Process for ConfigProperty annotation for rar artifact classes where @ConfigProperty is
+     * not defined in them, but their superclasses as we would have ignored
+     * ConfigProperty annotations in non-concrete rar artifacts during
+     * annotation processing phase
+     * @param desc ConnectorDescriptor
+     */
+    private void processConfigProperties(ConnectorDescriptor desc)  {
+
+        String raClass = desc.getResourceAdapterClass();
+        if (raClass != null && !raClass.equals("")) {
+            if (!desc.getConfigPropertyProcessedClasses().contains(raClass)) {
+                Class claz = getClass(raClass);
+                ConfigPropertyHandler.processParent(claz, desc.getConfigProperties());
+            }
+        }
+        if (desc.getOutBoundDefined()) {
+            OutboundResourceAdapter ora = desc.getOutboundResourceAdapter();
+            Set connectionDefs = ora.getConnectionDefs();
+            Iterator it = connectionDefs.iterator();
+            while (it.hasNext()) {
+                ConnectionDefDescriptor connectionDef = (ConnectionDefDescriptor) it.next();
+                //connection-factory class is the unique identifier.
+                String connectionFactoryClass = connectionDef.getConnectionFactoryIntf();
+                if (connectionFactoryClass != null && connectionFactoryClass.equals("")) {
+                    if (!desc.getConfigPropertyProcessedClasses().contains(connectionFactoryClass)) {
+                        Class claz = getClass(connectionDef.getManagedConnectionFactoryImpl());
+                        ConfigPropertyHandler.processParent(claz, connectionDef.getConfigProperties());
+                    }
+                }
+            }
+        }
+
+        if (desc.getInBoundDefined()) {
+            InboundResourceAdapter ira = desc.getInboundResourceAdapter();
+            Set messageListeners = ira.getMessageListeners();
+            Iterator it = messageListeners.iterator();
+            while (it.hasNext()) {
+                MessageListener ml = (MessageListener) it.next();
+                String activationSpecClass = ml.getActivationSpecClass();
+                if (activationSpecClass != null && activationSpecClass.equals("")) {
+                    if (!desc.getConfigPropertyProcessedClasses().contains(activationSpecClass)) {
+                        Class claz = getClass(activationSpecClass);
+                        ConfigPropertyHandler.processParent(claz, ml.getConfigProperties());
+                    }
+                }
+            }
+        }
+
+        Set adminObjects = desc.getAdminObjects();
+        Iterator it = adminObjects.iterator();
+        while (it.hasNext()) {
+            AdminObject ao = (AdminObject) it.next();
+            String uniqueName = ao.getAdminObjectInterface() + "_" + ao.getAdminObjectClass();
+            if (!desc.getConfigPropertyProcessedClasses().contains(uniqueName)) {
+                Class claz = getClass(ao.getAdminObjectClass());
+                ConfigPropertyHandler.processParent(claz, ao.getConfigProperties());
+            }
+        }
+    }
+
+    private Class getClass(String className){
+        Class claz = null;
+            try {
+                claz = Thread.currentThread().getContextClassLoader().loadClass(className);
+            } catch (ClassNotFoundException e) {
+                _logger.log(Level.WARNING, "Unable to load class [ "+className+" ]", e);
+            }
+        return claz;
     }
 }
