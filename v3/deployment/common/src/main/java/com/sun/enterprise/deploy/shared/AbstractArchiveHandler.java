@@ -76,11 +76,28 @@ public abstract class AbstractArchiveHandler extends GenericHandler {
         try {
             Manifest manifest = getManifest(context.getSource());
             return ASClassLoaderUtil.getManifestClassPathAsURLs(manifest, 
-                context.getSourceDir().getParent());
+                computeRootPathForManifestClassPath(context));
         }catch (IOException ioe) {
             _logger.log(Level.WARNING, 
                 "Exception while getting manifest classpath: ", ioe);
             return new ArrayList<URL>();
         }
+    }
+
+    private String computeRootPathForManifestClassPath(
+        DeploymentContext context) {
+        URI sourceURI = context.getSource().getURI();     
+        // this is for the case where the sub module is in a sub directory
+        String sourceString = sourceURI.toString().replaceAll("__", "/");
+        try {
+            File sourceFile = new File(new URI(sourceString));
+            String rootPath = sourceFile.getParent();
+            if (rootPath != null) {
+                return rootPath;
+            }
+        } catch (Exception e) {
+            _logger.fine(e.getMessage());
+        }
+        return context.getSourceDir().getParent();
     }
 }
