@@ -77,7 +77,6 @@ public interface WebModule extends ConfigBeanProxy, Injectable, ApplicationName,
      *         {@link String }
      */
     @Attribute
-    @NotNull
     public String getContextRoot();
 
     /**

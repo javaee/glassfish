@@ -88,8 +88,7 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
-    @NotNull
+    @Attribute    
     String getContextRoot();
 
     /**
