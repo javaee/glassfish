@@ -344,14 +344,22 @@ public class JmsHandlers {
      * destination.  Currently, this is all hard-coded, based on data from the MQ
      * documentation.  When/if they expose an API for determining this programmatically,
      * the implementation will be updated.</p>
+     * If an orig map is passed in, the default value will be set to this orig map instead
+     * of creating a new one.  This is used for restoring back to the default value during edit.
      *	@param	context	The HandlerContext.
      */
     @Handler(id = "getDefaultPhysicalDestinationValues",
+        input = {
+            @HandlerInput(name = "orig", type = Map.class)},
         output = {
             @HandlerOutput(name = "map", type = Map.class)
     })
     public static void getDefaultPhysicalDestinationValues(HandlerContext handlerCtx) {
+        Map orig = (Map)handlerCtx.getInputValue("orig");
         Map map = new HashMap();
+        if (orig != null){
+            map = orig;
+        }
         map.put(ATTR_MAX_NUM_MSGS, "-1");
         map.put(ATTR_MAX_BYTES_PER_MSG, "-1");
         map.put(ATTR_MAX_TOTAL_MSG_BYTES, "-1");

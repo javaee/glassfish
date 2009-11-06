@@ -1,4 +1,9 @@
 <sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}">
+    <sun:button id="def" rendered="#{edit}" primary="#{false}"  text="$resource{i18n.button.LoadDefaults}" >
+        <!command
+            getDefaultPhysicalDestinationValues( orig="#{pageSession.valueMap}"  map="#{pageSession.valueMap}" )
+        />
+    </sun:button>
     <!facet pageButtonsTop>
     <sun:panelGroup id="topButtons">
      <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.Save}"
