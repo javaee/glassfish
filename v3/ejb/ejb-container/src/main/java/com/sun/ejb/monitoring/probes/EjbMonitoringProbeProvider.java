@@ -60,14 +60,14 @@ public class EjbMonitoringProbeProvider {
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
-    @Probe(name="methodStartEvent")
+    @Probe(name="methodStartEvent", hidden=true)
     public void ejbMethodStartEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName,
             @ProbeParam("method") Method method) {}
 
-    @Probe(name="methodEndEvent")
+    @Probe(name="methodEndEvent", hidden=true)
     public void ejbMethodEndEvent(
             @ProbeParam("appName") String appName,
             @ProbeParam("modName") String modName,
