@@ -47,6 +47,7 @@
                 <include>org.glassfish:javax.jws</include>
                 <include>javax.ws.rs:jsr311-api</include>
                 <include>org.glassfish:javax.xml.soap</include>
+                <include>org.glassfish:javax.xml.registry</include>
                 <include>javax.xml:webservices-api-osgi</include>
             </includes>
         </dependencySet>

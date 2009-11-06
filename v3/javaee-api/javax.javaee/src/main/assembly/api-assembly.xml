@@ -66,6 +66,7 @@
                 <include>com.sun.messaging.mq:jaxm-api</include>
                 <include>org.glassfish.web:jstl-impl</include>
                 <include>javax.xml:webservices-api-osgi</include>
+                <include>org.glassfish:javax.xml.registry</include>
             </includes>
         </dependencySet>
     </dependencySets>

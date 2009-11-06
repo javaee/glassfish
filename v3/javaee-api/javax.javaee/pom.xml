@@ -298,5 +298,15 @@
             <groupId>javax.xml</groupId>
             <artifactId>webservices-api-osgi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.xml</groupId>
+            <artifactId>jaxr-api</artifactId>
+            <version>1.0_03</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.registry</groupId>
+            <artifactId>jaxr-impl</artifactId>
+            <version>1.0.6</version>
+        </dependency>
     </dependencies>
 </project>
