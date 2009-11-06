@@ -89,7 +89,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="32")
+    @Attribute (defaultValue="0")
     @Min(value=0)        
     String getSteadyPoolSize();
 
@@ -110,7 +110,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="16")
+    @Attribute (defaultValue="8")
     @Min(value=0)        
     String getPoolResizeQuantity();
 
@@ -132,7 +132,7 @@ public interface EjbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="64")
+    @Attribute (defaultValue="32")
     @Min(value=0)    
     String getMaxPoolSize();
 

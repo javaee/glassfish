@@ -76,7 +76,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="10")
+    @Attribute (defaultValue="0")
     @Min(value=0)
     String getSteadyPoolSize();
 
@@ -97,7 +97,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2")
+    @Attribute (defaultValue="8")
     @Min(value=0)
     String getPoolResizeQuantity();
 
@@ -116,7 +116,7 @@ public interface MdbContainer extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="60")
+    @Attribute (defaultValue="32")
     @Min(value=0)
     String getMaxPoolSize();
 
