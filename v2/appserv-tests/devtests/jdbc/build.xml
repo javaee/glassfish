@@ -65,10 +65,9 @@
 	<ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
-	<!-- Due to some issues with CLI this is commented as of now-->
-	<!--<ant dir="dmmcf" target="all"/>
+	<ant dir="dmmcf" target="all"/>
 	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
-	<ant dir="dmmcf.appclient" target="all"/>-->
+	<ant dir="dmmcf.appclient" target="all"/>
 	<ant dir="tracingsql" target="all"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>

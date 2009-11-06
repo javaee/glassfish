@@ -567,7 +567,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <property name="extra-params" value=""/>
     <exec executable="${ASADMIN}" failonerror="false">
         <arg line="create-jdbc-connection-pool"/>
-        <arg line="--datasourceclassname ${db.class}"/>
+        <arg line="--driverclassname ${db.class}"/>
         <arg line="--restype ${jdbc.resource.type}"/>
         <arg line="${extra-params}"/>
         <arg line="--target ${appserver.instance.name}"/>

@@ -54,10 +54,10 @@
     </target> 
     
     <target name="deploy" depends="init-common">
-      <antcall target="create-jdbc-connpool-common">
-	      <param name="jdbc.conpool.name" value="jdbc-driver-pool"/>
-	      <param name="db.class" value="org.apache.derby.jdbc.ClientDriver"/>
-	      <param name="jdbc.resource.type" value="java.sql.Driver"/>
+      <antcall target="create-jdbc-driver-connpool-common">
+        <param name="jdbc.conpool.name" value="jdbc-driver-pool"/>
+        <param name="db.class" value="org.apache.derby.jdbc.ClientDriver"/>
+        <param name="jdbc.resource.type" value="java.sql.Driver"/>
       </antcall>
 
       <antcall target="create-jdbc-resource-common">
