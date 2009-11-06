@@ -14,13 +14,13 @@ the JMX connector on the Edit JMX Connector page.</p><p>The SSL page contains th
 <dt>Client Authentication</dt>
 <dd><p>If this checkbox is selected, clients must identify themselves to the server on every request. This option is disabled by default.</p></dd>
 <dt>Certificate Nickname</dt>
-<dd><p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of the name in this attribute is optional. The default value is <tt>s1as</tt>.</p></dd>
+<dd><p>The nickname of the server certificate in the certificate database or the PKCS#11 token. In the certificate, the name format is <tt><i>tokenname</i>:<i>nickname</i></tt>. Including the <tt><i>tokenname</i>:</tt> part of the name in this attribute is optional.</p></dd>
 <dt>Key Store</dt>
 <dd><p>The name of the keystore file (for example, <tt>keystore.jks</tt>).</p></dd>
 <dt>Trust Algorithm</dt>
 <dd><p>The name of the trust management algorithm (for example, PKIX) to use for certification path validation.</p></dd>
 <dt>Max Certificate Length</dt>
-<dd><p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown. The default value is 5.</p></dd>
+<dd><p>The maximum number of non-self-issued intermediate certificates that can exist in a certification path. This field is used only if the Trust Algorithm field is set to PKIX. A value of 0 implies that the path can only contain a single certificate. A value of -1 implies that the path length is unconstrained (there is no maximum). Setting a value less than -1 causes an exception to be thrown.</p></dd>
 <dt>Trust Store</dt>
 <dd><p>The name of the truststore file (for example, <tt>cacerts.jks</tt>).</p></dd>
 <dt>Cipher Suites</dt>

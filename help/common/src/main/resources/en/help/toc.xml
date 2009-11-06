@@ -107,7 +107,7 @@
         <tocitem target="ref-setadminpassword" text="New Administrator Password" expand="false"></tocitem>
         <tocitem target="ref-systemproperties" text="System Properties" expand="false"></tocitem>
         <tocitem target="ref-preconfiguredprops" text="Predefined System Properties" expand="false"></tocitem>
-        <tocitem target="gentextid-4695" text="Monitor" expand="false">
+        <tocitem target="ref-group-monitor" text="Monitor" expand="false">
             <tocitem target="ref-appmonitoringdata" text="Application Monitoring" expand="false"></tocitem>
             <tocitem target="ref-servermonitoringdata" text="Server Monitoring" expand="false"></tocitem>
             <tocitem target="ref-resourcemonitoringdata" text="Resource Monitoring" expand="false"></tocitem></tocitem></tocitem>
@@ -157,7 +157,7 @@
                 <tocitem target="ref-jaccprovidernew" text="New JACC Provider" expand="false"></tocitem>
                 <tocitem target="ref-jaccproviderprop" text="Properties Specific to JACC Providers" expand="false"></tocitem>
                 <tocitem target="ref-jaccprovideredit" text="Edit JACC Provider" expand="false"></tocitem></tocitem>
-            <tocitem target="gentextid-7643" text="Message Security" expand="false">
+            <tocitem target="ref-group-messagesecurity" text="Message Security" expand="false">
                 <tocitem target="ref-messagesecurityconfig" text="Message Security Configurations" expand="false"></tocitem>
                 <tocitem target="ref-messagesecurityconfignew" text="New Message Security Configuration" expand="false"></tocitem>
                 <tocitem target="ref-messagesecurityconfigedit" text="Edit Message Security Configuration" expand="false"></tocitem>
