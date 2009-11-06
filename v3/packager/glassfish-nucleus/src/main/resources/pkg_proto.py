@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,21 @@ pkg = {
                         "pkg:/glassfish-hk2" : {"type" : "require" },
                         "pkg:/glassfish-grizzly" : {"type" : "require" },
                       },
-    "dirtrees"      : [ "glassfish", "bin" ],
+    "dirtrees"      : { "bin" : {},
+                        "glassfish/bin": {},
+                        "glassfish/docs" : {},
+                        "glassfish/domains" : {},
+                        "glassfish/legal" : {},
+                        "glassfish/lib" : {},
+                        "glassfish/modules" : {},
+                      },
+    "files"         : { "glassfish/config/asenv.conf" : { "preserve" : "renamenew"},
+                        "glassfish/config/asenv.bat" : { "preserve" : "renamenew"},
+                        "glassfish/config/asadminenv.conf" : { "preserve" : "renamenew"},
+                        "glassfish/config/glassfish.container" : { "preserve" : "renamenew"},
+                        "glassfish/config/client-jnlp-config.properties" : {},
+                        "glassfish/osgi/equinox/configuration/config.ini" : { "preserve" : "renamenew"},
+                      },
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
                       },
