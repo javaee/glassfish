@@ -98,6 +98,10 @@ public class DirectCreationTest extends ConfigPersistence {
             if (subType.getName().endsWith("HttpListener")) {
                 Map<String, String> configChanges = new HashMap<String, String>();
                 configChanges.put("id", "funky-listener");
+                configChanges.put("server-name", "server");
+                configChanges.put("default-virtual-server", "servre");
+                configChanges.put("address", "124.2.4.6");
+                configChanges.put("port", "8034");
                 support.createAndSet(serviceBean, (Class<? extends ConfigBeanProxy>)subType, configChanges);
                 break;
             }
@@ -108,7 +112,10 @@ public class DirectCreationTest extends ConfigPersistence {
         List<ConfigSupport.AttributeChanges> profilerChanges = new ArrayList<ConfigSupport.AttributeChanges>();
         String[] values = { "-Xmx512m", "-RFtrq", "-Xmw24" };
         ConfigSupport.MultipleAttributeChanges multipleChanges = new ConfigSupport.MultipleAttributeChanges("jvm-options", values );
+        String[] values1 = { "profile" };
+        ConfigSupport.MultipleAttributeChanges multipleChanges1 = new ConfigSupport.MultipleAttributeChanges("name", values1 );
         profilerChanges.add(multipleChanges);
+        profilerChanges.add(multipleChanges1);
         support.createAndSet((ConfigBean) ConfigBean.unwrap(habitat.getComponent(JavaConfig.class))
                 , Profiler.class, profilerChanges);
     }

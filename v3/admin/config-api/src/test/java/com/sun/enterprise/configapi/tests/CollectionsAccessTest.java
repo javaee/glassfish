@@ -92,6 +92,7 @@ public class CollectionsAccessTest extends ConfigApiTest  {
                 List<Named> modules = param.getModules();
                 EjbModule m = param.createChild(EjbModule.class);
                 m.setName( "ejb-test" );
+                m.setLocation("test-location");
                 modules.add(m);
                 modules.remove(m);
                 return m;
@@ -99,3 +100,4 @@ public class CollectionsAccessTest extends ConfigApiTest  {
         }, apps);
     }    
 }
+
