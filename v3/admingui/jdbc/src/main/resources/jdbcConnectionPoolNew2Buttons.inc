@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -63,12 +63,16 @@
                 setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
             }
             if ("#{wizardMap['Ping']}") {
-                pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}");
+                pingJdbcConnectionPool(jndiName="#{wizardMap['Name']}" , wmsg="$resource{i18njdbc.msg.warning.poolCreatedPingFailed}");
                 setSessionAttribute(key="wizardMap" value="#{null}")
+                setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+                setSessionAttribute(key="wizardPoolProperties" value="#{null}")
                 gf.redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             }
             if ("!#{wizardMap['Ping']}") {
                 setSessionAttribute(key="wizardMap" value="#{null}")
+                setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+                setSessionAttribute(key="wizardPoolProperties" value="#{null}")
                 gf.redirect(page="#{parentPage}");
             }
         />    
