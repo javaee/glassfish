@@ -68,12 +68,19 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.advancePageTitle}" helpText="$resource{i18njca.connectorConnectionPool.advancePageTitleHelp}" >
-#include "/common/shared/editPageButtons.inc"
+
+#include "/common/shared/editPageLoadDefaultButton.inc"
+#include "/jca/connectorConnectionPoolAdvanceButtons.inc"
     </sun:title>
-    "<br><br>
+    "<br>
     
 #include "/jca/connectorConnectionPoolAdvancedAttr.inc"
-    
+
+"<br>
+<sun:title>
+#include "/jca/connectorConnectionPoolAdvanceButtons.inc"
+</sun:title>
+
     <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolAdvance}" />
 </sun:form>
             "<br/>

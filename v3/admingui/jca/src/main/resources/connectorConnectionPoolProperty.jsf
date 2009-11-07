@@ -43,7 +43,6 @@
 <!define name="content">
 <event>
     <!beforeCreate
-    setPageSessionAttribute(key="edit" value="#{true}" );
     getRequestValue(key="name" value="#{pageSession.Name}");
     urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
     setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/connectorConnectionPoolProperty.jsf?name=#{pageSession.encodedName}");
@@ -53,12 +52,9 @@
     setPageSessionAttribute(key="childType" value="connector-connection-pool");
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+
     //set the following for including buttons.inc
-    setPageSessionAttribute(key="edit" value="#{true}" );
-    setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-    setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-    setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
-    setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
 </event>
 #include "/common/shared/restart.inc"
@@ -68,9 +64,29 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.propertyPageTitle}" helpText="$resource{i18njca.connectorConnectionPool.propertyPageTitleHelp}" >
-#include "/common/shared/editPageButtons_2.inc"
+    <!facet pageButtonsTop>
+        <sun:panelGroup id="topButtons">
+            <sun:button id="saveButton"  text="$resource{i18n.button.Save}">
+                <!command
+                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                prepareSuccessfulMsg();
+                if ("#{valueMap['Ping']}") {
+                    pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
+                }
+                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}"text="$resource{i18n.button.Cancel}" >
+                <!command
+                    gf.redirect(page="#{parentPage}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
     </sun:title>
-    "<br><br>
+    "<br>
 #include "/common/shared/propertyDescTable.inc"
     
     <sun:hidden id="helpKey" value="$resource{help_jca.connectorConnectionPoolProperty}" />
