@@ -45,7 +45,6 @@
                     setSessionAttribute(key="wizardPoolProperties", value="$attribute{newList}");
                     setAttribute(key="fromStep2" value="#{true}")
                     gf.navigate(page="#{request.contextPath}/jca/connectorConnectionPoolNew1.jsf")
-        
                  />
             </sun:button>
             <sun:button id="finishButton" rendered="#{!edit}" text="$resource{i18n.button.Finish}"
@@ -53,13 +52,20 @@
                 <!command
                     updateConnectorConnectionPoolWizardStep2();
                     createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
-                            attrs="#{wizardMap}"
+                            attrs="#{sessionScope.wizardMap}"
                             convertToFalse="#{pageSession.convertToFalseList}"
                             result => $attribute{objStr});
                     if (#{pageSession.hasPropertyTable}){
                         getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                         getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                         setProxyProperties(objectNameStr="$attribute{objStr}", propertyList="$attribute{newList}", systemProp="#{pageSession.systemProp}" );
+                    }
+                    if ("#{sessionScope.wizardMap['Ping']}") {
+                        pingJdbcConnectionPool(jndiName="#{sessionScope.wizardMap['Name']}" , wmsg="$resource{i18njca.msg.warning.poolCreatedPingFailed}");
+                        setSessionAttribute(key="wizardMap" value="#{null}")
+                        setSessionAttribute(key="wizardPoolExtra" value="#{null}")
+                        setSessionAttribute(key="wizardPoolProperties" value="#{null}")
+                        gf.redirect(page="#{parentPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     }
                     setSessionAttribute(key="wizardMap" value="#{null}")
                     setSessionAttribute(key="wizardPoolExtra" value="#{null}")

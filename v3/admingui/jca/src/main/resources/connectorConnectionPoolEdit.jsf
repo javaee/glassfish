@@ -55,14 +55,8 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"Ping" "IsConnectionValidationRequired" "FailAllConnections" "AssociateWithThread" "ConnectionLeakReclaim" "LazyConnectionAssociation" "LazyConnectionEnlistment" "MatchConnections" });
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
-
-        //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
-
         getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}");
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
 
@@ -76,12 +70,43 @@
     
     <!-- Page Title -->
     <sun:title id="propertyContentPage" title="$resource{i18njca.connectorConnectionPool.editPageTitle}" helpText="$resource{i18njca.connectorConnectionPool.editPageTitleHelp}" >
-#include "/common/shared/editPageButtons.inc"
-        <sun:button id="flush" text="$resource{i18njca.button.Flush}" primary="#{false}" > 
+
+    <!facet pageButtonsTop>
+    <sun:panelGroup id="topButtons">
+        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-                flushConnectionPool(jndiName="#{pageSession.Name}");
+                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    skipAttrs="#{pageSession.skipAttrsList}"
+                    convertToFalse="#{pageSession.convertToFalseList}"
+                    onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                );
+                prepareSuccessfulMsg();
+                if ("#{valueMap['Ping']}") {
+                    pingJdbcConnectionPool(jndiName="#{valueMap['Name']}", wmsg="$resource{i18njca.msg.warning.poolSavedPingFailed}");
+                }
+                gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
-        </sun:button>     
+            </sun:button>
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+                <!command
+                    gf.redirect(page="#{parentPage}");
+                />
+            </sun:button>
+        </sun:panelGroup>
+    </facet>
+#include "/common/shared/editPageLoadDefaultButton.inc"
+    <sun:button id="flush" text="$resource{i18njca.button.Flush}" primary="#{false}" >
+        <!command
+            flushConnectionPool(jndiName="#{pageSession.Name}");
+        />
+    </sun:button>
+    <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
+        <!command
+            pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
+        />
+    </sun:button>
+
     </sun:title>
     
 #include "/jca/connectorConnectionPoolAttrEdit.inc"
