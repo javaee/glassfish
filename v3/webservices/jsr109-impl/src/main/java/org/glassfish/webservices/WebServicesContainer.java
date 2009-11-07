@@ -26,38 +26,64 @@ package org.glassfish.webservices;
 
 import org.glassfish.api.container.Container;
 import org.glassfish.api.deployment.Deployer;
-import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
-import org.glassfish.webservices.monitoring.WebServiceStatsProviderBootstrap;
+import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
+import org.glassfish.gmbal.ManagedObjectManager;
+import org.glassfish.gmbal.ManagedObjectManagerFactory;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Singleton;
+
+import javax.management.ObjectName;
+import java.io.IOException;
 
 /**
  * Webservices container service
  *
  */
 @Service(name="org.glassfish.webservices.WebServicesContainer")
-public class WebServicesContainer implements Container, PostConstruct {
+@Scoped(Singleton.class)
+public class WebServicesContainer implements Container, PostConstruct, PreDestroy {
     @Inject
     private Habitat habitat;
 
-    private final Deployment109ProbeProvider wsProbeProvider = new Deployment109ProbeProvider();
+    private final WebServicesDeploymentMBean deploymentBean = new WebServicesDeploymentMBean();
+    private ManagedObjectManager mom;
 
     public String getName() {
         return "webservices";
     }
 
     public void postConstruct() {
-        habitat.getByType(WebServiceStatsProviderBootstrap.class);
+        ObjectName MONITORING_SERVER = AMXGlassfish.DEFAULT.serverMon(AMXGlassfish.DEFAULT.dasName());
+        mom = ManagedObjectManagerFactory.createFederated(MONITORING_SERVER);
+        if (mom != null) {
+            mom.setJMXRegistrationDebug(false);
+            mom.stripPackagePrefix();
+            mom.createRoot(deploymentBean, "webservices-deployment");
+        }
     }
 
-    /* package */ Deployment109ProbeProvider getDeploymentProbeProvider() {
-        return wsProbeProvider;
+    /* package */ WebServicesDeploymentMBean getDeploymentBean() {
+        return deploymentBean;
     }
 
     public Class<? extends Deployer> getDeployer() {
         return WebServicesDeployer.class;
+    }
+
+    public void preDestroy() {
+        try {
+            if (mom != null) {
+                mom.close();
+            }
+        } catch(IOException ioe) {
+            // nothing much can be done
+        }
     }
 }
 

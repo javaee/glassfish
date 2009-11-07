@@ -1,4 +1,4 @@
-package org.glassfish.webservices.monitoring;
+package org.glassfish.webservices.deployment;
 
 import org.glassfish.gmbal.ManagedData;
 import org.glassfish.gmbal.Description;

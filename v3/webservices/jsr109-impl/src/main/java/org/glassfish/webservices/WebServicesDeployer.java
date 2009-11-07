@@ -58,7 +58,7 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.DownloadableArtifacts;
-import org.glassfish.webservices.monitoring.Deployment109ProbeProvider;
+import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.internal.api.JAXRPCCodeGenFacade;
 import org.jvnet.hk2.annotations.Service;
@@ -113,9 +113,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     @Inject
     private ArchiveFactory archiveFactory;
 
-
-
-    private Deployment109ProbeProvider probe;
+    private WebServicesDeploymentMBean bean;
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
@@ -716,7 +714,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                probe.undeploy(endpoint);
+                bean.undeploy(endpoint);
                 if (notifier != null) {
                     notifier.notifyUndeployed(endpoint);
                 }
@@ -739,12 +737,12 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     @Override
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
-        probe = container.getDeploymentProbeProvider();
+        bean = container.getDeploymentBean();
         Application app = context.getModuleMetaData(Application.class);
         
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                probe.deploy(endpoint);
+                bean.deploy(endpoint);
             }
         }
 
