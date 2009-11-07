@@ -73,6 +73,11 @@
                     helpText="$resource{i18njdbc.jdbcConnection.editPageHelp}">
                     <!-- Buttons  -->  
 #include "/common/shared/editPageLoadDefaultButton.inc"
+                    <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" >
+                        <!command
+                            flushConnectionPool(jndiName="#{pageSession.Name}");
+                        />
+                    </sun:button>
                     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
                         <!command
                             pingJdbcConnectionPool(jndiName="#{pageSession.Name}");
@@ -81,6 +86,7 @@
                                      
 #include "/jdbc/jdbcConnectionPoolEditButtons.inc"
                 </sun:title>
+
 #include "/jdbc/poolPropertyEdit.inc"
 
        <sun:title>

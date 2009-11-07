@@ -72,51 +72,13 @@
 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.advancePageTitle}" 
     helpText="$resource{i18njdbc.jdbcConnectionPool.advancePageTitleHelp}">
 #include "/common/shared/editPageLoadDefaultButton.inc"
-    <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" >
-        <!command
-            flushConnectionPool(jndiName="#{pageSession.Name}");
-        />
-    </sun:button>
-<!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                    onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-                <!command
-                if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
-                                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
-                                } 
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
-                prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
-            </sun:button>
-        </sun:panelGroup>
-    </facet>
+#include"/jdbc/jdbcConnectionPoolAdvanceButtons.inc"
 </sun:title>
                 
 #include "/jdbc/advancePool.inc"
-    <sun:title >
-    <!facet pageButtonsBottom >
-    <sun:panelGroup id="topButtons">
-        <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-            onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-        <!command
-            if ("#{pageSession.valueMap['LazyConnectionAssociation']}") {
-                    setValueExpression(expression="#{pageSession.valueMap['LazyConnectionEnlistment']}", value="#{true}");
-                }
-            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-            skipAttrs="#{pageSession.skipAttrsList}"
-            convertToFalse="#{pageSession.convertToFalseList}"
-            );
-            prepareSuccessfulMsg();
-            gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-        />
-        </sun:button>
-    </sun:panelGroup>
-    </facet>
+"<br>
+<sun:title >
+#include"/jdbc/jdbcConnectionPoolAdvanceButtons.inc"
 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolAdvance}" />
 </sun:form>
