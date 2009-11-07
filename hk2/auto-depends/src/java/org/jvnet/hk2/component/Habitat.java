@@ -226,7 +226,8 @@ public class Habitat {
         if (byContract.containsKey(index)) {
              List<NamedInhabitant> contracted = byContract.get(index);
              for (NamedInhabitant i : contracted) {
-                 if (i.inhabitant.get().equals(service)) {
+                 // call to isInstantiated is necessary to avoid loading of services that are not yet loaded
+                 if (i.inhabitant.isInstantiated() && i.inhabitant.get().equals(service)) {
                     // remember to remove the components stored under its type
                     if (byType.get(index).contains(i.inhabitant)) {
                         byType.get(index).remove(i.inhabitant);

@@ -87,6 +87,7 @@ public class HK2Main extends Main implements
     private ModuleStartup moduleStartup;
     private ServiceRegistration habitatRegistration;
     private ServiceRegistration moduleStartupRegistration;
+    private ServiceTracker osgiServiceTracker;
 
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
@@ -139,11 +140,15 @@ public class HK2Main extends Main implements
     }
 
     private void createServiceTracker(Habitat habitat) {
-        ServiceTracker st = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
-        st.open(true);
+        osgiServiceTracker = new ServiceTracker(ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitat));
+        osgiServiceTracker.open(true);
     }
 
     public void stop(BundleContext context) throws Exception {
+        if (osgiServiceTracker != null) {
+            osgiServiceTracker.close();
+            osgiServiceTracker = null;
+        }
         // Execute code in reverse order w.r.t. start()
         if (moduleStartup != null) {
             moduleStartup.stop();
