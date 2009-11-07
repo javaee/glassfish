@@ -980,11 +980,28 @@ public void createServerShortCuts(String folderName) {
 			"Quick Start Guide",
 			modifiedInstallDir + "\\\\glassfish\\\\docs\\\\quickstart.html");
 
+		// Look for correct page deployed in the installdir before linking it.
+		// this code is only w2k specific. 
+		String aboutFilesLocation = "\\glassfish\\docs\\";
+		String aboutFiles[] = { "about_sdk.html", "about_sdk_web.html","about.html"};
+		// The default
+		String aboutFile = "about.html";
+		// Traverse through the list to find out which file exist first
+		for (int i=0;i<aboutFiles.length;i++) {
+			File f = new File(modifiedInstallDir + aboutFilesLocation + aboutFiles[i]);
+			if (f.exists()) {
+				// then break
+				aboutFile = aboutFiles[i];
+				break;
+			}
+			f = null;
+		}
+
 		// Create short cut for About Page.
 		wsShortMgr.createShortCut(
 			folderName,
 			"About GlassFish Server",
-			modifiedInstallDir + "\\\\glassfish\\\\docs\\\\about.html");
+			modifiedInstallDir + aboutFilesLocation.replace("\\","\\\\") + aboutFile.replace("\\","\\\\"));
 
 		// Create short cut for Admin Console.
 		wsShortMgr.createShortCut(

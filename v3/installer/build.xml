@@ -65,6 +65,7 @@
 	<target name="prepare_stage" description="Setup appropriate staging directories for each bundle to be used for build/runtime">
 		<echo message="Setting up staging directories for ${bundle.name}" />
 		<delete dir="${stage.dir}/${bundle.name}" />
+		<delete dir="${stage.dir}/${bundle.name}_engine_tmp" />
 		<mkdir dir="${stage.dir}/${bundle.name}" />
 		<mkdir dir="${stage.dir}/${bundle.name}/Product/Packages" />
 		<mkdir dir="${stage.dir}/${bundle.name}_engine_tmp" />
