@@ -200,20 +200,29 @@ public class WindowsService extends ServiceAdapter{
      * right in the template.  We don't have that and it is not worth the development
      * cost to add it.  So what we do is just drop %%%CREDENTIALS%%% into the xml
      * template at the right place.  We replace with one space character for default
-     * credentials.  If there ARE credentials we replace with 4 XML elements
+     * credentials.  If there ARE credentials we replace with XML elements
      *
      * @return the hunk of XML
      */
     private String getAsadminCredentials(String elem) {
-        if(!ok(getAppserverUser()) || !ok(getPasswordFilePath()))
+        // 1 -- no auth of any kind needed -- by definition when there is no
+        // password file
+        // note: you do NOT want to give a "--user" arg -- it can only appear
+        // if there is a password file too
+        if(!ok(getPasswordFilePath()))
             return " ";
+
+        // 2. --
+        String user = getAppserverUser(); // might be null
 
         String begin = "<" + elem + ">";
         String end   = "</" + elem + ">\n";
         StringBuilder sb = new StringBuilder();
 
-        sb.append(" "  + begin + "--user"               + end);
-        sb.append("  " + begin + getAppserverUser()     + end);
+        if(user != null) {
+            sb.append(" "  + begin + "--user"               + end);
+            sb.append("  " + begin + user                   + end);
+        }
         sb.append("  " + begin + "--passwordfile"       + end);
         sb.append("  " + begin + getPasswordFilePath()  + end);
         sb.append("  "); // such obsessive attention to detail!!! :-)

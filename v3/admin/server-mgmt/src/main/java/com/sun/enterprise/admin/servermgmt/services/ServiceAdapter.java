@@ -202,7 +202,7 @@ public abstract class ServiceAdapter implements Service{
         // we need a user for "--user" arg to start-domain
 
         if(!ok(appserverUser))
-           appserverUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
+            appserverUser = null;
 
         passwordFilePath = f.getPath().replace('\\', '/'); // already sanitized
     }
