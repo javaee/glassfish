@@ -79,7 +79,7 @@ import com.sun.xml.ws.api.server.InstanceResolver;
  * The JAX-WS dispatcher servlet.
  *
  */
-@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="109")
+@ProbeProvider(moduleProviderName="glassfish", moduleName="webservices", probeProviderName="servlet-109")
 public class JAXWSServlet extends HttpServlet {
 
     private static Logger logger = LogDomains.getLogger(JAXWSServlet.class,LogDomains.WEBSERVICES_LOGGER);
@@ -134,7 +134,7 @@ public class JAXWSServlet extends HttpServlet {
             if (endpt!=null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
                 WebServiceTesterServlet.invoke(request, response,
                         endpt.getDescriptor());
-                endedEvent();
+                endedEvent(endpoint.getEndpointAddressPath());
                 return;
             }
         }
@@ -153,7 +153,7 @@ public class JAXWSServlet extends HttpServlet {
             se.initCause(t);
             throw se;
         }
-        endedEvent();
+        endedEvent(endpoint.getEndpointAddressPath());
     }
 
     @Probe(name="startedEvent")
@@ -163,7 +163,8 @@ public class JAXWSServlet extends HttpServlet {
     }
 
     @Probe(name="endedEvent")
-    private void endedEvent() {
+    private void endedEvent(
+            @ProbeParam("endpointAddress") String endpointAddress) {
 
     }
 
