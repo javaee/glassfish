@@ -56,6 +56,7 @@ import org.glassfish.internal.api.*;
 @Service
 public class JVMStatsProviderBootstrap implements PostStartup, PostConstruct {
 
+    private ServerRuntimeStatsProvider sRuntimeStatsProvider = new ServerRuntimeStatsProvider();
     private JVMClassLoadingStatsProvider clStatsProvider = new JVMClassLoadingStatsProvider();
     private JVMCompilationStatsProvider compileStatsProvider = new JVMCompilationStatsProvider();
     private JVMMemoryStatsProvider memoryStatsProvider = new JVMMemoryStatsProvider();
@@ -69,6 +70,7 @@ public class JVMStatsProviderBootstrap implements PostStartup, PostConstruct {
     public void postConstruct(){
 
         /* register with monitoring */
+        StatsProviderManager.register("jvm", PluginPoint.SERVER, "", sRuntimeStatsProvider, ContainerMonitoring.LEVEL_LOW);
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/class-loading-system", clStatsProvider, ContainerMonitoring.LEVEL_LOW);
         StatsProviderManager.register("jvm", PluginPoint.SERVER, "jvm/compilation-system", compileStatsProvider, ContainerMonitoring.LEVEL_LOW);
         for (GarbageCollectorMXBean gc : ManagementFactory.getGarbageCollectorMXBeans()) {
