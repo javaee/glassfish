@@ -106,6 +106,9 @@ public class DriverLoader implements ConnectorConstants {
         Set<String> implClassNames = new TreeSet<String>();
         Set<String> allImplClassNames = new TreeSet<String>();
         
+        if(dbVendor != null) {
+            dbVendor = dbVendor.trim().replaceAll(" ", "");            
+        }
         //Get from the pre-populated list. This is done for common dbvendor names
         String implClass = getImplClassNameFromMapping(dbVendor, resType); 
         
@@ -130,8 +133,6 @@ public class DriverLoader implements ConnectorConstants {
             if (file.isFile()) {
                 //Introspect jar and get classnames.
                 if(dbVendor != null) {
-                    //This is to remove spaces from the database vendor names 
-                    dbVendor = dbVendor.trim().replaceAll(" ", "");
                     if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_JAVADB)) {
                         implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_DERBY);
                     } else if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_MSSQLSERVER)) {
