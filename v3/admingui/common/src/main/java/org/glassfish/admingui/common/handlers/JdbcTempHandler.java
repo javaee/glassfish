@@ -74,20 +74,34 @@ public class JdbcTempHandler {
 
     /**
      *	<p> This handler pings the  Jdbc Connection Pool
+     *  For the case where the ping is implicitedly done y GUI during create and edit where Ping is enabled,
+     *  give out the warning but don't specify that Ping succeeded.
      */
     @Handler(id = "pingJdbcConnectionPool",
         input = {
-            @HandlerInput(name = "jndiName", type = String.class, required = true)})
+            @HandlerInput(name = "jndiName", type = String.class, required = true),
+            @HandlerInput(name = "wmsg", type = String.class)})
     public static void pingJdbcConnectionPool(HandlerContext handlerCtx) {
 
         String jndiName = (String) handlerCtx.getInputValue("jndiName");
+        String warningMsg = (String) handlerCtx.getInputValue("wmsg");
+        boolean showSuccess = false;
+        String type = "warning";
+
+        if (GuiUtil.isEmpty(warningMsg)){
+            showSuccess = true;
+            warningMsg = GuiUtil.getMessage("msg.Error");
+            type = "error";
+        }
         try {
             Map<String, Object> statusMap = V3AMX.getInstance().getConnectorRuntime().pingJDBCConnectionPool(jndiName);
 
             if ((Boolean) statusMap.get(PING_CONNECTION_POOL_KEY)) {
-                GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.PingSucceed"), null);
+                if (showSuccess){
+                    GuiUtil.prepareAlert(handlerCtx, "success", GuiUtil.getMessage("msg.PingSucceed"), null);
+                }
             } else {
-                GuiUtil.prepareAlert(handlerCtx, "error", GuiUtil.getMessage("msg.Error"), statusMap.get(REASON_FAILED_KEY).toString());
+                GuiUtil.prepareAlert(handlerCtx, type, warningMsg, statusMap.get(REASON_FAILED_KEY).toString());
             }
 
         } catch (Exception ex) {
