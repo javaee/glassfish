@@ -5,12 +5,9 @@
 
 package com.sun.enterprise.v3.common;
 
-import java.io.OutputStream;
 import org.glassfish.api.ActionReport;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -97,5 +94,47 @@ public class PlainTextActionReporterTest {
             }
         }
         report.writeReport(System.out);
+    }
+
+    @Test
+    public void aggregateTest() {
+        ActionReporter successfulRoot = new PlainTextActionReporter();
+        assert successfulRoot.hasSuccesses();
+        assert !successfulRoot.hasFailures();
+        assert !successfulRoot.hasWarnings();
+        ActionReport failedChild = successfulRoot.addSubActionsReport();
+        failedChild.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        assert successfulRoot.hasSuccesses();
+        assert successfulRoot.hasFailures();
+        assert !successfulRoot.hasWarnings();
+        assert !failedChild.hasSuccesses();
+        assert !failedChild.hasWarnings();
+        assert failedChild.hasFailures();
+        ActionReport warningChild = failedChild.addSubActionsReport();
+        warningChild.setActionExitCode(ActionReport.ExitCode.WARNING);
+        assert successfulRoot.hasSuccesses();
+        assert successfulRoot.hasFailures();
+        assert successfulRoot.hasWarnings();
+        assert !failedChild.hasSuccesses();
+        assert failedChild.hasWarnings();
+        assert failedChild.hasFailures();
+        assert warningChild.hasWarnings();
+        assert !warningChild.hasSuccesses();
+        ActionReport successfulChild = warningChild.addSubActionsReport();
+        assert failedChild.hasSuccesses();
+        assert warningChild.hasSuccesses();
+        assert !warningChild.hasFailures();
+        StringBuilder sb = new StringBuilder();
+        successfulRoot.setMessage("sr");
+        successfulRoot.getCombinedMessages(successfulRoot, sb);
+        assertEquals("sr%%%EOL%%%", sb.toString());
+        warningChild.setMessage("wc");
+        sb = new StringBuilder();
+        successfulRoot.getCombinedMessages(successfulRoot, sb);
+        assertEquals("sr%%%EOL%%%wc%%%EOL%%%", sb.toString());
+        failedChild.setMessage("fc");
+        sb = new StringBuilder();
+        successfulRoot.getCombinedMessages(successfulRoot, sb);
+        assertEquals("sr%%%EOL%%%fc%%%EOL%%%wc%%%EOL%%%", sb.toString());
     }
 }

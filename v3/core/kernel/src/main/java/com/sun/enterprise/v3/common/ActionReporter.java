@@ -24,12 +24,17 @@
 package com.sun.enterprise.v3.common;
 
 
-import java.io.*;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Superclass for common ActionReport implementation.
@@ -75,21 +80,26 @@ public abstract class ActionReporter extends ActionReport {
         setActionExitCode(ExitCode.SUCCESS);
     }
     
+    @Override
     public void setActionDescription(String message) {
         this.actionDescription = message;
     }
 
+    @Override
     public void setFailureCause(Throwable t) {
         this.exception = t;
     }
+    @Override
     public Throwable getFailureCause() {
         return exception;
     }
         
+    @Override
     public MessagePart getTopMessagePart() {
         return topMessage;
     }
 
+    @Override
     public ActionReport addSubActionsReport() {
         ActionReporter subAction;
         try {
@@ -103,23 +113,28 @@ public abstract class ActionReporter extends ActionReport {
         return subAction;
     }
 
+    @Override
     public void setActionExitCode(ExitCode exitCode) {
         this.exitCode = exitCode;
     }
 
+    @Override
     public ExitCode getActionExitCode() {
         return exitCode;
     }
 
+    @Override
     public void setMessage(String message) {
         topMessage.setMessage(message);
     }
 
+    @Override
     public String getMessage() {
         return topMessage.getMessage();
     }
         
     
+    @Override
     public void setMessage(InputStream in) {
         try {
             if(in == null)
@@ -154,9 +169,11 @@ public abstract class ActionReporter extends ActionReport {
      * override the method to return a different valid type.
      * @return content type to be used in formatting the command response to the client
      */
+    @Override
     public String getContentType() {
         return contentType;
     }
+    @Override
     public void setContentType(String s) {
         contentType = s;
     }
@@ -179,7 +196,16 @@ public abstract class ActionReporter extends ActionReport {
         // and also set report.setFailureCause(exception). We need to avoid the duplicate message.
         if (aReport.getMessage() != null && aReport.getMessage().length() != 0) {
             mainMsg = aReport.getMessage();
-            sb.append(mainMsg);
+            String format = "{0}";
+            if (ActionReport.ExitCode.WARNING.equals(aReport.getActionExitCode())) {
+                LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ActionReporter.class);
+                format = localStrings.getLocalString("flag.message.as.warning", "Warning: {0}");
+            }
+            if (ActionReport.ExitCode.FAILURE.equals(aReport.getActionExitCode())) {
+                LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ActionReporter.class);
+                format = localStrings.getLocalString("flag.message.as.failure", "Failure: {0}");
+            }
+            sb.append(MessageFormat.format(format,mainMsg));
             sb.append(EOL_MARKER);
         }
         if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0) {
@@ -192,4 +218,36 @@ public abstract class ActionReporter extends ActionReport {
         }
     }
 
+    @Override
+    public boolean hasSuccesses() {
+        return has(this,ExitCode.SUCCESS);
+    }
+
+    @Override
+    public boolean hasWarnings() {
+        return has(this,ExitCode.WARNING);
+    }
+
+    @Override
+    public boolean hasFailures() {
+        return has(this,ExitCode.FAILURE);
+    }
+
+    private static boolean has(ActionReporter ar, ExitCode value) {
+        if (null != ar.exitCode && ar.exitCode.equals(value)) {
+            return true;
+        }
+        Queue<ActionReporter> q = new LinkedList<ActionReporter>();
+        q.addAll(ar.subActions);
+        while (!q.isEmpty()) {
+            ActionReporter lar = q.remove();
+            ExitCode ec = lar.getActionExitCode();
+            if (null != ec && ec.equals(value)) {
+                return true;
+            } else {
+                q.addAll(lar.subActions);
+            }
+        }
+        return false;
+    }
 }
