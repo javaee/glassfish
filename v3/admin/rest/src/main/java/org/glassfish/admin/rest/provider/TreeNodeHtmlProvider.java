@@ -162,6 +162,14 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
             if (value instanceof Statistic) {
                 Statistic statisticObject = (Statistic)value;
                 result = result + getStatisticRepresentation(statisticObject);
+
+                if (!result.equals("")) {
+                    result = "<h3>" + name + "</h3>" +
+                        "<div><dl>" + result + "</dl></div>";
+                }
+
+                result = result + "<br class=\"separator\">";
+                return result;
             } else if (value instanceof Stats) {
                 String statResult;
                 boolean firstEntry = true;
@@ -177,14 +185,15 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
                     result = result + statResult;
                     statResult = "";
                 }
-            }
-            if (!result.equals("")) {
-                result = "<h3>" + name + "</h3>" +
-                    "<div><dl>" + result + "</dl></div>";
-            }
 
-            result = result + "<br class=\"separator\">";
-            return result;
+                if (!result.equals("")) {
+                    result = "<h3>" + name + "</h3>" +
+                        "<div><dl>" + result + "</dl></div>";
+                }
+
+                result = result + "<br class=\"separator\">";
+                return result;
+            }
         } catch (Exception exception) {
             //log exception message as warning
         }

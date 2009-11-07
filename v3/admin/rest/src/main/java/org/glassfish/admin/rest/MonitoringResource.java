@@ -85,7 +85,16 @@ public class MonitoringResource {
             //get hold of root nodes for all the server instances.
             TreeNode serverNode = monitoringRegistry.get("server");
             if (serverNode != null) {
-                list.add(serverNode);
+                //check to make sure we do not display empty server resource
+                //    - http://host:port/monitoring/domain/server
+                //When you turn monitoring levels HIGH and then turn them OFF,
+                //you may see empty server resource. This is because server tree
+                //node has children (disabled) even when all the monitoring
+                //levels are turned OFF.
+                //Issue: 9921
+                if (!serverNode.getEnabledChildNodes().isEmpty()) {
+                    list.add(serverNode);
+                }
                 return list;
             } else {
                 //No root node available, so nothing to list

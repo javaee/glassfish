@@ -170,6 +170,9 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
             if (value instanceof Statistic) {
                 Statistic statisticObject = (Statistic)value;
                 result = result + getStatisticRepresentation(statisticObject);
+                result = "\n" + indent + quote(name) + ":" + "{" + result + "}";
+                result = result + ",";
+                return result;
             } else if (value instanceof Stats) {
                 String statResult;
                 for (Statistic statistic: ((Stats)value).getStatistics()) {
@@ -185,10 +188,11 @@ public class TreeNodeJsonProvider extends ProviderUtil implements MessageBodyWri
 
                 int endIndex = result.length() - 1;
                 if (endIndex > 0) result = result.substring(0, endIndex);
+
+                result = "\n" + indent + quote(name) + ":" + "{" + result + "}";
+                result = result + ",";
+                return result;
             }
-            result = "\n" + indent + quote(name) + ":" + "{" + result + "}";
-            result = result + ",";
-            return result;
         } catch (Exception exception) {
             //log exception message as warning
         }

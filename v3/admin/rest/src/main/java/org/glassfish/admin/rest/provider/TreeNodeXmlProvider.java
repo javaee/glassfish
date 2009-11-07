@@ -116,7 +116,8 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
 
     private String getAttributes(List<TreeNode> nodeList) {
         String result ="";
-        //account for primitive values
+        //account for primitive values.
+        //primitive value constitutes an xml element attribute
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
@@ -129,7 +130,8 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
 
         result = result + ">" + "\n\n";
 
-        //account for statistic values
+        //account for statistic or stats values
+        //statistic or stats value constitutes an xml element
         for (TreeNode node : nodeList) {
             //process only the leaf nodes, if any
             if (!node.hasChildNodes()) {
@@ -151,10 +153,10 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
             if (node.hasChildNodes()) {
                 try {
                         result = result + Constants.INDENT; //indent
-                        result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
+                        result = result + getStartXmlElement(getResourceKey().replace(' ', '-'));
                         elementName = node.getName();
                         result = result + getElementLink(uriInfo, elementName);
-                        result = result + getEndXmlElement(getResourcesKey().replace(' ', '-'));
+                        result = result + getEndXmlElement(getResourceKey().replace(' ', '-'));
                         result = result + "\n";
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -173,7 +175,7 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
     private String xmlForPrimitiveValue(Object value) {
         String result ="";
         if (value != null) {
-            if (!(value instanceof Statistic)) {
+            if (!((value instanceof Statistic)||(value instanceof Stats))) {
                 result =  value.toString();
             }
         }
