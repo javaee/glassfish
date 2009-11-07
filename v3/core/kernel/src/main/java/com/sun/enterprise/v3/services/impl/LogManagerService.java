@@ -59,6 +59,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
+import com.sun.enterprise.server.logging.UniformLogFormatter;
 
 import java.io.File;
 import java.io.IOException;
@@ -145,10 +146,32 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         } catch(IOException e) {
              logger.log(Level.SEVERE, "Cannot read logging configuration file : ", e);
         }
+
         FormatterDelegate agentDelegate = null;
         if (agent!=null) {
             agentDelegate = new AgentFormatterDelegate(agent);
 
+        }
+
+        // force the ConsoleHandler to use GF formatter
+        String formatterClassname=null;
+        try {
+            Map<String,String> props = loggingConfig.getLoggingProperties();
+            formatterClassname = props.get("java.util.logging.ConsoleHandler.formatter");
+            Class formatterClass = LogManagerService.class.getClassLoader().loadClass(formatterClassname);
+            UniformLogFormatter formatter = (UniformLogFormatter)formatterClass.newInstance();
+            for (Handler handler : logMgr.getLogger("").getHandlers()) {
+                // only get the ConsoleHandler
+                handler.setFormatter(formatter);
+            }
+
+        } catch (java.io.IOException ex) {
+            logger.log(Level.WARNING, "Cannot read logging properties file : ", ex);
+
+        } catch (ClassNotFoundException exc){
+            logger.log(Level.WARNING, "Cannot load specified formatter class file : ", formatterClassname);
+        } catch (Exception e) {
+           logger.log(Level.WARNING, "Exception thrown while setting ConsoleHandler formatter : ", e);
         }
 
         Collection<Handler> handlers = habitat.getAllByContract(Handler.class);
