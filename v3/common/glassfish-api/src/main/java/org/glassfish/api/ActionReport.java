@@ -107,6 +107,21 @@ public abstract class ActionReport {
         failure(logger,message,null);
     }
 
+    /**
+     * return true if the action report or a subaction report has ExitCode.SUCCESS.
+     */
+    public abstract boolean hasSuccesses();
+
+    /**
+     * return true if the action report or a subaction report has ExitCode.WARNING.
+     */
+    public abstract boolean hasWarnings();
+
+    /**
+     * return true if the action report or a subaction report has ExitCode.FAILURE.
+     */
+    public abstract boolean hasFailures();
+
     public static class MessagePart {
 
         Properties props = new Properties();
