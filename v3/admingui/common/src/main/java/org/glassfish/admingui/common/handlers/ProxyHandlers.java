@@ -732,8 +732,20 @@ public class ProxyHandlers {
     }
 
     /**
-     * TODO: Document me!
-     * @param handlerCtx
+     *	<p> This handler saves the property name and value.  Any properyt row that doesn't
+     *      have a Name OR Value will be ignored.  For creating a property with empty
+     *      value, the value can be specified as '()', then it will be writen out to
+     *      domain.xml as  ""
+     *  </p>
+     *
+     *	<p> The following are the inputs are supported:</p>
+     *	    <ul><li><b>objectName</b> - (required) This is the objectname for the
+     *                 mbean.</li>
+     *		<li><b>systemProp</b> - (optional) Boolean. If specified and it is
+     *                 equal to TRUE, the property will be saved as system property
+     *                 under server.  Otherwise, save as property for that objectname
+     *              </li>
+     *		<li><b>propertyList</b> - (required) Property list to be saved.</li></ul>
      */
     @Handler(id = "setProxyProperties",
         input = {
@@ -759,19 +771,19 @@ public class ProxyHandlers {
                 for (Map<String, String> oneRow : propertyList) {
                     Map newRow = new HashMap();
                     final String name = oneRow.get(PROPERTY_NAME);
-                    if (GuiUtil.isEmpty(name)) {
+                    String value = oneRow.get(PROPERTY_VALUE);
+                    if (GuiUtil.isEmpty(name) || GuiUtil.isEmpty(value)) {
                         continue;
                     }
+
                     if (propertyNames.contains(name)) {
                         GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.duplicatePropTableKey", new Object[]{name}));
                         return;
                     } else {
                         propertyNames.add(name);
                     }
-
-                    String value = oneRow.get(PROPERTY_VALUE);
-                    if (GuiUtil.isEmpty(value)) {
-                        value = "";
+                    if (value.equals(V3AMX.GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE)){
+                        value="";
                     }
                     newRow.put(PROPERTY_NAME, name);
                     newRow.put(PROPERTY_VALUE, value);
@@ -994,4 +1006,5 @@ public class ProxyHandlers {
     //Resources - can this obtained from AMX?
     public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
     public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
+
 }

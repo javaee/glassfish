@@ -414,6 +414,10 @@ public class V3AMX {
         if (skipList == null ){
             hasSkip = false;
         }
+        boolean convert = false;
+        if (childType.equals("property")){
+            convert = true;
+        }
         List result = new ArrayList();
         if (amx != null) {
             Map<String, AMXProxy> children = amx.childrenMap(childType);
@@ -427,7 +431,7 @@ public class V3AMX {
                     }
                     oneRow.put("selected", false);
                     for(String attrName : attrs.keySet()){
-                        oneRow.put(attrName, getA(attrs, attrName));
+                        oneRow.put(attrName, getA(attrs, attrName, convert));
                     }
                     result.add(oneRow);
                 }catch(Exception ex){
@@ -562,9 +566,12 @@ public class V3AMX {
          }
      }
 
-    private static String getA(Map<String, Object> attrs,  String key){
+    private static String getA(Map<String, Object> attrs,  String key, boolean convert){
         Object val = attrs.get(key);
-        return (val == null) ? "" : val.toString();
+        if (val == null){
+            return "";
+        }
+        return (convert && (val.equals(""))) ? GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE : val.toString();
     }
 
     final private static List skipAttr = new ArrayList();
@@ -577,5 +584,6 @@ public class V3AMX {
     private static final String PROPERTY_VALUE = "Value";
     private static final String PROPERTY_DESC = "Description";
 
+    public static final String GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE = "()";
 
 }
