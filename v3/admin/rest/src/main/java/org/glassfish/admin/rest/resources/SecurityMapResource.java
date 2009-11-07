@@ -14,6 +14,18 @@ import org.glassfish.admin.rest.TemplateResource;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
 public class SecurityMapResource extends TemplateResource<SecurityMap> {
 
+	@Path("principal/")
+	public PrincipalResource getPrincipalResource() {
+		PrincipalResource resource = resourceContext.getResource(PrincipalResource.class);
+		resource.setEntity(getEntity().getPrincipal() );
+		return resource;
+	}
+	@Path("user-group/")
+	public UserGroupResource getUserGroupResource() {
+		UserGroupResource resource = resourceContext.getResource(UserGroupResource.class);
+		resource.setEntity(getEntity().getUserGroup() );
+		return resource;
+	}
 	@Path("backend-principal/")
 	public BackendPrincipalResource getBackendPrincipalResource() {
 		BackendPrincipalResource resource = resourceContext.getResource(BackendPrincipalResource.class);

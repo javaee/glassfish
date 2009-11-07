@@ -35,43 +35,64 @@
  */
 package org.glassfish.admin.rest.provider;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
+import java.util.List;
 
 /**
-  * @author Rajeshwar Patil
+ * Response information object. Returned on call to GET methods on CollectionLeaf
+ * resources. Information used by provider to generate the appropriate output.
+ *
+ * @author Rajeshwar Patil
  */
-@Consumes(MediaType.APPLICATION_XML)
-@Provider
-public class XmlHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
+public class StringListResult extends Result {
 
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(HashMap.class);
+    /**
+     * Constructor
+     */
+    public StringListResult(String name, List<String> messages,
+        String postCommand, String deleteCommand, OptionsResult metaData) {
+        __name = name;
+        __messages = messages;
+        __postCommand =  postCommand;
+        __deleteCommand = deleteCommand;
+        __metaData = metaData;
+
     }
 
-    @Override
-    public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
-        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
-        InputStream in) throws IOException {
-        try {
-            XmlInputObject xmlObject = new XmlInputObject(in);
-            return getStringMap((HashMap)xmlObject.initializeMap());
-        } catch (InputException exception) {
-            HashMap map = new HashMap();
-            map.put("error", "Entity Parsing Error: " + exception.getMessage());
-              
-            return map;
-            ///throw new RuntimeException(exception); 
-        }
+
+    /**
+     * Returns the result strings this object represents
+     */
+    public List<String> getMessages() {
+        return __messages;
     }
+
+
+    /**
+     * Returns OptionsResult - the meta-data of this resource.
+     */
+    public OptionsResult getMetaData() {
+        return __metaData;
+    }
+
+
+    /**
+     * Returns post Command associated with the resource.
+     */
+    public String getPostCommand() {
+        return __postCommand;
+    }
+
+
+    /**
+     * Returns delete Command associated with the resource.
+     */
+    public String getDeleteCommand() {
+        return __deleteCommand;
+    }
+
+
+    List<String> __messages;
+    String __postCommand;
+    String __deleteCommand;
+    OptionsResult __metaData;
 }

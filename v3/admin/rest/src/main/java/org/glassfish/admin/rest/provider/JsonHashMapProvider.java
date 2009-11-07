@@ -52,7 +52,7 @@ import javax.ws.rs.ext.Provider;
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Provider
-public class JsonHashMapProvider implements MessageBodyReader<HashMap<String, String>> {
+public class JsonHashMapProvider extends ProviderUtil implements MessageBodyReader<HashMap<String, String>> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -65,7 +65,7 @@ public class JsonHashMapProvider implements MessageBodyReader<HashMap<String, St
         InputStream in) throws IOException {
         try {
             JsonInputObject jsonObject = new JsonInputObject(in);
-            return (HashMap) jsonObject.initializeMap();
+            return getStringMap((HashMap)jsonObject.initializeMap());
         } catch (InputException exception) {
             HashMap map = new HashMap();
             map.put("error", "Entity Parsing Error: " + exception.getMessage());

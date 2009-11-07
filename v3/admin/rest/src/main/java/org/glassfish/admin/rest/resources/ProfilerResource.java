@@ -20,4 +20,10 @@ public class ProfilerResource extends TemplateResource<Profiler> {
 		resource.setEntity(getEntity().getProperty() );
 		return resource;
 	}
+	@Path("jvm-options/")
+	public JvmOptionsResource getJvmOptionsResource() {
+		JvmOptionsResource resource = resourceContext.getResource(JvmOptionsResource.class);
+		resource.setEntity(getEntity().getJvmOptions() );
+		return resource;
+	}
 }

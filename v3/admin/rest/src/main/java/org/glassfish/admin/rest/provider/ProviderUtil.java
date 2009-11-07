@@ -215,6 +215,25 @@ public class ProviderUtil extends Util {
     }
 
 
+    static protected HashMap<String, String> getStringMap(Map map) {
+        HashMap<String, String> stringMap = new HashMap<String, String>();
+        if (map != null) {
+            //Convert attribute value to String if that's not the case.
+            //Attribute value can be Boolean, Interger etc.
+            String key = null;
+            Object value = null;
+            //We know keys in the map are always stoared as String objects
+            Iterator<String> iterator = map.keySet().iterator();
+            while (iterator.hasNext()) {
+                key = iterator.next();
+                value = map.get(key);
+                stringMap.put(key, value.toString());
+            }
+        }
+        return stringMap;
+    }
+
+
     static protected String getHtmlRespresentationForAttributes(ConfigBean proxy,
             UriInfo uriInfo) {
         String result = "";

@@ -9,15 +9,9 @@
 *
 **/
 package org.glassfish.admin.rest.resources;
-import javax.ws.rs.*;
-import org.glassfish.admin.rest.TemplateResource;
-import com.sun.enterprise.config.serverbeans.AmxPref;
-public class AmxPrefResource extends TemplateResource<AmxPref> {
 
-	@Path("property/")
-	public ListPropertyResource getPropertyResource() {
-		ListPropertyResource resource = resourceContext.getResource(ListPropertyResource.class);
-		resource.setEntity(getEntity().getProperty() );
-		return resource;
-	}
+import org.glassfish.admin.rest.CollectionLeafResource;
+
+public class UserGroupResource extends CollectionLeafResource {
+
 }

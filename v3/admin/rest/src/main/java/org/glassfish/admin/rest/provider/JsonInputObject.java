@@ -121,7 +121,9 @@ public class JsonInputObject extends InputObject {
                 JsonInputObject jsonObject = (JsonInputObject) value;
                 map.putAll(jsonObject.initializeMap());
             } else {
-                put(key, (String) value);
+                //storing the value in the map as Object as apposed to String.
+                //boolean, interger literals can be valid json values.
+                put(key, value);
             } 
 
             /*

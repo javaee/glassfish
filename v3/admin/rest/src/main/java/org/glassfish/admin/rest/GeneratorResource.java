@@ -338,6 +338,22 @@ public class GeneratorResource {
 
             if (prop != null && prop.isLeaf()) {
                 System.out.println("proxy.getElement(a).isLeaf() " + a);
+                if (prop.isCollection()) {
+                    //handle the CollectionLeaf config objects.
+                    //JVM Options is an example of CollectionLeaf object.
+                    String name = getBeanName(a);
+                    out.write("\t@Path(\"" + a + "/\")\n");
+                    out.write("\tpublic " + name + "Resource get" + name + "Resource() {\n");
+
+                    out.write("\t\t" + name + "Resource resource = resourceContext.getResource(" + name + "Resource.class);\n");
+                    out.write("\t\tresource.setEntity(getEntity().get" + name + "() );\n");
+                    out.write("\t\treturn resource;\n");
+                    out.write("\t}\n");
+
+                    //create resource class
+                    createCollectionLeafResourceFile(name);
+                }
+                System.out.println("proxy.getElement(a).isCollection() " + a);
             } else {
                 ConfigModel.Node node = (ConfigModel.Node) prop;
                 //String childbeanName = getBeanName(a);
@@ -536,6 +552,16 @@ public class GeneratorResource {
     }
 
 
+    private String[] getCollectionLeafResourceInfo(String resourceName) {
+        for (int i = 0; i < ConfigBeansToCommands.length; i++) {
+            if (resourceName.equals(ConfigBeansToCommands[i][0])) {
+                    return ConfigBeansToCommands[i];
+            }
+        }
+        return null;
+    }
+
+
     /*
      * temporary mapping to add Admin Commands to some of our configbeans
      *
@@ -648,6 +674,15 @@ public class GeneratorResource {
         {"ThreadPool", "delete-threadpool"},
         {"NetworkListener", "delete-network-listener"},
         {"Protocol", "delete-protocol"}
+    };
+
+
+    //This map is used to generate CollectionLeaf resources.
+    //Example: JVM Options. This information will eventually move to config bean-
+    //JavaConfig or JvmOptionBag
+    private static String ConfigBeansToCommands[][] = {
+        //{config-bean, post command, delete command, disaplay name}
+        {"JvmOptions", "create-jvm-options", "delete-jvm-options", "JvmOption"}
     };
 
 
@@ -832,6 +867,60 @@ public class GeneratorResource {
 
         out.close();
         System.out.println("created:" + file.getAbsolutePath());
+    }
+
+
+    private void createCollectionLeafResourceFile(String beanName) throws IOException {
+        String resourceFileName = genDir + "/" + beanName + "Resource.java";
+        String resourceName = beanName + "Resource";
+
+        File file = new File(resourceFileName);
+        try {
+            file.createNewFile();
+        } catch (Exception e) {}
+        FileWriter fstream = new FileWriter(file);
+        BufferedWriter out = new BufferedWriter(fstream);
+
+        //header
+        genHeader(out);
+
+        //package
+        out.write("package org.glassfish.admin.rest.resources;\n\n");
+
+        //imports
+        out.write("import org.glassfish.admin.rest.CollectionLeafResource;\n\n");
+
+        //class header
+        out.write("public class " + resourceName + " extends CollectionLeafResource {\n\n");
+
+        String[] collectionLeafResourceInfo = getCollectionLeafResourceInfo(beanName);
+
+        if (collectionLeafResourceInfo != null) {
+            //post method
+            if ((collectionLeafResourceInfo[1] != null) && (!collectionLeafResourceInfo[1].equals(""))) {
+                out.write("@Override\n");
+                out.write("protected String getPostCommand(){\n");
+                out.write("return \"" + collectionLeafResourceInfo[1] + "\";\n");
+                out.write("}\n");
+            }
+
+            //delete method
+            if ((collectionLeafResourceInfo[2] != null) && (!collectionLeafResourceInfo[2].equals(""))) {
+                out.write("@Override\n");
+                out.write("protected String getDeleteCommand(){\n");
+                out.write("return \"" + collectionLeafResourceInfo[2] + "\";\n");
+                out.write("}\n");
+            }
+
+            //display name method
+            out.write("@Override\n");
+            out.write("protected String getName(){\n");
+            out.write("return \"" + collectionLeafResourceInfo[3] + "\";\n");
+            out.write("}\n");
+        }
+
+        out.write("}\n");
+        out.close();
     }
 
 
