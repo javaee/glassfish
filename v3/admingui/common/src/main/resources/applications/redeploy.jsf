@@ -68,7 +68,7 @@
                     }
                     if(result == true) {
                             if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
-                                return submitAndDisable(this, '$resource{i18n.button.Processing}');
+                                return submitAndDisable(this, '$resource{i18n.button.Processing}', '_top');
                     }
                     return false;"
                  >
