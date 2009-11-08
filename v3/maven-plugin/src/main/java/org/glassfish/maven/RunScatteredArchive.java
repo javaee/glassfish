@@ -80,7 +80,8 @@ public class RunScatteredArchive extends AbstractDeployMojo{
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
-            Server server = Util.getServer(serverID, instanceRoot, installRoot, configFile);
+            super.setClassPathProperty();
+            Server server = Util.getServer(serverID, instanceRoot, installRoot, configFile, autoDelete);
 
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();

@@ -58,6 +58,7 @@ public class UndeployMojo extends AbstractMojo  {
 
 /**
  * @parameter expression="${name}"
+ *
  */
     protected String name;
 

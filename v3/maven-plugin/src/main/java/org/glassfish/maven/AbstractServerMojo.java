@@ -42,6 +42,21 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+
+import java.util.*;
+import java.io.File;
+
 public abstract class AbstractServerMojo extends AbstractMojo {
 /**
  * @parameter expression="${serverID}" default-value="maven"
@@ -68,7 +83,101 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 */
     protected String configFile;
 
+/**
+ * @parameter expression="${autoDelete}"
+*/
+    protected Boolean autoDelete;
+
+    /**
+     * The maven project.
+     *
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    protected MavenProject project;
+
+    /**
+     * @component
+     */
+    protected MavenProjectBuilder projectBuilder;
+
+    /**
+     * @parameter expression="${localRepository}"
+     * @required
+     */
+    protected ArtifactRepository localRepository;
+
+    /**
+     * @component
+     */
+    protected ArtifactResolver artifactResolver;
+
+    /**
+     * Used to construct artifacts for deletion/resolution...
+     *
+     * @component
+     */
+    private ArtifactFactory factory;
+
+
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
+
+
+    void setClassPathProperty() throws ProjectBuildingException {
+        String prop = System.getProperty("java.class.path");
+        String classPath = getEmbeddedDependenciesClassPath();
+        if (classPath != null && classPath.length() > 0) {
+            if (prop != null && prop.length() > 0)
+                prop = prop + File.pathSeparator;
+            System.setProperty("java.class.path", prop + classPath);
+        }
+    }
+
+    private String getEmbeddedDependenciesClassPath() throws ProjectBuildingException {
+        String classPath = "";
+
+        for( Artifact a : (Set<Artifact>)project.getPluginArtifacts()) {
+            a.setVersion("3.0-SNAPSHOT");
+            // get the plugin artifact and find the MavenProject (POM)
+            MavenProject pluginProject = projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), localRepository);
+            List ea = resolveEmbeddedArtifacts(pluginProject);
+            for ( Iterator it = ea.iterator(); it.hasNext(); ) {
+                Artifact artifact = (Artifact) it.next();
+                File f = artifact.getFile();
+                if (f != null && f.getName().contains("glassfish-embedded")) {
+                    classPath = classPath + f + File.pathSeparator;
+                }
+            }
+        }
+        return classPath;
+    }
+
+    private List resolveEmbeddedArtifacts( MavenProject project )  {
+	List artifactList = new ArrayList();
+        List dependencies = project.getDependencies();
+        Set dependencyArtifacts = new HashSet();
+        for ( Iterator it = dependencies.iterator(); it.hasNext(); ) {
+            Dependency dependency = (Dependency) it.next();
+            VersionRange vr = VersionRange.createFromVersion( dependency.getVersion() );
+            Artifact artifact = factory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(), vr, dependency.getType(), dependency.getClassifier(), dependency.getScope() );
+            dependencyArtifacts.add( artifact );
+        }
+	for ( Iterator it = dependencyArtifacts.iterator(); it.hasNext(); ) {
+            Artifact artifact = (Artifact) it.next();
+            try {
+                //resolve artifact from localRepository
+                artifactResolver.resolve( artifact, Collections.EMPTY_LIST, localRepository );
+		artifactList.add( artifact);
+	    } catch ( ArtifactResolutionException e ) {
+                // cannot resolve artifact
+            } catch ( ArtifactNotFoundException e ) {
+                //artifact not found..
+	    }
+        }
+        return artifactList;
+    }
+
 
 }

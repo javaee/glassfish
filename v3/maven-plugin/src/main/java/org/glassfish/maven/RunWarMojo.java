@@ -45,8 +45,11 @@ import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.ContainerBuilder;
+import org.apache.maven.artifact.*;
+import org.apache.maven.artifact.handler.*;
+import org.apache.maven.project.MavenProject;
 
-
+import java.util.*;
 /**
  * @goal runweb
  */
@@ -66,9 +69,10 @@ public class RunWarMojo extends AbstractDeployMojo {
         if (!deployArchive.exists()) {
             throw new MojoExecutionException ("", new java.io.FileNotFoundException(app));
         }
-        try {
 
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile);
+        try {
+            super.setClassPathProperty();
+            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
             if (port != -1)
                 server.createPort(port);
 

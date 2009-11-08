@@ -53,7 +53,8 @@ public class StartMojo extends AbstractServerMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile);
+            super.setClassPathProperty();
+            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
 
             if (port != -1)
                 server.createPort(port);

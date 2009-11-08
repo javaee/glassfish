@@ -42,41 +42,26 @@ import java.io.*;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedFileSystem;
 
+import java.io.File;
+
 
 public  class Util {
 
-    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile) throws IOException {
+    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile, 
+            Boolean autoDelete) throws IOException {
 
         Server server = Server.getServer(serverID);
         if (server != null)
             return server;
-        
+
         Server.Builder builder = new Server.Builder(serverID);
 
-        EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile);
-        if (efs != null) {
-            server = builder.embeddedFileSystem(efs).build();
-        }
-        else {
-            server = builder.build();
-        }
+        EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile, autoDelete);
+        server = builder.embeddedFileSystem(efs).build();
         return server;
     }
 
-    public static EmbeddedFileSystem getFileSystem(String installRoot, String instanceRoot, String configFile) {
-        if (installRoot == null && instanceRoot == null && configFile == null)
-            return null;
-
-        System.out.println("InstallRoot = " + installRoot);
-        System.out.println("InstanceRoot = " + instanceRoot);
-        if (instanceRoot == null && installRoot != null) {
-            instanceRoot = installRoot + "/domains/domain1";
-        }
-
-        System.out.println("InstanceRoot = " + instanceRoot);
-        if (configFile == null && instanceRoot != null) {
-            configFile = instanceRoot + "/config/domain.xml";
-        }
+    public static EmbeddedFileSystem getFileSystem(String installRoot, String instanceRoot, String configFile, Boolean autoDelete) {
 
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
         if (installRoot != null)
@@ -85,10 +70,9 @@ public  class Util {
             efsb.instanceRoot(new File(instanceRoot));
         if (configFile != null)
             efsb.configurationFile(new File(configFile));
+        if (autoDelete != null)
+            efsb.autoDelete(autoDelete.booleanValue());
 
         return efsb.build();
     }
-
-
-
 }
