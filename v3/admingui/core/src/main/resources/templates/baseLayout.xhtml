@@ -9,27 +9,26 @@
     <sun:html>
 	<ui:event type="beforeCreate">
 	    initSessionAttributes();
+            setShowRegTreeNode();
+            <!--
 	    checkSupport(supportCluster=>$session{supportCluster});
-	    if( $session{supportCluster}){
+	    /if( $session{supportCluster}){
 		initClusterSessionAttribute();
 		setSessionAttribute(key="notSupportCluster" value="$boolean{false}");
 	    }
+            -->
 	    if(! $session{supportCluster}){
 		setSessionAttribute(key="notSupportCluster" value="$boolean{true}");
 	    }
-
-	    showRegistration(value=>$session{showRegistration});
-	    if ($session{showRegistration}){
-		setRegistrationNodeText();
-	    }
-
 	    if(! $session{supportCluster}){
 		checkRestart(RestartRequired=>$session{restartRequired},
 		unprocessedChanges=>$session{unprocessedChanges});
 	    }
+            <!--
 	    if($session{supportCluster}){
 		setSessionAttribute(key="restartRequired" value="$boolean{false}");
 	    }
+            -->
 
 	    // Set expand / collapse preferences...
 	    getPreference(default="#{false}", root="glassfish/layout", key="hideLeft", value="#{sessionScope.hideLeft}");

@@ -63,8 +63,6 @@ import com.sun.enterprise.registration.RegistrationAccount;
 import com.sun.enterprise.registration.RegistrationService;
 import com.sun.enterprise.registration.RegistrationService.RegistrationStatus;
 import com.sun.enterprise.registration.RegistrationService.RegistrationReminder;
-import com.sun.enterprise.registration.RegistrationServiceConfig;
-import com.sun.enterprise.registration.RegistrationServiceFactory;
 import com.sun.enterprise.registration.impl.SOAccount;
 import com.sun.enterprise.registration.impl.SysnetRegistrationService;
 import java.util.Calendar;
@@ -72,7 +70,6 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Random;
 import javax.faces.context.FacesContext;
-
 
 /**
  *
@@ -99,17 +96,25 @@ public class RegisterHandlers {
 
         RegistrationService regService = getRegistrationService();
         if (regService == null) {
-            System.out.println("========== No RegistrationService available. ===========");
+            GuiUtil.getLogger().info("No RegistrationService available.");
             handlerCtx.setOutputValue("value", false);
             return;
         }
         if (( getRegistrationStatus() == RegistrationStatus.NOT_REGISTERED) &&
                 !regService.isRegistrationEnabled()){
-            System.out.println("============ Product is not registered and registration is not Enabled ===========");
+            GuiUtil.getLogger().info("Product is not registered and registration is not Enabled");
             handlerCtx.setOutputValue("value", false);
             return;
         }
         handlerCtx.setOutputValue("value", true);
+    }
+
+
+    @Handler(id="setShowRegTreeNode")
+    public static void testIfRegistered(HandlerContext handlerCtx) {
+        if( GuiUtil.getSessionValue("showRegTreeNode") == null){
+            GuiUtil.setSessionValue("showRegTreeNode", (getRegistrationStatus() != RegistrationStatus.REGISTERED));
+        }
     }
 
     private static RegistrationStatus getRegistrationStatus() {
@@ -127,7 +132,6 @@ public class RegisterHandlers {
 
         return regStatus;
     }
-
 
     private static RegistrationReminder getRegistrationReminder() {
         try {
@@ -314,7 +318,6 @@ public class RegisterHandlers {
                     return;
                 }
                 regService.register(account);
-                setNodeText(handlerCtx, true);
             } catch (Exception ex) {
 		// FIXME: Log trace instead
                 ex.printStackTrace();
@@ -373,7 +376,6 @@ public class RegisterHandlers {
                 RegistrationAccount account = new SOAccount(map);
                 regService.createRegistrationAccount(account);
                 regService.register(account);
-                setNodeText(handlerCtx, true);
             } catch(Exception ex) {
 		// FIXME: Log trace instead
                 ex.printStackTrace();
@@ -445,22 +447,6 @@ public class RegisterHandlers {
         return ret;
     }
      */
-
-
-    @Handler(id="setRegistrationNodeText")
-    public static void setRegistrationNodeText(HandlerContext handlerCtx) {
-
-        try {
-            RegistrationService regService = getRegistrationService();
-            RegistrationStatus status = regService.getRegistrationStatus();
-            setNodeText(handlerCtx, (status == RegistrationStatus.REGISTERED));
-        } catch(Exception ex) {
-	    // FIXME: Log trace instead
-            ex.printStackTrace();
-            setNodeText(handlerCtx, false);
-        }
-    }
-    
                
     @Handler(id="getSupportImages",
         input={
@@ -487,16 +473,6 @@ public class RegisterHandlers {
         handlerCtx.setOutputValue("imageList", result);       
     }
 
-    private static void setNodeText(HandlerContext handlerCtx, boolean registered) {
-        if (registered) {
-            GuiUtil.setSessionValue("registrationNodeText", GuiUtil.getMessage("tree.support"));
-            GuiUtil.setSessionValue("registrationNodePage", "support");
-        }else{
-            GuiUtil.setSessionValue("registrationNodeText", GuiUtil.getMessage("tree.registration"));
-            GuiUtil.setSessionValue("registrationNodePage", "registration");
-        }
-    }
-    
     @Handler(id="getIssueQueryString",
      output={
         @HandlerOutput(name="query", type=String.class)
