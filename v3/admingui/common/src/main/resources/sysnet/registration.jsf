@@ -57,7 +57,7 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); admingui.nav.selectTreeNodeById('treeForm:tree:registration');" >
 
 <!define name="content">
-<sun:script url="/resource/common/js/adminjsf.js" />
+//<sun:script url="/resource/common/js/adminjsf.js" />
     <event>
     <!beforeCreate
         setAttribute(key="accountGroup", value="hasAccount");
@@ -242,8 +242,8 @@
             <!facet pageButtonsBottom>
                 <sun:panelGroup id="bottomButtons">
                     "<span style="left: 30px; position: absolute;"> $resource{i18nc.reg.agree}</span>
-                    <sun:button id="button2" text="$resource{i18n.button.register}" 
-                        onClick="if (validateRegisterField(this.form)){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } else{ return false;}" onKeyPress="javascript: return true;" >
+                    <sun:button id="button2" text="$resource{i18n.button.register}"
+                        onClick=" if ( validateRegisterField(this.form) ){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } return false; " >
                         <!afterCreate
                             getClientId(component="$this{component}" clientId=>$page{button2Id});
                         />
@@ -254,7 +254,8 @@
                             screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
                             country="#{country}", companyName="#{companyName}" accountStatus="#{accountGroup}"
                             newProxy="#{newProxy}" newPort="#{newPort}" );
-                         gf.redirect("support.jsf");
+                         setSessionAttribute(key="showRegTreeNode" value="#{false}")
+                         gf.redirect(page="#{request.contextPath}/common/sysnet/support.jsf");
                          />
                     </sun:button>
                 </sun:panelGroup>

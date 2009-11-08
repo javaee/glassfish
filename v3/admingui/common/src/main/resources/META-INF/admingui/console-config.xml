@@ -91,7 +91,7 @@
         <integration-point
                 id="web_MonitorConfigurationLink"
                 type="org.glassfish.admingui:configuration"
-                priority="750"
+                priority="800"
                 parentId="propSheetSection"
                 content="monitor/configurationLink.jsf"
         />
@@ -131,7 +131,7 @@
         <integration-point
                 id="monitor"
                 type="org.glassfish.admingui:navNode"
-                priority="750"
+                priority="800"
                 parentId="configuration"
                 content="monitor/monitoringNode.jsf"
         />

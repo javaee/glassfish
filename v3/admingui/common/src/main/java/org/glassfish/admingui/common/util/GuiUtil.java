@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.MessageFormat;
@@ -79,7 +78,6 @@ import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.admin.amx.util.ExceptionUtil;
-
 
 /**
  *
@@ -157,7 +155,7 @@ public class GuiUtil {
             //should never get here.
             sessionMap.put("serverName", "");
         }
-
+        sessionMap.put("supportCluster", Boolean.FALSE);
         sessionMap.put("appServerVersion", V3AMX.getInstance().getDomainRoot().getApplicationServerFullVersion());
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
@@ -169,7 +167,6 @@ public class GuiUtil {
         sessionMap.put("ADMIN_LISTENER", V3AMX.getInstance().getAdminListener().objectName());
         sessionMap.put("_SESSION_INITIALIZED","TRUE");
         sessionMap.put("restartRequired", Boolean.FALSE);
-
 
         /* refer to issue# 5698 and issue# 3691
          * There is a chance that this getAdminSessionTimoutInMinutes() throws an exception in Turkish locale.

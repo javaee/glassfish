@@ -50,7 +50,8 @@ Network Config web  550
 ORB            corba  600
 Thread Pools   web  650
 Admin Service  common 700
-monitoring     web  750
+Connector Service   750
+monitoring     web  800
 
 update tool    updatetool 800
 -->
@@ -109,7 +110,7 @@ update tool    updatetool 800
 
         <!--  ===================================== Registration  ======================  -->
         <sun:treeNode id="registration"
-            rendered="#{sessionScope.registrationNodePage == 'registration'}"
+            rendered="#{sessionScope.showRegTreeNode}"
             text="$resource{i18n.tree.registration}"
             url="/common/sysnet/registration.jsf"
             >

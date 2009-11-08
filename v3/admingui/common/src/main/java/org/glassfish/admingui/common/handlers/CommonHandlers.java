@@ -62,7 +62,6 @@ import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
@@ -423,15 +422,15 @@ public class CommonHandlers {
      *  <p> Output value: "supportHADB" -- Type: <code>Boolean</code>/</p>
      *	@param	handlerCtx	The HandlerContext.
      */
-    @Handler(id="checkSupport",
-    output={
-        @HandlerOutput(name="supportCluster", type=Boolean.class),
-        @HandlerOutput(name="supportHADB", type=Boolean.class)})
-        public static void checkSupport(HandlerContext handlerCtx) {
-            handlerCtx.setOutputValue("supportCluster", false);
-            handlerCtx.setOutputValue("supportHADB", false);
-    }
-    
+//    @Handler(id="checkSupport",
+//    output={
+//        @HandlerOutput(name="supportCluster", type=Boolean.class),
+//        @HandlerOutput(name="supportHADB", type=Boolean.class)})
+//        public static void checkSupport(HandlerContext handlerCtx) {
+//            handlerCtx.setOutputValue("supportCluster", false);
+//            handlerCtx.setOutputValue("supportHADB", false);
+//    }
+
     /**
      *	<p> This handler is different than JSFT's default navigate handler in
      *	    that it forces the request to NOT be a "partial request".  The
