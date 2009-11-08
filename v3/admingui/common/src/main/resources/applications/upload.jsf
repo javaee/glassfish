@@ -69,7 +69,7 @@
 #include "/common/applications/uploadComponent.jsf"
         "<br/>
 //#include "/common/shared/propertyDescTable.inc"
-	<sun:hidden id="helpKey" value="uploadDev" />
+	<sun:hidden id="helpKey" value="$resource{help.uploadDev}" />
         "<br/>
         <sun:title id="title2">
             <!facet pageButtonsBottom>
