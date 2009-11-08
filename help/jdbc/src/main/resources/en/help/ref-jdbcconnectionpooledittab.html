@@ -7,8 +7,10 @@ Use is subject to License Terms  -->
 <a name="indexterm-23"></a><p>Use the Edit Connection Pool page to edit the general properties of a
 JDBC connection pool.</p><p>The Edit Connection Pool page contains the following options.</p><dl><dt>Load Defaults</dt>
 <dd><p>Button to restore the default values of all the settings.</p></dd>
+<dt>Flush</dt>
+<dd><p>Button to reinitialize the connections in the connection pool. Clicking this button destroys any existing connections, recreates connections established for the pool, and restores the pool to its initial and minimum pool size.</p></dd>
 <dt>Ping</dt>
-<dd><p>Button to verify the database connection. If an error message appears when you click this button, check to see if the database server has been started.</p></dd>
+<dd><p>Button to verify that the connection pool is usable. If an error message appears when you click this button, check to see if the database server has been started.</p></dd>
 <dt>JNDI Name</dt>
 <dd><p>The name of the connection pool. This is a read-only field. You can only specify the name when you create a JDBC connection pool.</p></dd>
 <dt>Resource Type</dt>

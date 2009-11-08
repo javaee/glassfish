@@ -31,7 +31,7 @@ following options.</p><dl><dt>Datasource Classname</dt>
 <dt>Isolation Level</dt>
 <dd><p>If the Guaranteed checkbox is selected, all connections taken from the pool have the same isolation level. For example, if the isolation level for the connection is changed programmatically (with <tt>con.setTransactionIsolation</tt>) when last used, then this mechanism changes the status back to the specified isolation level. This option is enabled by default.</p><p>This setting is only applicable if a transaction isolation level has been specified.</p></dd>
 <dt>Additional Properties</dt>
-<dd><p>Additional properties for the JDBC connection pool. These properties might include database name (URL), user name, and password. The table normally contains properties used by the database vendor.</p><p>For a description of connection pool properties, see <a href="ref-jdbc-properties.html">Properties Specific to JDBC Connection Pools</a>.</p></dd>
+<dd><p>Additional properties for the JDBC connection pool. These properties might include database name (URL), user name, and password. The table normally contains properties used by the database vendor.</p><p>For a description of some of the available properties, see <a href="ref-jdbc-properties.html">Properties Specific to JDBC Connection Pools</a>.</p><p>If you do not specify a value for a property, it is removed from the table when you finish creating the connection pool. If you do not want to set a value for a property now, but you want the property to remain in the table so that the value can be set later, type a set of empty parentheses in the Value field:</p><pre>()</pre></dd>
 </dl>
 <h5>Related Tasks</h5>
 

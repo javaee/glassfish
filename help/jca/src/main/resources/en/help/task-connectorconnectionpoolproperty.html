@@ -14,7 +14,11 @@ that you are editing.</b><p>The Edit Connector Connection Pool page opens.</p></
 <li><b>On the Edit Connector Connection Pool page, click the Additional Properties tab.</b><p>The Edit Connection Pool Properties page opens.</p></li>
 <li>(Optional) <b>In the Additional Properties table, specify additional properties for the connector connection pool.</b><p>The properties specified depend on the resource adapter used by this pool. The
 name-value pairs specified by the user using this table can be used to
-override the default values for the properties defined by the resource-adapter vendor.</p><ul>
+override the default values for the properties defined by the resource-adapter vendor.</p><p>If you do not specify a value for a property, it is
+removed from the table when you finish editing the connection pool. If you
+do not want to set a value for a property now, but you
+want the property to remain in the table so that the value can
+be set later, type a set of empty parentheses in the Value field:</p><pre>()</pre><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
 the property value in the Value field.</b></li>

@@ -122,6 +122,8 @@
         <tocitem target="ref-lifecyclemodules" text="Lifecycle Modules" expand="false"></tocitem>
         <tocitem target="ref-lifecyclemodulenew" text="New Lifecycle Module" expand="false"></tocitem>
         <tocitem target="ref-lifecyclemoduleedit" text="Edit Lifecycle Module" expand="false"></tocitem></tocitem>
+    <tocitem target="ref-group-resources" text="Resources" expand="false">
+        <tocitem target="ref-resources" text="Resources" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-configuration" text="Configuration" expand="false">
         <tocitem target="ref-configuration" text="Configuration" expand="false"></tocitem>
         <tocitem target="ref-group-jvm" text="JVM Settings" expand="false">

@@ -66,8 +66,12 @@ the pool have the same isolation level.</b><p>For example, if the isolation leve
 when last used, this mechanism changes the status back to the specified isolation
 level. This option is enabled by default.</p><p>This setting is only applicable if a transaction isolation level has been specified.</p></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>Examples of required properties include database name (URL), user name, and password. The
-table normally contains properties used by the database vendor. For information on available
-properties, see <a href="ref-jdbc-properties.html">Properties Specific to JDBC Connection Pools</a>.</p><ul>
+table normally contains properties used by the database vendor. For information on some
+of the available properties, see <a href="ref-jdbc-properties.html">Properties Specific to JDBC Connection Pools</a>.</p><p>If you do not specify a value for a property, it is
+removed from the table when you finish creating the connection pool. If you
+do not want to set a value for a property now, but you
+want the property to remain in the table so that the value can
+be set later, type a set of empty parentheses in the Value field:</p><pre>()</pre><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
 that appears, type the property name in the Name field, and type
 the property value in the Value field.</b></li>

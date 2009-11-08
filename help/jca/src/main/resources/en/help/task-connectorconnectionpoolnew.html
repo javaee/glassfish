@@ -55,7 +55,12 @@ by implementing the LocalTransaction and  XAResource interfaces.</b><p>XA transa
 manager.</p></li></ul></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties for the connector connection pool.</b><p>Available properties depend upon the resource adapter for the connector connection pool.</p><p>To add a property, click the Add Property button. In the blank
 row that appears, type the property name in the Name field, and type
-the property value in the Value field.</p></li>
+the property value in the Value field.</p><p>If you specify a name but not a value for a property,
+it is removed from the table when you finish creating the connection pool.
+If you do not want to set a value for a property now,
+but you want the property to remain in the table so that the
+value can be set later, type a set of empty parentheses in the
+Value field:</p><pre>()</pre></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-connectorresourcenew.html">To Create a Connector Resource</a></p></li>
 <li><p><a href="task-connectorresourceedit.html">To Edit a Connector Resource</a></p></li>

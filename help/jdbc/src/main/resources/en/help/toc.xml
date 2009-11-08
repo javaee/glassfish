@@ -15,7 +15,6 @@
         <tocitem target="task-jdbcconnectionpooldelete" text="To Delete a JDBC Connection Pool" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-resources" text="Resources" expand="false">
-        <tocitem target="ref-resources" text="Resources" expand="false"></tocitem>
         <tocitem target="ref-group-jdbc" text="JDBC" expand="false">
             <tocitem target="ref-jdbc" text="JDBC" expand="false"></tocitem>
             <tocitem target="ref-group-jdbcresources" text="JDBC Resources" expand="false">
