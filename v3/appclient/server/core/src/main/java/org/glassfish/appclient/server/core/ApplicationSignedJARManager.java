@@ -302,7 +302,7 @@ public class ApplicationSignedJARManager {
         boolean jarIsSigned = false;
         for (Map.Entry<String,Attributes> entry : perEntryAttrs.entrySet()) {
             for (Object attrKey : entry.getValue().keySet()) {
-                if (attrKey.toString().contains("-Digest-")) {
+                if (attrKey.toString().contains("-Digest-") || attrKey.toString().contains("-Digest:")) {
                     jarIsSigned = true;
                     break;
                 }
