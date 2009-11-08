@@ -73,7 +73,7 @@
         <sun:title id="bottom" >
 #include "providerButtons.inc"
         </sun:title>
-	<sun:hidden id="helpKey" value="$resource{help_common.msgProviderEdit}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.msgProviderNew}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 
