@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
-<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
 ]>
 
 <project name="showWithSignedLib" default="usage" basedir=".">
@@ -17,12 +17,9 @@
 
     <import file="../../appclient.xml"/>
 
-    <!-- Props that allow reuse from showWithSignedLib -->
     <property name="lib.jar.path" value="signedlib.jar"/>
 
-    <target name="build">
-        <antcall target="build.ear"/> <!-- also builds the client -->
-    </target>
+    <target name="build" depends="build.ear"/>
     
     <target name="sign.jar" depends="build.lib">
         <signjar verbose="true" jar="${assemble.dir}/lib/lib.jar" alias="s1as" storepass="changeit"
@@ -30,7 +27,7 @@
                  signedjar="${assemble.dir}/lib/${lib.jar.path}"/>
     </target>
 
-    <target name="build.ear" depends="build.lib,sign.jar,build.client">
+    <target name="build.ear" depends="sign.jar,build.client">
         <delete file="${assemble.dir}/${appname}App.ear"/>
         <mkdir dir="${assemble.dir}"/>
         <mkdir dir="${build.classes.dir}/META-INF"/>
@@ -75,24 +72,16 @@
         </antcall>
     </target>
 
-    <target name="deploy">
-        <antcall target="deploy.ear"/>
-    </target>
+    <target name="deploy" depends="init-common,deploy.ear"/>
 
-    <target name="undeploy">
-        <antcall target="undeploy.ear"/>
-    </target>
+    <target name="undeploy" depends="init-common,undeploy.ear"/>
 
 <!--    <target name="undeploy.ear">
         <antcall target="undeploy-common"/>
     </target>
 -->
     
-    <target name="run" depends="init-common">
-        <echo>No test for stand-alone client</echo>
-        <echo>Testing embedded client...</echo>
-        <antcall target="test.embedded.client"/>
-    </target>
+    <target name="run" depends="init-common,test.embedded.client"/>
 
     
     <target name="usage">
