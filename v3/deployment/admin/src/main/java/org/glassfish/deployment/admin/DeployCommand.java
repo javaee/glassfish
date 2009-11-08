@@ -315,7 +315,11 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         file.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-                report.setMessage(localStrings.getLocalString("deploy.command.success","Application deployed successfully with name {0}", name));
+                if (report.hasWarnings()) {
+                    report.setMessage(localStrings.getLocalString("deploy.command.successwithwarning","Application deployed successfully with name {0} and with the following warning(s):", name));
+                } else {
+                    report.setMessage(localStrings.getLocalString("deploy.command.success","Application deployed successfully with name {0}", name));
+                }
 
                 logger.info(localStrings.getLocalString(
                         "deploy.done", 
