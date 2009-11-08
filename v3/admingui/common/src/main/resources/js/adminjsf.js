@@ -977,7 +977,9 @@ admingui.help = {
 	    },
 	    "helpKey");
 	if (!(helpKeys === null)) {
-            var prefix = "/resource/" + admingui.help.pluginId + "/" + admingui.help.locale + "/help/";
+            //var prefix = "/resource/" + admingui.help.pluginId + "/" + admingui.help.locale + "/help/";
+            // FIXME: When locale-aware resource resolution is implemented, re-enable locale support in the line above.
+            var prefix = "/resource/" + admingui.help.pluginId + "/en/help/";
 
 	    helpLink = helpLink + "?contextRef=" + prefix + helpKeys[0].value;
 	}
@@ -2012,11 +2014,11 @@ admingui.ajax = {
         if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
             contentNode = document.getElementById("content");
         }
-	var result = this.xmlReq.responseText;
-	var len = (result.length > 200) ? 200 : result.length;
-	var testString = result.substring(0, len);
-	var viewState = null;
-	if (testString.indexOf("<changes>") > 0) {
+        var result = this.xmlReq.responseText;
+        var len = (result.length > 200) ? 200 : result.length;
+        var testString = result.substring(0, len);
+        var viewState = null;
+        if (testString.indexOf("<changes>") > 0) {
 	    // We have a JSF response... if id="javax.faces.ViewRoot", handle it
 	    var idx = testString.indexOf('id="javax.faces.ViewRoot"');
 	    if (idx > 0) {
