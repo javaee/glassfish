@@ -4,7 +4,7 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jmsconnectionproperties"></a><h4>Properties Specific to JMS Connection Factories</h4>
-<a name="indexterm-31"></a><a name="indexterm-32"></a><p>The following additional properties are available for a JMS connection factory.</p><dl><dt><tt>ClientId</tt></dt>
+<a name="indexterm-33"></a><a name="indexterm-34"></a><p>The following additional properties are available for a JMS connection factory.</p><dl><dt><tt>ClientId</tt></dt>
 <dd><p>Specifies a client ID for a connection factory that will be used by a durable subscriber.</p></dd>
 <dt><tt>AddressList</tt></dt>
 <dd><p>Specifies the names (and, optionally, port numbers) of a message broker instance or instances with which applications will communicate. Each address in the list specifies the host name (and, optionally, host port and connection service) for the connection. For example, the value might be <tt>earth</tt> or <tt>earth:7677</tt>. Specify the port number if the message broker is running on a port other than the default (7676). If the property setting specifies multiple hosts and ports in a clustered environment, the first available host on the list is used unless the <tt>AddressListBehavior</tt> property is set to <tt>RANDOM</tt>.</p><p>For details, see the <b>Message Queue Developer&#8217;s Guide for Java Clients</b>.</p><p>The default value is the local host and default port number (7676). The client will attempt a connection to a broker on port 7676 of the local host.</p></dd>

@@ -43,7 +43,9 @@
     <indexitem target="ref-jmsphysicaldestedit" text="editing (reference)"></indexitem>
     <indexitem target="task-jmsphysicaldestedit" text="editing (task)"></indexitem>
     <indexitem target="task-jmsflushmessages" text="removing messages from"></indexitem>
-    <indexitem target="ref-jmsphysicaldest" text="viewing and configuring"></indexitem></indexitem>
+    <indexitem target="ref-jmsphysicaldest" text="viewing and configuring"></indexitem>
+    <indexitem target="ref-jmsphysicaldeststats" text="viewing statistics (reference)"></indexitem>
+    <indexitem target="task-jmsphysicaldeststats" text="viewing statistics (task)"></indexitem></indexitem>
  <indexitem text="JMS service">
     <indexitem target="ref-jmsservice" text="configuring (reference)"></indexitem>
     <indexitem target="task-jmsservice" text="configuring (task)"></indexitem>
@@ -55,7 +57,9 @@
     <indexitem target="ref-jmsphysicaldestedit" text="editing (reference)"></indexitem>
     <indexitem target="task-jmsphysicaldestedit" text="editing (task)"></indexitem>
     <indexitem target="task-jmsflushmessages" text="removing messages from"></indexitem>
-    <indexitem target="ref-jmsphysicaldest" text="viewing and configuring"></indexitem></indexitem>
+    <indexitem target="ref-jmsphysicaldest" text="viewing and configuring"></indexitem>
+    <indexitem target="ref-jmsphysicaldeststats" text="viewing statistics (reference)"></indexitem>
+    <indexitem target="task-jmsphysicaldeststats" text="viewing statistics (task)"></indexitem></indexitem>
  <indexitem text="properties">
     <indexitem target="ref-jmsconnectionproperties" text="JMS connection factories"></indexitem>
     <indexitem target="ref-jmsservice-additional-props" text="JMS service"></indexitem>

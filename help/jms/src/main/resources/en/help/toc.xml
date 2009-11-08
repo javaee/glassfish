@@ -16,7 +16,8 @@
         <tocitem target="task-jmsphysicaldestnew" text="To Create a JMS Physical Destination" expand="false"></tocitem>
         <tocitem target="task-jmsphysicaldestedit" text="To Edit a JMS Physical Destination" expand="false"></tocitem>
         <tocitem target="task-jmsphysicaldestdelete" text="To Delete a JMS Physical Destination" expand="false"></tocitem>
-        <tocitem target="task-jmsflushmessages" text="To Remove Messages from a JMS Physical Destination" expand="false"></tocitem></tocitem></tocitem>
+        <tocitem target="task-jmsflushmessages" text="To Remove Messages from a JMS Physical Destination" expand="false"></tocitem>
+        <tocitem target="task-jmsphysicaldeststats" text="To View Statistics for a JMS Physical Destination" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="Enterprise Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-resources" text="Resources" expand="false">
         <tocitem target="ref-group-jmsresources" text="JMS Resources" expand="false">
@@ -43,6 +44,7 @@
                 <tocitem target="ref-jmsphysicaldest" text="JMS Physical Destinations" expand="false"></tocitem>
                 <tocitem target="ref-jmsphysicaldestnew" text="New JMS Physical Destination" expand="false"></tocitem>
                 <tocitem target="ref-jmsphysicaldestedit" text="Edit JMS Physical Destination" expand="false"></tocitem>
+                <tocitem target="ref-jmsphysicaldeststats" text="View JMS Physical Destination Statistics" expand="false"></tocitem>
 </tocitem>
 </tocitem>
 </tocitem>
