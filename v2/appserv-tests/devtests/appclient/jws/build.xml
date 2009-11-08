@@ -13,6 +13,8 @@
 
     <target name="all">
         <antcall target="showArgs"/>
+        <antcall target="showArgsWithLib"/>
+        <antcall target="showArgsWithSignedLib"/>
     </target>
 
     <target name="runsubtest">
@@ -26,7 +28,19 @@
             <param name="subtest.name" value="showArgs"/>
         </antcall>
     </target>
-    
+
+    <target name="showArgsWithLib">
+        <antcall target="runsubtest">
+            <param name="subtest.name" value="showArgsWithLib"/>
+        </antcall>
+    </target>
+
+    <target name="showArgsWithSignedLib">
+        <antcall target="runsubtest">
+            <param name="subtest.name" value="showArgsWithSignedLib"/>
+        </antcall>
+    </target>
+   
     <target name="usage">
 	<echo>
 		Usage:
