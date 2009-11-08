@@ -17,10 +17,17 @@
 
     <import file="../../appclient.xml"/>
 
-    <target name="build">
-        <antcall target="build.ear"/> <!-- also builds the client -->
-    </target>
+    <!-- Props that allow reuse from showWithSignedLib -->
+    <property name="lib.jar.path" value="lib.jar"/>
+
+    <target name="build" depends="build.ear"/>
     
+    <target name="sign.jar" depends="build.lib">
+        <signjar verbose="true" jar="${assemble.dir}/lib/lib.jar" alias="s1as" storepass="changeit"
+                 keypass="changeit" keystore="${env.S1AS_HOME}/domains/domain1/config/keystore.jks"
+                 signedjar="${assemble.dir}/lib/signedlib.jar"/>
+    </target>
+
     <target name="build.ear" depends="build.lib,build.client">
         <delete file="${assemble.dir}/${appname}App.ear"/>
         <mkdir dir="${assemble.dir}"/>
@@ -30,7 +37,7 @@
         <jar jarfile="${assemble.dir}/${appname}App.ear">
             <fileset dir="${assemble.dir}">
                 <include name="*.jar"/>
-                <include name="lib/*.jar"/>
+                <include name="lib/${lib.jar.path}"/>
             </fileset>
             <fileset dir="${build.classes.dir}">
                 <include name="META-INF/sun-application.xml"/>
@@ -66,16 +73,16 @@
         </antcall>
     </target>
 
+    <target name="deploy" depends="deploy.ear"/>
 
-    <target name="undeploy.ear">
+    <target name="undeploy" depends="undeploy.ear"/>
+
+<!--    <target name="undeploy.ear">
         <antcall target="undeploy-common"/>
     </target>
-
+-->
     
-    <target name="run" depends="init-common">
-        <echo>Testing stand-alone client...</echo>
-        <antcall target="test.standalone.client"/>
-    </target>
+    <target name="run" depends="init-common,test.embedded.client"/>
 
     
     <target name="usage">
