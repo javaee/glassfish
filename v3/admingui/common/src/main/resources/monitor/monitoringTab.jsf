@@ -4,6 +4,6 @@
     />
     <!command
 	setSessionAttribute(key="serverInstTabs" value="monitoring");
-	gf.redirect(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
+	gf.redirect(page="#{request.contextPath}/common/monitor/monitoringAppStatsPage.jsf");
     />
 </sun:tab>
