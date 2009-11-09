@@ -25,13 +25,6 @@
 			<param name="selfextractexe.name" value="glassfish-web" />
 		</antcall>
 
-	<!-- Build multi-lingual installer -->
-		<antcall target="do_processing">
-			<param name="bundle.name" value="GlassFishV3WebProfilePreview" />
-			<param name="sourcezip.name" value="../distributions/glassfish/target/web-ips-ml-installer.zip" />
-			<param name="selfextractexe.name" value="glassfish-web-ml" />
-		</antcall>
-
 		<!-- Build GlassFish Enterprise Server v3 Preview distribution. -->
 		<!-- Could have used ant-contrib's foreach :-) -->
 		<antcall target="do_processing">
@@ -39,14 +32,6 @@
 			<param name="sourcezip.name" value="../distributions/glassfish/target/glassfish-ips-installer.zip" />
 			<param name="selfextractexe.name" value="glassfish-full" />
 		</antcall>
-
-	<!-- Build multi-lingual installer -->
-		<antcall target="do_processing">
-			<param name="bundle.name" value="GlassFishV3Preview" />
-			<param name="sourcezip.name" value="../distributions/glassfish/target/glassfish-ips-ml-installer.zip" />
-			<param name="selfextractexe.name" value="glassfish-full-ml" />
-		</antcall>
-
 		<antcall target="push_zip_artifact_to_repository"/>
 		<delete dir="${stage.dir}/GlassFishV3WebProfilePreview"/>
 		<delete dir="${stage.dir}/GlassFishV3Preview"/>
@@ -64,7 +49,7 @@
 	<!-- Set up staging directories for build/runtime. -->
 	<target name="prepare_stage" description="Setup appropriate staging directories for each bundle to be used for build/runtime">
 		<echo message="Setting up staging directories for ${bundle.name}" />
-		<delete dir="${stage.dir}/${bundle.name}" />
+		<delete dir="${stage.dir}/bundle.name}" />
 		<delete dir="${stage.dir}/${bundle.name}_engine_tmp" />
 		<mkdir dir="${stage.dir}/${bundle.name}" />
 		<mkdir dir="${stage.dir}/${bundle.name}/Product/Packages" />
@@ -91,11 +76,7 @@
 	<!-- Extract Open Installer's resource.zip file. -->
 	<target name="extract_resource_zip" description="Extract resource.zip">
 		<!-- Explode the resources.zip to enable installer to refer the contents -->
-		<unzip src="${resources.zip}" dest="${stage.dir}/${bundle.name}">
-			<patternset>
-				<exclude name="**/ui_*.prefs"/>
-			</patternset>
-		</unzip>
+		<unzip src="${resources.zip}" dest="${stage.dir}/${bundle.name}" />
 	</target>
 
 	<!-- No changes are required for resource.zip, so just copy to the CD image. -->
@@ -107,11 +88,7 @@
 	<!-- Extract Open Installer's engine.zip file. -->
 	<target name="extract_engine_zip" description="Extract engine.zip">
 		<!-- Explode the engine.zip to repack -->
-		<unzip src="${engine.zip}" dest="${stage.dir}/${bundle.name}_engine_tmp" >
-			<patternset>
-				<exclude name="**/ResourceMsgs_*.properties"/>
-			</patternset>
-		</unzip>
+		<unzip src="${engine.zip}" dest="${stage.dir}/${bundle.name}_engine_tmp" />
 	</target>
 
 
@@ -131,11 +108,7 @@
 	<!-- Create a modified Engine.zip file new configurator, wrappers and provider.jar. -->
 	<target name="update_engine_zip" description="Recreating the engine.zip with updated contents">
 		<!-- Overwrite the Default resource file bundled in OI with GlassFish Resource file -->
-		<copy todir="${stage.dir}/${bundle.name}_engine_tmp/install/lib/resources/org/openinstaller/resources">
-		<fileset dir="${basedir}/src/${bundle.name}/java/org/openinstaller/resource">
-			<include name="ResourceMsg*.properties"/>
-			</fileset>
-		</copy>
+		<copy tofile="${stage.dir}/${bundle.name}_engine_tmp/install/lib/resources/org/openinstaller/resources/ResourceMsgs.properties" file="${basedir}/src/${bundle.name}/java/org/openinstaller/resource/ResourceMsgs.properties" overwrite="true" />
 
 		<!-- Copy the uninstaller wrapper also into Engine.zip -->
 		<copy todir="${stage.dir}/${bundle.name}_engine_tmp">
@@ -197,10 +170,7 @@
 		</copy>
 		<copy todir="${stage.dir}/${bundle.name}/install/metadata" file="${basedir}/src/${bundle.name}/resources/pagesequence.xml">
 		</copy>
-		<copy todir="${stage.dir}/${bundle.name}/install/metadata">
-			<fileset dir="${basedir}/src/${bundle.name}/resources"> 
-				<include name="pagesequence*.properties"/>
-			</fileset>
+		<copy todir="${stage.dir}/${bundle.name}/install/metadata" file="${basedir}/src/${bundle.name}/resources/pagesequence.properties">
 		</copy>
 
 		<zip destfile="${stage.dir}/${bundle.name}/Product/Packages/metadata.zip" basedir="${stage.dir}/${bundle.name}" includes="install/metadata/**" />
