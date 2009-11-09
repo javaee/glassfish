@@ -89,8 +89,18 @@
                                 <sun:dropDown id="resType" selected="#{wizardPoolExtra.ResType}" labels="$attribute{ResTypeList}" />
                             </sun:property>
                             
-                            <sun:property id="dbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}" >
-                                <sun:dropDown id="db" selected="#{wizardPoolExtra.DBVendor}" labels="$attribute{DBVendorList}" />
+                            <sun:property id="dbProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}" helpText="$resource{i18njdbc.jdbcPool.dbVendorHelp}">
+                                <sun:dropDown id="db" selected="#{wizardPoolExtra.DBVendorBox}" labels="$attribute{DBVendorList}" onChange="emptyDBVendorField(this.value);">
+                                    <!afterCreate
+                                        getClientId(component="$this{component}" clientId="#{pageSession.dbBoxId}");
+                                    />
+                                </sun:dropDown>
+                                "<br/>
+                                <sun:textField id="dbField"  columns="$int{60}" text="#{wizardPoolExtra.DBVendorField}" onChange="emptyDropdown(this.value);">
+                                    <!afterCreate
+                                        getClientId(component="$this{component}" clientId="#{pageSession.dbFieldId}");
+                                    />
+                                </sun:textField>
                             </sun:property>
                             
                             "<br /><br />
@@ -99,6 +109,24 @@
                 </sun:title>
 	<sun:hidden id="helpKey" value="$resource{help_jdbc.jdbcConnectionPoolNew1}" />
             </sun:form>
+
+<f:verbatim>
+
+<script type="text/javascript">
+    function emptyDBVendorField(dropDownValue) {
+        if (dropDownValue==''){
+            enableComponent('#{pageSession.dbFieldId}', 'text');
+        }else{
+            disableComponent('#{pageSession.dbFieldId}', 'text');
+        }
+    }
+
+    function emptyDropdown(fieldValue) {
+        getSelectElement('#{pageSession.dbBoxId}').value="";
+    }
+    </script>
+</f:verbatim>
+
 </define>
 </composition>
 
