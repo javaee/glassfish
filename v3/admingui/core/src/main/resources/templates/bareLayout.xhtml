@@ -7,6 +7,12 @@
     }
     getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
 </ui:event>
+<event>
+    <!-- Before Create must be inside a component, cannot be at page-level -->
+    <ui:event type="beforeCreate">
+	setPartialRequest("false");
+    </ui:event>
+</event>
 
 // Need to write the title so it is updated in the browser.
 <f:verbatim>
@@ -19,8 +25,9 @@
     admingui.help.pluginId = '#{pluginId}';
     admingui.help.locale = '#{view.locale.language}';
 </script>
+<title>#{guiTitle}</title>
 </f:verbatim>
-"<title>#{guiTitle}</title>
+
 <!insert name="content">
     Content Missing!
 </insert>

@@ -8,11 +8,12 @@
 <sun:page>
     <sun:html>
 	<ui:event type="beforeCreate">
+	    setPartialRequest("false");
 	    initSessionAttributes();
             setShowRegTreeNode();
             <!--
 	    checkSupport(supportCluster=>$session{supportCluster});
-	    /if( $session{supportCluster}){
+	    if ($session{supportCluster}) {
 		initClusterSessionAttribute();
 		setSessionAttribute(key="notSupportCluster" value="$boolean{false}");
 	    }
@@ -91,7 +92,6 @@
                     visibility:hidden;
                     display:none;
                 }
-
             </style>
 	    </f:verbatim>
 	</sun:head>
@@ -247,7 +247,7 @@
         admingui.help.pluginId = '#{pluginId}';
         admingui.help.locale = '#{view.locale.language}';
 
-        var layout = new YAHOO.widget.Layout({
+	var layout = new YAHOO.widget.Layout({
 	   units: [
 	       { position : 'top', body : 'gfLayoutTop', height : 115, scroll : false, gutter1 : '5px', resize : false, collapse : false},
 	       { position : 'left', body : 'gfLayoutLeft', width : 250, scroll : true, gutter1 : '5px', resize : true, header : 'Tree', collapse : true},
