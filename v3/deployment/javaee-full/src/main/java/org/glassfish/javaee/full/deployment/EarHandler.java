@@ -141,7 +141,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 ReadableArchive subArchive = null;
                 WritableArchive subTarget = null;
                 try {
-                    subArchive = source.getSubArchive(moduleUri);
+                    subArchive = source2.getSubArchive(moduleUri);
                     if (subArchive == null) {
                         _logger.log(Level.WARNING, 
                             "Exception while locating sub archive: " + 
