@@ -56,7 +56,7 @@ public class ConnectorJavaBeanValidator {
 
     public void validateJavaBean(Object bean, String rarName) {
         if (bean != null) {
-            Validator validator = ConnectorRegistry.getInstance().getBeanValidator(rarName);
+            Validator validator = getBeanValidator(rarName);
             if (validator != null) {
                 BeanDescriptor bd =
                         validator.getConstraintsForClass(bean.getClass());
@@ -89,5 +89,18 @@ public class ConnectorJavaBeanValidator {
                 }
             }
         }
+    }
+
+    private Validator getBeanValidator(String rarName) {
+        Validator beanValidator = ConnectorRegistry.getInstance().getBeanValidator(rarName);
+        ValidatorFactory validatorFactory = null;
+        // this is needed in case of appclient/standalone client
+        // and system-resource-adapters in server.
+        if (beanValidator == null) {
+            validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
+            beanValidator = validatorFactory.getValidator();
+            ConnectorRegistry.getInstance().addBeanValidator(rarName, beanValidator);
+        }
+        return beanValidator;
     }
 }
