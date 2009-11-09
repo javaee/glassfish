@@ -588,5 +588,11 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public ConnectorDescriptor getConnectorDescriptor(String rarName)
             throws ConnectorRuntimeException ;
-
+    
+    /**
+     * Get jdbc database vendor names list. This is used for getting a list
+     * of all common database vendor names.
+     * @return set of common database vendor names
+     */
+    public Set<String> getDatabaseVendorNames();
 }

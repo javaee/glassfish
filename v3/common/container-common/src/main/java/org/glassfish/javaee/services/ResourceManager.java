@@ -271,51 +271,16 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             return np;
         }
 
-        private void checkAndPingPool(Object instance, boolean deployedStatus) {
-            //TODO return this ping status to CLI/GUI in some form
-            boolean ping = false;
-            ResourcePool pool = (ResourcePool) instance;
-            if(getConnectorRuntime().getPingDuringPoolCreation(pool.getName())) {
-                if (!deployedStatus) {
-                    //Invoke deployResource
-                    try {
-                        getResourceDeployer(instance).deployResource(instance);
-                    } catch (Exception ex) {
-                        String resourceName = ConnectorsUtil.getResourceName((Resource) instance);
-                        Object params[] = {resourceName, ex};
-                        logger.log(Level.WARNING, "resources.resource-manager.deploy-resource-failed", params);
-                    }
-                }
-                try {
-                    logger.fine("Pinging pool " + pool.getName() + " during creation");
-                    ping = getConnectorRuntime().pingConnectionPool(pool.getName());
-                } catch (Exception ex) {
-                    Object params[] = {pool.getName(), ex};
-                    logger.log(Level.WARNING, "ping_during_creation_exception", params);
-                }
-                if (!ping) {
-                    logger.log(Level.WARNING, "ping_during_creation_failure", pool.getName());
-                }
-            }        
-        }
-        
         private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
             NotProcessed np = null;
             //TODO V3 handle enabled / disabled / resource-ref / redeploy ?
             try {
                 if (ConnectorsUtil.isValidEventType(instance)) {
                     getResourceDeployer(instance).redeployResource(instance);
-                    if(instance instanceof ResourcePool) {
-                        //already redeployed hence pass true
-                        checkAndPingPool(instance, true);
-                    }
                 } else if (ConnectorsUtil.isValidEventType(instance.getParent())) {
                     //Added in case of a property change
                     //check for validity of the property's parent and redeploy
                     getResourceDeployer(instance.getParent()).redeployResource(instance.getParent());
-                    if(instance.getParent() instanceof ResourcePool) {
-                        checkAndPingPool(instance, true);
-                    }
                 } else if (instance instanceof ResourceRef) {
                     ResourceRef ref = (ResourceRef) instance;
                     ResourceDeployer deployer = null;
@@ -368,8 +333,6 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
 
             if (instance instanceof BindableResource) {
                 resourcesBinder.deployResource(((BindableResource) instance).getJndiName(), (Resource) instance);
-            } else if (instance instanceof ResourcePool) {
-                checkAndPingPool(instance, false);
             } else if (instance instanceof Resource) {
                 //only resource type left is RAC
                 try {

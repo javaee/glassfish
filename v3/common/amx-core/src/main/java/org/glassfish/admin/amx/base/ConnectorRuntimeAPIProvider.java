@@ -72,6 +72,9 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     /**Value of type Set for Map from {@link #getValidationTableNames}*/
     public static final String VALIDATION_TABLE_NAMES_KEY = "ValidationTableNamesKey";
     
+    /**Value of type Set for Map from {@link #getDatabaseVendorNames}*/
+    public static final String DATABASE_VENDOR_NAMES_KEY = "DatabaseVendorNamesKey";
+    
     /** Key into Map returned by various methods including {@link #getConnectionDefinitionPropertiesAndDefaults}
      * {@link #getConnectionDefinitionNames}
      * {@link #getAdminObjectInterfaceNames}
@@ -257,4 +260,13 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
     @Description("Get connection validation class names for custom validation")
     public Map<String, Object> getValidationClassNames( final String dbVendor );   
 
+    /**
+     * Obtain database vendor names.
+     * @see #DATABASE_VENDOR_NAMES_KEY
+     * @see #REASON_FAILED_KEY
+     */
+    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @Description("Get database vendor names")
+    public Map<String, Object> getDatabaseVendorNames();   
+    
 }

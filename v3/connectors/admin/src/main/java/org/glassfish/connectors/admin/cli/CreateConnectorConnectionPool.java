@@ -58,6 +58,10 @@ import java.util.Properties;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Create Connector Connection Pool Command
@@ -157,6 +161,9 @@ public class CreateConnectorConnectionPool implements AdminCommand {
     @Inject
     private Habitat habitat;
 
+    @Inject
+    CommandRunner commandRunner;    
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -220,6 +227,23 @@ public class CreateConnectorConnectionPool implements AdminCommand {
             }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
+        } else {
+            if ("true".equalsIgnoreCase(ping.toString())) {
+                ActionReport subReport = report.addSubActionsReport();
+                ParameterMap parameters = new ParameterMap();
+                parameters.set("pool_name", poolname);
+                commandRunner.getCommandInvocation("ping-connection-pool", subReport).parameters(parameters).execute();
+                if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())) {
+                    subReport.setMessage(localStrings.getLocalString("ping.create.connector.connection.pool.fail",
+                            "\nAttempting to ping during Connector Connection " +
+                            "Pool Creation : {0} - Failed.", poolname));
+                    subReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                } else {
+                    subReport.setMessage(localStrings.getLocalString("ping.create.connector.connection.pool.success",
+                            "\nAttempting to ping during Connector Connection " +
+                            "Pool Creation : {0} - Succeeded.", poolname));
+                }
+            }            
         }
         report.setActionExitCode(ec);
     }

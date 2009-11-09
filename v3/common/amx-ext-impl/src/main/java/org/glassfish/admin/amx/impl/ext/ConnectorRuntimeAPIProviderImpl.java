@@ -562,7 +562,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         catch (ResourceException ex)
         {
             result.put(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY, false);
-            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(ex));
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ex.getMessage());
         }
         catch (ComponentException e)
         {
@@ -592,6 +592,13 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     public Map<String, Object> getValidationClassNames(final String dbVendor) {
         final Map<String, Object> result = new HashMap<String, Object>();
 
+        if (mHabitat == null)
+        {
+            result.put(ConnectorRuntimeAPIProvider.VALIDATION_CLASS_NAMES_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
+            return result;
+        }
+
         try {
             final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
             final Set<String> valClassNames = connRuntime.getValidationClassNames(dbVendor);
@@ -601,6 +608,39 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         } catch (Exception e) {
             result.put(ConnectorRuntimeAPIProvider.VALIDATION_CLASS_NAMES_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        }
+        return result;
+    }
+
+    /**
+     * Obtain a set of database vendor names. This API is used to list
+     * the various common database vendor names.
+
+     * @return a map containing a DATABASE_VENDOR_NAMES_KEY with a set of
+     * database vendor names. If DATABASE_VENDOR_NAMES_KEY is null, an 
+     * exception has occured and REASON_FAILED_KEY would give the reason
+     * why getting database vendor names failed.
+     */
+    public Map<String, Object> getDatabaseVendorNames() {
+        final Map<String, Object> result = new HashMap<String, Object>();
+
+        if (mHabitat == null)
+        {
+            result.put(ConnectorRuntimeAPIProvider.DATABASE_VENDOR_NAMES_KEY, false);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, "Habitat is null");
+            return result;
+        }
+
+        try {
+            final ConnectorRuntime connRuntime = mHabitat.getComponent(ConnectorRuntime.class, null);
+            final Set<String> dbVendorNames = connRuntime.getDatabaseVendorNames();
+            result.put(ConnectorRuntimeAPIProvider.DATABASE_VENDOR_NAMES_KEY, dbVendorNames);
+        } catch (ComponentException e) {
+            result.put(ConnectorRuntimeAPIProvider.DATABASE_VENDOR_NAMES_KEY, null);
+            result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
+        } catch (Exception e) {
+            result.put(ConnectorRuntimeAPIProvider.DATABASE_VENDOR_NAMES_KEY, null);
             result.put(ConnectorRuntimeAPIProvider.REASON_FAILED_KEY, ExceptionUtil.toString(e));
         }
         return result;

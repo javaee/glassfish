@@ -1196,4 +1196,12 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return ConnectorsUtil.getPingDuringPoolCreation(poolName, 
                 allResources.getComponent(Resources.class));
     }
+    
+    /**
+     * Get jdbc database vendor names list.
+     * @return set of common database vendor names
+     */
+    public Set<String> getDatabaseVendorNames() {
+        return driverLoader.getDatabaseVendorNames();
+    }    
 }

@@ -52,9 +52,13 @@ import com.sun.enterprise.config.serverbeans.Resources;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.resource.common.ResourceStatus;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.util.HashMap;
 import java.util.Properties;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  * Create JDBC Connection Pool Command
@@ -190,6 +194,9 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Inject
     Domain domain;
 
+    @Inject
+    CommandRunner commandRunner;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -241,7 +248,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
         attrList.put(ResourceConstants.WRAP_JDBC_OBJECTS, wrapjdbcobjects.toString());
         
         ResourceStatus rs;
- 
+
         try {
             JDBCConnectionPoolManager connPoolMgr = new JDBCConnectionPoolManager();
             rs = connPoolMgr.create(resources, attrList, properties, targetServer);
@@ -265,6 +272,23 @@ public class CreateJdbcConnectionPool implements AdminCommand {
             }
             if (rs.getException() != null)
                 report.setFailureCause(rs.getException());
+        } else {
+            if ("true".equalsIgnoreCase(ping.toString())) {
+                ActionReport subReport = report.addSubActionsReport();
+                ParameterMap parameters = new ParameterMap();
+                parameters.set("pool_name", jdbc_connection_pool_id);
+                commandRunner.getCommandInvocation("ping-connection-pool", subReport).parameters(parameters).execute();
+                if (ActionReport.ExitCode.FAILURE.equals(subReport.getActionExitCode())) {
+                    subReport.setMessage(localStrings.getLocalString("ping.create.jdbc.connection.pool.fail",
+                            "\nAttempting to ping during JDBC Connection Pool " +
+                            "Creation : {0} - Failed.", jdbc_connection_pool_id));
+                    subReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                } else {
+                    subReport.setMessage(localStrings.getLocalString("ping.create.jdbc.connection.pool.success",
+                            "\nAttempting to ping during JDBC Connection Pool " +
+                            "Creation : {0} - Succeeded.", jdbc_connection_pool_id));
+                }
+            }
         }
         report.setActionExitCode(ec);
     }

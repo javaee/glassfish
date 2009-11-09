@@ -48,6 +48,14 @@ public class DriverLoader implements ConnectorConstants {
     private static final String DATABASE_VENDOR_DERBY = "DERBY";
     private static final String DATABASE_VENDOR_JAVADB = "JAVADB";
     private static final String DATABASE_VENDOR_MSSQLSERVER = "MICROSOFTSQLSERVER";
+    private String DATABASE_VENDOR_SUN_SQLSERVER = "SUN-SQLSERVER";
+    private String DATABASE_VENDOR_SUN_ORACLE = "SUN-ORACLE";
+    private String DATABASE_VENDOR_SUN_DB2 = "SUN-DB2";
+    private String DATABASE_VENDOR_SUN_SYBASE = "SUN-SYBASE";
+    private String DATABASE_VENDOR_SYBASE = "SYBASE";
+    private String DATABASE_VENDOR_ORACLE = "ORACLE";
+    private String DATABASE_VENDOR_DB2 = "DB2";
+
     private static final String DATABASE_VENDOR_SQLSERVER = "SQLSERVER";
     private static final String DBVENDOR_MAPPINGS_ROOT = 
             System.getProperty(ConnectorConstants.INSTALL_ROOT) + File.separator + 
@@ -57,10 +65,45 @@ public class DriverLoader implements ConnectorConstants {
     private final String CPDS_PROPERTIES = "cpds.properties";
     private final String XADS_PROPERTIES = "xads.properties";
     private final String DRIVER_PROPERTIES = "driver.properties";
+    private final String VENDOR_PROPERTIES = "dbvendor.properties";
+
+    /**
+     * Get a set of common database vendor names supported in glassfish.
+     * @return database vendor names set.
+     */
+    public Set<String> getDatabaseVendorNames() {
+        File dbVendorFile = new File(DBVENDOR_MAPPINGS_ROOT + VENDOR_PROPERTIES);
+        Properties fileProperties = new Properties();
+        Set<String> dbvendorNames = new TreeSet<String>();
+
+        if (dbVendorFile != null && dbVendorFile.exists()) {
+            try {
+
+                FileInputStream fis = new FileInputStream(dbVendorFile);
+                try {
+                    fileProperties.load(fis);
+                } finally {
+                    fis.close();
+                }
+            } catch (IOException ioe) {
+                logger.fine("IO Exception during properties load : " +
+                        dbVendorFile.getAbsolutePath());
+            }
+        } else {
+            logger.fine("File not found : " + dbVendorFile.getAbsolutePath());
+        }
+        
+        Enumeration e = fileProperties.propertyNames();
+        while(e.hasMoreElements()) {
+            String vendor = (String) e.nextElement();
+            dbvendorNames.add(vendor);
+        }
+        return dbvendorNames;
+    }
 
 
     private String getImplClassNameFromMapping(String dbVendor, String resType) {
-        File mappingFile = null;
+        File mappingFile = null;        
         Properties fileProperties = new Properties();
         
         if(ConnectorConstants.JAVAX_SQL_DATASOURCE.equals(resType)) {
@@ -95,6 +138,29 @@ public class DriverLoader implements ConnectorConstants {
     }
     
     /**
+     * Get equivalent name for the database vendor name. This is useful for
+     * introspection as the vendor name for oracle and sun oracle type of jdbc
+     * drivers are the same. 
+     * @param dbVendor
+     * @return
+     */
+    private String getEquivalentName(String dbVendor) {
+        if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_JAVADB)) {
+            return DATABASE_VENDOR_DERBY;
+        } else if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_MSSQLSERVER) ||
+                dbVendor.equalsIgnoreCase(DATABASE_VENDOR_SUN_SQLSERVER)) {
+            return DATABASE_VENDOR_SQLSERVER;
+        } else if (dbVendor.equalsIgnoreCase(this.DATABASE_VENDOR_SUN_DB2)) {
+            return DATABASE_VENDOR_DB2;
+        } else if (dbVendor.equalsIgnoreCase(this.DATABASE_VENDOR_SUN_ORACLE)) {
+            return this.DATABASE_VENDOR_ORACLE;
+        } else if (dbVendor.equalsIgnoreCase(this.DATABASE_VENDOR_SUN_SYBASE)) {
+            return this.DATABASE_VENDOR_SYBASE;
+        }
+        return null;    
+    }
+    
+    /**
      * Gets a set of driver or datasource classnames for the particular vendor.
      * Loads the jdbc driver, introspects the jdbc driver jar and gets the 
      * classnames.
@@ -105,11 +171,17 @@ public class DriverLoader implements ConnectorConstants {
         // that is a jdbc jar will have a set of driver impls.
         Set<String> implClassNames = new TreeSet<String>();
         Set<String> allImplClassNames = new TreeSet<String>();
+        //Used for introspection.
+        String vendor = null;
         
         if(dbVendor != null) {
-            dbVendor = dbVendor.trim().replaceAll(" ", "");            
+            dbVendor = dbVendor.trim().replaceAll(" ", "");
+            vendor = getEquivalentName(dbVendor);
+            if (vendor == null) {
+                vendor = dbVendor;
+            }
         }
-        //Get from the pre-populated list. This is done for common dbvendor names
+            //Get from the pre-populated list. This is done for common dbvendor names
         String implClass = getImplClassNameFromMapping(dbVendor, resType); 
         
         if(implClass != null) {
@@ -132,14 +204,8 @@ public class DriverLoader implements ConnectorConstants {
         for (File file : allJars) {
             if (file.isFile()) {
                 //Introspect jar and get classnames.
-                if(dbVendor != null) {
-                    if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_JAVADB)) {
-                        implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_DERBY);
-                    } else if (dbVendor.equalsIgnoreCase(DATABASE_VENDOR_MSSQLSERVER)) {
-                        implClassNames = introspectAndLoadJar(file, resType, DATABASE_VENDOR_SQLSERVER);
-                    } else {
-                        implClassNames = introspectAndLoadJar(file, resType, dbVendor);
-                    }
+                if(vendor != null) {
+                    implClassNames = introspectAndLoadJar(file, resType, vendor);
                 }
                 //Found the impl classnames for the particular dbVendor. 
                 //Hence no need to search in other jar files.
@@ -464,10 +530,14 @@ public class DriverLoader implements ConnectorConstants {
         try {
             jarFile = new JarFile(f);
             Manifest manifest = jarFile.getManifest();
-            Attributes mainAttributes = manifest.getMainAttributes();
-            vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR.toString());
-            if (vendor == null) {
-                vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR_ID.toString());
+            if(manifest != null) {
+                Attributes mainAttributes = manifest.getMainAttributes();
+                if(mainAttributes != null) {
+                    vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR.toString());
+                    if (vendor == null) {
+                        vendor = mainAttributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR_ID.toString());
+                    }
+                }
             }
         } catch (IOException ex) {
             logger.log(Level.WARNING, "Exception while reading manifest file : ", ex);
