@@ -54,7 +54,7 @@
          </apt:property>
 
            <apt:property apt:name="ADMIN_PORT"
-              apt:label="Admin Port"
+              apt:label="$ADMIN_PORT_TEXT"
               apt:dataPath="Administration.ADMIN_PORT"
               apt:type="xs:string">
             <apt:visual>
@@ -63,7 +63,7 @@
 	</apt:property>
 
            <apt:property apt:name="HTTP_PORT"
-              apt:label="HTTP Port"
+              apt:label="$HTTP_PORT_TEXT"
               apt:dataPath="Administration.HTTP_PORT"
               apt:type="xs:string">
             <apt:visual>
@@ -71,7 +71,7 @@
             </apt:visual>
 	</apt:property>
 
-       <apt:property apt:name="ADMIN_USER" apt:label="Username"
+       <apt:property apt:name="ADMIN_USER" apt:label="$ADMIN_USER_TEXT"
                 apt:dataPath="Administration.ADMIN_USER"
                 apt:type="xs:string">
           <apt:visual>
@@ -79,7 +79,7 @@
           </apt:visual>
         </apt:property>
 
-        <apt:property apt:name="ADMIN_PASSWORD" apt:label="Password"
+        <apt:property apt:name="ADMIN_PASSWORD" apt:label="$ADMIN_PASSWORD_TEXT"
                       apt:dataPath="Administration.ADMIN_PASSWORD"
                       apt:type="xs:string">
           <apt:visual>

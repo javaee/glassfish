@@ -8,10 +8,10 @@
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 PRODUCT_NAME=GlassFish v3 Web Profile Preview
 
 app_title=GlassFish v3 Web Profile Preview
-
 # Text for Buttons
 btnCancel_text=Cancel
 btnExit_text=Exit
@@ -449,7 +449,15 @@ that you specify in the configuration pages that follow.&lt;BR&gt;
 EXPRESS_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; mode installs the  software and configures it with default values.
 CONFIGURE_SELECTED_COMPONENTS_MSG=Configures the selected software components with default or custom values.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+ADMIN_USER_TEXT=Username
+ADMIN_PASSWORD_TEXT=Password
+ADMIN_PORT_TEXT=Admin Port
+HTTP_PORT_TEXT=Http Port
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~U P D A T E T O O L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSTALL_UPDATE_TOOL_TEXT=Install Update Tool
+ENABLE_UPDATE_TOOL_TEXT=Enable Update Tool
+PROXY_HOST_TEXT=Proxy Host
+PROXY_PORT_TEXT=Proxy Port
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 EMAIL=Email Address
 PASSWORD=Password

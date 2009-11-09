@@ -59,7 +59,7 @@
               apt:type="xs:boolean">
             <apt:prop-value>true</apt:prop-value>
             <apt:visual>
-                <apt:checkBox apt:labelPost="Install Update Tool" apt:toolTip="Requires Online Installation" />
+                <apt:checkBox apt:labelPost="$INSTALL_UPDATE_TOOL_TEXT" apt:toolTip="Requires Online Installation" />
             </apt:visual>
       <apt:scriptHandler apt:scriptLanguage="beanshell">
          <apt:scriptCode><![CDATA[
@@ -95,7 +95,7 @@ theAL = new ActionListener() {
       </apt:property>
 
           <apt:property apt:name="PROXY_HOST"
-              apt:label="Proxy Host"
+              apt:label="$PROXY_HOST_TEXT"
               apt:dataPath="Configuration.PROXY_HOST"
               apt:type="xs:string">
             <apt:visual>
@@ -104,7 +104,7 @@ theAL = new ActionListener() {
       </apt:property>  
 
            <apt:property apt:name="PROXY_PORT"
-              apt:label="Proxy Port"
+              apt:label="$PROXY_PORT_TEXT"
               apt:dataPath="Configuration.PROXY_PORT"
               apt:type="xs:string">
             <apt:visual>
@@ -127,7 +127,7 @@ theAL = new ActionListener() {
               apt:type="xs:boolean">
             <apt:prop-value>true</apt:prop-value>
             <apt:visual>
-                <apt:checkBox apt:labelPost="Enable Update Tool" apt:toolTip="" />
+                <apt:checkBox apt:labelPost="$ENABLE_UPDATE_TOOL_TEXT" apt:toolTip="" />
             </apt:visual>
            </apt:property>                   
         </apt:section>        
