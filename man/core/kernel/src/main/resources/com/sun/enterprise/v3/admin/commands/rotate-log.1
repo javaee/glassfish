@@ -15,14 +15,14 @@ DESCRIPTION
      not required.
 
      The size of  the  log  queue  is  configurable  through  the
-     logging.properties  file,  and log rotation is based on file
-     size or elapsed time since the last log  rotation.  In  some
-     circumstances,  the  queue  might fill up, especially if the
-     log level is set to FINEST and there is  heavy  activity  on
-     the  server.  In this case, the rotate-log subcommand can be
-     used to rotate the server log immediately.  This  subcommand
-     is  also  useful in creating scripts for rotating the log at
-     convenient times.
+     logging.properties  file. Log rotation is based on file size
+     or elapsed time since the last log rotation.  In  some  cir-
+     cumstances,  the  queue might fill up, especially if the log
+     level is set to FINEST and there is heavy  activity  on  the
+     server.  In this case, the rotate-log subcommand can be used
+     to rotate the server log  immediately.  This  subcommand  is
+     also useful in creating scripts for rotating the log at con-
+     venient times.
 
      This subcommand is supported in remote mode only.
 
@@ -39,14 +39,14 @@ EXIT STATUS
                                  mand
 
 EXAMPLES
-     Example 1 Rotating the Log File
+     Example 1 Rotating the Server Log
 
-     This example rotates the log file.
+     This example rotates the server log.
 
        asadmin> rotate-log
        Command rotate-log executed successfully.
 
-Java EE 6            Last change: 2 Oct 2009                    1
+Java EE 6           Last change: 06 Nov 2009                    1
 
 asadmin Utility Subcommands                         rotate-log(1)
 
@@ -58,5 +58,5 @@ SEE ALSO
      Chapter 7, Administering the Logging Service, in Sun GlassF-
      ish Enterprise Server v3 Administration Guide
 
-Java EE 6            Last change: 2 Oct 2009                    2
+Java EE 6           Last change: 06 Nov 2009                    2
 

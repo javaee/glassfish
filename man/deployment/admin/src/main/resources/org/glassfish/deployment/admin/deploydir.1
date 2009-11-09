@@ -7,8 +7,8 @@ NAME
 
 SYNOPSIS
      deploydir [--help] [--force={false|true}]
-     [--virtualservers virtual-servers]
-     [--contextroot context-root]
+     [--virtualservers virtual_servers]
+     [--contextroot context_root]
      [--verify={false|true}]
      [--precompilejsp={false|true}]
      [--name component-name]
@@ -17,7 +17,7 @@ SYNOPSIS
      [--createtables={false|true}|--dropandcreatetables={false|true}]
      [--generatermistubs={false|true}]
      [--availabilityenabled={false|true}]
-     [--libraries jar-file[,jar-file]*]
+     [--libraries jar_file[,jar_file]*]
      [--target target]
      [--type pkg-type]
      [--properties(name=value)[:name=value]*]
@@ -48,7 +48,7 @@ DESCRIPTION
 
          o    The IP address of the machine
 
-Java EE 6           Last change: 30 Oct 2009                    1
+Java EE 6            Last change: 6 Nov 2009                    1
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -98,7 +98,7 @@ OPTIONS
 
          Name of the deployable component.
 
-Java EE 6           Last change: 30 Oct 2009                    2
+Java EE 6            Last change: 6 Nov 2009                    2
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -133,30 +133,33 @@ asadmin Utility Subcommands                          deploydir(1)
          nized, SQL-92 compliance is presumed.
 
      --createtables
-         Creates tables at  deployment  of  an  application  with
-         unmapped  CMP  beans.  Default  is the create-tables-at-
-         deploy entry in the cmp-resource  element  of  the  sun-
-         ejb-jar.xml file.
+          If specified as true, creates tables at  deployment  of
+         an  application with unmapped CMP beans. If specified as
+         false, tables are not created.  If  not  specified,  the
+         value  of  the create-tables-at-deploy entry in the cmp-
+         resource element of the sun-ejb-jar.xml file  determines
+         whether or not tables are created.
 
      --dropandcreatetables
 
-         If set to true, when the component  is  redeployed,  the
-         tables  created  by  the previous deployment are dropped
-         before creating  the  new  tables.  Applies  to  already
-         deployed  applications  with  unmapped  CMP  beans. Pre-
-         existing tables will  not  be  dropped  on  the  initial
-         deployment  of  an application or a deployment that fol-
-         lows an explicit undeploy. If not set,  the  tables  are
-         dropped  if  the  drop-tables-at-undeploy  entry  in the
-         cmp-resource element of the sun-ejb-jar.xml file is  set
-         to  true.  The  new  tables  are  created if the create-
-         tables-at-deploy entry in the  cmp-resource  element  of
+         If specified as true when the component  is  redeployed,
+         the  tables  created  by  the  previous  deployment  are
+         dropped before creating  the  new  tables.   Applies  to
+         deployed  applications  with unmapped CMP beans.  Preex-
+         isting tables will not be dropped on the initial deploy-
+         ment  of  an application or on a deployment that follows
+         an explicit undeploy.  If specified as false, tables are
+         neither  dropped  nor  created.   If  not specified, the
+         tables are dropped if the drop-tables-at-undeploy  entry
 
-Java EE 6           Last change: 30 Oct 2009                    3
+Java EE 6            Last change: 6 Nov 2009                    3
 
 asadmin Utility Subcommands                          deploydir(1)
 
-         the sun-ejb-jar.xml file is set to true.
+         in  the cmp-resource element of the sun-ejb-jar.xml file
+         is set to true, and the new tables are  created  if  the
+         create-tables-at-deploy  entry  in the cmp-resource ele-
+         ment of the sun-ejb-jar.xml file is set to true.
 
      --uniquetablenames
 
@@ -198,25 +201,24 @@ asadmin Utility Subcommands                          deploydir(1)
          root/lib/applibs.  The  libraries  are made available to
          the application in the order specified.
 
+Java EE 6            Last change: 6 Nov 2009                    4
+
+asadmin Utility Subcommands                          deploydir(1)
+
      --target
 
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-
-Java EE 6           Last change: 30 Oct 2009                    4
-
-asadmin Utility Subcommands                          deploydir(1)
-
          option, a syntax error does not occur. Instead, the sub-
          command  runs  successfully  and  the option is silently
          ignored.
 
      --type
-
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
          osgi
+
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -224,7 +226,6 @@ asadmin Utility Subcommands                          deploydir(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
-
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -246,6 +247,7 @@ asadmin Utility Subcommands                          deploydir(1)
          ment:
 
          jar-signing-alias
+
              Specifies the alias  for  the  security  certificate
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
@@ -253,15 +255,15 @@ asadmin Utility Subcommands                          deploydir(1)
              JAR file signed with a certificate that  the  user's
              system  trusts.  For  your  convenience,  Enterprise
              Server signs the JAR file  automatically  using  the
-             certificate  with  this alias from the domain's key-
-             store. Java Web Start then asks the user whether  to
-             trust  the  code  and displays the Enterprise Server
-             certificate information.  To sign this JAR file with
+             certificate   with  this  alias  from  the  domain's
 
-Java EE 6           Last change: 30 Oct 2009                    5
+Java EE 6            Last change: 6 Nov 2009                    5
 
 asadmin Utility Subcommands                          deploydir(1)
 
+             keystore. Java Web Start then asks the user  whether
+             to trust the code and displays the Enterprise Server
+             certificate information.  To sign this JAR file with
              a  different certificate, add the certificate to the
              domain keystore, then use this property.  For  exam-
              ple,  you  can  use  a  certificate  from  a trusted
@@ -307,7 +309,7 @@ asadmin Utility Subcommands                          deploydir(1)
              is 1.  For  more  information,  see  the  configure-
              jruby-container(1) help page.
 
-Java EE 6           Last change: 30 Oct 2009                    6
+Java EE 6            Last change: 6 Nov 2009                    6
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -361,7 +363,7 @@ asadmin Utility Subcommands                          deploydir(1)
              visible  to  various  modules within an EAR file. In
              particular, application clients must not have access
 
-Java EE 6           Last change: 30 Oct 2009                    7
+Java EE 6            Last change: 6 Nov 2009                    7
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -411,7 +413,7 @@ OPERANDS
          Path to the directory containing the exploded format  of
          the deployable archive.
 
-Java EE 6           Last change: 30 Oct 2009                    8
+Java EE 6            Last change: 6 Nov 2009                    8
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -424,6 +426,8 @@ EXAMPLES
      already exists, the application is redeployed.
 
        asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
+       Application deployed successfully with name sampleApp.
+       WARNING : deploydir command deprecated.  Please use deploy command instead.
        Command deploydir executed successfully
 
 EXIT STATUS
@@ -438,5 +442,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    9
+Java EE 6            Last change: 6 Nov 2009                    9
 

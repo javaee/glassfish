@@ -2,34 +2,37 @@
 asadmin Utility Subcommands                     create-service(1)
 
 NAME
-     create-service - configures the starting of a  DAS  or  node
-     agent on an unattended boot
+     create-service - configures the starting  of  a  DAS  on  an
+     unattended boot
 
 SYNOPSIS
-     create-service [--name servicename] [--serviceproperties serviceproperties]
-     [--dry-run={false|true}] [--domaindir domain-dir] [domain-name]
+     create-service [--name name] [--serviceproperties serviceproperties]
+     [--dry-run={false|true}] [--domaindir domaindir] [domain_name]
 
 DESCRIPTION
      The create-service subcommand configures the starting  of  a
-     DAS or node agent on an unattended boot by using the Solaris
-     10 Service Management Facility (SMF). This  subcommand  must
-     be run as the OS-level user with superuser privileges. After
-     this subcommand creates the service, you must start, enable,
-     disable,  delete,  or  stop  the service. The DAS/node-agent
-     configuration must be  stored  on  a  folder  to  which  the
-     superuser  has access and cannot be stored on a network file
-     system. The service is created such that it is controlled by
-     the  OS-level user, who owns the folder where the configura-
-     tion of the DAS or node agent resides.
+     domain administration server (DAS)  on an unattended boot by
+     using the Solaris 10 Service Management Facility (SMF). This
+     subcommand  must  be run as the OS-level user with superuser
+     privileges. After this subcommand creates the  service,  you
+     must  start,  enable,  disable, delete, or stop the service.
+     The DAS configuration must be stored on a  folder  to  which
+     the  superuser  has access and cannot be stored on a network
+     file system. The service is created such  that  it  is  con-
+     trolled  by  the OS-level user who owns the folder where the
+     configuration of the DAS resides. If no arguments are speci-
+     fied, the subcommand uses the default domain.
 
      To run this subcommand, you must have solaris.smf.* authori-
-     zation.  (Refer  to  the useradd and usermod man pages.) You
-     must also have  write  permission  in  the  directory  tree:
-     /var/svc/manifest/application/SUNWappserver.   Usually,  the
-     superuser has both these permissions. To run these  commands
-     as non-root user, the system administrator must be contacted
-     so that the relevant authorizations are granted.   You  need
-     to also ensure that:
+     zation.  (Refer  to  the  useradd and usermod man pages.) On
+     Solaris,   the   manifest   file   is   created    in    the
+     /var/svc/manifest/application/GlassFish/domain-name_domain-
+     root-dir directory. You must also have write  permission  in
+     the  directory tree /var/svc/manifest/application/GlassFish.
+     Usually, the superuser has both these  permissions.  To  run
+     these  commands  as  non-root user, the system administrator
+     must be contacted so that the  relevant  authorizations  are
+     granted.  You need to also ensure that:
 
          o    Solaris 10 administration commands such as  svccfg,
               svcs,  and auths are available in the PATH, so that
@@ -37,8 +40,8 @@ DESCRIPTION
               so  is  to  issue the subcommand, which svccfg on a
               bash shell.
 
-         o    You should have  write  permission  for  the  path,
-              /var/svc/manifest/application.
+         o    You  must  have  write  permission  for  the   path
+              /var/svc/manifest/application/GlassFish.
 
      This subcommand is supported in local mode only.
 
@@ -48,14 +51,27 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6            Last change: 8 Oct 2009                    1
+Java EE 6            Last change: 6 Nov 2009                    1
 
 asadmin Utility Subcommands                     create-service(1)
 
+     --domaindir
+
+         The directory where the domain is to be started. This is
+         the absolute path of the directory on the disk that con-
+         tains the configuration of the domain.
+
+     --dry-run
+         Previews your attempt to  create  a  service.  Indicates
+         issues  and  the  outcome that will occur if you run the
+         command without using the --dry-run option.  Nothing  is
+         actually configured. Default is false.
+
      --name
 
-          Indicates the name of the  service  and  overrides  the
-         default, if present.
+          Tthe name of the service that you will use to  run  the
+         Solaris SMF commands. If a default is present, this name
+         overrides the default.
 
      --serviceproperties
           Specifies a : (colon)-separated list of various proper-
@@ -64,28 +80,41 @@ asadmin Utility Subcommands                     create-service(1)
          will  be able to bind to the privileged ports (<1024) on
          the platform. You can bind to ports< 1024  only  if  the
          owner  of  the  service is superuser, otherwise, this is
-         not allowed. If  you  specify  startinstances=true/false
-         for a node agent, all the instances are started when the
-         node agent starts.
-
-     --dry-run
-
-         Default is false.
-
-     --domaindir
+         not allowed.
 
 OPERANDS
-     domain-name
+     domain_name
 
-          The absolute path of directory on  disk  that  contains
-         the configuration of the domain or node agent.
+         The name of the domain to be started. If  no  domain  is
+         specified, the default domain is used.
 
 EXAMPLES
      Example 1 Creating a Service
 
-     This example creates a service.
+     This example creates a service for the default domain  on  a
+     Solaris system.
 
        asadmin> create-service
+       The Service was created successfully. Here are the details:
+       Name of the service:application/GlassFish/domain1
+       Type of the service:Domain
+       Configuration location of the service:/home/gfuser/glassfish-installations
+       /glassfishv3/glassfish/domains
+       Manifest file location on the system:/var/svc/manifest/application
+
+Java EE 6            Last change: 6 Nov 2009                    2
+
+asadmin Utility Subcommands                     create-service(1)
+
+       /GlassFish/domain1_home_gfuser_glassfish-installations_glassfishv3
+       _glassfish_domains/Domain-service-smf.xml.
+       You have created the service but you need to start it yourself.
+       Here are the most typical Solaris commands of interest:
+       * /usr/bin/svcs  -a | grep domain1  // status
+       * /usr/sbin/svcadm enable domain1 // start
+       * /usr/sbin/svcadm disable domain1 // stop
+       * /usr/sbin/svccfg delete domain1 // uninstall
+       Command create-service executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -93,12 +122,8 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6            Last change: 8 Oct 2009                    2
-
-asadmin Utility Subcommands                     create-service(1)
-
 SEE ALSO
      asadmin(1M)
 
-Java EE 6            Last change: 8 Oct 2009                    3
+Java EE 6            Last change: 6 Nov 2009                    3
 

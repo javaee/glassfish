@@ -36,7 +36,8 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-     -T --desttype
+     --desttype
+     -T
 
          The type of the JMS destination. Valid values are  topic
          and queue.
@@ -46,14 +47,13 @@ OPTIONS
          physical destination. You can specify the following pro-
          perties for a physical destination.
 
-         maxNumMsgs
-
-             The maximum number of unconsumed messages  permitted
-
 Java EE 6           Last change: 22 Sep 2009                    1
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
+         maxNumMsgs
+
+             The maximum number of unconsumed messages  permitted
              for the destination. A value of -1 denotes an unlim-
              ited number of messages. The default  value  is  -1.
              For  the  dead  message  queue, the default value is
@@ -68,7 +68,6 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              rather than a strictly enforced limit.
 
          maxBytesPerMsg
-
              The maximum size, in bytes, of any  single  message.
              Rejection of a persistent message is reported to the
              producing client with an exception; no  notification
@@ -88,25 +87,24 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              default value is -1.
 
          maxTotalMsgBytes
+
              The maximum total memory, in bytes,  for  unconsumed
              messages. The default value is -1. The syntax is the
              same as for maxBytesPerMsg.  For  the  dead  message
              queue, the default value is 10m.
 
          limitBehavior
-
              The behavior of the MQ broker when the  memory-limit
              threshold is reached. Valid values are as follows.
-
-             REJECT_NEWEST          Reject  newest  messages  and
-                                    notify  the  producing client
-                                    with an exception only if the
-                                    message  is  persistent. This
 
 Java EE 6           Last change: 22 Sep 2009                    2
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
+             REJECT_NEWEST          Reject  newest  messages  and
+                                    notify  the  producing client
+                                    with an exception only if the
+                                    message  is  persistent. This
                                     is the default value.
 
              FLOW_CONTROL           Slow the rate at  which  mes-
@@ -148,18 +146,17 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              number of queued messages routed to active consumers
              before load balancing begins.
 
+Java EE 6           Last change: 22 Sep 2009                    3
+
+asadmin Utility Subcommands                     create-jmsdest(1)
+
          useDMQ
 
              If set to true, dead messages go to the dead message
              queue. If set to false, dead messages are discarded.
              The default value is true.
 
-Java EE 6           Last change: 22 Sep 2009                    3
-
-asadmin Utility Subcommands                     create-jmsdest(1)
-
          validateXMLSchemaEnabled
-
              If set to true, XML schema validation is enabled for
              the destination. The default value is false.
 
@@ -177,6 +174,7 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              nation. Otherwise the producer must reconnect.
 
          XMLSchemaURIList
+
              A space-separated list of XML schema document  (XSD)
              URI  strings.  The URIs point to the location of one
              or more XSDs to use for XML  schema  validation,  if
@@ -202,15 +200,15 @@ asadmin Utility Subcommands                     create-jmsdest(1)
          Message Queue 4.4 Administration Guide for more informa-
          tion.
 
+Java EE 6           Last change: 22 Sep 2009                    4
+
+asadmin Utility Subcommands                     create-jmsdest(1)
+
 OPERANDS
      dest_name
 
          A unique  identifier  for  the  JMS  destination  to  be
          created.
-
-Java EE 6           Last change: 22 Sep 2009                    4
-
-asadmin Utility Subcommands                     create-jmsdest(1)
 
 EXAMPLES
      Example 1 Creating a JMS physical destination

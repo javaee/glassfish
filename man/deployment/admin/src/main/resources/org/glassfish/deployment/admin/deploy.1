@@ -7,21 +7,21 @@ NAME
 SYNOPSIS
      deploy [--help]
      [--force={false|true}]
-     [--virtualservers virtual-servers]
-     [--contextroot context-root]
+     [--virtualservers virtual_servers]
+     [--contextroot context_root]
      [--precompilejsp={false|true}]
      [--verify={false|true}]
-     [--name component-name]
+     [--name component_name]
      [--upload={true|false}]
-     [--retrieve local-dirpath]
+     [--retrieve local_dirpath]
      [--dbvendorname dbvendorname]
      [--createtables={true|false}|--dropandcreatetables={true|false}]
      [--uniquetablenames={true|false}]
-     [--deploymentplan deployment-plan]
+     [--deploymentplan deployment_plan]
      [--enabled={true|false}]
      [--generatermistubs={false|true}]
      [--availabilityenabled={false|true}]
-     [--libraries jar-file[,jar-file]*]
+     [--libraries jar_file[,jar_file]*]
      [--target target]
      [--type pkg-type]
      [--properties(name=value)[:name=value]*]
@@ -49,7 +49,7 @@ OPTIONS
          specified component has already been deployed or already
          exists. Default is false.
 
-Java EE 6           Last change: 29 Oct 2009                    1
+Java EE 6            Last change: 6 Nov 2009                    1
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -99,7 +99,7 @@ asadmin Utility Subcommands                             deploy(1)
          Specifies the name of  the  database  vendor  for  which
          tables are created. Supported values include db2, mssql,
 
-Java EE 6           Last change: 29 Oct 2009                    2
+Java EE 6            Last change: 6 Nov 2009                    2
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -115,24 +115,27 @@ asadmin Utility Subcommands                             deploy(1)
 
      --createtables
 
-         Creates tables at  deployment  of  an  application  with
-         unmapped  CMP  beans.  Default  is the create-tables-at-
-         deploy entry in the cmp-resource  element  of  the  sun-
-         ejb-jar.xml file.
+          If specified as true, creates tables at  deployment  of
+         an  application with unmapped CMP beans. If specified as
+         false, tables are not created.  If  not  specified,  the
+         value  of  the create-tables-at-deploy entry in the cmp-
+         resource element of the sun-ejb-jar.xml file  determines
+         whether or not tables are created.
 
      --dropandcreatetables
-         If set to true, when the component  is  redeployed,  the
-         tables  created  by  the previous deployment are dropped
-         before creating  the  new  tables.  Applies  to  already
-         deployed  applications  with  unmapped  CMP  beans. Pre-
-         existing tables will  not  be  dropped  on  the  initial
-         deployment  of  an application or a deployment that fol-
-         lows an explicit undeploy. If not set,  the  tables  are
-         dropped  if  the  drop-tables-at-undeploy  entry  in the
-         cmp-resource element of the sun-ejb-jar.xml file is  set
-         to  true.  The  new  tables  are  created if the create-
-         tables-at-deploy entry in the  cmp-resource  element  of
-         the sun-ejb-jar.xml file is set to true.
+         If specified as true when the component  is  redeployed,
+         the  tables  created  by  the  previous  deployment  are
+         dropped before creating  the  new  tables.   Applies  to
+         deployed  applications  with unmapped CMP beans.  Preex-
+         isting tables will not be dropped on the initial deploy-
+         ment  of  an application or on a deployment that follows
+         an explicit undeploy.  If specified as false, tables are
+         neither  dropped  nor  created.   If  not specified, the
+         tables are dropped if the drop-tables-at-undeploy  entry
+         in  the cmp-resource element of the sun-ejb-jar.xml file
+         is set to true, and the new tables are  created  if  the
+         create-tables-at-deploy  entry  in the cmp-resource ele-
+         ment of the sun-ejb-jar.xml file is set to true.
 
      --uniquetablenames
 
@@ -148,24 +151,23 @@ asadmin Utility Subcommands                             deploy(1)
          when deploying a pure EAR file. A pure EAR  file  is  an
          EAR without Sun-specific descriptors.
 
-     --enabled
-
-         Allows users to access the application. If set to false,
-
-Java EE 6           Last change: 29 Oct 2009                    3
+Java EE 6            Last change: 6 Nov 2009                    3
 
 asadmin Utility Subcommands                             deploy(1)
 
+     --enabled
+
+         Allows users to access the application. If set to false,
          users  will  not  be  able  to  access  the application.
          Default is true.
 
      --generatermistubs
-
          If set to true, static RMI-IIOP stubs are generated  and
          put  into the client.jar. If set to false, the stubs are
          not generated. Default is false.
 
      --availabilityenabled
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -173,7 +175,6 @@ asadmin Utility Subcommands                             deploy(1)
          ignored.
 
      --libraries
-
          A comma-separated list of library JAR files. Specify the
          library  JAR  files by their relative or absolute paths.
          Specify   relative   paths   relative    to    instance-
@@ -181,6 +182,7 @@ asadmin Utility Subcommands                             deploy(1)
          the application in the order specified.
 
      --target
+
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -188,26 +190,25 @@ asadmin Utility Subcommands                             deploy(1)
          ignored.
 
      --type
-
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
          osgi
+
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
          The --type option is optional. If the component is pack-
          aged as a regular archive, omit this option.
 
+Java EE 6            Last change: 6 Nov 2009                    4
+
+asadmin Utility Subcommands                             deploy(1)
+
      --properties or --property
 
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
-
-Java EE 6           Last change: 29 Oct 2009                    4
-
-asadmin Utility Subcommands                             deploy(1)
-
          are determined by the implementation  of  the  component
          that  is  being deployed or redeployed. The --properties
          option and the --property option are equivalent. You can
@@ -227,7 +228,6 @@ asadmin Utility Subcommands                             deploy(1)
          ment:
 
          jar-signing-alias
-
              Specifies the alias  for  the  security  certificate
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
@@ -248,18 +248,19 @@ asadmin Utility Subcommands                             deploy(1)
              signed certificate created for every domain.
 
          java-web-start-enabled
+
              Specifies whether Java Web Start access is permitted
              for an application client module. Default is true.
 
          jruby.home
-
              Specifies the directory where JRuby itself (not  the
              Enterprise  Server  JRuby  container)  is installed.
-             Default is as-install/jruby.
 
-Java EE 6           Last change: 29 Oct 2009                    5
+Java EE 6            Last change: 6 Nov 2009                    5
 
 asadmin Utility Subcommands                             deploy(1)
+
+             Default is as-install/jruby.
 
          jruby.runtime
 
@@ -307,7 +308,7 @@ asadmin Utility Subcommands                             deploy(1)
              work, errors result.  Default  is  computed  through
              auto-detection.
 
-Java EE 6           Last change: 29 Oct 2009                    6
+Java EE 6            Last change: 6 Nov 2009                    6
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -360,7 +361,7 @@ asadmin Utility Subcommands                             deploy(1)
                  Active  sessions  of  the  application  are  not
                  preserved and restored (default).
 
-Java EE 6           Last change: 29 Oct 2009                    7
+Java EE 6            Last change: 6 Nov 2009                    7
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -400,6 +401,7 @@ EXAMPLES
      the Cart.ear file.
 
        asadmin> deploy Cart.ear
+       Application deployed successfully with name Cart.
        Command deploy executed successfully
 
      Example 2 Deploying a Web Application With the Default  Con-
@@ -408,11 +410,12 @@ EXAMPLES
      This example deploys the web application  in  the  hello.war
      file.
 
-Java EE 6           Last change: 29 Oct 2009                    8
+Java EE 6            Last change: 6 Nov 2009                    8
 
 asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy hello.war
+       Application deployed successfully with name hello.
        Command deploy executed successfully
 
      Example 3  Forcibly  Deploying  a  Web  Application  With  a
@@ -424,6 +427,7 @@ asadmin Utility Subcommands                             deploy(1)
      deployed, it is redeployed.
 
        asadmin> deploy  --force=true --contextroot greetings hello.war
+       Application deployed successfully with name hello.
        Command deploy executed successfully
 
      Example 4 Deploying an Enterprise Bean
@@ -433,6 +437,7 @@ asadmin Utility Subcommands                             deploy(1)
      tables used by the bean.
 
        asadmin> deploy --createtables=true EmployeeEJB.jar
+       Application deployed successfully with name EmployeeEJB.
        Command deploy executed successfully
 
      Example 5 Deploying a Connector Module
@@ -441,17 +446,18 @@ asadmin Utility Subcommands                             deploy(1)
      an RAR file.
 
        asadmin> deploy jdbcra.rar
+       Application deployed successfully with name jdbcra.
        Command deploy executed successfully
 
 EXIT STATUS
      0                           subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
-
-Java EE 6           Last change: 29 Oct 2009                    9
+Java EE 6            Last change: 6 Nov 2009                    9
 
 asadmin Utility Subcommands                             deploy(1)
+
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      redeploy(1),  list-components(1),  undeploy(1),   configure-
@@ -462,5 +468,5 @@ SEE ALSO
      Sun GlassFish Enterprise Server  v3  Application  Deployment
      Guide
 
-Java EE 6           Last change: 29 Oct 2009                   10
+Java EE 6            Last change: 6 Nov 2009                   10
 

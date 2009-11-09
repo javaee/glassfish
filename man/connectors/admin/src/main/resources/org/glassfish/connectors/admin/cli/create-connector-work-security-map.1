@@ -4,25 +4,24 @@ asadmin Utility Subcommands
 
 NAME
      create-connector-work-security-map - creates a work security
-     map for the specified resource adapter.
+     map for the specified resource adapter
 
 SYNOPSIS
-     create-connector-work-security-map [--help]
-     --raname resource-adapter-name
-     {--principalsmap eis-principal1=principal_name1[, eis-principal2=principal_name2]* |
-     --groupsmap eis-group1=server-group1[, eis-group2=server-group2]*}
-     [--description text]
-     work-security-map-name
+     create-connector-work-security-map [--help] --raname raname
+     [--principalsmap eis-principal1=principal_name1[, eis-principal2=principal_name2]*
+     |--groupsmap eis-group1=server-group1[, eis-group2=server-group2]*}
+     [--description description]
+     mapname
 
 DESCRIPTION
-     You can use this subcommand to map the  caller  identity  of
-     the  work submitted by the resource adapter EIS principal or
-     EIS user group to a suitable principal or user group in  the
-     application  server  security domain. One or more work secu-
-     rity maps may be associated with  a  resource  adapter.  The
-     connector  work  security map configuration supports the use
-     of the wild card asterisk (*) to indicate all users  or  all
-     user groups.
+     The create-connector-work-security-map subcommand  maps  the
+     caller  identity  of  the  work  submitted  by  the resource
+     adapter EIS principal or EIS user group to a suitable  prin-
+     cipal  or  user  group  in  the  application server security
+     domain. One or more work security  maps  may  be  associated
+     with  a  resource  adapter.  The connector work security map
+     configuration supports the use of the wild card asterisk (*)
+     to indicate all users or all user groups.
 
      The enterprise information system (EIS) is any  system  that
      holds  the data of an organization. It can be a mainframe, a
@@ -36,57 +35,68 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --raname
-         Indicates the connector module name, which is  the  name
-         of the resource adapter in the domain.xml file.
-
-     --principalsmap
-
-         Specifies a map of the back-end  EIS  principal  to  the
-         application server principal. Use a comma-separated list
-         to specify more than one  mapping.  Use  either  the  --
-         principalsmap  option or the --groupsmap option, but not
-         both.
-
-Java EE 6           Last change: 22 Oct 2009                    1
-
-asadmin Utility Subcommands
-                            create-connector-work-security-map(1)
+     --description
+         Text providing descriptive details about  the  connector
+         work security map.
 
      --groupsmap
 
-         Specifies a map of the back-end EIS user  group  to  the
+         Specifies a map of the backend EIS  user  group  to  the
          application  server  user  group.  Use a comma-separated
          list to specify more than one mapping.  Use  either  the
          --principalsmap  option  or  the --groupsmap option, but
          not both.
 
-     --description
-         Text providing descriptive details about  the  connector
-         work security map.
+Java EE 6           Last change: 05 Nov 2009                    1
+
+asadmin Utility Subcommands
+                            create-connector-work-security-map(1)
+
+     --principalsmap
+
+         Specifies a map of the  backend  EIS  principal  to  the
+         application server principal. Use a comma-separated list
+         to specify more than one  mapping.  Use  either  the  --
+         principalsmap  option or the --groupsmap option, but not
+         both.
+
+     --raname
+         Indicates the connector module name, which is  the  name
+         of the resource adapter.
 
 OPERANDS
-     work-security-map-name
+     mapname
 
          The name of the work security map to be created.
 
 EXAMPLES
-     Example 1 Using the create-connector-work-security-map  sub-
-     command
+     Example 1 Creating a Connector Work Security Map (Principal)
 
-       asadmin create-connector-work-security-map
-       --raname my-resource-adapter-name
-       --principalsmap eis-principal-1=server-principal-1,eis-principal-2=server-principal-2,
-       eis-principal-3=server-principal-1
+     This example creates connector work security map workSecuri-
+     tyMap1  that  maps the backend EIS principal to the applica-
+     tion server principal.
+
+       asadmin create-connector-work-security-map --raname my-resource-adapter
+       --principalsmap eis-principal-1=server-principal-1,eis-principal-2
+       =server-principal-2,eis-principal-3=server-principal-1
        workSecurityMap1
        Command create-connector-work-security-map executed successfully.
 
-       asadmin create-connector-work-security-map
-       --raname my-resource-adapter-name
+     Example 2 Creating a Connector Work Security Map (Group)
+
+     This example creates connector work security map workSecuri-
+     tyMap2  that maps the backend EIS user group to the applica-
+     tion server user group.
+
+       asadmin create-connector-work-security-map --raname my-resource-adapter
        --groupsmap eis-group-1=server-group-1,eis-group-2=server-group-2,
-       eis-group-3=server-group-1
-       workSecurityMap2
+       eis-group-3=server-group-1 workSecurityMap2
        Command create-connector-work-security-map executed successfully.
+
+Java EE 6           Last change: 05 Nov 2009                    2
+
+asadmin Utility Subcommands
+                            create-connector-work-security-map(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -94,21 +104,16 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 22 Oct 2009                    2
-
-asadmin Utility Subcommands
-                            create-connector-work-security-map(1)
-
 SEE ALSO
      delete-connector-work-security-map(1),  list-connector-work-
-     security-maps(1)
+     security-maps(1), update-connector-work-security-map(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2009                    3
+Java EE 6           Last change: 05 Nov 2009                    3
 
 asadmin Utility Subcommands
                             create-connector-work-security-map(1)
 
-Java EE 6           Last change: 22 Oct 2009                    4
+Java EE 6           Last change: 05 Nov 2009                    4
 

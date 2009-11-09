@@ -8,16 +8,11 @@ NAME
 SYNOPSIS
      create-http-listener
      [--help]
-      --listeneraddress  address
-     --listenerport listener_port
-     {--default-virtual-server |  --defaultvs } virtual_server
-     [--servername server_name]
-     [--acceptorthreads acceptor-threads]
-     [--xpowered={true|false}]
-     [ --redirectport  redirect_port]
-     [--securityenabled={false|true}]
-     [ --enabled ={true|false}]
-     [ --target  target] listener_id
+      --listeneraddress  address --listenerport listener_port
+     {--default-virtual-server |  --defaultvs } virtual_server [--servername server_name]
+     [--acceptorthreads acceptor-threads] [--xpowered={true|false}]
+     [ --redirectport  redirect_port] [--securityenabled={false|true}]
+     [ --enabled ={true|false}] [ --target  target] listener_id
 
 DESCRIPTION
      The create-http-listener subcommand creates an HTTP  network
@@ -51,14 +46,13 @@ OPTIONS
 
          The port number to create the listen  socket  on.  Legal
          values  are  1-65535.  On  UNIX,  creating  sockets that
+         listen on ports 1-1024  requires  superuser  privileges.
+         Configuring  an  SSL listen socket to listen on port 443
+         is recommended.
 
 Java EE 6           Last change: 26 Oct 2009                    1
 
 asadmin Utility Subcommands               create-http-listener(1)
-
-         listen on ports 1-1024  requires  superuser  privileges.
-         Configuring  an  SSL listen socket to listen on port 443
-         is recommended.
 
      --default-virtual-server or --defaultvs
 
@@ -101,24 +95,23 @@ asadmin Utility Subcommands               create-http-listener(1)
          command  runs  successfully  and  the option is silently
          ignored.
 
-Java EE 6           Last change: 26 Oct 2009                    2
-
-asadmin Utility Subcommands               create-http-listener(1)
-
      --securityenabled
-
          If set to true, the HTTP listener runs SSL. You can turn
          SSL2 or SSL3 ON or OFF and set ciphers using an SSL ele-
          ment. The security setting globally enables or  disables
          SSL  by  making  certificates  available  to  the server
          instance. The default value is false.
 
+Java EE 6           Last change: 26 Oct 2009                    2
+
+asadmin Utility Subcommands               create-http-listener(1)
+
      --enabled
+
          If set to true, the listener is enabled at runtime.  The
          default value is true.
 
      --target
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -137,8 +130,7 @@ EXAMPLES
      threads and is not enabled at runtime:
 
        asadmin> create-http-listener --listeneraddress 0.0.0.0 --listenerport 7272
-       --defaultvs server --servername host1.sun.com --acceptorthreads 100
-       --securityenabled=false --enabled=false sampleListener
+       --defaultvs server --servername host1.sun.com --acceptorthreads 100 --securityenabled=false --enabled=false sampleListener
        Command create-http-listener executed successfully.
 
 EXIT STATUS
@@ -146,15 +138,11 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6           Last change: 26 Oct 2009                    3
-
-asadmin Utility Subcommands               create-http-listener(1)
-
 SEE ALSO
      delete-http-listener(1),   list-http-listeners(1),   create-
      virtual-server(1), create-ssl(1), create-network-listener(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 26 Oct 2009                    4
+Java EE 6           Last change: 26 Oct 2009                    3
 

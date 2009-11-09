@@ -3,16 +3,16 @@ asadmin Utility Subcommands  list-connector-work-security-maps(1)
 
 NAME
      list-connector-work-security-maps - lists the work  security
-     maps belonging to the specified resource adapter.
+     maps belonging to the specified resource adapter
 
 SYNOPSIS
-     list-connector-work-security-maps [--help]
-     [--securitymap security_map_name]
+     list-connector-work-security-maps [--help] [--securitymap securitymap]
      resource_adapter_name
 
 DESCRIPTION
-     Use this subcommand to list the work security maps belonging
-     to the specified resource adapter.
+     The list-connector-work-security-maps subcommand  lists  the
+     work  security  maps  belonging  to  the  specified resource
+     adapter.
 
      This subcommand is supported in remote mode only.
 
@@ -34,28 +34,33 @@ OPERANDS
          list security maps.
 
 EXAMPLES
-     Example 1 Using list-connector-work-security-maps subcommand
+     Example 1 Listing Connector Work Security Maps
 
-       asadmin list-connector-work-security-maps my_resource_adapter_name
-       worksecuritymap1
-       worksecuritymap2
+     This example lists the current connector work security  maps
+     for the resource adapter named my_resource_adapter.
+
+       asadmin list-connector-work-security-maps my_resource_adapter
+       workSecurityMap1: EIS principal=eis-principal-2, mapped principal=server-principal-2
+       workSecurityMap1: EIS principal=eis-principal-1, mapped principal=server-principal-1
+       workSecurityMap2: EIS principal=eis-principal-2, mapped principal=server-principal-2
+       workSecurityMap2: EIS principal=eis-principal-1, mapped principal=server-principal-1
        Command list-connector-work-security-maps executed successfully.
+
+Java EE 6           Last change: 05 Nov 2009                    1
+
+asadmin Utility Subcommands  list-connector-work-security-maps(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
-
-Java EE 6           Last change: 09 Oct 2009                    1
-
-asadmin Utility Subcommands  list-connector-work-security-maps(1)
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     delete-connector-work-security-map(1),     create-connector-
+     create-connector-work-security-map(1),     delete-connector-
      work-security-map(1), update-connector-work-security-map(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 05 Nov 2009                    2
 

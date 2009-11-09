@@ -7,21 +7,15 @@ NAME
 
 SYNOPSIS
      delete-connector-security-map [--help]
-     --poolname connector_connection_pool_name
-     [--target target]
-     security_map_name
+     --poolname connector_connection_pool_name [--target target] mapname
 
 DESCRIPTION
-     Use this subcommand to delete a security map for the  speci-
-     fied connector connection pool.
+     The delete-connector-security-map subcommand deletes a secu-
+     rity map for the specified connector connection pool.
 
      For this subcommand to succeed, you must have first  created
      a  connector  connection  pool  using  the create-connector-
      connection-pool subcommand.
-
-     The enterprise information system (EIS) is any  system  that
-     holds  the  information.  It can be a mainframe, a messaging
-     system, a database system, or an application.
 
      This subcommand is supported in remote mode only.
 
@@ -44,18 +38,18 @@ OPTIONS
          ignored.
 
 OPERANDS
-     security_map_name
+     mapname
          Name of the security map to be deleted.
 
-Java EE 6           Last change: 09 Oct 2009                    1
+EXAMPLES
+     Example 1 Deleting a Connector Security Map
+
+Java EE 6           Last change: 03 Nov 2009                    1
 
 asadmin Utility Subcommands      delete-connector-security-map(1)
 
-EXAMPLES
-     Example 1 Using the delete-connector-security-map subcommand
-
-     It is assumed that  the  connector  pool  has  already  been
-     created using the create-connector-pool subcommand.
+     This example deletes securityMap1 for the  existing  connec-
+     tion pool named connector-pool1.
 
        asadmin> delete-connector-security-map
        --poolname connector-pool1 securityMap1
@@ -73,5 +67,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 03 Nov 2009                    2
 

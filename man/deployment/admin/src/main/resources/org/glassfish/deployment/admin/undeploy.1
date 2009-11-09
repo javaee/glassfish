@@ -5,8 +5,8 @@ NAME
      undeploy - removes a deployed component
 
 SYNOPSIS
-     undeploy [--help] [--droptables=true|false]
-     [--cascade=false] [--target target] component_name
+     undeploy [--help] [--target target]  [--droptables={true|false}]
+     [--cascade={false|true}] name
 
 DESCRIPTION
      The undeploy subcommand uninstalls a deployed application or
@@ -20,18 +20,7 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --droptables
-         Drops the tables that the application created  by  using
-         CMP   beans   during  deployment.  The  default  is  the
-         corresponding entry in the cmp-resource element  of  the
-         sun-ejb-jar.xml  file.  If not specified, it defaults to
-         the entries specified in the deployment descriptors.  In
-         a  production environment, database tables contain valu-
-         able information, so use the  --droptables  option  with
-         care.
-
      --cascade
-
          If set to true, deletes all  the  connection  pools  and
          connector resources associated with the resource adapter
          being undeployed. If set to false, the undeploy fails if
@@ -42,22 +31,32 @@ OPTIONS
          pools  and  resources still associated with the resource
          adapter, the resource adapter is undeployed. This option
          is  applicable  to  connectors  (resource  adapters) and
-         applications. Default is false.
+         applications. Default value is false.
+
+     --droptables
+
+         If set to true, drops the tables  that  the  application
+         created  by using CMP beans during deployment. If set to
+         false, tables are not dropped.  If  not  specified,  the
+         value  of  the  drop-tables-at-deploy  entry in the cmp-
+         resource element of the sun-ejb-jar.xml file  determines
+         whether  or  not  tables  are  dropped. Default value is
+         true.
 
      --target
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
-         option, a syntax error  does  not  occur.  Instead,  the
+         option, a syntax error does not occur. Instead, the sub-
+         command  runs  successfully  and  the option is silently
 
-Java EE 6           Last change: 16 Sep 2009                    1
+Java EE 6            Last change: 6 Nov 2009                    1
 
 asadmin Utility Subcommands                           undeploy(1)
 
-         subcommand  runs successfully and the option is silently
          ignored.
 
 OPERANDS
-     component_name              Name of the deployed component.
+     name                        Name of the deployed component.
 
 EXAMPLES
      Example 1 Undeploying an Enterprise Application
@@ -89,12 +88,12 @@ EXAMPLES
 EXIT STATUS
      0                           subcommand executed successfully
 
-Java EE 6           Last change: 16 Sep 2009                    2
-
-asadmin Utility Subcommands                           undeploy(1)
-
      1                           error in executing  the  subcom-
                                  mand
+
+Java EE 6            Last change: 6 Nov 2009                    2
+
+asadmin Utility Subcommands                           undeploy(1)
 
 SEE ALSO
      deploy(1), redeploy(1), list-components(1)
@@ -104,5 +103,5 @@ SEE ALSO
      Sun GlassFish Enterprise Server  v3  Application  Deployment
      Guide
 
-Java EE 6           Last change: 16 Sep 2009                    3
+Java EE 6            Last change: 6 Nov 2009                    3
 

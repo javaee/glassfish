@@ -7,8 +7,7 @@ NAME
      application JAR file
 
 SYNOPSIS
-     appclient [client_application_classfile | -client client_application_jar]
-     [-mainclass main_class_name | -name display_name]
+     appclient [client_application_classfile | -client client_application_jar] [-mainclass main_class_name| -name display_name]
      [-xml sun-acc.xml file] [-textauth]
      [ -targetserver  host[:port][,host[:port]...]]
      [-user username] [-passwordfile password_file]
@@ -48,12 +47,12 @@ DESCRIPTION
      only client in an EAR file, the Application Client Container
      can find the client without using the  -mainclass  or  -name
      options.  If  you  provide  a -mainclass or -name value that
+     does not match what is in the client, the Application Client
 
 Java EE 6           Last change: 26 Oct 2009                    1
 
 Utility Commands                                    appclient(1M)
 
-     does not match what is in the client, the Application Client
      Container  launches  the  client anyway but issues a warning
      that the selection did not  match  the  information  in  the
      client. The warning also displays what the actual main class
@@ -102,12 +101,11 @@ OPTIONS
          Used  for  multiple client applications. By default, the
          display  name   is   specified   in   the   client   jar
          application-client.xml  file  which is identified by the
+         display-name attribute.
 
 Java EE 6           Last change: 26 Oct 2009                    2
 
 Utility Commands                                    appclient(1M)
-
-         display-name attribute.
 
       -xml
 
@@ -155,13 +153,14 @@ Utility Commands                                    appclient(1M)
          The password can be specified by one  of  the  following
          means:
 
+             o    Through the -passwordfile option
+
+             o    Interactively at the command prompt
+
 Java EE 6           Last change: 26 Oct 2009                    3
 
 Utility Commands                                    appclient(1M)
 
-             o    Through the -passwordfile option
-
-             o    Interactively at the command prompt
          For security reasons, a password that is specified as an
          environment  variable is not read by the appclient util-
          ity.

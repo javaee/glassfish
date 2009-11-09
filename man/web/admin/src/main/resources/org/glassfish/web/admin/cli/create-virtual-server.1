@@ -8,12 +8,10 @@ SYNOPSIS
      create-virtual-server
      [--help]
      [ --target  target]
-     --hosts hosts
-     [--httplisteners http_listeners]
+     --hosts hosts [--httplisteners http_listeners]
      [--networklisteners network_listeners]
      [--defaultwebmodule default_web_module]
-     [--state={on|off}]
-     [ --logfile  log_file]
+     [--state={on|off}] [ --logfile  log_file]
      [--property (name=value)[:name=value]*]
      virtual_server_id
 
@@ -47,36 +45,36 @@ OPTIONS
          Each virtual server that is configured to the same  con-
          nection group must have a unique host for that group.
 
+     --httplisteners
+         A  comma-separated  (,)  list  of  HTTP  listener   IDs.
+         Required  only  for  a  virtual  server  that is not the
+
 Java EE 6           Last change: 15 Sep 2009                    1
 
 asadmin Utility Subcommands;             create-virtual-server(1)
 
-     --httplisteners
-
-         A  comma-separated  (,)  list  of  HTTP  listener   IDs.
-         Required  only  for  a  virtual  server  that is not the
          default virtual server. HTTP listeners are converted  to
          network  listeners.  This option is deprecated but main-
          tained    for    backward    compatibility.    Use    --
          networklisteners instead.
 
      --networklisteners
+
          A comma-separated (,)  list  of  network  listener  IDs.
          Required  only  for  a  virtual  server  that is not the
          default virtual server.
 
      --defaultwebmodule
-
          The standalone web module associated with  this  virtual
          server by default.
 
      --state
+
          Determines whether a virtual server is  active  (on)  or
          inactive  (off  or  disabled). Default is on. When inac-
          tive, the virtual server does not service requests.
 
      --logfile
-
          Name of the file where  log  entries  for  this  virtual
          server are to be written. By default, this is the server
          log. The file and directory in which the access  log  is
@@ -84,11 +82,11 @@ asadmin Utility Subcommands;             create-virtual-server(1)
          the server runs.
 
      --property
+
          Optional property name/value pairs for  configuring  the
          virtual server. The following properties are available:
 
          sso-max-inactive-seconds
-
              Specifies the number of seconds after which a user's
              single  sign-on  record becomes eligible for purging
              if no client  activity  is  received.  Since  single

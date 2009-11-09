@@ -126,61 +126,46 @@ asadmin Utility Subcommands   create-message-security-provider(1)
 
          The following properties may be set:
 
-         security.config               Specifies the location  of
-                                       the  message security con-
-                                       figuration file. To  point
-                                       to a configuration file in
-                                       the      domain-dir/config
-                                       directory,  use the system
-                                       property
-                                       ${com.sun.aas.instanceRoot}/config/,
-                                       for               example:
-                                       ${com.sun.aas.instanceRoot}/config/wss-
-                                       server-config-1.0.xml. The
-                                       default     is     domain-
-                                       dir/config/           wss-
-                                       serverconfig-1.0.xml.
+         security.config
 
-         debug                         If true,  enables  dumping
-                                       of  server  provider debug
-                                       messages  to  the   server
-                                       log. The default is false.
+             Specifies the location of the message security  con-
+             figuration file. To point to a configuration file in
+             the domain-dir/config directory, use the system pro-
+             perty ${com.sun.aas.instanceRoot}/config/, for exam-
+             ple:  ${com.sun.aas.instanceRoot}/config/wss-server-
+             config-1.0.xml.  The  default  is domain-dir/config/
+             wss-serverconfig-1.0.xml.
 
-         dynamic.username. password    If true, signals the  pro-
-                                       vider  runtime  to collect
-                                       the user name and password
-                                       from  the  CallbackHandler
-                                       for   each   request.   If
-                                       false,  the  user name and
-                                       password               for
-                                       wsse:UsernameToken(s)   is
+         debug
+             If true, enables dumping of  server  provider  debug
+             messages to the server log. The default is false.
+
+         dynamic.username. password
+
+             If true, signals the provider runtime to collect the
+             user  name and password from the CallbackHandler for
+             each request. If false, the user name  and  password
+             for  wsse:UsernameToken(s) is collected once, during
+             module initialization. This property is only  appli-
+             cable for a ClientAuthModule. The default is false.
+
+         encryption.key.alias
+             Specifies the encryption key used by  the  provider.
+             The  key  is  identified  by its keystore alias. The
+             default value is s1as.
 
 Java EE 6           Last change: 28 Aug 2009                    3
 
 asadmin Utility Subcommands   create-message-security-provider(1)
 
-                                       collected   once,   during
-                                       module     initialization.
-                                       This  property   is   only
-                                       applicable  for  a  Clien-
-                                       tAuthModule.  The  default
-                                       is false.
+         signature.key.alias
 
-         encryption.key.alias          Specifies  the  encryption
-                                       key  used by the provider.
-                                       The key is  identified  by
-                                       its  keystore  alias.  The
-                                       default value is s1as.
-
-         signature.key.alias           Specifies  the   signature
-                                       key  used by the provider.
-                                       The key is  identified  by
-                                       its  keystore  alias.  The
-                                       default value is s1as.
+             Specifies the signature key used  by  the  provider.
+             The  key  is  identified  by its keystore alias. The
+             default value is s1as.
 
 OPERANDS
      provider_name
-
          The  name  of  the  provider  used  to   reference   the
          provider-config element.
 
@@ -199,15 +184,11 @@ EXIT STATUS
 
      1                            error in executing the command
 
-Java EE 6           Last change: 28 Aug 2009                    4
-
-asadmin Utility Subcommands   create-message-security-provider(1)
-
 SEE ALSO
      delete-message-security-provider(1),  list-message-security-
      providers(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 28 Aug 2009                    5
+Java EE 6           Last change: 28 Aug 2009                    4
 

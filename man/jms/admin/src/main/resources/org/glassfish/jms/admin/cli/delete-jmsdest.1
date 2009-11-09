@@ -28,7 +28,8 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-     -T --desttype
+     --desttype
+     -T
 
          The type of the JMS destination. Valid values are  topic
          and queue.
@@ -45,11 +46,12 @@ EXAMPLES
      Queue.
 
        asadmin> delete-jmsdest --desttype queue PhysicalQueue
-       Command delete-jmsdest executed successfully.
 
 Java EE 6           Last change: 16 Sep 2009                    1
 
 asadmin Utility Subcommands                     delete-jmsdest(1)
+
+       Command delete-jmsdest executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully

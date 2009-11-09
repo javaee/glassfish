@@ -2,20 +2,20 @@
 asadmin Utility Subcommands              flush-connection-pool(1)
 
 NAME
-     flush-connection-pool - reinitializes the connections in the
-     specified connection pool
+     flush-connection-pool -  reintializes all connections  esta-
+     blished in the specified connection pool
 
 SYNOPSIS
      flush-connection-pool [--help] pool_name
 
 DESCRIPTION
-     The flush-connection-pool  subcommand  resets  a  connection
-     pool to its initial state for both JDBC connection pools and
-     connector connection pools.  Any  existing  connections  are
-     destroyed, which means that the transactions associated with
-     these connections are lost and must be retired. Finally, the
-     subcommand  recreates  the  connections that are established
-     for the pool, and restores the pool to its steady pool size.
+     The flush-connection-pool subcommand resets a  JDBC  connec-
+     tion  pool  or  a  connector  connection pool to its initial
+     state. Any existing live connections  are  destroyed,  which
+     means  that  the  transactions associated with these connec-
+     tions are lost. The subcommand then  recreates  the  initial
+     connections  for  the  pool,  and  restores  the pool to its
+     steady pool size.
 
      This subcommand is supported in remote mode only.
 
@@ -30,8 +30,8 @@ OPERANDS
          Name of the connection pool to be reinitialized.
 
 EXAMPLES
-     This example reinitializes the JDBC connection pool __Timer-
-     Pool.
+     This example reinitializes the JDBC  connection  pool  named
+     __TimerPool.
 
        asadmin> flush-connection-pool __TimerPool
        Command flush-connection-pool executed successfully.
@@ -46,11 +46,11 @@ SEE ALSO
      list-connector-connection-pools(1),    list-jdbc-connection-
      pools(1)
 
-Java EE 6           Last change: 23 Oct 2009                    1
+Java EE 6            Last change: 2 Nov 2009                    1
 
 asadmin Utility Subcommands              flush-connection-pool(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 23 Oct 2009                    2
+Java EE 6            Last change: 2 Nov 2009                    2
 

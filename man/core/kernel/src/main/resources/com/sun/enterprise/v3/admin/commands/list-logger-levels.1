@@ -23,14 +23,13 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-OPERANDS
 EXAMPLES
      Example 1 Listing the Log Levels
 
-     This example lists the existing loggers and their  log  lev-
-     els.
+     This example lists the existing loggers  and  indicates  how
+     their log levels are set.
 
-       asadmin> list-log-levels
+       asadmin> list-logger-levels
        javax.enterprise.system.container.cmp: INFO
        javax.enterprise.system.tools.admin: INFO
        java.util.logging.ConsoleHandler: FINEST
@@ -49,12 +48,12 @@ EXAMPLES
        javax.enterprise.system.webservices.rpc: INFO
        javax.enterprise.system.webservices.registry: INFO
        javax.enterprise.system.tools.deployment: INFO
+       javax.enterprise.resource.jms: INFO
 
-Java EE 6            Last change: 1 Oct 2009                    1
+Java EE 6           Last change: 06 Nov 2009                    1
 
 asadmin Utility Subcommands                 list-logger-levels(1)
 
-       javax.enterprise.resource.jms: INFO
        javax.enterprise.system: INFO
        javax.enterprise.system.webservices.saaj: INFO
        org.apache.jasper: INFO
@@ -91,5 +90,5 @@ SEE ALSO
      Chapter 7, Administering the Logging Service, in Sun GlassF-
      ish Enterprise Server v3 Administration Guide
 
-Java EE 6            Last change: 1 Oct 2009                    2
+Java EE 6           Last change: 06 Nov 2009                    2
 

@@ -6,10 +6,12 @@ NAME
      ponents and services
 
 SYNOPSIS
-     monitor [--help] --type type
+     monitor [--help]
+     --type type
      [--filename filename]
      [--interval interval]
-     [--filter filter_name] instance-name
+     [--filter filter]
+     instance-name
 
 DESCRIPTION
      The monitor subcommand displays statistics for commonly mon-
@@ -47,11 +49,12 @@ OPTIONS
 
              ec
                  The total number errors  in  the  processing  of
-                 HTTP requests.
 
-Java EE 6           Last change: 29 Oct 2009                    1
+Java EE 6            Last change: 2 Nov 2009                    1
 
 asadmin Utility Subcommands                            monitor(1)
+
+                 HTTP requests.
 
              mt
 
@@ -95,24 +98,24 @@ asadmin Utility Subcommands                            monitor(1)
                  The maximum amount of memory that  can  be  used
                  for memory management.
 
-             low
-                 Retained for compatibility with other releases.
-
-Java EE 6           Last change: 29 Oct 2009                    2
+Java EE 6            Last change: 2 Nov 2009                    2
 
 asadmin Utility Subcommands                            monitor(1)
 
-             high
+             low
 
                  Retained for compatibility with other releases.
 
+             high
+                 Retained for compatibility with other releases.
+
              count
+
                  The  amount  of  memory  (in  bytes)   that   is
                  guaranteed  to  be  available for use by the JVM
                  machine.
 
          webmodule
-
              For  this   type,   the   attribute   server.server-
              config.monitoring-service.module-monitoring-
              levels.web-container must be set to LOW or HIGH.
@@ -121,55 +124,55 @@ asadmin Utility Subcommands                            monitor(1)
              web modules:
 
              asc
+
                  The number of currently active sessions.
 
              ast
-
                  The total number of sessions that are  currently
                  active or have been active previously.
 
              rst
+
                  The total number of rejected sessions.
 
              st
-
                  The total number  of  sessions  that  have  been
                  created.
 
              ajlc
-                 The  number  of  currently   active   JavaServer
-                 PagesTM   (JSPTM)   technology  pages  that  are
+
+                 The  TMmber  oTM currently   active   JavaServer
+                 Pages     (JSP  )   technology  pages  that  are
                  loaded.
+
+Java EE 6            Last change: 2 Nov 2009                    3
+
+asadmin Utility Subcommands                            monitor(1)
 
              mjlc
 
                  The maximum number of JSP technology pages  that
                  were active at any time simultaneously.
 
-Java EE 6           Last change: 29 Oct 2009                    3
-
-asadmin Utility Subcommands                            monitor(1)
-
              tjlc
-
                  Total number of JSP technology pages  that  have
                  been loaded.
 
              aslc
+
                  The number of  currently  active  Java  servlets
                  that are loaded.
 
              mslc
-
                  The maximum number of Java  servlets  that  were
                  active at any time simultaneously.
 
              tslc
+
                  The total number of Java servlets that have been
                  loaded.
 
      --filename
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
@@ -177,26 +180,28 @@ asadmin Utility Subcommands                            monitor(1)
          ignored.
 
      --interval
+
          The interval  in  seconds  before  capturing  monitoring
          attributes.  The  interval  must  be greater than 0. The
          monitoring attributes are displayed on stdout until  you
          type Control-C or q. The default value is 30.
 
      --filter
-
          Do not specify this option. This option is retained  for
          compatibility  with  other releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
          command  runs  successfully  and  the option is silently
          ignored.
 
-OPERANDS
-     instance-name               The server instance for which to
-                                 view monitoring data.
-
-Java EE 6           Last change: 29 Oct 2009                    4
+Java EE 6            Last change: 2 Nov 2009                    4
 
 asadmin Utility Subcommands                            monitor(1)
+
+OPERANDS
+     instance-name
+
+         The server instance for which to view  monitoring  data.
+         The default value is server.
 
 EXAMPLES
      Example 1 Displaying Monitoring Statistics by Interval
@@ -229,5 +234,5 @@ SEE ALSO
      Chapter 8, Administering  the  Monitoring  Service,  in  Sun
      GlassFish Enterprise Server v3 Administration Guide
 
-Java EE 6           Last change: 29 Oct 2009                    5
+Java EE 6            Last change: 2 Nov 2009                    5
 

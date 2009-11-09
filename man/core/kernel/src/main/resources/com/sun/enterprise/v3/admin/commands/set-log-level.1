@@ -9,9 +9,8 @@ SYNOPSIS
 
 DESCRIPTION
      The set-log-level subcommand sets the log level for  one  or
-     more  loggers.   The  list-logger-levels can be used to list
-     the names of the current loggers. Changes take effect dynam-
-     ically, that is, server restart is not required.
+     more  loggers.  Changes  take  effect  dynamically, that is,
+     server restart is not required.
 
      This subcommand is supported in remote mode only.
 
@@ -23,7 +22,9 @@ OPTIONS
 
 OPERANDS
      logger-name
-         The name of the logger.
+         The name of the logger. The  list-logger-levels  subcom-
+         mand  can  be  used  to  list  the  names of the current
+         loggers.
 
      logger-level
 
@@ -42,12 +43,13 @@ EXAMPLES
 
      Example 2 Setting the Log Level for Multiple Loggers
 
-Java EE 6            Last change: 2 Oct 2009                    1
+Java EE 6           Last change: 06 Nov 2009                    1
 
 asadmin Utility Subcommands                      set-log-level(1)
 
      This example sets the log level of the web container  logger
-     to FINE and the EJB container logger to SEVERE:
+     to  FINE  and  the  log level of the EJB container logger to
+     SEVERE:
 
        asadmin set-log-level javax.enterprise.system.container.web=FINE:
        javax.enterprise.system.container.ejb=SEVERE
@@ -67,5 +69,5 @@ SEE ALSO
      Chapter 7, Administering the Logging Service, in Sun GlassF-
      ish Enterprise Server v3 Administration Guide
 
-Java EE 6            Last change: 2 Oct 2009                    2
+Java EE 6           Last change: 06 Nov 2009                    2
 

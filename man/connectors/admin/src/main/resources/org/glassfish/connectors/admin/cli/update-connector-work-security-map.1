@@ -7,17 +7,16 @@ NAME
      rity map for the specified resource adapter
 
 SYNOPSIS
-     update-connector-work-security-map [--help]
-     --raname resource-adapter-name
-     [--addprincipals eis-principal1=server-principal1[, eis-principal2=server-principal2]*] |
-     --addgroups eis-group1=server-group1[, eis-group2=server-group2]*]
+     update-connector-work-security-map [--help] --raname raname
+     [--addprincipals eis-principal1=server-principal1[, eis-principal2=server-principal2]*]
+     [--addgroups eis-group1=server-group1[, eis-group2=server-group2]*]
      [--removeprincipals eis-principal1[,eis-principal2]*]
-     [--removegroups eis-group1[, eis-group2]* ]
-     work-security-map-name
+     [--removegroups eis-group1[, eis-group2]*]
+     mapname
 
 DESCRIPTION
-     Use this subcommand to modify a security map for the  speci-
-     fied resource adapter.
+     The update-connector-work-security-map subcommand modifies a
+     security map for the specified resource adapter.
 
      This subcommand is supported in remote mode only.
 
@@ -27,9 +26,10 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --raname
-         Indicates the connector module name with which the  work
-         security map is associated.
+     --addgroups
+         Specifies a comma-separated list of  EIS  groups  to  be
+         added.  Use  either the --addprincipals option or the --
+         addgroups option, but not both.
 
      --addprincipals
 
@@ -37,37 +37,37 @@ OPTIONS
          pals  to be added. Use either the --addprincipals option
          or the --addgroups option, but not both.
 
-     --addgroups
+     --removegroups
          Specifies a comma-separated list of  EIS  groups  to  be
-         added.  Use  either the --addprincipals option or the --
-         addgroups option, but not both.
+         removed.
 
      --removeprincipals
 
          Specifies a comma-separated list of EIS-specific princi-
          pals to be removed.
 
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 02 Nov 2009                    1
 
 asadmin Utility Subcommands
                             update-connector-work-security-map(1)
 
-     --removegroups
+     --raname
 
-         Specifies a comma-separated list of  EIS  groups  to  be
-         removed.
+         Indicates the connector module name with which the  work
+         security map is associated.
 
 OPERANDS
-     work-security-map-name
+     mapname
          The name of the work security map to be updated.
 
 EXAMPLES
-     Example 1 Using the update-connector-work-security-map  sub-
-     command
+     Example 1 Updating a Connector Work Security Map
+
+     This  example  updates  workSecurityMap2  by  removing  eis-
+     group-2.
 
        asadmin> update-connector-work-security-map
-       --raname my-resource-adapter-name --removegroups eis-group-2 workSecurityMap2
-
+       --raname my-resource-adapter --removegroups eis-group-2 workSecurityMap2
        Command update-connector-work-security-map executed successfully.
 
 EXIT STATUS
@@ -77,15 +77,15 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     delete-connector-work-security-map(1),  list-connector-work-
-     security-maps(1), create-connector-work-security-map(1)
+     create-connector-work-security-map(1),     delete-connector-
+     work-security-map(1), list-connector-work-security-maps(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 02 Nov 2009                    2
 
 asadmin Utility Subcommands
                             update-connector-work-security-map(1)
 
-Java EE 6           Last change: 09 Oct 2009                    3
+Java EE 6           Last change: 02 Nov 2009                    3
 

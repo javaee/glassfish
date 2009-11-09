@@ -6,7 +6,7 @@ NAME
      current resource adapter configurations
 
 SYNOPSIS
-     list-resource-adapter-configs [--help] [--raname connector-module-name]
+     list-resource-adapter-configs [--help] [--raname raname] [--verbose {false|true}]
 
 DESCRIPTION
      This command lists  the  configuration  information  in  the
@@ -25,12 +25,12 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --raname
-         This option specifies the connector module name.
+         Specifies the connector module name.
 
-OPERANDS
-     target
+     --verbose
 
-         This operand is deprecated.
+         Lists the properties that are configured. Default  value
+         is false.
 
 EXAMPLES
      Example 1 Listing the Resource Adapter Configurations
@@ -43,7 +43,7 @@ EXAMPLES
        ra2
        Command list-resource-adapter-configs executed successfully
 
-Java EE 6            Last change: 8 Oct 2009                    1
+Java EE 6            Last change: 4 Nov 2009                    1
 
 asadmin Utility Subcommands      list-resource-adapter-configs(1)
 
@@ -58,5 +58,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 8 Oct 2009                    2
+Java EE 6            Last change: 4 Nov 2009                    2
 

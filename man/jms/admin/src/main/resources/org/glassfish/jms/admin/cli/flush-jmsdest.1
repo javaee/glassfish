@@ -28,7 +28,8 @@ OPTIONS
          command  runs  successfully  and  the option is silently
          ignored.
 
-     -T --desttype
+     --desttype
+     -T
 
          This option indicates the type of  physical  destination
          from  which  you  want  to purge messages. The supported
@@ -45,12 +46,11 @@ EXAMPLES
      The following subcommand  purges  messages  from  the  queue
      named PhysicalQueue.
 
-       asadmin> flush-jmsdest --desttype queue PhysicalQueue
-
 Java EE 6           Last change: 16 Sep 2009                    1
 
 asadmin Utility Subcommands                      flush-jmsdest(1)
 
+       asadmin> flush-jmsdest --desttype queue PhysicalQueue
        Command flush-jmsdest executed successfully.
 
 EXIT STATUS
