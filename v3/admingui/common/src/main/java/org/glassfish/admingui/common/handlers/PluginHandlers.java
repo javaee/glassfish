@@ -557,6 +557,9 @@ public class PluginHandlers {
             if (cl != null) {
                 url = cl.getResource(resource);
             }
+            if (url == null) {
+                pluginId = "";
+            }
         }
         handlerCtx.setOutputValue("pluginId", pluginId);
     }
