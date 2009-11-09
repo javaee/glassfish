@@ -36,6 +36,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.StringUtils;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.client.ProbeClientMethodHandle;
@@ -74,6 +75,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     private StatsProviderRegistry statsProviderRegistry;
     private static final Logger logger =
         LogDomains.getLogger(StatsProviderManagerDelegateImpl.class, LogDomains.MONITORING_LOGGER);
+    private static final ResourceBundle rb = logger.getResourceBundle();
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StatsProviderManagerDelegateImpl.class);
     boolean ddebug = false;
 
@@ -100,9 +102,9 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             tryToRegister(spInfo);
         }
         catch(RuntimeException rte) {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.WARNING,
-                    "Flashlight listener registration failed for this listener class: "
-                        + spInfo.getStatsProvider().getClass().getName());
+            logger.log(Level.WARNING, "ListenerRegistrationFailed",
+                            new Object[] {spInfo.getStatsProvider().getClass().getName()});
+            logger.log(Level.WARNING, null, rte);
             FutureStatsProviders.add(spInfo);
         }
     }
@@ -115,13 +117,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         String configElement = spInfo.getConfigElement();
         Object statsProvider = spInfo.getStatsProvider();
         // register the statsProvider
-        if (logger.isLoggable(Level.FINEST))
-            printd("registering a statsProvider ");
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("registering a statsProvider");
         StatsProviderRegistryElement spre;
         // First check if the configElement associated for statsProvider is 'ON'
         if (getMonitoringEnabled() && getEnabledValue(configElement)) {
-            if (logger.isLoggable(Level.FINEST))
-                printd(" enabled is true ");
+            if (logger.isLoggable(Level.FINE))
+                logger.fine(" enabled is true ");
             spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
 
             if (spre == null) {
@@ -134,16 +136,16 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             }
 
         } else {
-            if (logger.isLoggable(Level.FINEST))
-                printd(" enabled is false ");
+            if (logger.isLoggable(Level.FINE))
+                logger.fine(" enabled is false ");
             // Register with null values so to know that we need to register them individually and config is on
             statsProviderRegistry.registerStatsProvider(spInfo);
             spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
         }
 
-        if (logger.isLoggable(Level.FINEST)) {
-            printd(spre.toString());
-            printd("=========================================================");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine(spre.toString());
+            logger.fine("=========================================================");
         }
     }
 
@@ -152,10 +154,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         try {
             StatsProviderRegistryElement spre = statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
             if (spre == null) {
-                logger.log(Level.INFO,
-                        localStrings.getLocalString("invalidStatsProvider",
-                            "Invalid statsProvider (very likely a duplicate request), cannot unregister : {0}",
-                            statsProvider.getClass().getName()));
+                logger.log(Level.INFO,"invalidStatsProvider",
+                            new Object[] {statsProvider.getClass().getName()});
                 return;
             }
 
@@ -198,7 +198,9 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             //Unregister from the MonitoringDataTreeRegistry and the map entries
             statsProviderRegistry.unregisterStatsProvider(statsProvider);
         } catch (Exception ex) {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+            String msg = rb.getString("errorUnregisteringStatsProvider");
+            msg = MessageFormat.format(msg, statsProvider.getClass().getName());
+            logger.log(Level.SEVERE, msg, ex);
         }
 
     }
@@ -254,8 +256,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             return;
         String configLevel = getMonitoringLevel(configElement);
         //Enable all the StatsProviders for a given configElement
-        if (logger.isLoggable(Level.FINEST))
-            printd("Enabling all the statsProviders for - " + configElement);
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("Enabling all the statsProviders for - " + configElement);
         List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
         if (spreList == null)
             return;
@@ -287,8 +289,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             return;
         */
         //Disable all the StatsProviders for a given configElement
-        if (logger.isLoggable(Level.FINEST))
-            printd("Disabling all the statsProviders for - " + configElement);
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("Disabling all the statsProviders for - " + configElement);
         List<StatsProviderRegistryElement> spreList = statsProviderRegistry.getStatsProviderRegistryElement(configElement);
         if (spreList == null)
             return;
@@ -304,8 +306,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private void enableStatsProvider(StatsProviderRegistryElement spre) {
         Object statsProvider = spre.getStatsProvider();
-        if (logger.isLoggable(Level.FINEST))
-            printd("Enabling the statsProvider - " + statsProvider.getClass().getName());
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("Enabling the statsProvider - " + statsProvider.getClass().getName());
 
          /* Step 1. Create the tree for the statsProvider */
         // Check if we already have TreeNodes created
@@ -354,8 +356,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private void disableStatsProvider(StatsProviderRegistryElement spre) {
-        if (logger.isLoggable(Level.FINEST))
-            printd("Disabling the statsProvider - " + spre.getStatsProvider().getClass().getName());
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("Disabling the statsProvider - " + spre.getStatsProvider().getClass().getName());
         /* Step 1. Disable the tree nodes for StatsProvider */
         updateTreeNodes(spre, false);
 
@@ -374,8 +376,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     public void registerAllGmbal() {
         /* We do this when the mbean-enabled is turned on from off */
 
-        if (logger.isLoggable(Level.FINEST))
-            printd("Registering all the statsProviders whose enabled flag is 'on' with Gmbal");
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("Registering all the statsProviders whose enabled flag is 'on' with Gmbal");
         for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
             if (spre.isEnabled()) {
                 ManagedObjectManager mom = spre.getManagedObjectManager();
@@ -390,8 +392,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     public void unregisterAllGmbal() {
         /* We do this when the mbean-enabled is turned off from on */
 
-        if (logger.isLoggable(Level.FINEST))
-            printd("Unregistering all the statsProviders whose enabled flag is 'off' with Gmbal");
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("Unregistering all the statsProviders whose enabled flag is 'off' with Gmbal");
         for (StatsProviderRegistryElement spre : statsProviderRegistry.getSpreList()) {
             if (spre.isEnabled()) {
                 unregisterGmbal(spre);
@@ -492,10 +494,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                     }
                 }
             } else {
-                logger.log(Level.WARNING,
-                        localStrings.getLocalString("nodeNotFound",
-                        "Cannot find node " + parentNodePath + " for statsProvider " + statsProviderName,
-                        parentNodePath, statsProviderName));
+                logger.log(Level.WARNING,"nodeNotFound",
+                            new Object[] {parentNodePath, statsProviderName});
             }
         }
     }
@@ -517,11 +517,17 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             try {
                 m.invoke(statsProvider);
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+                String msg = rb.getString("errorResettingStatsProvider");
+                msg = MessageFormat.format(msg, statsProvider.getClass().getName());
+                logger.log(Level.SEVERE, msg, ex);
             } catch (IllegalArgumentException ex) {
-                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+                String msg = rb.getString("errorResettingStatsProvider");
+                msg = MessageFormat.format(msg, statsProvider.getClass().getName());
+                logger.log(Level.SEVERE, msg, ex);
             } catch (InvocationTargetException ex) {
-                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, null, ex);
+                String msg = rb.getString("errorResettingStatsProvider");
+                msg = MessageFormat.format(msg, statsProvider.getClass().getName());
+                logger.log(Level.SEVERE, msg, ex);
             }
          }
     }
@@ -648,9 +654,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                         }
                     } else {
                         String spName = statsProvider.getClass().getName();
-                        Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.INFO,
-                                localStrings.getLocalString("notaManagedObject", spName +
-                                " is not a ManagedObject and will not be registered with Gmbal to create an MBean", spName));
+                        logger.log(Level.INFO, "notaManagedObject", new Object[] {spName});
                     }
                 }
             //To register hierarchy in mom specify parent ManagedObject, and the ManagedObject itself
@@ -658,7 +662,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             } catch (Exception e) {
                 //createRoot failed - need to return a null mom so we know not to unregister an mbean that does not exist
                 mom = null;
-                Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.SEVERE, "Gmbal registration failed", e);
+                logger.log(Level.SEVERE, "gmbalRegistrationFailed", e);
             }
         return mom;
     }
@@ -671,7 +675,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
             try {
                 mom.close();
             } catch (IOException ioe) {
-                Logger.getLogger(StatsProviderRegistry.class.getName()).log(Level.SEVERE, "Gmbal unregister failed", ioe);
+                logger.log(Level.SEVERE, "gmbalUnRegistrationFailed", ioe);
             }
             spre.setManagedObjectManager(null);
         }
@@ -718,7 +722,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
                 enabled = false;
             }
         } else {
-            Logger.getLogger(StatsProviderManagerDelegateImpl.class.getName()).log(Level.WARNING, "module-monitoring-level or container-monitoring config element for " + configElement + " does not exist.");
+            logger.log(Level.WARNING, "monitorElementDoesnotExist", new Object[] {configElement});
         }
         return enabled;
     }
@@ -762,10 +766,6 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     public String getNameValue(String subTreePath) {
         return subTreePath;
-    }
-
-    private void printd(String pstring) {
-        logger.log(Level.FINEST, pstring);
     }
 
 }

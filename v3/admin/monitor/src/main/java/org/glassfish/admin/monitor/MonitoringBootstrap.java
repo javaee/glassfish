@@ -86,8 +86,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private static final String INSTALL_ROOT_URI_PROPERTY_NAME = "com.sun.aas.installRootURI";
     private static final Logger logger =
         LogDomains.getLogger(MonitoringBootstrap.class, LogDomains.MONITORING_LOGGER);
-    public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(MonitoringBootstrap.class);
-
 
     private final String PROBE_PROVIDER_CLASS_NAMES = "probe-provider-class-names";
     private final String PROBE_PROVIDER_XML_FILE_NAMES = "probe-provider-xml-file-names";
@@ -119,13 +117,13 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
     private void discoverProbeProviders() {
         // Iterate thru existing modules
-        if (logger.isLoggable(Level.FINEST))
-            printd(localStrings.getLocalString("discoveringProbeProviders",
-                                                    "Discovering the ProbeProviders"));
+        if (logger.isLoggable(Level.FINE))
+            logger.log(Level.FINE, "discoveringProbeProviders",
+                                                    new Object[] {"Discovering the ProbeProviders"});
         for (Module m : registry.getModules()) {
             if ((m.getState() == ModuleState.READY) || (m.getState() == ModuleState.RESOLVED)) {
-                if (logger.isLoggable(Level.FINEST))
-                    printd( " In (discoverProbeProviders) ModuleState - " + m.getState() + " : " + m.getName());
+                if (logger.isLoggable(Level.FINE))
+                    logger.fine(" In (discoverProbeProviders) ModuleState - " + m.getState() + " : " + m.getName());
                 verifyModule(m);
             }
         }
@@ -143,10 +141,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     public void event(Event event) {
         if (event.is(EventTypes.SERVER_READY)) {
             // Process the XMLProviders in lib/monitor dir. Should be the last thing to do in server startup.
-            String msg = localStrings.getLocalString("discoveringXmlProbeProviders",
-                                        "Discovering the XML ProbeProviders from lib/monitor");
-            if (logger.isLoggable(Level.FINEST))
-                printd(msg);
+            if (logger.isLoggable(Level.FINE))
+                logger.log(Level.FINE, "discoveringXmlProbeProviders");
             discoverXMLProviders();
         }
     }
@@ -159,8 +155,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         //Set the StatsProviderManagerDelegate, so we can start processing the StatsProviders
         spmd = new StatsProviderManagerDelegateImpl(pcm, probeRegistry, mrdr, domain, monitoringService);
         StatsProviderManager.setStatsProviderManagerDelegate(spmd);
-        if (logger.isLoggable(Level.FINEST))
-            printd(" StatsProviderManagerDelegate is assigned");
+        if (logger.isLoggable(Level.FINE))
+            logger.fine(" StatsProviderManagerDelegate is assigned");
 
         // Register listener for AMX DomainRoot loaded
         final AMXGlassfish amxg = AMXGlassfish.DEFAULT;
@@ -199,8 +195,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }
 
     private void addProvider(Module module) {
-        if (logger.isLoggable(Level.FINEST))
-            printd(" Adding the Provider - verified the module");
+        if (logger.isLoggable(Level.FINE))
+            logger.fine(" Adding the Provider - verified the module");
         String mname = module.getName();
         ClassLoader mcl = module.getClassLoader();
         //get manifest entries and process
@@ -216,8 +212,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             if (attrs != null) {
                 cnames = attrs.getValue(PROBE_PROVIDER_CLASS_NAMES);
                 if (cnames != null) {
-                    if (logger.isLoggable(Level.FINEST))
-                        printd("probe providers = " + cnames);
+                    if (logger.isLoggable(Level.FINE))
+                        logger.fine("probe providers = " + cnames);
                     StringTokenizer st = new StringTokenizer(cnames, DELIMITER);
                     while (st.hasMoreTokens()) {
                         try {
@@ -227,14 +223,14 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                             if (mcl != null)
                                 processProbeProviderClass(mcl.loadClass(clStr));
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            logger.log(Level.SEVERE, "unableToLoadProbeProvider", e);
                         }
                     }
                 }
                 xnames = attrs.getValue(PROBE_PROVIDER_XML_FILE_NAMES);
                 if (xnames != null) {
-                    if (logger.isLoggable(Level.FINEST))
-                        printd("xnames = " + xnames);
+                    if (logger.isLoggable(Level.FINE))
+                        logger.fine("xnames = " + xnames);
                     StringTokenizer st = new StringTokenizer(xnames, DELIMITER);
                     while (st.hasMoreTokens()) {
                         processProbeProviderXML(mcl, st.nextToken(), true);
@@ -279,18 +275,18 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
         try {
             URI xmlProviderDirStr = new URI(System.getProperty(INSTALL_ROOT_URI_PROPERTY_NAME) + "/" + "lib" + "/" + "monitor");
-            if (logger.isLoggable(Level.FINEST))
-                printd("ProviderXML's Dir = " + xmlProviderDirStr.getPath());
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("ProviderXML's Dir = " + xmlProviderDirStr.getPath());
             File xmlProviderDir = new File(xmlProviderDirStr.getPath());
             //File scriptFile = new File ("/space/GFV3_BLD/glassfish/domains/domain1/applications/scripts/InvokeJavaFromJavascript.js");
-            if (logger.isLoggable(Level.FINEST)) {
-                printd("ProviderXML's Dir exists = " + xmlProviderDir.exists());
-                printd("ProviderXML's Dir path - " + xmlProviderDir.getAbsolutePath());
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("ProviderXML's Dir exists = " + xmlProviderDir.exists());
+                logger.fine("ProviderXML's Dir path - " + xmlProviderDir.getAbsolutePath());
             }
             loadXMLProviders(xmlProviderDir);
             hasDiscoveredXMLProviders = true;
         } catch (URISyntaxException ex) {
-            Logger.getLogger(MonitoringBootstrap.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "unableToProcessXMLProbeProvider", ex);
         }
     }
 
@@ -308,30 +304,29 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         Map<String, File> providerMap = new HashMap();
 
         for (File file : files) {
-            if (logger.isLoggable(Level.FINEST))
-                printd("Found the provider xml - " + file.getAbsolutePath());
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("Found the provider xml - " + file.getAbsolutePath());
             int index = file.getName().indexOf("-:");
             if (index != -1) {
                 String moduleName = file.getName().substring(0,index);
                 providerMap.put(moduleName, file);
-                if (logger.isLoggable(Level.FINEST))
-                    printd(" The provider xml belongs to - \"" + moduleName + "\"");
+                if (logger.isLoggable(Level.FINE))
+                    logger.fine(" The provider xml belongs to - \"" + moduleName + "\"");
                 if (!map.containsKey(moduleName)) {
                     continue;
                 }
-                if (logger.isLoggable(Level.FINEST))
-                    printd (" Module found (containsKey)");
+                if (logger.isLoggable(Level.FINE))
+                    logger.fine (" Module found (containsKey)");
                 Module module = map.get(moduleName);
                 if (module == null) {
                     logger.log(Level.SEVERE,
-                            localStrings.getLocalString("monitoringMissingModuleFromXmlProbeProviders",
-                                        "Couldn't find the module, when loading the monitoring providers " +
-                                        "from XML directory : {0}", moduleName));
+                                "monitoringMissingModuleFromXmlProbeProviders",
+                                        new Object[] {moduleName});
                 } else {
                     ClassLoader mcl = module.getClassLoader();
-                    if (logger.isLoggable(Level.FINEST)) {
-                        printd("ModuleClassLoader = " + mcl);
-                        printd("XML File path = " + file.getAbsolutePath());
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.fine("ModuleClassLoader = " + mcl);
+                        logger.fine("XML File path = " + file.getAbsolutePath());
                     }
                     processProbeProviderXML(mcl, file.getAbsolutePath(), false);
                 }
@@ -344,21 +339,21 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     private void removeProvider(Module module) {
         //Cannot really remove the Provider b'cos of a bug in BTrace (Cannot re-retransform).
         // We should just not reprocess the module, next time around
-        if (logger.isLoggable(Level.FINEST))
-            printd("removeProvider ...");
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("removeProvider ...");
     }
 
     private void processProbeProviderClass(Class cls) {
-        if (logger.isLoggable(Level.FINEST))
-            printd("processProbeProviderClass for " + cls);
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("processProbeProviderClass for " + cls);
         try {
 
             probeProviderFactory.getProbeProvider(cls);
 
         } catch (InstantiationException ex) {
-            Logger.getLogger(MonitoringBootstrap.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "unableToLoadProbeProvider", ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(MonitoringBootstrap.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "unableToLoadProbeProvider", ex);
         }
     }
 
@@ -373,11 +368,11 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }*/
 
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-        if (logger.isLoggable(Level.FINEST))
-            printd(" spmd = " + spmd);
+        if (logger.isLoggable(Level.FINE))
+            logger.fine(" spmd = " + spmd);
         StatsProviderRegistry spr = (spmd == null) ? null : spmd.getStatsProviderRegistry();
-        if (logger.isLoggable(Level.FINEST))
-            printd("spr = " + spr);
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("spr = " + spr);
         for (PropertyChangeEvent event : propertyChangeEvents) {
             // let's get out of here ASAP if it is not our stuff!!
             if(event == null)
@@ -396,10 +391,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             if (event.getSource() instanceof ModuleMonitoringLevels) {
                 String newEnabled = newVal.toString().toUpperCase();
                 String oldEnabled = (oldVal == null) ? "OFF" : oldVal.toString().toUpperCase();
-                if (logger.isLoggable(Level.FINEST))
-                    printd(localStrings.getLocalString("levelChangeEventReceived",
-                                "Level change event received, {0} New Level = {1}, Old Level = {2}",
-                                propName, newEnabled, oldEnabled));
+                if (logger.isLoggable(Level.FINE))
+                    logger.log(Level.FINE, "levelChangeEventReceived",
+                                new Object[]{propName, newEnabled, oldEnabled});
                 if ((!newEnabled.equals(oldEnabled)) && (spr != null)) {
                     handleLevelChange(propName, newEnabled);
                 }
@@ -409,10 +403,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
                 String newEnabled = newVal.toString().toUpperCase();
                 String oldEnabled = (oldVal == null) ? "OFF" : oldVal.toString().toUpperCase();
-                if (logger.isLoggable(Level.FINEST))
-                    printd(localStrings.getLocalString("levelChangeEventReceived",
-                                "Level change event received, {0} New Level = {1}, Old Level = {2}",
-                                propName, newEnabled, oldEnabled));
+                if (logger.isLoggable(Level.FINE))
+                    logger.log(Level.FINE, "levelChangeEventReceived",
+                                new Object[]{propName, newEnabled, oldEnabled});
                 if ((!newEnabled.equals(oldEnabled)) && (spr != null)) {
                     handleLevelChange(cm.getName(), newEnabled);
                 }
@@ -423,10 +416,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 // so we convert to boolean and then compare...
                 boolean newEnabled = Boolean.parseBoolean(newVal.toString());
                 boolean oldEnabled = (oldVal == null) ? !newEnabled : Boolean.parseBoolean(oldVal.toString());
-                if (logger.isLoggable(Level.FINEST))
-                    printd(localStrings.getLocalString("levelChangeEventReceived",
-                                "Level change event received, {0} New Level = {1}, Old Level = {2}",
-                                propName, newEnabled, oldEnabled));
+                if (logger.isLoggable(Level.FINE))
+                    logger.log(Level.FINE, "levelChangeEventReceived",
+                                new Object[]{propName, newEnabled, oldEnabled});
 
                 if(newEnabled != oldEnabled) {
                     handleServiceChange(spr, propName, newEnabled);
@@ -438,8 +430,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
     }
 
     private void handleLevelChange(String propName, String enabledStr) {
-        if (logger.isLoggable(Level.FINEST))
-            printd("In handleLevelChange(), spmd = " + spmd + "  Enabled="+enabledStr);
+        if (logger.isLoggable(Level.FINE))
+            logger.fine("In handleLevelChange(), spmd = " + spmd + "  Enabled="+enabledStr);
         if(!ok(propName))
             return;
 
@@ -448,12 +440,11 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
         if (parseLevelsBoolean(enabledStr)) {
             logger.log(Level.INFO,
-                    localStrings.getLocalString("enableStatsMonitoring",
-                            "Enabling the monitoring for all the stats with level = {0}", enabledStr));
+                        "enableStatsMonitoring", new Object[] {enabledStr});
             spmd.enableStatsProviders(propName);
         } else {
-            localStrings.getLocalString("disableStatsMonitoring",
-                    "Disabling the monitoring for all the stats");
+            logger.log(Level.INFO,
+                        "disableStatsMonitoring");
             spmd.disableStatsProviders(propName);
         }
     }
@@ -467,18 +458,15 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                 return;
 
             if(enabled) {
-                logger.log(Level.INFO,
-                        localStrings.getLocalString("mbeanEnabled",
-                            "mbean-enabled flag is turned on. Enabling all the MBeans"));
+                logger.log(Level.INFO,"mbeanEnabled");
                 spmd.registerAllGmbal();
             } else {
-                logger.log(Level.INFO,
-                        localStrings.getLocalString("mbeanDisabled",
-                            "mbean-enabled flag is turned off. Disabling all the MBeans"));
+                logger.log(Level.INFO,"mbeanDisabled");
                 spmd.unregisterAllGmbal();
             }
         }
         else if(propName.equals("dtrace-enabled")) {
+            logger.log(Level.INFO,"dtraceEnabled");
             probeProviderFactory.dtraceEnabledChanged(enabled);
         }
         else if(propName.equals("monitoring-enabled")) {
@@ -486,18 +474,14 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             probeProviderFactory.monitoringEnabledChanged(enabled);
 
             if(enabled) {
-                logger.log(Level.INFO,
-                        localStrings.getLocalString("monitoringEnabled",
-                            "monitoring-enabled flag is turned on. Enabling all the Probes and Stats"));
+                logger.log(Level.INFO,"monitoringEnabled");
                 // attach btrace agent dynamically
                 FlashlightProbeClientMediator.attachAgent();
                 enableMonitoringForProbeProviders(true);
                 //Lets do the catch up for all the statsProviders (we might have ignored the module level changes earlier) s
                 spmd.updateAllStatsProviders();
             } else { // if disabled
-                logger.log(Level.INFO,
-                        localStrings.getLocalString("monitoringDisabled",
-                            "monitoring-enabled flag is turned off. Disabling all the Stats"));
+                logger.log(Level.INFO,"monitoringDisabled");
                 disableMonitoringForProbeProviders();
                 spmd.disableAllStatsProviders();
             }
@@ -535,9 +519,4 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
 
         return true;
     }
-
-    private void printd(String pstring) {
-        logger.log(Level.FINEST, pstring);
-    }
-
 }
