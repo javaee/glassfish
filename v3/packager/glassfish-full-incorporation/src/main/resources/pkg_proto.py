@@ -51,7 +51,6 @@ pkg = {
 	    	        "pkg:/glassfish-web-incorporation@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-common-full@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-ejb@" + conf.glassfish_version : {"type" : "incorporate" },
-			"pkg:/glassfish-codegen@" + conf.corba_version : {"type" : "incorporate" },
 			"pkg:/glassfish-corba@"  + conf.corba_version : {"type" : "incorporate" },
 			"pkg:/glassfish-cmp@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/metro@" + conf.metro_version : {"type" : "incorporate" },

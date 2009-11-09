@@ -152,6 +152,12 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-javahelp</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-upgrade</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
@@ -200,7 +206,7 @@
        </dependency>
        <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
+            <artifactId>glassfish-corba-base</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
        </dependency>

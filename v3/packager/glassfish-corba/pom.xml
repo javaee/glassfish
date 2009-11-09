@@ -70,8 +70,18 @@
     <dependencies>
         <!--
           modules to be included in this bundle
-        -->       
-        
+	  -->   
+
+        <dependency>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-codegen</artifactId>
+            <version>${glassfish-corba.version}</version>
+        </dependency>
+	<dependency>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-asm</artifactId>
+            <version>${glassfish-corba.version}</version>
+        </dependency> 
        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-newtimer</artifactId>
@@ -93,7 +103,7 @@
 
        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-codegen</artifactId>
+           <artifactId>glassfish-jpa</artifactId>
            <version>${project.version}</version>
            <type>zip</type>
 	</dependency>

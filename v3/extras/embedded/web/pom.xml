@@ -178,7 +178,7 @@
        </dependency>
        <dependency>
             <groupId>org.glassfish.packager</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
+            <artifactId>glassfish-corba-base</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>

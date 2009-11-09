@@ -50,8 +50,7 @@ pkg = {
                         "info.classification" : conf.glassfish_info_classification,
                       },
      "depends"       : { 
-                        "pkg:/glassfish-corba-omgapi" : {"type" : "require" },
-                        "pkg:/glassfish-codegen" : {"type" : "require" },
+                        "pkg:/glassfish-corba-base" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {
