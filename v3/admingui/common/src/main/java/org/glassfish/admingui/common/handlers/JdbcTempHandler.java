@@ -196,12 +196,16 @@ public class JdbcTempHandler {
         Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
 
         String resType = (String) extra.get("ResType");
-        String dbVendor = (String) extra.get("DBVendor");
+        String dbVendorBox = (String) extra.get("DBVendorBox");
+        String dbVendorField = (String) extra.get("DBVendorField");
+
+        String dbVendor = (GuiUtil.isEmpty(dbVendorField))? dbVendorBox : dbVendorField;
 
         String previousResType = (String) extra.get("PreviousResType");
         String previousDB = (String) extra.get("PreviousDB");
 
-        if (resType.equals(previousResType) && dbVendor.equals(previousDB) && !GuiUtil.isEmpty((String) extra.get("DatasourceClassname"))) {
+        if (resType.equals(previousResType) && dbVendor.equals(previousDB) ){
+                //&& !GuiUtil.isEmpty((String) extra.get("DatasourceClassname"))) {
             //User didn't change type and DB, keep the datasource classname as the same.
         } else {
 
@@ -248,7 +252,7 @@ public class JdbcTempHandler {
             } else {
                 // Allow user to provide DataSource ClassName when resourceType is not of type Driver
                 // or is not selected.
-                if (!GuiUtil.isEmpty(resType) && resType.equals(DRIVER)) {
+                if (DRIVER.equals(resType)){
                     extra.put("DatasourceClassnameField", "");
                     extra.put("dsClassname", Boolean.FALSE);
                 } else {
@@ -289,7 +293,7 @@ public class JdbcTempHandler {
             attrs.put("DatasourceClassname", classname);
             attrs.put("DriverClassname", driver);
         } else {
-            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("Classname Cannot be Empty"));
+            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("org.glassfish.jdbc.admingui.Strings", "msg.Error.classNameCannotBeEmpty"));
             return;
         }
 
