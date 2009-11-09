@@ -106,7 +106,7 @@
        </dependency> 
        <dependency>
            <groupId>org.glassfish.admingui</groupId>
-	   <artifactId>console-jmail-plugin-help</artifactId>
+	   <artifactId>console-common-full-plugin-help</artifactId>
        </dependency> 
    	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

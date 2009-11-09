@@ -158,7 +158,7 @@
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
-        <v3-docs.version>3.0-b05</v3-docs.version>
+        <v3-docs.version>3.0-b06</v3-docs.version>
         <l10n.version>3.0-b70</l10n.version>
     </properties>
 
@@ -985,7 +985,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.admingui</groupId>
-                <artifactId>console-jmail-plugin-help</artifactId>
+                <artifactId>console-common-full-plugin-help</artifactId>
                 <version>${v3-docs.version}</version>
             </dependency>
             <dependency>
