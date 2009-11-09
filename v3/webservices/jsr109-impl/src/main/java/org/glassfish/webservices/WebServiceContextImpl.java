@@ -39,6 +39,7 @@ package org.glassfish.webservices;
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.api.server.WSWebServiceContext;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.web.WebModule;
 import org.glassfish.api.invocation.InvocationManager;
 
 import javax.xml.ws.EndpointReference;
@@ -48,6 +49,7 @@ import java.util.Set;
 import java.util.Iterator;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.ejb.api.EJBInvocation;
+import org.glassfish.internal.api.Globals;
 
 /**
  * <p><b>NOT THREAD SAFE: mutable instance variables</b>
@@ -63,7 +65,15 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
     private final String JAXWS_SERVLET = "org.glassfish.webservices.JAXWSServlet";
 
     private String servletName;
-    
+
+    private SecurityService  secServ;
+
+    public WebServiceContextImpl() {
+        if (Globals.getDefaultHabitat() != null) {
+            secServ = Globals.get(org.glassfish.webservices.SecurityService.class);
+        }
+    }
+
     public void setContextDelegate(WSWebServiceContext wsc) {
         this.jaxwsContextDelegate = wsc;
     }
@@ -91,7 +101,16 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
             return p;
         }
         // This is a servlet endpoint
-        return this.jaxwsContextDelegate.getUserPrincipal();
+        p = this.jaxwsContextDelegate.getUserPrincipal();
+        //handling for WebService with WS-Security
+        if (p == null && secServ != null) {
+            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+            InvocationManager mgr = wscImpl.getInvocationManager();
+            boolean isWeb = ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION.
+                    equals(mgr.getCurrentInvocation().getInvocationType()) ? true : false;
+            p = secServ.getUserPrincipal(isWeb);
+        }
+        return p;
     }
 
     public boolean isUserInRole(String role) {
@@ -103,7 +122,17 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
            return res;
         }
         // This is a servlet endpoint
-        return this.jaxwsContextDelegate.isUserInRole(role);
+        boolean ret = this.jaxwsContextDelegate.isUserInRole(role);
+        //handling for webservice with WS-Security
+        if (!ret && secServ != null) {
+            if (mgr != null && mgr.getCurrentInvocation() != null) {
+                if (mgr.getCurrentInvocation().getContainer() instanceof WebModule) {
+                    Principal p = getUserPrincipal();
+                    ret = secServ.isUserInRole((WebModule)mgr.getCurrentInvocation().getContainer(), p, servletName, role);
+                }
+            }
+        }
+        return ret;
     }
     
     // TODO BM need to fix this after checking with JAXWS spec

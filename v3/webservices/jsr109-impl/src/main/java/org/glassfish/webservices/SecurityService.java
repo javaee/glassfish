@@ -39,11 +39,13 @@ package org.glassfish.webservices;
 import com.sun.enterprise.deployment.ServiceReferenceDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.runtime.common.MessageSecurityBindingDescriptor;
+import com.sun.enterprise.web.WebModule;
 import com.sun.xml.rpc.spi.runtime.SystemHandlerDelegate;
 import javax.servlet.http.HttpServletRequest;
 import com.sun.xml.rpc.spi.runtime.SOAPMessageContext;
 import com.sun.xml.rpc.spi.runtime.StreamingHandler;
 import com.sun.xml.ws.assembler.ClientPipelineHook;
+import java.security.Principal;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.handler.HandlerInfo;
 import org.jvnet.hk2.annotations.Contract;
@@ -63,5 +65,7 @@ public interface SecurityService {
     public void secureResponse(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context);
     public HandlerInfo getMessageSecurityHandler(MessageSecurityBindingDescriptor binding, QName serviceName);
     public ClientPipelineHook getClientPipelineHook(ServiceReferenceDescriptor ref);
+    public Principal getUserPrincipal(boolean isWeb);
+    public boolean isUserInRole(WebModule webModule, Principal principal, String servletName, String role);
 }
 
