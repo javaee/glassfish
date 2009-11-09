@@ -75,8 +75,10 @@ public class FlashlightProbe
         this.hidden = hidden;
         
         if (self) {
-            if (isMethodStatic())
-                throw new RuntimeException("Monitoring: Cannot define \"self\" on a static method - " + probeDesc);
+            if (isMethodStatic()) {
+                String errStr = localStrings.getLocalString("cannotDefineSelfOnStatic", "Cannot define \"self\" on a static method - ", probeDesc);
+                throw new RuntimeException(errStr);
+            }
             // Fill in the first slot of ParamNames with @Self and paramTypes with the providerClass type
             this.probeParamNames = new String[probeParamNames.length+1];
             this.paramTypes = new Class[paramTypes.length+1];
@@ -108,15 +110,15 @@ public class FlashlightProbe
     	boolean isFirst = (invokers.isEmpty() && firstTransform);
 
         if(invokers.putIfAbsent(invoker.getId(), invoker) != null) {
-            if (logger.isLoggable(Level.FINEST))
-                printd("Adding an invoker that already exists: " + invoker.getId() +  "  &&&&&&&&&&");
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("Adding an invoker that already exists: " + invoker.getId() +  "  &&&&&&&&&&");
         }
         else {
-            if (logger.isLoggable(Level.FINEST))
-                printd("Adding an Invoker that does not exist: " + invoker.getId() +   " $$$$$$$$$$$$$");
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("Adding an Invoker that does not exist: " + invoker.getId() +   " $$$$$$$$$$$$$");
         }
-        if (logger.isLoggable(Level.FINEST)) {
-            printd("Total invokers = " + invokers.size());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Total invokers = " + invokers.size());
         }
         listenerEnabled.set(true);
         firstTransform = false;
@@ -129,15 +131,15 @@ public class FlashlightProbe
         ProbeClientInvoker pci = invokers.remove(invoker.getId());
 
         if(pci != null) {
-            if (logger.isLoggable(Level.FINEST))
-                printd("Removing an invoker that already exists: " + pci.getId() +  "  ##########");
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("Removing an invoker that already exists: " + pci.getId() +  "  ##########");
         }
         else {
-            if (logger.isLoggable(Level.FINEST))
-                printd("Failed to remove an invoker that does not exist: " + invoker.getId() +  "  %%%%%%%%%");
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("Failed to remove an invoker that does not exist: " + invoker.getId() +  "  %%%%%%%%%");
         }
-        if (logger.isLoggable(Level.FINEST)) {
-            printd("Total invokers = " + invokers.size());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Total invokers = " + invokers.size());
         }
         
         listenerEnabled.set(!invokers.isEmpty());
@@ -258,15 +260,6 @@ public class FlashlightProbe
         invokerList = invList;
     }
 
-    private void printd(String pstring) {
-        logger.log(Level.FINEST, pstring);
-    }
-
-    private void printStackTrace() {
-        for(StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-            System.out.println("- " + stackTraceElement);
-        }
-    }
     public static String SELF = "@SELF";
     private boolean ddebug = false;
     private int id;

@@ -35,8 +35,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 public class DTraceClientInvoker implements ProbeClientInvoker{
     private static final Logger logger =
         LogDomains.getLogger(DTraceClientInvoker.class, LogDomains.MONITORING_LOGGER);
-    public final static LocalStringManagerImpl localStrings =
-                            new LocalStringManagerImpl(DTraceClientInvoker.class);
 
     public DTraceClientInvoker(int ID, FlashlightProbe p) {
         id          = ID;

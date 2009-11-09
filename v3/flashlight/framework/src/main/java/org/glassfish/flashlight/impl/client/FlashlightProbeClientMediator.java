@@ -305,8 +305,7 @@ public class FlashlightProbeClientMediator
         try {
             int pid = ProcessUtils.getPid();
             if (pid == -1) {
-                logger.log(Level.WARNING, localStrings.getLocalString("invalid.pid", 
-                    "invalid pid, start btrace-agent using asadmin enable-monitoring with --pid option, you may get pid using jps command"));
+                logger.log(Level.WARNING, "invalid.pid");
                 return false;
             }
             VirtualMachine vm = VirtualMachine.attach(String.valueOf(pid));
@@ -318,18 +317,15 @@ public class FlashlightProbeClientMediator
                     setAgentInitialized(false);
                     vm.loadAgent(agentJar.getPath(), "unsafe=true,noServer=true");
                 } else {
-                    logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar",
-                        "btrace-agent.jar does not exist under {0}", dir));
+                    logger.log(Level.WARNING, "missing.btrace-agent.jar", new Object[] {dir});
                     return false;
                 }
             } else {
-                logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar.dir",
-                    "btrace-agent.jar directory {0} does not exist", dir));
+                logger.log(Level.WARNING, "missing.btrace-agent.jar.dir", new Object[] {dir});
                 return false;
             }
         } catch (Exception e) {
-            logger.log(Level.WARNING, localStrings.getLocalString("attach.agent.exception",
-                "Encountered exception during agent attach {0}", e.getMessage()));
+            logger.log(Level.WARNING, "attach.agent.exception", e);
         }
         return (isAgentAttached());
     }

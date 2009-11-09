@@ -30,8 +30,6 @@ public class ProviderImplGenerator {
 
     private static final Logger logger =
         LogDomains.getLogger(ProviderImplGenerator.class, LogDomains.MONITORING_LOGGER);
-    public final static LocalStringManagerImpl localStrings =
-                            new LocalStringManagerImpl(ProviderImplGenerator.class);
 
     public String defineClass(FlashlightProbeProvider provider, Class providerClazz) {
 
@@ -84,10 +82,10 @@ public class ProviderImplGenerator {
 
 
         Type classType = Type.getType(providerClazz);
-        if (logger.isLoggable(Level.FINEST)) {
-            printd("** classType: " + classType);
-            printd("** classDesc: " + Type.getDescriptor(providerClazz));
-            printd("Generating for: " + generatedClassName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("** classType: " + classType);
+            logger.fine("** classDesc: " + Type.getDescriptor(providerClazz));
+            logger.fine("Generating for: " + generatedClassName);
         }
 
         generatedClassName = generatedClassName.replace('.', '/');
@@ -157,8 +155,8 @@ public class ProviderImplGenerator {
 
 
         if(Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
-			if (logger.isLoggable(Level.FINEST))
-                printd("Generated ClassDATA " + clsName);
+			if (logger.isLoggable(Level.FINE))
+                logger.fine("Generated ClassDATA " + clsName);
 
             // the path is horribly long.  Let's just write t directly into the
             // lib dir.  It is not for loading as a class but just for us humans
@@ -175,8 +173,8 @@ public class ProviderImplGenerator {
 									File.separator + "lib" + File.separator;
 
 				String fileName = rootPath + clsName + ".class";
-				if (logger.isLoggable(Level.FINEST))
-                    printd("ClassFile: " + fileName);
+				if (logger.isLoggable(Level.FINE))
+                    logger.fine("ClassFile: " + fileName);
 				File file = new File(fileName);
 				file.getParentFile().mkdirs();
 				FileOutputStream fos = new FileOutputStream(file);
@@ -227,9 +225,6 @@ public class ProviderImplGenerator {
         mg.returnValue();
     }
 
-    private void printd(String pstring) {
-        logger.log(Level.FINEST, pstring);
-    }
 }
 /*************
  *

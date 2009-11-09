@@ -45,9 +45,7 @@ public class ProbeProviderStaxParser extends StaxParser{
         }
         if (providers.isEmpty()) {
             // this line snatched from the previous implementation (DOM)
-            String errStr = localStrings.getLocalString("noProviderIdentifiedFromXML",
-                                "No providers identified from the xml");
-            logger.log(Level.SEVERE, errStr);
+            logger.log(Level.SEVERE, "noProviderIdentifiedFromXML");
         }
 
         return providers;
