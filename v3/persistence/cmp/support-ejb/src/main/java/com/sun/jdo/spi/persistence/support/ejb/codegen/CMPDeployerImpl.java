@@ -81,8 +81,8 @@ import org.glassfish.loader.util.ASClassLoaderUtil;
 @Service
 public class CMPDeployerImpl implements CMPDeployer {
 
-    @Inject
-    private JavaConfig javaConfig;
+    @Inject(optional=true)
+    private JavaConfig javaConfig=null;
 
     @Inject
     private Habitat habitat;
@@ -308,7 +308,9 @@ public class CMPDeployerImpl implements CMPDeployer {
         // class path for javac
         String classPath = ctx.getTransientAppMetaData(CMPDeployer.MODULE_CLASSPATH, String.class); 
         List<String> options    = new ArrayList<String>();
-        options.addAll(javaConfig.getJavacOptionsAsList());
+        if (javaConfig!=null) {
+            options.addAll(javaConfig.getJavacOptionsAsList());
+        }
 
         StringBuffer msgBuffer = new StringBuffer();
         boolean compilationResult = false;

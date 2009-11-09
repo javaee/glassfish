@@ -54,5 +54,6 @@
         <module>web-api</module>
         <module>web-war</module>
         <module>servlet</module>
+        <module>autodelete</module>
     </modules>
 </project>
