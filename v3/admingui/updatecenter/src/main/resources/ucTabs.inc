@@ -35,6 +35,8 @@
 -->
 <!-- updateCenter/ucTabs.inc -->
 
+"<script type="text/javascript">admingui.help.pluginId = 'common';</script>
+
 <sun:tabSet id="ucSet" immediate="$boolean{true}" selected="#{sessionScope.ucTabs}" width="100%">
         <sun:tab id="addOn" immediate="$boolean{true}" text="$resource{i18nUC.updateCenter.AddOnTab}" toolTip="$resource{i18nUC.updateCenter.AddOnTab} Tab">
             <!command
@@ -60,6 +62,4 @@
                     gf.redirect(page="#{request.contextPath}/updateCenter/ucConfig.jsf");
                 />       
         </sun:tab>
-        
-
 </sun:tabSet>
