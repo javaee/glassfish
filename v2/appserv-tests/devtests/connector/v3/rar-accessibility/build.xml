@@ -18,49 +18,63 @@
     &testcommon;
     &connectorcommon;
 
+    <property name="cclp" value="class-loading-policy"/>
+    <property name="connector-service" value="server.connector-service"/>
     <property name="connector-service-property" value="server.connector-service.property"/>
-    <property name="global-access-property" value="access-all-rars"/>
-    <property name="custom-access-property" value="required-rars-for-"/>
+    <property name="global-access-property" value="global"/>
+    <property name="derived-access-property" value="derived"/>
 
     <target  name="all" depends="init-common">
         <antcall target="exec">
             <param name="expected_count" value="1"/>
         </antcall>
 
-<!--
-             commented till a fix for connector-service element in domain.xml 
-             is available by default and CTS fixes issues of resource-ref
-
-        
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${connector-service-property}.${custom-access-property}${appname}App=blackbox-notx"/>
+                   value="${connector-service-property}.${appname}App=blackbox-notx"/>
         </antcall>
         <antcall target="exec">
             <param name="expected_count" value="2"/>
         </antcall>
-        
+     
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${connector-service-property}.${global-access-property}=true"/>
+                   value="${connector-service}.${cclp}=${global-access-property}"/>
         </antcall>
-
         <antcall target="exec">
             <param name="expected_count" value="3"/>
         </antcall>
+
+
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${connector-service-property}.${global-access-property}=''"/>
+                   value="${connector-service}.${cclp}=${derived-access-property}"/>
         </antcall>
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="${connector-service-property}.${custom-access-property}${appname}App=''"/>
+                   value="${connector-service-property}.${appname}App='*'"/>
         </antcall>
--->
+        <antcall target="exec">
+            <param name="expected_count" value="3"/>
+        </antcall>
+
+
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${connector-service}.${cclp}=''"/>
+        </antcall>
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${connector-service-property}.${appname}App=''"/>
+        </antcall>
+
     </target>
 
         <target name="exec" depends="build,deploy,run,undeploy"/>
@@ -159,7 +173,9 @@
             <param name="con-def-name" value="javax.sql.DataSource"/>
         </antcall>
 
-        <antcall target="deploy-common"/>
+        <antcall target="deploy-common">
+            <param  name="${extra-params}" value="${custom-access-property}"/>
+        </antcall>
     </target>
 
     <target name="run" depends="init-common">
