@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.glassfish.tests.embedded</groupId>
+        <artifactId>ejb</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.tests.embedded.ejb</groupId>
+    <artifactId>ejb-main-test</artifactId>
+    <name>EJB Embedded API In a standalone program</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1.1</version>
+          <executions>
+              <execution>
+                  <phase>test</phase>
+                  <goals>
+                      <goal>exec</goal>
+                  </goals>
+              </execution>
+          </executions>
+          <configuration>
+              <executable>java</executable>
+              <arguments>
+                  <argument>-classpath</argument>
+                  <classpath/>
+                  <argument>org.glassfish.tests.embedded.ejb.main.EmbeddedMainTest</argument>
+              </arguments>
+              <classpathScope>test</classpathScope>
+              <includeProjectDependencies>true</includeProjectDependencies>
+          </configuration>
+      </plugin>
+    </plugins>
+  </build>
+          <dependencies>
+            <dependency>
+                <groupId>org.glassfish.tests.embedded.ejb</groupId>
+                <artifactId>ejb-api-test</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.tests.embedded.ejb</groupId>
+                <artifactId>ejb-api-test</artifactId>
+                <version>${project.version}</version>
+                <classifier>tests</classifier>
+                <scope>test</scope>
+            </dependency>              
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.3.1</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.extras</groupId>
+                <artifactId>glassfish-embedded-web</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+          </dependencies> 
+</project>
