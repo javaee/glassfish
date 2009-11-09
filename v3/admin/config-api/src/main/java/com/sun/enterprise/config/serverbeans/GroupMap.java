@@ -54,7 +54,7 @@ public interface GroupMap extends ConfigBeanProxy, Injectable {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(key=true)
     @NotNull
     public String getEisGroup();
 
