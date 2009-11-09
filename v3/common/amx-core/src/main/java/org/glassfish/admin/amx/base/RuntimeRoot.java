@@ -116,6 +116,18 @@ public interface RuntimeRoot extends AMXProxy, Utility, Singleton
             @Param(name = "moduleName") String moduleName);
 
     /**
+     * Return the relative URI (within host:port) for launching
+     * an app client using Java Web Start.
+     * @param applicationName the application name
+     * @param clientModuleURI the relative URI of the client module; null if a stand-alone client
+     * @return the relative URI for launching the app client using Java Web Start
+     */
+    @ManagedOperation(impact = MBeanOperationInfo.INFO)
+    public String getRelativeJWSURI(
+            @Param(name = "applicationName") String applicationName,
+            @Param(name = "clientModuleURI") String clientModuleURI);
+
+    /**
     Execute a REST command.  Do not include a leading "/".
      */
     @ManagedOperation(impact = MBeanOperationInfo.ACTION)

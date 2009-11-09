@@ -46,7 +46,9 @@ import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.logging.LogDomains;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.logging.Logger;
@@ -177,6 +179,14 @@ public class AppClientDeployer
 
     @Inject(name="server-config") // for now
     Config config;
+
+    /**
+     * Maps the app name to the user-friendly context root for that app.
+     */
+    private final Map<String,String> appAndClientNameToUserFriendlyContextRoot =
+            new HashMap<String,String>();
+
+
 
     /** the class loader which knows about the org.glassfish.appclient.gf-client-module */
     private ClassLoader gfClientModuleClassLoader;
@@ -310,5 +320,43 @@ public class AppClientDeployer
     private static String generatedEARFacadeName(final String earName) {
         return earName + "Client.jar";
     }
+
+    public void recordContextRoot(final String appName,
+            final String clientURIWithinEAR,
+            final String userFriendlyContextRoot) {
+        appAndClientNameToUserFriendlyContextRoot.put(
+                keyToAppAndClientNameMap(appName, clientURIWithinEAR),
+                userFriendlyContextRoot);
+    }
+
+    public void removeContextRoot(final String appName,
+            final String clientURIWithinEAR) {
+            appAndClientNameToUserFriendlyContextRoot.remove(
+                keyToAppAndClientNameMap(appName, clientURIWithinEAR));
+    }
+    
+    /**
+     * Returns the user-friendly context root for the specified app client.
+     * <p>
+     * Primarily used from the admin console for retrieving the context path
+     * for launching the specified app client.
+     * @param appName
+     * @param clientModuleURI
+     * @return
+     */
+    public String userFriendlyContextRoot(final String appName,
+            final String clientModuleURI) {
+        return appAndClientNameToUserFriendlyContextRoot.get(
+                keyToAppAndClientNameMap(appName, clientModuleURI));
+    }
+
+
+
+    private String keyToAppAndClientNameMap(final String appName,
+            final String moduleURIText) {
+        return (moduleURIText == null ? appName : appName + "/" + moduleURIText);
+    }
+
+
 
 }

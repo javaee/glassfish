@@ -114,7 +114,7 @@ public class ACCPersistenceArchivist extends PersistenceArchivist {
 
     private URI makeFileURI(final URI uri) throws URISyntaxException {
         if (uri.getScheme() != null && uri.getScheme().equals("jar")) {
-            return new URI("file", uri.getPath(), null);
+            return new URI("file", uri.getSchemeSpecificPart(), null);
         }
         return uri;
     }

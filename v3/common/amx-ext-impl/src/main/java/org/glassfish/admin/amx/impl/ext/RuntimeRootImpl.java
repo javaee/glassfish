@@ -35,7 +35,6 @@
  */
 package org.glassfish.admin.amx.impl.ext;
 
-import java.util.Map;
 import java.util.List;
 import javax.management.ObjectName;
 
@@ -96,6 +95,7 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.appclient.server.core.AppClientDeployer;
 
 /**
 AMX RealmsMgr implementation.
@@ -108,6 +108,8 @@ public final class RuntimeRootImpl extends AMXImplBase
 
     private final Habitat mHabitat;
 
+    private final AppClientDeployer appClientDeployer;
+
     public RuntimeRootImpl(final ObjectName parent)
     {
         super(parent, RuntimeRoot.class);
@@ -115,6 +117,8 @@ public final class RuntimeRootImpl extends AMXImplBase
         mHabitat = InjectedValues.getInstance().getHabitat();
 
         appRegistry = mHabitat.getComponent(ApplicationRegistry.class);
+
+        appClientDeployer = mHabitat.getComponent(AppClientDeployer.class);
 
     }
 
@@ -280,6 +284,21 @@ public final class RuntimeRootImpl extends AMXImplBase
         final String host = "localhost";
 
         return scheme + "://" + host + ":" + getRESTPort() + "/" + get_asadmin() + "/";
+    }
+
+    /**
+     * Returns a partial URI (excludes the scheme, host, and port) for launching
+     * an app client using Java Web Start.
+     *
+     * @param applicationName name of the application as recorded internally
+     * @param clientModuleURI relative URI within the EAR to the app client; null for a stand-alone app client
+     * @return
+     */
+    public String getRelativeJWSURI(
+        final String applicationName,
+        final String clientModuleURI)
+    {
+        return appClientDeployer.userFriendlyContextRoot(applicationName, clientModuleURI);
     }
 
     public String executeREST(final String cmd)

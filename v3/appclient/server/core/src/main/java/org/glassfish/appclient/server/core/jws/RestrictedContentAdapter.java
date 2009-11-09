@@ -140,7 +140,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         final StaticContent existingContent = content.get(relativeURIString);
         if (existingContent != null) {
             if ( ! existingContent.equals(newContent)) {
-                logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.staticContentCollision",
+                logger.log(Level.FINE, "enterprise.deployment.appclient.jws.staticContentCollision",
                         new Object[] {relativeURIString, newContent.toString()});
             }
             return;

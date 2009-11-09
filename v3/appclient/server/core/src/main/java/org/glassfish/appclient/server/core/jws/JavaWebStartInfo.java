@@ -352,7 +352,10 @@ public class JavaWebStartInfo implements ConfigListener {
             c.stop();
         }
 
-        jwsAdapterManager.removeContentForAppClient(acServerApp.deployedAppName(), acServerApp);
+        jwsAdapterManager.removeContentForAppClient(
+                acServerApp.deployedAppName(),
+                (acDesc.isStandalone() ? null : acDesc.getModuleName()),
+                acServerApp);
         logger.log(Level.INFO, "enterprise.deployment.appclient.jws.stopped",
                 acServerApp.moduleExpression());
     }
@@ -420,7 +423,9 @@ public class JavaWebStartInfo implements ConfigListener {
         Set<Content> result = new HashSet<Content>(staticContent.values());
         result.addAll(dynamicContent.values());
 
-        jwsAdapterManager.addContentForAppClient(acServerApp.deployedAppName(),
+        jwsAdapterManager.addContentForAppClient(
+                acServerApp.deployedAppName(),
+                (acDesc.isStandalone() ? null : acDesc.getModuleName()),
                 acServerApp, tHelper.tokens(),
                 staticContent, dynamicContent);
         return result;

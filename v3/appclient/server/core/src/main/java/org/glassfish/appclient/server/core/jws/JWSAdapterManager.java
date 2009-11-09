@@ -41,6 +41,7 @@ package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileFilter;
@@ -75,6 +76,9 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
+import org.glassfish.internal.data.ModuleInfo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -113,8 +117,7 @@ public class JWSAdapterManager implements PostConstruct {
     @Inject
     private ExtensionFileManager extensionFileManager;
 
-//    @Inject
-//    private Applications apps;
+    @Inject AppClientDeployer appClientDeployer;
 
     private static final String LINE_SEP = System.getProperty("line.separator");
 
@@ -343,6 +346,7 @@ public class JWSAdapterManager implements PostConstruct {
      */
     public synchronized void addContentForAppClient(
             final String appName,
+            final String clientURIWithinEAR,
             final AppClientServerApplication contributor, final Properties tokens,
             final Map<String,StaticContent> staticContent,
             final Map<String,DynamicContent> dynamicContent) throws EndpointRegistrationException, IOException {
@@ -370,7 +374,7 @@ public class JWSAdapterManager implements PostConstruct {
         AppClientHTTPAdapter userFriendlyAppAdapter =
                 addAdapterForUserFriendlyContextRoot(staticContent, dynamicContent,
                 tokens, contributor);
-
+        appClientDeployer.recordContextRoot(appName, clientURIWithinEAR, userFriendlyAppAdapter.contextRoot());
         logger.fine("Registered at context roots " + appAdapter.contextRoot() + "," +
                 userFriendlyAppAdapter.contextRoot());
         
@@ -424,30 +428,17 @@ public class JWSAdapterManager implements PostConstruct {
         return adapter;
     }
 
-//    public String userFriendlyContextRoot(final String appName,
-//            final String uriToAppClientWithinEAR) {
-//
-//    }
-//
-//    public String userFriendlyContextRoot(final String appName) {
-//        final Application app = apps.getModule(Application.class, appName);
-//        if (app == null) {
-//            throw new IllegalArgumentException(appName);
-//        }
-//
-//        final Properties appProps = app.getDeployProperties();
-//
-//    }
     static String userFriendlyContextRoot(final AppClientServerApplication contributor) {
+        return userFriendlyContextRoot(contributor.getDescriptor(), 
+                contributor.dc().getAppProps());
+    }
+
+    private static String userFriendlyContextRoot(
+            final ApplicationClientDescriptor acDesc, final Properties p) {
 
         String ufContextRoot = NamingConventions.defaultUserFriendlyContextRoot(
-                contributor.getDescriptor());
+                acDesc);
 
-        /*
-         * The administrator might have set the context root in
-         * deployment-time properties.
-         */
-        Properties p = contributor.dc().getAppProps();
         /*
          * See if the context root setting has one for this client.  The
          * format of the property setting is:
@@ -459,7 +450,7 @@ public class JWSAdapterManager implements PostConstruct {
          * each nested app client in the EAR.
          */
         String overridingContextRoot = null;
-        if (contributor.getDescriptor().getApplication().isVirtual()) {
+        if (acDesc.getApplication().isVirtual()) {
             /*
              * Stand-alone case.
              */
@@ -469,7 +460,7 @@ public class JWSAdapterManager implements PostConstruct {
              * Nested app clients case.
              */
             final String uriToNestedClient = NamingConventions.uriToNestedClient(
-                    contributor.getDescriptor());
+                    acDesc);
             overridingContextRoot = p.getProperty(
                     JAVA_WEB_START_CONTEXT_ROOT_PROPERTY_NAME + "." + uriToNestedClient);
         }
@@ -535,6 +526,7 @@ public class JWSAdapterManager implements PostConstruct {
     }
 
     public synchronized void removeContentForAppClient(final String appName,
+            final String clientURIWithinEAR,
             final AppClientServerApplication contributor) throws EndpointRegistrationException {
 
         /*
@@ -543,6 +535,8 @@ public class JWSAdapterManager implements PostConstruct {
         removeAdapter(userFriendlyContextRoot(contributor));
 
         removeContributorToAppLevelAdapter(appName, contributor);
+
+        appClientDeployer.removeContextRoot(appName, clientURIWithinEAR);
     }
     
     private synchronized void removeContributorToAppLevelAdapter(
