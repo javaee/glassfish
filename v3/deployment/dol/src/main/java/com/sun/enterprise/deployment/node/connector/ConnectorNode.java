@@ -162,20 +162,25 @@ public class ConnectorNode extends BundleNode<ConnectorDescriptor> {
      * @param element the xml element
      * @param value it's associated value
      */
-    public void setElementValue(XMLElement element, String value) {        
+    public void setElementValue(XMLElement element, String value) {
         getDescriptor();
-        if (descriptor==null) {
-            throw new RuntimeException(
-                "Trying to set values on a null descriptor");
-        } if (ConnectorTagNames.SPEC_VERSION.equals(element.getQName())) {
-	    descriptor.setSpecVersion(value);
+        if (descriptor == null) {
+            throw new RuntimeException("Trying to set values on a null descriptor");
+        }
+        if (ConnectorTagNames.SPEC_VERSION.equals(element.getQName())) {
+            descriptor.setSpecVersion(value);
             specVersion = value;
-        // the version element value is the resourve adapter version
-        // and it's only available from dtd based xml
+            // the version element value is the resourve adapter version
+            // and it's only available from dtd based xml
         } else if (ConnectorTagNames.VERSION.equals(element.getQName())) {
             descriptor.setResourceAdapterVersion(value);
-        } else
-	super.setElementValue(element, value);
+        } else if(TagNames.MODULE_NAME.equals(element.getQName())) {
+            ConnectorDescriptor bundleDesc = getDescriptor();
+            bundleDesc.getModuleDescriptor().setModuleName(value);
+            bundleDesc.setModuleNameSet(true);
+        } else {
+            super.setElementValue(element, value);
+        }
     }
 
     /**

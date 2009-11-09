@@ -168,10 +168,7 @@ public abstract class BundleNode<T extends RootDeploymentDescriptor>
             // in case of application, write application-name
             appendTextChild(bundleNode, ApplicationTagNames.APPLICATION_NAME, application.getAppName());
         } else {
-            // in case of non-connector bundle, write module-name
-            if (! (descriptor instanceof ConnectorDescriptor)) {
-                appendTextChild(bundleNode, TagNames.MODULE_NAME, descriptor.getModuleDescriptor().getModuleName());
-            }
+            appendTextChild(bundleNode, TagNames.MODULE_NAME, descriptor.getModuleDescriptor().getModuleName());
         }
 
         // description, display-name, icons...

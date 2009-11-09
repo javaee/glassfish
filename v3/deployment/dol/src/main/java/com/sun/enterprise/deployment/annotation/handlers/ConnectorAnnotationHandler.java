@@ -142,6 +142,10 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
             desc.setVersion(connector.version());
         }
 
+        if(!desc.isModuleNameSet() && !connector.moduleName().equals("")){
+            desc.getModuleDescriptor().setModuleName(connector.moduleName());
+        }
+
         if (desc.getLicenseDescriptor() == null) {
             // We will be able to detect whether license description is specified in annotation
             // or not, but "license required" can't be detected. Hence taking the annotated values *always*
@@ -228,7 +232,7 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
         //if reauth is false, we can ignore it as default value in dol is also false.
         if(connector.reauthenticationSupport()){
             OutboundResourceAdapter ora = getOutbound(desc);
-            if(ora.isReauthenticationSupportSet()){
+            if(!ora.isReauthenticationSupportSet()){
                 ora.setReauthenticationSupport(connector.reauthenticationSupport());
             }
         }
