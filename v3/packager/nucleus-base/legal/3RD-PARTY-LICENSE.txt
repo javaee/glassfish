@@ -1,6 +1,6 @@
 
 DO NOT TRANSLATE OR LOCALIZE
-
+v3
 ***************************************************************************
 
 %%The following software may be included in this product:
@@ -211,6 +211,31 @@ Use of any of this software is governed by the terms of the license below:
    limitations under the License.
 
 ***************************************************************************
+%%The following software may be included in this product:
+Prototype javascript library
+
+Use of any of this software is governed by the terms of the license below:
+
+Copyright (c) 2005 Sam Stephenson
+2 	
+3 	Permission is hereby granted, free of charge, to any person obtaining a copy
+4 	of this software and associated documentation files (the "Software"), to deal
+5 	in the Software without restriction, including without limitation the rights
+6 	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+7 	copies of the Software, and to permit persons to whom the Software is
+8 	furnished to do so, subject to the following conditions:
+9 	
+10 	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+11 	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+12 	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+13 	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+14 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+15 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+16 	SOFTWARE.
+
+
+
+******************************************************************************
 
 %%The following software may be included in this product:
 ASM
@@ -4072,17 +4097,6 @@ limitations under the License.
 
 ***************************************************************************
 
-%%The following software may be included in this product:
-HTML entity document
-
-Use of any of this software is governed by the terms of the license below:
-
-Portions (C) International Organization for Standardization 1986:
-Permission to copy in any form is granted for use with
-conforming SGML systems and applications as defined in
-ISO 8879, provided this notice is included in all copies.
-
-***************************************************************************
 
 %%The following software may be included in this product:
 cometd
