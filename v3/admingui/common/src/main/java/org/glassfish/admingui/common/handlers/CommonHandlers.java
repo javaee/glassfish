@@ -432,6 +432,21 @@ public class CommonHandlers {
 //    }
 
     /**
+     *	<p> This handler allows the "partialRequest" flag to be set.  This
+     *	    was added to work-a-round a bug in JSF where the behavior was
+     *	    inconsistent between FF and other browsers.  Namely it recognized
+     *	    redirects as "partial" requets in other browsers due to the
+     *	    header being preserved across the redirect, but not in FF.</p>
+     */
+    @Handler(id="setPartialRequest",
+	input={
+	    @HandlerInput(name="value", type=Boolean.class, required=true)})
+    public static void setPartialRequest(HandlerContext context) {
+	boolean isPartial = (Boolean) context.getInputValue("value");
+	context.getFacesContext().getPartialViewContext().setPartialRequest(isPartial);
+    }
+
+    /**
      *	<p> This handler is different than JSFT's default navigate handler in
      *	    that it forces the request to NOT be a "partial request".  The
      *	    effect is that no wrapping of the response will be done.  This is
