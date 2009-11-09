@@ -129,6 +129,7 @@
  sun.misc,
  sun.net.www,
  sun.nio.cs,
+ sun.reflect,
  sun.rmi.rmic,
  sun.security.action,
  sun.security.action,
