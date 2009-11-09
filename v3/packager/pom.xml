@@ -68,6 +68,7 @@
         <module>glassfish-grizzly-full</module>
 	<module>glassfish-corba-omgapi</module>
 	<module>glassfish-common-tmp</module>
+	<module>glassfish-javahelp</module>
 	<module>glassfish-upgrade</module>
 	<module>glassfish-registration</module>
 	<module>glassfish-management</module>
