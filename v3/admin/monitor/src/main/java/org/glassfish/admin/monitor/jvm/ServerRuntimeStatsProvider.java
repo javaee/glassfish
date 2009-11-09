@@ -49,7 +49,7 @@ import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
 
 /* server.runtime */
-@AMXMetadata(type="server-runtime-mon", group="monitoring")
+@AMXMetadata(type="server-runtime-mon", group="monitoring", isSingleton=true)
 @ManagedObject
 @Description( "Server Runtime Statistics" )
 public class ServerRuntimeStatsProvider {
