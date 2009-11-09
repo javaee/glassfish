@@ -24,7 +24,10 @@ from the Connection Pools page, click New to create a new connection pool.</p>
 <li><b>In the Name field, type a name for the new connection pool.</b><p>This is a required field.</p></li>
 <li><b>From the Resource Type drop-down list, select a resource type.</b><p>Choices include <tt>javax.sql.XADataSource</tt> (global transactions), <tt>java.sql.ConnectionPoolDataSource</tt> (local transactions, possible performance improvements), <tt>javax.sql.DataSource</tt> (local transactions
 only), and <tt>java.sql.Driver</tt>.</p></li>
+<li><b>Specify a database vendor by performing one of the following actions:</b><ul>
 <li><b>From the Database Vendor drop-down list, select a database vendor.</b></li>
+<li><b>If the database vendor does not appear in the list, type the
+name of the vendor in the Database Vendor text field.</b></li></ul></li>
 <li><b>Click Next.</b><p>The New JDBC Connection Pool (Step 2 of 2) page opens.</p></li>
 <li><b>In the Datasource Classname field, type the name of the vendor-specific class that
 implements the <tt>DataSource</tt>, <tt>ConnectionPoolDataSource</tt>, or <tt>XADataSource</tt> API.</b><p>If you selected one of the datasource resource types, this field is usually

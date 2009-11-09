@@ -34,13 +34,13 @@ log files that are to be kept.</b><p>A negative value indicates that there is no
 The default value is &#8211;1.</p></li>
 <li><b>In the Buffer Size field, type the size, in bytes, of the
 access log buffer.</b><p>A value of less than or equal to 0 disables access log buffering.
-The default value is 4096.</p></li>
-<li><b>In the Access Log Write Interval field, type the number of seconds before
-the log will be written to the disk.</b><p>The access log is written when the buffer is full or when the
+The default value is 32768.</p></li>
+<li><b>In the Write Interval field, type the number of seconds before the log
+will be written to the disk.</b><p>The access log is written when the buffer is full or when the
 interval expires. If the value is less than or equal to 0, then
 the buffer is always written even if it is not full. This means
 that each time the server is accessed, the log message is stored directly
-to the file. The default value is 0.</p></li>
+to the file. The default value is 300.</p></li>
 <li><b>In the Format field, type the string value to specify the following properties
 of the access log:</b>
 <ul><li><p>The information that is to be captured in the access log</p></li>

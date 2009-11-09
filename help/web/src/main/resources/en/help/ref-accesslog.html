@@ -26,9 +26,9 @@ located in the <tt><i>domain-dir</i>/logs/access</tt> directory and are named as
 <dt>Max File Count</dt>
 <dd><p>The maximum number of rotated access log files that are to be kept. A negative value indicates that there is no limit to the file count. The default value is &#8211;1.</p></dd>
 <dt>Buffer Size</dt>
-<dd><p>The size, in bytes, of the access log buffer, or a value less than or equal to 0 for unbuffered access logs. The default value is 4096.</p></dd>
-<dt>Access Log Write Interval</dt>
-<dd><p>The number of seconds before the log will be written to the disk. The access log is written when the buffer is full or when the interval expires. If the value is less than or equal to 0, then the buffer is always written even if it is not full. This means that each time the server is accessed, the log message is stored directly to the file. The default value is 0.</p></dd>
+<dd><p>The size, in bytes, of the access log buffer, or a value less than or equal to 0 for unbuffered access logs. The default value is 32768.</p></dd>
+<dt>Write Interval</dt>
+<dd><p>The number of seconds before the log will be written to the disk. The access log is written when the buffer is full or when the interval expires. If the value is less than or equal to 0, then the buffer is always written even if it is not full. This means that each time the server is accessed, the log message is stored directly to the file. The default value is 300.</p></dd>
 <dt>Format</dt>
 <dd><p>String value that specifies what information is to be captured in the access log and the order in which it is captured. The default value is as follows:</p><pre>%client.name% %auth-user-name% %datetime% %request% %status% %response.length%</pre><p>The following values are available for inclusion in the format string:</p><dl><dt><tt>%attribute.<i>name</i>%</tt></dt>
 <dd><p>Logs the value (by calling its <tt>toString</tt> method) of the request attribute with the given <i>name</i></p></dd>
