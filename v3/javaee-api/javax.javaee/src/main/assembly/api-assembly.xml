@@ -48,7 +48,7 @@
                 <include>org.glassfish:javax.security.jacc</include>
                 <include>org.glassfish:javax.transaction</include>
                 <include>org.glassfish:javax.xml.stream</include>
-                <include>org.glassfish:javax.mail</include>
+                <include>javax.mail:mail</include>
                 <include>org.glassfish:javax.xml.rpc</include>
                 <include>org.glassfish:javax.activation</include>
                 <include>org.glassfish:javax.xml.bind</include>

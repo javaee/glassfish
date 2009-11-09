@@ -42,9 +42,8 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.glassfish</groupId>
-                  <artifactId>javax.mail</artifactId>
-                  <version>${project.version}</version>
+                  <groupId>javax.mail</groupId>
+                  <artifactId>mail</artifactId>
                   <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/tmp</outputDirectory>
