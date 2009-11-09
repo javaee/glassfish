@@ -369,6 +369,8 @@ public class JdbcTempHandler {
     static private final String FLUSH_CONNECTION_POOL_KEY = "FlushConnectionPoolKey";
     static private final String VALIDATION_TABLE_NAMES_KEY = "ValidationTableNamesKey";
     static private final String JDBC_DRIVER_CLASS_NAMES_KEY = "JdbcDriverClassNamesKey";
+    static private final String DATABASE_VENDOR_NAMES_KEY = "DatabaseVendorNamesKey";
+
     static private final String DATA_SOURCE = "javax.sql.DataSource";
     static private final String XADATA_SOURCE = "javax.sql.XADataSource";
     static private final String CCDATA_SOURCE = "javax.sql.ConnectionPoolDataSource";
@@ -388,6 +390,7 @@ public class JdbcTempHandler {
     static private List dbVendorList = new ArrayList();
 
     static {
+        dbVendorList =  new ArrayList((Set)V3AMX.getInstance().getConnectorRuntime().getDatabaseVendorNames().get(DATABASE_VENDOR_NAMES_KEY));
 
         resTypeList.add("");
         resTypeList.add(DATA_SOURCE);
@@ -395,19 +398,19 @@ public class JdbcTempHandler {
         resTypeList.add(CCDATA_SOURCE);
         resTypeList.add(DRIVER);
 
-        dbVendorList.add("");
-        dbVendorList.add(JAVADB);
-        dbVendorList.add(ORACLE);
-        dbVendorList.add(DERBY);
-        dbVendorList.add(SYBASE);
-        dbVendorList.add(DB2);
-        dbVendorList.add(POINTBASE);
-        dbVendorList.add(POSTGRESQL);
-        dbVendorList.add(INFORMIX);
-        dbVendorList.add(CLOUDSCAPE);
-        dbVendorList.add(MSSQL);
-        dbVendorList.add(MYSQL);
-        Collections.sort(dbVendorList);
+//        dbVendorList.add("");
+//        dbVendorList.add(JAVADB);
+//        dbVendorList.add(ORACLE);
+//        dbVendorList.add(DERBY);
+//        dbVendorList.add(SYBASE);
+//        dbVendorList.add(DB2);
+//        dbVendorList.add(POINTBASE);
+//        dbVendorList.add(POSTGRESQL);
+//        dbVendorList.add(INFORMIX);
+//        dbVendorList.add(CLOUDSCAPE);
+//        dbVendorList.add(MSSQL);
+//        dbVendorList.add(MYSQL);
+//        Collections.sort(dbVendorList);
     }
 }
         
