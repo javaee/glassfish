@@ -159,7 +159,8 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
             if (archive.exists("META-INF/application.xml") || 
                 archive.exists("WEB-INF/web.xml") ||
                 archive.exists("META-INF/ejb-jar.xml") || 
-                archive.exists("META-INF/ejb-jar.xml")) {
+                archive.exists("META-INF/application-client.xml") || 
+                archive.exists("META-INF/ra.xml")) {
                 application = applicationFactory.createApplicationFromStandardDD(archive);
                 ApplicationHolder holder = new ApplicationHolder(application);
                 if (context != null) {
