@@ -1969,7 +1969,9 @@ public class StandardContext
 
         if (createRegistration) {
             ServletRegistrationImpl regis = null;
-            if (isProgrammatic || null == wrapper.getServletClassName()) {
+            if (isProgrammatic ||
+                    (null == wrapper.getServletClassName() &&
+                        null == wrapper.getJspFile())) {
                 regis = createDynamicServletRegistrationImpl(
                     (StandardWrapper) wrapper);
             } else {
