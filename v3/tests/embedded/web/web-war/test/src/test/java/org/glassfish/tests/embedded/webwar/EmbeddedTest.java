@@ -142,8 +142,8 @@ public class EmbeddedTest {
                 throw e;
             }
         } catch(Exception e) {
-            // mask exceptions for now
-            // e.printStackTrace();
+            e.printStackTrace();
+            throw e;
         }
         if (appName!=null)
             deployer.undeploy(appName, null);
