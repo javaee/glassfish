@@ -167,7 +167,11 @@ public class ApplicationSignedJARManager {
              */
         }
         final ReadableArchive arch = archiveFactory.openArchive(archiveURI);
-        if ( ! isArchiveSigned(arch)) {
+        final Manifest archiveMF = arch.getManifest();
+        if (archiveMF == null) {
+            return null;
+        }
+        if ( ! isArchiveSigned(archiveMF)) {
             /*
              * The developer did not sign this JARs, so arrange for it to be
              * auto-signed.
@@ -289,7 +293,7 @@ public class ApplicationSignedJARManager {
                 : null;
     }
 
-    private boolean isArchiveSigned(final ReadableArchive arch) throws IOException {
+    private boolean isArchiveSigned(final Manifest archiveMF) throws IOException {
         /*
          * Signature files are *.SF, but looking through all the entries for
          * ones that match *.SF could be expensive if there are many entries.
@@ -297,7 +301,6 @@ public class ApplicationSignedJARManager {
          * see if it contains per-entry attributes and, if so, if the first
          * entry has a x-Digest-y entry-level attribute.
          */
-        final Manifest archiveMF = arch.getManifest();
         final Map<String,Attributes> perEntryAttrs = archiveMF.getEntries();
         boolean jarIsSigned = false;
         for (Map.Entry<String,Attributes> entry : perEntryAttrs.entrySet()) {

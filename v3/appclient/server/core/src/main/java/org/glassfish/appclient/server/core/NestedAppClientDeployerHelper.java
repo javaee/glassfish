@@ -567,7 +567,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 processDependentDirectory(f, baseURI, dependencyURIsProcessed, downloads);
             } else {
                 URI dependencyFileURI = f.toURI();
-                signedJARManager.addJAR(f.toURI());
+                signedJARManager.addJAR(dependencyFileURI);
                 DownloadableArtifacts.FullAndPartURIs fileDependency = new FullAndPartURIs(dependencyFileURI,
                     earDirUserURI(dc()).resolve(earURI.relativize(dependencyFileURI)));
                 downloads.add(fileDependency);
