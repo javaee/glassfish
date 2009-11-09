@@ -934,9 +934,14 @@ public final class EJBSecurityManager
                 probeProvider.policyDestructionEvent(contextId);
                 probeProvider.policyDestructionEndedEvent(ejbName);
                 policy.refresh();
-                PermissionCacheFactory.removePermissionCache(uncheckedMethodPermissionCache);
-                uncheckedMethodPermissionCache = null;
             }
+	    /* 
+	     * all ejbs of module share same policy context, but each has its own
+	     * permission cache, which  must be unregistered from factory to
+	     * avoid leak.
+	     */
+	    PermissionCacheFactory.removePermissionCache(uncheckedMethodPermissionCache);
+            uncheckedMethodPermissionCache = null; 
             roleMapperFactory.removeAppNameForContext(this.contextId);
 
         } catch (PolicyContextException pce) {
