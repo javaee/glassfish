@@ -215,11 +215,7 @@
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api-osgi</artifactId>
        </dependency>   
-       <!-- javahelp jar -->
-       <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-        </dependency>
+       
         <!-- embedded shell fragment -->
         <dependency>
            <groupId>org.glassfish.extras</groupId>

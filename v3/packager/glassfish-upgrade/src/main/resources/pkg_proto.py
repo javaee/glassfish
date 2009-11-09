@@ -49,6 +49,7 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-common" : {"type" : "require" },
+			"pkg:/glassfish-javahelp" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {

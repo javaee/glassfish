@@ -59,6 +59,7 @@ pkg = {
 			"pkg:/glassfish-grizzly-full" : {"type" : "require" },
 			"pkg:/glassfish-scripting" : {"type" : "require" },
 			"pkg:/glassfish-common" : {"type" : "require" },
+			"pkg:/glassfish-javahelp" : {"type" : "require" },
 			"pkg:/glassfish-upgrade" : {"type" : "require" },
 			"pkg:/glassfish-registration" : {"type" : "require" },
 			"pkg:/jersey" : {"type" : "require" },

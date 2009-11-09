@@ -59,6 +59,7 @@ pkg = {
 			"pkg:/glassfish-grizzly-full@" + conf.grizzly_version : {"type" : "incorporate" },
 			"pkg:/glassfish-scripting@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-common@" + conf.glassfish_version : {"type" : "incorporate" },
+			"pkg:/glassfish-javahelp@" + conf.javahelp_version : {"type" : "incorporate" },
 			"pkg:/glassfish-upgrade@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-registration@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/jersey@1.1" : {"type" : "incorporate" },
