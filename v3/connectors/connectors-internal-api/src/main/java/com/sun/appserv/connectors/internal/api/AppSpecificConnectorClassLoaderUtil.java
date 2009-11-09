@@ -218,9 +218,10 @@ public class AppSpecificConnectorClassLoaderUtil {
         ConnectorService connectorService = habitat.getComponent(ConnectorService.class);
         //it is possible that connector-service is not yet defined in domain.xml
         if(connectorService != null){
-            Property property = connectorService.getProperty(ConnectorConstants.ACCESS_ALL_RARS);
-            if (property != null) {
-                flag = Boolean.valueOf(property.getValue());
+            String classLoadingPolicy = connectorService.getClassLoadingPolicy();
+            if (classLoadingPolicy != null &&
+                    classLoadingPolicy.equals(ConnectorConstants.CLASSLOADING_POLICY_GLOBAL_ACCESS)) {
+                flag = true;
             }
         }
         return flag;
@@ -234,8 +235,7 @@ public class AppSpecificConnectorClassLoaderUtil {
 
             if (connectorService != null) {
                 if (appName != null && appName.trim().length() > 0) {
-                    Property property = connectorService.getProperty(
-                            ConnectorConstants.REQUIRED_RARS_FOR_APP_PREFIX + appName.trim());
+                    Property property = connectorService.getProperty(appName.trim());
                     if (property != null) {
                         String requiredRarsString = property.getValue();
                         StringTokenizer tokenizer = new StringTokenizer(requiredRarsString, ",");

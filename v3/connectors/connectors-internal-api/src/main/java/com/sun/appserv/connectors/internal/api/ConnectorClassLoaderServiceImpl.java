@@ -115,7 +115,8 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
 
     private boolean hasGlobalAccessForRARs(String appName) {
         return appName == null || appsSpecificCCLUtil.useGlobalConnectorClassLoader() ||
-                appsSpecificCCLUtil.getRequiredResourceAdapters(appName).contains("*");
+                appsSpecificCCLUtil.getRequiredResourceAdapters(appName).contains
+                        (ConnectorConstants.RAR_VISIBILITY_GLOBAL_ACCESS);
     }
 
     private ClassLoader getCommonClassLoader(){

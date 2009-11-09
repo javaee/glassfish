@@ -81,6 +81,30 @@ public interface ConnectorService extends ConfigBeanProxy, Injectable, PropertyB
     public void setShutdownTimeoutInSeconds(String value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the connector-classloading-policy.<br>
+     * Valid values are <i>derived</i> or <i>global</i><br>
+     * <i>derived</i> indicates that the resource-adapters are provided according the the
+     * references of resource-adapters in application's deployment-descriptors<br>
+     * <i>global</i> indicates that all resource-adapters will be visible to all applications.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @Attribute (defaultValue="derived")
+    public String getClassLoadingPolicy();
+
+    /**
+     * Sets the value of the connector-classloading-policy.<br>
+     * Valid values are <i>derived</i> or <i>global</i><br>
+     * <i>derived</i> indicates that the resource-adapters are provided according the the
+     * references of resource-adapters in application's deployment-descriptors<br>
+     * <i>global</i> indicates that all resource-adapters will be visible to all applications.
+     * @param value allowed object is
+     *              {@link String }
+     */
+    public void setClassLoadingPolicy(String value) throws PropertyVetoException;
+
+    /**
      *	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      *
      *  Properties are used to override the ManagedConnectionFactory  javabean

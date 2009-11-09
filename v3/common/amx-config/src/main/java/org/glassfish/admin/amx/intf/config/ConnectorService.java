@@ -44,4 +44,8 @@ public interface ConnectorService extends ConfigElement, PropertiesAccess
     public String getShutdownTimeoutInSeconds();
 
     public void setShutdownTimeoutInSeconds(final String value);
+
+    public String getClassLoadingPolicy();
+
+    public void setClassLoadingPolicy(final String value);
 }

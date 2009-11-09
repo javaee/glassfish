@@ -419,6 +419,12 @@ public interface ConnectorConstants {
     // service providing outbound support
     public static final String AORA = "ActiveOutboundResourceAdapter";
 
+    public static final String CLASSLOADING_POLICY_DERIVED_ACCESS = "derived";
+    public static final String CLASSLOADING_POLICY_GLOBAL_ACCESS = "global";
+
+    public static final String RAR_VISIBILITY = "rar-visibility";
+    public static final String RAR_VISIBILITY_GLOBAL_ACCESS = "*";
+
     //flag to indicate that all applications have access to all deployed standalone RARs
     public static final String ACCESS_ALL_RARS = "access-all-rars";
     //flag to indiate additional RARs required for an application, apart from the ones referred via app's DD
