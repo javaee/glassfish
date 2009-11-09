@@ -106,11 +106,11 @@
             <artifactId>container-common</artifactId>
             <version>${project.version}</version>
         </dependency> -->
-        <!--<dependency>
+        <dependency>
            <groupId>org.glassfish.web</groupId>
             <artifactId>web-glue</artifactId>
             <version>${project.version}</version>
-        </dependency>-->
+        </dependency>
         <dependency>
            <groupId>com.sun.xml.ws</groupId>
             <artifactId>webservices-osgi</artifactId>

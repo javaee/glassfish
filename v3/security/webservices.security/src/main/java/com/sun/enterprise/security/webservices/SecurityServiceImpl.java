@@ -72,6 +72,7 @@ import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.jauth.ServerAuthContext;
 import com.sun.enterprise.security.jmac.provider.ClientAuthConfig;
 import com.sun.enterprise.security.jmac.provider.ServerAuthConfig;
+import com.sun.enterprise.web.WebModule;
 import com.sun.xml.rpc.spi.runtime.StreamingHandler;
 import java.util.HashMap;
 import java.util.Map;
@@ -315,5 +316,27 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public ClientPipelineHook getClientPipelineHook(ServiceReferenceDescriptor ref) {
         return new ClientPipeCreator(ref);
+    }
+
+      public Principal getUserPrincipal(boolean isWeb) {
+         //This is a servlet endpoint
+        SecurityContext ctx = SecurityContext.getCurrent();
+        if (ctx == null) {
+            return null;
+        }
+        if (ctx.didServerGenerateCredentials()) {
+            if (isWeb) {
+                return null;
+            }
+        }
+        return ctx.getCallerPrincipal();
+    }
+
+    public boolean isUserInRole(WebModule webModule, Principal principal, String servletName, String role) {
+            if (webModule.getRealm() instanceof RealmAdapter) {
+                RealmAdapter realmAdapter = (RealmAdapter)webModule.getRealm();
+                return realmAdapter.hasRole(servletName, principal, role);
+            }
+        return false;
     }
 }

@@ -353,6 +353,14 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
     }
 
+    public boolean hasRole(String servletName, Principal principal, String role) {
+        WebSecurityManager secMgr = getWebSecurityManager(true);
+	if (secMgr == null) {
+	    return false;
+	}
+        return secMgr.hasRoleRefPermission(servletName, role, principal);
+    }
+
     public void logout() {
         setSecurityContext(null);
     }
