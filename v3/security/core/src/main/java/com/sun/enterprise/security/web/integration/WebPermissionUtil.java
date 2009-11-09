@@ -460,11 +460,14 @@ public class WebPermissionUtil {
 
         pc.removeUncheckedPolicy();
         pc.removeExcludedPolicy();
-
+        // iteration done for old providers
         Set<Role> roleSet = wbd.getRoles();
         for (Role r : roleSet) {
             pc.removeRole(r.getName());
         }
+        // 1st call will remove "*" role if present. 2nd will remove all roles (if supported).
+ 	pc.removeRole("*");
+ 	pc.removeRole("*");
     }
     
     public static void processConstraints(WebBundleDescriptor wbd,

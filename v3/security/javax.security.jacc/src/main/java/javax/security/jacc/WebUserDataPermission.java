@@ -263,7 +263,7 @@ implements java.io.Serializable
      * yields the string "/", the permission is constructed with the empty
      * string as its name. The constructor must transform all colon
      * characters occuring in the name to escaped encoding as defined in
-     * RFC 2396.The HTTP method component of the permission's
+     * RFC 2396. The HTTP method component of the permission's
      * actions is as obtained from HttpServletRequest.getMethod().
      * The TransportType component of the permission's
      * actions is determined by calling HttpServletRequest.isSecure().

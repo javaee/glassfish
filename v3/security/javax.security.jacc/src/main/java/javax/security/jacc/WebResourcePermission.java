@@ -164,6 +164,8 @@ implements java.io.Serializable
      * of the deployed web application module, and the same URLPattern must not
      * occur more than once in a URLPatternSpec. A null URLPatternSpec is 
      * translated to the default URLPattern, "/", by the permission constructor.
+     * All colons occuring within the URLPattern elements of the URLPatternSpec
+     * must be represented in escaped encoding as defined in RFC 2396.
      * <P>
      * @param actions identifies the HTTP methods to which the permission
      * pertains. If the value passed through this parameter is null or
@@ -216,7 +218,7 @@ implements java.io.Serializable
      * (HttpServletRequest.getContextPath()). When the substring operation
      * yields the string "/", the permission is constructed with the empty
      * string as its name. The permission's actions field is obtained from 
-     * HttpServletRequest.getMethod().The constructor must transform all colon
+     * HttpServletRequest.getMethod(). The constructor must transform all colon
      * characters occuring in the name to escaped encoding as defined in
      * RFC 2396.
      */

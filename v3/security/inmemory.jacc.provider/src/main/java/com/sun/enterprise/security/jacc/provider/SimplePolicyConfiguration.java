@@ -453,7 +453,14 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
         try {
             assertStateIsOpen();
             if (roleName != null && roleTable != null) {
-                roleTable.remove(new Role(roleName));
+                if (!roleTable.remove(new Role(roleName))) {
+		    if (roleName.equals("*")) {
+			roleTable.clear();
+			roleTable = null;
+		    }
+		} else if (roleTable.isEmpty()) {
+		    roleTable = null;
+		}
             }
 
         } finally {

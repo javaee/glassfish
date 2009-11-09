@@ -242,7 +242,7 @@ public interface PolicyConfiguration {
 
    /**
     * Used to add permissions to a named role in this PolicyConfiguration.
-    * If the named Role does not exist in the PolicyConfiguration, it is
+    * If the named role does not exist in the PolicyConfiguration, it is
     * created as a result of the call to this function.
     * <P>
     * It is the job of the Policy provider to ensure that all the permissions
@@ -276,7 +276,7 @@ public interface PolicyConfiguration {
    /**
     * Used to add a single permission to a named role in this
     * PolicyConfiguration.
-    * If the named Role does not exist in the PolicyConfiguration, it is
+    * If the named role does not exist in the PolicyConfiguration, it is
     * created as a result of the call to this function.
     * <P>
     * It is the job of the Policy provider to ensure that all the permissions
@@ -415,8 +415,10 @@ public interface PolicyConfiguration {
     * PolicyConfiguration. This method has no effect on the links
     * between this PolicyConfiguration and others.
     * <P>
-    * @param roleName the name of the Role to remove from this 
-    * PolicyConfiguration.
+    * @param roleName the name of the role to remove from this 
+    * PolicyConfiguration. If the value of the roleName parameter is "*"
+    * and no role with name "*" exists in this PolicyConfiguration,
+    * then all roles must be removed from this PolicyConfiguration.
     *
     * @throws java.lang.SecurityException
     * if called by an AccessControlContext that has not been

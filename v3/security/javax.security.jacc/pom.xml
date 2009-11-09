@@ -47,7 +47,7 @@
     <packaging>jar</packaging>
     <properties>
         <extension.name>javax.security.jacc</extension.name>
-        <spec.version>1.2</spec.version>
+        <spec.version>1.4</spec.version>
     </properties>
     <name>${extension.name} API v.${spec.version}</name>
     <url>http://jcp.org/en/jsr/detail?id=115</url>

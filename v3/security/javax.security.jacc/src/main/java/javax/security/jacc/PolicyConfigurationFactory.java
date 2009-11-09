@@ -220,9 +220,9 @@ public abstract class PolicyConfigurationFactory
     * this parameter must not be null.
     * <P>
     * @param remove A boolean value that establishes whether or not the
-    * policy statements of an existing policy context are to be 
+    * policy statements and linkages of an existing policy context are to be 
     * removed before its PolicyConfiguration object is returned. If the value
-    * passed to this parameter is true, the policy statements of  
+    * passed to this parameter is true, the policy statements and linkages of  
     * an existing policy context will be removed. If the value is false, 
     * they will not be removed.
     *

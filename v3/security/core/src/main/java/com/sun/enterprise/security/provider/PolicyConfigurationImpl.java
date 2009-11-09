@@ -430,8 +430,10 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
     * Used to remove a role and all its permissions from this
     * PolicyConfiguration.
     * <P>
-    * @param roleName the name of the Role to remove from this 
-    * PolicyConfiguration.
+    * @param roleName the name of the role to remove from this 
+    * PolicyConfiguration. If the value of the roleName parameter is "*"
+    * and no role with name "*" exists in this PolicyConfiguration,
+    * then all roles must be removed from this PolicyConfiguration.
     *
     * @throws java.lang.SecurityException
     * if called by an AccessControlContext that has not been
@@ -457,8 +459,21 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
 
 	if(roleName != null && rolePermissionsTable != null) {
 	    checkSetPolicyPermission();
-	    if (rolePermissionsTable.remove(roleName) != null) 
+	    if (rolePermissionsTable.remove(roleName) != null) {
+		if (rolePermissionsTable.isEmpty()) {
+		    rolePermissionsTable = null;
+		}
 		writeOnCommit = true;
+	    } else if (roleName.equals("*")) {
+		boolean wasEmpty = rolePermissionsTable.isEmpty();
+		if (!wasEmpty) {
+		     rolePermissionsTable.clear();
+		}
+		rolePermissionsTable = null;
+		if (!wasEmpty) {
+		    writeOnCommit = true;
+		}
+	    }
 	}
     }
 
