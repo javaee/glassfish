@@ -201,6 +201,7 @@ public class JdbcTempHandler {
 
         String dbVendor = (GuiUtil.isEmpty(dbVendorField))? dbVendorBox : dbVendorField;
 
+        extra.put("DBVendor", dbVendor);
         String previousResType = (String) extra.get("PreviousResType");
         String previousDB = (String) extra.get("PreviousDB");
 
