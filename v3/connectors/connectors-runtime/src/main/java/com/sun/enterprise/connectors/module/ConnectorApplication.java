@@ -152,7 +152,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         if (failIfResourcesExist && resources.size() > 0) {
             String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                     "use '--cascade=true' to delete them during undeploy";
-            _logger.warning(message);
+            _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
             status = false;
             throw new RuntimeException(message);
         } else {
@@ -281,7 +281,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                             if (getAllConnectorResources().size() > 0) {
                                 String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                                         "use '--cascade=true' to delete them during undeploy";
-                                _logger.log(Level.WARNING, message);
+                                _logger.log(Level.WARNING, "resources.of.rar.exist");
 
                                 ActionReport report = dc.getActionReport();
                                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

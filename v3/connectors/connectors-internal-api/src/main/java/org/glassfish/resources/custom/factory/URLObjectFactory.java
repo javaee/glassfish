@@ -71,7 +71,8 @@ public class URLObjectFactory implements Serializable, ObjectFactory {
                 try{
                     port = Integer.parseInt(content);
                 }catch(NumberFormatException nfe){
-                    Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.WARNING, "Error occurred", nfe);
+                    Object args[] = new Object[]{content, nfe};
+                    Logger.getLogger(LogDomains.RSR_LOGGER).log(Level.WARNING, "invalid.port.number", args);
                     IllegalArgumentException iae = new IllegalArgumentException("Invalid value for port");
                     iae.initCause(nfe);
                     throw iae;

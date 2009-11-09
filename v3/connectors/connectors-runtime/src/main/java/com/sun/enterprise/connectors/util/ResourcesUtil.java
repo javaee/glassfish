@@ -573,7 +573,8 @@ public class ResourcesUtil {
             com.sun.enterprise.deployment.Application application = archivist.open(in);
             return application.getRarDescriptorByUri(raLoc);
         } catch (Exception e) {
-            _logger.log(Level.WARNING, "Exception while getting connector descriptor for RAR [ "+rarName+" ]", e);
+            Object params[] = new Object[]{rarName, e};
+            _logger.log(Level.WARNING, "error.getting.connector.descriptor", params);
         }
         return null;
     }

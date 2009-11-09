@@ -174,7 +174,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
 
             } catch (Exception cre) {
-                _logger.log(Level.WARNING, " unable to load the resource-adapter [ " + moduleName + " ]", cre);
+                Object params[] = new Object[]{moduleName, cre};
+                _logger.log(Level.WARNING, "unable.to.load.ra", params);
 
                 //since resource-adapter creation has failed, remove the class-loader for the RAR
                 if (!(isEmbedded) && ccf != null) {
@@ -210,7 +211,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }
             runtime.destroyActiveResourceAdapter(moduleName);
         } catch (ConnectorRuntimeException e) {
-            _logger.log(Level.WARNING, " unable to unload the resource-adapter [ " + moduleName + " ]", e);
+            Object params[] = new Object[]{moduleName, e};
+            _logger.log(Level.WARNING, "unable.to.unload.ra", params);
         } finally {
 
             //remove it only if it is not embedded
@@ -280,14 +282,12 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     return param.getResources().remove(rac);
                 }
             }, resources) == null) {
-                _logger.log(Level.WARNING, "Unable to delete resource-adapter-config for RAR : "
-                        + rac.getResourceAdapterName());
+                _logger.log(Level.WARNING, "unable.to.delete.rac", rac.getResourceAdapterName());
             }
 
         } catch (TransactionFailure tfe) {
-            _logger.log(Level.WARNING, "Unable to delete resource-adapter-config for RAR : "
-                    + rac.getResourceAdapterName(), tfe);
-
+            Object params[] = new Object[]{rac.getResourceAdapterName(), tfe};
+            _logger.log(Level.WARNING, "unable.to.delete.rac.exception", params);
         }
     }
 
@@ -304,11 +304,12 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     return true; // indicating that removal was successful
                 }
             }, resources) == null) {
-                _logger.log(Level.WARNING, "Unable to delete work-security-map(s) for RAR : " + raName);
+                _logger.log(Level.WARNING, "unable.to.delete.work.security.map", raName);
             }
 
         } catch (TransactionFailure tfe) {
-            _logger.log(Level.WARNING, "Unable to delete work-security-map(s) for RAR : " + raName, tfe);
+            Object params[] = new Object[]{raName, tfe};
+            _logger.log(Level.WARNING, "unable.to.delete.work.security.map.exception", params);
         }
 
     }
@@ -330,10 +331,11 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     return true;
                 }
             }, resources) == null) {
-                _logger.log(Level.WARNING, "Unable to delete admin-object-resource(s) for RAR : " + raName);
+                _logger.log(Level.WARNING, "unable.to.delete.admin.object", raName);
             }
         } catch (TransactionFailure tfe) {
-            _logger.log(Level.WARNING, "Unable to delete admin-object-resource(s) for RAR : " + raName, tfe);
+            Object params[] = new Object[]{raName, tfe};
+            _logger.log(Level.WARNING, "unable.to.delete.admin.object.exception", params);
         }
 
     }
@@ -355,10 +357,11 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     return true;
                 }
             }, resources) == null) {
-                _logger.log(Level.WARNING, "Unable to delete connector-resource(s) for RAR : " + raName);
+                _logger.log(Level.WARNING, "unable.to.delete.connector.resource", raName);
             }
         } catch (TransactionFailure tfe) {
-            _logger.log(Level.WARNING, "Unable to delete connector-resource(s) for RAR : " + raName, tfe);
+            Object params[] = new Object[]{raName, tfe};
+            _logger.log(Level.WARNING, "unable.to.delete.connector.resource.exception", params);
         }
 
     }
@@ -375,10 +378,11 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     return null;
                 }
             }, resources) == null) {
-                _logger.log(Level.WARNING, "Unable to delete connector-connection-pool(s) for RAR : " + raName);
+                _logger.log(Level.WARNING, "unable.to.delete.connector.connection.pool", raName);
             }
         } catch (TransactionFailure tfe) {
-            _logger.log(Level.WARNING, "Unable to delete connector-connection-pool(s) for RAR : " + raName, tfe);
+            Object params[] = new Object[]{raName, tfe};
+            _logger.log(Level.WARNING, "unable.to.delete.connector.connection.pool.exception", params);
         }
     }
 
@@ -439,8 +443,8 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 }
 
             } catch (Exception e) {
-                _logger.log(Level.WARNING, "Exception while processing xml files for detecting " +
-                        "bean-validation-mapping of RAR [ " + rarName + " ], using default validator", e);
+                Object params[] = new Object[]{rarName, e};
+                _logger.log(Level.WARNING, "error.processing.xml.for.bean.validation.mapping", params);
             }
             if (beanValidator == null) {
                 validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();

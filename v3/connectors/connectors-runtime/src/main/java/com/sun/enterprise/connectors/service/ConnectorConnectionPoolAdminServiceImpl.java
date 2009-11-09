@@ -443,7 +443,8 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         } catch (Exception re) {
             //Since we have an exception, the pool is not good
-            _logger.log(Level.WARNING, re.getMessage());
+            Object params[] = new Object[]{poolName, re.getMessage()};
+            _logger.log(Level.WARNING, "test.connection.pool.failed", params);
             ResourceException e = new ResourceException(re.getMessage());
             e.initCause(re);
             throw e;

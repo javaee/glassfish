@@ -212,8 +212,7 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
                             sma.run();
                             activationSpecList.add(aspec);
                         } catch (Exception e) {
-                            //TODO V3 logstrings
-                            _logger.log(Level.WARNING, "Error creating ActivationSpec \n" + e.getMessage());
+                            _logger.log(Level.WARNING, "error.creating.activationspec", e.getMessage());
                             if (_logger.isLoggable(Level.FINE)) {
                                 _logger.log(Level.FINE, e.toString(), e);
                             }
@@ -236,13 +235,11 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
                     _logger.log(Level.FINE, uoex.getMessage());
                     // otherwise catch the unexpected exception
                 } catch (Exception e) {
-                    //TODO V3 logstrings
-                    _logger.log(Level.SEVERE, e.getMessage());
+                    _logger.log(Level.SEVERE, "exception.during.inbound.resource.acqusition", e);
                 }
             }
         } catch (Exception e) {
-            //TODO V3 logstrings
-            _logger.log(Level.SEVERE, e.getMessage());
+            _logger.log(Level.SEVERE,"exception.during.inbound.recovery", e);
         }
 
     }

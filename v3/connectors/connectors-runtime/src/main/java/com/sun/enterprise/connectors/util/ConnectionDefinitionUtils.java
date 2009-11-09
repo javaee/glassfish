@@ -263,13 +263,11 @@ public class ConnectionDefinitionUtils {
     }
     
     private static void handleException(Exception ex, String className) {
-        _logger.log(Level.FINE, "Exception while trying to find properties of class [ "+className+" ]", ex);
-        //TODO V3 logStrings ?
-        _logger.log(
-            Level.SEVERE,
-            "Exception while trying to find properties of class [ "+className+" ], " +
-                    "set log-level of CONNECTOR to FINE for more information",
-            ex.getMessage());
+        if(_logger.isLoggable(Level.FINE)){
+            _logger.log(Level.FINE, "Exception while trying to find properties of class [ "+className+" ]", ex);
+        }
+        Object param[] = new Object[]{className, ex.getMessage()};
+        _logger.log(Level.SEVERE,"error.finding.properties", param);
     }
 
     //test code

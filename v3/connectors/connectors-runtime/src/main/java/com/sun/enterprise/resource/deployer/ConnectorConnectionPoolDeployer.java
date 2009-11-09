@@ -193,7 +193,8 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
             poolRecreateRequired = runtime.reconfigureConnectorConnectionPool(ccp,
                     new HashSet());
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING,"Exception while reconfiguring pool [ "+poolName+" ] : ", cre);
+            Object params[] = new Object[]{poolName, cre};
+            _logger.log(Level.WARNING,"error.reconfiguring.pool", params);
         }
 
         if (poolRecreateRequired) {

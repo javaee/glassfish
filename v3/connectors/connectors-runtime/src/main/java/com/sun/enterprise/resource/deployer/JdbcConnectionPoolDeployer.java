@@ -132,7 +132,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
             //now do internal book keeping
             runtime.createConnectorConnectionPool(connConnPool);
         } catch (Exception e) {
-            _logger.log(Level.WARNING, "Exception while creating connection pool [ "+adminPool.getName()+" ] : ", e);
+            Object params[] = new Object[]{adminPool.getName(), e};
+            _logger.log(Level.WARNING, "error.creating.jdbc.pool", params);
         }
     }
 
@@ -657,8 +658,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                 _logger.finest("Pool recreation done");
             }
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING, "Exception while redeploying jdbc-connection-pool " +
-                    "[ "+adminPool.getName()+" ]", cre);
+            Object params[] = new Object[]{adminPool.getName(), cre};
+            _logger.log(Level.WARNING, "error.redeploying.jdbc.pool", params);
             throw cre;
         }
     }

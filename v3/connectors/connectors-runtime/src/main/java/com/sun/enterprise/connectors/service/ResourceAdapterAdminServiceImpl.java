@@ -444,7 +444,8 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         try {
             destroyActiveResourceAdapter(raName);
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING, "unable to stop resource adapter [ " + raName + " ]", cre.getMessage());
+            Object params[] = new Object[]{raName, cre.getMessage()};
+            _logger.log(Level.WARNING, "unable.to.stop.ra", params);
             _logger.log(Level.FINE, "unable to stop resource adapter [ " + raName + " ]", cre);
         }
     }
@@ -535,10 +536,12 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                     "[ "+ raName  +" ]");
             stopSuccessful = true;
         } catch (TimeoutException e) {
-            _logger.log(Level.WARNING, "RA  [ " + raName + " ] stop timeout occured", e);
+            Object params[] = new Object[]{raName, e};
+            _logger.log(Level.WARNING, "ra.stop.timeout", params);
             cancelTask(future, true, raName);
         } catch(Exception e){
-            _logger.log(Level.WARNING, "RA  [ " + raName + " ] stop failed", e);
+            Object params[] = new Object[]{raName, e};
+            _logger.log(Level.WARNING, "ra.stop.failed", params);
             cancelTask(future, true, raName);
         }
 

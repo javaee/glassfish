@@ -67,7 +67,7 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
     @Inject
     Habitat habitat;
 
-    static private Logger _logger = LogDomains.getLogger(JdbcConnectionPoolDeployer.class, LogDomains.RSR_LOGGER);
+    private static Logger _logger = LogDomains.getLogger(DataSourceDefinitionDeployer.class, LogDomains.RSR_LOGGER);
 
     public void deployResource(Object resource) throws Exception {
 
@@ -85,23 +85,11 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
         Collection<ResourceDeployer> deployers = habitat.getAllByContract(ResourceDeployer.class);
         //deploy pool
-        ResourceDeployer jdbcPoolDeployer = getDeployer(jdbcCp, deployers);
-        if (jdbcPoolDeployer != null) {
-            jdbcPoolDeployer.deployResource(jdbcCp);
-        } else {
-            _logger.log(Level.WARNING, "Unable to find a deployer for type : " + jdbcCp);
-        }
+        getDeployer(jdbcCp, deployers).deployResource(jdbcCp);
 
         //deploy resource
-
         JdbcResource jdbcResource = new MyJdbcResource(poolName, resourceName);
-        ResourceDeployer jdbcResourceDeployer = getDeployer(jdbcResource, deployers);
-        if (jdbcResourceDeployer != null) {
-            jdbcResourceDeployer.deployResource(jdbcResource);
-        } else {
-            _logger.log(Level.WARNING, "Unable to find a deployer for type : " + jdbcResource);
-        }
-
+        getDeployer(jdbcResource, deployers).deployResource(jdbcResource);
     }
 
     private ResourceDeployer getDeployer(Object resource, Collection<ResourceDeployer> deployers) {
@@ -134,22 +122,11 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
         //undeploy resource
         JdbcResource jdbcResource = new MyJdbcResource(poolName, resourceName);
-        ResourceDeployer jdbcResourceDeployer = getDeployer(jdbcResource, deployers);
-        if (jdbcResourceDeployer != null) {
-            jdbcResourceDeployer.undeployResource(jdbcResource);
-        } else {
-            _logger.log(Level.WARNING, "Unable to find a deployer for type : " + jdbcResource);
-        }
+        getDeployer(jdbcResource, deployers).undeployResource(jdbcResource);
 
         //undeploy pool
         JdbcConnectionPool jdbcCp = new MyJdbcConnectionPool(desc, poolName);
-        ResourceDeployer jdbcPoolDeployer = getDeployer(jdbcCp, deployers);
-        if (jdbcPoolDeployer != null) {
-            jdbcPoolDeployer.undeployResource(jdbcCp);
-        } else {
-            _logger.log(Level.WARNING, "Unable to find a deployer for type : " + jdbcCp);
-        }
-
+        getDeployer(jdbcCp, deployers).undeployResource(jdbcCp);
     }
 
     public void redeployResource(Object resource) throws Exception {

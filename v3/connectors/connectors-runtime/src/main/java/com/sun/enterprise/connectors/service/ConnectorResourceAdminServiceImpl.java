@@ -92,7 +92,8 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
                     ccp =
                             (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
                 } catch (NamingException e) {
-                    _logger.log(Level.SEVERE, "Unable to lookup pool [ " + name + " ]", e);
+                    Object params[] = new Object[]{name, e};
+                    _logger.log(Level.SEVERE, "unable.to.lookup.pool", params);
                 }
             }
 

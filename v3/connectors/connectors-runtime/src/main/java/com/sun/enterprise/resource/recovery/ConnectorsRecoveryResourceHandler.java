@@ -304,7 +304,8 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                     pool.getResourceAdapterName()).getOutboundResourceAdapter().
                     getTransSupport();
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING, cre.getMessage());
+            Object params[] = new Object[]{pool.getResourceAdapterName(), cre};
+            _logger.log(Level.WARNING, "error.retrieving.tx-support.from.rar", params);
             _logger.finest("setting no-tx-support as tx-support-level for pool : " + pool.getName());
             txSupport = ConnectorConstants.NO_TRANSACTION_TX_SUPPORT_STRING;
         }
@@ -324,7 +325,6 @@ public class ConnectorsRecoveryResourceHandler implements RecoveryResourceHandle
                 // so we are not logging the message as an exception
                 // but treating the same as a debug message
                 // Santanu De, Sun Microsystems, 2002.
-                //TODO V3 logstrings
                 _logger.log(Level.WARNING, "Connector Resource could not be closed", ex);
             }
         }

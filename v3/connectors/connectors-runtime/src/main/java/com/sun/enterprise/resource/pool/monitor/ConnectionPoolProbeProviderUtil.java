@@ -54,7 +54,6 @@ public class ConnectionPoolProbeProviderUtil {
 
     private ConnectionPoolProbeProvider jcaProbeProvider = null;
     private ConnectionPoolProbeProvider jdbcProbeProvider = null;
-    private Logger _logger = LogDomains.getLogger(ConnectionPoolProbeProviderUtil.class, LogDomains.RSR_LOGGER);
     
     @Inject 
     private Habitat habitat;
@@ -74,22 +73,7 @@ public class ConnectionPoolProbeProviderUtil {
      *
      */   
     public void createJcaProbeProvider() {    
-        try {
-            jcaProbeProvider = new ConnectorConnPoolProbeProvider();
-            if (jcaProbeProvider == null) {
-                // Should never happen
-                _logger.log(Level.WARNING,
-                    "Unable to create probe provider for interface " +
-                    ConnectorConnPoolProbeProvider.class.getName() +
-                    ", using no-op provider");
-            }
-        } catch (Exception e) {
-            _logger.log(Level.SEVERE,
-                        "Unable to create probe provider for interface " +
-                        ConnectorConnPoolProbeProvider.class.getName() +
-                        ", using no-op provider",
-                        e);
-        }
+        jcaProbeProvider = new ConnectorConnPoolProbeProvider();
     }
     
     /**
@@ -101,22 +85,7 @@ public class ConnectionPoolProbeProviderUtil {
      *
      */   
     public void createJdbcProbeProvider() {
-        try {
-            jdbcProbeProvider = new JdbcConnPoolProbeProvider();
-            if (jdbcProbeProvider == null) {
-                //Should never happen
-                _logger.log(Level.WARNING,
-                    "Unable to create probe provider for interface " +
-                    JdbcConnPoolProbeProvider.class.getName() +
-                    ", using no-op provider");
-            }
-        } catch (Exception e) {
-            _logger.log(Level.SEVERE,
-                        "Unable to create probe provider for interface " +
-                        JdbcConnPoolProbeProvider.class.getName() +
-                        ", using no-op provider",
-                        e);
-        }
+        jdbcProbeProvider = new JdbcConnPoolProbeProvider();
     }
     
     private ConnectionPoolStatsProviderBootstrap getConnPoolBootstrap() {

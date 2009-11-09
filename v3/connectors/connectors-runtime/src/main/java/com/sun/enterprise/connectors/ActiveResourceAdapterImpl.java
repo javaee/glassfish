@@ -119,8 +119,9 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
             String ic = (String)workContextsIterator.next();
             boolean supported = workContextHandler.isContextSupported(true, ic );
             if(!supported){
-                String errorMsg = "Unsupported inflow context [ "+ ic + " ] ";
-                _logger.log(Level.WARNING,errorMsg);
+                String errorMsg = "Unsupported work context [ "+ ic + " ] ";
+                Object params[] = new Object[]{ic, desc.getName()};
+                _logger.log(Level.WARNING,"unsupported.work.context", params);
                 throw new ConnectorRuntimeException(errorMsg);
             }
         }

@@ -129,7 +129,7 @@ public class ConnectorService implements ConnectorConstants {
         if (defResConfig != null) {
             try {
                 loadDeferredResources(defResConfig.getResourceAdapterConfig());
-                String rarName = defResConfig.getRarName();
+                final String rarName = defResConfig.getRarName();
                 loadDeferredResourceAdapter(rarName);
                 final ConfigBeanProxy[] resToLoad = defResConfig.getResourcesToLoad();
                 AccessController.doPrivileged(new PrivilegedAction() {
@@ -137,15 +137,15 @@ public class ConnectorService implements ConnectorConstants {
                         try {
                             loadDeferredResources(resToLoad);
                         } catch (Exception ex) {
-                            _logger.log(Level.SEVERE, "failed to load resources/ResourceAdapter");
-                            _logger.log(Level.SEVERE, "", ex);
+                            Object params[] = new Object[]{rarName, ex};
+                            _logger.log(Level.SEVERE, "failed.to.load.deferred.resources", params);
                         }
                         return null;
                     }
                 });
             } catch (Exception ex) {
-                _logger.log(Level.SEVERE, "failed to load resources/ResourceAdapter");
-                _logger.log(Level.SEVERE, "", ex);
+                Object params[] = new Object[]{defResConfig.getRarName(), ex};
+                _logger.log(Level.SEVERE, "failed.to.load.deferred.ra", params);
                 return false;
             }
             return true;
@@ -306,7 +306,8 @@ public class ConnectorService implements ConnectorConstants {
 
             status = loadResourcesAndItsRar(defResConfig);
         } catch (ConnectorRuntimeException cre) {
-            _logger.log(Level.WARNING, "unable to load Jdbc Connection Pool [ " + poolName + " ]", cre);
+            Object params[] = new Object[]{poolName, cre};
+            _logger.log(Level.WARNING, "unable.to.load.connection.pool", params);
         }
         return status;
     }

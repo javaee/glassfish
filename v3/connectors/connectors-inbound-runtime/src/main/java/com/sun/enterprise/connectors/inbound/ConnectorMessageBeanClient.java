@@ -219,8 +219,8 @@ public final class ConnectorMessageBeanClient
                         new MessageEndpointFactoryInfo(this, activationSpec));
 
             } catch (Exception ex) {
-                logger.log(Level.WARNING, "Exception during endpoint activation for ra [ "+resourceAdapterMid+" ], " +
-                        "activationSpecClass [ "+activationSpecClassName+" ] ", ex);
+                Object args[] = new Object[]{resourceAdapterMid, activationSpecClassName, ex};
+                logger.log(Level.WARNING, "endpoint.activation.failure", args);
                 throw (Exception) (new Exception()).initCause(ex);
             }
         } else {

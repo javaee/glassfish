@@ -114,8 +114,7 @@ public class ConnectorsClassLoaderUtil {
                 }
             });
         } catch (PrivilegedActionException e) {
-            //TODO V3 better log msg
-            _logger.log(Level.SEVERE, "failed to create libraries classloader", e);
+            _logger.log(Level.SEVERE, "error.creating.libraries.classloader", e);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
             cre.initCause(e);
             throw cre;
@@ -135,7 +134,7 @@ public class ConnectorsClassLoaderUtil {
                 }
             });
         } catch (Exception ex) {
-            _logger.log(Level.SEVERE, "failed to create connector classloader", ex);
+            _logger.log(Level.SEVERE, "error.creating.connector.classloader", ex);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(ex.getMessage());
             cre.initCause(ex);
             throw cre;
