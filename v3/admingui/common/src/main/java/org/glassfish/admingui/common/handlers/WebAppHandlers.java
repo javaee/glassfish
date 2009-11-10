@@ -199,10 +199,14 @@ public class WebAppHandlers {
                 }
             }
             if (snifferList.contains("appclient")){
-                String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
-                if (!GuiUtil.isEmpty(appClientLaunch)){
-                    oneRow.put("hasLaunch", true);
-                    oneRow.put("launchLink", appClientLaunch);
+                String jwEnabled = V3AMX.getPropValue(V3AMX.getInstance().getApplication(appName), "javaWebStartEnabled");
+                if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
+                    String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
+                    if (!GuiUtil.isEmpty(appClientLaunch)){
+                        String httpLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
+                        oneRow.put("hasLaunch", true);
+                        oneRow.put("launchLink", httpLink+appClientLaunch);
+                    }
                 }
             }
             result.add(oneRow);
