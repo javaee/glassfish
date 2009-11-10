@@ -35,26 +35,28 @@
  */
 package org.glassfish.connectors.admin.cli;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.BackendPrincipal;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
 import com.sun.enterprise.config.serverbeans.SecurityMap;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import java.util.*;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Update Connector SecurityMap command
@@ -87,8 +89,8 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
     @Param(name="mappedusername", optional=true)
     String mappedusername;
 
-    @Param(name="mappedpassword", optional=true)
-    String mappedpassword; //TODO get this from local command thru REST?
+    @Param(name="mappedpassword", password=true, optional=true)
+    String mappedpassword;
 
     @Param(name="mapname", primary=true)
     String securityMapName;
@@ -191,6 +193,22 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
         SecurityMap map = getSecurityMap(securityMapName, poolName, ccPools);
         final List<String> existingPrincipals = new ArrayList(map.getPrincipal());
         final List<String> existingUserGroups = new ArrayList(map.getUserGroup());
+
+         if (existingPrincipals.isEmpty() && addPrincipals != null) {
+            report.setMessage(localStrings.getLocalString("update.connector.security.map." +
+                    "addPrincipalToExistingUserGroupsWorkSecurityMap",
+                    "Failed to add principals to a security map with user groups."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
+        if (existingUserGroups.isEmpty() && addUserGroups != null) {
+            report.setMessage(localStrings.getLocalString("update.connector.security.map." +
+                    "addUserGroupsToExistingPrincipalsWorkSecurityMap",
+                    "Failed to add user groups to a security map with principals."));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
 
         //check if there is any invalid principal in removePrincipals.
         if (removePrincipals != null) {
@@ -316,10 +334,14 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
             }
         }
 
-        try {
-            ConfigSupport.apply(new SingleConfigCode<SecurityMap>() {
+        BackendPrincipal backendPrincipal = map.getBackendPrincipal();
 
-                public Object run(SecurityMap sm) throws PropertyVetoException, TransactionFailure {
+        try {
+            ConfigSupport.apply(new ConfigCode() {
+
+                public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
+                    SecurityMap sm = (SecurityMap) params[0];
+                    BackendPrincipal bp = (BackendPrincipal) params[1];
                     //setting the updated principal user-group arrays....
                     if (existingPrincipals != null) {
                         sm.getPrincipal().clear();
@@ -336,18 +358,17 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
 
                     //updating the backend-principal.......
                     //get the backend principal for the given security map and pool...
-                    BackendPrincipal backendPrincipal = sm.getBackendPrincipal();
                     if (mappedusername != null && !mappedusername.isEmpty()) {
-                        backendPrincipal.setUserName(mappedusername);
+                        bp.setUserName(mappedusername);
                     }
                     if (mappedpassword != null && !mappedpassword.isEmpty()) {
-                        backendPrincipal.setPassword(mappedpassword);
+                        bp.setPassword(mappedpassword);
                     }
 
                     return sm;
                 }
-            }, map);
-
+            }, map, backendPrincipal);
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (TransactionFailure tfe) {
             Object params[] = {securityMapName, poolName};
             report.setMessage(localStrings.getLocalString("update.connector.security.map.fail",
@@ -355,8 +376,6 @@ public class UpdateConnectorSecurityMap extends ConnectorSecurityMap implements 
                     " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
-        }
-
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        }        
     }   
 }
