@@ -41,6 +41,7 @@ package org.glassfish.appclient.server.core.jws.servedcontent;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import java.net.URI;
 import java.util.Properties;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.NestedAppClientDeployerHelper;
@@ -211,8 +212,9 @@ public abstract class TokenHelper {
          * For clients in an EAR there will be an EAR-level generated group facade
          * JAR to include in the downloaded files.
          */
+        final URI groupFacadeUserURI = dHelper.groupFacadeUserURI(dHelper.dc());
         t.setProperty(GROUP_JAR_ELEMENT_PROPERTY_NAME,
-                "<jar href=\"" + dHelper.groupFacadeUserURI(dHelper.dc()) + "\"/>");
+                (groupFacadeUserURI == null ? "" : "<jar href=\"" + groupFacadeUserURI.toASCIIString() + "\"/>"));
         setSystemJNLPTokens(t);
         return t;
 
