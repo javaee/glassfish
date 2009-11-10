@@ -1873,7 +1873,7 @@ admingui.ajax = {
 
     getXMLHttpRequestObject: function() {
 	var reqObj = null;
-	if (window.XMLHttpRequest && !(window.ActiveXObject)) {
+	if (window.XMLHttpRequest) {
 	    reqObj = new XMLHttpRequest();
 	} else if (window.ActiveXObject) {
 	    try {
