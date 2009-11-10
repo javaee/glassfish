@@ -387,10 +387,11 @@ public final class AMXProxyTests extends AMXTestBase
                 
                 if ( mo != null )
                 {
-                    // operations that start
+                    // operations that mimic getters are bad. We can't prevent all such things
+                    // but we can object to such oddball usage in an AMX interface
                     if ( numArgs == 0 && m.getName().startsWith("get") )
                     {
-                        System.out.println( "Warning: @ManagedOperation looks like getter: " + desc );
+                        assert false : "testForBogusAnnotations: @ManagedOperation should be @ManagedAttribute: " + desc;
                     }
                 }
             }
