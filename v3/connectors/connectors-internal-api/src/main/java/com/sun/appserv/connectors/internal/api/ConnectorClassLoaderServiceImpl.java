@@ -95,11 +95,9 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
                if(globalConnectorCL == null){
                    ClassLoader parent = getCommonClassLoader();
                     globalConnectorCL =  new DelegatingClassLoader(parent);
-/*                  TODO V3
                     for(DelegatingClassLoader.ClassFinder cf : appsSpecificCCLUtil.getSystemRARClassLoaders()){
                         globalConnectorCL.addDelegate(cf);
                     }
-*/
                }
            }
         }
