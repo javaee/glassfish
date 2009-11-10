@@ -40,8 +40,6 @@ package org.glassfish.ejb.api;
 import java.lang.reflect.Method;
 import javax.ejb.EJBContext;
 import javax.xml.rpc.handler.MessageContext;
-import javax.xml.ws.WebServiceContext;
-
 
 /**
  * This interface provides access to the exported portions of the
@@ -123,7 +121,4 @@ public interface EJBInvocation {
 
     public void setWebServiceMethod(Method method);
     public Method getWebServiceMethod();
-
-    public void setContextData(WebServiceContext context) ;
-
 }

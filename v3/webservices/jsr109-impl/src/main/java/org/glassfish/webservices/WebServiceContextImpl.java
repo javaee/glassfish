@@ -86,10 +86,6 @@ public final class WebServiceContextImpl implements WSWebServiceContext {
         msgContext.set(ctxt);
     }
 
-    public WSWebServiceContext getContextDelegate(){
-        return jaxwsContextDelegate;
-    }
-
     /*
      * this may still be required for EJB endpoints
      *
