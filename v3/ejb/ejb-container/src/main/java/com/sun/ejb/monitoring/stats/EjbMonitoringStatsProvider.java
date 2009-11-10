@@ -101,8 +101,10 @@ public abstract class EjbMonitoringStatsProvider {
                 methodMonitorMap.put(m, monitor);
             }
 
-            _logger.log(Level.FINE, "[EJBMonitoringStatsProvider] : "
-                    + appName + ":" + moduleName + ":" + beanName + ":" + methodMonitorMap.size());
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "[EJBMonitoringStatsProvider] : "
+                        + appName + ":" + moduleName + ":" + beanName + ":" + methodMonitorMap.size());
+            }
         }
     }
 
@@ -125,11 +127,20 @@ public abstract class EjbMonitoringStatsProvider {
     }
 
     public void unregister() {
+        boolean debug = _logger.isLoggable(Level.FINE);
         if (registered) {
+            if (debug) {
+                _logger.log(Level.FINE, "[EJBMonitoringStatsProvider] unregister: " 
+                       + appName + ":" + moduleName + ":" + beanName);
+            }
             registered = false;
             StatsProviderManager.unregister(this);
-            for ( EjbMethodStatsProvider monitor : (Set<EjbMethodStatsProvider>) methodMonitorMap.values()) {
+            for ( EjbMethodStatsProvider monitor : methodMonitorMap.values()) {
                 if (monitor.isRegistered()) {
+                    if (debug) {
+                        _logger.log(Level.FINE, "[EJBMonitoringStatsProvider] unregister method: " 
+                                + monitor.getStringifiedMethodName());
+                    }
                     monitor.unregistered();
                     StatsProviderManager.unregister(monitor);
                 }
@@ -146,7 +157,7 @@ public abstract class EjbMonitoringStatsProvider {
             @ProbeParam("method") Method method) {
         if (this.beanId == beanId) {
             log ("ejbMethodStartEvent", method);
-            EjbMethodStatsProvider monitor = (EjbMethodStatsProvider) methodMonitorMap.get(method);
+            EjbMethodStatsProvider monitor = methodMonitorMap.get(method);
             if (monitor != null) {
                 monitor.methodStart();
             }
@@ -163,7 +174,7 @@ public abstract class EjbMonitoringStatsProvider {
             @ProbeParam("method") Method method) {
         if (this.beanId == beanId) {
             log ("ejbMethodEndEvent", method);
-            EjbMethodStatsProvider monitor = (EjbMethodStatsProvider) methodMonitorMap.get(method);
+            EjbMethodStatsProvider monitor = methodMonitorMap.get(method);
             if (monitor != null) {
                 monitor.methodEnd((exception == null));
             }
