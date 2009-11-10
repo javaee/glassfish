@@ -44,9 +44,12 @@ public class FlashlightUtils {
             if(habitat == null) {
                 habitat = h;
                 monConfig = mc;
-                setDTraceAvailabilty();
                 setDTraceEnabled(Boolean.parseBoolean(monConfig.getDtraceEnabled()));
                 setMonitoringEnabled(Boolean.parseBoolean(monConfig.getMonitoringEnabled()));
+                
+                // order mattrs.  the next method is depending on the previous 
+                //methods having been run already...
+                setDTraceAvailabilty();
             }
         }
     }
@@ -237,23 +240,24 @@ public class FlashlightUtils {
             // 2. dt is not null and isSupported() is false
             // 3. dt is not null and isSupported() is true
 
-        String message;
+        String message = localStrings.getLocalString("enabled",
+                                "DTrace enabled is set to {0}", dtraceEnabled);
 
         if(!contractExists) {
-            message = localStrings.getLocalString("no_impl",
+            message += localStrings.getLocalString("no_impl",
                                 "DTrace is not available.  This can be caused by two things:\n" +
                                 "1. JDK 7 is required to run DTrace\n" +
                                 "2. glassfish-dtrace.jar value-add is required for DTrace");
         }
         else if(!isSupported){
-            message = localStrings.getLocalString("not_supported",
+            message += localStrings.getLocalString("not_supported",
             "DTrace is not available.  This condition normally only occurs when your\n" +
             "Operating System does not support DTrace.  Currently you must have Solaris 10\n" +
             "or better for dtrace support");
         }
 
         else {
-            message = localStrings.getLocalString("init_ok",
+            message += localStrings.getLocalString("init_ok",
             "DTrace is connected and ready.");
         }
 
