@@ -296,7 +296,8 @@ public class SecurityHandler {
                 V3AMX.getInstance().getRealmsMgr().updateUser(realmName, userid, userid, password, groups);
             }
 
-            if (! ((Boolean) GuiUtil.getSessionValue("showLogoutButton"))){
+            Boolean bool = (Boolean) GuiUtil.getSessionValue("showLogoutButton");
+            if  ((bool == null) || bool) {
                 if (V3AMX.getInstance().getRealmsMgr().getAnonymousUser() == null){
                     GuiUtil.setSessionValue("showLogoutButton", Boolean.TRUE);
                 }
