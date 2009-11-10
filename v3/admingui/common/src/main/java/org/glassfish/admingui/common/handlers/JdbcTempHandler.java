@@ -391,7 +391,7 @@ public class JdbcTempHandler {
 
     static {
         dbVendorList =  new ArrayList((Set)V3AMX.getInstance().getConnectorRuntime().getDatabaseVendorNames().get(DATABASE_VENDOR_NAMES_KEY));
-
+        dbVendorList.add(0, "");
         resTypeList.add("");
         resTypeList.add(DATA_SOURCE);
         resTypeList.add(XADATA_SOURCE);
