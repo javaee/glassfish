@@ -146,18 +146,30 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
                     WELD_DEPLOYMENT, DeploymentImpl.class);
                 deploymentImpl = buildDeploymentGraph(deploymentImpl);
-System.out.println(deploymentImpl.toString());
-                bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
-                bootstrap.startInitialization();
-                bootstrap.deployBeans();
+                System.out.println(deploymentImpl.toString());
+                try {
+                    bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
+                    bootstrap.startInitialization();
+                    bootstrap.deployBeans();
+                } catch (Throwable t) {
+                    DeploymentException de = new DeploymentException(t.getMessage());
+                    de.initCause(t);
+                    throw(de);
+                }
             }
         } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STARTED) ) {
             ApplicationInfo appInfo = (ApplicationInfo)event.hook();
             WeldBootstrap bootstrap = (WeldBootstrap)appInfo.getTransientAppMetaData(WELD_BOOTSTRAP, 
                 WeldBootstrap.class);
             if( bootstrap != null ) {
-                bootstrap.validateBeans();
-                bootstrap.endInitialization();
+                try {
+                    bootstrap.validateBeans();
+                    bootstrap.endInitialization();
+                } catch (Throwable t) {
+                    DeploymentException de = new DeploymentException(t.getMessage());
+                    de.initCause(t);
+                    throw(de);
+                }
             }
         } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STOPPED) ||
                     event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_UNLOADED)) {
