@@ -265,7 +265,7 @@ public interface ConnectorRuntimeAPIProvider extends AMXProxy, Utility, Singleto
      * @see #DATABASE_VENDOR_NAMES_KEY
      * @see #REASON_FAILED_KEY
      */
-    @ManagedOperation(impact=MBeanOperationInfo.INFO)
+    @ManagedAttribute
     @Description("Get database vendor names")
     public Map<String, Object> getDatabaseVendorNames();   
     
