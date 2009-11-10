@@ -44,7 +44,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="name" value="#{pageSession.Name}");
+        getRequestValue(key="mapName" value="#{pageSession.Name}");
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?name=#{pageSession.encodedName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
