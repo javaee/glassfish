@@ -56,12 +56,12 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class RealmsManager {
     //per domain list of loaded Realms
-    private Hashtable<String, Realm> loadedRealms = new Hashtable();
+    private final Hashtable<String, Realm> loadedRealms = new Hashtable();
 
     // Keep track of name of default realm for this domain. This is updated during startup
     // using value from server.xml
-    private  String defaultRealmName="default";
-    private RealmsProbeProvider probeProvider = new RealmsProbeProvider();
+    private volatile String defaultRealmName="default";
+    private final RealmsProbeProvider probeProvider = new RealmsProbeProvider();
     
     public RealmsManager() {
         
@@ -120,11 +120,11 @@ public class RealmsManager {
     public Realm getFromLoadedRealms(String realmName) {
         return loadedRealms.get(realmName);
     }
-    public String getDefaultRealmName() {
+    public synchronized String getDefaultRealmName() {
         return defaultRealmName;
     }
 
-    public void setDefaultRealmName(String defaultRealmName) {
+    public synchronized void setDefaultRealmName(String defaultRealmName) {
         this.defaultRealmName = defaultRealmName;
     }
     

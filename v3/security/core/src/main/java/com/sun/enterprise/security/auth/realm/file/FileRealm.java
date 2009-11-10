@@ -79,7 +79,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Shing Wai Chan
  */
 @Service
-final public class FileRealm extends IASRealm
+public final class FileRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.
     public static final String AUTH_TYPE = "filepassword";
@@ -99,12 +99,11 @@ final public class FileRealm extends IASRealm
     private static final int SALT_SIZE=8;
     
     // Contains cache of keyfile data
-    private Map<String,FileRealmUser> userTable;  // user=>FileRealmUser
-    private Hashtable<String,Integer> groupSizeMap; // maps of groups with value cardinality of group
+    private final Hashtable<String,FileRealmUser> userTable = new Hashtable<String, FileRealmUser>();  // user=>FileRealmUser
+    private final Hashtable<String,Integer> groupSizeMap = new Hashtable<String, Integer>(); // maps of groups with value cardinality of group
 
-    private boolean constructed = false;
+    //private boolean constructed = false;
     
-
     /**
      * Constructor.
      *
@@ -153,7 +152,7 @@ final public class FileRealm extends IASRealm
             }
         }
         
-        constructed = true;
+        //constructed = true;
         Properties p = new Properties();
         p.setProperty(PARAM_KEYFILE, keyfile);
         p.setProperty(IASRealm.JAAS_CONTEXT_PARAM, "ignore");
@@ -230,7 +229,7 @@ final public class FileRealm extends IASRealm
      * @return enumeration of user names (strings)
      * @exception BadRealmException if realm data structures are bad
      */
-    public Enumeration getUserNames()
+    public Enumeration<String> getUserNames()
          throws BadRealmException
     {
         return (new Vector(userTable.keySet())).elements(); // ugh
@@ -808,8 +807,6 @@ final public class FileRealm extends IASRealm
             }
         }
 
-        userTable = new Hashtable<String, FileRealmUser>();
-        groupSizeMap = new Hashtable<String, Integer>();
         BufferedReader input = null;
         
         try {
