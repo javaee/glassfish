@@ -11,7 +11,8 @@
 # To protect the release from interference with other builds in this system,
 # use a private copy of the local repository. This avoids a JVM crash and
 # other mysterious zip/jar related errors
-export MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
+MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
+export MAVEN_OPTS
 uname -a
 
 # don't let the crash logs fail the release
