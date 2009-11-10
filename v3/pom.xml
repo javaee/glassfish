@@ -133,7 +133,7 @@
         <glassfish-corba.version>3.0.0-b036</glassfish-corba.version>
         <uc-pkg-client.version>1.122-38.2471</uc-pkg-client.version>
 	<uc-pkg-bootstrap.version>1.122-38.2471</uc-pkg-bootstrap.version>
-        <webservices.version>2.0-b27</webservices.version>
+        <webservices.version>2.0-b28</webservices.version>
         <woodstox.version>3.2.1-RC1</woodstox.version>
         <jaxb.version>2.2-promoted-b65</jaxb.version>
         <javax-persistence-api.version>2.0.0-M12</javax-persistence-api.version>
