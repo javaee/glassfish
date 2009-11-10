@@ -69,7 +69,6 @@
     />
     </event>
 
-#include "/common/shared/restart.inc"
             <sun:form id="form2">
 #include "/common/shared/alertMsg.inc"
             <sun:hidden id="validate"  value="TRUE" />

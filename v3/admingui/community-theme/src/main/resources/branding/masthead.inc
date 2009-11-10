@@ -66,8 +66,8 @@
     <!facet statusArea>
         <sun:panelGroup id="statusPanel" separator="">
             "<span style="margin: 5px 5px 0px 5px">
-                <sun:image id="alertImage" rendered="$session{restartRequired}" alt="$resource{i18n.masthead.restartRequired}" icon="ALERT_WARNING_MEDIUM"/>
-                <sun:hyperlink id="restartLink" rendered="$session{restartRequired}"
+                <sun:image id="alertImage" rendered="#{sessionScope.restartRequired}" alt="$resource{i18n.masthead.restartRequired}" icon="ALERT_WARNING_MEDIUM"/>
+                <sun:hyperlink id="restartLink" rendered="#{sessionScope.restartRequired}"
                                style="color:white; margin-left: 5px;"
                                text="$resource{i18n.masthead.restartRequired}"
                                toolTip="$resource{i18n.masthead.restartStatusMsg}"

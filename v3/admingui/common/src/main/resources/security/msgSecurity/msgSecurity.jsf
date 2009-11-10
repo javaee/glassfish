@@ -57,7 +57,6 @@
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecurity.TableTitle}");
     />
     </event>
-#include "/common/shared/restart.inc"
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:security:messageSecurity");</script>
 
 <sun:form id="propertyForm">

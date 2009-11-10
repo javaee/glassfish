@@ -38,7 +38,7 @@
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  
-    guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{sessionScope.restartRequired}','#{requestScope.restartRequired}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
+    guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -53,7 +53,6 @@
         createMap(result="#{pageSession.deployMap}")
     />
     </event>
-#include "/common/shared/restart.inc"  
     <sun:form id="form">
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$attribute{formId})

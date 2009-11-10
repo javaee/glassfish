@@ -60,7 +60,6 @@
         setPageSessionAttribute(key="hasResType" value="#{true}" );
     />
     </event>
-#include "/common/shared/restart.inc"    
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:jndi:customResources");</script>
 
             <sun:form id="propertyForm">

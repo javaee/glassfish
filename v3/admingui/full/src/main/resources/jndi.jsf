@@ -44,7 +44,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njmail.jndi.pageTitle}" >
 <!define name="content">
 
-#include "/common/shared/restart.inc"    
             <sun:form id="curstomResourcesForm"> 
                 <sun:title 
                 id="resourcesPageTitle" 

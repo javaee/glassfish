@@ -57,7 +57,6 @@
     //set the following for including buttons.inc
     />
 </event>
-#include "/common/shared/restart.inc"
 <sun:form id="propertyForm">
 #include "/jca/connectorConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"

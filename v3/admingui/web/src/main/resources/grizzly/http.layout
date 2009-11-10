@@ -83,7 +83,6 @@
         setPageSessionAttribute(key="additionalSaveHandlerArgs" value="previousVSName:%23{pageSession.previousVSName},protocolName:%23{pageSession.protocolName}");
     />
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 
 <!insert name="protocolTabs" />

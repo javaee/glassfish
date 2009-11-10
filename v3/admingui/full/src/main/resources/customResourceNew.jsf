@@ -80,7 +80,6 @@
 
     />
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="form1">
 #include "/common/shared/alertMsg.inc"
 

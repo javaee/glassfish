@@ -52,7 +52,6 @@
         //guiLog(message="***** statsData = #{statsData}");
     />
     </event>
-#include "/common/shared/restart.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:form id="jmsPhysDestForm">
         <sun:title title="#{pageTitle}">

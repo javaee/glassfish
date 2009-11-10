@@ -55,7 +55,6 @@
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         />
     </event>
-#include "/common/shared/restart.inc"
     <sun:form id="propertyForm">
 #include "/jms/jmsHost.inc"
         <sun:hidden id="helpKey" value="$resource{helpjms.jmsHostEdit}" />

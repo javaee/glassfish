@@ -63,7 +63,6 @@
         getConnectionDefinitionsForRA(resourceAdapter="#{pageSession.valueMap.ResourceAdapterName}" result="#{pageSession.cdList}");
     />
 </event>
-#include "/common/shared/restart.inc"
 <sun:form id="propertyForm">
 #include "/jca/connectorConnectionPoolTabs.inc"    
 #include "/common/shared/alertMsg.inc"

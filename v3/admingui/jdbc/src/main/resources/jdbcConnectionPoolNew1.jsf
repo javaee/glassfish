@@ -55,7 +55,6 @@
     println("=========== #{wizardPoolExtra}")
     />
     </event>
-#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}"

@@ -33,17 +33,9 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!initPage
-    if(! $session{supportCluster}){
-        checkRestart(RestartRequired=>$session{restartRequired},
-            unprocessedChanges=>$session{unprocessedChanges});
-        setAttribute(key="unprocessedChanges", value="$session{unprocessedChanges}");
-    }
-/>
 <sun:page id="page">
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.common.restartRequired}" >
 <!define name="content">
-<sun:script url="/resource/common/js/adminjsf.js" />
     <event>    
         <!beforeCreate setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");/>
     </event>

@@ -75,7 +75,6 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 
 <!insert name="protocolTabs" />

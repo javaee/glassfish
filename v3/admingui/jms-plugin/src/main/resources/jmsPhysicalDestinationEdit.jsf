@@ -52,7 +52,6 @@
         getPhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", destData="#{pageSession.valueMap}");
     />
     </event>
-#include "/common/shared/restart.inc"
 #include "/common/shared/alertMsg.inc"
     <sun:form id="jmsPhysDestForm">
 #include "jmsPhysicalDestinationSheet.inc"

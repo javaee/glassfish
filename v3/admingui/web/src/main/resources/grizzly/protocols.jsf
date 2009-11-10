@@ -74,7 +74,6 @@
         setPageSessionAttribute(key="tableTitle"  value="$resource{i18n_web.grizzly.protocol.tableName}");
     />
     </event>
-#include "/common/shared/restart.inc"
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configuration:networkConfig:protocols");</script>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"

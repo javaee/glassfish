@@ -56,7 +56,6 @@
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         />
     </event>
-#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
 #include "jdbcConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"

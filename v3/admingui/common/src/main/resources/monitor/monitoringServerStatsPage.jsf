@@ -94,7 +94,6 @@
         }
     />
 </event>
-#include "/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/appServer/serverInstTabs.inc"
 #include "/shared/alertMsg.inc"

@@ -44,8 +44,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.networkConfigPageTitle}" >
 <!define name="content">
 
-#include "/common/shared/restart.inc"
-
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkConfigPageTitle}"

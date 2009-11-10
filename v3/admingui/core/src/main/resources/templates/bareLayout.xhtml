@@ -12,6 +12,34 @@
     <ui:event type="beforeCreate">
 	setPartialRequest("false");
     </ui:event>
+    <ui:event type="beforeEncode">
+	<!-- Set request-scoped restart flag to compare w/ session -->
+	if (!$session{supportCluster}) {
+	    checkRestart(RestartRequired=>$attribute{restartRequired},
+		unprocessedChanges=>$attribute{unprocessedChanges});
+	}
+	if($session{supportCluster}) {
+	    setAttribute(key="restartRequired" value="$boolean{false}");
+	}
+	testLoginBypass(byPass="#{requestScope.byPassLogin}");
+	setSessionAttribute(key="showLogoutButton" value="#{! requestScope.byPassLogin}");
+	if ("!(#{requestScope.restartRequired})") {
+	    if ("!(#{sessionScope.showLogoutButton})") {
+		setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	    if ("#{sessionScope.showLogoutButton}") {
+		setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	}
+	if ("#{requestScope.restartRequired}") {
+	    if ("!(#{sessionScope.showLogoutButton})") {
+		setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	    if ("#{sessionScope.showLogoutButton}") {
+		setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	}
+    </ui:event>
 </event>
 
 // Need to write the title so it is updated in the browser.
@@ -34,6 +62,7 @@
 <f:verbatim>
 <script type="text/javascript">
     #{guiOnLoad};
-    #{guiTemplateOnLoad}
+    #{guiTemplateOnLoad};
+    #{requestScope.reloadJS}
 </script>
 </f:verbatim>

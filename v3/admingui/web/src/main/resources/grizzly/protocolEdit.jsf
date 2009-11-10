@@ -64,7 +64,6 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/web/grizzly/protocolTabs.inc"
 #include "/common/shared/alertMsg.inc"

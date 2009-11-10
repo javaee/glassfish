@@ -48,12 +48,11 @@
         setPageSessionAttribute(key="pageTitle" value="$resource{i18n.connectionFactory.targetPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.resource.targetPageTitleHelp}");
     />
-#include "/common/shared/restart.inc"    
     <sun:html id="html2">
         <sun:head id="propertyhead" title="#{pageTitle}" >
             <sun:script url="/resource/common/js/restart.js" />
         </sun:head>
-        <sun:body id="body3" onLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}')">
+        <sun:body id="body3">
             <sun:form id="propertyForm">
   //#include "resourceNode/resourcesTabs.inc"
 #include "/common/shared/alertMsg.inc"                <!-- Page Title -->

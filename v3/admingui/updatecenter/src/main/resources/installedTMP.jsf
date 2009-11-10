@@ -45,7 +45,6 @@
     i18nBundle="org.glassfish.admingui.core.Strings"
     helpBundle="org.glassfish.updatecenter.admingui.Helplinks"
     helpKey="$resource{help_uc.uc.installed}"
-    bodyOnLoad="synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');"
     >
     
     <!define name="headExtra">

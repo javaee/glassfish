@@ -45,7 +45,6 @@
         getRequestValue(key="configName" value=>$page{configName});
     />
     </event>
-#include "/common/shared/restart.inc"    
             <sun:form id="configForm"> 
                 <sun:title 
                     id="configPageTitle" 

@@ -56,7 +56,6 @@
         setPageSessionAttribute(key="buttonLabel" value="$resource{i18n.button.ChooseFile}");
     }
     />
-#include "/common/shared/restart.inc"    
 <sun:html id="html2">
     <sun:head id="propertyhead">
         <sun:script url="/resource/common/js/adminjsf.js" />

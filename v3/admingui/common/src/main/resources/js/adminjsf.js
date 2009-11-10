@@ -22,8 +22,8 @@ function showAlert(msg) {
 function submitAndDisable(button, msg, target) {
     disableBtnComponent(button.id);
     button.value=msg;
-    var oldtarget = button.form.target;
     if (target) {
+	var oldtarget = button.form.target;
 	button.form.target = target;
 	if (target === "_top") {
 	    // In this case we want the non-ajax behavior
@@ -35,8 +35,8 @@ function submitAndDisable(button, msg, target) {
 	    button.form.action = oldaction;
 	    return false;
 	}
+	button.form.target = oldtarget;
     }
-    button.form.target = oldtarget;
     var args = {};
     args[button.id] = button.id;
     admingui.ajax.postAjaxRequest(button, args);
@@ -1676,27 +1676,19 @@ function checkForSelectedValue(fieldId) {
     return true; 
 }
 
-function synchronizeRestartRequired(currentRestartStatus, oldRestartStatus) {
-    if (currentRestartStatus != oldRestartStatus) {
-        reloadHeaderFrame();
-    }
-    return true;
-}
-
 function reloadHeaderFrame() {
-    // FIXME:
-    //alert('reload');
+    var mastheadForm = document.getElementById('af');
+    admingui.ajax.postAjaxRequest(mastheadForm, {render: 'af'}, 'af');
 }
 
 admingui.deploy = {
     // FIXME: similar functions are defined in uploadJS.inc :(
-    uploadInit: function(dirPathId, oldRestartFlag, newRestartFlag, dirSelectBtnId, filSelectBtnId, fileuploadId) {
+    uploadInit: function(dirPathId, dirSelectBtnId, filSelectBtnId, fileuploadId) {
             //
             //We need to set a timeout to delay the call to getTextElement inside disable component.
             //otherwise getTextElement will always return null, causing JS error.
             //disableComponent(dirPathId, 'text');
             window.setTimeout("disableComponent('" + dirPathId+ "', 'text')", 1);
-            synchronizeRestartRequired(newRestartFlag, oldRestartFlag);
             if(getSelectedValueFromForm(document.forms['form'], 'uploadRdBtn')=='serverSide'){
                 enableDOMComponent(dirPathId);
                 enableBtnComponent(dirSelectBtnId);
@@ -1959,21 +1951,27 @@ admingui.ajax = {
     },
 
     postAjaxRequest : function (component, args, respTarget) {
-	if ((respTarget === null) || (respTarget === 'undefined')) {
+	if ((respTarget === null) || (typeof(respTarget) === 'undefined')) {
 	    respTarget = 'content';
 	}
-	this.respTarget = respTarget;
+	component.respTarget = respTarget;
 	var params = {
 	    // I need to do this by default so all form values get processed.
 	    execute: '@all',
 	    bare: true,
-	    render: '@all',
-	    onComplete: admingui.ajax.handleResponse
+	    render: '@all'
 	};
 	if ((args !== null) && (typeof(args) !== 'undefined')) {
 	    for (var name in args) {
 		params[name] = args[name];
 	    }
+	}
+	if (params.render == "@all") {
+	    // Don't do this for user-defined render value
+	    params.onComplete = admingui.ajax.handleResponse;
+
+	    // Make cursor spin... (only do this when we're handling the response)
+	    document.body.style.cursor = 'wait';
 	}
 	jsf.ajax.request(component, null, params);
     },
@@ -2015,10 +2013,15 @@ admingui.ajax = {
     handleResponse : function () {
 	admingui.ajax.fixQue(this.que);
         //admingui.ajax.updateCurrentPageLink(o.argument.url);  <-- find a better way to get the viewId
-        var contentNode = this.respTarget;
+        var contentNode = null;
+	if ((this.context) && (this.context.source)) {
+	    contentNode = this.context.source.respTarget;
+	}
         if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
             contentNode = document.getElementById("content");
-        }
+        } else if (typeof(contentNode) === 'string') {
+            contentNode = document.getElementById(contentNode);
+	}
         var result = this.xmlReq.responseText;
         var len = (result.length > 200) ? 200 : result.length;
         var testString = result.substring(0, len);
@@ -2099,7 +2102,6 @@ admingui.ajax = {
         if (node.nodeName == 'A') {
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
-                //if (((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) || (node.href.charAt(0) == '#')) {
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
                     admingui.util.log("*NOT* replacing href for " + node.id);
                     shouldReplace = false;
@@ -2158,7 +2160,7 @@ admingui.ajax = {
 	}
 
 	// If recurse flag is true... recurse
-	if (recurse) {
+	if (recurse && node.childNodes) {
 	    for (var i = 0; i < node.childNodes.length; i++) {
 		admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
 	    }
@@ -2267,7 +2269,7 @@ admingui.ajax = {
 		    });
 	    }
 	} else {
-	    alert('JSF 2 Ajax Missing!');
+	    alert('JSF2+ Ajax Missing!');
 	}
     },
 

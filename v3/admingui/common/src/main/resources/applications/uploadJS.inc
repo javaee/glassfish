@@ -7,7 +7,6 @@ function uploadInit() {
         //otherwise getTextElement will always return null, causing JS error.
         //disableComponent('#{dirPathId}', 'text');
         window.setTimeout("disableComponent('#{dirPathId}', 'text')", 1);
-        synchronizeRestartRequired('#{requestScope.restartRequired}', '#{sessionScope.restartRequired}');
         if(getSelectedValueFromForm(document.forms['form'], 'uploadRdBtn')=='serverSide'){
             enableDOMComponent('#{dirPathId}'); 
             enableBtnComponent('#{dirSelectBtnId}'); 

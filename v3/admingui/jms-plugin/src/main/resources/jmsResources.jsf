@@ -42,7 +42,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jms.ResourcesPageTitle}" >
 <!define name="content">
 
- #include "/common/shared/restart.inc"
 <sun:form id="resourcesForm">
     <sun:title id="resourcesPageTitle" title="$resource{i18njms.jms.ResourcesPageTitle}"/>
     <sun:propertySheet>

@@ -61,5 +61,4 @@
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
     />
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">

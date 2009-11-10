@@ -377,7 +377,7 @@ public class CommonHandlers {
     )
     public void checkRestart(HandlerContext handlerCtx) {
         List<Object[]> changes = V3AMX.getInstance().getDomainRoot().getExt().getSystemStatus().getRestartRequiredChanges();
-        handlerCtx.setOutputValue("RestartRequired", (changes.size() > 0) || (Boolean)GuiUtil.getSessionValue("restartRequired"));
+        handlerCtx.setOutputValue("RestartRequired", (changes.size() > 0));
         handlerCtx.setOutputValue("unprocessedChanges", changes); 
     }
 

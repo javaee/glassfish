@@ -68,7 +68,6 @@
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
     />
 </event>    
-#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
 #include "/common/appServer/serverInstTabs.inc"
 #include "/common/shared/alertMsg.inc"

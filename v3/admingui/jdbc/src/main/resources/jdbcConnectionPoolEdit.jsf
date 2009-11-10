@@ -64,7 +64,6 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
         </event>
-#include "/common/shared/restart.inc"        
             <sun:form id="propertyForm">
 #include "/jdbc/jdbcConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"

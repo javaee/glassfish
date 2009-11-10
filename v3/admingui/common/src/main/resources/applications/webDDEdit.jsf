@@ -44,7 +44,6 @@
             getDeploymentDescriptorList(appName="#{pageSession.appName}"  descriptors="#{requestScope.descriptors}");
         />
     </event>
-#include "/common/shared/restart.inc"    
     <sun:form id="propertyForm">
 #include "/common/applications/appGeneralTabs.inc"
 #include "/common/shared/alertMsg.inc"                

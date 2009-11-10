@@ -15,19 +15,6 @@
 	    checkSupport(supportCluster=>$session{supportCluster});
 	    if ($session{supportCluster}) {
 		initClusterSessionAttribute();
-		setSessionAttribute(key="notSupportCluster" value="$boolean{false}");
-	    }
-            -->
-	    if(! $session{supportCluster}){
-		setSessionAttribute(key="notSupportCluster" value="$boolean{true}");
-	    }
-	    if(! $session{supportCluster}){
-		checkRestart(RestartRequired=>$session{restartRequired},
-		unprocessedChanges=>$session{unprocessedChanges});
-	    }
-            <!--
-	    if($session{supportCluster}){
-		setSessionAttribute(key="restartRequired" value="$boolean{false}");
 	    }
             -->
 
@@ -101,17 +88,28 @@
 "	    <div class="yui-skin-sam"><div id="gfLayoutTop"><div class="header_main">
 //                "<a class="skip" href="#navigation" alt="Skip masthead" title="Skip masthead">Skip Masthead</a>
 			<sun:form id="af" prependId="false">
+			    <event id="restartCheck">
+				<ui:event type="beforeEncode">
+				    if ("!$session{supportCluster}") {
+					checkRestart(
+					    RestartRequired="#{sessionScope.restartRequired}",
+					    unprocessedChanges="#{sessionScope.unprocessedChanges}");
+				    }
+				    if("$session{supportCluster}") {
+					setSessionAttribute(key="restartRequired" value="$boolean{false}");
+				    }
+				</ui:event>
+				<!-- Masthead Integration Point -->
+				<ui:event type="afterCreate">
+				    includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="$this{component}");
+				</ui:event>
+			    </event>
 			    <h:commandButton id="execButton" text="na" style="display:none;">
 				<ui:event type="command">
 				    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" depth="#{param.d}" values="#{requestScope.execResp}");
 				</ui:event>
 			    </h:commandButton>
 			    <h:inputText id="execResp" value="#{requestScope.execResp}" />
-
-			    <!-- Masthead Integration Point -->
-			    <ui:event type="afterCreate">
-				includeFirstIntegrationPoint(type="org.glassfish.admingui:masthead" root="$this{component}");
-			    </ui:event>
 			</sun:form>
 "		    </div></div>
 

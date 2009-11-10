@@ -54,7 +54,6 @@
             debugOptions="#{pageSession.valueMap2['DebugOptions']}" debugInfo="#{pageSession.debugInfo}")
         />   
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/common/appServer/serverInstTabs.inc"
           

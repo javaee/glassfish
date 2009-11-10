@@ -270,16 +270,14 @@ public class SecurityHandler {
      *	@param	handlerCtx	The HandlerContext.
      */
     @Handler(id="saveUser",
-    input={
-        @HandlerInput(name="Realm", type=String.class, required=true),
-        @HandlerInput(name="UserId", type=String.class, required=true),
-        @HandlerInput(name="GroupList", type=String.class, required=true),
-        @HandlerInput(name="Password", type=String.class, required=true),
-        @HandlerInput(name="CreateNew", type=Boolean.class)})
-
-        public static void saveUser(HandlerContext handlerCtx) {
-        try{
-
+	input={
+	    @HandlerInput(name="Realm", type=String.class, required=true),
+	    @HandlerInput(name="UserId", type=String.class, required=true),
+	    @HandlerInput(name="GroupList", type=String.class, required=true),
+	    @HandlerInput(name="Password", type=String.class, required=true),
+	    @HandlerInput(name="CreateNew", type=Boolean.class)})
+    public static void saveUser(HandlerContext handlerCtx) {
+        try {
             String realmName = (String) handlerCtx.getInputValue("Realm");
             String grouplist = (String)handlerCtx.getInputValue("GroupList");
             String[] groups = GuiUtil.stringToArray(grouplist, ",");
@@ -287,22 +285,15 @@ public class SecurityHandler {
             String userid = (String)handlerCtx.getInputValue("UserId");
             Boolean createNew = (Boolean)handlerCtx.getInputValue("CreateNew");
 
-            if (password == null){
+            if (password == null) {
                 password = "";
             }
-            if ((createNew != null) && (createNew == Boolean.TRUE)){
+            if ((createNew != null) && (createNew == Boolean.TRUE)) {
                 V3AMX.getInstance().getRealmsMgr().addUser(realmName, userid, password, groups);
-            }else{
+            } else {
                 V3AMX.getInstance().getRealmsMgr().updateUser(realmName, userid, userid, password, groups);
             }
-
-            Boolean bool = (Boolean) GuiUtil.getSessionValue("showLogoutButton");
-            if  ((bool == null) || bool) {
-                if (V3AMX.getInstance().getRealmsMgr().getAnonymousUser() == null){
-                    GuiUtil.setSessionValue("showLogoutButton", Boolean.TRUE);
-                }
-            }
-        }catch(Exception ex){
+        } catch(Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }

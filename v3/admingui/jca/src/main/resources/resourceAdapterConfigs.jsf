@@ -63,7 +63,6 @@
         setPageSessionAttribute(key="hasDesc" value="#{false}" );
     />
     </event>
-#include "/common/shared/restart.inc"
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:resourceAdapterConfigs");</script>
 
             <sun:form id="propertyForm">

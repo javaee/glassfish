@@ -68,7 +68,6 @@
 #include "/common/shared/viewSummaryDetail.inc"
         />
     </event>
-#include "/common/shared/restart.inc"
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:jmsResources:jmsDestinationResources");</script>
     <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"

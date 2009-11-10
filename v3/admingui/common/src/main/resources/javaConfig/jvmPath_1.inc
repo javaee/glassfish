@@ -73,5 +73,4 @@
 
         />   
     </event> 
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">

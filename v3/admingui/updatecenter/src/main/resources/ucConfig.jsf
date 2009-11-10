@@ -44,7 +44,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
 <!define name="content">
  
-#include "/common/shared/restart.inc"    
             <sun:form id="propertyForm">
 <f:verbatim>
     <script type="text/javascript">

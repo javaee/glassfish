@@ -44,7 +44,6 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.connectors.pageTitle}" >
 <!define name="content">
 
-#include "/common/shared/restart.inc"    
             <sun:form id="resourcesForm"> 
                 <sun:title 
                 id="resourcesPageTitle" 

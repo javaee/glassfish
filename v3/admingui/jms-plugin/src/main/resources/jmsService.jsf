@@ -70,7 +70,6 @@
     </event>   
 <!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   
 <!-- TO DO: NEED TO ADD HANDLER FOR PING BUTTON ONCE MESSAGES ARE WORKING  -->  
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->

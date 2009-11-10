@@ -57,7 +57,6 @@
         hasManageUserButton(realmName="#{pageSession.Name}" result="#{pageSession.showUserButton}")
     />
     </event>
-#include "/common/shared/restart.inc"
 #include "/common/security/realms/realm.inc"
 </define>
 </composition>

@@ -77,7 +77,6 @@
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
         />
     </event>
-#include "/common/shared/restart.inc"
             <sun:form id="propertyForm">
 #include "listenerTabs.inc"
 #include "/common/shared/alertMsg.inc"
