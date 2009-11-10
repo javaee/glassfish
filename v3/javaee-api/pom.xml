@@ -143,10 +143,8 @@ comment out since we don't want dev to generate javaee-api.jar
         <module>javax.jws</module>
         <module>javax.servlet.jsp</module>
         <module>javax.servlet.jsp.jstl</module>
-        <module>javax.xml.bind</module>
         <module>javax.xml.rpc</module>
         <module>javax.xml.soap</module>
         <module>javax.xml.stream</module>
-        <module>javax.xml.ws</module>
     </modules>
 </project>

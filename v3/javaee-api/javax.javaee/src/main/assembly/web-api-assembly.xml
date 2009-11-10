@@ -51,8 +51,7 @@
                 <include>javax.mail:mail</include>
                 <include>org.glassfish:javax.xml.rpc</include>
                 <include>org.glassfish:javax.activation</include>
-                <include>org.glassfish:javax.xml.bind</include>
-                <include>org.glassfish:javax.xml.ws</include>
+                <include>javax.xml.bind:jaxb-api-osgi</include>
                 <include>com.sun.faces:jsf-api</include>
                 <include>com.sun.faces:jsf-impl</include>
                 <include>org.glassfish:javax.servlet.jsp</include>

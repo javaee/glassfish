@@ -127,10 +127,9 @@
             <optional>true</optional>
         </dependency>        
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.ws</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
+            <groupId>javax.xml</groupId>
+            <artifactId>webservices-api-osgi</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>

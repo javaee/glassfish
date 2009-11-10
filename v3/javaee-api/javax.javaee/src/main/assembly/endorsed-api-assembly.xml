@@ -42,8 +42,7 @@
                 <include>org.glassfish:javax.annotation</include>
                 <include>org.glassfish:javax.xml.stream</include>
                 <include>org.glassfish:javax.xml.rpc</include>
-                <include>org.glassfish:javax.xml.bind</include>
-                <include>org.glassfish:javax.xml.ws</include>
+                <include>javax.xml.bind:jaxb-api-osgi</include>
                 <include>org.glassfish:javax.jws</include>
                 <include>javax.ws.rs:jsr311-api</include>
                 <include>org.glassfish:javax.xml.soap</include>
