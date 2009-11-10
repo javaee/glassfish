@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -78,7 +79,12 @@ public class ACCClassLoader extends URLClassLoader {
         if (instance != null) {
             throw new IllegalStateException("already set");
         }
-        instance = new ACCClassLoader(parent, shouldTransform);
+        instance = new ACCClassLoader(userClassPath(), parent, shouldTransform);
+        try {
+            adjustACCAgentClassLoaderParent(instance);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         return instance;
     }
 
@@ -86,29 +92,16 @@ public class ACCClassLoader extends URLClassLoader {
         return instance;
     }
 
-    /**
-     * Constructor invoked by the VM (because of the -Djava.system.class.loader
-     * setting).
-     *
-     * @param parent
-     */
-    public ACCClassLoader(ClassLoader parent) {
-        /*
-         * This constructor is used by the VM to create an ACCClassLoader as
-         * the system class loader (as specified by -Djava.system.class.loader
-         * on the java command created from the appclient script).  
-         * <p>
-         * Actually create two new loaders.  One will handle the GlassFish system JARs
-         * and the second will handle the application classes and anything
-         * from APPCPATH.  The first new ACCClassLoader will be set as the
-         * parent of the second and the second will be the one built by
-         * this constructor.
-         */
-        super(userClassPath(),
-                new ACCClassLoader(GFSystemClassPath(), parent.getParent()));
-        instance = this;
+    private static void adjustACCAgentClassLoaderParent(final ACCClassLoader instance)
+            throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        final ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        if (systemClassLoader.getClass().getName().equals("org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader")) {
+            final Field jwsLoaderParentField = ClassLoader.class.getDeclaredField("parent");
+            jwsLoaderParentField.setAccessible(true);
+            jwsLoaderParentField.set(systemClassLoader, instance);
+        }
     }
-
+    
     private static URL[] userClassPath() {
         final URI GFSystemURI = GFSystemURI();
         final List<URL> result = classPathToURLs(System.getProperty("java.class.path"));
@@ -126,14 +119,6 @@ public class ACCClassLoader extends URLClassLoader {
         result.addAll(classPathToURLs(System.getenv("APPCPATH")));
 
         return result.toArray(new URL[result.size()]);
-    }
-
-    private static URL[] GFSystemClassPath() {
-        try {
-            return new URL[] {GFSystemURI().normalize().toURL()};
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     private static URI GFSystemURI() {
@@ -177,6 +162,11 @@ public class ACCClassLoader extends URLClassLoader {
 //        super(urls, parent, factory);
 //    }
 
+    private ACCClassLoader(URL[] urls, ClassLoader parent, boolean shouldTransform) {
+        this(urls, parent);
+        this.shouldTransform = shouldTransform;
+    }
+    
     public synchronized void appendURL(final URL url) {
         addURL(url);
         if (shadow != null) {

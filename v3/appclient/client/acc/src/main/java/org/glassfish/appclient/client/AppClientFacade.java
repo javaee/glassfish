@@ -160,6 +160,7 @@ public class AppClientFacade {
                     "Current Java version {0} is too low; {1} or later required",
                     new Object[] {javaVersion.versionString, "1.6"}));
         }
+        System.setProperty("org.glassfish.appclient.acc.agentLoaderDone", "true");
         AgentArguments agentArgs = AgentArguments.newInstance(agentArgsText);
 
         List<String> effectiveCommandLineArgs = new ArrayList<String>();
@@ -333,7 +334,7 @@ public class AppClientFacade {
         ACCClassLoader loader = ACCClassLoader.instance();
         if (loader == null) {
             loader = ACCClassLoader.newInstance(
-                Thread.currentThread().getContextClassLoader(),
+                Thread.currentThread().getContextClassLoader().getParent(),
                 loaderShouldTransform);
         }
         return loader;
