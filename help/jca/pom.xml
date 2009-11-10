@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.glassfish.docs</groupId>
 	<artifactId>v3-docs</artifactId>
-        <version>3.0-b07</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-jca-plugin-help</artifactId>
