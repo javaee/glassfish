@@ -52,7 +52,6 @@
                 attrMap="#{pageSession.tmpMap}"
                 ResTypeList=>$attribute{ResTypeList}
                 DBVendorList=>$attribute{DBVendorList});
-    println("=========== #{wizardPoolExtra}")
     />
     </event>
             <sun:form id="propertyForm">
