@@ -99,6 +99,10 @@ public class TreeNodeHtmlProvider extends ProviderUtil implements MessageBodyWri
         String result = getHtmlHeader();
         result = result + "<h1>" + getTypeKey() + "</h1>" + "<hr>";
 
+        //display hint if module monitoring levels are OFF.
+        if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
+            result = result + getHint(uriInfo, MediaType.TEXT_HTML);
+        }
         String attributes = getAttributes(proxy);
         result = getHtmlForComponent(attributes, "Attributes", result);
 

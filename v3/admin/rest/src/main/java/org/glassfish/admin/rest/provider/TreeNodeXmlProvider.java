@@ -98,6 +98,11 @@ public class TreeNodeXmlProvider extends ProviderUtil implements MessageBodyWrit
         String result;
         result ="<" + getTypeKey();
 
+        //display hint if module monitoring levels are OFF.
+        if ((proxy.isEmpty()) && (uriInfo.getPath().equalsIgnoreCase("domain"))) {
+            result = result + getHint(uriInfo, MediaType.APPLICATION_XML);
+        }
+
         String attributes = getAttributes(proxy);
         if ((attributes != null) && (attributes.length() > 0)) {
             result = result + attributes;

@@ -58,6 +58,7 @@ import org.glassfish.admin.rest.Util;
 import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.external.statistics.Statistic;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 
@@ -378,6 +379,68 @@ public class ProviderUtil extends Util {
             result = result + component;
             result = result + "<hr class=\"separator\"/>";
         }
+        return result;
+    }
+
+
+    /**
+     * Method to get the hint to display in case module monitoring levels are OFF
+     *
+     * @param UriInfo the uri context object of the input request
+     * @param mediaType the media type of the input request
+     * @return a hit to display when module monitoring levels are all OFF
+     */
+    static protected String getHint(UriInfo uriInfo, String mediaType) {
+        String result = "";
+        java.net.URI baseUri = uriInfo.getBaseUri();
+        String monitoringLevelsConfigUrl = baseUri.getScheme() + "://" +
+            baseUri.getHost() + ":" +  baseUri.getPort() +
+                "/management/domain/configs/config/server-config/monitoring-service/module-monitoring-levels";
+
+        String name = localStrings.getLocalString(
+            "rest.monitoring.levels.hint.heading", "Hint");
+        String value = localStrings.getLocalString("rest.monitoring.levels.hint.message",
+            "Module monitoring levels may be OFF. To set module monitoring levels please visit following url: {0}",
+                new Object[] {monitoringLevelsConfigUrl});
+
+        if (mediaType.equals(MediaType.TEXT_HTML)) {
+            monitoringLevelsConfigUrl =
+                "<br><a href=\"" + monitoringLevelsConfigUrl + "\">" +
+                    monitoringLevelsConfigUrl + "</a>";
+
+            value = localStrings.getLocalString("rest.monitoring.levels.hint.message",
+                "Module monitoring levels may be OFF. To set module monitoring levels please visit following url: {0}",
+                    new Object[] {monitoringLevelsConfigUrl});
+
+            result = result + "<h2>" + name + "</h2>";
+            result = result + value + "<br>";
+            result = "<div>" + result + "</div>" + "<br>";
+            return result;
+       }
+
+       if (mediaType.equals(MediaType.APPLICATION_JSON)) {
+           result = " " + quote(name) + ":" + jsonValue(value);
+           return result;
+       }
+
+       if (mediaType.equals(MediaType.APPLICATION_XML)) {
+           result = result + " " + name + "=" + quote(value);
+           return result;
+       }
+
+       return result;
+    }
+
+
+    static protected String jsonValue(Object value) {
+        String result ="";
+
+        if (value.getClass().getName().equals("java.lang.String")) {
+            result = quote(value.toString());
+        } else {
+            result =  value.toString();
+        }
+
         return result;
     }
 
