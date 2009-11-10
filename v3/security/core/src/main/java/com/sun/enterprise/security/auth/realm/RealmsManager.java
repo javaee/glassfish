@@ -83,7 +83,7 @@ public class RealmsManager {
      * Returns the names of accessible realms.
      * @return set of realm names
      */
-    public  Enumeration	getRealmNames() {
+    public  Enumeration<String>	getRealmNames() {
 	return loadedRealms.keys();
     }
     

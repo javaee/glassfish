@@ -171,7 +171,7 @@ public abstract class Realm implements Comparable {
      * @throws BadRealmException If the requested realm cannot be instantiated.
      *
      */
-    public static Realm instantiate(String name, String className,
+    public static synchronized Realm instantiate(String name, String className,
                                     Properties props)
         throws BadRealmException
     {
@@ -206,7 +206,7 @@ public abstract class Realm implements Comparable {
      * @param realmName Name of the new realm.
      * @param f File containing Properties for the new realm.
      */
-    public static Realm instantiate(String realmName, File f)
+    public static synchronized Realm instantiate(String realmName, File f)
     throws NoSuchRealmException, BadRealmException, FileNotFoundException
     {
 
@@ -255,7 +255,7 @@ public abstract class Realm implements Comparable {
      * Instantiates a Realm class of the given type and invokes its init()
      *
      */
-    private static Realm doInstantiate(String name, String className,
+    private static synchronized Realm doInstantiate(String name, String className,
                                        Properties props)
         throws BadRealmException
     {
@@ -321,7 +321,7 @@ public abstract class Realm implements Comparable {
      * @param name The (previously instantiated) name for this realm.
      *
      */
-    protected static void updateInstance(Realm realm, String name)
+    protected static synchronized void updateInstance(Realm realm, String name)
     {
         RealmsManager mgr = getRealmsManager();
         if (mgr == null) {
@@ -348,7 +348,7 @@ public abstract class Realm implements Comparable {
      * @return Realm representing default realm.
      * @exception NoSuchRealmException if default realm does not exist
      */
-    public static Realm getDefaultInstance() throws NoSuchRealmException
+    public static synchronized Realm getDefaultInstance() throws NoSuchRealmException
     {
         return getInstance(getDefaultRealm());
     }
@@ -360,7 +360,7 @@ public abstract class Realm implements Comparable {
      * @return Default realm name.
      *
      */
-    public static String getDefaultRealm() {
+    public static synchronized String getDefaultRealm() {
         RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr.getDefaultRealmName();
@@ -376,7 +376,7 @@ public abstract class Realm implements Comparable {
      * @param realmName Name of realm to set as default.
      *
      */
-    public static void setDefaultRealm(String realmName) {
+    public static synchronized void setDefaultRealm(String realmName) {
         //defaultRealmName = realmName;
         RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
@@ -391,7 +391,7 @@ public abstract class Realm implements Comparable {
      * @param realmName
      * @exception NoSuchRealmException
      */
-    public static void unloadInstance(String realmName) throws NoSuchRealmException {
+    public static synchronized void unloadInstance(String realmName) throws NoSuchRealmException {
         //make sure instance exist
         getInstance(realmName);
         RealmsManager mgr = getRealmsManager();
@@ -411,7 +411,7 @@ public abstract class Realm implements Comparable {
      * @param value property value.
      *
      */
-    public void setProperty(String name, String value)
+    public synchronized void setProperty(String name, String value)
     {
         ctxProps.setProperty(name, value);
     }
@@ -424,7 +424,7 @@ public abstract class Realm implements Comparable {
      * @returns value.
      *
      */
-    public String getProperty(String name)
+    public synchronized String getProperty(String name)
     {
         return ctxProps.getProperty(name);
     }
@@ -432,7 +432,7 @@ public abstract class Realm implements Comparable {
     /**
      * Return properties of the realm.
      */
-    protected Properties getProperties() {
+    protected synchronized Properties getProperties() {
         return ctxProps;
     }
 
@@ -446,7 +446,7 @@ public abstract class Realm implements Comparable {
      * @return String containing JAAS context name.
      *
      */
-    public String getJAASContext()
+    public synchronized String getJAASContext()
     {
         return ctxProps.getProperty(IASRealm.JAAS_CONTEXT_PARAM);
     }
@@ -463,7 +463,7 @@ public abstract class Realm implements Comparable {
      * @exception NoSuchRealmException if the realm is invalid
      * @exception BadRealmException if realm data structures are bad
      */
-    public static Realm	getInstance(String name) throws NoSuchRealmException
+    public static synchronized Realm	getInstance(String name) throws NoSuchRealmException
     {
 	Realm retval = _getInstance(name);
 
@@ -485,7 +485,7 @@ public abstract class Realm implements Comparable {
      * @param name identifies the realm
      * @return the requested realm
      */
-    private static Realm _getInstance(String name) {
+    private static synchronized Realm _getInstance(String name) {
         RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr._getInstance(name);
@@ -501,7 +501,7 @@ public abstract class Realm implements Comparable {
      * Returns the names of accessible realms.
      * @return set of realm names
      */
-    public static Enumeration	getRealmNames() {
+    public static synchronized Enumeration	getRealmNames() {
         RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr.getRealmNames();
