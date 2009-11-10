@@ -48,6 +48,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.BindingID;
 
 import javax.xml.ws.WebServiceContext;
+import org.glassfish.ejb.api.EJBInvocation;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.AddressingFeature;
@@ -306,8 +307,41 @@ public class EjbRuntimeEndpointInfo {
                 }
             }
         }
+        ComponentInvocation ejbInvocation = adapterInvInfo.getInv();
+        ((EJBInvocation)ejbInvocation).setContextData(wsCtxt);
+        doWSContextInjection(wsCtxt);
+
         adapterInvInfo.setAdapter(adapter);
         return adapterInvInfo;
+    }
+
+    private void doWSContextInjection(WebServiceContextImpl wsCtxt) {
+        WebServiceContextImpl wsc = null;
+
+        EjbDescriptor bundle = (EjbDescriptor)endpoint.getEjbComponentImpl();
+        Iterator<ResourceReferenceDescriptor> it = bundle.getResourceReferenceDescriptors().iterator();
+        while(it.hasNext()) {
+            ResourceReferenceDescriptor r = it.next();
+            if(r.isWebServiceContext()) {
+                Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
+
+                while(iter.hasNext()) {
+                    InjectionTarget target = iter.next();
+                    try {
+                        javax.naming.InitialContext ic = new javax.naming.InitialContext();
+                        wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
+                    } catch (Throwable t) {
+                        // Do something here
+                        logger.fine(rb.getString("exception.thrown") + t);
+                    }
+                    if(wsc != null) {
+                        wsc.setContextDelegate(wsCtxt.getContextDelegate());
+
+
+                    }
+                } 
+            }
+        }
     }
 
    /**
