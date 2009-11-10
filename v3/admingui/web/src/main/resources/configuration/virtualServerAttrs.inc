@@ -60,7 +60,7 @@
 
          <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.sso}">
              <sun:radioButton id="httpS"  name="ssoGroup" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="inherit" />
-             " <b>$resource{i18n_web.vs.httpLink, $pageSession{configName}}</b>
+             " <b>$resource{i18n_web.vs.httpLink}</b>
              # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
              "<br />
              <sun:radioButton id="ena"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true" />
@@ -107,7 +107,7 @@
 
         <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}">
              <sun:radioButton id="httpS"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="inherit" />
-             " <b>$resource{i18n_web.vs.httpLink, $pageSession{configName}}</b>
+             " <b>$resource{i18n_web.vs.httpLink}</b>
              # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
              "<br />
              <sun:radioButton id="ena"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true" />
