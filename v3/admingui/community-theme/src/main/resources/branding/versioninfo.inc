@@ -38,9 +38,11 @@
 <!initPage
     setResourceBundle(key="theme" bundle="org.glassfish.admingui.community-theme.Strings");
 />
-<sun:versionPage id="version"
-    productImageURL="/resource/images/VersionProductName.png"
-    productImageDescription="$resource{theme.versionImage.description}"
-    versionString="#{sessionScope.appServerVersion}"
-    copyrightString="$resource{i18n.copyright.shortMessage}"
-/>
+<sun:form>
+    <sun:versionPage id="version"
+        productImageURL="/resource/images/VersionProductName.png"
+        productImageDescription="$resource{theme.versionImage.description}"
+        versionString="#{sessionScope.appServerVersion}"
+        copyrightString="$resource{i18n.copyright.shortMessage}"
+    />
+</sun:form>
