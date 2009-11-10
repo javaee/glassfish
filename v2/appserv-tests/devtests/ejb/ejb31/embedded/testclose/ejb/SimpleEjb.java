@@ -42,4 +42,17 @@ public class SimpleEjb {
         return result;
 
     }
+
+    public SimpleEntity getSimpleEntity(int i) {
+        Query q = em.createNamedQuery("SimpleEntity.findAll");
+        Collection entities = q.getResultList();
+        int s = entities.size();
+        for (Object o : entities) {
+            SimpleEntity se = (SimpleEntity)o;
+            if (se.getName().startsWith("Entity number " + i)) {
+                return se;
+            }
+        }
+        return null;
+    }
 }

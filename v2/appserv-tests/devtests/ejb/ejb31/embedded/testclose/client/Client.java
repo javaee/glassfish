@@ -37,6 +37,7 @@
 package com.acme;
 
 import org.glassfish.tests.ejb.sample.SimpleEjb;
+import org.glassfish.tests.ejb.sample.SimpleEntity;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -77,6 +78,8 @@ public class Client {
                 System.out.println("Invoking EJB...");
                 System.out.println("EJB said: " + ejb.saySomething());
                 System.out.println("JPA call returned: " + ejb.testJPA());
+                SimpleEntity se = ejb.getSimpleEntity(1);
+                System.out.println("getSimpleEntity call returned: " + ((se == null)? null : se.getName()));
             }
 
             stat.addStatus("EJB embedded with JPA", stat.PASS);
