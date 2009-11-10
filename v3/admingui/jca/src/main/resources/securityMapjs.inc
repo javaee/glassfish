@@ -53,19 +53,14 @@
     }\
  }
 " function enableWorkSecurityMapFields(opt){	\
-    var selectedOption = getSelectedValueFromForm(document.forms['propertyForm'], 'usersOptionGrp'); \
     if(opt == 'principals') {\
- 	enableComponent('#{eisprincipalsId}', 'text');  \
-        enableComponent('#{mapprincipalsId}', 'text');  \
         disableComponent('#{eisuserGroupsId}', 'text'); \
-        disableComponent('#{mapuserGroupsId}', 'text'); \
+ 	enableComponent('#{eisprincipalsId}', 'text');  \
 	getTextElement('#{eisprincipalsId}').focus();  \
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true); \
     }else{ \
 	disableComponent('#{eisprincipalsId}', 'text'); \
-        disableComponent('#{mapprincipalsId}', 'text'); \
         enableComponent('#{eisuserGroupsId}', 'text');  \
-        enableComponent('#{mapuserGroupsId}', 'text');  \
         getTextElement('#{eisuserGroupsId}').focus();  \
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);  \
     }\

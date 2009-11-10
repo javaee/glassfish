@@ -58,11 +58,6 @@
         setPageSessionAttribute(key="childType3" value="principal-map");
          //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
-        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
-        setPageSessionAttribute(key="showCancelButton" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
-        
     />
     </event>
             <sun:form id="propertyForm">

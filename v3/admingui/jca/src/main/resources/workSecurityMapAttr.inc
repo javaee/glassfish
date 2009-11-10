@@ -56,7 +56,7 @@
                     onClick="enableWorkSecurityMapFields('users'); "
                 />
             "<br /><br />
-            <sun:textField id="eisgrouptext" columns="$int{55}" text="#{pageSession.valueMap2['EisGroup']}" >
+            <sun:textField id="eisgrouptext" columns="$int{55}" text="#{pageSession.valueMap2['GroupMapping']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{eisuserGroupsId});
                     />
@@ -64,14 +64,7 @@
             "<br />
             <sun:helpInline id="eisgroupHelp"text="$resource{i18njca.workSecurityMap.EISGroupInlineHelp}"/>
             "<br />
-            <sun:textField id="mapgroup" columns="$int{55}" text="#{pageSession.valueMap2['MappedGroup']}" >
                     <!afterCreate
-                        getClientId(component="$this{component}" clientId=>$page{mapuserGroupsId});
-                    />
-            </sun:textField>
-            "<br />
-            <sun:helpInline id="mapgroupHelp"text="$resource{i18njca.workSecurityMap.MappedGroupInlineHelp}"/>
-            <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{grpPropId});
                 />
         </sun:property>
@@ -81,7 +74,7 @@
                     onClick="javascript: enableWorkSecurityMapFields('principals');"
                 />
             "<br /><br />
-            <sun:textField id="eisprincipals" columns="$int{55}" text="#{pageSession.valueMap3['EisPrincipal']}" >
+            <sun:textField id="eisprincipals" columns="$int{55}" text="#{pageSession.valueMap2['PrincipalMapping']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{eisprincipalsId});
                     />
@@ -89,14 +82,7 @@
             "<br />
                     <sun:helpInline id="eisprincipalsHelp"text="$resource{i18njca.workSecurityMap.EISPrincipalInlineHelp}"/>
             "<br />
-            <sun:textField id="mapprincipals" columns="$int{55}" text="#{pageSession.valueMap3['MappedPrincipal']}" >
                     <!afterCreate
-                        getClientId(component="$this{component}" clientId=>$page{mapprincipalsId});
-                    />
-            </sun:textField>
-            "<br />
-                    <sun:helpInline id="mapprincipalsHelp"text="$resource{i18njca.workSecurityMap.MappedPrincipalInlineHelp}"/>
-            <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{pPropId});
                 />
         </sun:property>

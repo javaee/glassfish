@@ -40,92 +40,25 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-               if(#{pageSession.hasRadioButtons}){
-                    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
-                        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
-                    }
-
-                }
-                if(#{pageSession.hasPropertySheet}){
-                    saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        onlyUseAttrs="#{pageSession.onlyUseAttrs}"
-                    );
-                    if(#{usersOptionG}){
-                        if(#{pexist}) {
-                            deleteChild(objectNameStr="#{pageSession.objectNameStr}", type="principal-map", name="#{null}");
-                        }
-                        if(#{gexist}) {
-                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}" attrs="#{pageSession.valueMap2}"
-                                skipAttrs="#{pageSession.skipAttrsList2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                            );
-                        }
-                        if(!#{gexist}) {
-                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="group-map"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{objStr2});
-                        }
-
-                    }
-                    if(#{usersOptionP}){
-                        if(#{gexist}) {
-                            deleteChild(objectNameStr="#{pageSession.objectNameStr}", type="group-map", name="#{null}");
-                        }
-                        if(#{pexist}) {
-                            saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr3}" attrs="#{pageSession.valueMap3}"
-                            skipAttrs="#{pageSession.skipAttrsList2}"
-                            convertToFalse="#{pageSession.convertToFalseList2}"
-                            );
-                        }
-                        if(!#{pexist}) {
-                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="principal-map"
-                                attrs="#{pageSession.valueMap3}"
-                                convertToFalse="#{pageSession.convertToFalseList3}"
-                                result => $attribute{objStr3});
-                        }
-                        
-                    }
-                }
+                    saveWorkSecurityMap(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}" valueMap2="#{pageSession.valueMap2}" usersOptionG="#{usersOptionG}" usersOptionP="#{usersOptionP}" );
                 prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.redirect(page="#{selfPage}&mapName=#{pageSession.valueMap['Name']}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                 createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
+                   createWorkSecurityMap(parentObjectNameStr="#{pageSession.parentObjectNameStr}"
+                        childType="#{pageSession.childType}"
+                        usersOptionG="#{usersOptionG}"
+                        usersOptionP="#{usersOptionP}"
                         attrs="#{pageSession.valueMap}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                        result => $attribute{objStr});
-                    setPageSessionAttribute(key="parentObjectNameStr2", value="$attribute{objStr}");
-                    if(#{pageSession.has2Objects}){
-                        if(#{usersOptionG}){
-                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{objStr2});
-                        }
-                        if(#{usersOptionP}){
-                            createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType3}"
-                                attrs="#{pageSession.valueMap3}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{objStr2});
-                        }
-                        if (!#{pageSession.parentObjectNameStr2}){
-                            //create as a sub-element
-                            createProxy(parentObjectNameStr="$attribute{objStr}" childType="#{pageSession.childType2}"
-                                attrs="#{pageSession.valueMap2}"
-                                convertToFalse="#{pageSession.convertToFalseList2}"
-                                result => $attribute{objStr2});
-                        }
-                    }
+                        mapping="#{pageSession.valueMap2}"
+                        convertToFalse="#{pageSession.convertToFalseList}");
                     gf.redirect(page="#{pageSession.parentPage}")
                 />
             </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}"  text="$resource{i18n.button.Cancel}" >
                 <!command
                     gf.redirect(page="#{parentPage}");
                 />

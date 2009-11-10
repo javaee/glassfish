@@ -60,6 +60,14 @@ import java.util.Map;
 import java.util.HashMap;
 
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.ObjectName;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -372,6 +380,197 @@ public class ConnectorsHandlers {
             } 
             return defs;
         }
+    }
+
+     @Handler(id = "createWorkSecurityMap",
+        input = {
+            @HandlerInput(name = "parentObjectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "childType", type = String.class, required = true),
+            @HandlerInput(name = "usersOptionG", type = String.class),
+            @HandlerInput(name = "usersOptionP", type = String.class),
+            @HandlerInput(name = "attrs", type = Map.class),
+            @HandlerInput(name = "mapping", type = Map.class),
+            @HandlerInput(name = "convertToFalse", type = List.class)})
+    public static void createWorkSecurityMap(HandlerContext handlerCtx) {
+         String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
+         String childType = (String) handlerCtx.getInputValue("childType");
+         String usersOptionG = (String) handlerCtx.getInputValue("usersOptionG");
+         String usersOptionP = (String) handlerCtx.getInputValue("usersOptionP");
+         Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
+         Map<String, Object> mappings = (Map) handlerCtx.getInputValue("mapping");
+
+         try {
+             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxy(new ObjectName(parentObjectNameStr));
+             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
+
+             if (convertToFalse != null) {
+                 for (String sk : convertToFalse) {
+                     if (attrs.keySet().contains(sk)) {
+                         if (attrs.get(sk) == null) {
+                             attrs.put(sk, "false");
+                         }
+                     }
+                 }
+             }
+
+             V3AMX.removeElement(attrs);
+             /* If user doesn't fill in anything, we need to remove it, otherwise, it is written out as "" in domain.xml and
+              * user will not be able to get the default value.
+              * Another reason is for attributes that is optional but is an enum, eg  transactionIsolationLevel in jdbc connection
+              * pool, (read-uncommitted|read-committed|repeatable-read|serializable)  pass in "" will result in constraints
+              * violation.
+              */
+             Set<Map.Entry<String, Object>> attrSet = attrs.entrySet();
+             Iterator<Map.Entry<String, Object>> iter = attrSet.iterator();
+             while (iter.hasNext()) {
+                 Map.Entry<String, Object> oneEntry = iter.next();
+                 Object val = oneEntry.getValue();
+                 if ((val != null) && (val instanceof String) && (val.equals(""))) {
+                     iter.remove();
+                 }
+             }
+
+             AMXConfigProxy workSecurityMap = amx.createChild(childType, attrs);
+             setWorkSecurityMapChildren(workSecurityMap, usersOptionG, usersOptionP, mappings);
+
+         } catch (Exception ex) {
+             GuiUtil.getLogger().severe("createWorkSecurityMap error");
+             GuiUtil.handleException(handlerCtx, ex);
+         }
+    }
+
+
+     private static void setWorkSecurityMapChildren(AMXConfigProxy amx, String usersOptionG, String usersOptionP, Map mappings){
+         Map<String,String> mappingAttrs = new HashMap();
+         if ((usersOptionG != null) && usersOptionG.equals("users")) {
+             String groupsMapping = (String) mappings.get("GroupMapping");
+             mappingAttrs = stringToMap(groupsMapping, ",");
+             for(String key: mappingAttrs.keySet()){
+                 Map<String, Object>  attrs = new HashMap();
+                 attrs.put("EisGroup", key);
+                 attrs.put("MappedGroup", mappingAttrs.get(key));
+                 amx.createChild("group-map", attrs);
+             }
+         } else {
+             String principalMapping = (String) mappings.get("PrincipalMapping");
+             mappingAttrs = stringToMap(principalMapping, ",");
+             for(String key: mappingAttrs.keySet()){
+                 Map attrs = new HashMap();
+                 attrs.put("EisPrincipal", key);
+                 attrs.put("MappedPrincipal", mappingAttrs.get(key));
+                 amx.createChild("principal-map", attrs);
+             }
+         }
+     }
+
+
+     @Handler(id = "saveWorkSecurityMap",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+            @HandlerInput(name = "valueMap", type = Map.class, required = true),
+            @HandlerInput(name = "valueMap2", type = Map.class, required = true),
+            @HandlerInput(name = "usersOptionG", type = String.class),
+            @HandlerInput(name = "usersOptionP", type = String.class)})
+        public static void saveWorkSecurityMap(HandlerContext handlerCtx) {
+
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            Map valueMap = (Map) handlerCtx.getInputValue("valueMap");
+            Map valueMap2 = (Map) handlerCtx.getInputValue("valueMap2");
+            String usersOptionG = (String) handlerCtx.getInputValue("usersOptionG");
+            String usersOptionP = (String) handlerCtx.getInputValue("usersOptionP");
+            
+
+            try{
+                AttributeList attrList = new AttributeList();
+                Attribute rarAttr = new Attribute("ResourceAdapterName", valueMap.get("ResourceAdapterName"));
+                String desc = valueMap.get("Description") == null ? null : (String) valueMap.get("Description");
+                Attribute descAttr = new Attribute("Description", desc);
+                String enable = valueMap.get("Enabled") == null ? "false" : (String) valueMap.get("Enabled");
+                Attribute enableAttr = new Attribute("Enabled", enable);
+                attrList.add(rarAttr);
+                attrList.add(descAttr);
+                attrList.add(enableAttr);
+                V3AMX.setAttributes( new ObjectName(objectNameStr), attrList);
+
+                AMXConfigProxy workSecurityMap = (AMXConfigProxy)V3AMX.getInstance().getProxy(new ObjectName(objectNameStr));
+                Map<String, AMXProxy> children = (Map<String, AMXProxy>)workSecurityMap.childrenMap("group-map");
+                if (children.size() > 0){
+                    for(String oneChild: children.keySet()){
+                        workSecurityMap.removeChild("group-map", oneChild);
+                    }
+                }
+
+                Map<String, AMXProxy> pchildren = (Map<String, AMXProxy>)workSecurityMap.childrenMap("principal-map");
+                if (pchildren.size() > 0){
+                    for(String oneChild: pchildren.keySet()){
+                        workSecurityMap.removeChild("principal-map", oneChild);
+                    }
+                }
+                setWorkSecurityMapChildren(workSecurityMap, usersOptionG, usersOptionP, valueMap2);
+            }catch(Exception ex){
+                GuiUtil.prepareException(handlerCtx, ex);
+            }
+     }
+
+
+    @Handler(id = "getWorkSecurityMapInfo",
+        input = {
+            @HandlerInput(name = "objectNameStr", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "valueMap2", type = Map.class),
+            @HandlerOutput(name = "usersOptionG", type = String.class),
+            @HandlerOutput(name = "usersOptionP", type = String.class)
+    })
+    public static void getWorkSecurityMap(HandlerContext handlerCtx) {
+        try {
+            String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
+            Map valueMap2 = new HashMap();
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxy(new ObjectName(objectNameStr));
+
+            Map<String, AMXProxy> children = (Map<String, AMXProxy>)amx.childrenMap("group-map");
+            if (children.size()> 0){
+                String gp = "";
+                for(AMXProxy oneGroup: children.values()){
+                    ObjectName objN = oneGroup.objectName();
+                    gp = gp + V3AMX.getAttribute(objN, "EisGroup") + "=" +  V3AMX.getAttribute(objN, "MappedGroup");
+                    gp = gp + ",";
+                }
+                gp = gp.substring(0, gp.length()-1);
+                valueMap2.put("GroupMapping", gp);
+                handlerCtx.setOutputValue("usersOptionG", "users");
+            }else{
+                Map<String, AMXProxy> pChildren = (Map<String, AMXProxy>)amx.childrenMap("principal-map");
+                if (pChildren.size() > 0){
+                    String pM = "";
+                    for(AMXProxy oneGroup: pChildren.values()){
+                        ObjectName objN = oneGroup.objectName();
+                        pM = pM + V3AMX.getAttribute(objN, "EisPrincipal") + "=" + V3AMX.getAttribute(objN, "MappedPrincipal");
+                        pM = pM + ",";
+                    }
+                    pM = pM.substring(0, pM.length()-1);
+                    valueMap2.put("PrincipalMapping", pM);
+                    handlerCtx.setOutputValue("usersOptionP", "principals");
+                }
+            }
+            handlerCtx.setOutputValue("valueMap2", valueMap2);
+        } catch (Exception ex) {
+
+        }
+    }
+
+   public static Map stringToMap(String str, String delimiter) {
+        Map props = new HashMap();
+         if ( str != null && delimiter != null) {
+            StringTokenizer tokens = new StringTokenizer(str, delimiter);
+            while (tokens.hasMoreTokens()) {
+                String token = tokens.nextToken().trim();
+                String values[] = token.split("=");
+                if(values.length == 2) {
+                    props.put(values[0], values[1]);
+                }
+            }
+        }
+        return props;
     }
 
     public static final String ADMINOBJECT_INTERFACES_KEY = "AdminObjectInterfacesKey";
