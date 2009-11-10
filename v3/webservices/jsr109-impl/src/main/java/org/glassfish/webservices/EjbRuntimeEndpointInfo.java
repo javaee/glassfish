@@ -306,8 +306,41 @@ public class EjbRuntimeEndpointInfo {
                 }
             }
         }
+        //Issue 10776 The wsCtxt created using WebServiceReferenceManagerImpl
+        //does not have the jaxwsContextDelegate set
+        //set it using this method
+        addWSContextInfo(wsCtxt);
+
         adapterInvInfo.setAdapter(adapter);
         return adapterInvInfo;
+    }
+
+    private void addWSContextInfo(WebServiceContextImpl wsCtxt) {
+        WebServiceContextImpl wsc = null;
+
+        EjbDescriptor bundle = (EjbDescriptor)endpoint.getEjbComponentImpl();
+        Iterator<ResourceReferenceDescriptor> it = bundle.getResourceReferenceDescriptors().iterator();
+        while(it.hasNext()) {
+            ResourceReferenceDescriptor r = it.next();
+            if(r.isWebServiceContext()) {
+                Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
+
+                while(iter.hasNext()) {
+                    InjectionTarget target = iter.next();
+                    try {
+                        javax.naming.InitialContext ic = new javax.naming.InitialContext();
+                        wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
+                    } catch (Throwable t) {
+                        // Do something here
+                        logger.fine(rb.getString("exception.thrown") + t);
+                    }
+                    if(wsc != null) {
+                        wsc.setContextDelegate(wsCtxt.getContextDelegate());
+
+                    }
+                } 
+            }
+        }
     }
 
    /**
