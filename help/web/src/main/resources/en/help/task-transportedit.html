@@ -18,8 +18,9 @@ an abstract class that manages the lifecycle of selection keys. If you do
 not specify a value, a default implementation is used.</p></li>
 <li><b>From the Byte Buffer Type drop-down list, select the type of <tt>ByteBuffer</tt>
 to be used.</b><p>Available choices are <tt>HEAP</tt> and <tt>DIRECT</tt>. The default value is <tt>HEAP</tt>.</p></li>
-<li><b>In the Acceptor Threads field, type the number of processors in the machine.</b><p>The default value is &#8211;1, which indicates that Grizzly will calculate the number
-of acceptor threads itself, based on the number of processors in the machine.</p><p>To set the number of request processing threads, set the Max Thread Pool
+<li><b>In the Acceptor Threads field, type the number of processors in the machine.</b><p>A value of &#8211;1 indicates that Grizzly will calculate the number of acceptor
+threads itself, based on the number of processors in the machine. The default
+value is 1.</p><p>To set the number of request processing threads, set the Max Thread Pool
 Size value of the thread pool used by a network listener that
 uses this transport.</p></li>
 <li><b>In the Max Connections Count field, type the maximum number of pending connections
@@ -32,7 +33,7 @@ an idle key will be cancelled and the channel closed.</b><p>The default value is
 <li><b>In the Read Timeout field, type the number of milliseconds the Enterprise
 Serverwaits during the header and body parsing phase of a read operation.</b><p>The default value is 30,000.</p></li>
 <li><b>In the Selector Poll Timeout field, type the number of milliseconds a NIO
-Selector will block waiting for events (users' requests).</b><p>The default value is 1.</p></li>
+Selector will block waiting for events (users' requests).</b><p>The default value is 1000.</p></li>
 <li><b>In the Write Timeout field, type the number of milliseconds the Enterprise
 Serverwaits before considering the remote client disconnected when writing the response.</b><p>The default value is 30,000.</p></li>
 <li><b>Select the Display Configuration Enabled checkbox to flush Grizzly's internal configuration to the

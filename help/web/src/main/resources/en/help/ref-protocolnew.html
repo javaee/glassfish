@@ -29,7 +29,7 @@ for you at the same time.</p><p>The New Protocol page contains the following opt
 <li><p>A request is received for which a matching security constraint requires SSL transport.</p></li></ul>
 <p>If a redirect port is not specified, the Enterprise Server uses the port number specified in the original request. By default, no port is specified.</p></dd>
 <dt>Max Connections</dt>
-<dd><p>Specifies the maximum number of requests that can be pipelined until the connection is closed by the server. The Keep-Alive subsystem periodically polls idle connections. The default value is 250.</p><p>Set this property to 1 to disable HTTP/1.0 keep-alive, as well as HTTP/1.1 keep-alive and pipelining. A value of 0 means requests are always rejected. A value of &#8211;1 sets no limit to the number of keep-alive connections.</p></dd>
+<dd><p>Specifies the maximum number of requests that can be pipelined until the connection is closed by the server. The Keep-Alive subsystem periodically polls idle connections. The default value is 256.</p><p>Set this property to 1 to disable HTTP/1.0 keep-alive, as well as HTTP/1.1 keep-alive and pipelining. A value of 0 means requests are always rejected. A value of &#8211;1 sets no limit to the number of keep-alive connections.</p></dd>
 <dt>Timeout</dt>
 <dd><p>The maximum time in seconds that a connection can be deemed as idle and kept in the keep-alive state. A value of 0 or less means that keep-alive connections are kept open indefinitely. The default value is 30 seconds.</p></dd>
 <dt>Upload Timeout</dt>

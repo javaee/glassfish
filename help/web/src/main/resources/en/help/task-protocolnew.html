@@ -47,7 +47,7 @@ to redirect a request to another port. </b><p>The Enterprise Server automaticall
 <p>If a redirect port is not specified, the Enterprise Server uses the
 port number specified in the original request. By default, no port is specified.</p></li>
 <li><b>In the Max Connections field, type the maximum number of requests that can
-be pipelined until the connection is closed by the server.</b><p>The Keep-Alive subsystem periodically polls idle connections. The default value is 250.</p><p>Set this property to 1 to disable HTTP/1.0 keep-alive, as well as
+be pipelined until the connection is closed by the server.</b><p>The Keep-Alive subsystem periodically polls idle connections. The default value is 256.</p><p>Set this property to 1 to disable HTTP/1.0 keep-alive, as well as
 HTTP/1.1 keep-alive and pipelining. A value of 0 means requests are always rejected. A
 value of &#8211;1 sets no limit to the number of keep-alive connections.</p></li>
 <li><b>In the Timeout field, type the maximum time in seconds that a connection

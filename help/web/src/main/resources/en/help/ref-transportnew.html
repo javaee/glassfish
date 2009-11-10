@@ -14,7 +14,7 @@ default <tt>tcp</tt> transport.</p><p>The New Transport page contains the follow
 <dt>Byte Buffer Type</dt>
 <dd><p>The type of <tt>ByteBuffer</tt> to be used. Available choices are <tt>HEAP</tt> and <tt>DIRECT</tt>. The default value is <tt>HEAP</tt>.</p></dd>
 <dt>Acceptor Threads</dt>
-<dd><p>The number of processors in the machine. The default value is &#8211;1, which indicates that Grizzly will calculate the number of acceptor threads itself, based on the number of processors in the machine.</p><p>To set the number of request processing threads, set the Max Thread Pool Size value of the thread pool used by a network listener that uses this transport.</p></dd>
+<dd><p>The number of processors in the machine. A value of &#8211;1 indicates that Grizzly will calculate the number of acceptor threads itself, based on the number of processors in the machine. The default value is 1.</p><p>To set the number of request processing threads, set the Max Thread Pool Size value of the thread pool used by a network listener that uses this transport.</p></dd>
 <dt>Max Connections Count</dt>
 <dd><p>The maximum number of pending connections on a network listener that uses this transport. The default value is 4096.</p></dd>
 <dt>Buffer Size</dt>
@@ -24,7 +24,7 @@ default <tt>tcp</tt> transport.</p><p>The New Transport page contains the follow
 <dt>Read Timeout</dt>
 <dd><p>The number of milliseconds the Enterprise Server waits during the header and body parsing phase of a read operation. The default value is 30,000.</p></dd>
 <dt>Selector Poll Timeout</dt>
-<dd><p>The number of milliseconds an NIO selector will block waiting for events (user requests). The default value is 1.</p></dd>
+<dd><p>The number of milliseconds an NIO selector will block waiting for events (user requests). The default value is 1000.</p></dd>
 <dt>Write Timeout</dt>
 <dd><p>The number of milliseconds the Enterprise Server waits before considering the remote client disconnected when writing the response. The default value is 30,000.</p></dd>
 <dt>Display Configuration</dt>
