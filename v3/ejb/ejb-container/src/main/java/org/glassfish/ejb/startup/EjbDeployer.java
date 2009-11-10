@@ -238,7 +238,7 @@ public class EjbDeployer
         OpsParams params = dc.getCommandParameters(OpsParams.class);
         if (params.origin == OpsParams.Origin.undeploy) {
 
-            initCMPDeployer();
+            // If CMP beans are present, cmpDeployer should've been initialized in unload()
             if (cmpDeployer != null) {
                 cmpDeployer.clean(dc);
             }
