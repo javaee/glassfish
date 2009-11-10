@@ -77,15 +77,18 @@ import com.sun.enterprise.security.auth.login.LoginContextDriver;
 public final class RealmsImpl extends AMXImplBase
     // implements Realms
 {
-    private final RealmsManager mRealmsManager;
-    
 		public
 	RealmsImpl( final ObjectName containerObjectName )
 	{
         super( containerObjectName, Realms.class);
-        
-        mRealmsManager = Globals.getDefaultHabitat().getComponent(RealmsManager.class);
 	}
+    
+    public static RealmsManager
+    getRealmsManager()
+    {
+        final RealmsManager mgr = Globals.getDefaultHabitat().getComponent(RealmsManager.class);
+        return mgr;
+    }
     
     private volatile boolean    realmsLoaded = false;
     
@@ -177,7 +180,7 @@ public final class RealmsImpl extends AMXImplBase
         private String[]
     _getRealmNames()
     {
-        final List<String> items = ListUtil.newList( mRealmsManager.getRealmNames() );
+        final List<String> items = ListUtil.newList( getRealmsManager().getRealmNames() );
         return CollectionUtil.toArray(items, String.class);
     }
     
@@ -201,27 +204,27 @@ public final class RealmsImpl extends AMXImplBase
     public String[]
     getPredefinedAuthRealmClassNames()
     {
-        final List<String> items = mRealmsManager.getPredefinedAuthRealmClassNames();
+        final List<String> items = getRealmsManager().getPredefinedAuthRealmClassNames();
         return CollectionUtil.toArray(items, String.class);
     }
     
     
     public String getDefaultRealmName()
     {
-        return mRealmsManager.getDefaultRealmName();
+        return getRealmsManager().getDefaultRealmName();
     }
     
     
     public void setDefaultRealmName(final String realmName)
     {
-        mRealmsManager.setDefaultRealmName(realmName);
+        getRealmsManager().setDefaultRealmName(realmName);
     }
         
         private Realm
     getRealm(final String realmName)
     {
         loadRealms();
-        final Realm realm = mRealmsManager.getFromLoadedRealms(realmName);
+        final Realm realm = getRealmsManager().getFromLoadedRealms(realmName);
         if ( realm == null )
         {
             throw new IllegalArgumentException( "No such realm: " + realmName );
@@ -300,8 +303,8 @@ public final class RealmsImpl extends AMXImplBase
         }
     }
 
-    
-    
+
+
     public String[] getUserNames(final String realmName)
     {
         try
@@ -359,8 +362,6 @@ public final class RealmsImpl extends AMXImplBase
         throw new RuntimeException(e);
         }
     }
-    
-    private static void debug( final String s ) { System.out.println("##### " + s); }
     
     private static final String ADMIN_REALM = "admin-realm";
     private static final String ANONYMOUS_USER = "anonymous";
