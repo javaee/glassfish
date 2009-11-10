@@ -90,6 +90,9 @@
 
         <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  helpText="$resource{i18njca.adminObjectResource.resTypeHelp}">
             <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ResType']}"  labels="$attribute{resourceTypes}" submitForm="#{true}" immediate="#{true}">
+            <!afterCreate
+                      getClientId(component="$this{component}" clientId=>$page{resTypePropId});
+             />
             <!command
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="resType" value="#{click.selected}")
@@ -111,9 +114,20 @@
         </sun:property>  
 
         <sun:property id="className"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.adminObjectResource.classname}" helpText="$resource{i18njca.adminObjectResource.classnameHelp}">
-            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ClassName']}"  labels="$attribute{classNames}" values="$attribute{classNames}" immediate="#{true}" >
-                <!afterCreate
-                      getClientId(component="$this{component}" clientId=>$page{classNameId});
+            <sun:dropDown id="db" required="#{true}" styleClass="required" selected="#{pageSession.valueMap['ClassName']}"  labels="$attribute{classNames}" values="$attribute{classNames}" submitForm="#{true}" immediate="#{true}" >
+                <!command
+                    setAttribute(key="click" value="$this{component}");
+                    setAttribute(key="className" value="#{click.selected}")
+                    setAttribute(key="reload" value="#{true}" );
+                    getUIComponent(clientId="#{resAdaptorPropId}", component=>$attribute{resAdaptorComponent});
+                    getUIComponentProperty(component="$attribute{resAdaptorComponent}", name="selected", value=>$attribute{resAdapter});
+                    getUIComponent(clientId="#{resTypePropId}", component=>$attribute{resTypeComponent});
+                    getUIComponentProperty(component="$attribute{resTypeComponent}", name="selected", value=>$attribute{resType});
+                    if(!#{edit}){
+                        getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
+                        getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
+                        gf.navigate(page="#{selfPage}");
+                    }
                 />
             </sun:dropDown>
         </sun:property>

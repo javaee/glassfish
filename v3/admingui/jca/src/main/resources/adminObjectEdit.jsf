@@ -50,9 +50,11 @@
          getRequestValue(key="name" value="#{pageSession.Name}");
          getRequestValue(key="resAdapter" value="#{resAdapter}");
          getRequestValue(key="resType" value="#{resType}");
+         getRequestValue(key="className" value="#{className}");
          mapPut(map="#{pageSession.tmpMap}" key="Name" value="#{pageSession.Name}");
          mapPut(map="#{pageSession.tmpMap}" key="ResAdapter" value="#{resAdapter}");
          mapPut(map="#{pageSession.tmpMap}" key="ResType" value="#{resType}");
+         mapPut(map="#{pageSession.tmpMap}" key="ClassName" value="#{className}");
     }
     if(!#{reload}){
         getRequestValue(key="name" value="#{pageSession.Name}");

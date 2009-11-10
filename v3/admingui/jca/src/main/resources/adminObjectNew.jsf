@@ -53,6 +53,7 @@
             mapPut(map="#{pageSession.tmpMap}" key="Name" value="$attribute{nameChosen}");
             mapPut(map="#{pageSession.tmpMap}" key="ResAdapter" value="$attribute{resAdapter}");
             mapPut(map="#{pageSession.tmpMap}" key="ResType" value="$attribute{resType}");
+            mapPut(map="#{pageSession.tmpMap}" key="ClassName" value="#{className}");
         }
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
@@ -75,7 +76,8 @@
             currentMap="#{pageSession.valueMap}"
             valueMap=>$pageSession{valueMap}
             resourceTypes=>$attribute{resourceTypes}
-            classNames=>$attribute{classNames})
+            classNames=>$attribute{classNames}
+            result=>$attribute{tableList})
     />
     </event>
 #include "/common/shared/restart.inc"

@@ -279,7 +279,8 @@ public class ConnectorsHandlers {
     }, output = {
     @HandlerOutput(name = "resourceTypes", type = List.class),
     @HandlerOutput(name = "classNames", type = List.class),
-    @HandlerOutput(name = "valueMap", type = Map.class)
+    @HandlerOutput(name = "valueMap", type = Map.class),
+    @HandlerOutput(name = "result", type = java.util.List.class)
     })
     public static void getAdminObjectResourceWizard(HandlerContext handlerCtx) {
         Boolean reload = (Boolean) handlerCtx.getInputValue("reload");
@@ -288,7 +289,7 @@ public class ConnectorsHandlers {
         String name = null;
         String resAdapter = null;
         String resType = null;
-        
+        String className = null;
         if (attrMap == null) {
             attrMap = new HashMap();
         }
@@ -296,12 +297,14 @@ public class ConnectorsHandlers {
             name = (String) currentMap.get("Name");
             resAdapter = (String) currentMap.get("ResAdapter");
             resType = (String) currentMap.get("ResType");
+            className = (String) currentMap.get("ClassName");
             currentMap.putAll(attrMap);
         } else {
             if (attrMap != null) {
                 name = (String) attrMap.get("Name");
                 resAdapter = (String) attrMap.get("ResAdapter");
                 resType = (String) attrMap.get("ResType");
+                className = (String) attrMap.get("ClassName");
             }
         }
         if (resAdapter != null) {
@@ -318,12 +321,28 @@ public class ConnectorsHandlers {
             }
         }
         List classNames = getClassNames(resAdapter, resType);
+        if (className == null) {
+            if (classNames.size() > 0) {
+                className = (String) classNames.get(0);
+            }
+        }
+        List result = new ArrayList();
+        try {
+            Map<String,Object> configMap = V3AMX.getInstance().getConnectorRuntime().getAdminObjectConfigProps(resAdapter, resType, className);
+            Map<String, Object> configPropsMap = (Map<String, Object>) configMap.get(ADMINOBJECT_CONFIG_PROPS_KEY);
+            result = V3AMX.getTableList(configPropsMap);
+        } catch (Exception ex) {
+            GuiUtil.getLogger().warning("Cannot get getAdminObjectConfigProps for resource adapter : " + resAdapter + " resource type : " + resType + " and classname : " + className);
+        }
+
         attrMap.put("Name", name);
         attrMap.put("ResType", resType);
         attrMap.put("ResAdapter", resAdapter);
+        attrMap.put("ClassName", className);
         handlerCtx.setOutputValue("resourceTypes", defs);
         handlerCtx.setOutputValue("classNames", classNames);
         handlerCtx.setOutputValue("valueMap", attrMap);
+        handlerCtx.setOutputValue("result", result);
     }
 
     private static List getResourceTypesForRA(String ra) {
@@ -354,12 +373,13 @@ public class ConnectorsHandlers {
             return defs;
         }
     }
-    
+
     public static final String ADMINOBJECT_INTERFACES_KEY = "AdminObjectInterfacesKey";
     public static final String ADMINOBJECT_CLASSES_KEY = "AdminObjectClassesKey";
     public static final String CONNECTION_DEFINITION_NAMES_KEY = "ConnectionDefinitionNamesKey";
     public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
     public static final String SYSTEM_CONNECTORS_KEY = "SystemConnectorsKey";
+    public static final String ADMINOBJECT_CONFIG_PROPS_KEY = "AdminObjectConfigPropsKey";
 
 
 }

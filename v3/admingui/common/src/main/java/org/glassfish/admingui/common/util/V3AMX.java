@@ -576,6 +576,21 @@ public class V3AMX {
         return (convert && (val.equals(""))) ? GUI_TOKEN_FOR_EMPTY_PROPERTY_VALUE : val.toString();
     }
 
+    public static List getTableList(Map<String,Object> nameValueMap){
+        List result = new ArrayList();
+        
+        for (String attrName : nameValueMap.keySet()) {
+            HashMap oneRow = new HashMap();
+            oneRow.put("selected", false);
+            oneRow.put(PROPERTY_NAME,attrName);
+            oneRow.put(PROPERTY_VALUE,getA(nameValueMap, attrName, true));
+            oneRow.put(PROPERTY_DESC,"");
+            result.add(oneRow);
+        }
+        return result;
+    }
+
+
     final private static List skipAttr = new ArrayList();
     static{
         skipAttr.add("Parent");
