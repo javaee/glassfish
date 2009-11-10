@@ -104,7 +104,7 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ArrayList<EjbEndpoint> getEjbEndpoints() {
         ejbendpoints = new ArrayList<EjbEndpoint>();
-        WsUtil wsutil = new WsUtil();
+        
         EjbEndpoint ejbendpoint = null;
         Application app = deploymentCtx.getModuleMetaData(Application.class);
         if (!isJAXWSbasedApp(app)) {

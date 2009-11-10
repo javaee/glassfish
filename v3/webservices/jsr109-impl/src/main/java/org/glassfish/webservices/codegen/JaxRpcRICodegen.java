@@ -63,6 +63,7 @@ import com.sun.enterprise.deployment.JaxrpcMappingDescriptor.Mapping;
 import com.sun.enterprise.deployment.util.ApplicationVisitor;
 import com.sun.enterprise.deployment.util.ModuleContentLinker;
 import com.sun.enterprise.deployment.util.WebServerInfo;
+import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
 import org.glassfish.deployment.common.ClientArtifactsManager;
@@ -195,7 +196,7 @@ public class JaxRpcRICodegen extends ModuleContentLinker
                     } else {
                         portInfo.addStubProperty(Stub.ENDPOINT_ADDRESS_PROPERTY, actualAddress.toExternalForm());
                     }
-                    if (serviceRef.getBundleDescriptor().getModuleType().equals(ModuleType.CAR)) {
+                    if (serviceRef.getBundleDescriptor().getModuleType().equals(XModuleType.CAR)) {
                         wsdlOverride = serviceRef.getWsdlOverride();
                         if (wsdlOverride!=null) {
                             wsdlOverriden = true;
