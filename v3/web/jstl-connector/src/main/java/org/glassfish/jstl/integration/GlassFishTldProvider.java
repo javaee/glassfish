@@ -97,14 +97,7 @@ public class GlassFishTldProvider implements TldProvider, PostConstruct {
 
         
         Class jstlImplClass = org.apache.taglibs.standard.Version.class;
-/*
-         Class jstlImplClass = null;
-        try {
-            jstlImplClass = getClass().getClassLoader().loadClass(
-                "org.apache.taglibs.standard.Version");
-        } catch (ClassNotFoundException ignored) {
-        }
-*/
+
         URI[] uris = null;
         Module m = null;
         if (jstlImplClass != null) {
