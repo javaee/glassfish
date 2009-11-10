@@ -198,6 +198,13 @@ public class WebAppHandlers {
                     oneRow.put("launchLink", launchLink +  ctxRoot);
                 }
             }
+            if (snifferList.contains("appclient")){
+                String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
+                if (!GuiUtil.isEmpty(appClientLaunch)){
+                    oneRow.put("hasLaunch", true);
+                    oneRow.put("launchLink", appClientLaunch);
+                }
+            }
             result.add(oneRow);
             getSubComponentDetail(appName, moduleName, snifferList, result);
         }
