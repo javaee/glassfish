@@ -38,6 +38,7 @@ package org.glassfish.admin.amx.config;
 import org.glassfish.admin.amx.config.AttributeResolver;
 import org.glassfish.admin.amx.core.AMXProxy;
 import javax.management.ObjectName;
+import javax.management.AttributeList;
 
 import java.util.Map;
 import javax.management.MBeanOperationInfo;
@@ -46,6 +47,7 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
+import org.glassfish.admin.amx.core.StdAttributesAccess;
 
 /**
 Extending this proxy interface implies that the class is part of the MBean API for configuration,
@@ -152,6 +154,14 @@ public interface AMXConfigProxy extends AMXProxy, AttributeResolver
     @ManagedOperation
     public ObjectName removeChild(
             @Param(name = "childType") String childType);
+            
+    /**
+        Direct access to the MBeanServer, calls conn.setAttributes(objectName, attrs).
+        Unlike {@link StdAttributesAccess#setAttributes}, this method throws a generic Exception if there is a transaction failure.
+    */
+    @ManagedOperation
+	public AttributeList	setAttributesTransactionally( @Param(name = "attrs") AttributeList attrs )
+								throws Exception;
 
 }
 

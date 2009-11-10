@@ -223,10 +223,19 @@ public class AMXConfigImpl extends AMXImplBase
         final AttributeList attrList = new AttributeList();
         attrList.add(attr);
 
-        final AttributeList successList = setAttributesInConfigBean(attrList);
-        if (successList.size() == 0)
+        try
         {
-            throw new AttributeNotFoundException(attr.getName());
+            final AttributeList successList = setAttributesInConfigBean(attrList);
+            if (successList.size() == 0)
+            {
+                throw new AttributeNotFoundException(attr.getName());
+            }
+        }
+        catch (final Exception e)
+        {
+            // propogate the stack trace back, it's important for clients to have somethingto go on
+            final Throwable rootCause = ExceptionUtil.getRootCause(e);
+            throw new AttributeNotFoundException( ExceptionUtil.toString(rootCause) );
         }
     }
 
@@ -237,13 +246,40 @@ public class AMXConfigImpl extends AMXImplBase
     @Override
     public AttributeList setAttributes(final AttributeList attrs)
     {
+        try
+        {
+            return setAttributesTransactionally(attrs);
+        }
+        catch (final Exception e)
+        {
+            // squelch, per JMX spec
+        }
+
+        // return an empty list, per JMX spec for failure
+        return new AttributeList();
+    }
+    
+    public AttributeList setAttributesTransactionally(final AttributeList attrs) throws Exception
+    {
         final AttributeList successList = new AttributeList();
 
-        final AttributeList delegateSuccess = setAttributesInConfigBean(attrs);
-        successList.addAll(delegateSuccess);
+        try
+        {
+            final AttributeList delegateSuccess = setAttributesInConfigBean(attrs);
+            successList.addAll(delegateSuccess);
+        }
+        catch (final Exception e)
+        {
+            // propogate the stack trace back, it's important for clients to have something to go on
+            final Throwable rootCause = ExceptionUtil.getRootCause(e);
+            
+            // do not propagate back any proprietary exception; class might not exist on client
+            throw new Exception( ExceptionUtil.toString(rootCause) );
+        }
 
-        return (successList);
+        return successList;
     }
+
 
     /**
     The actual name could be different than the 'name' property in the ObjectName if it
@@ -1497,7 +1533,7 @@ public class AMXConfigImpl extends AMXImplBase
         return xmlAttrs;
     }
 
-    public AttributeList setAttributesInConfigBean(final AttributeList attrsIn)
+    public AttributeList setAttributesInConfigBean(final AttributeList attrsIn) throws TransactionFailure
     {
         // now map the AMX attribute names to xml attribute names
         final Map<String, Object> amxAttrs = JMXUtil.attributeListToValueMap(attrsIn);
