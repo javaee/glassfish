@@ -121,7 +121,10 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 if(pool.getName() == null) {
                     ConfigSupport.apply(new SingleConfigCode<ThreadPool>() {
                         public Object run(ThreadPool param) {
-                            param.setName("thread-pool-" + (count[0]++));
+                            param.setName(param.getThreadPoolId());
+                            if(param.getMinThreadPoolSize() == null || Integer.parseInt(param.getMinThreadPoolSize()) < 2) {
+                                param.setMinThreadPoolSize("2");
+                            }
                             return null;
                         }
                     }, pool);
@@ -294,6 +297,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 @Override
                 public Object run(ThreadPool param) {
                     param.setMaxQueueSize(pool.getQueueSizeInBytes());
+                    if (param.getMinThreadPoolSize() == null || Integer.parseInt(param.getMinThreadPoolSize()) < 2) {
+                        param.setMinThreadPoolSize("2");
+                    }
                     return null;
                 }
             }, threadPool);
@@ -368,6 +374,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             public Object run(final ThreadPool pool) {
                 pool.setMaxThreadPoolSize(request.getThreadCount());
                 pool.setMinThreadPoolSize(request.getInitialThreadCount());
+                if (pool.getMinThreadPoolSize() == null || Integer.parseInt(pool.getMinThreadPoolSize()) < 2) {
+                    pool.setMinThreadPoolSize("2");
+                }
                 return null;
             }
         }, habitat.getComponent(ThreadPool.class, HTTP_THREAD_POOL));
