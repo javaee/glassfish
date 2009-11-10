@@ -91,6 +91,7 @@ public class PortImpl implements Port {
                     param.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
                     http.setDefaultVirtualServer(defaultVirtualServer);
+                    http.setServerName("");
                     protocol.setHttp(http);
                     return protocol;
                 }
@@ -99,7 +100,6 @@ public class PortImpl implements Port {
                 public Object run(NetworkListeners param) throws TransactionFailure {
                     final NetworkListener listener = param.createChild(NetworkListener.class);
                     listener.setName(listenerName);
-                    listener.setAddress("127.0.0.1");
                     listener.setPort(Integer.toString(portNumber));
                     listener.setProtocol(listenerName);
                     listener.setThreadPool("http-thread-pool");

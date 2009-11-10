@@ -47,13 +47,19 @@ public class ServletMain {
             while(contents.hasMoreElements()) {
                 System.out.println(contents.nextElement());
             }
-            Port port = server.createPort(8080);
+            Port port = server.createPort(8882);
+
             server.addContainer(server.createConfig(ContainerBuilder.Type.web));
             DeployCommandParameters dp = new DeployCommandParameters(f);
             String appName = server.getDeployer().deploy(war, dp);
             WebClient webClient = new WebClient();
             try {
-                Page page =  webClient.getPage("http://localhost:8080/classes/hello");
+                Page page =  webClient.getPage("http://localhost:8882/classes/hello");
+                System.out.println("Got response " + page.getWebResponse().getContentAsString());
+                Assert.assertTrue("Servlet returne wrong content", page.getWebResponse().getContentAsString().startsWith("Hello World"));
+                String hostName = System.getProperty("com.sun.aas.hostName");
+                assert hostName!=null;
+                page =  webClient.getPage("http://"+hostName+":8882/classes/hello");
                 System.out.println("Got response " + page.getWebResponse().getContentAsString());
                 Assert.assertTrue("Servlet returned wrong content", page.getWebResponse().getContentAsString().startsWith("Hello World"));
             } finally {

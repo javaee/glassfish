@@ -46,7 +46,7 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
 
@@ -125,9 +125,10 @@ public abstract class DomainXml implements Populator {
     protected void upgrade() {
         
         // run the upgrades...
-        for (ConfigurationUpgrade cu : habitat.getAllByContract(ConfigurationUpgrade.class)) {
+        for (Inhabitant<? extends ConfigurationUpgrade> cu : habitat.getInhabitants(ConfigurationUpgrade.class)) {
             try {
-                Logger.getAnonymousLogger().fine("Upgrading domain.xml with " + cu.getClass());
+                cu.get(); // run the upgrade                
+                Logger.getAnonymousLogger().fine("Successful Upgrade domain.xml with " + cu.getClass());
             } catch (Exception e) {
                 Logger.getAnonymousLogger().log(Level.FINE,e.toString(),e);
                 Logger.getAnonymousLogger().severe(cu.getClass() + " upgrading domain.xml failed " + e);

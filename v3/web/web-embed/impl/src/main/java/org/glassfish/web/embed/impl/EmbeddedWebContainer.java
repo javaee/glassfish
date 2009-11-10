@@ -51,7 +51,7 @@ import org.glassfish.api.embedded.web.WebBuilder;
 import org.glassfish.api.embedded.web.config.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.*;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
@@ -60,6 +60,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.Connector;
+import org.omg.CORBA.DynAnyPackage.*;
 
 /**
  * Class representing an embedded web container, which supports the
@@ -84,17 +85,18 @@ public class EmbeddedWebContainer implements
       
     
     public EmbeddedWebContainer() {
-        embedded = new Embedded();
-        embedded.setUseNaming(false);
-        engine = embedded.createEngine();
-        embedded.addEngine(engine);
+        //embedded = new Embedded();
+        //embedded.setUseNaming(false);
+        //engine = embedded.createEngine();
+        //embedded.addEngine(engine);
         
     }
     
 
     // ----------------------------------------------------- Instance Variables
 
-    
+    Inhabitant<? extends org.glassfish.api.container.Container> webContainer;
+
     private VirtualServer defaultVirtualServer = null;
     
     private Embedded embedded = null;
@@ -150,7 +152,7 @@ public class EmbeddedWebContainer implements
      */
     public void start() throws LifecycleException {
    
-        log.info("EmbeddedWebContainer is starting");
+        /*log.info("EmbeddedWebContainer is starting");
         int port = 8080;
         String webListenerId = "http-listener-1";
         String virtualServerId = "server";
@@ -187,8 +189,23 @@ public class EmbeddedWebContainer implements
             
             embedded.start();
             
+            
         } catch (Exception e) {
             e.printStackTrace();
+            throw new LifecycleException(e);
+        }
+        */
+
+        webContainer = habitat.getInhabitant(org.glassfish.api.container.Container.class,
+                "com.sun.enterprise.web.WebContainer");
+        if (webContainer==null) {
+            log.severe("Cannot find webcontainer implementation");
+            throw new LifecycleException(new Exception("Cannot find web container implementation"));
+        }
+        // force the start
+        try {
+            webContainer.get();
+        } catch (Exception e) {
             throw new LifecycleException(e);
         }
 
@@ -204,13 +221,20 @@ public class EmbeddedWebContainer implements
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void stop() throws LifecycleException {
-                
-        try {
+
+       if (webContainer!=null && webContainer.isInstantiated()) {
+           try {
+               webContainer.release();
+           } catch (Exception e) {
+               throw new LifecycleException(e);
+           }
+       }
+/*        try {
             embedded.stop();
         } catch (org.apache.catalina.LifecycleException e) {
             throw new LifecycleException(e);
         }
-        
+*/
     }
    
     /**
