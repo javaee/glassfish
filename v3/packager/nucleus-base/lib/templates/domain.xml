@@ -159,6 +159,7 @@
         -->
         <jvm-options>-Dfelix.fileinstall.bundles.new.start=true</jvm-options>
         <!-- End of OSGi bundle configurations -->
+        <jvm-options>-Dorg.glassfish.web.rfc2109_cookie_names_enforced=false</jvm-options>
         <jvm-options>-XX:NewRatio=2</jvm-options>
       </java-config>
       <network-config>
