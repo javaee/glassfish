@@ -34,9 +34,6 @@ public class FlashlightUtils {
 
     private static final Logger logger =
         LogDomains.getLogger(FlashlightUtils.class, LogDomains.MONITORING_LOGGER);
-    public final static LocalStringManagerImpl localStrings =
-                            new LocalStringManagerImpl(FlashlightUtils.class);
-
     private FlashlightUtils() {
         // All static.  No instances allowed.
     }
@@ -97,19 +94,21 @@ public class FlashlightUtils {
     }
 
     private static void setDTraceAvailabilty() {
-        // the code below fails fast -- it marches through returning immediately
-        // when something is amiss instead of having complicated hard-to-read nested
-        // blocks of code.
-
         ok();
         dt = habitat.getByContract(DTraceContract.class);
 
-        if(dt == null)
-            return;
+        if(dt == null) {
+            logDTraceAvailability(false, false);
+        }
 
-        if(!dt.isSupported())
+        else if(!dt.isSupported()) {
             dt = null;
+            logDTraceAvailability(true, false);
+        }
         // else dt is available!!
+        else {
+            logDTraceAvailability(true, true);
+        }
     }
 
     /** bnevins -- I see 2 exact copies of this big chunk of code -- so I moved it here!
@@ -232,6 +231,36 @@ public class FlashlightUtils {
         return name;
     }
 
+    private static void logDTraceAvailability(boolean contractExists, boolean isSupported) {
+            // There are three and only three possibilities:
+            // 1. dt  is null
+            // 2. dt is not null and isSupported() is false
+            // 3. dt is not null and isSupported() is true
+
+        String message;
+
+        if(!contractExists) {
+            message = localStrings.getLocalString("no_impl",
+                                "DTrace is not available.  This can be caused by two things:\n" +
+                                "1. JDK 7 is required to run DTrace\n" +
+                                "2. glassfish-dtrace.jar value-add is required for DTrace");
+        }
+        else if(!isSupported){
+            message = localStrings.getLocalString("not_supported",
+            "DTrace is not available.  This condition normally only occurs when your\n" +
+            "Operating System does not support DTrace.  Currently you must have Solaris 10\n" +
+            "or better for dtrace support");
+        }
+
+        else {
+            message = localStrings.getLocalString("init_ok",
+            "DTrace is connected and ready.");
+        }
+
+        logger.info(message);
+    }
+
+
     private static void ok() {
         if(habitat == null || monConfig == null) {
             String errStr = localStrings.getLocalString("habitatNotSet", "Internal Error: habitat was not set in {0}", FlashlightUtils.class);
@@ -240,9 +269,10 @@ public class FlashlightUtils {
     }
 
 
-
-    private static              Habitat             habitat;
-    private static              MonitoringService   monConfig;
+    private final static LocalStringManagerImpl localStrings =
+                            new LocalStringManagerImpl(FlashlightUtils.class);
+    private static              volatile Habitat             habitat;
+    private static              volatile MonitoringService   monConfig;
     private static              DTraceContract      dt;
     private static              boolean             dtraceEnabled;
     private static              boolean             monitoringEnabled;
