@@ -64,6 +64,8 @@ import java.util.logging.Logger;
  */
 public class ACCClassLoader extends URLClassLoader {
 
+    private static final String AGENT_LOADER_CLASS_NAME =
+            "org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader";
     private static ACCClassLoader instance = null;
 
     private ACCClassLoader shadow = null;
@@ -79,12 +81,24 @@ public class ACCClassLoader extends URLClassLoader {
         if (instance != null) {
             throw new IllegalStateException("already set");
         }
-        instance = new ACCClassLoader(userClassPath(), parent, shouldTransform);
-        try {
-            adjustACCAgentClassLoaderParent(instance);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader parentForACCCL = currentCL;
+        final boolean currentCLWasAgentCL = currentCL.getClass().getName().equals(
+                    AGENT_LOADER_CLASS_NAME);
+        if (currentCLWasAgentCL) {
+            parentForACCCL = currentCL.getParent();
         }
+        
+        instance = new ACCClassLoader(userClassPath(), parentForACCCL, shouldTransform);
+        
+        if (currentCLWasAgentCL) {
+            try {
+                adjustACCAgentClassLoaderParent(instance);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
         return instance;
     }
 
@@ -95,10 +109,12 @@ public class ACCClassLoader extends URLClassLoader {
     private static void adjustACCAgentClassLoaderParent(final ACCClassLoader instance)
             throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         final ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-        if (systemClassLoader.getClass().getName().equals("org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader")) {
+        if (systemClassLoader.getClass().getName().equals(AGENT_LOADER_CLASS_NAME)) {
             final Field jwsLoaderParentField = ClassLoader.class.getDeclaredField("parent");
             jwsLoaderParentField.setAccessible(true);
             jwsLoaderParentField.set(systemClassLoader, instance);
+            System.setProperty("org.glassfish.appclient.acc.agentLoaderDone", "true");
+        
         }
     }
     
