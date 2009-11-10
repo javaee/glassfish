@@ -354,7 +354,7 @@ public class AppClientDeployer
 
     private String keyToAppAndClientNameMap(final String appName,
             final String moduleURIText) {
-        return (moduleURIText == null ? appName : appName + "/" + moduleURIText);
+        return appName + "/" + (moduleURIText == null ? appName : moduleURIText);
     }
 
 
