@@ -425,7 +425,7 @@ public class ComponentEnvManagerImpl
                 }
 
             } else {
-              value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, true);
+              value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
             }
 
             jndiBindings.add(new CompEnvBinding(name, value));
