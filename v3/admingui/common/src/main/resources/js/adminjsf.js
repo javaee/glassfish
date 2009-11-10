@@ -767,7 +767,12 @@ admingui.nav = {
 
     processUpdatedTreeNode: function(data, nodeId, previousState) {
         if (data.status == 'success') {
-            var text = data.responseXML.childNodes[0].childNodes[0].childNodes[0].childNodes[0].data;
+            var text = data.responseXML.childNodes[0]
+	    if (text.nodeName === 'xml') {
+		// IE7 consider <?xml ...> to be element 0
+		text = data.responseXML.childNodes[1]
+	    }
+	    text = text.childNodes[0].childNodes[0].childNodes[0].data;
             var parserElement = document.createElement('div');
             parserElement.innerHTML = text;
             var mainNode = document.getElementById(nodeId);
