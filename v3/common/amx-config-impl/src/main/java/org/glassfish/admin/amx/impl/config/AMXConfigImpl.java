@@ -1573,6 +1573,7 @@ public class AMXConfigImpl extends AMXImplBase
             {
                 // empty results -- no Exception should be thrown per JMX spec
                 cdebug(ExceptionUtil.toString(tf));
+                throw(tf);
             }
             finally
             {

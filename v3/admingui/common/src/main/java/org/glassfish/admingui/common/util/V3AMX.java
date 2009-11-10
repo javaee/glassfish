@@ -243,7 +243,9 @@ public class V3AMX {
     
     public static void setAttributes(ObjectName objectName, AttributeList attrList) {
 	try {
-	    V3AMX.getInstance().getMbeanServerConnection().setAttributes(objectName, attrList);
+        final V3AMX  v3amx = V3AMX.getInstance();
+        final AMXConfigProxy config = v3amx.getProxyFactory().getProxy(objectName, AMXConfigProxy.class);
+	    config.setAttributesTransactionally(attrList);
 	} catch (Exception  ex) {
             throw new RuntimeException(ex);
         }
