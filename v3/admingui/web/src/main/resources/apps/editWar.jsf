@@ -45,6 +45,7 @@
 <!composition template="/common/applications/appEdit.layout"   >
 <!define name="editAppFields">
 #include "/common/applications/edit.inc"
+"<script type="text/javascript">admingui.help.pluginId = 'common';</script>
 </define>
 </composition>
 
