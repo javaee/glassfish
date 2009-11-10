@@ -41,7 +41,7 @@ import com.sun.ejte.ccl.reporter.*;
  * Unit test for Bugtraq 5027440 ("Impossible for webapp to override global
  * JspServlet settings").
  *
- * Notice that for test "jsp-servlet-override-ieClassId" to work, JSP
+ * Note that for test "jsp-servlet-override-ieClassId" to work, JSP
  * precompilation must be turned off (see build.properties in this directory),
  * so that the value of the 'ieClassId' property is gotten from the JspServlet
  * (instead of from the JspC command line).
@@ -50,9 +50,10 @@ public class WebTest {
 
     private static final String OBJECT_CLASSID = "ABCD";
     private static final String INCLUDED_RESPONSE = "This is included page";
+    private static final String TEST_NAME = "jsp-servlet-override";
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
 
     private String host;
     private String port;
@@ -67,98 +68,90 @@ public class WebTest {
     public static void main(String[] args) {
         stat.addDescription("Unit test for Bugtraq 5027440");
         WebTest webTest = new WebTest(args);
-        webTest.overrideIeClassId();
-        webTest.jspInclude();
+        try {
+            webTest.overrideIeClassId();
+            webTest.jspInclude();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Exception ex) {
+            System.out.println(TEST_NAME + " test failed");
+            ex.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+
         stat.printSummary();
     }
 
-    private void overrideIeClassId() {
-     
-        String testName = "jsp-servlet-override-ieClassId";
-
-        BufferedReader bis = null;
-        try {
-            URL url = new URL("http://" + host  + ":" + port
-                              + contextRoot + "/jsp/overrideIeClassId.jsp");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) { 
-                stat.addStatus("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode, stat.FAIL);
-            } else {
-                bis = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-                String line = null;
-                while ((line = bis.readLine()) != null) {
-                    if (line.startsWith("<OBJECT")) {
-                        break;
-                    }
+    private void overrideIeClassId() throws Exception {
+        URL url = new URL("http://" + host  + ":" + port +
+            contextRoot + "/jsp/overrideIeClassId.jsp");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) { 
+            throw new Exception("Wrong response code. Expected: 200" +
+                ", received: " + responseCode);
+        }
+        
+        BufferedReader br = null;
+        try {     
+            br = new BufferedReader(new InputStreamReader(
+                conn.getInputStream()));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("<OBJECT")) {
+                    break;
                 }
+            }
   
-                if (line != null) {
-                    // Check <OBJECT> classid comment
-                    System.out.println(line);
-                    String classid = getAttributeValue(line, "classid");
-                    if (classid != null) {
-                        if (!classid.equals(OBJECT_CLASSID)) {
-                            stat.addStatus("Wrong classid: " + classid
-                                           + ", expected: " + OBJECT_CLASSID,
-                                           stat.FAIL);
-                        } else {
-                            stat.addStatus(testName, stat.PASS);
-                        }
-                    } else {
-                        stat.addStatus("Missing classid", stat.FAIL);
+            if (line != null) {
+                // Check <OBJECT> classid comment
+                System.out.println(line);
+                String classid = getAttributeValue(line, "classid");
+                if (classid != null) {
+                    if (!classid.equals(OBJECT_CLASSID)) {
+                        throw new Exception("Wrong classid: " + classid +
+                            ", expected: " + OBJECT_CLASSID);
                     }
-
                 } else {
-                    stat.addStatus("Missing OBJECT element in response body",
-                                   stat.FAIL);
+                    throw new Exception("Missing classid");
                 }
-	    }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println(testName + " test failed.");
-            stat.addStatus(testName, stat.FAIL);
+
+            } else {
+                throw new Exception("Missing OBJECT element in response body");
+            }
         } finally {
             try {
-                if (bis != null) bis.close();
+                if (br != null) br.close();
             } catch (IOException ex) {}
         }
     }
 
-    private void jspInclude() {
-     
-        String testName = "jsp-servlet-override-include";
+    private void jspInclude() throws Exception {
+        URL url = new URL("http://" + host  + ":" + port +
+            contextRoot + "/jsp/include.jsp");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) { 
+            throw new Exception("Wrong response code. Expected: 200" +
+                ", received: " + responseCode);
+        }
 
+        BufferedReader br = null;
         try {
-            URL url = new URL("http://" + host  + ":" + port
-                              + contextRoot + "/jsp/include.jsp");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) { 
-                stat.addStatus("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode, stat.FAIL);
-            } else {
-                BufferedReader bis = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-                String line = bis.readLine();
-                if (!INCLUDED_RESPONSE.equals(line)) {
-                    stat.addStatus("Wrong response. Expected: "
-                                   + INCLUDED_RESPONSE
-                                   + ", received: " + filter(line), stat.FAIL);
-                } else {
-                    stat.addStatus(testName, stat.PASS);
-                }
-	    }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println(testName + " test failed.");
-            stat.addStatus(testName, stat.FAIL);
+            br = new BufferedReader(new InputStreamReader(
+                conn.getInputStream()));
+            String line = br.readLine();
+            if (!INCLUDED_RESPONSE.equals(line)) {
+                throw new Exception("Wrong response. Expected: " +
+                    INCLUDED_RESPONSE + ", received: " + filter(line));
+            }
+        } finally {
+            try {
+                if (br != null) br.close();
+            } catch (IOException ex) {}
         }
     }
 
