@@ -122,6 +122,7 @@
   <concat append="true"
           destfile="${glassfish.home}/domains/domain1/config/server.policy">
     <fileset file="${glassfish.home}/domains/domain1/config/server_policy.orig"/>
+    <fileset file="${basedir}/weld/numberguess/numberguess.policy"/>   
   </concat>
 </target>
 
