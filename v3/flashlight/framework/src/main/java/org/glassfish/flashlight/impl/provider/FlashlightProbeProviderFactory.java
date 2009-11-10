@@ -314,15 +314,23 @@ public class FlashlightProbeProviderFactory
         provider.setDTraceInstrumented(true);
  
          Collection<FlashlightProbe> probes = provider.getProbes();
+         boolean onlyHidden = true;
 
          for(FlashlightProbe probe : probes) {
-             // mf will either find a method or throw an Exception
-             DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
-             probe.setDTraceMethod(mf.matchMethod());
-             probe.setDTraceProviderImpl(dtraceProviderImpl);
+             // if it is hidden -- do not hook-up a DTrace "listener"
+
+             if(!probe.isHidden()) {
+                 DTraceMethodFinder mf = new DTraceMethodFinder(probe, dtraceProviderImpl);
+                 probe.setDTraceMethod(mf.matchMethod());
+                 probe.setDTraceProviderImpl(dtraceProviderImpl);
+                 onlyHidden = false;    // we have at least one!
+             }
          }
 
-         FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
+         // if there are only hidden probes -- don't register the class
+
+         if(!onlyHidden)
+            FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
     }
 
     private void registerProvider(ClassLoader cl, org.glassfish.flashlight.xml.Provider provider) {

@@ -40,6 +40,8 @@ class DTraceMethodFinder {
     Method matchMethod() {
         String metname = probe.getProviderJavaMethodName();
 
+        // bnevins - the contract is that you do not call me with a hidden probe
+        // If you do anyway -- I'll throw an unchecked exception as punishment.
         if(probe.isHidden())
             throw new RuntimeException(localStrings.getLocalString("dtrace_cantfind",
                             "The probe is  hidden.  DTrace will ignore it.", metname));
