@@ -123,6 +123,7 @@ public class StatsProviderRegistry {
         PluginPoint pp;
         String subTreePath;
         String parentTreeNodePath = null;
+        String invokerId;
         List<String> childTreeNodeNames = null;
         Collection<ProbeClientMethodHandle> handles = null;
         Object statsProvider;
@@ -137,6 +138,7 @@ public class StatsProviderRegistry {
             this.configStr = spInfo.getConfigElement();
             this.pp = spInfo.getPluginPoint();
             this.subTreePath = spInfo.getSubTreeRoot();
+            this.invokerId = spInfo.getInvokerId();
             this.statsProvider = spInfo.getStatsProvider();
             this.mbeanName = spInfo.getSubTreeRoot();
             String configLevelStr = spInfo.getConfigLevel();
@@ -155,6 +157,10 @@ public class StatsProviderRegistry {
 
         public String getSubTreePath() {
             return subTreePath;
+        }
+
+        String getInvokerId() {
+            return invokerId;
         }
 
         public List<String> getChildTreeNodeNames() {

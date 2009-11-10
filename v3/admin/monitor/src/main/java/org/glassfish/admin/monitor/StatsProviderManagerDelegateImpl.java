@@ -93,7 +93,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     public void register(String configElement, PluginPoint pp,
                          String subTreePath, Object statsProvider) {
-        StatsProviderInfo spInfo = new StatsProviderInfo(configElement, pp, subTreePath, statsProvider);
+        register(configElement, pp, subTreePath, statsProvider, null);
+    }
+
+    public void register(String configElement, PluginPoint pp,
+                         String subTreePath, Object statsProvider, String invokerId) {
+        StatsProviderInfo spInfo = new StatsProviderInfo(configElement, pp, subTreePath, statsProvider, invokerId);
         register(spInfo);
     }
     
@@ -568,7 +573,13 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //register the statsProvider with Flashlight
         Collection<ProbeClientMethodHandle> handles = null;
             //System.out.println("****** Registering the StatsProvider (" + statsProvider.getClass().getName() + ") with flashlight");
+        StatsProviderRegistryElement spre =
+            this.statsProviderRegistry.getStatsProviderRegistryElement(statsProvider);
+        if (spre != null) {
+            handles = pcm.registerListener(statsProvider, spre.getInvokerId());
+        } else {
             handles = pcm.registerListener(statsProvider);
+        }
         //System.out.println("********* handles = " + handles);
         // save the handles against config so you can enable/disable the handles
         // save the handles also against statsProvider so you can unregister when statsProvider is unregistered

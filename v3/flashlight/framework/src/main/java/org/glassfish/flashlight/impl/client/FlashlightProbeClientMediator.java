@@ -141,10 +141,16 @@ public class FlashlightProbeClientMediator
     }
 
     public Collection<ProbeClientMethodHandle> registerListener(Object listener) {
+        return (registerListener(listener, null));
+    }
+
+    public Collection<ProbeClientMethodHandle> 
+        registerListener(Object listener, String invokerId) {
+
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
 
-        registerJavaListener(listener, pcms, probesRequiringClassTransformation);
+        registerJavaListener(listener, pcms, probesRequiringClassTransformation, invokerId);
         transformProbes(listener, probesRequiringClassTransformation);
 
         return pcms;
@@ -164,9 +170,11 @@ public class FlashlightProbeClientMediator
     private void registerJavaListener(
             Object listener,
             List<ProbeClientMethodHandle> pcms,
-            List<FlashlightProbe> probesRequiringClassTransformation) {
+            List<FlashlightProbe> probesRequiringClassTransformation,
+            String invokerId) {
 
-        List<MethodProbe> methodProbePairs = handleListenerAnnotations(listener.getClass());
+        List<MethodProbe> methodProbePairs = 
+            handleListenerAnnotations(listener.getClass(), invokerId);
 
         if(methodProbePairs.isEmpty())
             return;
@@ -232,7 +240,9 @@ public class FlashlightProbeClientMediator
      * @param listenerClass
      * @return 
      */
-    private List<MethodProbe> handleListenerAnnotations(Class listenerClass) {
+    private List<MethodProbe> 
+        handleListenerAnnotations(Class listenerClass, String invokerId) {
+
         List<MethodProbe> mp = new LinkedList<MethodProbe> ();
 
         for (Method method : listenerClass.getMethods()) {
@@ -243,6 +253,13 @@ public class FlashlightProbeClientMediator
                 continue;
 
             String probeString = probeAnn.value();
+            if ((probeString != null) && (invokerId != null)) {
+                String[] strArr = probeString.split(":");
+                probeString = strArr[0] + ":" +
+                              strArr[1] + ":" +
+                              strArr[2] + invokerId + ":" +
+                              strArr[3];
+            }
             FlashlightProbe probe = probeRegistry.getProbe(probeString);
 
             if (probe == null) {
@@ -250,29 +267,12 @@ public class FlashlightProbeClientMediator
                                     "Probe is not registered: {0}", probeString);
                 throw new RuntimeException(errStr);
             }
-            else if(alreadyAdded(mp, probe)) {
-                String errStr = localStrings.getLocalString("overload_error",
-                        "The listener class, {0}, has two or more methods sharing the same \n" +
-                        "Probe ID ({1})This is illegal.  Every ID must be unique.",
-                        listenerClass.getName(), probeString);
-                throw new RuntimeException(errStr);
-            }
-
+            
             mp.add(new MethodProbe(method, probe));
         }
         
         return mp;
     }
-
-    private static boolean alreadyAdded(List<MethodProbe> mps, FlashlightProbe probe) {
-        for(MethodProbe mp : mps) {
-            if(mp.probe == probe) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     private void submit2BTrace(byte [] bArr) {
         try {
@@ -305,7 +305,8 @@ public class FlashlightProbeClientMediator
         try {
             int pid = ProcessUtils.getPid();
             if (pid == -1) {
-                logger.log(Level.WARNING, "invalid.pid");
+                logger.log(Level.WARNING, localStrings.getLocalString("invalid.pid", 
+                    "invalid pid, start btrace-agent using asadmin enable-monitoring with --pid option, you may get pid using jps command"));
                 return false;
             }
             VirtualMachine vm = VirtualMachine.attach(String.valueOf(pid));
@@ -317,15 +318,18 @@ public class FlashlightProbeClientMediator
                     setAgentInitialized(false);
                     vm.loadAgent(agentJar.getPath(), "unsafe=true,noServer=true");
                 } else {
-                    logger.log(Level.WARNING, "missing.btrace-agent.jar", new Object[] {dir});
+                    logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar",
+                        "btrace-agent.jar does not exist under {0}", dir));
                     return false;
                 }
             } else {
-                logger.log(Level.WARNING, "missing.btrace-agent.jar.dir", new Object[] {dir});
+                logger.log(Level.WARNING, localStrings.getLocalString("missing.btrace-agent.jar.dir",
+                    "btrace-agent.jar directory {0} does not exist", dir));
                 return false;
             }
         } catch (Exception e) {
-            logger.log(Level.WARNING, "attach.agent.exception", e);
+            logger.log(Level.WARNING, localStrings.getLocalString("attach.agent.exception",
+                "Encountered exception during agent attach {0}", e.getMessage()));
         }
         return (isAgentAttached());
     }

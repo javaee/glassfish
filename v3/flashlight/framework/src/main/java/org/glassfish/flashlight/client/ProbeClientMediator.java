@@ -52,5 +52,7 @@ public interface ProbeClientMediator {
 
     public Collection<ProbeClientMethodHandle> registerListener(Object listener);
 
+    public Collection<ProbeClientMethodHandle> registerListener(Object listener, String invokerId);
+
     public void transformProbes(Object listener, List<FlashlightProbe> probes);
 }
