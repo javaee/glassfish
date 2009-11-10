@@ -35,24 +35,37 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgijpa.dd;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.net.URL;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface Constants
+public class Persistence
 {
-    public String WEB_BUNDLE_SCHEME = "webbundle";
-    public String WEB_CONTEXT_PATH = "Web-ContextPath";
-    public String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
-    public String BUNDLE_CONTEXT_ATTR = "osgi-bundlecontext";
-    public String OSGI_WEB_SYMBOLIC_NAME = "osgi.web.symbolicname";
-    public String OSGI_WEB_VERSION = "osgi.web.version";
-    public String OSGI_WEB_CONTEXTPATH= "osgi.web.contextpath";
+    private URL url;
 
-    // Protocol used both in Felix and Equinox to read content of a bundle
-    // directly from a jar or directory as opposed to first copying it to
-    // bundle cache and then reading from there.
-    public String REFERENCE_PROTOCOL = "reference:";
-    public String FILE_PROTOCOL = "file:";
+    private List<PersistenceUnit> persistenceUnits = new ArrayList<PersistenceUnit>();
+
+    public Persistence(URL pxmlURL)
+    {
+        this.url = pxmlURL;
+    }
+
+    public void add(PersistenceUnit persistenceUnit)
+    {
+        persistenceUnits.add(persistenceUnit);
+    }
+
+    public List<PersistenceUnit> getPUs() {
+        return persistenceUnits;
+    }
+
+    public URL getUrl()
+    {
+        return url;
+    }
 }

@@ -35,63 +35,34 @@
  */
 
 
-package org.glassfish.jpa.osgi;
+package org.glassfish.osgijpa;
 
-import org.osgi.framework.*;
-import org.glassfish.web.osgi.Extender;
+import org.osgi.framework.Bundle;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.util.jar.JarInputStream;
+import java.util.List;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * An extender that listens for Persistence bundle's life cycle events
- * and takes appropriate actions.
- *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JPAExtender implements Extender, SynchronousBundleListener
+interface JPAEnhancer
 {
-    private Logger logger = Logger.getLogger(JPAExtender.class.getPackage().getName());
-    private BundleContext context;
-
-    public JPAExtender(BundleContext context)
-    {
-        this.context = context;
-    }
-
-    public void start()
-    {
-        context.addBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "start", " JPAExtender started", new Object[]{});
-    }
-
-    public void stop()
-    {
-        context.removeBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "stop", " JPAExtender stopped", new Object[]{});
-    }
-
-    public void bundleChanged(BundleEvent event)
-    {
-        Bundle bundle = event.getBundle();
-        switch (event.getType())
-        {
-            case BundleEvent.INSTALLED :
-            case BundleEvent.UPDATED :
-                JPABundleProcessor bi = new JPABundleProcessor(bundle);
-                if (!bi.isEnhanced(bundle) && bi.isJPABundle()) {
-                    logger.logp(Level.INFO, "JPAExtender", "bundleChanged", "Bundle having id {0} is a JPA bundle", new Object[]{bundle.getBundleId()});
-                    try {
-                        bi.enhance();
-                    } catch (Exception e) {
-                        logger.logp(Level.WARNING, "JPAExtender", "bundleChanged", "Failed to enhance bundle having id " + bundle.getBundleId(), e);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
+    /**
+     * An enhancer is used to statically enhance the classes of a bundle and
+     * produce a new JarInputStream which can then be used to update the
+     * supplied bundle. It returns null if no enhancement is needed, e.g., the
+     * bundle might have been enhanced already.
+     * An enhancer may have to explode the bundle in a directory so that it
+     * can scan the contents of the bundle using File or Jar APIs. If so, it
+     * is the responsibility of the enhancer to delete such temporary
+     * locations.
+     *
+     * @param b Bundle to be enhanced
+     * @param puRoots Entries in the bundle containing META-INF/persistence.xml
+     * @return a JarInputStream which contains the enhanced classes along with
+     * changed manifest
+     */
+    InputStream enhance(Bundle b, List<String> puRoots) throws IOException;
 }

@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import java.io.*;
 import java.net.URLConnection;

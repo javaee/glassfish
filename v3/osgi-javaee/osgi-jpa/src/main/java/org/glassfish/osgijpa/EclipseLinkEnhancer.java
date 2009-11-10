@@ -35,26 +35,24 @@
  */
 
 
-package org.glassfish.jpa.osgi;
+package org.glassfish.osgijpa;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveProcessor;
-import org.glassfish.web.osgi.OSGiBundleArchive;
-import org.glassfish.web.osgi.OSGiWarHandler;
-import org.glassfish.web.osgi.BundleClassLoader;
-import org.glassfish.web.osgi.JarHelper;
+import org.glassfish.osgiweb.OSGiBundleArchive;
+import org.glassfish.osgiweb.OSGiWarHandler;
+import org.glassfish.osgiweb.BundleClassLoader;
+import org.glassfish.osgiweb.JarHelper;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.api.Globals;
 
-import java.util.jar.JarInputStream;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.io.*;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;

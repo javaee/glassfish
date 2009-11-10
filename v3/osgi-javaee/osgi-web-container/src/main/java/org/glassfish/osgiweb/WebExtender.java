@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;

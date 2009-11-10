@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;

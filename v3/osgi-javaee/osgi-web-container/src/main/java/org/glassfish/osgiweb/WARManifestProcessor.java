@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
 import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;

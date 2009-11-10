@@ -35,37 +35,29 @@
  */
 
 
-package org.glassfish.jpa.osgi.dd;
+package org.glassfish.osgijpa.dd;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.net.URL;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class Persistence
+public class PersistenceUnit
 {
-    private URL url;
+    public String name;
+    public String provider;
 
-    private List<PersistenceUnit> persistenceUnits = new ArrayList<PersistenceUnit>();
-
-    public Persistence(URL pxmlURL)
+    public PersistenceUnit(String name, String provider)
     {
-        this.url = pxmlURL;
+        this.name = name;
+        this.provider = provider;
     }
 
-    public void add(PersistenceUnit persistenceUnit)
+    @Override
+    public String toString()
     {
-        persistenceUnits.add(persistenceUnit);
-    }
-
-    public List<PersistenceUnit> getPUs() {
-        return persistenceUnits;
-    }
-
-    public URL getUrl()
-    {
-        return url;
+        return "PU(" + name + ", " + provider + ")";
     }
 }

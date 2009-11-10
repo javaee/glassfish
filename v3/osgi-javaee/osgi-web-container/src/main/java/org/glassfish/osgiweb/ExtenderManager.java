@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;

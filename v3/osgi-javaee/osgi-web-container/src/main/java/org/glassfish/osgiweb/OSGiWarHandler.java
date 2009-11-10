@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import org.glassfish.internal.deployment.GenericHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;

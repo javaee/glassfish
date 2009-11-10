@@ -35,14 +35,14 @@
  */
 
 
-package org.glassfish.jpa.osgi;
+package org.glassfish.osgijpa;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
-import org.glassfish.jpa.osgi.dd.PersistenceXMLParser;
-import org.glassfish.jpa.osgi.dd.Persistence;
-import org.glassfish.jpa.osgi.dd.PersistenceUnit;
+import org.glassfish.osgijpa.dd.PersistenceXMLParser;
+import org.glassfish.osgijpa.dd.Persistence;
+import org.glassfish.osgijpa.dd.PersistenceUnit;
 
 import java.net.URL;
 import java.net.URI;

@@ -35,30 +35,75 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+
+import java.io.IOException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /**
+ * This is a delegating class loader.
+ * It always delegates to OSGi bundle's class loader.
+ * ClassLoader.defineClass() is never called in the context of this class.
+ * There will never be a class for which getClassLoader()
+ * would return this class loader.
+ * It overrides loadClass(), getResource() and getResources() as opposed to
+ * their findXYZ() equivalents so that the OSGi export control mechanism
+ * is enforced even for classes and resources available in the system/boot
+ * class loader.
+ *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebContainerActivator implements BundleActivator
+public class BundleClassLoader extends ClassLoader
 {
-    private ExtenderManager extenderManager;
+    private Bundle bundle;
 
-    public void start(BundleContext context) throws Exception
+    public BundleClassLoader(Bundle b)
     {
-        extenderManager = new ExtenderManager(context);
-        extenderManager.start();
-        // Move registration of extenders to a separate bundle when
-        // we move the extenders to a separate bundle
-        WebExtender webExtender = new WebExtender(context);
-        context.registerService(Extender.class.getName(), webExtender, null);
+        super(Bundle.class.getClassLoader());
+        this.bundle = b;
     }
 
-    public void stop(BundleContext context) throws Exception
+    @Override
+    protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException
     {
-        extenderManager.stop();
+        return bundle.loadClass(name);
+    }
+
+    @Override
+    public URL getResource(String name)
+    {
+        return bundle.getResource(name);
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException
+    {
+        Enumeration<URL> resources = bundle.getResources(name);
+        if (resources == null)
+        {
+            // This check is needed, because ClassLoader.getResources()
+            // expects us to return an empty enumeration.
+            resources = new Enumeration<URL>()
+            {
+
+                public boolean hasMoreElements()
+                {
+                    return false;
+                }
+
+                public URL nextElement()
+                {
+                    throw new NoSuchElementException();
+                }
+            };
+        }
+        return resources;
     }
 }

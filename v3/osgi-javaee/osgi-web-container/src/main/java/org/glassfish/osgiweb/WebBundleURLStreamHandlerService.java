@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 import static org.osgi.framework.Constants.BUNDLE_SYMBOLICNAME;
@@ -43,9 +43,9 @@ import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import static org.osgi.framework.Constants.BUNDLE_MANIFESTVERSION;
 import static org.osgi.framework.Constants.IMPORT_PACKAGE;
 import static org.osgi.framework.Constants.EXPORT_PACKAGE;
-import static org.glassfish.web.osgi.Constants.WEB_CONTEXT_PATH;
-import static org.glassfish.web.osgi.Constants.WEB_JSP_EXTRACT_LOCATION;
-import static org.glassfish.web.osgi.Constants.WEB_BUNDLE_SCHEME;
+import static org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH;
+import static org.glassfish.osgiweb.Constants.WEB_JSP_EXTRACT_LOCATION;
+import static org.glassfish.osgiweb.Constants.WEB_BUNDLE_SCHEME;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -35,40 +35,30 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
-import com.sun.enterprise.web.WebModuleDecorator;
-import com.sun.enterprise.web.WebModule;
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
- * This class is responsible for setting an attribute called
- * @link Constants.BUNDLE_CONTEXT_ATTR} in ServletContext of the web app
- * associated with the current OSGi bundle.
- *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebModuleDecorator implements WebModuleDecorator
+public class OSGiWebContainerActivator implements BundleActivator
 {
-    private volatile OSGiWebContainer wc;
+    private ExtenderManager extenderManager;
 
-    public OSGiWebModuleDecorator(OSGiWebContainer wc)
+    public void start(BundleContext context) throws Exception
     {
-        this.wc = wc;
+        extenderManager = new ExtenderManager(context);
+        extenderManager.start();
+        // Move registration of extenders to a separate bundle when
+        // we move the extenders to a separate bundle
+        WebExtender webExtender = new WebExtender(context);
+        context.registerService(Extender.class.getName(), webExtender, null);
     }
 
-    public void decorate(WebModule module)
+    public void stop(BundleContext context) throws Exception
     {
-        if (wc != null) {
-            BundleContext bctx = wc.getCurrentBundleContext();
-            if (bctx != null) {
-                module.getServletContext().setAttribute(Constants.BUNDLE_CONTEXT_ATTR, bctx);
-            }
-        }
-    }
-
-    /* package */ void setWc(OSGiWebContainer wc)
-    {
-        this.wc = wc;
+        extenderManager.stop();
     }
 }

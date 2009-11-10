@@ -35,14 +35,13 @@
  */
 
 
-package org.glassfish.web.osgi;
+package org.glassfish.osgiweb;
 
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import static org.glassfish.web.osgi.Constants.FILE_PROTOCOL;
-import static org.glassfish.web.osgi.Constants.REFERENCE_PROTOCOL;
+import static org.glassfish.osgiweb.Constants.FILE_PROTOCOL;
+import static org.glassfish.osgiweb.Constants.REFERENCE_PROTOCOL;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 import java.io.IOException;
@@ -58,8 +57,6 @@ import java.util.Enumeration;
 import java.util.ListIterator;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
-import com.sun.enterprise.deployment.deploy.shared.Util;
 
 /**
  * Adapts a {@link Bundle} to {@link Archive}.

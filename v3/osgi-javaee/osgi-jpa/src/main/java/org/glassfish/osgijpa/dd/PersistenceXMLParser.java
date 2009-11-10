@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.jpa.osgi.dd;
+package org.glassfish.osgijpa.dd;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
