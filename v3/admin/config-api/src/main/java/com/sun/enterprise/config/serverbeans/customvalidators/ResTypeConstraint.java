@@ -40,7 +40,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import javax.validation.Constraint;
-import javax.validation.ConstraintPayload;
+import javax.validation.Payload;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -65,6 +65,5 @@ public @interface ResTypeConstraint {
                             "javax.sql.XADataSource. DriverClassname is mandatory" +
                                     "when resType is java.sql.Driver.";
     Class<?>[] groups() default {};
-    Class<? extends ConstraintPayload>[] payload() default {};
-
+    Class<? extends Payload>[] payload() default {};
 }

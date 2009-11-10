@@ -8,7 +8,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import javax.validation.Constraint;
-import javax.validation.ConstraintPayload;
+import javax.validation.Payload;
 
 @Retention(RUNTIME)
 @Target({METHOD, FIELD, TYPE})
@@ -17,5 +17,5 @@ import javax.validation.ConstraintPayload;
 public @interface FileRealmPropertyCheck {
     String message() default "file and jaas-context have to be specified for FileRealm";
     Class<?>[] groups() default {};
-    Class<? extends ConstraintPayload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }
