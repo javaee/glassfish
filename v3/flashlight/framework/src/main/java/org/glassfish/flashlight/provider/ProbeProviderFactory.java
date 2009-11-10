@@ -50,6 +50,9 @@ public interface ProbeProviderFactory {
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException;
 
+    public <T> T getProbeProvider(Class<T> providerClazz, String invokerId)
+            throws InstantiationException, IllegalAccessException;
+
     public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> clazz)
             throws InstantiationException, IllegalAccessException;
 

@@ -151,6 +151,11 @@ public class FlashlightProbeProviderFactory
     
     public <T> T getProbeProvider(Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
+        return getProbeProvider(providerClazz, null);
+    }
+
+    public <T> T getProbeProvider(Class<T> providerClazz, String invokerId)
+            throws InstantiationException, IllegalAccessException {
         //TODO: check for null and generate default names
         ProbeProvider provAnn = providerClazz.getAnnotation(ProbeProvider.class);
 
@@ -163,7 +168,7 @@ public class FlashlightProbeProviderFactory
             isValidString(probeProviderName)) {
             return getProbeProvider(moduleProviderName, moduleName,
                                 probeProviderName,
-                                providerClazz);
+                                invokerId, providerClazz);
         } else {
             logger.log(Level.WARNING,
                        "invalidProbeProvider", new Object[] {providerClazz.getName()});
@@ -171,18 +176,38 @@ public class FlashlightProbeProviderFactory
         }
     }
 
+    public <T> T getProbeProvider(String moduleName, String providerName, String appName,
+                                  Class<T> clazz)
+            throws InstantiationException, IllegalAccessException {
+
+        return getProbeProvider(moduleName, providerName, appName, null, clazz);
+    }
+
     public <T> T getProbeProvider(String moduleProviderName, String moduleName,
-    		String probeProviderName,
+    		String probeProviderName, String invokerId,
     		Class<T> providerClazz)
             throws InstantiationException, IllegalAccessException {
-        
+
+        String origProbeProviderName = probeProviderName;
+        Class<T> oldProviderClazz = providerClazz;
+
+        if (invokerId != null) {
+            probeProviderName += invokerId;
+            try {
+                providerClazz = getGeneratedProbeProviderClass(oldProviderClazz, invokerId);
+
+            } catch (Exception ex) {
+                //TODO
+                providerClazz = oldProviderClazz;
+            }
+        }
         ProbeProviderRegistry ppRegistry = ProbeProviderRegistry.getInstance();
-        FlashlightProbeProvider provider = null;
-        provider = new FlashlightProbeProvider(
+        FlashlightProbeProvider provider = new FlashlightProbeProvider(
                 moduleProviderName, moduleName, probeProviderName, providerClazz);
-        if (logger.isLoggable(Level.FINE))
+        if (logger.isLoggable(Level.FINE)) {
             logger.fine("ModuleProviderName= " + moduleProviderName + " \tModule= " + moduleName
                 + "\tProbeProviderName= " + probeProviderName + "\tProviderClazz= " + providerClazz.toString());
+        }
 
         // IT 10269 -- silently return a fresh instance if it is already registered
         // don't waste time -- return right away...
@@ -247,6 +272,31 @@ public class FlashlightProbeProviderFactory
 
         T inst = (T) tClazz.newInstance();
         return inst;
+    }
+
+    private <T> Class<T> getGeneratedProbeProviderClass(Class<T> oldProviderClazz, String invokerId) {
+        String generatedClassName = oldProviderClazz.getName() + invokerId;
+
+        Class<T> genClazz = null;
+        try {
+            genClazz = (Class<T>) (oldProviderClazz.getClassLoader()).loadClass(generatedClassName);
+            //System.out.println ("Reusing the Generated class");
+            return genClazz;
+        } catch (Exception cnfEx) {
+            //Ignore
+        }
+
+        try {
+            ProviderSubClassImplGenerator gen = new ProviderSubClassImplGenerator(
+                    oldProviderClazz, invokerId);
+
+            genClazz = gen.generateAndDefineClass(oldProviderClazz, generatedClassName, invokerId);
+
+            System.out.println("** Loaded generated provider: " + genClazz.getName());
+            return genClazz;
+        } catch (Throwable cnfEx) {
+            throw new RuntimeException(cnfEx);
+        }
     }
 
     public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle) {
