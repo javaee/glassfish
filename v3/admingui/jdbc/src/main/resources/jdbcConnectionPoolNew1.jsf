@@ -52,6 +52,7 @@
                 attrMap="#{pageSession.tmpMap}"
                 ResTypeList=>$attribute{ResTypeList}
                 DBVendorList=>$attribute{DBVendorList});
+    println("=========== #{wizardPoolExtra}")
     />
     </event>
 #include "/common/shared/restart.inc"    
@@ -117,7 +118,7 @@
         if (dropDownValue==''){
             enableComponent('#{pageSession.dbFieldId}', 'text');
         }else{
-            disableComponent('#{pageSession.dbFieldId}', 'text');
+            getTextElement('#{pageSession.dbFieldId}').value="";
         }
     }
 
