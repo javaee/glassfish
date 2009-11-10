@@ -92,7 +92,7 @@
 	    </exclusions-->   
         </dependency>
         <dependency>
-            <groupId>org.glassfish.web</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>osgi-web-container</artifactId>
             <version>${project.version}</version>
         </dependency>

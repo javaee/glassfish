@@ -72,7 +72,7 @@
           modules to be included in this bundle
         -->       
         <dependency>
-            <groupId>org.glassfish.web</groupId>
+            <groupId>org.glassfish</groupId>
             <artifactId>osgi-http</artifactId>
             <version>${project.version}</version>
         </dependency>
