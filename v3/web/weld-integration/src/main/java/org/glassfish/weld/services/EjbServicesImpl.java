@@ -223,11 +223,13 @@ public class EjbServicesImpl implements EjbServices
                                 glassfishEjbDesc);
             glassfishEjbDesc.addMethodLevelChain(aroundInvokeChain, m, true);
 
+            /** TODO comment out until 299 impl issue with not recognizing AROUND_TIMEOUT enum is resolved
             List<EjbInterceptor> aroundTimeoutChain =
                 makeInterceptorChain(InterceptionType.AROUND_TIMEOUT,
                         interceptorBindings.getMethodInterceptors(InterceptionType.AROUND_TIMEOUT, m),
                                 glassfishEjbDesc);
             glassfishEjbDesc.addMethodLevelChain(aroundTimeoutChain, m, false);
+             **/
         }                                     
 
         return;
