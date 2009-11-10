@@ -91,23 +91,25 @@ public class MonitoringHandlers {
             while (iter.hasNext()) {
                 Map attrs = ((AMXProxy) iter.next()).attributesMap();
                 ObjectName[] pnames = (ObjectName[]) attrs.get("ContainerMonitoring");
-                for (int i = 0; i < pnames.length; i++) {
-                    Map oneRow = new HashMap();
-                    String cname = null;
-                    String pname = pnames[i].getKeyProperty("name");
-                    ListIterator ci = containerDispList.listIterator();
-                    ListIterator vi = containerNameList.listIterator();
-                    while (ci.hasNext() && vi.hasNext()) {
-                        String dispName = (String) ci.next();
-                        String value = (String) vi.next();
-                        if (pname.equals(value)) {
-                            cname = dispName;
+                if (pnames != null) {
+                    for (int i = 0; i < pnames.length; i++) {
+                        Map oneRow = new HashMap();
+                        String cname = null;
+                        String pname = pnames[i].getKeyProperty("name");
+                        ListIterator ci = containerDispList.listIterator();
+                        ListIterator vi = containerNameList.listIterator();
+                        while (ci.hasNext() && vi.hasNext()) {
+                            String dispName = (String) ci.next();
+                            String value = (String) vi.next();
+                            if (pname.equals(value)) {
+                                cname = dispName;
+                            }
                         }
+                        oneRow.put("monCompName", (cname == null) ? pname : cname);
+                        oneRow.put("level", V3AMX.getAttribute(pnames[i], "Level"));
+                        oneRow.put("selected", false);
+                        result.add(oneRow);
                     }
-                    oneRow.put("monCompName", (cname == null) ? pname : cname);
-                    oneRow.put("level", V3AMX.getAttribute(pnames[i], "Level"));
-                    oneRow.put("selected", false);
-                    result.add(oneRow);
                 }
             }
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectName));
@@ -539,15 +541,17 @@ public class MonitoringHandlers {
                 ObjectName[] pnames = (ObjectName[]) attrs.get("Children");
                 for (int i = 0; i < pnames.length; i++) {
                     String pname = pnames[i].getKeyProperty("name");
-                    if (end.equals("true")) {
-                        if (pname.endsWith(app + "/" + comp)) {
-                            mbeanName = pname;
-                            break;
-                        }
-                    } else {
-                        if (pname.startsWith(app + "/" + comp)) {
-                            mbeanName = pname;
-                            break;
+                    if(pname != null){
+                        if (end.equals("true")) {
+                            if (pname.endsWith(app + "/" + comp)) {
+                                mbeanName = pname;
+                                break;
+                            }
+                        } else {
+                            if (pname.startsWith(app + "/" + comp)) {
+                                mbeanName = pname;
+                                break;
+                            }
                         }
                     }
 
