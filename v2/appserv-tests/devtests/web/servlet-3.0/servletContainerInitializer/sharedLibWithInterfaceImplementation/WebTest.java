@@ -45,7 +45,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "pluggability-sharedlib-interfaceImpl";
-    private static final String EXPECTED_RESPONSE = "4CALLED INTFIMPL-SHAREDLIB-1;null;null;null;null;null;";
+    private static final String EXPECTED_RESPONSE = "3CALLED INTFIMPL-SHAREDLIB-1;null;null;null;null;null;";
 
     private String host;
     private String port;
