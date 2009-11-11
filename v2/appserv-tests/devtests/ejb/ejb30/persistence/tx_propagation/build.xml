@@ -91,6 +91,7 @@
 
     <target name="run" depends="init-common">
         <antcall target="runclient-common"/>
+        <antcall target="runclient-standalone"/>
     </target>
  
     <target name="undeploy" depends="init-common">
@@ -100,4 +101,24 @@
     <target name="usage">
         <antcall target="usage-common"/>
     </target>
+
+    <target name="runclient-standalone" depends="clean-db">
+       <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${simple.client}">
+        </java>
+    </target>
+
+    <target name="clean-db" depends="init-common">
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/drop.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
+      <antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+      </antcall>
+    </target>
+
 </project>

@@ -18,7 +18,7 @@ public class Client {
 
     private String personName;
 
-    private static @Resource(mappedName="jdbc/xa") DataSource ds;
+    private /** static @Resource(mappedName="jdbc/xa") **/ DataSource ds;
 
     public static void main (String[] args) {
 
@@ -47,13 +47,19 @@ public class Client {
         Connection connection = null;
         PreparedStatement s = null;
         try {
-            
             System.err.println("I am in client");
+            
+            UserTransaction utx = (UserTransaction)(new javax.naming.InitialContext()).lookup("java:comp/UserTransaction");
+            ds = (DataSource)(new javax.naming.InitialContext()).lookup("jdbc/xa");
+
             System.err.println("calling createPerson(" + personName + ")");
+            if (sful == null) {
+                // Java SE client
+                sful = (Sful)(new javax.naming.InitialContext()).lookup("com.sun.s1asdev.ejb.ejb30.persistence.tx_propagation.Sful");
+            }
             sful.setName(personName);
             System.err.println("created ");
 
-            UserTransaction utx = (UserTransaction)(new javax.naming.InitialContext()).lookup("java:comp/UserTransaction");
             utx.begin();
             System.err.println("utx.begin called ");
             
