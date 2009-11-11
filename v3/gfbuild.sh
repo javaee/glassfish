@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh 
 
 #This shell script invokes mvn to build GFv3. 
 #First the script will verify that mvn is installed and is in the path.  
@@ -31,9 +31,24 @@ if [ "$java_ver" -lt 6 ]; then
     echo "Please use JDK 1.6"
     exit 1
 fi
-#verify that maven version is 2.0.9
-if [ "$mvn_ver" != "2.0.9" ]; then
-    echo "Please use Maven version 2.0.9."
+
+# mvn -version returns "Maven version:..." in 2.0.9 
+# and in 2.2.0 and up returns "Apache Maven..."  so need to 
+# apply awk with different string values.
+mvn_ver=`mvn -version 2>&1 | awk '/^Maven version:/ {print $3}'`
+if [ "$mvn_ver" = "" ]; then
+    mvn_ver=`mvn -vesrion 2>&1 | awk '/^Apache Maven / {print $3}'`
+fi
+
+# convert to number since shell is unable to compare float"
+# e.g. convert 2.2.1 to 221
+version=`echo $mvn_ver |  sed 's/\.//g'`
+#verify that maven version is 2.0.9 or 2.2.1 and greater 
+if [ "$version" -lt  "209" ]; then
+        echo "Please do not use Maven version lower than 2.0.9."
+    exit 1
+elif [ "$version" -eq "220" ]; then
+        echo "Please do not use Maven version 2.2.0."
     exit 1
 fi
 
