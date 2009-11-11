@@ -558,6 +558,37 @@ public class ConnectorsHandlers {
         }
     }
 
+    /**
+     *	<p> updates the wizard map properties on step 2
+     */
+    @Handler(id = "getResourceAdapterConfigNewInfo",
+        input = {
+            @HandlerInput(name = "name", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "valueMap", type = Map.class),
+            @HandlerOutput(name = "tableList", type = java.util.List.class)
+    })
+    public static void getResourceAdapterConfigNewInfo(HandlerContext handlerCtx) {
+        String rarName = (String) handlerCtx.getInputValue("name");
+        if (GuiUtil.isEmpty(rarName)){
+            rarName = "jmsra";
+        }
+        
+        Map valueMap = new HashMap();
+        valueMap.put("Name", rarName);
+        handlerCtx.setOutputValue("valueMap", valueMap);
+
+        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getResourceAdapterConfigProps(rarName);
+        if (result != null) {
+            Map<String, String> props = (Map) result.get(RESOURCE_ADAPTER_CONFIG_PROPS_KEY);
+            handlerCtx.setOutputValue("tableList", GuiUtil.convertMapToListOfMap(props));
+        }else{
+            List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
+            handlerCtx.setOutputValue("tableList", noprops);
+        }
+    }
+
+    
    public static Map stringToMap(String str, String delimiter) {
         Map props = new HashMap();
          if ( str != null && delimiter != null) {
@@ -579,6 +610,7 @@ public class ConnectorsHandlers {
     public static final String MCF_CONFIG_PROPS_KEY = "McfConfigPropsKey";
     public static final String SYSTEM_CONNECTORS_KEY = "SystemConnectorsKey";
     public static final String ADMINOBJECT_CONFIG_PROPS_KEY = "AdminObjectConfigPropsKey";
+    public static final String RESOURCE_ADAPTER_CONFIG_PROPS_KEY = "ResourceAdapterConfigPropsKey";
 
 
 }

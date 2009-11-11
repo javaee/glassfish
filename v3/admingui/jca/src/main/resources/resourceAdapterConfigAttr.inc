@@ -46,13 +46,33 @@
         </sun:property>
 
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.Name}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" text="#{pageSession.valueMap['Name']}" />
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['Name']}" labels="$pageSession{connectorList}"
+                    required="#{true}" submitForm="#{true}" immediate="#{true}" >
+                <!beforeCreate
+                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
+                     listAdd(list="#{pageSession.connectorList}" value="jmsra")
+                />
+                <!command
+                    setAttribute(key="click" value="$this{component}");
+                    setAttribute(key="name" value="#{click.selected}");
+                    setAttribute(key="reload" value="#{true}" );
+                    gf.navigate(page="#{pageSession.selfPage}");
+                />
+           </sun:dropDown>
         </sun:property>
 
         <sun:property id="threadPoolsIdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.threadPoolId}"
                 helpText="$resource{i18njca.resourceAdapterConfig.ThreadPoolIdsHelp}" >
-            <sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['ThreadPoolIds']}" />
-        </sun:property>
+            //<sun:textField id="threadpoolsid" columns="$int{55}" text="#{pageSession.valueMap['ThreadPoolIds']}" />
+            <sun:dropDown id="threadpoolsid" selected="#{pageSession.valueMap['ThreadPoolIds']}" labels="#{pageSession.threadPoolList}" >
+                <!beforeCreate
+                    getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[server-config],type=thread-pools" 
+                        type="thread-pool" result="#{requestScope.tmpList}");
+                    addEmptyFirstElement(in="#{requestScope.tmpList}" out="#{pageSession.threadPoolList}")
+                />
+                </sun:dropDown>
+
+</sun:property>
         "<br /><br />
     </sun:propertySheetSection>
 </sun:propertySheet> 

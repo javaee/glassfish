@@ -44,16 +44,19 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/resourceAdapterConfigNew.jsf");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/resourceAdapterConfigs.jsf");
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="resource-adapter-config");
-        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+        //getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
         //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        getResourceAdapterConfigNewInfo(name="#{pageSession.Name}", valueMap="#{pageSession.valueMap}" tableList="#{requestScope.tableList}" )
     />
     </event>
             <sun:form id="propertyForm">
