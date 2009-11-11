@@ -53,7 +53,14 @@
     </sun:property>
 
     <sun:property id="dsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelpEnter}">
-        <sun:dropDown  id="datasource" selected="#{wizardPoolExtra.DatasourceClassname}" labels="$attribute{DSList}"  disabled="#{!wizardPoolExtra.dsClassname}" />
+        <sun:dropDown  id="datasource" selected="#{wizardPoolExtra.DatasourceClassname}" labels="$attribute{DSList}"  disabled="#{!wizardPoolExtra.dsClassname}" submitForm="#{true}" immediate="#{true}">
+            <!command
+                    setAttribute(key="click" value="$this{component}");
+                    mapPut(map="#{wizardPoolExtra}" key="DatasourceClassname" value="#{click.selected}");
+                    updateJdbcConnectionPoolPropertiesTable();
+                    gf.navigate(page="#{selfPage}");
+                />
+        </sun:dropDown>
         "<br/>
         <sun:textField id="datasourceField"  columns="$int{60}" text="#{wizardPoolExtra.DatasourceClassnameField}"  disabled="#{!wizardPoolExtra.dsClassname}" />
     </sun:property>

@@ -224,6 +224,9 @@ public class JdbcTempHandler {
                             System.out.println( "classname[" + i + "] : " + dsl.get(i));
                         }
                     }
+                    
+                    List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
+                    String dslName = (dsl != null && (dsl.size() > 0)) ? (String) dsl.get(0) : "";
                     if (resType.equals(DRIVER)) {
                         extra.put("DList", dsl);
                         extra.put("DSList", "");
@@ -234,9 +237,8 @@ public class JdbcTempHandler {
                         extra.put("DList", "");
                         extra.put("DriverClassnameField", "");
                         extra.put("dsClassname", Boolean.TRUE);
+                        extra.put("DatasourceClassname", dslName);
                     }
-                    List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
-                    String dslName = (dsl != null && (dsl.size() > 0)) ? (String) dsl.get(0) : "";
                     GuiUtil.getLogger().info("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType +")");
                     Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(dslName, resType);
                     if (result != null) {
@@ -268,6 +270,27 @@ public class JdbcTempHandler {
         }
     }
 
+     /**
+     *	<p> updates the wizard map properties on step 2
+     */
+    @Handler(id = "updateJdbcConnectionPoolPropertiesTable")
+    public static void updateJdbcConnectionPoolPropertiesTable(HandlerContext handlerCtx) {
+        Map extra = (Map) handlerCtx.getFacesContext().getExternalContext().getSessionMap().get("wizardPoolExtra");
+        String resType = (String) extra.get("ResType");
+        String classname = (String) extra.get("DatasourceClassname");
+        List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
+        GuiUtil.getLogger().info("===== getConnectionDefinitionPropertiesAndDefaults(\"" + classname + "\"," + resType + ")");
+        Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
+        if (result != null) {
+            Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
+            GuiUtil.getLogger().info("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
+        } else {
+            GuiUtil.getLogger().info("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+            handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
+        }
+    }
+    
     /**
      *	<p> updates the wizard map properties on step 2
      */
