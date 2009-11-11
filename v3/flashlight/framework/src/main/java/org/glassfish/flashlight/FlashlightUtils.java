@@ -235,29 +235,34 @@ public class FlashlightUtils {
     }
 
     private static void logDTraceAvailability(boolean contractExists, boolean isSupported) {
-            // There are three and only three possibilities:
-            // 1. dt  is null
-            // 2. dt is not null and isSupported() is false
-            // 3. dt is not null and isSupported() is true
+        // There are three and only three possibilities:
+        // 1. dt  is null
+        // 2. dt is not null and isSupported() is false
+        // 3. dt is not null and isSupported() is true
 
-        String message = localStrings.getLocalString("enabled",
-                                "DTrace enabled is set to {0}", dtraceEnabled);
+        // if dtrace is not enabled then don't harass user with noisy
+        // DTrace messages
+       
+        if(!dtraceEnabled)
+           return;
+
+       String message;
 
         if(!contractExists) {
-            message += localStrings.getLocalString("no_impl",
-                                "DTrace is not available.  This can be caused by two things:\n" +
-                                "1. JDK 7 is required to run DTrace\n" +
-                                "2. glassfish-dtrace.jar value-add is required for DTrace");
+            message = localStrings.getLocalString("no_impl",
+                "DTrace is not available.  This can be caused by two things:\n" +
+                "1. JDK 7 is required to run DTrace\n" +
+                "2. glassfish-dtrace.jar value-add is required for DTrace");
         }
         else if(!isSupported){
-            message += localStrings.getLocalString("not_supported",
+            message = localStrings.getLocalString("not_supported",
             "DTrace is not available.  This condition normally only occurs when your\n" +
             "Operating System does not support DTrace.  Currently you must have Solaris 10\n" +
             "or better for dtrace support");
         }
 
         else {
-            message += localStrings.getLocalString("init_ok",
+            message = localStrings.getLocalString("init_ok",
             "DTrace is connected and ready.");
         }
 
