@@ -981,14 +981,15 @@ admingui.help = {
 		return (shortName == name);
 	    },
 	    "helpKey");
-	if (!(helpKeys === null)) {
-            //var prefix = "/resource/" + admingui.help.pluginId + "/" + admingui.help.locale + "/help/";
-            // FIXME: When locale-aware resource resolution is implemented, re-enable locale support in the line above.
-            var prefix = "/resource/" + admingui.help.pluginId + "/en/help/";
-
-	    helpLink = helpLink + "?contextRef=" + prefix + helpKeys[0].value;
-	}
-	admingui.help.openHelpWindow(helpLink);
+	if (helpKeys !== null) {
+            admingui.ajax.invoke("calculateHelpUrl", {pluginId: admingui.help.pluginId, helpKey: helpKeys[0].value, url:"url"},
+                function(result) {
+                    admingui.help.openHelpWindow(helpLink + "?contextRef=" + "/resource/" + admingui.help.pluginId + result.url);
+                }
+            );
+	} else {
+            admingui.help.openHelpWindow(helpLink);
+        }
     },
 
     openHelpWindow: function (url) {
@@ -2242,7 +2243,7 @@ admingui.ajax = {
 			var result = '';
 			if (respElt.value != '') {
 			    result = '(' + respElt.value + ')';
-			    result = eval(result).content;
+			    result = eval(result);
 			}
 			callback(result, data);
 		    }
@@ -2387,12 +2388,12 @@ var globalEvalNextScript = function(scriptQueue) {
         globalEvalNextScript(scriptQueue);
     } else {
         // Get via Ajax
-        admingui.ajax.getResource(node.src, function(result) {globalEval(result);globalEvalNextScript(scriptQueue);} );
+        admingui.ajax.getResource(node.src, function(result) {globalEval(result.content);globalEvalNextScript(scriptQueue);} );
         // This gets a relative URL vs. a full URL with http://... needed
         // when we properly serve resources w/ rlubke's recent fix that
         // will be integrated soon.  We need to handle the response
         // differently also.
-        //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result); globalEvalNextScript(scriptQueue);} );
+        //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
     }
 }
 

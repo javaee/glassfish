@@ -50,9 +50,11 @@ import com.sun.jsftemplating.util.FileUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -542,7 +544,7 @@ public class PluginHandlers {
             return;
         }
         ConsolePluginService cps = getPluginService(handlerCtx.getFacesContext());
-        String pluginId = "";
+        String pluginId = "common";
         int next = viewId.indexOf("/", 1);
         if (next > -1) {
             pluginId = viewId.substring(0, next);
@@ -558,9 +560,91 @@ public class PluginHandlers {
                 url = cl.getResource(resource);
             }
             if (url == null) {
-                pluginId = "";
+                pluginId = "common";
             }
         }
         handlerCtx.setOutputValue("pluginId", pluginId);
     }
+
+    @Handler(id="calculateHelpUrl",
+        input={
+            @HandlerInput(name="pluginId",type=String.class,required=true),
+            @HandlerInput(name="helpKey",type=String.class,required=true)
+        },
+        output={
+            @HandlerOutput(name="url",type=String.class)
+        }
+    )
+    public static void calculateHelpUrl(HandlerContext handlerCtx) {
+        String pluginId = (String) handlerCtx.getInputValue("pluginId");
+        String helpKey = (String)handlerCtx.getInputValue("helpKey");
+        ConsolePluginService cps = getPluginService(handlerCtx.getFacesContext());
+
+        ClassLoader cl = cps.getModuleClassLoader(pluginId);
+
+        // Try the viewRoot locale first
+        String path = getPathForResource(helpKey, handlerCtx.getFacesContext().getViewRoot().getLocale(), cl);
+        if (path == null) {
+            // Try the default locale
+            getPathForResource(helpKey, Locale.getDefault(), cl);
+
+            // Default to en
+            if (path == null) {
+                path = "/en/help/" + helpKey;
+            }
+        }
+
+        handlerCtx.setOutputValue("url", path);
+    }
+
+    private static String getPathForResource (String resource, Locale locale, ClassLoader cl) {
+        String path = "/" + locale.toString() + "/help/" + resource;
+        String language = locale.getLanguage();
+        String country = locale.getCountry();
+        
+        // Try with full locale
+        boolean found = cl.getResource(path) != null;
+
+        // Try with language_COUNTRY
+        if (!found) {
+            path = "/" + language + "_" + country + "/help/" + resource;
+            found = cl.getResource(path) != null;
+
+            // Try with just language
+            if (!found) {
+                path = "/" + language + "/help/" + resource;
+                found = cl.getResource(path) != null;
+                // Still not found, so fall back to en
+                if (!found) {
+                    path = null;
+                }
+            }
+        }
+
+        return path;
+    }
+
+    /*
+    private static String getPluginIdFromViewId(ConsolePluginService cps, String viewId) {
+        String pluginId = "";
+        int next = viewId.indexOf("/", 1);
+        if (next > -1) {
+            pluginId = viewId.substring(0, next);
+            String resource = viewId.substring(next);
+
+            if (pluginId.startsWith("/")) {
+                pluginId = pluginId.substring(1);
+            }
+
+            ClassLoader cl = cps.getModuleClassLoader(pluginId);
+            if (cl != null) {
+                if (cl.getResource(resource) == null) {
+                    pluginId = "";
+                }
+            }
+        }
+
+        return pluginId;
+    }
+    */
 }
