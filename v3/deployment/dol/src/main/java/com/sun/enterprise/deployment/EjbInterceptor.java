@@ -51,6 +51,7 @@ public class EjbInterceptor extends InterceptorDescriptor
 {
 
     private EjbBundleDescriptor ejbBundleDescriptor;
+    private boolean cdiInterceptor = false;
   
 
     public EjbBundleDescriptor getEjbBundleDescriptor() {
@@ -64,5 +65,13 @@ public class EjbInterceptor extends InterceptorDescriptor
 
     public String toString() {
         return "EjbInterceptor class = " + getInterceptorClassName();
+    }
+
+    public void setCDIInterceptor(boolean flag) {
+        cdiInterceptor = flag;
+    }
+
+    public boolean isCDIInterceptor() {
+        return cdiInterceptor;
     }
 }

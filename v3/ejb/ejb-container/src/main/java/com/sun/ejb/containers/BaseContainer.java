@@ -1741,6 +1741,17 @@ public abstract class BaseContainer
         }
     }
 
+    private boolean doPreInvokeAuthorization(EjbInvocation inv) {
+
+        // preInvocation authorization does not apply if this is a timer callback
+        // OR if it's a remove operation initiated via the 299 SPI
+        boolean skipPreInvokeAuth = inv.isTimerCallback ||
+                ( inv.isLocal &&
+                  inv.method.equals(ejbIntfMethods[EJBLocalObject_remove]) &&
+                  !((EJBLocalObjectImpl)inv.ejbObject).isLocalHomeView() );
+
+       return !skipPreInvokeAuth;
+    }
 
     /**
      * Called from EJBObject/EJBHome before invoking on EJB.
@@ -1782,7 +1793,7 @@ public abstract class BaseContainer
                 return;
             }
 
-            if (!inv.isTimerCallback) {
+            if ( doPreInvokeAuthorization(inv) ) {
                 if (! authorize(inv)) {
                     throw new AccessLocalException(
                         "Client not authorized for this invocation.");

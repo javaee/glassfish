@@ -56,6 +56,7 @@ import javax.ejb.EJBException;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
 import com.sun.logging.LogDomains;
 
 import java.util.Set;
@@ -255,7 +256,12 @@ public class EjbContainerServicesImpl implements EjbContainerServices {
 
         Set<String> ejbManagedObjectClassNames = new HashSet<String>();
         ejbManagedObjectClassNames.add(ejbDesc.getEjbClassName());
-        ejbManagedObjectClassNames.addAll(ejbDesc.getInterceptorClassNames());
+
+        for(EjbInterceptor next : ejbDesc.getInterceptorClasses()) {
+            if( !next.isCDIInterceptor() ) {
+                ejbManagedObjectClassNames.add(next.getInterceptorClassName());
+            }
+        }
 
         Set<String> serializableClassNames = new HashSet<String>();
 
