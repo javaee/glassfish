@@ -485,9 +485,9 @@
         <ant dir="sslMultiSelector" target="all"/>
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
-        <!-- Exclude for prelude, since port unification not supported
+<!-- Exclude for prelude, since port unification not supported, see IT 4675
         <ant dir="wrongTransport" target="all"/>
-        -->
+-->
 <!-- XXX temporarily commented out, see IT 7420
         <ant dir="maxKeepAliveRequests" target="all"/>
 -->
