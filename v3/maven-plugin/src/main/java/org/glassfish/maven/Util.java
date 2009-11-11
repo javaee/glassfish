@@ -66,8 +66,12 @@ public  class Util {
         EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
         if (installRoot != null)
             efsb.installRoot(new File(installRoot), true);
-        if (instanceRoot != null)
+        if (instanceRoot != null) {
+            // this property is normally used as a token in a regular glassfish domain.xml
+            System.setProperty("com.sun.aas.instanceRootURI", "file:" + instanceRoot);
             efsb.instanceRoot(new File(instanceRoot));
+        }
+        
         if (configFile != null)
             efsb.configurationFile(new File(configFile));
         if (autoDelete != null)
