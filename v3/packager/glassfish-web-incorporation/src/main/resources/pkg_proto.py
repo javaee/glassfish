@@ -67,7 +67,7 @@ pkg = {
 			"pkg:/glassfish-jca@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jpa@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jta@" + conf.glassfish_version : {"type" : "incorporate" },
-			"pkg:/glassfish-corba-omgapi@" + conf.corba_version : {"type" : "incorporate" },
+			"pkg:/glassfish-corba-base@" + conf.corba_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jts@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-ejb-lite@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jsf@" + conf.jsf_version : {"type" : "incorporate" },
