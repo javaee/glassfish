@@ -40,6 +40,9 @@ import org.glassfish.internal.api.ConnectorClassFinder;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.DelegatingClassLoader;
 import org.glassfish.api.admin.*;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
+import org.glassfish.api.event.EventTypes;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -82,6 +85,10 @@ public class ConnectorsClassLoaderUtil {
 
     @Inject
     private ProcessEnvironment processEnv;
+
+    @Inject
+    Events events;
+
 
     private boolean rarsInitializedInEmbeddedServerMode;
 
@@ -130,7 +137,17 @@ public class ConnectorsClassLoaderUtil {
             final DelegatingClassLoader.ClassFinder librariesCL = getLibrariesClassLoader(appLibs);
             cl = (ConnectorClassFinder)AccessController.doPrivileged(new PrivilegedExceptionAction() {
                 public Object run() throws Exception {
-                        return new ConnectorClassFinder(parent, moduleName, librariesCL);
+                        final ConnectorClassFinder ccf = new ConnectorClassFinder(parent, moduleName, librariesCL);
+                        if (processEnv.getProcessType().isEmbedded()) {
+                            events.register(new EventListener() {
+                                public void event(Event event) {
+                                    if (event.is(EventTypes.PREPARE_SHUTDOWN)) {
+                                        ccf.done();
+                                    }
+                                }
+                            });
+                        }
+                        return ccf;
                 }
             });
         } catch (Exception ex) {

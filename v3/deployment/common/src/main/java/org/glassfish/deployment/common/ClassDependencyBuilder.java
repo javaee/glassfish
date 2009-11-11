@@ -45,7 +45,7 @@ public class ClassDependencyBuilder {
                 System.out.println("????");
             }
         } else {
-            System.out.println("No info about: " + name);
+            //System.out.println("No info about: " + name);
         }
 
         return new HashSet<String>();

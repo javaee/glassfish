@@ -237,20 +237,20 @@ public class Server {
 
         if (!fs.instanceRoot.exists()) {
             fs.instanceRoot.mkdirs();
-            // todo : dochez : temporary fix for docroot
-            File f = new File(fs.instanceRoot, "docroot");
-            if (!f.mkdirs()) {
-                if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
-                    Logger.getAnonymousLogger().fine("Cannot create docroot embedded directory at "
-                        + f.getAbsolutePath());
-                }
+        }
+        // todo : dochez : temporary fix for docroot
+        File f = new File(fs.instanceRoot, "docroot");
+        if (!f.mkdirs()) {
+            if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
+                Logger.getAnonymousLogger().fine("Cannot create docroot embedded directory at "
+                    + f.getAbsolutePath());
             }
-            f = new File(fs.instanceRoot, "config");
-            if (!f.mkdirs()) {
-                if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
-                    Logger.getAnonymousLogger().fine("Cannot create config embedded directory at "
-                        + f.getAbsolutePath());
-                }
+        }
+        f = new File(fs.instanceRoot, "config");
+        if (!f.mkdirs()) {
+            if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
+                Logger.getAnonymousLogger().fine("Cannot create config embedded directory at "
+                    + f.getAbsolutePath());
             }
         }
         
