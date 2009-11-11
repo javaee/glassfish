@@ -302,6 +302,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         false);
             }
         } catch(Throwable e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
             report.failure(logger,localStrings.getLocalString(
                     "errDuringDepl", 
                     "Error during deployment : ") + e.getMessage(),null);
