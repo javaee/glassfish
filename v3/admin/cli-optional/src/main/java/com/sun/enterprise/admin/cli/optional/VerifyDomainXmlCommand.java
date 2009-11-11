@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import org.glassfish.api.embedded.Server;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.ConfigParser;
@@ -96,9 +97,7 @@ public final class VerifyDomainXmlCommand extends LocalDomainCommand {
         File domainXMLFile = getDomainXml();
         logger.printDebugMessage("Domain XML file = " + domainXMLFile);
         try {
-            Server server = new Server.Builder("dummylaunch").build();
-            server.start();
-            Habitat habitat = server.getHabitat();
+            Habitat habitat = Globals.getStaticHabitat();
             ConfigParser parser = new ConfigParser(habitat);
             URL domainURL = domainXMLFile.toURI().toURL();
             DomDocument doc = parser.parse(domainURL);

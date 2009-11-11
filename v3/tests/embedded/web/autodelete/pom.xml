@@ -44,8 +44,8 @@
           <configuration>
               <executable>java</executable>
               <arguments>
-                  <argument>-Xdebug</argument>
-                  <argument>-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009</argument>
+                  <!--argument>-Xdebug</argument>
+                  <argument>-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9009</argument-->
                   <argument>-classpath</argument>
                   <classpath/>
                   <argument>org.glassfish.tests.embedded.web.autodelete.ServletMain</argument>
