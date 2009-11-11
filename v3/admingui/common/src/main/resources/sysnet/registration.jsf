@@ -57,7 +57,7 @@
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); admingui.nav.selectTreeNodeById('treeForm:tree:registration');" >
 
 <!define name="content">
-//<sun:script url="/resource/common/js/adminjsf.js" />
+<sun:script url="/resource/common/js/adminjsf.js" />
     <event>
     <!beforeCreate
         setAttribute(key="accountGroup", value="hasAccount");
@@ -304,7 +304,7 @@
             function validateRegisterField(form){
                 ss = getSelectedValueFromForm(form, 'accountGroup');
                 if( ss =='hasAccount'){
-                    test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswdProp',  '#{reqMsg}') ) ;
+                    test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswd',  '#{reqMsg}') ) ;
                     if (!test){
                         return test;
                     }

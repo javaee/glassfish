@@ -1220,7 +1220,7 @@ function checkRequired(componentId, reqMsg){
     //var value = component.getProps().value;
     var component = getTextElement(componentId);
     var value = component.value;
-    var result = (value != '') && (isWhitespace(value) == false); 
+    var result = (value != null) && (value != '') && (isWhitespace(value) == false);
     if (result == false) {
         if (reqMsg == '') {
             showAlert(getLabel(component) + ' is a required field.');
