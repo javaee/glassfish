@@ -64,19 +64,21 @@ import java.util.TreeSet;
 import javax.management.Attribute;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.intf.config.Application;
-import org.glassfish.admin.amx.intf.config.ApplicationRef;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.AppUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 import org.glassfish.admingui.common.util.V3AMXUtil;
-import org.glassfish.admin.amx.intf.config.Property;
-import org.glassfish.admin.amx.intf.config.VirtualServer;
-import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.deployment.client.DFDeploymentProperties;
 
 import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.TabularData;
+import org.glassfish.admin.amx.core.Util;
+import org.glassfish.admin.amx.intf.config.ApplicationRef;
+import org.glassfish.admin.amx.intf.config.Property;
+import org.glassfish.admin.amx.intf.config.VirtualServer;
+import org.glassfish.admin.amx.monitoring.ServerMon;
+import org.glassfish.admingui.common.util.DeployUtil;
 
 
 public class WebAppHandlers {
@@ -144,38 +146,12 @@ public class WebAppHandlers {
         V3AMX.setAttribute(appRefObjectName, new Attribute("VirtualServers", appRefAttr.get("VirtualServers")));
     }
 
-
-    /**
-     *	<p> This handler returns the list of applications for populating the table.
-     *  <p> Input  value: "serverName" -- Type: <code> java.lang.String</code></p>
-     *	@param	handlerCtx	The HandlerContext.
-     */
     @Handler(id = "getSubComponents",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true)},
         output = {
             @HandlerOutput(name = "result", type = java.util.List.class)})
     public static void getSubComponents(HandlerContext handlerCtx) {
-        List result = new ArrayList();
-        String appName = (String) handlerCtx.getInputValue("appName");
-        Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
-        for(AMXProxy oneModule: modules.values()){
-            Map oneRow = new HashMap();
-            List<String> snifferList = AppUtil.getSnifferListOfModule(oneModule);
-            oneRow.put("componentName", oneModule.getName());
-            oneRow.put("engines", snifferList.toString());
-            result.add(oneRow);
-        }
-        handlerCtx.setOutputValue("result", result);
-    }
-
-
-    @Handler(id = "getSubComponentsNew",
-        input = {
-            @HandlerInput(name = "appName", type = String.class, required = true)},
-        output = {
-            @HandlerOutput(name = "result", type = java.util.List.class)})
-    public static void getSubComponentsNew(HandlerContext handlerCtx) {
         List result = new ArrayList();
         String appName = (String) handlerCtx.getInputValue("appName");
         Map<String, AMXProxy> modules = V3AMX.getInstance().getApplication(appName).childrenMap("module");
@@ -219,13 +195,33 @@ public class WebAppHandlers {
     @Handler(id = "getEndpointInfo",
         input = {
             @HandlerInput(name = "appName", type = String.class, required = true),
-            @HandlerInput(name = "subComponentName", type = String.class, required = true)},
+            @HandlerInput(name = "moduleName", type = String.class, required = true),
+            @HandlerInput(name = "subComponentName", type = String.class, required = true),
+            @HandlerInput(name = "type", type = String.class, required = true)},
         output = {
             @HandlerOutput(name = "result", type = Map.class)})
     public static void getEndpointInfo(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        String subComponentName = (String) handlerCtx.getInputValue("subComponentName");
-        Map result = findEndpointInfo(appName, subComponentName);
+        String moduleName = (String) handlerCtx.getInputValue("moduleName");
+        String componentName = (String) handlerCtx.getInputValue("subComponentName");
+        String type = (String) handlerCtx.getInputValue("type");
+        Map result = new HashMap();
+        TabularData endpointMap = getEndpointMap ( appName,   moduleName,  componentName,  type);
+        if (endpointMap.isEmpty()){
+            handlerCtx.setOutputValue("result", result);
+        }
+
+        result.put("appName", (String)endpointMap.get(new Object[] {"appName"}).get("value"));
+        result.put("endpointName", (String)endpointMap.get(new Object[] {"endpointName"}).get("value"));
+        result.put("namespace", (String)endpointMap.get(new Object[] {"implClass"}).get("value"));
+        result.put("serviceName", (String)endpointMap.get(new Object[] {"namespace"}).get("value"));
+        result.put("portName", (String)endpointMap.get(new Object[] {"portName"}).get("value"));
+        result.put("implClass", (String)endpointMap.get(new Object[] {"implClass"}).get("value"));
+        result.put("address", (String)endpointMap.get(new Object[] {"address"}).get("value"));
+        result.put("wsdl", (String)endpointMap.get(new Object[] {"wsdl"}).get("value"));
+        result.put("tester", (String)endpointMap.get(new Object[] {"tester"}).get("value"));
+        result.put("implType", (String)endpointMap.get(new Object[] {"implType"}).get("value"));
+        result.put("deploymentType", (String)endpointMap.get(new Object[] {"deploymentType"}).get("value"));
         String launchLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
         if (GuiUtil.isEmpty(launchLink)){
             result.put("disableTester", "true");
@@ -236,11 +232,11 @@ public class WebAppHandlers {
             result.put("testLink", launchLink+result.get("tester"));
             result.put("wsdlLink", launchLink+result.get("wsdl"));
         }
-        GuiUtil.getLogger().fine("Endpoint Info for " + appName + "#" + subComponentName  +" : " + result);
+        GuiUtil.getLogger().fine("Endpoint Info for " + appName + "#" + componentName  +" : " + result);
         handlerCtx.setOutputValue("result", result);
     }
 
-
+    
     private static List<Map> getSubComponentDetail(String appName, String moduleName, List<String> snifferList, List<Map> result){
         Map<String, String> sMap = V3AMX.getInstance().getRuntime().getSubComponentsOfModule(appName, moduleName);
         for(String cName: sMap.keySet()){
@@ -250,69 +246,30 @@ public class WebAppHandlers {
             oneRow.put("type", sMap.get(cName));
             oneRow.put("hasLaunch", false);
             oneRow.put("sniffers", "");
+            oneRow.put("hasEndpoint", false);
             if (snifferList.contains("webservices")){
-                oneRow.put("hasEndpoint", (findEndpointInfo(appName, cName).size()>0) );
-            }else{
-                oneRow.put("hasEndpoint", false);
+                if (!getEndpointMap(appName, moduleName, cName, sMap.get(cName)).isEmpty()){
+                    oneRow.put("hasEndpoint", true );
+                }
             }
             result.add(oneRow);
         }
         return result;
     }
 
-
-    //This method will have to be modified once the webservice endpoint info is de-coupled from monitoring framework.
-    //This is temp and hard code the monitoring bean object name.
-    private static Map<String, String> findEndpointInfo(String appName, String compName){
-        Map result = new HashMap();
-        String objectName = "amx:pp=/mon/server-mon[server],type=web-service-mon,name=webservices";
-        if (!ProxyHandlers.doesProxyExist(objectName)){
-            return result;
+     private static TabularData getEndpointMap (String appName,  String moduleName, String componentName, String type){
+        ServerMon serverMon = V3AMX.getInstance().getDomainRoot().getMonitoringRoot().getServerMon().get("server").as(ServerMon.class);
+        AMXConfigProxy webDeployment = serverMon.childrenMap("web-service-mon").get("webservices-deployment").as(AMXConfigProxy.class);
+        String[] params = new String[]{ appName, moduleName, componentName};
+        String[] sig = new String[]{"java.lang.String", "java.lang.String", "java.lang.String"};
+        TabularData endpointMap = null;
+        if (type.equalsIgnoreCase("Servlet")){
+            endpointMap = (TabularData) webDeployment.invokeOp("getServlet109Endpoint", params, sig);
+        }else{
+            endpointMap = (TabularData) webDeployment.invokeOp("getEjb109Endpoint", params, sig);
         }
-        try{
-            CompositeData endpoints = (CompositeData)V3AMX.getAttribute(objectName, "Endpoints");
-            CompositeData[] dataList = (CompositeData[])endpoints.get("statistics");
-            for(int i=0; i < dataList.length; i++){
-                CompositeData endInfo = dataList[i];
-                String dAppName = (String) endInfo.get("appName");
-                String endpointName = (String) endInfo.get("endpointName");
-                boolean found = false;
-                if ( "RI".equals(endInfo.get("deploymentType")) &&
-                     endInfo.get("implClass").toString().startsWith(compName+".")){
-                    //TODO:  RI type deployment actually supports multi endpoints in one servlet.  I just display one here.
-                    //need to fix this.  Current UI doesn't work well with multi endpoint.
-                    found = true;
-                    result.put("hasTesterButton", false);
-                }else
-                if (appName.equals(dAppName) && compName.equals(endpointName)){
-                    found = true;
-                    result.put("hasTesterButton", true);
-                }
-                if (!found){
-                    continue;
-                }
-                result.put("appName", appName);
-                result.put("endpointName", endpointName);
-                result.put("address", endInfo.get("address"));
-                result.put("deploymentType", endInfo.get("deploymentType"));
-                result.put("description", endInfo.get("description"));
-                result.put("implClass", endInfo.get("implClass"));
-                result.put("implType", endInfo.get("implType"));
-                result.put("name", endInfo.get("name"));
-                result.put("namespace", endInfo.get("namespace"));
-                result.put("portName", endInfo.get("portName"));
-                result.put("serviceName", endInfo.get("serviceName"));
-                result.put("tester", endInfo.get("tester"));
-                result.put("wsdl", endInfo.get("wsdl"));
-                break;
-            }
-        }catch(Exception ex){
-            GuiUtil.getLogger().warning("Cannot get info for webservice , compName="+compName);
-            //ex.printStackTrace();
-        }
-        
-        return result;
-    }
+        return endpointMap;
+     }
 
     /**
      *	<p> This handler returns the list of applications for populating the table.

@@ -45,9 +45,13 @@
     <!beforeCreate
         getRequestValue(key="appName" value="#{pageSession.appName}");
         urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
+        getRequestValue(key="moduleName" value="#{pageSession.moduleName}");
+        urlencode(value="#{pageSession.moduleName}" encoding="UTF-8" result="#{pageSession.encodedModuleName}");
         getRequestValue(key="subComponentName" value="#{pageSession.subComponentName}");
+        getRequestValue(key="type" value="#{pageSession.type}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/applicationEdit.jsf?name=#{pageSession.encodedAppName}");
-        getEndpointInfo(appName="#{pageSession.appName}" subComponentName="#{pageSession.subComponentName}" result="#{pageSession.valueMap}");
+        getEndpointInfo(appName="#{pageSession.appName}" moduleName="#{pageSession.moduleName}" subComponentName="#{pageSession.subComponentName}" type="#{pageSession.type}"
+                result="#{pageSession.valueMap}");
     />
     </event>
 

@@ -33,36 +33,45 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
+<!--
+setAttribute(key="sectionTitle", value="#{listOfSection[0].sectionTitle}");
+setAttribute(key="sectionDetail", value="#{listOfSection[0].sectionDetail}");
+println("++++++ #{requestScope.listOfSection}")
+println("sectionTitle =   $attribute{sectionTitle}");
+println("sectionDetail =  $attribute{sectionDetail}");
+-->
 
 <!-- applications/subComponentTable.inc -->
 
-  "<br /><br />
-<sun:table id="components"  title="$resource{i18n.common.SubModules}" style="padding: 8pt; width:95%" >
+<sun:table id="subcomponents"  title="$resource{i18n.ComponentTable.tableTitle}" style="padding: 10pt; width:95%" >
     <!beforeCreate
-        getSubComponents(appName="#{appName}"  result=>$attribute{listOfRows});
+        getSubComponents(appName="#{appName}"  result="#{requestScope.listOfRows}");
     />
-<sun:tableRowGroup id="rowGroup1" data={"$attribute{listOfRows}"} sourceVar="td">
-<!beforeCreate
-    println("=============== #$attribute{listOfRows}" );
-/>
+     <sun:tableRowGroup id="rowGroup1"  data={"$attribute{listOfRows}"} sourceVar="td">
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colModule}" sort="moduleName" rowHeader="$boolean{true}" id="colModule">
+            <staticText id="nameCol" value="#{td.value.moduleName}" />
+        </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" rowHeader="$boolean{true}" id="col1">
-        <staticText id="nameCol" value="#{td.value.componentName}" />
-    </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}"  sort="sniffers"  rowHeader="$boolean{true}" id="colsnif">
+            <staticText id="sniffer" value="#{td.value.sniffers}" />
+        </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.deployTable.ColEngines}" rowHeader="$boolean{true}" id="col2">
-        <staticText id="typeCol" value="#{td.value.engines}" />
-    </sun:tableColumn>
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colName}" sort="name" rowHeader="$boolean{true}" id="col1">
+            <staticText id="nameCol" value="#{td.value.name}" />
+        </sun:tableColumn>
 
-    <!-- TODO
-    <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" rendered="#{hasActionColumn}" embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
-        <sun:hyperlink id="link" text="#{td.value.downloadText}"
-            url="/download/#{td.value.componentName}?contentSourceId=clientStubs&appName=#{name}&appClientName=#{td.value.componentName}" />
-        <sun:hyperlink id="link2" rendered="#{td.value.javaWebStart}" text="$resource{i18n.deployTable.launch}"
-            url="appclientLaunch.jsf?appID=#{name}&appName=#{name}&appClientName=#{td.value.componentName}&nextPage=enterpriseApplicationsEdit.jsf&appType=#{appType}" />
-    </sun:tableColumn>
-    -->
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colType}" sort="type" rowHeader="$boolean{true}" id="col2">
+            <staticText id="typeCol" value="#{td.value.type}" />
+        </sun:tableColumn>
 
-</sun:tableRowGroup>
+        <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
+            <sun:hyperlink id="endpointLink" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
+                url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}&subComponentName=#{td.value.name}&type=#{td.value.type}" />
+            <sun:hyperlink id="launchLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
+                onClick="window.open('#{td.value.launchLink}','_blank','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;"
+            />
+        </sun:tableColumn>
+
+    </sun:tableRowGroup>
 </sun:table>
-
+"<br /><br />
