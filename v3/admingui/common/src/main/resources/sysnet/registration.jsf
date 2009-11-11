@@ -52,19 +52,17 @@
     setComponentRequired(id="form1:pSheet:pSection:lastName:lastName" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:companyName:companyName" required="$boolean{false}" );
     setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
-
 />  
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); admingui.nav.selectTreeNodeById('treeForm:tree:registration');" >
 
 <!define name="content">
-<sun:script url="/resource/common/js/adminjsf.js" />
     <event>
-    <!beforeCreate
-        setAttribute(key="accountGroup", value="hasAccount");
-        setAttribute(key="contextRoot" value="#{request.contextPath}");
-        setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/common/sysnet/sample.html");
-        setAttribute(key="PageTitleHelp" value="$resource{i18nc.reg.PageTitleHelp, ${samplePath}}");
-    />
+        <!beforeCreate
+            setAttribute(key="accountGroup", value="hasAccount");
+            setAttribute(key="contextRoot" value="#{request.contextPath}");
+            setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/common/sysnet/sample.html");
+            setAttribute(key="PageTitleHelp" value="$resource{i18nc.reg.PageTitleHelp, ${samplePath}}");
+        />
     
         <!beforeEncode
             # need to put back the required image if there is any error in processing and the page is refreshed.
@@ -247,14 +245,14 @@
                             getClientId(component="$this{component}" clientId=>$page{button2Id});
                         />
                         <!command
-                         registerAS(
-                            userName="#{userName}", pswd="#{pswd}", proxy="#{proxy}" port="#{port}",
-                            emailAdr="#{emailAdr}", newPswd="#{newPswd}",
-                            screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
-                            country="#{country}", companyName="#{companyName}" accountStatus="#{accountGroup}"
-                            newProxy="#{newProxy}" newPort="#{newPort}" );
-                         setSessionAttribute(key="showRegTreeNode" value="#{false}")
-                         gf.redirect(page="#{request.contextPath}/common/sysnet/support.jsf");
+                             registerAS(
+                                userName="#{userName}", pswd="#{pswd}", proxy="#{proxy}" port="#{port}",
+                                emailAdr="#{emailAdr}", newPswd="#{newPswd}",
+                                screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
+                                country="#{country}", companyName="#{companyName}" accountStatus="#{accountGroup}"
+                                newProxy="#{newProxy}" newPort="#{newPort}" );
+                             setSessionAttribute(key="showRegTreeNode" value="#{false}")
+                             gf.redirect(page="#{request.contextPath}/common/sysnet/support.jsf");
                          />
                     </sun:button>
                 </sun:panelGroup>

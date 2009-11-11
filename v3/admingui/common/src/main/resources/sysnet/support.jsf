@@ -43,7 +43,6 @@
         guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:registration', '/common/peTree.inc', 'treeForm:tree:registration');">
 <!define name="content">
 
-<sun:script url="/resource/common/js/adminjsf.js" />
 <sun:script>
     // Should move this to JS to our adminjsf.js file
     <f:verbatim>

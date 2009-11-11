@@ -742,69 +742,137 @@ admingui.nav = {
         if (refreshNode && updateTreeButton) {
             admingui.nav.requestTreeUpdate(
                 updateTreeButton,
-                {type: 'click'},
+                {
+                    type: 'click'
+                },
                 refreshNodeId,
                 "updateTreeNode="+refreshNodeId+"&viewId="+viewId+"&relId="+relId,
                 {
                     mainNode: document.getElementById(refreshNodeId),
                     childNodes: document.getElementById(refreshNodeId+"_children")
                 }
-            );
+                );
         }
         return false;
     },
 
     requestTreeUpdate: function(source, event, nodeId, params, previousState) {
-            jsf.ajax.request(source, event, {
-                execute: "treeForm treeForm:update",
-                render: nodeId + " " + nodeId + "_children",
-                onevent: function(data) {
-                    admingui.nav.processUpdatedTreeNode(data, nodeId, previousState);
-                },
-                params: 'treeForm:update=&' + params
-            });
+        jsf.ajax.request(source, event, {
+            execute: "treeForm treeForm:update",
+            render: nodeId + " " + nodeId + "_children",
+            onevent: function(data) {
+                admingui.nav.processUpdatedTreeNode(data, nodeId, previousState);
+            },
+            params: 'treeForm:update=&' + params
+        });
     },
 
     processUpdatedTreeNode: function(data, nodeId, previousState) {
         if (data.status == 'success') {
-            var text = data.responseXML.childNodes[0]
-	    if (text.nodeName === 'xml') {
-		// IE7 consider <?xml ...> to be element 0
-		text = data.responseXML.childNodes[1]
-	    }
-	    text = text.childNodes[0].childNodes[0].childNodes[0].data;
-            var parserElement = document.createElement('div');
-            parserElement.innerHTML = text;
-            var mainNode = document.getElementById(nodeId);
-            var childNodes = document.getElementById(nodeId+"_children");
-
-            mainNode.innerHTML = parserElement.childNodes[0].innerHTML;
-
-            try {
-                var oldNode = previousState.mainNode;
-                mainNode.className = oldNode.className;
-                mainNode.style["display"] = oldNode.style["display"];
+            var content = admingui.nav.getUpdateNode(data.responseXML, nodeId);
+            if (content != null) {
+                // Woodstock renders a tree node and its children as siblings in the DOM.
+                // For example, the applications node is treeForm:tree:applications, and the
+                // deployed applications listed as child nodes are in a DIV with the ID
+                // treeForm:tree:applications_children.  What we do here, then, is take the
+                // two DOM elements returned from the server when a given treeNode component
+                // is rerendered.
+                //
+                var mainNode = document.getElementById(nodeId);
+                var childNodes = document.getElementById(nodeId+"_children");
+                
                 try {
-                    // Copy image src value to correct visual state of the node turner
-                    mainNode.childNodes[0].childNodes[0].childNodes[0].src = oldNode.childNodes[0].childNodes[0].childNodes[0].src;
-                }catch (err1) {
-                    
-                }
+                    var oldNode = previousState.mainNode;
+                    mainNode.className = oldNode.className;
+                    mainNode.style["display"] = oldNode.style["display"];
+                    try {
+                        // Copy image src value to correct visual state of the node turner
+                        // TODO: This should be smarter
+                        mainNode.childNodes[0].childNodes[0].childNodes[0].src = oldNode.childNodes[0].childNodes[0].childNodes[0].src;
+                    }catch (err1) {
 
-                if (childNodes) {
-                    childNodes.innerHTML = parserElement.childNodes[1].innerHTML;
-                    oldNode = previouesState.childNodes;
-                    childNodes.className = oldNode.className;
-                    childNodes.style["display"] = oldNode.style["display"];
-                    admingui.nav.copyStyleAndClass(childNodes, oldNode);
-                }
-            } catch (err) {
+                    }
 
+                    if (childNodes) {
+                        childNodes.innerHTML = content.childNodes[1].innerHTML;
+                        oldNode = previousState.childNodes;
+                        childNodes.className = oldNode.className;
+                        childNodes.style["display"] = oldNode.style["display"];
+                        admingui.nav.copyStyleAndClass(childNodes, oldNode);
+                    }
+                } catch (err) {
+
+                }
+            } else {
+                var element = document.getElementById(nodeId);
+                // If the node exists, hide it
+                if (element != null) {
+                    element.style.display = 'none';
+                    // If the node has a "children" node, hide it too.
+                    element = document.getElementById(nodeId+"_children");
+                    if (element != null) {
+                        element.style.display = 'none';
+                    }
+                }
             }
             
             admingui.ajax.processElement(window, document.getElementById(nodeId), true);
             admingui.ajax.processElement(window, document.getElementById(nodeId+"_children"), true);
         }
+    },
+
+    /**
+     * This function takes the given JSF 2 Ajax response XML and returns the <update>
+     * node with the given id
+     */
+    getUpdateNode: function(xml, desiredId) {
+        var responseType = xml.getElementsByTagName("partial-response")[0].firstChild;
+        if (responseType.nodeName === "error") { // it's an error
+            var errorMessage = responseType.firstChild.nextSibling.firstChild.nodeValue;
+            //sendError(request, context, "serverError", null, errorName, errorMessage);
+            admingui.util.log(errorMessage);
+            return null;
+        }
+
+        if (responseType.nodeName === "redirect") {
+            admingui.ajax.loadPage({url: responseType.getAttribute("url")});
+            return null;
+        }
+
+
+        if (responseType.nodeName !== "changes") {
+            admingui.util.log("Top level node must be one of: changes, redirect, error, received: " + responseType.nodeName + " instead.");
+            return null;
+        }
+
+        var changes = responseType.childNodes;
+
+        try {
+            for (var i = 0; i < changes.length; i++) {
+                var element = changes[i];
+                if (element.nodeName === "update") {
+                    var id = element.getAttribute('id');
+                    if (id === desiredId) {
+                        // join the CDATA sections in the markup
+                        var content = '';
+                        var markup = '';
+                        for (var j = 0; j < element.childNodes.length; j++) {
+                            content = element.childNodes[j];
+                            markup += content.nodeValue;
+                        }
+                        var parserElement = document.createElement('div');
+                        parserElement.innerHTML = markup;
+                        return parserElement;
+                    }
+                }
+            }
+        } catch (ex) {
+            //sendError(request, context, "malformedXML", ex.message);
+            admingui.util.log(ex.message);
+            return null;
+        }
+
+        return null;
     },
 
     /**
@@ -985,7 +1053,7 @@ admingui.help = {
             admingui.ajax.invoke("calculateHelpUrl", {pluginId: admingui.help.pluginId, helpKey: helpKeys[0].value, url:"url"},
                 function(result) {
                     admingui.help.openHelpWindow(helpLink + "?contextRef=" + "/resource/" + admingui.help.pluginId + result.url);
-                }
+                }, 3, false
             );
 	} else {
             admingui.help.openHelpWindow(helpLink);
@@ -993,7 +1061,7 @@ admingui.help = {
     },
 
     openHelpWindow: function (url) {
-	win = window.open(url, "HelpWindow" , "width=800, height=530, resizable"); 
+	var win = window.open(url, "HelpWindow" , "width=800, height=530, resizable");
 	win.focus();
     }
 };
