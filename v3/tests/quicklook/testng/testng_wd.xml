@@ -119,9 +119,10 @@
         <class name="test.bv.servlet.simple.SimpleBVServletTestNG" />
     </classes>
   </test>
-  <test name="weld_numberguess">
+  <test name="weld_tests">
     <classes>
         <class name="test.web.numberguess.NumberGuessTestNG" />
+        <class name="test.web.extensions.OsgiWeldTestNG" />
     </classes>
   </test>
   <test name="asadmin_tests">
