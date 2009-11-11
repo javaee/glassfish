@@ -44,7 +44,7 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
@@ -95,10 +95,10 @@ public class ListAppRefsCommand implements AdminCommand {
             return true;
         }
 
-        Named named = ConfigBeansUtilities.getModule(name);
+        ApplicationName ApplicationName = ConfigBeansUtilities.getModule(name);
         Application app = null;
-        if (named instanceof Application) {
-            app = (Application) named;
+        if (ApplicationName instanceof Application) {
+            app = (Application) ApplicationName;
         }
         if (app != null) {
             if (!app.isStandaloneModule()) {

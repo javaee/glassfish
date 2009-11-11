@@ -37,7 +37,7 @@
 package com.sun.enterprise.configapi.tests;
 
 import com.sun.enterprise.config.serverbeans.Applications;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class ModulesTest extends ConfigApiTest {
         return "DomainTest";
     }
 
-    Collection<? extends Named> modules = null;
+    Collection<? extends ApplicationName> modules = null;
 
     @Before
     public void setup() {
@@ -67,7 +67,7 @@ public class ModulesTest extends ConfigApiTest {
 
     @Test
     public void modulesTest() {
-        for (Named module : modules) {
+        for (ApplicationName module : modules) {
             logger.fine("Found module " + module.getName());
             assertTrue(module.getName()!=null);
         }

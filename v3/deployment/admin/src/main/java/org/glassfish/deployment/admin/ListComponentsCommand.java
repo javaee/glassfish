@@ -36,7 +36,7 @@ package org.glassfish.deployment.admin;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.container.Sniffer;
@@ -77,7 +77,7 @@ public class ListComponentsCommand  implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
-        for (Named module : applications.getModules()) {
+        for (ApplicationName module : applications.getModules()) {
             if (module instanceof Application) {
                 final Application app = (Application)module;
                 if (app.getObjectType().equals("user")) {

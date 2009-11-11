@@ -41,7 +41,6 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
@@ -52,20 +51,8 @@ import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
-import javax.validation.constraints.NotNull;
-
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "description",
-    "webServiceEndpoint",
-    "property"
-}) */
-
 @Configured(name="j2ee-application") // name is necessary as hk2 name mangling will create j2-ee-application
-public interface J2eeApplication extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
+public interface J2eeApplication extends Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the location property.
@@ -74,7 +61,6 @@ public interface J2eeApplication extends ConfigBeanProxy, Injectable, Applicatio
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getLocation();
 
     /**

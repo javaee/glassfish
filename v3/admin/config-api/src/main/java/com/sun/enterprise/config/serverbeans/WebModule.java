@@ -38,7 +38,6 @@ package com.sun.enterprise.config.serverbeans;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.jvnet.hk2.component.Injectable;
@@ -49,20 +48,9 @@ import java.util.List;
 import org.glassfish.api.admin.config.*;
 import org.glassfish.quality.ToDo;
 
-import javax.validation.constraints.NotNull;
-
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "description",
-    "webServiceEndpoint",
-    "property"
-}) */
 
 @Configured
-public interface WebModule extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
+public interface WebModule extends Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the contextRoot property.
@@ -94,7 +82,6 @@ public interface WebModule extends ConfigBeanProxy, Injectable, ApplicationName,
      *         {@link String }
      */
     @Attribute
-    @NotNull
     public String getLocation();
 
     /**

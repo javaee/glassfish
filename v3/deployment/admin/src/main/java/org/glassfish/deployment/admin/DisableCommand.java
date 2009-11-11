@@ -37,7 +37,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -108,7 +108,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             commandParams.name = this.name();
             final ExtendedDeploymentContext deploymentContext = 
                     deployment.getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
-            Named module = ConfigBeansUtilities.getModule(name());
+            ApplicationName module = ConfigBeansUtilities.getModule(name());
             Application application = null;
             if (module instanceof Application) {
                 application = (Application) module;

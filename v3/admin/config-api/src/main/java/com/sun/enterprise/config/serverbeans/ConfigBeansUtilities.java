@@ -31,7 +31,7 @@ import java.util.List;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -175,7 +175,7 @@ public final class ConfigBeansUtilities {
         List<Application> allSysApps = new ArrayList<Application>();
         SystemApplications sa = domain.getSystemApplications();
         if (sa != null) {
-            for (Named m : sa.getModules()) {
+            for (ApplicationName m : sa.getModules()) {
                 if (m instanceof Application)
                     allSysApps.add((Application)m);
             }
@@ -211,13 +211,13 @@ public final class ConfigBeansUtilities {
             }
         }
         if (theServer != null) {
-            List<Named> modulesToExclude = excludeSystemApps ?
-                domain.getSystemApplications().getModules() : Collections.<Named>emptyList();
+            List<ApplicationName> modulesToExclude = excludeSystemApps ?
+                domain.getSystemApplications().getModules() : Collections.<ApplicationName>emptyList();
             List<ApplicationRef> result = new ArrayList<ApplicationRef>();
               for (ApplicationRef candidateRef : theServer.getApplicationRef()) {
                 String appRefModuleName = candidateRef.getRef();
                 boolean isSystem = false;
-                for (Named sysModule : modulesToExclude) {
+                for (ApplicationName sysModule : modulesToExclude) {
                     if (sysModule.getName().equals(appRefModuleName)) {
                         isSystem = true;
                         break;
@@ -257,8 +257,8 @@ public final class ConfigBeansUtilities {
         return ( aref );
     }
 
-    public static Named getModule(String moduleID) {
-        for (Named module : apps.getModules()) {
+    public static ApplicationName getModule(String moduleID) {
+        for (ApplicationName module : apps.getModules()) {
             if (module.getName().equals(moduleID)) {
                 return module;
             }
@@ -285,7 +285,7 @@ public final class ConfigBeansUtilities {
     }
 
    public static String getContextRoot(String moduleID) {
-        Named module = getModule(moduleID);
+        ApplicationName module = getModule(moduleID);
         if (module == null) {
             return null;
         }
@@ -300,7 +300,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static String getLibraries(String moduleID) {
-        Named module = getModule(moduleID);
+        ApplicationName module = getModule(moduleID);
         if (module == null) {
             return null;
         }
@@ -319,7 +319,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static String getLocation(String moduleID) {
-        Named module = getModule(moduleID);
+        ApplicationName module = getModule(moduleID);
         if (module == null) {
             return null;
         } 
@@ -351,7 +351,7 @@ public final class ConfigBeansUtilities {
     }
 
     public static String getDirectoryDeployed(String moduleID) {
-        Named module = getModule(moduleID);
+        ApplicationName module = getModule(moduleID);
         if (module == null) {
             return null;
         } 

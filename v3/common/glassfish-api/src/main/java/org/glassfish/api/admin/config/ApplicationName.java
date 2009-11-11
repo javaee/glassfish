@@ -4,7 +4,6 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
-import javax.validation.constraints.NotNull;
 import java.beans.PropertyVetoException;
 
 /**
@@ -13,19 +12,16 @@ import java.beans.PropertyVetoException;
  * @author Nandini Ektare
  */
 @Configured
-public interface ApplicationName extends Named {
+public interface ApplicationName extends ConfigBeanProxy {
 
     /**
      *  Name of the configured object
      *
      * @return name of the configured object
      */
-    @Override
-    @NotNull
-    @Attribute(required=true)
+    @Attribute(key=true)
     public String getName();
 
-    @Override
     public void setName(String value) throws PropertyVetoException;
     
 }

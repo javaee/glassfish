@@ -39,7 +39,6 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -52,19 +51,8 @@ import org.glassfish.api.admin.config.*;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
-import javax.validation.constraints.NotNull;
-
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "description",
-    "property"
-}) */
-
 @Configured
-public interface ConnectorModule extends ConfigBeanProxy, Injectable, ApplicationName, PropertyBag {
+public interface ConnectorModule extends Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the location property.
@@ -73,7 +61,6 @@ public interface ConnectorModule extends ConfigBeanProxy, Injectable, Applicatio
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getLocation();
 
     /**

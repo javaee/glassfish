@@ -36,7 +36,7 @@ package org.glassfish.javaee.core.deployment;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.internal.deployment.Deployment;
@@ -106,7 +106,7 @@ public class ListSubComponentsCommand implements AdminCommand {
 
         }
 
-        Named module = ConfigBeansUtilities.getModule(applicationName);
+        ApplicationName module = ConfigBeansUtilities.getModule(applicationName);
   
         Application application = null;
         if (module instanceof Application) {

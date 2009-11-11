@@ -28,7 +28,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.StateCommandParameters;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -112,7 +112,7 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
         ApplicationConfigInfo savedAppConfig = null;
         try {
             Application app = null; 
-            for (Named module : applications.getModules()) {
+            for (ApplicationName module : applications.getModules()) {
                 if (module.getName().equals(name())) {  
                     app = (Application)module;
                     break;

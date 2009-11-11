@@ -39,7 +39,7 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.config.PropertyDesc;
@@ -378,7 +378,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             List<Application> allSysApps = new ArrayList<Application>();
             SystemApplications sa = me.getSystemApplications();
             if (sa != null) {
-                for (Named m : sa.getModules()) {
+                for (ApplicationName m : sa.getModules()) {
                     if (m instanceof Application)
                         allSysApps.add((Application)m);
                 }

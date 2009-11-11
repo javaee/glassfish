@@ -37,7 +37,7 @@ import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.config.types.Property;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -922,7 +922,7 @@ public class ApplicationLifecycle implements Deployment {
                 }
 
                 // remove application element
-                for (Named module : apps.getModules()) {
+                for (ApplicationName module : apps.getModules()) {
                     if (module.getName().equals(appName)) {
                         ((Applications)params[0]).getModules().remove(module);
                         break;

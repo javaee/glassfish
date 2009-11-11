@@ -38,7 +38,6 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -47,6 +46,7 @@ import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
 import java.util.*;
+import org.glassfish.api.admin.config.ApplicationName;
 
 /**
  *
@@ -75,7 +75,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
      */             
     @Element("*")
     @RestRedirect(opType= RestRedirect.OpType.PUT, commandName="deploy")
-    public List<Named> getModules();     
+    public List<ApplicationName> getModules();
             
     /**
      * Gets a subset of {@link #getModules()} that has the given type.
@@ -113,7 +113,7 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
                 return null;
             }
 
-            for (Named module : apps.getModules())
+            for (ApplicationName module : apps.getModules())
                 if (type.isInstance(module) && module.getName().equals(moduleID))
                     return type.cast(module);
 

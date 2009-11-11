@@ -85,7 +85,6 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      *         {@link String }
      */
     @Attribute
-    @NotNull
     public String getName();
 
     /**
@@ -137,7 +136,6 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      *         {@link String }
      */
     @Attribute(key=true)
-    @NotNull
     @Pattern(regexp="[^':,][^':,]*")
     public String getResourceAdapterName();
 

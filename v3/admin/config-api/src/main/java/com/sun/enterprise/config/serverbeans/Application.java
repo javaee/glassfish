@@ -46,9 +46,10 @@ import java.util.logging.Level;
 import java.net.URISyntaxException;
 import java.net.URI;
 
+import javax.validation.constraints.NotNull;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
@@ -56,22 +57,9 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-
-import javax.validation.constraints.NotNull;
-
-/**
- *
- */
-
-/* @XmlType(name = "", propOrder = {
-    "description",
-    "engine",
-    "property"
-}) */
 
 @Configured
 @RestRedirects(
@@ -80,7 +68,7 @@ import javax.validation.constraints.NotNull;
           @RestRedirect(opType= RestRedirect.OpType.POST, commandName = "redeploy")
         }
 )
-public interface Application extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface Application extends Injectable, ApplicationName, PropertyBag {
 
     /**
      * Gets the value of the contextRoot property.
@@ -106,7 +94,6 @@ public interface Application extends ConfigBeanProxy, Injectable, Named, Propert
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getLocation();
 
     /**

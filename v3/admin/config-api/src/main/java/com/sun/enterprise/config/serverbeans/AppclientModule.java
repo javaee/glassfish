@@ -52,9 +52,6 @@ import org.jvnet.hk2.config.Element;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
-
 @Configured
 public interface AppclientModule extends Injectable, ApplicationName, PropertyBag {
     
@@ -65,7 +62,6 @@ public interface AppclientModule extends Injectable, ApplicationName, PropertyBa
      *         {@link String }
      */
     @Attribute
-    @NotNull
     String getLocation();
 
     /**

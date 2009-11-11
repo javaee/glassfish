@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.component.Habitat;
 
@@ -101,7 +101,7 @@ public class DynamicReloader implements Runnable {
     private void initAppReloadInfo(Applications applications) throws URISyntaxException {
          appReloadInfo = new HashMap<String,AppReloadInfo>();
          logger.fine("[Reloader] Preparing list of apps to monitor:");
-         for (Named m : applications.getModules()) {
+         for (ApplicationName m : applications.getModules()) {
              if (m instanceof Application) {
                  Application app = (Application) m;
                  if (Boolean.valueOf(app.getDeployProperties().getProperty
@@ -154,7 +154,7 @@ public class DynamicReloader implements Runnable {
          */
         Set<AppReloadInfo> possiblyUndeployedApps = new HashSet<AppReloadInfo>(appReloadInfo.values());
         
-        for (Named m : applications.getModules()) {
+        for (ApplicationName m : applications.getModules()) {
             if (m instanceof Application) {
                 Application app = (Application) m;
                 if (Boolean.valueOf(app.getDeployProperties().getProperty
