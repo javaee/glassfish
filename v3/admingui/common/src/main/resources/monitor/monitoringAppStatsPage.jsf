@@ -66,6 +66,7 @@
             setPageSessionAttribute(key="cVal" value="#{cVal}");
         }
         getNameforMbean(appName="#{viewVal}", compVal="#{cVal}", end="true", mbeanName=>$attribute{mbName});
+        calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
     />
 </event>    
             <sun:form id="propertyForm">

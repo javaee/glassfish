@@ -53,7 +53,7 @@
         if(!#{viewVal}) {
             setAttribute(key="viewVal" value="#{firstVal}");
         }
-        
+        calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
     />
 </event>    
             <sun:form id="propertyForm">

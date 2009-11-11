@@ -92,6 +92,7 @@
             setAttribute(key="hasStatsORBOut" value="#{false}");
             setAttribute(key="hasStatsJMS" value="#{false}");
         }
+        calculateHelpUrl(pluginId="#{pluginId}", helpKey: "$resource{help_web.monitorApps}", url="#{olhLink}");
     />
 </event>
             <sun:form id="propertyForm">
