@@ -30,37 +30,14 @@
       <property file="${basedir}/build.properties"/> 
       <property name="jaxr.build" value="${basedir}/build"/>
       <property name="jaxr.lib" value="${basedir}/lib"/>
-      <property name="jaxr.version" value="1.0.6"/>
+      <property name="jaxr.version" value="1.0.7"/>
 
       <!-- Jar files for classpath -->
       <property name="jaxr.cp" value="${basedir}/lib/jaxr-api.jar"/>
-      <property name="fastinfoset.cp" value="${basedir}/lib/FastInfoset.jar"/>                
-      <property name="mail.cp" value="${basedir}/lib/mail.jar"/>
-      <property name="activation.cp" value="${basedir}/lib/activation.jar"/>
-      <property name="xerces.cp" value="${basedir}/lib/xercesImpl.jar"/>
-      <property name="xalan.cp" value="${basedir}/lib/xalan.jar"/>
-      <property name="jsse.cp" value="${basedir}/lib/jsse.jar"/>
-      <property name="jcert.cp" value="${basedir}/lib/jcert.jar"/>
-      <property name="jnet.cp" value="${basedir}/lib/jnet.jar"/>
-      <property name="jaas.cp" value="${basedir}/lib/jaas.jar"/>
-      <property name="fscontext.cp" value="${basedir}/lib/fscontext.jar"/>
-      <property name="providerutil.cp" value="${basedir}/lib/providerutil.jar"/>
-      <property name="jsr173.cp" value="${basedir}/lib/jsr173_1.0_api.jar"/>
-      <property name="jaxm.cp" value="${basedir}/lib/saaj-api.jar"/>
-      <property name="jaxp-api.cp" value="${basedir}/lib/jaxp-api.jar"/>
-      <property name="dom.cp" value="${basedir}/lib/dom.jar"/>
-      <property name="sax.cp" value="${basedir}/lib/sax.jar"/>
-      <property name="soap.cp" value="${basedir}/lib/soap.jar"/>
-      <property name="logging.cp" value="${basedir}/lib/commons-logging.jar"/>
-      <property name="jaxb-api.cp" value="${basedir}/lib/jaxb-api.jar"/>
-      <property name="jaxb.cp" value="${basedir}/lib/jaxb-impl.jar"/>
-      <property name="jaxb-libs.cp" value="${basedir}/lib/jaxb-libs.jar"/>
-      <property name="xsdlib.cp" value="${basedir}/lib/xsdlib.jar"/>
-      <property name="relax.cp" value="${basedir}/lib/relaxngDatatype.jar"/>
-      <property name="namespace.cp" value="${basedir}/lib/namespace.jar"/>
 
       <!-- The javadoc properties -->
       <property name="src.dir" value="${basedir}/src/java" />
+      <property name="src.test.dir" value="${basedir}/src/test/java" />
       <property name="dist.javadoc.dir" value="${basedir}/javadoc"/>
 
       <property name="jaxr.build.classpath"
@@ -70,7 +47,7 @@
        <filter token="jaxr.home" value="${basedir}" />
    </target>
 
-   <target name="prepare" depends="init">
+   <target name="prepare" depends="init, copy.jaxr-api">
       <mkdir dir="${jaxr.build}"/>
       <mkdir dir="${jaxr.build}/bin"/>
       <mkdir dir="${jaxr.build}/docs"/>
@@ -102,6 +79,17 @@
          <fileset dir="${basedir}/docs"
             includes="*.html,*.pdf"/>
       </copy>
+
+      <!-- Copy query.properties to build directory. This file is used by the test classes -->
+      <copy file="${src.test.dir}/com/sun/xml/registry/query.properties"
+         todir="${jaxr.build}/classes/com/sun/xml/registry"/>
+
+   </target>
+
+   <target name="copy.jaxr-api">
+      <exec executable="mvn" failonerror="true" >
+        <arg line="dependency:copy" />
+      </exec>
    </target>
 
    <target name="dist" depends="compile, samples">
@@ -116,7 +104,7 @@
    <target name="compile" depends="prepare">
 
       <!-- Compile all the sources -->
-      <javac srcdir="src/java"
+      <javac srcdir="src"
              destdir="${jaxr.build}/classes"
          debug="no"
              deprecation="no">
@@ -179,6 +167,23 @@
       <delete dir="javadoc"/>
    </target>
    
+   <!-- The test target is not currently functional. There is a ClassNotFoundException: 
+     com.sun.xml.internal.bind.v2.ContextFactory . You can run the test in a terminal:
+     java -cp build/lib/jaxr-impl.jar com.sun.xml.registry.BusinessQueryTest
+
+     You should get this result:
+     Successfully queried the registry for organization matching the name pattern: "%USA%"
+     Results found: 0
+   -->
+   <target name="test" depends="compile">
+      <java classname="com.sun.xml.registry.BusinessQueryTest" taskname="java1.6">
+         <classpath>
+           <path path="${java.class.path}:${jaxr.build.classpath}"/>
+           <pathelement location="${java.home}/jre/lib/rt.jar"/>
+           <pathelement location="${jaxr.build}/lib/jaxr-impl.jar"/>
+         </classpath>
+       </java>
+   </target>
 
    <!--
    ======================
