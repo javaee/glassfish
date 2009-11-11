@@ -84,7 +84,7 @@
             </sun:listbox>
         </sun:property>
        <sun:property id="roleMappingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.RoleMapping}" helpText="$resource{i18nc.security.RoleMappingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ActivateDefaultPrincipalToRoleMapping']}" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ActivateDefaultPrincipalToRoleMapping']}" selectedValue="true" />
         </sun:property>
         <sun:property id="mappedPrincipalClassProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.MappedPrincipalClass}" helpText="$resource{i18nc.security.MappedPrincipalClassHelp}">
             <sun:textField id="MappedPrincipalClass" columns="$int{55}" text="#{pageSession.valueMap['MappedPrincipalClass']}"/>
