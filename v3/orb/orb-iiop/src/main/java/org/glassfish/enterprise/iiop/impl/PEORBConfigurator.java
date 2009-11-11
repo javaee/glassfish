@@ -42,6 +42,7 @@ import com.sun.corba.ee.spi.orb.DataCollector;
 import com.sun.corba.ee.spi.orb.ORB;
 import com.sun.corba.ee.spi.orb.ORBConfigurator;
 import com.sun.corba.ee.spi.orbutil.copyobject.ObjectCopierFactory;
+import com.sun.corba.ee.spi.orbutil.threadpool.NoSuchWorkQueueException;
 import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPoolManager;
 import com.sun.corba.ee.spi.presentation.rmi.InvocationInterceptor;
 import com.sun.corba.ee.spi.transport.CorbaTransportManager;
@@ -50,6 +51,7 @@ import com.sun.corba.ee.spi.transport.TransportDefault;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.grizzly.config.dom.Ssl;
+import java.util.logging.Logger;
 import org.glassfish.enterprise.iiop.api.IIOPConstants;
 import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
 import org.glassfish.enterprise.iiop.util.IIOPUtils;
@@ -66,14 +68,17 @@ import com.sun.corba.ee.impl.naming.cosnaming.TransientNameService;
 
 // TODO import com.sun.corba.ee.impl.txpoa.TSIdentificationImpl;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import com.sun.corba.ee.spi.orbutil.threadpool.ThreadPool;
 import java.util.logging.Level;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Properties;
 import java.nio.channels.SelectableChannel;
+import org.glassfish.enterprise.iiop.util.ThreadPoolStats;
+import org.glassfish.enterprise.iiop.util.ThreadPoolStatsImpl;
+import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.external.probe.provider.StatsProviderManager;
 
 public class PEORBConfigurator implements ORBConfigurator {
     private static final java.util.logging.Logger logger =
@@ -103,52 +108,61 @@ public class PEORBConfigurator implements ORBConfigurator {
     }
 
     public void configure(DataCollector dc, ORB orb) {
-        //begin temp fix for bug 6320008
-        // this is needed only because we are using transient Name Service
-        //this should be removed once we have the persistent Name Service in place
-        /*TODO
-        orb.setBadServerIdHandler(
-                new BadServerIdHandler() {
-                    public void handle(ObjectKey objectkey) {
-                        // NO-OP
-                    }
-                }
-        );
-        */
+        try {
+            //begin temp fix for bug 6320008
+            // this is needed only because we are using transient Name Service
+            //this should be removed once we have the persistent Name Service in place
+            /*TODO
+            orb.setBadServerIdHandler(
+            new BadServerIdHandler() {
+            public void handle(ObjectKey objectkey) {
+            // NO-OP
+            }
+            }
+            );
+             */
+            //end temp fix for bug 6320008
+            if (threadpoolMgr != null) {
+                // This will be the case for the Server Side ORB created
+                // For client side threadpoolMgr will be null, so we will
+                // never come here
+              orb.setThreadPoolManager(threadpoolMgr);
+            }
 
-        //end temp fix for bug 6320008
-        if (threadpoolMgr != null) {
-            // This will be the case for the Server Side ORB created
-            // For client side threadpoolMgr will be null, so we will
-            // never come here
-            orb.setThreadPoolManager(threadpoolMgr);
-        }
-
-        configureCopiers(orb);
-        configureCallflowInvocationInterceptor(orb);
-
-        // In the server-case, iiop acceptors need to be set up after the initial part of the
-        // orb creation but before any portable interceptor initialization
-        IIOPUtils iiopUtils = IIOPUtils.getInstance();
-        if( iiopUtils.getProcessType().isServer() ) {
-            IiopListener[] iiopListenerBeans =   (IiopListener[]) IIOPUtils.getInstance().
+            // Do the stats for the threadpool
+            
+            ThreadPoolManager tpool =  orb.getThreadPoolManager();
+            // ORB creates its own threadpool if threadpoolMgr was null above
+            ThreadPool thpool=tpool.getDefaultThreadPool();
+            String ThreadPoolName = thpool.getName();
+            ThreadPoolStats tpStats = new ThreadPoolStatsImpl(thpool.getWorkQueue(0).getThreadPool());
+            StatsProviderManager.register("orb", PluginPoint.SERVER, "thread-pool/orb/threadpool/"+ThreadPoolName, tpStats);
+           
+            configureCopiers(orb);
+            configureCallflowInvocationInterceptor(orb);
+            // In the server-case, iiop acceptors need to be set up after the initial part of the
+            // orb creation but before any portable interceptor initialization
+            IIOPUtils iiopUtils = IIOPUtils.getInstance();
+            if (iiopUtils.getProcessType().isServer()) {
+                IiopListener[] iiopListenerBeans = (IiopListener[]) IIOPUtils.getInstance().
                     getIiopService().getIiopListener().toArray(new IiopListener[0]);
-            this.createORBListeners(iiopUtils, iiopListenerBeans, orb);
-        }
-
-        if (orb.getORBData().environmentIsGFServer()) {
-            // Start the transient name service, which publishes NameService
-            // in the ORB's local resolver.
-            new TransientNameService( orb ) ;
-        }
-
-        // Publish the ORB reference back to GlassFishORBHelper, so that
-        // subsequent calls from interceptor ORBInitializers can call
-        // GlassFishORBHelper.getORB() without problems.  This is 
-        // especially important for code running in the service initializer
-        // thread.
-        getHelper().setORB( orb ) ; 
-    }
+                this.createORBListeners(iiopUtils, iiopListenerBeans, orb);
+            }
+            if (orb.getORBData().environmentIsGFServer()) {
+                // Start the transient name service, which publishes NameService
+                // in the ORB's local resolver.
+                new TransientNameService(orb);
+            }
+            // Publish the ORB reference back to GlassFishORBHelper, so that
+            // subsequent calls from interceptor ORBInitializers can call
+            // GlassFishORBHelper.getORB() without problems.  This is
+            // especially important for code running in the service initializer
+            // thread.
+            getHelper().setORB(orb);
+        } catch (NoSuchWorkQueueException ex) {
+            Logger.getLogger(PEORBConfigurator.class.getName()).log(Level.SEVERE, null, ex);
+        }  
+        } 
 
     private static void configureCopiers(ORB orb) {
         CopierManager cpm = orb.getCopierManager();
