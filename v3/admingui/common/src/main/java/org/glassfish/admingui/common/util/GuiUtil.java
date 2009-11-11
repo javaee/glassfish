@@ -629,6 +629,7 @@ public class GuiUtil {
                 HashMap oneRow = new HashMap();
                 Object value = values.get(key);
                 String valString = (value == null) ? "" : value.toString();
+                oneRow.put("selected", false);
                 oneRow.put("Name", key);
                 oneRow.put("Value", valString);
                 oneRow.put("Description", "");
