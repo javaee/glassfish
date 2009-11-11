@@ -38,6 +38,8 @@ package org.glassfish.web.loader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
@@ -49,6 +51,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
 import com.sun.logging.LogDomains;
 import org.apache.naming.Util;
+import org.glassfish.deployment.common.ClassDependencyBuilder;
 
 /**
  * Utility class - contains util methods used for implementation of
@@ -155,7 +158,8 @@ public class ServletContainerInitializerUtil {
             if(interestList == null) {
                 interestList = new HashMap<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>>();
             }
-            HandlesTypes ann = sc.getClass().getAnnotation(HandlesTypes.class);
+            Class sciClass = sc.getClass();
+            HandlesTypes ann = (HandlesTypes) sciClass.getAnnotation(HandlesTypes.class);
             if(ann == null) {
                 // This initializer does not contain @HandlesTypes
                 // This means it should always be called for all web apps
@@ -165,10 +169,10 @@ public class ServletContainerInitializerUtil {
                 if(currentInitializerList == null) {
                     ArrayList<Class<? extends ServletContainerInitializer>> arr =
                             new ArrayList<Class<? extends ServletContainerInitializer>>();
-                    arr.add(sc.getClass());
+                    arr.add(sciClass);
                     interestList.put(ServletContainerInitializerUtil.class, arr);
                 } else {
-                    currentInitializerList.add(sc.getClass());
+                    currentInitializerList.add(sciClass);
                 }
             } else {
                 Class[] interestedClasses = ann.value();
@@ -179,10 +183,10 @@ public class ServletContainerInitializerUtil {
                         if(currentInitializerList == null) {
                             ArrayList<Class<? extends ServletContainerInitializer>> arr =
                                     new ArrayList<Class<? extends ServletContainerInitializer>>();
-                            arr.add(sc.getClass());
+                            arr.add(sciClass);
                             interestList.put(c, arr);
                         } else {
-                            currentInitializerList.add(sc.getClass());
+                            currentInitializerList.add(sciClass);
                         }
                     }
                 }
@@ -238,6 +242,12 @@ public class ServletContainerInitializerUtil {
         if( (interestList.keySet().size() > 1) ||
             ((interestList.keySet().size() == 1) &&
                     (!interestList.containsKey(ServletContainerInitializerUtil.class)))) {
+            /*
+             * Create an instance of ClassDependencyBuilder that looks at the byte code and keeps
+             * the information for every class in this app
+             *
+             */
+            ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
             for(URL u : ((URLClassLoader)cl).getURLs()) {
                 String path = Util.URLDecode(u.getPath());
                 try {
@@ -251,20 +261,29 @@ public class ServletContainerInitializerUtil {
                                     continue;
                                 if(!anEntry.getName().endsWith(".class"))
                                     continue;
+                                InputStream jarInputStream = null;
                                 try {
-                                    String className = anEntry.getName().replace('/', '.');
-                                    className = className.substring(0, className.length()-6);
-                                    Class aClass = cl.loadClass(className);
-                                    initializerList = checkAgainstInterestList(aClass, interestList, initializerList);
+                                    jarInputStream = jf.getInputStream(anEntry);
+                                    int size = (int) anEntry.getSize();
+                                    byte[] classData = new byte[size];
+                                    for(int bytesRead = 0; bytesRead < size;) {
+                                        int r2 = jarInputStream.read(classData, bytesRead, size - bytesRead);
+                                        bytesRead += r2;
+                                    }
+                                    classInfo.loadClassData(classData);
                                 } catch (Throwable t) {
-                                    if (log.isLoggable(Level.FINEST)) {
-                                        log.log(Level.FINEST,
+                                    if (log.isLoggable(Level.FINE)) {
+                                        log.log(Level.FINE,
                                             "servletContainerInitializerUtil.classLoadingError",
                                             new Object[] {
                                                 anEntry.getName(),
                                                 t.toString()});
                                     }
                                     continue;
+                                } finally {
+                                    if(jarInputStream != null) {
+                                        jarInputStream.close();
+                                    }
                                 }
                             }
                         } finally {
@@ -274,8 +293,7 @@ public class ServletContainerInitializerUtil {
                         File file = new File(path);
                         if (file.exists()) {
                             if (file.isDirectory()) {
-                                initializerList = scanDirectory(file, path, cl,
-                                    interestList, initializerList);
+                                scanDirectory(file, classInfo);
                             } else {
                                 log.log(Level.WARNING,
                                     "servletContainerInitializerUtil.invalidUrlClassLoaderPath",
@@ -292,6 +310,7 @@ public class ServletContainerInitializerUtil {
                     return null;
                 }
             }
+            initializerList = checkAgainstInterestList(classInfo, interestList, initializerList, cl);
         }
 
         /*
@@ -325,54 +344,35 @@ public class ServletContainerInitializerUtil {
    }
 
     /**
-     * Given a path (say /Users/user/glassfish/domains/.../WEB-INF/classes/com/sun/x.class) and the topmost directory
-     * (/Users/user/glassfish/domains/.../WEB-INF/classes/) returns the class name (com.sun.x)
-     *
-     * @param fullPath String representing complete path of the class
-     * @param top String representing the complete path of topmost directory
-     *
-     * @return the class name as mentioned in the example above
-     */
-    private static String getClassNameFromPath(String fullPath, String top) {
-        //We got the  path from Class Loader
-        //which has path in the form /x/y/z. On Solaris/Linux/Mac, the path
-        //obtained File is also /x/y/z but on windows it D:\\x\\y\\z
-        //To ensure this code works on all platforms in the same way,
-        //We get a File representation of path and then do the calculation
-        String className = fullPath.substring((new File(top)).getPath().length()+File.separator.length());
-        className = className.replace(File.separatorChar, '.');
-        className = className.substring(0, className.length()-6);
-        return className;
-    }
-
-    /**
      * Given a directory, scan all sub directories looking for classes and
      * build the interest list
      *
      * @param dir the directory to be scanned
-     * @param path topmost directory from which scanning started
-     * @param cl the classloader to be used
-     * @param interestList The interestList built earlier
-     * @param initializerList The initializerList built so far
-     * @return the updated initialiserList
+     * @param classInfo the ClassDependencyBuilder that holds info on all classes
      */
-    private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> scanDirectory(
-                                 File dir, String path, ClassLoader cl,
-                                 Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
-                                 Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
+    private static void scanDirectory(File dir, ClassDependencyBuilder classInfo) {
         File[] files = dir.listFiles();
         for (File file : files) {
             if (file.isFile()) {
                 String fileName = file.getPath();
                 if (fileName.endsWith(".class")) {
                     try {
-                        Class aClass = cl.loadClass(getClassNameFromPath(
-                            fileName, path));
-                        initializerList = checkAgainstInterestList(aClass,
-                            interestList, initializerList);
+                        byte[] classData = null;
+                        InputStream is = null;
+                        try {
+                            is = new FileInputStream(fileName);
+                            int size = is.available();
+                            classData = new byte[size];
+                            is.read(classData);
+                            classInfo.loadClassData(classData);
+                        } finally {
+                            if (is != null) {
+                                is.close();
+                            }
+                        }
                     } catch (Throwable t) {
-                        if (log.isLoggable(Level.FINEST)) {
-                            log.log(Level.FINEST,
+                        if (log.isLoggable(Level.WARNING)) {
+                            log.log(Level.WARNING,
                                 "servletContainerInitializerUtil.classLoadingError",
                                 new Object[] {fileName, t.toString()});
                         }
@@ -380,40 +380,57 @@ public class ServletContainerInitializerUtil {
                     }
                 }
             } else {
-                initializerList = scanDirectory(file, path, cl,
-                    interestList, initializerList);
+                scanDirectory(file, classInfo);
             }
         }
-        return initializerList;
+        return;
     }
 
     /**
      * Given the interestList, checks if a given class uses any of the
      * annotations; If so, builds the initializer list
      *
-     * @param aClass the class to be examined
+     * @param classInfo the ClassDependencyBuilder instance that holds info on all classes
      * @param interestList the interestList built earlier
      * @param initializerList the initializerList built so far
+     * @param cl the ClassLoader to be used to load the class
      * @return the updated initializer list
      */
     private static Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> checkAgainstInterestList(
-                                Class aClass,
+                                ClassDependencyBuilder classInfo,
                                 Map<Class<?>, ArrayList<Class<? extends ServletContainerInitializer>>> interestList,
-                                Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList) {
+                                Map<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>> initializerList,
+                                ClassLoader cl) {
         for(Class c : interestList.keySet()) {
-            if((aClass.getAnnotation(c) != null) || (c.isAssignableFrom(aClass)) ) {
-                if(initializerList == null) {
-                    initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
-                }
-                ArrayList<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
-                for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
-                    HashSet<Class<?>> classSet = initializerList.get(initializer);
-                    if(classSet == null) {
-                        classSet = new HashSet<Class<?>>();
+            Set<String> resultFromClassInfo = classInfo.computeResult(c.getName());
+            if(resultFromClassInfo.isEmpty()) {
+                continue;
+            }
+            HashSet<Class<?>> resultSet = new HashSet<Class<?>>();
+            for(Iterator<String> iter = resultFromClassInfo.iterator(); iter.hasNext();) {
+                String className = iter.next().replace('/', '.');
+                try {
+                    Class aClass = cl.loadClass(className);
+                    resultSet.add(aClass);
+                } catch (Throwable t) {
+                    if (log.isLoggable(Level.WARNING)) {
+                        log.log(Level.WARNING,
+                            "servletContainerInitializerUtil.classLoadingError",
+                            new Object[] {className, t.toString()});
                     }
-                    classSet.add(aClass);
-                    initializerList.put(initializer, classSet);
                 }
+            }
+            if(initializerList == null) {
+                initializerList = new HashMap<Class<? extends ServletContainerInitializer>, HashSet<Class<?>>>();
+            }
+            ArrayList<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
+                HashSet<Class<?>> classSet = initializerList.get(initializer);
+                if(classSet == null) {
+                    classSet = new HashSet<Class<?>>();
+                }
+                classSet.addAll(resultSet);
+                initializerList.put(initializer, classSet);
             }
         }
         return initializerList;
