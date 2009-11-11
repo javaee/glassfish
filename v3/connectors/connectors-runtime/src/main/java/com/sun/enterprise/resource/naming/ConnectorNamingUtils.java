@@ -47,6 +47,7 @@ import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.*;
+import org.glassfish.internal.api.Globals;
 
 /**
  * Utility class to bootstrap connector-runtime.<br>
@@ -75,10 +76,7 @@ public class ConnectorNamingUtils {
     }
 
     static private Habitat getHabitat() {
-        Habitat habitat = null;
-        ModulesRegistry registry = new StaticModulesRegistry(ConnectorNamingUtils.class.getClassLoader());
-        habitat = registry.createHabitat("default");
-
+        Habitat habitat = Globals.getStaticHabitat();
         StartupContext startupContext = new StartupContext();
         habitat.add(new ExistingSingletonInhabitant(startupContext));
 

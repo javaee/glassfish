@@ -180,8 +180,7 @@ public class SerialContext implements Context {
                     // piece of glassfish code that can be an initial entry point from a
                     // Java SE client will need to make this happen.
 
-                    ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-                    habitat = registry.createHabitat("default");
+                    habitat = Globals.getStaticHabitat();
 
                     SerialInitContextFactory.setDefaultHabitat(habitat);
                 } else {

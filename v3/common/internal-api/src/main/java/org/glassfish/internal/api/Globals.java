@@ -24,6 +24,7 @@
 package org.glassfish.internal.api;
 
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -35,12 +36,14 @@ import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
  *
  * @author Jerome Dochez
  */
-@Service(name="globals")
+@Service(name = "globals")
 public class Globals implements Init {
 
     @Inject
-    static Habitat defaultHabitat;
+    static volatile Habitat defaultHabitat;
 
+    private static Object staticLock = new Object();
+    
     // dochez : remove this once we can get rid of ConfigBeanUtilities class
     @Inject
     ConfigBeansUtilities utilities;
@@ -56,4 +59,18 @@ public class Globals implements Init {
     public static void setDefaultHabitat(final Habitat habitat) {
         defaultHabitat = habitat;
     }
+
+    public static Habitat getStaticHabitat() {
+        if (defaultHabitat == null) {
+            synchronized (staticLock) {
+                if (defaultHabitat == null) {
+                    ModulesRegistry registry = new StaticModulesRegistry(Globals.class.getClassLoader());
+                    defaultHabitat = registry.createHabitat("default");
+                }
+            }
+        }
+
+        return defaultHabitat;
+    }
+
 }
