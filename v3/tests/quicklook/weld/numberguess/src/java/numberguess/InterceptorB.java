@@ -1,5 +1,7 @@
 package numberguess;
 
+import java.io.Serializable;
+
 import javax.interceptor.*;
 import javax.annotation.*;
 
@@ -8,7 +10,7 @@ import javax.ejb.EJBException;
 
 import javax.inject.Inject;
 
-public class InterceptorB {
+public class InterceptorB implements Serializable{
 
     @EJB StatelessLocal sbean;
 
