@@ -2,15 +2,18 @@ package numberguess;
 
 import javax.interceptor.*;
 import javax.annotation.*;
-
+import javax.ejb.EJB;
 import javax.inject.Inject;
+import java.io.Serializable;
 
 @Interceptor
 @SomeBindingType
-public class InterceptorA {
+public class InterceptorA implements Serializable {
 
-    @Inject
+    @EJB
     private StatelessLocal statelessLocal;
+
+    @Inject Foo foo;
 
     @AroundInvoke
 	public Object around(InvocationContext ctx) throws Exception {
@@ -25,6 +28,7 @@ public class InterceptorA {
 	System.out.println("In InterceptorA::init()");
 
 	System.out.println("statelessLocal = " + statelessLocal);
+	System.out.println("foo = " + foo);
 
 	ctx.proceed();
     }
