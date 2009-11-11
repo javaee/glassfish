@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <servlet>
+        <servlet-name>WebBeanServlet</servlet-name>
+        <servlet-class>extensions.WebBeanServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ExtensionBeanServlet</servlet-name>
+        <servlet-class>extensions.ExtensionBeanServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>JarExtensionBeanServlet</servlet-name>
+        <servlet-class>extensions.JarExtensionBeanServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>WebBeanServlet</servlet-name>
+        <url-pattern>/WebBean</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ExtensionBeanServlet</servlet-name>
+        <url-pattern>/ExtensionBean</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JarExtensionBeanServlet</servlet-name>
+        <url-pattern>/JarExtensionBean</url-pattern>
+    </servlet-mapping>
+
+    <env-entry>
+        <env-entry-name>injectedResource</env-entry-name>
+        <env-entry-type>java.lang.Integer</env-entry-type>
+        <env-entry-value>15</env-entry-value>
+    </env-entry>
+
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>
