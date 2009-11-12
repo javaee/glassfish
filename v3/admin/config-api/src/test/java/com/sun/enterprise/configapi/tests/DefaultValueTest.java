@@ -1,7 +1,6 @@
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.*;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +37,16 @@ public class DefaultValueTest extends ConfigApiTest {
         assertEquals(raw.attribute("address"), address);
         assertEquals(raw.rawAttribute("address"), address);
 
+    }
+
+    @Test
+    public void defaultValueTest() {
+        Protocols protocols = getHabitat().getComponent(Protocols.class);
+        for (Protocol protocol : protocols.getProtocol()) {
+            Http http = protocol.getHttp();
+            System.out.println(http.getCompressableMimeType());
+        }
+        
     }
 
 }
