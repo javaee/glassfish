@@ -179,6 +179,7 @@
         <ant dir="bean-validator/simple-bv-servlet" target="build-deploy"/>
         <ant dir="weld/numberguess" target="build-deploy"/>
         <ant dir="weld/osgiweld" target="build-deploy"/>
+        <ant dir="weld/extensions" target="build-deploy"/>
         <record name="build.output" action="stop"/>
     </target>
 
@@ -207,6 +208,7 @@
         <ant dir="bean-validator/simple-bv-servlet" target="undeploy"/>
         <ant dir="weld/numberguess" target="undeploy"/>
         <ant dir="weld/osgiweld" target="undeploy"/>
+        <ant dir="weld/extensions" target="undeploy"/>
         <record name="undeploy.output" action="stop"/>
     </target>
 
