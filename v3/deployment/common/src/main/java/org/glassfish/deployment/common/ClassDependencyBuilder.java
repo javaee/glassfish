@@ -42,7 +42,7 @@ public class ClassDependencyBuilder {
             } else if (ni.isClass() || ni.isInterface()) {
                 return getSubClasses(ni, ni.isInterface());
             } else {
-                System.out.println("????");
+                //System.out.println("????");
             }
         } else {
             //System.out.println("No info about: " + name);
@@ -54,8 +54,11 @@ public class ClassDependencyBuilder {
     private Set<String> getAnnotatedClasses(NodeInfo ni) {
         Set<String> annotatedClasses = new HashSet<String>();
         if (ni != null) {
-            for (NodeInfo n : ni.getDirectImplementors()) {
-                annotatedClasses.add(n.getClassName());
+            Set<NodeInfo> nInfos = ni.getDirectImplementors();
+            if ((nInfos != null) && (nInfos.size() > 0)) {
+                for (NodeInfo n : nInfos) {
+                    annotatedClasses.add(n.getClassName());
+                }
             }
         }
 
@@ -68,7 +71,7 @@ public class ClassDependencyBuilder {
             List<NodeInfo> list = new LinkedList<NodeInfo>();
             while (true) {
                 Set<NodeInfo> set = node.getDirectSubClass();
-                if (set != null) {
+                if ((set != null) && (set.size() > 0)) {
                     for (NodeInfo n : set) {
                         list.add(n);
                     }
@@ -76,7 +79,7 @@ public class ClassDependencyBuilder {
 
                 if (addImplementors) {
                     Set<NodeInfo> intfs = node.getDirectImplementors();
-                    if (intfs != null) {
+                    if ((intfs != null) && (intfs.size() > 0)) {
                         for (NodeInfo n : intfs) {
                             list.add(n);
                         }
@@ -135,7 +138,7 @@ public class ClassDependencyBuilder {
         }
 
         String[] interfaces = nodeInfo.getInterfaces();
-        if (interfaces != null) {
+        if ((interfaces != null) && (interfaces.length > 0)) {
             for (String interf : interfaces) {
                 NodeInfo interfNodeInfo = mappings.get(interf);
                 if (interfNodeInfo == null) {
@@ -148,7 +151,7 @@ public class ClassDependencyBuilder {
         }
 
         List<String> anns = nodeInfo.getClassLevelAnnotations();
-        if (anns != null) {
+        if ((anns != null) && (anns.size() > 0)) {
             for (String ann : anns) {
                 NodeInfo annNode = mappings.get(ann);
                 if (annNode == null) {

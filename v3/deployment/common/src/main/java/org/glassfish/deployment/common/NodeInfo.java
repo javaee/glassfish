@@ -46,6 +46,10 @@ class NodeInfo
 
     private String classTypeAsString;
 
+    private static final List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
+
+    private static final Set<NodeInfo> EMPTY_NODEINFO_SET = new HashSet<NodeInfo>();
+
     NodeInfo(byte[] classData) {
         ClassReader cr = new ClassReader(classData);
         infoAsString = className;
@@ -118,11 +122,11 @@ class NodeInfo
     }
 
     List<String> getClassLevelAnnotations() {
-        return classLevelAnnotations;
+        return classLevelAnnotations == null ? EMPTY_STRING_LIST : classLevelAnnotations;
     }
 
     String[] getInterfaces() {
-        return interfaces;
+        return interfaces == null ? new String[0] : interfaces;
     }
 
     void addDirectSubClass(NodeInfo ni) {
@@ -148,11 +152,11 @@ class NodeInfo
     }
 
     Set<NodeInfo> getDirectImplementors() {
-        return directImplementorsNodeInfos;
+        return directImplementorsNodeInfos == null ? EMPTY_NODEINFO_SET : directImplementorsNodeInfos;
     }
 
     Set<NodeInfo> getDirectSubClass() {
-        return directSubClassesNodeInfos;
+        return directSubClassesNodeInfos == null ?  EMPTY_NODEINFO_SET : directSubClassesNodeInfos;
     }
 
     boolean isInterface() {
@@ -177,7 +181,7 @@ class NodeInfo
         this.access = access;
         this.className = className;
         this.superClassName = superName;
-        this.interfaces = interfaces;
+        this.interfaces = interfaces == null ? new String[0] : interfaces;
 
         determineClassType();
     }
