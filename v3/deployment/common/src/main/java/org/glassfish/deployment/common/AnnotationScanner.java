@@ -99,7 +99,7 @@ public class AnnotationScanner implements ClassVisitor {
                                         ClassReader cr = new ClassReader(is);
                                         cr.accept(this, crFlags);
                                     } catch(Exception e) {
-                                        logger.log(Level.WARNING,
+                                        logger.log(Level.FINE,
                                                 "Exception while scanning " +
                                                         entryName, e);
                                     } finally {
