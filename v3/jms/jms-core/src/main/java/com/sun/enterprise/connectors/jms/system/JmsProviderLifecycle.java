@@ -56,7 +56,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
 import com.sun.hk2.component.Holder;
-import org.glassfish.internal.api.PostStartup;
+//import org.glassfish.internal.api.PostStartup;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
 //import com.sun.enterprise.config.serverbeans.MonitoringService;
@@ -67,7 +67,7 @@ import com.sun.enterprise.config.serverbeans.JmsService;
 //import java.util.List;
 
 @Service
-public class JmsProviderLifecycle implements PostStartup, PostConstruct{
+public class JmsProviderLifecycle implements  PostConstruct{
     private static final String JMS_EAGER_STARTUP = "org.glassfish.jms.EagerStartup";
     //Lifecycle properties
     public static final String EMBEDDED="EMBEDDED";
@@ -120,6 +120,9 @@ public class JmsProviderLifecycle implements PostStartup, PostConstruct{
         if (EMBEDDED.equals(integrationMode) && (jmsEagerStartup == null || "".equals(jmsEagerStartup) || "false".equals(jmsEagerStartup)))
             return false;
 
+        if (EMBEDDED.equals(integrationMode) && "true".equals(jmsEagerStartup))
+            return true;
+
         //if local broker and system property is false, don't do eager startup
         if (LOCAL.equals(integrationMode) &&  "false".equals(jmsEagerStartup))
             return false;
@@ -127,6 +130,7 @@ public class JmsProviderLifecycle implements PostStartup, PostConstruct{
         //local broker has eager startup by default
         if(LOCAL.equals(integrationMode))
             return true;
+
 
         return false;
     }

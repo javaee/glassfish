@@ -1940,7 +1940,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
         } catch(Exception ce) {
         String msg = sm.getString("ajra.mdb_cf_not_created", cfName);
         ConnectorRuntimeException cre = new ConnectorRuntimeException( msg );
-        ce.initCause( ce );
+        cre.initCause( ce );
             throw cre;
         }
 
