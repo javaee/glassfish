@@ -56,7 +56,7 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class RealmsManager {
     //per domain list of loaded Realms
-    private final Hashtable<String, Realm> loadedRealms = new Hashtable();
+    private final Hashtable<String, Realm> loadedRealms = new Hashtable<String, Realm>();
 
     // Keep track of name of default realm for this domain. This is updated during startup
     // using value from server.xml

@@ -255,7 +255,7 @@ public class CreateFileUser implements AdminCommand {
        }
        return password;
    } */
-   public void refreshRealm(String realmName){
+   public static void refreshRealm(String realmName){
       if(realmName != null && realmName.length()  >0){
          try{
             Realm realm = Realm.getInstance(realmName);

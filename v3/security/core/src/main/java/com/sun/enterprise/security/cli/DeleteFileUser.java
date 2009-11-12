@@ -55,6 +55,8 @@ import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.common.Util;
 import org.jvnet.hk2.config.types.Property;
 
 /**
@@ -154,7 +156,13 @@ public class DeleteFileUser implements AdminCommand {
             FileRealm fr = new FileRealm(keyFile);
             try {
                 fr.removeUser(userName);
-                fr.writeKeyFile(keyFile);
+                //fr.writeKeyFile(keyFile);
+                if (Util.isEmbeddedServer()) {
+                    fr.writeKeyFile(Util.writeConfigFileToTempDir(keyFile).getAbsolutePath());
+                } else {
+                    fr.writeKeyFile(keyFile);
+                }
+                CreateFileUser.refreshRealm(authRealmName);
             } catch (NoSuchUserException e) {
                 report.setMessage(
                         localStrings.getLocalString("delete.file.user.usernotfound",
