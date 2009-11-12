@@ -47,7 +47,7 @@ import java.lang.reflect.*;
 /** 
  * The method-intf element must be one of the following "Remote" or "Home" or "LocalHome" or "Local".
  */
-public class EjbMethodIntfElement extends EjbTest implements EjbCheck { 
+public class EjbMethodIntfElement extends EjbTest implements EjbCheck {
 
 
     /** 
@@ -151,10 +151,7 @@ public class EjbMethodIntfElement extends EjbTest implements EjbCheck {
 			for (Iterator itr = permissionedMethodsForRole.iterator(); itr.hasNext();) {
 			    MethodDescriptor methodDescriptor = (MethodDescriptor) itr.next();
 
-                            String methodIntf = null;
-                            try {
-                                methodIntf = methodDescriptor.getEjbClassSymbol();
-                            } catch ( Exception ex ) {}
+                            String methodIntf = methodDescriptor.getEjbClassSymbol();
                             if ( methodIntf == null  ) { //|| methodIntf.equals("")
                                 continue;
                             }

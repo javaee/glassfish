@@ -135,7 +135,7 @@ class EclipseLinkEnhancer implements JPAEnhancer {
         String value = m.getMainAttributes().getValue(Constants.DYNAMICIMPORT_PACKAGE);
         if (value != null) {
             // TODO(Sahoo): Don't add if org.eclipselink.* is already specified
-            value.concat(", " + elPackage);
+            value = value.concat(", " + elPackage);
         } else {
             value = elPackage;
         }
