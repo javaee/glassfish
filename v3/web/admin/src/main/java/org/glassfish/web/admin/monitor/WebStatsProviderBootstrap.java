@@ -23,6 +23,8 @@ import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
 import org.glassfish.flashlight.datatree.TreeNode;
 import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
@@ -60,8 +62,10 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     private Server server;
 
     // Map of apps and its StatsProvider list
-    private Map<String, Queue> nameToStatsProviders = new ConcurrentHashMap();
+    private ConcurrentMap<String, ConcurrentMap<String, Queue>> vsNameToStatsProviderMap =
+            new ConcurrentHashMap<String, ConcurrentMap<String, Queue>>();
     private Queue webContainerStatsProviderQueue = new ConcurrentLinkedQueue();
+    private AtomicBoolean isWebStatsProvidersRegistered = new AtomicBoolean(false);
 
     public WebStatsProviderBootstrap() {
     }
@@ -91,7 +95,11 @@ public class WebStatsProviderBootstrap implements PostConstruct {
         registerWebStatsProviders();
     }
 
-    private void registerWebStatsProviders() {
+    private synchronized void registerWebStatsProviders() {
+        if (isWebStatsProvidersRegistered.get()) {
+            return;
+        }
+
         JspStatsProvider jsp = new JspStatsProvider(null, null);
         RequestStatsProvider wsp = new RequestStatsProvider(null, null);
         ServletStatsProvider svsp = new ServletStatsProvider(null, null);
@@ -108,17 +116,38 @@ public class WebStatsProviderBootstrap implements PostConstruct {
         webContainerStatsProviderQueue.add(wsp);
         webContainerStatsProviderQueue.add(svsp);
         webContainerStatsProviderQueue.add(sssp);
+
+        isWebStatsProvidersRegistered.set(true);
     }
 
     public void registerApplicationStatsProviders(String monitoringName,
             String vsName, List<String> servletNames) {
 
+        // try register again as it may be unregistered
+        registerWebStatsProviders();
+
         //create stats providers for each virtual server 'vsName'
         String node = getNodeString(monitoringName, vsName);
-        Queue statspList = nameToStatsProviders.get(monitoringName);
+        ConcurrentMap<String, Queue> statsProviderMap = vsNameToStatsProviderMap.get(vsName);
+        Queue statspList = null;
+        if (statsProviderMap == null) {
+            statsProviderMap = new ConcurrentHashMap<String, Queue>();
+            ConcurrentMap<String, Queue> anotherMap =
+                    vsNameToStatsProviderMap.putIfAbsent(vsName, statsProviderMap);
+            if (anotherMap != null) {
+                statsProviderMap = anotherMap;
+            }
+        } else {
+            statspList = statsProviderMap.get(monitoringName);
+        }
         if (statspList == null) {
             statspList = new ConcurrentLinkedQueue();
+            Queue anotherQueue = statsProviderMap.putIfAbsent(monitoringName, statspList);
+            if (anotherQueue != null) {
+                statspList = anotherQueue;
+            }
         }
+
         JspStatsProvider jspStatsProvider =
                 new JspStatsProvider(monitoringName, vsName);
         StatsProviderManager.register(
@@ -155,22 +184,29 @@ public class WebStatsProviderBootstrap implements PostConstruct {
         }
 
         statspList.add(websp);
-        nameToStatsProviders.put(monitoringName, statspList);
     }
 
     public void unregisterApplicationStatsProviders(String monitoringName,
             String vsName) {
 
-        Queue statsProviders = nameToStatsProviders.remove(monitoringName);
+        Map<String, Queue> statsProviderMap = vsNameToStatsProviderMap.get(vsName); 
+        // remove stats providers for a given monitoringName and vs
+        Queue statsProviders = statsProviderMap.remove(monitoringName);
         for (Object statsProvider : statsProviders) {
             StatsProviderManager.unregister(statsProvider);
         }
 
-        if (nameToStatsProviders.isEmpty()) {
+        if (statsProviderMap.isEmpty()) {
+            vsNameToStatsProviderMap.remove(vsName);
+        }
+
+        // remove web stats provider if it is empty (for all vs)
+        if (vsNameToStatsProviderMap.isEmpty()) {
             for (Object statsProvider : webContainerStatsProviderQueue) {
                 StatsProviderManager.unregister(statsProvider);
             }
             webContainerStatsProviderQueue.clear();
+            isWebStatsProvidersRegistered.set(false);
         }
     }
 
