@@ -47,7 +47,7 @@
        <filter token="jaxr.home" value="${basedir}" />
    </target>
 
-   <target name="prepare" depends="init, copy.jaxr-api">
+   <target name="prepare" depends="init">
       <mkdir dir="${jaxr.build}"/>
       <mkdir dir="${jaxr.build}/bin"/>
       <mkdir dir="${jaxr.build}/docs"/>
