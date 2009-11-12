@@ -47,23 +47,70 @@ import org.glassfish.external.probe.provider.annotations.ProbeProvider;
 @ProbeProvider(moduleProviderName="glassfish", moduleName="web", probeProviderName="jsp")
 public class JspProbeProvider {
 
+    /**
+     * Emits notification that a JSP has been accessed for the first time
+     * and its corresponding Servlet has been loaded and initialized.
+     *
+     * @param jspUri The path (relative to the root of the application)
+     * to the JSP that was loaded
+     * @param appName The name of the application to which the JSP belongs
+     * @param hostName The name of the virtual server on which the
+     * application has been deployed
+     */
     @Probe(name="jspLoadedEvent")
     public void jspLoadedEvent(
+        @ProbeParam("jspUri") String jspUri,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
+    /**
+     * Emits notification that a JSP whose source code has changed since
+     * it was first deployed has been accessed again and was recompiled,
+     * and its corresponding Servlet reloaded and reinitialized.
+     *
+     * @param jspUri The path (relative to the root of the application)
+     * to the JSP that was reloaded
+     * @param appName The name of the application to which the JSP belongs
+     * @param hostName The name of the virtual server on which the
+     * application has been deployed
+     */
     @Probe(name="jspReloadedEvent")
     public void jspReloadedEvent(
+        @ProbeParam("jspUri") String jspUri,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
+    /**
+     * Emits notification that a JSP is being destroyed, that is, the
+     * Servlet corresponding to the JSP is called at its destroy method
+     * either because the JSP is being reloaded or because the application
+     * to which the JSP belongs is being stopped (for example, as part of its
+     * undeployment).
+     *
+     * @param jspUri The path (relative to the root of the application)
+     * to the JSP that was destroyed
+     * @param appName The name of the application to which the JSP belongs
+     * @param hostName The name of the virtual server on which the
+     * application has been deployed
+     */
     @Probe(name="jspDestroyedEvent")
     public void jspDestroyedEvent(
+        @ProbeParam("jspUri") String jspUri,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 
+    /**
+     * Emits notification that access to a JSP has resulted in an error.
+     *
+     * @param jspUri The path (relative to the root of the application)
+     * to the JSP that produced the error
+     * @param appName The name of the application to which the JSP belongs
+     * @param hostName The name of the virtual server on which the
+     * application has been deployed
+     */
     @Probe(name="jspErrorEvent")
     public void jspErrorEvent(
+        @ProbeParam("jspUri") String jspUri,
         @ProbeParam("appName") String appName,
         @ProbeParam("hostName") String hostName) {}
 }

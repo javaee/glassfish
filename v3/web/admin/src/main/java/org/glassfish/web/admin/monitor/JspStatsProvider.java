@@ -125,6 +125,7 @@ public class JspStatsProvider {
     
     @ProbeListener("glassfish:web:jsp:jspLoadedEvent")
     public void jspLoadedEvent(
+            @ProbeParam("jspUri") String jspUri,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
@@ -138,6 +139,7 @@ public class JspStatsProvider {
 
     @ProbeListener("glassfish:web:jsp:jspReloadedEvent")
     public void jspReloadedEvent(
+            @ProbeParam("jspUri") String jspUri,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
@@ -147,6 +149,7 @@ public class JspStatsProvider {
 
     @ProbeListener("glassfish:web:jsp:jspDestroyedEvent")
     public void jspDestroyedEvent(
+            @ProbeParam("jspUri") String jspUri,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {
@@ -159,6 +162,7 @@ public class JspStatsProvider {
 
     @ProbeListener("glassfish:web:jsp:jspErrorEvent")
     public void jspErrorEvent(
+            @ProbeParam("jspUri") String jspUri,
             @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName) {
         if (isValidEvent(appName, hostName)) {

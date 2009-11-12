@@ -72,22 +72,19 @@ public class JspProbeEmitterImpl implements JspProbeEmitter {
         this.jspProbeProvider = webModule.getWebContainer().getJspProbeProvider();
     }
 
-    public void jspLoadedEvent(Servlet jspServlet) {
-        // Pass jspServlet's name as part of the probe event if ever needed
-        jspProbeProvider.jspLoadedEvent(monitoringNodeName, vsId);
+    public void jspLoadedEvent(String jspUri) {
+        jspProbeProvider.jspLoadedEvent(jspUri, monitoringNodeName, vsId);
     }
 
-    public void jspReloadedEvent(Servlet jspServlet) {
-        // Pass jspServlet's name as part of the probe event if ever needed
-        jspProbeProvider.jspReloadedEvent(monitoringNodeName, vsId);
+    public void jspReloadedEvent(String jspUri) {
+        jspProbeProvider.jspReloadedEvent(jspUri, monitoringNodeName, vsId);
     }
 
-    public void jspDestroyedEvent(Servlet jspServlet) {
-        // Pass jspServlet's name as part of the probe event if ever needed
-        jspProbeProvider.jspDestroyedEvent(monitoringNodeName, vsId);
+    public void jspDestroyedEvent(String jspUri) {
+        jspProbeProvider.jspDestroyedEvent(jspUri, monitoringNodeName, vsId);
     }
 
-    public void jspErrorEvent() {
-        jspProbeProvider.jspErrorEvent(monitoringNodeName, vsId);
+    public void jspErrorEvent(String jspUri) {
+        jspProbeProvider.jspErrorEvent(jspUri, monitoringNodeName, vsId);
     }
 }
