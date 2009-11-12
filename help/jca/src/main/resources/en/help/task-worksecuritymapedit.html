@@ -11,17 +11,12 @@ Use is subject to License Terms  -->
 <li><b>Under the Connectors node, select the Work Security Maps node.</b><p>The Work Security Maps page opens.</p></li>
 <li><b>On the Work Security Maps page, click the name of the work
 security map that you are editing.</b><p>The Edit Work Security Map page opens.</p></li>
-<li><b>Use either the Group fields or the Principal fields as follows.</b><ul>
-<li><b>If you select the Group Mapping radio button:</b><ol style="list-style-type: lower-alpha">
-<li><b>In the field labeled EIS Group, type the name of the back-end EIS
-user group.</b></li>
-<li><b>In the field labeled Mapped Group, type the name of the corresponding user
-group defined in the Enterprise Server security domain.</b></li></ol></li>
-<li><b>If you select the Principal Mapping radio button:</b><ol style="list-style-type: lower-alpha">
-<li><b>In the field labeled EIS Principal, type the name of the back-end EIS
-principal.</b></li>
-<li><b>In the field labeled Mapped Principal, type the name of the corresponding principal
-defined in the Enterprise Server security domain.</b></li></ol></li></ul></li>
+<li><b>Use either the Group field or the Principal field as follows.</b><ul>
+<li><b>If you select the Group radio button, type a map of each
+back-end EIS user group to the corresponding user group defined in the Enterprise
+Server security domain.</b><p>Use a comma-separated list to specify more than one mapping. For example:</p><pre>eis-group-1=server-group-1,eis-group-2=server-group-2</pre></li>
+<li><b>If you select the Principal radio button, type a map of each
+back-end EIS principal to the corresponding principal defined in the Enterprise Server security domain.</b><p>Use a comma-separated list to specify more than one mapping. For example:</p><pre>eis-principal-1=server-principal-1,eis-principal-2=server-principal-2</pre></li></ul></li>
 <li><b>From the Resource Adapter drop-down list, select the resource adapter for the EIS.</b></li>
 <li><b>In the Description field, type a description of the work security map.</b></li>
 <li><b>Select the Status Enabled checkbox to enable the work security map.</b><p>This option is enabled by default.</p></li>

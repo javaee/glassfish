@@ -4,13 +4,13 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-worksecuritymapnew"></a><h4>New Work Security Map</h4>
-<a name="indexterm-55"></a><a name="indexterm-56"></a><p>Use the New Work Security Map page to create a new work
+<a name="indexterm-56"></a><a name="indexterm-57"></a><p>Use the New Work Security Map page to create a new work
 security map.</p><p>The New Work Security Map contains the following options.</p><dl><dt>Security Map Name</dt>
 <dd><p>The name of the work security map.</p></dd>
 <dt>Group</dt>
-<dd><p>If the Group Mapping radio button is selected, the EIS Group text field must contain the name of the back-end EIS user group, and the Mapped Group text field must contain the name of the corresponding user group defined in the Enterprise Server security domain.</p></dd>
+<dd><p>If the Group Mapping radio button is selected, the text field must specify a map of each back-end EIS user group to the corresponding user group defined in the Enterprise Server security domain. Use a comma-separated list to specify more than one mapping. For example:</p><pre>eis-group-1=server-group-1,eis-group-2=server-group-2</pre></dd>
 <dt>Principal</dt>
-<dd><p>If the Principal Mapping radio button is selected, the EIS Principal text field must contain the name of the back-end EIS principal, and the Mapped Principal text field must contain the name of the corresponding principal defined in the Enterprise Server security domain.</p></dd>
+<dd><p>If the Principal Mapping radio button is selected, the text field must specify a map of each back-end EIS principal to the corresponding principal defined in the Enterprise Server security domain. Use a comma-separated list to specify more than one mapping. For example:</p><pre>eis-principal-1=server-principal-1,eis-principal-2=server-principal-2</pre></dd>
 <dt>Resource Adapter</dt>
 <dd><p>The resource adapter for the EIS.</p></dd>
 <dt>Description</dt>

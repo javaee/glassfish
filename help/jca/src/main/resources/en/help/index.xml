@@ -34,6 +34,9 @@
     <indexitem target="ref-connectorresourceedit" text="editing (reference)"></indexitem>
     <indexitem target="task-connectorresourceedit" text="editing (task)"></indexitem>
     <indexitem target="ref-connectorresources" text="viewing and configuring"></indexitem></indexitem>
+ <indexitem text="connector service">
+    <indexitem target="ref-connectionservice" text="configuring (reference)"></indexitem>
+    <indexitem target="task-connectionservice" text="configuring (task)"></indexitem></indexitem>
  <indexitem text="connector work security maps">
     <indexitem target="ref-worksecuritymapnew" text="creating (reference)"></indexitem>
     <indexitem target="task-worksecuritymapnew" text="creating (task)"></indexitem>

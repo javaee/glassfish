@@ -9,17 +9,20 @@ Use is subject to License Terms  -->
 <li><b>In the navigation tree, expand the Resources node.</b></li>
 <li><b>Under the Resources node, select the Resource Adapter Configs node.</b><p>The Resource Adapter Configs page opens.</p></li>
 <li><b>On the Resource Adapter Configs page, click New.</b><p>The New Resource Adapter Config page opens.</p></li>
-<li><b>In the Resource Adapter Name field, type the name of the resource adapter.</b><p>If the resource adapter is embedded in an application, then the name is
-<tt><i>app_name</i>#<i>rar_name</i></tt>. You can deploy the resource adapter either before or after you create
-a resource adapter config for it.</p></li>
-<li><b>In the Thread Pool IDs field, type a comma-separated list of the thread
-pools to be used for the resource adapter configuration.</b></li>
+<li><b>From the Resource Adapter Name drop-down list, select the resource adapter.</b></li>
+<li><b>From the Thread Pool ID drop-down list, select the thread pool to be
+used for the resource adapter configuration.</b></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties for the resource adapter.</b><p>Available properties are the names of setter methods of the class referenced by
 the <tt>resourceadapter-class</tt> element in the <tt>ra.xml</tt> file, which defines the class name of
-the resource adapter JavaBean. Any properties defined here override the default values present
-in <tt>ra.xml</tt>.</p><p>To add a property, click the Add Property button. In the blank
-row that appears, type the property name in the Name field, and type
-the property value in the Value field.</p></li>
+the resource adapter JavaBeans component. Any modifications to properties defined here override the
+default values present in <tt>ra.xml</tt>.</p><ul>
+<li><b>To add a property, click the Add Property button. In the blank row
+that appears, type the property name in the Name field, and type
+the property value in the Value field.</b></li>
+<li><b>To modify a property, edit that property's Value field.</b></li>
+<li><b>To delete a property, select the checkbox to the left of the
+Name field of the property that you are deleting, then click the Delete
+Properties button.</b></li></ul></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-resourceadapterconfigedit.html">To Edit a Resource Adapter Config</a></p></li>
 <li><p><a href="task-resourceadapterconfigdelete.html">To Delete a Resource Adapter Config</a></p></li></ul>
