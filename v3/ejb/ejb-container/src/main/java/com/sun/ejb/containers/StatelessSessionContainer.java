@@ -341,6 +341,10 @@ public class StatelessSessionContainer
                 ejbDescriptor, localHomeCreateMethod, null);
         }
         */
+	ejbProbeNotifier.ejbBeanCreatedEvent(
+                getContainerId(), containerInfo.appName, containerInfo.modName,
+                containerInfo.ejbName);
+
         // For stateless EJBs, EJB2.0 Section 7.8 says that 
         // Home.create() need not do any real creation.
         // If necessary, a stateless bean is created below during getContext().
