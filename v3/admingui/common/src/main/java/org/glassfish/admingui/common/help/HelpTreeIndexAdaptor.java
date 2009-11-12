@@ -190,8 +190,7 @@ public class HelpTreeIndexAdaptor extends TreeAdaptorBase {
 
         if (null != (htmlFile = item.getHtmlFileForTarget())) {
             // Add leading "/resource/" to ensure it's treated as *context root* relative.
-            props.put("url", "javascript:admingui.help.showHelpPage('/resource/"
-                    + htmlFile + "', 'helpContent');");
+	    props.put("url", "/resource/" + htmlFile);
         }
 //	LayoutComponent desc = getLayoutComponent();
 //	setProperty(props, "imageURL", desc.getOption("imageURL"));

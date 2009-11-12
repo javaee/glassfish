@@ -189,8 +189,7 @@ public class HelpTreeAdaptor extends TreeAdaptorBase {
 	props.put("expanded", item.isExpand());
 	props.put("text", item.getText());
 	// Add leading "/resource/" to ensure it's treated as *context root* relative.
-	props.put("url", "javascript:admingui.help.showHelpPage('/resource/"
-	    + item.getTargetPath() + "', 'helpContent');");
+	props.put("url", "/resource/" + item.getTargetPath());
 //	LayoutComponent desc = getLayoutComponent();
 //	setProperty(props, "imageURL", desc.getOption("imageURL"));
 //	setProperty(props, "target", desc.getOption("target"));
