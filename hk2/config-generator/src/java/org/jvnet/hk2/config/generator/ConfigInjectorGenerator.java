@@ -792,8 +792,13 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             @Override
             protected void generate() {
                 metadata.add(xmlTokenName(),isRequired()?"required":"optional");
-                if (this.hasDefault())
-                    metadata.add(xmlTokenName(), "default:" + a.defaultValue());
+                if (this.hasDefault()) {
+                    if (a.defaultValue().indexOf(',')!=-1) {
+                        metadata.add(xmlTokenName(), '"' + "default:" + a.defaultValue() + '"');
+                    } else {
+                        metadata.add(xmlTokenName(), "default:" + a.defaultValue());                        
+                    }
+                }
                 String ant = "";
                 try {
                     Class c = a.dataType();

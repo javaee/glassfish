@@ -69,6 +69,9 @@ public class Main extends Assert implements ModuleStartup {
     Habitat habitat;
 
     @Inject
+    ConfigWithDefaultValues defaults;
+
+    @Inject
     TestCageBuilder testCageBuilder;
 
 //    private static final XMLOutputFactory xof = XMLOutputFactory.newInstance();
@@ -121,6 +124,9 @@ public class Main extends Assert implements ModuleStartup {
         Dom i = (Dom) habitat.getInhabitant(HttpListener.class, "a");
         i.attribute("acceptor-threads","56");
         assertEquals(56,listener.acceptorThreads);
+
+        assert(defaults!=null);
+        assertEquals(defaults.getMimeTypes(),"text/plain,text/xml,text/plain");
 
         // turning off those tests until we get a clear picture on how the @Configured
         // and @CagedBy can play together.
