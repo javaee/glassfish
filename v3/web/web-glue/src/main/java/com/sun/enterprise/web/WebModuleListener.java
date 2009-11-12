@@ -160,6 +160,11 @@ final class WebModuleListener
      * JspServlet (using the values from sun-web.xml's jsp-config).
      */
     private void configureJsp(WebModule webModule) {
+
+        webModule.getServletContext().setAttribute(
+            "org.glassfish.jsp.isStandaloneWebapp",
+            new Boolean(webModule.isStandalone()));
+
         // Find tld URI and set it to ServletContext attribute
         Collection<TldProvider> tldProviders =
             webContainer.getTldProviders();
@@ -265,7 +270,8 @@ final class WebModuleListener
                 sysClassPath + "\n");
         }
         if (sysClassPath.equals("")) {
-            // In embedded mode, habitat returns SingleModulesRegistry and it has no modules.
+            // In embedded mode, habitat returns SingleModulesRegistry and
+            // it has no modules.
             // Try "java.class.path" system property instead.
             sysClassPath = System.getProperty("java.class.path"); 
         }

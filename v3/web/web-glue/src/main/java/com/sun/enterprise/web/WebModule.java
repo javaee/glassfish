@@ -180,6 +180,9 @@ public class WebModule extends PwcWebModule {
 
     private WebModuleConfig wmInfo;
 
+    // true if standalone WAR, false if embedded in EAR file
+    private boolean isStandalone = true;
+
     /**
      * Constructor.
      */
@@ -1122,9 +1125,16 @@ public class WebModule extends PwcWebModule {
         return bean;
     }
 
-
     public void setBean(Application bean) {
         this.bean = bean;
+    }
+
+    void setStandalone(boolean isStandalone) {
+        this.isStandalone = isStandalone;
+    }
+
+    boolean isStandalone() {
+        return isStandalone;
     }
 
     /**

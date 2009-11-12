@@ -1898,6 +1898,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // Not a dummy web module
             com.sun.enterprise.deployment.Application app =
                 wbd.getApplication();
+            ctx.setStandalone(app.isVirtual());
             // S1AS BEGIN WORKAROUND FOR 6174360
             if (app.isVirtual()) {
                 // Standalone web module
