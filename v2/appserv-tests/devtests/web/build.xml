@@ -458,7 +458,9 @@
 <!-- IT 10553         
         <ant dir="defaultKeepAlive" target="all"/>
 -->
+<!-- IT 10951
         <ant dir="multiServletRequests" target="all"/>
+-->
         <ant dir="networkListenerDynamicConfig" target="all"/>
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
         <ant dir="caseSensitiveHostMapping" target="all"/>
