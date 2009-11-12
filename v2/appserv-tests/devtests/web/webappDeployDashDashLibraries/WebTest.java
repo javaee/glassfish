@@ -66,6 +66,7 @@ public class WebTest {
 
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -83,12 +84,9 @@ public class WebTest {
         conn.connect();
 
         int responseCode = conn.getResponseCode();
-        if (responseCode == 200) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Wrong response code. Expected: 200"
-                               + ", received: " + responseCode);
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (responseCode != 200) {
+            throw new Exception("Wrong response code. Expected: 200" +
+                ", received: " + responseCode);
         }
     }
 }
