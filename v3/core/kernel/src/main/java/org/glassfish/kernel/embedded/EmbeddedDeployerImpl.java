@@ -276,7 +276,7 @@ public class EmbeddedDeployerImpl implements EmbeddedDeployer {
         if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
             if (params.keepreposdir == null)
                 params.keepreposdir = false;
-            if ( !params.keepreposdir && !info.isDirectory && source.exists()) {
+            if ( !params.keepreposdir && info != null && !info.isDirectory && source.exists()) {
                 FileUtils.whack(new File(source.getURI()));
             }
             //remove context from generated
