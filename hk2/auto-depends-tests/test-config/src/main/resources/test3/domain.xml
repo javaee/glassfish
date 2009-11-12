@@ -28,4 +28,7 @@
     </security-map>
     <bird name="tweety"/>
     <lion name="kitty"/>
+    <config-with-default-values>
+        
+    </config-with-default-values>
 </domain>
