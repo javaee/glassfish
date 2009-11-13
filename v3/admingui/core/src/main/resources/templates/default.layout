@@ -1,14 +1,6 @@
 <ui:event type="initPage">
-    <!--
-	I am leaving this in for now in case we decide to
-	experiment with alternate layouts later...  Ken
-    -->
-    if ("!#{sessionScope.guiNavScheme}") {
-	setSessionAttribute(key="guiNavScheme" value="tree");
-    }
-    if ("!#{pageSession.bare}") {
+    if ("!(#{param.bare}=#{null}) || !#{pageSession.bare}") {
 	setPageSessionAttribute(key="bare", value="#{param.bare == 'true'}");
     }
 </ui:event>
-
 <!composition template="/templates/#{pageSession.bare == 'true' ? 'bareLayout.xhtml' : 'treeLayout.xhtml'}" />

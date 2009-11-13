@@ -45,24 +45,24 @@
 // Need to write the title so it is updated in the browser.
 <f:verbatim>
 <script type="text/javascript">
-    var loc = window.location.href;
+    var loc = top.window.location.href;
     var index = loc.indexOf("bare=true");
     if (index > -1) {
-        window.location = loc.substring(0, index);
+        top.window.location = loc.substring(0, index);
     }
     admingui.help.pluginId = '#{pluginId}';
 </script>
-<title>#{guiTitle}</title>
+<div class="guiPageContent">
 </f:verbatim>
-
-<!insert name="content">
-    Content Missing!
-</insert>
+    <!insert name="content">
+	Content Missing!
+    </insert>
 <f:verbatim>
+</div>
 <script type="text/javascript">
     #{guiOnLoad};
     #{guiTemplateOnLoad};
     #{requestScope.reloadJS}
-    document.title = '#{guiTitle}';
+    document.title = "#{guiTitle}";
 </script>
 </f:verbatim>
