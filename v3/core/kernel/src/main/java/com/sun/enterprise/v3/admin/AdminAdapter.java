@@ -135,6 +135,9 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     @Inject
     volatile Domain domain;
 
+    @Inject
+    GenericJavaConfigListener listener;
+
     final Class<? extends Privacy> privacyClass;
 
     private boolean isRegistered = false;
@@ -473,12 +476,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 	this.isRegistered = isRegistered;
     }
     
-    private void registerJavaConfigListener() {
-        Habitat habitat = sc.getDefaultHabitat();
-        ConstructorWomb<GenericJavaConfigListener> womb = new 
-                ConstructorWomb<GenericJavaConfigListener>(GenericJavaConfigListener.class, habitat, null);
-        ConfigListener jcl = womb.get(null);
-    }
     private void registerSystemPropertyListener() {
         ObservableBean ob = (ObservableBean)ConfigSupport.getImpl(domain);
         SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
@@ -488,7 +485,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         ob.addListener(ls);
     }
     private void registerDynamicReconfigListeners() {
-        registerJavaConfigListener();
         registerSystemPropertyListener();
     }
 }

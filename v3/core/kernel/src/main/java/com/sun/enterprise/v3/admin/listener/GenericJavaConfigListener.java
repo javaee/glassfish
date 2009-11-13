@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jvnet.hk2.annotations.Inject;
+
+import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.Changed.TYPE;
@@ -60,6 +61,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * @see com.sun.enterprise.config.serverbeans.JavaConfig
  */
 
+@Service
 public final class GenericJavaConfigListener implements PostConstruct, ConfigListener {
     @Inject JavaConfig jc;
     List<String> oldProps;
