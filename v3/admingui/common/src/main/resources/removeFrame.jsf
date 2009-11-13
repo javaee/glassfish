@@ -1,0 +1,28 @@
+<f:verbatim>
+<html>
+<head>
+    <script type="text/javascript" src="#{request.contextPath}/resource/common/js/adminjsf.js" ></script>
+    <script type="text/javascript">
+	function redirectToQS() {
+	    var loc = window.location.href;
+	    var idx = loc.indexOf('?');
+	    loc = loc.substring(idx + 1);
+	    if (loc.indexOf('?') == -1) {
+		idx = loc.indexOf('&');
+		if (idx != -1) {
+		    // replace first '&'  with '?'
+		    loc = loc.substring(0, idx) + '?' + loc.substring(idx + 1);
+		}
+	    }
+	    admingui.ajax.loadPage(
+		{
+		    url: loc,
+		    target: top.document.getElementById('content')
+		});
+	}
+    </script>
+</head>
+<body onload="redirectToQS()">
+</body>
+</html>
+</f:verbatim>
