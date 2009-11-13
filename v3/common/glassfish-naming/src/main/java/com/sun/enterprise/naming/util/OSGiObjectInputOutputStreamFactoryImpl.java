@@ -71,7 +71,8 @@ public class OSGiObjectInputOutputStreamFactoryImpl
     public ObjectInputStream createObjectInputStream(InputStream in)
             throws IOException
     {
-        return new OSGiObjectInputStream(in);
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        return new OSGiObjectInputStream(in, loader);
     }
 
     public ObjectOutputStream createObjectOutputStream(OutputStream out)
@@ -80,12 +81,12 @@ public class OSGiObjectInputOutputStreamFactoryImpl
         return new OSGiObjectOutputStream(out);
     }
 
-    private class OSGiObjectInputStream extends ObjectInputStream
+    private class OSGiObjectInputStream extends ObjectInputStreamWithLoader
     {
 
-        public OSGiObjectInputStream(InputStream in) throws IOException
+        public OSGiObjectInputStream(InputStream in, ClassLoader loader) throws IOException
         {
-            super(in);
+            super(in, loader);
         }
 
         @Override
