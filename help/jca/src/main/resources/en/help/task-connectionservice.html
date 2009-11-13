@@ -12,6 +12,12 @@ Use is subject to License Terms  -->
 Enterprise Server shutdown for the <tt>ResourceAdapter.stop</tt> method of a connector module's instance to
 complete.</b><p>Resource adapters that take longer to shut down are ignored, and Enterprise Server
 shutdown continues. The default value is 30 seconds.</p></li>
+<li><b>From the Connector Classloading Policy drop-down list, select the policy to be used.</b><ul>
+<li><b>Select <tt>derived</tt> to specify that the resource adapters are provided according to an
+application's references to any of the resource adapter's resources.</b><p>This policy is the default.</p></li>
+<li><b>Select <tt>global</tt> to specify that all resource adapters will be visible to all
+applications.</b></li></ul><p>This policy does not apply to the preinstalled JMS system resource adapter,
+<tt>jmsra</tt>, which is always visible to all applications.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
