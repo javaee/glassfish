@@ -44,7 +44,7 @@
         if (result == true) {
 	    if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
 		disableAllButtons();
-		return submitAndDisable(this, '$resource{i18n.button.Processing}', '_top');
+		return submitAndDisable(this, '$resource{i18n.button.Processing}', '_self');
 	    }
         }
         return false;"
@@ -68,12 +68,12 @@
               appType = "#{pageSession.appType}"
               propertyList="$attribute{newList}"
         );
-       gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+	gf.redirect(page="#{request.contextPath}/common/removeFrame.jsf?#{request.contextPath}/common/applications/applications.jsf&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&bare=true");
     />
 </sun:button>
 
 <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
-    onClick="admingui.ajax.loadPage({url:'#{request.contextPath}/#{cancelPage}?name=$pageSession{target}'}); return false;">
+    onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/#{cancelPage}?name=$pageSession{target}'}); return false;">
 //    <!command
 //        println("cancel");
 //        gf.navigate(page="#{request.contextPath}/#{cancelPage}?name=$pageSession{target}");

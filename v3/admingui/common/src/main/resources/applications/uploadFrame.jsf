@@ -3,7 +3,7 @@
 	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
 <!composition template="/templates/iframe.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  
-    guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{sessionScope.restartRequired}','#{requestScope.restartRequired}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
+    guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
 <!define name="content">
     <event>
     <!beforeCreate

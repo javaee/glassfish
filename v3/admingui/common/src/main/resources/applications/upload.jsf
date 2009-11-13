@@ -40,44 +40,13 @@
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  
     guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
 <!define name="content">
-    <event>
-    <!beforeCreate
-        setPageSessionAttribute(key="displayVS" value="#{true}");
-        if(! $session{supportCluster}){
-            setPageSessionAttribute(key="helpid" value="$resource{help.uploadDev}");
-        }
-        setPageSessionAttribute(key="chooseType" value="#{true}");
-        setPageSessionAttribute(key="listPageLink" value="common/applications/applications.jsf");
-        getRequestValue(key="cancelPage" default="#{listPageLink}" value=>$page{cancelPage});
-        setPageSessionAttribute(key="enabled" value="#{true}");
-        createMap(result="#{pageSession.deployMap}")
-    />
-    </event>
-    <sun:form id="form">
-            <!afterCreate
-                getClientId(component="$this{component}" clientId=>$attribute{formId})
-            />
-#include "/common/shared/alertMsg.inc"
-        <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
-            <!facet pageButtonsTop>
-                <sun:panelGroup id="topButtons">
-#include "/common/applications/uploadButtons.inc"
-                </sun:panelGroup>
-            </facet>
-        </sun:title>
-#include "/common/applications/uploadComponent.jsf"
-        "<br/>
-//#include "/common/shared/propertyDescTable.inc"
-	<sun:hidden id="helpKey" value="$resource{help.uploadDev}" />
-        "<br/>
-        <sun:title id="title2">
-            <!facet pageButtonsBottom>
-                <sun:panelGroup id="bottomButtons">
-#include "/common/applications/uploadButtons.inc"
-                </sun:panelGroup>
-            </facet>
-        </sun:title>
-    </sun:form>
+<f:verbatim>
+    <script type="text/javascript">
+	document.body.style.cursor = 'auto';
+    </script>
+    <iframe src="/common/applications/uploadFrame.jsf?tpl=iframe" style="overflow:auto; width:100%; height:100%; border:0px;">
+    </iframe>
+</f:verbatim>
 //#include "/common/applications/uploadJS.inc"
 </define>
 </composition>
