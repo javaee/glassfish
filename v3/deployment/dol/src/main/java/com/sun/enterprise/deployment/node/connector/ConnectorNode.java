@@ -177,7 +177,9 @@ public class ConnectorNode extends BundleNode<ConnectorDescriptor> {
         } else if(TagNames.MODULE_NAME.equals(element.getQName())) {
             ConnectorDescriptor bundleDesc = getDescriptor();
             bundleDesc.getModuleDescriptor().setModuleName(value);
+/*
             bundleDesc.setModuleNameSet(true);
+*/
         } else {
             super.setElementValue(element, value);
         }

@@ -142,9 +142,11 @@ public class ConnectorAnnotationHandler extends AbstractHandler  {
             desc.setVersion(connector.version());
         }
 
+/*
         if(!desc.isModuleNameSet() && !connector.moduleName().equals("")){
             desc.getModuleDescriptor().setModuleName(connector.moduleName());
         }
+*/
 
         if (desc.getLicenseDescriptor() == null) {
             // We will be able to detect whether license description is specified in annotation

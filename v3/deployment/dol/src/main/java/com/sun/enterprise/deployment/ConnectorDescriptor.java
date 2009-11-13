@@ -105,7 +105,9 @@ public class ConnectorDescriptor extends BundleDescriptor {
       annotation processing need not (must not) set the values from annotation */
     private boolean specVersionSet = false;
 
+/*
     private boolean moduleNameSet = false;
+*/
 
     // book keeping annotations that cannot be processed up-front. These will be processed
     // during validation phase of the descriptor
@@ -911,6 +913,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
         return specVersionSet;
     }
 
+/*
     public boolean isModuleNameSet(){
         return moduleNameSet;
     }
@@ -918,6 +921,7 @@ public class ConnectorDescriptor extends BundleDescriptor {
     public void setModuleNameSet(boolean value){
         moduleNameSet = value;
     }
+*/
 
     public void addConnectorAnnotation(AnnotationInfo c){
         connectorAnnotations.add(c);
