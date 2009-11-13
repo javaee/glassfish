@@ -23,19 +23,16 @@ function submitAndDisable(button, msg, target) {
     disableBtnComponent(button.id);
     button.value=msg;
     if (target) {
+	// In this case we want the non-ajax behavior
+	var oldaction = button.form.action;
 	var oldtarget = button.form.target;
 	button.form.target = target;
-	if (target === "_top") {
-	    // In this case we want the non-ajax behavior
-	    var oldaction = button.form.action;
-	    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
-	    button.form.action += sep + button.name + "=" + encodeURI(button.value) + "&bare=false"; //bug# 6294035
-	    button.form.submit();
-	    button.form.target = oldtarget;
-	    button.form.action = oldaction;
-	    return false;
-	}
+	var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
+	button.form.action += sep + button.name + "=" + encodeURI(button.value) + "&bare=false"; //bug# 6294035
+	button.form.submit();
+	button.form.action = oldaction;
 	button.form.target = oldtarget;
+	return false;
     }
     var args = {};
     args[button.id] = button.id;
@@ -2046,17 +2043,23 @@ admingui.ajax = {
     },
 
     defaultGetCallback: function(xmlReq, target, url) {
+	if (window != top) {
+	    // May be inside a frame...
+	    return top.admingui.ajax.defaultGetCallback(xmlReq, target, url);
+	}
         var contentNode = target;
 	if (typeof(contentNode) === 'string') {
             contentNode = document.getElementById(contentNode);
 	}
         if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
-            contentNode = document.getElementById("content");
+            contentNode = top.document.getElementById("content");
         }
 
-	// FIXME: These 2 functions (should) only need be replaced after FPR...
-        webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
-        webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+	if (typeof(webui) !== 'undefined') {
+	    // FIXME: These 2 functions (should) only need be replaced after FPR...
+	    webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+	    webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+	}
 
         contentNode.innerHTML = xmlReq.responseText;
 
@@ -2190,6 +2193,8 @@ admingui.ajax = {
                     };
                 }
             }
+        } else if (node.nodeName == 'IFRAME') {
+	    recurse = false;
         } else if (node.nodeName == 'INPUT') {
 	    if (((node.type == 'submit') || (node.type == 'image'))
 		    && ((node.onclick === null) || (typeof(node.onclick) === 'undefined') || (node.onclick == ''))) {
@@ -2213,10 +2218,6 @@ admingui.ajax = {
 	    */
         } else if (node.nodeName == 'TITLE') {
 	    recurse = false;
-            document.title = node.text;
-	    // Node no longer needed, mark for removal
-	    // Can't remove here, breaks tree traversal...
-	    //node.parentNode.removeChild(node);
         } else if (node.nodeName == 'SCRIPT') {
 	    recurse = false;  // don't walk scripts
 	    if (queueScripts) {
