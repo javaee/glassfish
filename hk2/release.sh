@@ -16,6 +16,7 @@
 if [ $# -eq 0 ]; then
     MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
 else
+    echo "settings.xml = $1"
     MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo -s $1"
 fi
 export MAVEN_OPTS
