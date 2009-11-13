@@ -41,16 +41,16 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
+import java.lang.annotation.ElementType;
 import java.util.*;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintViolation;
+import javax.validation.Path;
+import javax.validation.TraversableResolver;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.ConstraintDescriptor;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
@@ -78,10 +78,25 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(null);
-                ValidatorFactory validatorFactory =
-                    Validation.buildDefaultValidatorFactory();
+                TraversableResolver traversableResolver =
+                    new TraversableResolver() {
+                        public boolean isReachable(Object traversableObject,
+                            Path.Node traversableProperty, Class<?> rootBeanType,
+                            Path pathToTraversableObject, ElementType elementType) {
+                                return true;
+                        }
+
+                        public boolean isCascadable(Object traversableObject,
+                            Path.Node traversableProperty, Class<?> rootBeanType,
+                            Path pathToTraversableObject, ElementType elementType) {
+                                return true;
+                        }
+                    };
+
+                ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
                 ValidatorContext validatorContext = validatorFactory.usingContext();
-                beanValidator = validatorContext.getValidator();
+                    beanValidator = validatorContext.traversableResolver(
+                            traversableResolver).getValidator();
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);
             }
@@ -268,7 +283,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
      * @return true if the trsaction commiting would be successful
      */
     public synchronized boolean canCommit(Transaction t) throws TransactionFailure {
-        
         Set constraintViolations =
             beanValidator.validate(this.getProxy(this.getProxyType()));
 
