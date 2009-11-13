@@ -39,21 +39,17 @@ import java.net.*;
 
 import com.sun.ejte.ccl.reporter.*;
 
-public class WebTest
-{
-    
-    private static boolean pass = false;
-    
-    static SimpleReporterAdapter stat=
+public class WebTest {    
+
+    static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
-    public static void main(String args[])
-    {
+    static final String TEST_NAME = "tagfile-include";
 
-        // The stat reporter writes out the test info and results
-        // into the top-level quicklook directory during a run.
-      
-        stat.addDescription("Test that static include works with a taglib directive for tag files");
+    public static void main(String args[]) {
+
+        stat.addDescription("Test that static include works with a taglib " +
+            "directive for tag files");
 
         String host = args[0];
         String portS = args[1];
@@ -62,41 +58,54 @@ public class WebTest
         
         try {
             goGet(host, port, contextRoot + "/test.jsp" );
-            stat.addStatus("Tag Plugin test", pass? stat.PASS: stat.FAIL);
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Throwable t) {
-            System.out.println(t.getMessage());
-            stat.addStatus("Test UNPREDICTED-FAILURE", stat.FAIL);
+            t.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
-        stat.printSummary("Tagfile with include");
+        stat.printSummary();
     }
 
-    private static void goGet(String host, int port, String contextPath)
+    private static void goGet(String host, int port, String uri)
          throws Exception
     {
-        Socket s = new Socket(host, port);
-        OutputStream os = s.getOutputStream();
 
-        System.out.println("GET " + contextPath + " HTTP/1.0");
-        os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = s.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
+        URL url = new URL("http://" + host  + ":" + port + uri);
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
 
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Unexpected response code. Expected: 200, " +
+                "received: " + responseCode);
+        }
+
+        BufferedReader br = null;
+        boolean pass = false;
         try {
-            while ((line = bis.readLine()) != null) {
-                if (line.trim().length() > 0)
-                    System.out.println(line);
-                int index = line.indexOf("PASS");
-                if (index >= 0) {
+            InputStream is = conn.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                if (line.indexOf("PASS") >= 0) {
                     pass = true;
+                    break;
                 } 
             }
-        } catch( Exception ex){
-            ex.printStackTrace();   
-            throw new Exception("Test UNPREDICTED-FAILURE");
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
+
+        if (!pass) {
+            throw new Exception("Response did not contain PASS string");
         }
     }
 }
