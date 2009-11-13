@@ -50,8 +50,8 @@ public class WebTest {
         "ds1-login-timeout=0,ds2-login-timeout=0,ds3-login-timeout=0,"
         + "ds4-login-timeout=0,ds5-login-timeout=0,ds6-login-timeout=0";
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
 
     private String host;
     private String port;
@@ -70,6 +70,7 @@ public class WebTest {
 
         try {
             webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -80,36 +81,31 @@ public class WebTest {
 
     public void doTest() throws Exception {
 
+        URL url = new URL("http://" + host  + ":" + port +
+            contextRoot + "/jsp/test.jsp");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Wrong response code. Expected: 200" +
+                ", received: " + responseCode);
+        }
+
         InputStream is = null;
         BufferedReader input = null;
         try {
-            URL url = new URL("http://" + host  + ":" + port
-                              + contextRoot + "/jsp/test.jsp");
-            System.out.println("Connecting to: " + url.toString());
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
-                is = conn.getInputStream();
-                input = new BufferedReader(new InputStreamReader(is));
-                String line = null;
-                String lastLine = null;
-                while ((line = input.readLine()) != null) {
-                    lastLine = line;
-                }
-                if (EXPECTED_RESPONSE.equals(lastLine)) {
-                    stat.addStatus(TEST_NAME, stat.PASS);
-                } else {
-                    System.err.println("Wrong response body. Expected: "
-                                       + EXPECTED_RESPONSE + ", received: "
-                                       + lastLine);
-                    stat.addStatus(TEST_NAME, stat.FAIL);
-                }
-            } else {
-                System.err.println("Wrong response code. Expected: 200"
-                                   + ", received: " + responseCode);
-                stat.addStatus(TEST_NAME, stat.FAIL);
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            String lastLine = null;
+            while ((line = input.readLine()) != null) {
+                lastLine = line;
+            }
+            if (!EXPECTED_RESPONSE.equals(lastLine)) {
+                throw new Exception("Wrong response body. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + lastLine);
             }
         } finally {
             try {
