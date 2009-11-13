@@ -1,0 +1,47 @@
+
+<!initPage
+	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+/>
+<!composition template="/templates/iframe.layout" guiTitle="$resource{i18n.enterpriseApplications.deployPageTitle}"  
+    guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{sessionScope.restartRequired}','#{requestScope.restartRequired}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
+<!define name="content">
+    <event>
+    <!beforeCreate
+        setPageSessionAttribute(key="displayVS" value="#{true}");
+        if(! $session{supportCluster}){
+            setPageSessionAttribute(key="helpid" value="$resource{help.uploadDev}");
+        }
+        setPageSessionAttribute(key="chooseType" value="#{true}");
+        setPageSessionAttribute(key="listPageLink" value="common/applications/applications.jsf");
+        getRequestValue(key="cancelPage" default="#{listPageLink}" value=>$page{cancelPage});
+        setPageSessionAttribute(key="enabled" value="#{true}");
+        createMap(result="#{pageSession.deployMap}")
+    />
+    </event>
+    <sun:form id="form">
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$attribute{formId})
+            />
+#include "/common/shared/alertMsg.inc"
+        <sun:title id="title" title="$resource{i18n.enterpriseApplications.deployPageTitle}" helpText="$resource{i18n.enterpriseApplications.deployPageTitleHelp}">
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "/common/applications/uploadButtons.inc"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+#include "/common/applications/uploadComponent.jsf"
+        "<br/>
+//#include "/common/shared/propertyDescTable.inc"
+	<sun:hidden id="helpKey" value="uploadDev" />
+        "<br/>
+        <sun:title id="title2">
+            <!facet pageButtonsBottom>
+                <sun:panelGroup id="bottomButtons">
+#include "/common/applications/uploadButtons.inc"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+    </sun:form>
+</define>
+</composition>
