@@ -68,8 +68,12 @@
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="timeout"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorService.shutdownTimeout}" helpText="$resource{i18njca.connectorService.shutdownTimeoutHelp}">
-            <sun:textField id="tiimeout" styleClass="integer" text="#{pageSession.valueMap['ShutdownTimeoutInSeconds']}" columns="$int{55}" />
+            <sun:textField id="tiimeout" styleClass="integer" text="#{pageSession.valueMap['ShutdownTimeoutInSeconds']}" columns="$int{20}" />
             <sun:staticText id="secs" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+        </sun:property>
+
+        <sun:property id="ClassLoadingPolicy"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorService.classLoadingPolicy}" helpText="$resource{i18njca.connectorService.classLoadingPolicyHelp}">
+            <sun:dropDown id="ClassLoadingPolicy"  selected="#{pageSession.valueMap['ClassLoadingPolicy']}" labels={"derived", "global"} />
         </sun:property>
 
     </sun:propertySheetSection>
