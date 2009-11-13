@@ -14,12 +14,13 @@
 
 # The first parameter is settings.xml.  If not set, then it assume that settings.xml is in ~/.m2/
 if [ $# -eq 0 ]; then
-    MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
-else
-    echo "settings.xml = $1"
-    MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo -s $1"
+    SETTING_XML="-s $1"
+    export SETTING_XML
 fi
+
+MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
 export MAVEN_OPTS
+
 uname -a
 
 # don't let the crash logs fail the release
@@ -53,12 +54,7 @@ mvn -e -B -P release release:prepare
 mvn -e -P release-phase1 install
 
 # finally a release
-mvn -e -B release:perform
-
-# when other people get the new workspace, they'll fail to resolve maven-hk2-plugin,
-# so we need some seed version to be out there.
-mvn -Prelease-phase1 install
-mvn deploy
+mvn $SETTING_XML -e -B release:perform
 
 # Once the bits are pushed and made visible, you just need to change v3/pom.xml <hk2.version> property
 # and GFv3 will pick up the new version of HK2.
