@@ -13,10 +13,11 @@
 # other mysterious zip/jar related errors
 
 # The first parameter is settings.xml.  If not set, then it assume that settings.xml is in ~/.m2/
+    SETTING_XML=""
 if [ $# -eq 0 ]; then
     SETTING_XML="-s $1"
-    export SETTING_XML
 fi
+export SETTING_XML
 
 MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
 export MAVEN_OPTS
