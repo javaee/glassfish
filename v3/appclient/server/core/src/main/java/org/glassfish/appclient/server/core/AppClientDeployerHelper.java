@@ -307,7 +307,7 @@ public abstract class AppClientDeployerHelper {
     }
 
     private URI expandedDirURI(final URI submoduleURI) {
-        final String uriText = submoduleURI.toString();
+        final String uriText = submoduleURI.toString().replace("/", "__");
         int lastDot = uriText.lastIndexOf('.');
         return URI.create(uriText.substring(0, lastDot) + "_" + uriText.substring(lastDot + 1));
     }
