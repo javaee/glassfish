@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,8 @@
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/configs/config[server-config],type=java-config");
             setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=server-config");
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+
+          <!-- commented out. refer to issue# 10967
             formatStringsforDisplay(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
             mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");
             formatStringsforDisplay(string="#{pageSession.valueMap['SystemClasspath']}"  formattedString="#{requestScope.syscp}");
@@ -57,20 +59,16 @@
             mapPut(map="#{pageSession.valueMap}" key="ClasspathPrefix" value="$attribute{cpp}");
             formatStringsforDisplay(string="#{pageSession.valueMap['ClasspathSuffix']}"  formattedString="#{requestScope.cps}");
             mapPut(map="#{pageSession.valueMap}" key="ClasspathSuffix" value="$attribute{cps}");
+          -->
+
             formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathPrefix']}"  formattedString="#{requestScope.npp}");
             mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{npp}");
             formatStringsforDisplay(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
-            mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{nps}");
+            mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathSuffix" value="$attribute{nps}");
+
             setPageSessionAttribute(key="convertToFalseList" value={"EnvClasspathIgnored"});
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstJvmPathSettings.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
-            setPageSessionAttribute(key="skipAttrsList", value={"RmicOptions" "JavacOptions" "JavaHome" "DebugOptions" "DebugEnabled" "BytecodePreprocessors"});
-             //set the following for including buttons.inc
-            setPageSessionAttribute(key="edit" value="#{true}" );
-            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
-            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-            setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
-             setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
-
+            setPageSessionAttribute(key="skipAttrsList", value={"EnvClasspathIgnored" "RmicOptions" "JavacOptions" "JavaHome" "DebugOptions" "DebugEnabled" "BytecodePreprocessors"});
         />   
     </event> 
             <sun:form id="propertyForm">

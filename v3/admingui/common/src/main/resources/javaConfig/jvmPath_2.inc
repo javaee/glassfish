@@ -40,8 +40,9 @@
 <sun:title id="propertyContentPage" title="$resource{i18nc.jvm.PathSettingsTitle}" helpText="$resource{i18nc.jvm.PathSettingsPageHelp}" >
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}">
+            <sun:button id="saveButton" text="$resource{i18n.button.Save}">
                 <!command
+                  <!-- commented out. refer to issue# 10967
                     formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['ServerClasspath']}"  formattedString="#{requestScope.scp}");
                     mapPut(map="#{pageSession.valueMap}" key="ServerClasspath" value="$attribute{scp}");
                     formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['SystemClasspath']}"  formattedString="#{requestScope.syscp}");
@@ -50,11 +51,12 @@
                     mapPut(map="#{pageSession.valueMap}" key="ClasspathPrefix" value="$attribute{cpp}");
                     formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['ClasspathSuffix']}"  formattedString="#{requestScope.cps}");
                     mapPut(map="#{pageSession.valueMap}" key="ClasspathSuffix" value="$attribute{cps}");
+                  -->
+
                     formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['NativeLibraryPathPrefix']}"  formattedString="#{requestScope.npp}");
                     mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathPrefix" value="$attribute{npp}");
                     formatPathSeperatorStringsforSaving(string="#{pageSession.valueMap['NativeLibraryPathSuffix']}"  formattedString="#{requestScope.nps}");
                     mapPut(map="#{pageSession.valueMap}" key="NativeLibraryPathSuffix" value="$attribute{nps}");
-                    //convertArrayToCommaString(array="#{pageSession.selectedThreadPools}"  commaString="#{pageSession.valueMap['UseThreadPoolIds']}")
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}");
@@ -72,38 +74,39 @@
     </facet>
 
 </sun:title>                  
-                    <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet">			 
-                        <!-- Text Field section -->               
-                        <sun:propertySheetSection id="propertSectionTextField">
-                            <sun:property id="EnvironmentClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.EnvironmentClasspath}">
-                                <sun:checkbox label="$resource{i18n.common.Ignore}" selected="#{pageSession.valueMap['EnvClasspathIgnored']}" selectedValue="true" />         
-                            </sun:property>
-                            <sun:property id="ServerClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ServerClasspath}" helpText="$resource{i18nc.jvm.ServerClasspathHelp}">
-                                <sun:staticText id="ServerClasspath"  text="#{pageSession.valueMap['ServerClasspath']}"/>       
-                            </sun:property>
-                            <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.SystemClasspath}" helpText="$resource{i18nc.jvm.SystemClasspathHelp}">
-                                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['SystemClasspath']}"/>   
-                            </sun:property>
-                            <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathPrefix}" helpText="$resource{i18nc.jvm.ClasspathPrefixHelp}">
-                                <sun:textArea id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathPrefix']}"/>        
-                            </sun:property>
-                            <sun:property id="ClasspathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathSuffix}" helpText="$resource{i18nc.jvm.ClasspathSuffixHelp}">
-                                <sun:textArea id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathSuffix']}"/>        
-                            </sun:property> 
-                            <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18nc.jvm.NativeLibraryPathPrefixHelp}">
-                                <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathPrefix']}"/>      
-                            </sun:property>      
-                            <sun:property id="NativeLibraryPathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathSuffix}" helpText="$resource{i18nc.jvm.NativeLibraryPathSuffixHelp}">
-                                <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathSuffix']}"/>      
-                            </sun:property>                  
-                            "<br /><br />
-                        </sun:propertySheetSection>
-                    </sun:propertySheet>    
-                     <sun:title  id="title2" >
-                    <!-- Buttons  -->         
-#include "/common/shared/editPageBottomButtons.inc"
-                </sun:title>
+    <!-- PropertySheet .... -->
+    <sun:propertySheet id="propertySheet">
+        <!-- Text Field section -->
+        <sun:propertySheetSection id="propertSectionTextField">
+
+        <!-- commented out. refer to issue# 10967
+            <sun:property id="EnvironmentClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.EnvironmentClasspath}">
+                <sun:checkbox label="$resource{i18n.common.Ignore}" selected="#{pageSession.valueMap['EnvClasspathIgnored']}" selectedValue="true" />
+            </sun:property>
+            <sun:property id="ServerClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ServerClasspath}" helpText="$resource{i18nc.jvm.ServerClasspathHelp}">
+                <sun:staticText id="ServerClasspath"  text="#{pageSession.valueMap['ServerClasspath']}"/>
+            </sun:property>
+            <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.SystemClasspath}" helpText="$resource{i18nc.jvm.SystemClasspathHelp}">
+                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['SystemClasspath']}"/>
+            </sun:property>
+            <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathPrefix}" helpText="$resource{i18nc.jvm.ClasspathPrefixHelp}">
+                <sun:textArea id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathPrefix']}"/>
+            </sun:property>
+            <sun:property id="ClasspathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathSuffix}" helpText="$resource{i18nc.jvm.ClasspathSuffixHelp}">
+                <sun:textArea id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathSuffix']}"/>
+            </sun:property>
+
+        -->
+
+            <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18nc.jvm.NativeLibraryPathPrefixHelp}">
+                <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathPrefix']}"/>
+            </sun:property>
+            <sun:property id="NativeLibraryPathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathSuffix}" helpText="$resource{i18nc.jvm.NativeLibraryPathSuffixHelp}">
+                <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathSuffix']}"/>
+            </sun:property>
+            "<br /><br />
+        </sun:propertySheetSection>
+    </sun:propertySheet>
 	<sun:hidden id="helpKey" value="$resource{help.serverInstJvmPathSettings}" />
             </sun:form>
 </define>
