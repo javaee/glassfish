@@ -66,7 +66,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);
 
-    protected static Logger logger = AnnotationUtils.getLogger();
+    protected final static Logger logger = AnnotationUtils.getLogger();
 
     private static final String SUCCESS = "success";
 
