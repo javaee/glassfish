@@ -229,6 +229,8 @@ public class ApplicationLifecycle implements Deployment {
             }
         };
 
+        context.addTransientAppMetaData(ExtendedDeploymentContext.TRACKER, 
+            tracker);
         context.setPhase(DeploymentContextImpl.Phase.PREPARE);
         ApplicationInfo appInfo = null;
         try {

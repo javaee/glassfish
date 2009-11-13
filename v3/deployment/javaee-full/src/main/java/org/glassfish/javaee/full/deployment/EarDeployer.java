@@ -254,15 +254,7 @@ public class EarDeployer implements Deployer {
 
         List<EngineInfo> orderedContainers = null;
 
-        ProgressTracker tracker = new ProgressTracker() {
-            public void actOn(Logger logger) {
-                for (EngineRef module : get("prepared", EngineRef.class)) {
-                    module.clean(bundleContext);
-                }
-
-            }
-
-        };
+        ProgressTracker tracker = bundleContext.getTransientAppMetaData(ExtendedDeploymentContext.TRACKER, ProgressTracker.class);
 
         try {
             // let's get the list of sniffers

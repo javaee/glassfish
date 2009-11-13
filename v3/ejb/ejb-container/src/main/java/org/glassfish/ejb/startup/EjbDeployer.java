@@ -236,7 +236,8 @@ public class EjbDeployer
         // But CMP drop tables should be handled here.
 
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin == OpsParams.Origin.undeploy) {
+        if (params.origin == OpsParams.Origin.undeploy || 
+            params.origin == OpsParams.Origin.deploy) {
 
             // If CMP beans are present, cmpDeployer should've been initialized in unload()
             if (cmpDeployer != null) {

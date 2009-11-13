@@ -57,6 +57,7 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
     public enum Phase { UNKNOWN, PREPARE, LOAD, START, STOP, UNLOAD, CLEAN }
 
     public static final String IS_TEMP_CLASSLOADER = "isTempClassLoader";
+    public static final String TRACKER = "tracker";
 
 
     /**
