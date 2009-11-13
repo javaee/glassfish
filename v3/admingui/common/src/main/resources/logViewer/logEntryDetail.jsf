@@ -48,7 +48,8 @@
     <!beforeCreate
     setPageSessionAttribute(key="instanceName" value="server");
     getRequestValue(key="instanceName" value=>$attribute{instanceName});
-    getRequestValue(key="logFile" value=>$attribute{logFile});        
+    getRequestValue(key="logFile" value=>$attribute{logFile});
+    getRequestValue(key="logLevel" value=>$attribute{logLevel});
     getRequestValue(key="recNumber" value=>$attribute{recNumber});
     longAdd(Long1="#{recNumber}", Long2="$int{1}", LongResult=>$attribute{recNumberPlus});
     getLogResultsTable(InstanceName="#{instanceName}", LogFileName="#{logFile}", LogLevel="#{logLevel}", FromRecord="#{recNumberPlus}", AfterRecord="#{false}", TruncateMessage="#{false}",  NumToDisplay="$int{1}", result=>$page{listOfInstances});        
@@ -82,7 +83,7 @@
                             </foreach>
                             </sun:property>                       
                             <sun:property id="logLevelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.levelLabel}">
-                                <sun:staticText id="LogLevel" text="#{requestScope.logLevel}"/>     
+                                <sun:staticText id="LogLevel" text="#{requestScope.logLevel}"/>
                             </sun:property> 
                             <sun:property id="loggerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logDetail.loggerLabel}">
                                 <foreach key="instance" list="#{listOfInstances}"><sun:staticText id="Logger" text="#{instance.logger}"/>  </foreach>   

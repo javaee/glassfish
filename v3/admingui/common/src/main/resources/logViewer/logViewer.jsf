@@ -245,8 +245,9 @@
                 "</span>	</td></tr></table>
             </sun:property>  
             <sun:property id="logLevelProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.logViewer.levelLabel}" helpText="$resource{i18nc.logViewer.levelLabelHelp}">
-                <sun:dropDown id="logLevel" selected="#{logLevel}" labels={"$resource{i18nc.logging.Default}" "$resource{i18nc.logging.Finest}" "$resource{i18nc.logging.Finer}" "$resource{i18nc.logging.Fine}" "$resource{i18nc.logging.Config}" "$resource{i18nc.logging.Info}" "$resource{i18nc.logging.Warning}" "$resource{i18nc.logging.Severe}"} >
-                 </sun:dropDown>
+                <sun:dropDown id="logLevel" selected="#{logLevel}" labels={"$resource{i18nc.logging.Default}" "$resource{i18nc.logging.Finest}" "$resource{i18nc.logging.Finer}" "$resource{i18nc.logging.Fine}" "$resource{i18nc.logging.Config}" "$resource{i18nc.logging.Info}" "$resource{i18nc.logging.Warning}" "$resource{i18nc.logging.Severe}"} 
+                        values={"INFO" "FINEST" "FINE" "FINER" "CONFIG" "INFO" "WARNING" "SEVERE"} >
+                </sun:dropDown>
                  <sun:checkbox label="$resource{i18nc.logViewer.noSevereMessages}" selected="#{requestScope.onlyLevel}" >
                 </sun:checkbox>
             </sun:property>     
