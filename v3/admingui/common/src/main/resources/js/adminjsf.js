@@ -29,7 +29,7 @@ function submitAndDisable(button, msg, target) {
 	    // In this case we want the non-ajax behavior
 	    var oldaction = button.form.action;
 	    var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
-	    button.form.action += sep + button.name + "=" + encodeURI(button.value); //bug# 6294035
+	    button.form.action += sep + button.name + "=" + encodeURI(button.value) + "&bare=false"; //bug# 6294035
 	    button.form.submit();
 	    button.form.target = oldtarget;
 	    button.form.action = oldaction;
@@ -1035,7 +1035,6 @@ admingui.nav = {
 
 admingui.help = {
     pluginId : null,
-    locale : null,
 
     launchHelp: function(url) {
 	var helpLink = "/common/help/help.jsf";
@@ -1052,9 +1051,8 @@ admingui.help = {
 	if (helpKeys !== null) {
             admingui.ajax.invoke("calculateHelpUrl", {pluginId: admingui.help.pluginId, helpKey: helpKeys[0].value, url:"url"},
                 function(result) {
-                    admingui.help.openHelpWindow(helpLink + "?contextRef=" + "/resource/" + admingui.help.pluginId + result.url);
-                }, 3, false
-            );
+		    admingui.help.openHelpWindow(helpLink + "?contextRef=" + "/resource/" + admingui.help.pluginId + result.url);
+                }, 3, false);
 	} else {
             admingui.help.openHelpWindow(helpLink);
         }
@@ -1062,7 +1060,9 @@ admingui.help = {
 
     openHelpWindow: function (url) {
 	var win = window.open(url, "HelpWindow" , "width=800, height=530, resizable");
-	win.focus();
+	if (win) {
+	    win.focus();
+	}
     }
 };
 
@@ -2257,7 +2257,7 @@ admingui.ajax = {
             var location = window.location;
             url = location.protocol + "//" + location.host + url
         }
-        if (url.indexOf('bare') > -1) {
+        if (url.indexOf('bare=') > -1) {
             return url;
         }
         

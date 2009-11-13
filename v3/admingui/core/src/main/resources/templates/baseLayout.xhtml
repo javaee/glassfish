@@ -243,7 +243,6 @@
 
 <f:verbatim>
         admingui.help.pluginId = '#{pluginId}';
-        admingui.help.locale = '#{view.locale.language}';
 
 	var layout = new YAHOO.widget.Layout({
 	   units: [
@@ -257,26 +256,30 @@
 	// Collapse panels if necessary
 	YAHOO.util.Event.onDOMReady(function (ev) {
 	    var lu = layout.getUnitByPosition('left');
-	    lu.on('collapse', function(ev) {
-		admingui.util.setPreference("layout", "hideLeft", "true");
-	    });
-	    lu.on('expand', function(ev) {
-		admingui.util.setPreference("layout", "hideLeft", "false");
-	    });
-	    if (#{sessionScope.hideLeft}) {
-		lu.collapse();
+	    if (lu) {
+		lu.on('collapse', function(ev) {
+		    admingui.util.setPreference("layout", "hideLeft", "true");
+		});
+		lu.on('expand', function(ev) {
+		    admingui.util.setPreference("layout", "hideLeft", "false");
+		});
+		if (#{sessionScope.hideLeft}) {
+		    lu.collapse();
+		}
 	    }
 
 	    // Deal w/ the right frame
 	    lu = layout.getUnitByPosition('right');
-	    lu.on('collapse', function(ev) {
-		admingui.util.setPreference("layout", "hideRight", "true");
-	    });
-	    lu.on('expand', function(ev) {
-		admingui.util.setPreference("layout", "hideRight", "false");
-	    });
-	    if (#{sessionScope.hideRight}) {
-		lu.collapse();
+	    if (lu) {
+		lu.on('collapse', function(ev) {
+		    admingui.util.setPreference("layout", "hideRight", "true");
+		});
+		lu.on('expand', function(ev) {
+		    admingui.util.setPreference("layout", "hideRight", "false");
+		});
+		if (#{sessionScope.hideRight}) {
+		    lu.collapse();
+		}
 	    }
 	});
     </script>
