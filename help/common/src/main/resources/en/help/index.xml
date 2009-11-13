@@ -143,15 +143,15 @@
     <indexitem target="task-jmxconnectoredit" text="configuring (task)"></indexitem>
     <indexitem target="ref-jmxconnectorssledit" text="editing SSL settings (reference)"></indexitem>
     <indexitem target="task-jmxconnectorssledit" text="editing SSL settings (task)"></indexitem></indexitem>
- <indexitem text="JVM classpath settings">
-    <indexitem target="ref-serverinstjvmpathsettings" text="configuring (reference)"></indexitem>
-    <indexitem target="task-jvmpathsettings" text="configuring (task)"></indexitem></indexitem>
  <indexitem text="JVM general settings">
     <indexitem target="ref-serverinstjvmgeneral" text="configuring (reference)"></indexitem>
     <indexitem target="task-jvmsettings" text="configuring (task)"></indexitem></indexitem>
  <indexitem text="JVM options">
     <indexitem target="ref-serverinstjvmoptions" text="configuring (reference)"></indexitem>
     <indexitem target="task-jvmoptions" text="configuring (task)"></indexitem></indexitem>
+ <indexitem text="JVM path settings">
+    <indexitem target="ref-serverinstjvmpathsettings" text="configuring (reference)"></indexitem>
+    <indexitem target="task-jvmpathsettings" text="configuring (task)"></indexitem></indexitem>
  <indexitem text="JVM profiler settings">
     <indexitem target="ref-serverinstjvmprofiler" text="configuring (reference)"></indexitem>
     <indexitem target="task-jvmprofilersettings" text="configuring (task)"></indexitem></indexitem>

@@ -3,22 +3,29 @@
 Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
-<a name="ref-serverinstjvmpathsettings"></a><h4>JVM Classpath Settings</h4>
-<a name="indexterm-183"></a><p>The classpath is the list of JAR files that the Java runtime
-environment searches for classes and other resources.</p><p>The JVM Classpath Settings page contains the following options.</p><dl><dt>Environment Classpath</dt>
-<dd><p>If the Ignore checkbox is selected, the <tt>CLASSPATH</tt> environment variable is ignored. The <tt>CLASSPATH</tt> environment variable is convenient for basic tutorials in programming, but is not recommended for enterprise environments.</p></dd>
-<dt>Server Classpath</dt>
-<dd><p>The Enterprise Server classpath. This is a read-only field.</p></dd>
+<a name="ref-serverinstjvmpathsettings"></a><h4>JVM Path Settings</h4>
+<a name="indexterm-183"></a><p>Use the JVM Path settings page to configure the native library path. The
+native library path is a concatenation of the following paths:</p>
+<ul><li><p>The native library path prefix</p></li>
+<li><p>The server's path for its native libraries (that is, <tt></tt><i>as-install</i><tt>/lib</tt>)</p></li>
+<li><p>The 64&#8211;bit native library directories, if applicable</p></li>
+<li><p>The value of the <tt>java.library.path</tt> variable for the JVM used to start the Enterprise Server (this differs between operating systems)</p></li>
+<li><p>Any paths that are specified on the <a href="ref-serverinstjvmprofiler.html">JVM Profiler Settings</a> page, if the profiler is enabled</p></li>
+<li><p>The native library path suffix</p></li></ul>
+<p>Other settings are shown as read-only values for domains that have been upgraded
+from an earlier release of Enterprise Server. They are not supported in the
+v3 release.</p><p>The JVM Path Settings page contains the following options.</p><dl><dt>Environment Classpath</dt>
+<dd><p>If the Ignore checkbox is selected, the <tt>CLASSPATH</tt> environment variable is ignored. The <tt>CLASSPATH</tt> environment variable is convenient for basic tutorials in programming, but is not recommended for enterprise environments. This is a read-only field.</p></dd>
 <dt>System Classpath</dt>
-<dd><p>The path to the classes on your system.</p></dd>
+<dd><p>The path to the classes on your system. This is a read-only field.</p></dd>
 <dt>Classpath Prefix</dt>
-<dd><p>Full paths to the JAR files to be prepended to the server's classpath, one per line.</p></dd>
+<dd><p>Full paths to the JAR files to be prepended to the server's classpath, one per line. This is a read-only field.</p></dd>
 <dt>Classpath Suffix</dt>
-<dd><p>Full paths to the JAR files to be appended to the server's classpath, one per line.</p></dd>
+<dd><p>Full paths to the JAR files to be appended to the server's classpath, one per line. This is a read-only field.</p></dd>
 <dt>Native Library Path Prefix</dt>
 <dd><p>Full paths to the JAR files to be prepended to the native library path, one per line.</p></dd>
 <dt>Native Library Path Suffix</dt>
-<dd><p>Full paths to the JAR files to be appended to the native library path, one per line.</p><p>The native library path is a concatenation of the server&#8217;s relative path for its native shared libraries, the standard runtime environment native library path, the shell environment setting (<tt>LD_LIBRARY_PATH</tt> on UNIX<sup>&#174;</sup> systems), and any path specified on the <a href="ref-serverinstjvmprofiler.html">JVM Profiler Settings</a> page.</p></dd>
+<dd><p>Full paths to the JAR files to be appended to the native library path, one per line.</p></dd>
 </dl>
 <h5>Related Tasks</h5>
 

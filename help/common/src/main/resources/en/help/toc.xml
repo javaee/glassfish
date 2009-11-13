@@ -128,7 +128,7 @@
         <tocitem target="ref-configuration" text="Configuration" expand="false"></tocitem>
         <tocitem target="ref-group-jvm" text="JVM Settings" expand="false">
             <tocitem target="ref-serverinstjvmgeneral" text="JVM General Settings" expand="false"></tocitem>
-            <tocitem target="ref-serverinstjvmpathsettings" text="JVM Classpath Settings" expand="false"></tocitem>
+            <tocitem target="ref-serverinstjvmpathsettings" text="JVM Path Settings" expand="false"></tocitem>
             <tocitem target="ref-serverinstjvmoptions" text="JVM Options" expand="false"></tocitem>
             <tocitem target="ref-serverinstjvmprofiler" text="JVM Profiler Settings" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-logging" text="Logger Settings" expand="false">
