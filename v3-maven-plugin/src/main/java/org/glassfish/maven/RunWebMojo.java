@@ -36,63 +36,20 @@
 
 package org.glassfish.maven;
 
-import java.io.*;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.ContainerBuilder;
-import org.apache.maven.artifact.*;
-import org.apache.maven.artifact.handler.*;
-import org.apache.maven.project.MavenProject;
 
-import java.util.*;
 /**
  * @goal runweb
  */
 
-public class RunWarMojo extends AbstractDeployMojo {
-
-/**
- * @parameter expression="${app}"
- * @required
- */
-    protected String app;
-
+public class RunWebMojo extends RunMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
-
-        File deployArchive = new File(app);
-        if (!deployArchive.exists()) {
-            throw new MojoExecutionException ("", new java.io.FileNotFoundException(app));
-        }
-
-        try {
-            super.setClassPathProperty();
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
-            if (port != -1)
-                server.createPort(port);
-
-            server.addContainer(ContainerBuilder.Type.web);
-
-            EmbeddedDeployer deployer = server.getDeployer();
-            DeployCommandParameters cmdParams = new DeployCommandParameters();
-            configureDeployCommandParameters(cmdParams);
-
-            while(true) {
-                String appName = deployer.deploy(deployArchive, cmdParams);
-                System.out.println("Hit ENTER to redeploy, X to exit");
-                String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                if (str.equalsIgnoreCase("X"))
-                    break;
-                deployer.undeploy(appName, null);
-            }
-        } catch(Exception e) {
-           throw new MojoExecutionException(e.getMessage(),e);
-       }
+        setContainerType(ContainerBuilder.Type.web);
+        super.execute();
     }
 
 }
