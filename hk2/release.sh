@@ -11,7 +11,13 @@
 # To protect the release from interference with other builds in this system,
 # use a private copy of the local repository. This avoids a JVM crash and
 # other mysterious zip/jar related errors
-MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
+
+# The first parameter is settings.xml.  If not set, then it assume that settings.xml is in ~/.m2/
+if [ $# -eq 0 ]; then
+    MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
+else
+    MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo -s $1"
+fi
 export MAVEN_OPTS
 uname -a
 
