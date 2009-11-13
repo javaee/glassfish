@@ -679,7 +679,7 @@ public class MonitoringHandlers {
             while (li.hasNext()) {
                 String pname = (String) li.next();
                 if (!ejbstate.isEmpty() || !ejbstate.equals("")) {
-                    if (pname.startsWith(name) || pname.contains("/"+name+"/") && pname.contains(ejbstate)) {
+                    if ((pname.startsWith(name) || pname.contains("/"+name+"/")) && pname.contains(ejbstate)) {
                         comps.add(pname.substring(pname.lastIndexOf("/") + 1, pname.length()));
                     }
                 } else {
