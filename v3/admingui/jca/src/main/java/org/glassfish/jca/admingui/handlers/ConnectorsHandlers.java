@@ -554,7 +554,7 @@ public class ConnectorsHandlers {
             }
             handlerCtx.setOutputValue("valueMap2", valueMap2);
         } catch (Exception ex) {
-
+            ex.printStackTrace();
         }
     }
 
