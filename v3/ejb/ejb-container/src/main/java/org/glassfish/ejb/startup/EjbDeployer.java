@@ -26,9 +26,7 @@ package org.glassfish.ejb.startup;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.util.IASSecurityException;
@@ -55,6 +53,7 @@ import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import org.glassfish.api.invocation.RegisteredComponentInvocationHandler;
+import org.glassfish.ejb.security.application.EJBSecurityManager;
 import org.glassfish.ejb.security.factory.EJBSecurityManagerFactory;
 
 /**
@@ -248,12 +247,22 @@ public class EjbDeployer
             String appName = params.name();
             String[] contextIds =
                     ejbSecManagerFactory.getContextsForApp(appName, false);
-            for (String contextId : contextIds) {
-                try {
-                    SecurityUtil.removePolicy(contextId);
-                } catch (IASSecurityException ex) {
-                    _logger.log( Level.WARNING,"Error removing the policy file " +
-                            "for application " + appName + " " + ex);
+            if (contextIds != null) {
+                for (String contextId : contextIds) {
+                    try {
+                        SecurityUtil.removePolicy(contextId);
+                    } catch (IASSecurityException ex) {
+                        _logger.log(Level.WARNING, "Error removing the policy file " +
+                                "for application " + appName + " " + ex);
+                    }
+
+                    ArrayList<EJBSecurityManager> managers =
+                            ejbSecManagerFactory.getManagers(contextId, false);
+                    if (managers != null) {
+                        for (EJBSecurityManager m : managers) {
+                            m.destroy();
+                        }
+                    }
                 }
             }
             //Removing the RoleMapper

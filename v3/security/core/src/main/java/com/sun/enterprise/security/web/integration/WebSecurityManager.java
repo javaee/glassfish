@@ -548,7 +548,7 @@ public class WebSecurityManager  {
     
     public void destroy() throws PolicyContextException {
         boolean wasInService = getPolicyFactory().inService(CONTEXT_ID);
-        getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,true);
+        //getPolicyFactory().getPolicyConfiguration(CONTEXT_ID,true);
         if (wasInService) {
             policy.refresh();
         }

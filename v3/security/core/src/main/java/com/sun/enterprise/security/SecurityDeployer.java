@@ -271,32 +271,31 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private void removePolicy(DeploymentContext dc)
             throws DeploymentException {
         OpsParams params = dc.getCommandParameters(OpsParams.class);
-        if (params.origin != OpsParams.Origin.undeploy) {
+        if (params.origin != OpsParams.Origin.undeploy
+                && params.origin != OpsParams.Origin.deploy) {
             return;
         }
         String appName = params.name();
         //Monitoring 
 
-        //Destroy the managers if present
-        boolean managersDestroyed = cleanSecurityContext(appName);
         //Remove policy files only if managers are not destroyed by cleanup
-        if (!managersDestroyed) {
-            try {
-                String[] webcontexts = wsmf.getContextsForApp(appName, true);
-                if (webcontexts != null) {
-                    for (int i = 0; i < webcontexts.length; i++) {
-                        if (webcontexts[i] != null) {
-                            SecurityUtil.removePolicy(webcontexts[i]);
-                        }
+        try {
+            String[] webcontexts = wsmf.getContextsForApp(appName, false);
+            if (webcontexts != null) {
+                for (int i = 0; i < webcontexts.length; i++) {
+                    if (webcontexts[i] != null) {
+                        SecurityUtil.removePolicy(webcontexts[i]);
                     }
                 }
-            } catch (IASSecurityException ex) {
-                String msg = "Error in removing security policy for " + appName;
-                _logger.log(Level.WARNING, msg, ex);
-                throw new DeploymentException(msg, ex);
             }
-
+        } catch (IASSecurityException ex) {
+            String msg = "Error in removing security policy for " + appName;
+            _logger.log(Level.WARNING, msg, ex);
+            throw new DeploymentException(msg, ex);
         }
+
+        //Destroy the managers if present
+        cleanSecurityContext(appName);
 
         /* From V2 but keep commented until need is discovered
         //remove any remaining policy
@@ -343,7 +342,7 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
     private boolean cleanSecurityContext(String appName) {
         boolean cleanUpDone = false;
         ArrayList<WebSecurityManager> managers =
-                wsmf.getManagersForApp(appName, true);
+                wsmf.getManagersForApp(appName, false);
         for (int i = 0; managers !=
                 null && i < managers.size(); i++) {
             try {
