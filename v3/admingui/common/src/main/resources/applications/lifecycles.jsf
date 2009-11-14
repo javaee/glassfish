@@ -69,11 +69,6 @@
 #include "/common/applications/lifecyclesTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help.lifecycles}" />
-            </sun:form>
-<f:verbatim>
-    <script type="text/javascript">
-        
-    </script>
-</f:verbatim>
+    </sun:form>
 </define>
 </composition>

@@ -35,14 +35,14 @@
 -->
 <!-- applications/lifecyclesTable.inc -->
 
-<sun:table id="deployTable" sortPanelToggleButton="#{false}"  title="$resource{i18n.deployTable.lifeCycle}" 
-        deselectMultipleButton="$boolean{true}"
-        deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
-        selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');()', 0)" >
-         <!afterCreate
-            getClientId(component="$this{component}" clientId=>$page{tableId});
-        />
+<sun:table id="deployTable" sortPanelToggleButton="#{false}"  title="$resource{i18n.deployTable.lifeCycle}"
+   deselectMultipleButton="$boolean{true}"
+    deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
+    selectMultipleButton="$boolean{true}"
+    selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+     <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
 
 <!facet actionsTop>
      <sun:panelGroup id="topActionsGroup1">
