@@ -79,34 +79,49 @@
         <!-- Text Field section -->
         <sun:propertySheetSection id="propertSectionTextField">
 
-        <!-- commented out. refer to issue# 10967
-            <sun:property id="EnvironmentClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.EnvironmentClasspath}">
-                <sun:checkbox label="$resource{i18n.common.Ignore}" selected="#{pageSession.valueMap['EnvClasspathIgnored']}" selectedValue="true" />
-            </sun:property>
-            <sun:property id="ServerClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ServerClasspath}" helpText="$resource{i18nc.jvm.ServerClasspathHelp}">
-                <sun:staticText id="ServerClasspath"  text="#{pageSession.valueMap['ServerClasspath']}"/>
-            </sun:property>
-            <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.SystemClasspath}" helpText="$resource{i18nc.jvm.SystemClasspathHelp}">
-                <sun:textArea id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['SystemClasspath']}"/>
-            </sun:property>
-            <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathPrefix}" helpText="$resource{i18nc.jvm.ClasspathPrefixHelp}">
-                <sun:textArea id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathPrefix']}"/>
-            </sun:property>
-            <sun:property id="ClasspathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathSuffix}" helpText="$resource{i18nc.jvm.ClasspathSuffixHelp}">
-                <sun:textArea id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathSuffix']}"/>
-            </sun:property>
-
-        -->
-
             <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18nc.jvm.NativeLibraryPathPrefixHelp}">
                 <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathPrefix']}"/>
             </sun:property>
             <sun:property id="NativeLibraryPathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathSuffix}" helpText="$resource{i18nc.jvm.NativeLibraryPathSuffixHelp}">
                 <sun:textArea id="NativeLibraryPathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['NativeLibraryPathSuffix']}"/>
             </sun:property>
-            "<br /><br />
+            <sun:property  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" >
+                <sun:staticText text=" " />
+            </sun:property>
+        </sun:propertySheetSection>
+
+            
+        <sun:propertySheetSection label="">
+        <!-- disable the following. refer to issue# 10967
+             Woodstock has issue of setting readOnly for textArea, we need to use disable instead
+         -->
+
+            <sun:property id=""  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.unsupportedSectionHelp}" >
+                <sun:staticText text=""/>
+                "<br/>
+            </sun:property>
+
+            <sun:property id="EnvironmentClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.EnvironmentClasspath}"  helpText="$resource{i18nc.jvm.EnvironmentClasspathHelp}">
+                <sun:checkbox disabled="true" label="$resource{i18n.common.Ignore}" selected="#{pageSession.valueMap['EnvClasspathIgnored']}" selectedValue="true" />
+            </sun:property>
+
+            <sun:property id="ServerClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ServerClasspath}" helpText="$resource{i18nc.jvm.ServerClasspathHelp}">
+                <sun:staticText id="ServerClasspath"  text="#{pageSession.valueMap['ServerClasspath']}"/>
+            </sun:property>
+            
+            <sun:property id="SystemClasspathProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.SystemClasspath}" helpText="$resource{i18nc.jvm.SystemClasspathHelp}">
+                <sun:textArea disabled="true"  id="systemClasspath" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['SystemClasspath']}"/>
+            </sun:property>
+            <sun:property id="ClasspathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathPrefix}" helpText="$resource{i18nc.jvm.ClasspathPrefixHelp}">
+                <sun:textArea disabled="true"  id="ClasspathPrefix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathPrefix']}"/>
+            </sun:property>
+            <sun:property id="ClasspathSuffixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ClasspathSuffix}" helpText="$resource{i18nc.jvm.ClasspathSuffixHelp}">
+                <sun:textArea disabled="true"  id="ClasspathSuffix" rows="$int{4}" columns="$int{75}" text="#{pageSession.valueMap['ClasspathSuffix']}"/>
+            </sun:property>
+            
         </sun:propertySheetSection>
     </sun:propertySheet>
+"<br/><br/>
 	<sun:hidden id="helpKey" value="$resource{help.serverInstJvmPathSettings}" />
             </sun:form>
 </define>
