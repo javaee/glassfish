@@ -434,7 +434,7 @@ public class WebAppHandlers {
         aMap.put("Name", name);
         aMap.put("Enabled", (attrMap2.get("Enabled") == null)? "false" : "true");
         aMap.put("Description", attrMap.get("Description"));
-
+        try{
         attrMap.put(DFDeploymentProperties.IS_LIFECYCLE, "true");
         SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.IS_LIFECYCLE, DFDeploymentProperties.IS_LIFECYCLE);
         SecurityHandler.putOptional(attrMap, propList, DFDeploymentProperties.CLASS_NAME, DFDeploymentProperties.CLASS_NAME);
@@ -489,6 +489,10 @@ public class WebAppHandlers {
             server.createChild("application-ref", attrMap2);
             //don't want to change the attrMap2 value, in case there is error and the create page need to be refreshed.
             attrMap2.put("selectedVS" , vs);
+        }
+        } catch (Exception ex) {
+            GuiUtil.getLogger().severe("saveLifecycle failed.");
+            GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
