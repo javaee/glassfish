@@ -146,20 +146,5 @@
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-            <artifactId>dataprovider</artifactId>
-            <version>${dataprovider.version}</version>
-	    <scope>provided</scope>
-        </dependency>
     </dependencies>
-
-    <properties>
-
-        <!-- raih:During release first official release change the versions of the following to the current level and then release the comments
-	<glassfish-api.version>10.0.0-rev8</glassfish-api.version>
-	<hk2.version>0.3.8</hk2.version>
-	-->
-	<dataprovider.version>4.2</dataprovider.version>
-    </properties>
 </project>

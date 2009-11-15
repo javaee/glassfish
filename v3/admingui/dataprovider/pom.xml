@@ -48,7 +48,6 @@
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>dataprovider</artifactId>
     <name>DataProvider</name>
-    <version>4.2</version>
     <modelVersion>4.0.0</modelVersion>
     <description>DataProvider Repackaged as OSGi bundle for GlassFish</description>
 

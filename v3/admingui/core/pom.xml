@@ -206,5 +206,11 @@
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.admingui</groupId>
+            <artifactId>dataprovider</artifactId>
+            <version>${project.version}</version>
+           <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

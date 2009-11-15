@@ -127,7 +127,6 @@
         <jmac-api.version>1.0-rev-1</jmac-api.version>
         <jaxws-ri.version>2.1.3</jaxws-ri.version>
         <stax-api.version>1.0-2</stax-api.version>
-        <dataprovider.version>4.2</dataprovider.version>
         <jsftemplating.version>2.0.2</jsftemplating.version>
         <scales.version>1.3.1</scales.version>
         <glassfish-corba.version>3.0.0-b038</glassfish-corba.version>
