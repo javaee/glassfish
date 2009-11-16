@@ -82,7 +82,7 @@
         <ant dir="jspScriptletDeclNestedInCustomAction" target="all"/>
         <ant dir="jspScriptletSyntaxErrorCorrectErrorMessage" target="all"/>
         <ant dir="jspCustomTagAttributeOfArrayType" target="all"/>
-        <ant dir="jspCustomTaglibJarInsideEar" target="all"/>
+        <ant dir="jspCustomTaglibJarInsideEarWithManifestClassPath" target="all"/>
         <ant dir="jspCommentedOutPageDirective" target="all"/>
         <ant dir="jspCommentedOutPageDirective1" target="all"/>
         <ant dir="jspScriptletAfterScriptlessTag" target="all"/>
