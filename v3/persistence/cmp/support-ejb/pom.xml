@@ -136,7 +136,6 @@
         <!-- We depend on repackaged antlr, but antlr-maven-plugin checks for this dependency to be present -->
             <groupId>antlr</groupId>
             <artifactId>antlr</artifactId>
-            <version>${antlr.version}</version>
             <optional>true</optional> <!-- This ensures that antlr:antlr does not get packaged -->
         </dependency>
         <dependency>

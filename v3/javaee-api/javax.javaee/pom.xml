@@ -253,7 +253,6 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>${javax-persistence-api.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -271,13 +270,12 @@
 	<dependency>
 	    <groupId>org.glassfish</groupId>
 	    <artifactId>bean-validator</artifactId>
-            <version>3.0-JBoss-4.0.1_03</version>
+            <version>3.0-JBoss-4.0.2</version>
             <optional>true</optional>
         </dependency>
         <dependency>
              <groupId>org.jboss.weld</groupId>
              <artifactId>weld-osgi-bundle</artifactId>
-             <version>${weld.version}</version>
              <optional>true</optional>
        </dependency>        
         <dependency>
@@ -289,7 +287,6 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jstl-impl</artifactId>
-            <version>${jstl-impl.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>

@@ -75,27 +75,22 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
 	<dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-asm</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency> 
        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-newtimer</artifactId>
-            <version>${glassfish-corba.version}</version>
        </dependency>
        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <version>${glassfish-corba.version}</version>
        </dependency>
        <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-csiv2-idl</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
 
         <!-- now, listing package dependencies so that their content

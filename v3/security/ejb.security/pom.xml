@@ -113,17 +113,14 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-csiv2-idl</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
          <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.orb</groupId>

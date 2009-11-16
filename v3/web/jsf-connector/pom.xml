@@ -77,7 +77,6 @@
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
-            <version>${jsf-impl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>

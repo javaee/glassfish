@@ -92,7 +92,7 @@
         <dependency>
             <groupId>jaxr-ra</groupId>
             <artifactId>jaxr-ra</artifactId>
-	    <version>${jaxr.version}</version>
+            <version>${jaxr.version}</version>
 	    <type>rar</type>
 	    <optional>true</optional>
         </dependency>

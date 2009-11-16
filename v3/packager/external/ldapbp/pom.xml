@@ -103,7 +103,6 @@
         <dependency>
             <groupId>com.sun</groupId>
             <artifactId>ldapbp</artifactId>
-            <version>1.0</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

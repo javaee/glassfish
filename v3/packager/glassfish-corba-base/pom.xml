@@ -74,12 +74,10 @@
          <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${glassfish-corba.version}</version>
          </dependency>
          <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orbgeneric</artifactId>
-            <version>${glassfish-corba.version}</version>
          </dependency>
         <!-- now, listing package dependencies so that their content
              can be excluded during staging -->	

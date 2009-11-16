@@ -109,7 +109,6 @@
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>${asm.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

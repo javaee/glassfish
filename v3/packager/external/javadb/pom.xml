@@ -101,7 +101,7 @@
         <dependency>
             <groupId>javadb</groupId>
             <artifactId>javadb</artifactId>
-	    <version>${javadb.version}</version>
+            <version>${javadb.version}</version>
 	    <type>zip</type>
         </dependency>
     </dependencies>

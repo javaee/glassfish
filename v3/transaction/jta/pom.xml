@@ -127,7 +127,6 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>${javax-persistence-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.transaction</groupId>

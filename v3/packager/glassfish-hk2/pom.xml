@@ -74,7 +74,6 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
-	    <version>${hk2.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.xml.stream</groupId>

@@ -106,7 +106,6 @@
         <dependency>
             <groupId>com.sun.scn</groupId>
             <artifactId>sysnet-registration</artifactId>
-            <version>1.0.2</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

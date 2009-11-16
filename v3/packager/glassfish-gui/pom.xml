@@ -84,7 +84,6 @@
         <dependency>
             <groupId>com.sun.jsftemplating</groupId>
             <artifactId>jsftemplating</artifactId>
-            <version>${jsftemplating.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
