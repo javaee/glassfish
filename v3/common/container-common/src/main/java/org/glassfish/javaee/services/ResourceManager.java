@@ -333,6 +333,8 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
 
             if (instance instanceof BindableResource) {
                 resourcesBinder.deployResource(((BindableResource) instance).getJndiName(), (Resource) instance);
+            } else if (instance instanceof ResourcePool) {
+                //ignore - as pools are handled lazily
             } else if (instance instanceof Resource) {
                 //only resource type left is RAC
                 try {
