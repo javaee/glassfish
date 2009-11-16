@@ -61,7 +61,6 @@
                     <sun:button id="launchButton" primary="#{true}" text="$resource{i18n.deployTable.launch}"
                         onClick="
                             var args=getTextElement('#{pageSession.argId}').value;
-                            alert(args);
                             window.open('#{pageSession.url}?'+args,'_blank','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;"
                     />
                     <sun:button id="backButton" immediate="#{true}"
