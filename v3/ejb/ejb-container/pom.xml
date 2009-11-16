@@ -228,7 +228,6 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
-            <version>${glassfish-corba.version}</version>
 	    <optional>true</optional> 
         </dependency>
         <dependency>

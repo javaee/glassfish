@@ -140,7 +140,6 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
-            <version>${hk2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -165,7 +164,6 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>${javax-persistence-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -195,7 +193,7 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>annotation-framework</artifactId>
-            <version>${pom.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

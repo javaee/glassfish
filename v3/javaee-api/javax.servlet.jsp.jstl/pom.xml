@@ -58,7 +58,6 @@
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>
             <artifactId>jstl-api</artifactId>
-            <version>${jstl-api.version}</version>
             <optional>true</optional>
         </dependency>
     </dependencies>

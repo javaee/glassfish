@@ -31,32 +31,27 @@
         <dependency>
             <groupId>org.glassfish.deployment</groupId>
             <artifactId>dol</artifactId>
-            <version>${pom.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-orbgeneric</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-asm</artifactId>
-            <version>${glassfish-corba.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.orb</groupId>

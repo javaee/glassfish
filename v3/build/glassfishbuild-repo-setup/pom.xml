@@ -79,56 +79,48 @@
         <dependency>
       	    <groupId>org.glassfish</groupId>
             <artifactId>mq-distribution</artifactId>
-	    <version>${mq.version}</version>
 	    <classifier>repo</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>javadb</groupId>
             <artifactId>javadb-common</artifactId>
-	    <version>${javadb.version}</version>
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>javadb</groupId>
             <artifactId>javadb-core</artifactId>
-	    <version>${javadb.version}</version>
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>javadb</groupId>
             <artifactId>javadb-client</artifactId>
-	    <version>${javadb.version}</version>
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>javadb</groupId>
             <artifactId>javadb-demo</artifactId>
-	    <version>${javadb.version}</version>
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>javadb</groupId>
             <artifactId>javadb-doc</artifactId>
-	    <version>${javadb.version}</version>
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>javadb</groupId>
             <artifactId>javadb-javadoc</artifactId>
-	    <version>${javadb.version}</version>
 	    <classifier>ips</classifier>
             <type>zip</type>    
        </dependency>
        <dependency>
       	    <groupId>org.glassfish.l10n</groupId>
             <artifactId>l10n-distribution</artifactId>
-            <version>${l10n.version}</version>
             <type>zip</type>    
        </dependency>
     </dependencies>

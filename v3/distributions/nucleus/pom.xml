@@ -186,7 +186,6 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>config-types</artifactId>
-            <version>${hk2.version}</version>
             <type>jar</type>
         </dependency>        
         <dependency>
