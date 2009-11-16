@@ -71,10 +71,12 @@ public class UndeployMojo extends AbstractMojo  {
 
         try {
             EmbeddedDeployer deployer = server.getDeployer();
-            deployer.undeploy(name, null);
+            if (name != null)
+                deployer.undeploy(name, null);
+            else
+                deployer.undeployAll();
         } catch (Exception ex) {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }
     }
-
 }
