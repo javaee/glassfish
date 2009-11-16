@@ -129,11 +129,13 @@ admingui.help = {
 			    return;
 			}
 		    }
-		    if ((idx = relPath.indexOf('#')) != -1) {
-			// Remove '#' from IE Ajax URLs b/c IE can't handle it!!
-			relPath = relPath.substring(0, idx);
-		    }
 		}
+                //**************************************************************
+                // Fix for 11017?
+                if ((idx = relPath.indexOf('#')) != -1) {
+                    // Remove '#' from IE Ajax URLs b/c IE can't handle it!!
+                    relPath = relPath.substring(0, idx);
+                }
 		// Take filename off baseURL
 		baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
 
