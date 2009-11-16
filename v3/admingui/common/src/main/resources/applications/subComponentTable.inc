@@ -46,6 +46,7 @@ println("sectionDetail =  $attribute{sectionDetail}");
 <sun:table id="subcomponents"  title="$resource{i18n.ComponentTable.tableTitle}" style="padding: 10pt; width:95%" >
     <!beforeCreate
         getSubComponents(appName="#{appName}"  result="#{requestScope.listOfRows}");
+println("================ #{requestScope.listOfRows}");
     />
      <sun:tableRowGroup id="rowGroup1"  data={"$attribute{listOfRows}"} sourceVar="td">
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colModule}" sort="moduleName" rowHeader="$boolean{true}" id="colModule">
@@ -67,8 +68,13 @@ println("sectionDetail =  $attribute{sectionDetail}");
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}"  embeddedActions="#{true}" rowHeader="$boolean{true}" id="col3">
             <sun:hyperlink id="endpointLink" rendered="#{td.value.hasEndpoint}" text="$resource{i18n.ComponentTable.viewEndPoint}"
                 url="#{request.contextPath}/common/applications/endpoint.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}&subComponentName=#{td.value.name}&type=#{td.value.type}" />
+
             <sun:hyperlink id="launchLink" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
                 onClick="window.open('#{td.value.launchLink}','_blank','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;"
+            />
+
+            <sun:hyperlink id="appClientLink" rendered="#{td.value.hasAppClientLaunch}" text="$resource{i18n.deployTable.launch}"
+                url="#{request.contextPath}/common/applications/appclientLaunch.jsf?appName=#{appName}&moduleName=#{td.value.moduleName}"/>
             />
         </sun:tableColumn>
 

@@ -164,6 +164,7 @@ public class WebAppHandlers {
             oneRow.put("type", " ----------- ");
             oneRow.put("hasEndpoint", false);
             oneRow.put("hasLaunch", false);
+            oneRow.put("hasAppClientLaunch", false);
             oneRow.put("sniffers", snifferList.toString());
             Application application = V3AMX.getInstance().getApplication(appName);
             if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(application)){
@@ -178,11 +179,7 @@ public class WebAppHandlers {
                 String jwEnabled = V3AMX.getPropValue(V3AMX.getInstance().getApplication(appName), "javaWebStartEnabled");
                 if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
                     String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
-                    if (!GuiUtil.isEmpty(appClientLaunch)){
-                        String httpLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
-                        oneRow.put("hasLaunch", true);
-                        oneRow.put("launchLink", httpLink+appClientLaunch);
-                    }
+                    oneRow.put("hasAppClientLaunch", !GuiUtil.isEmpty(appClientLaunch));
                 }
             }
             result.add(oneRow);
@@ -190,6 +187,24 @@ public class WebAppHandlers {
         }
         handlerCtx.setOutputValue("result", result);
     }
+
+
+    @Handler(id = "getAppclinetLaunchURL",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true),
+            @HandlerInput(name = "moduleName", type = String.class, required = true)},
+        output = {
+            @HandlerOutput(name = "url", type = String.class)})
+    public static void getAppclinetLaunchURL(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        String moduleName = (String) handlerCtx.getInputValue("moduleName");
+        String appClientLaunch = V3AMX.getInstance().getRuntime().getRelativeJWSURI(appName, moduleName);
+        if (!GuiUtil.isEmpty(appClientLaunch)){
+            String httpLink = V3AMXUtil.getLaunchLink((String)GuiUtil.getSessionValue("serverName"), appName);
+            handlerCtx.setOutputValue("url", httpLink+appClientLaunch);
+        }
+    }
+
 
 
     @Handler(id = "getEndpointInfo",
@@ -247,6 +262,7 @@ public class WebAppHandlers {
             oneRow.put("hasLaunch", false);
             oneRow.put("sniffers", "");
             oneRow.put("hasEndpoint", false);
+            oneRow.put("hasAppClientLaunch", false);
             if (snifferList.contains("webservices")){
                 if (!getEndpointMap(appName, moduleName, cName, sMap.get(cName)).isEmpty()){
                     oneRow.put("hasEndpoint", true );
