@@ -2159,9 +2159,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             context.destroy();
                         }
                     } catch(Exception ex) {
-                        _logger.log(Level.WARNING,
-                            "[WebContainer] Context " + contextRoot
-                                + " threw exception in destroy()", ex);
+                        String msg = rb.getString(
+                            "webcontainer.webmodule.exceptionDuringDestroy");
+                        msg = MessageFormat.format(msg, contextRoot,
+                            host.getName());
+
+                        _logger.log(Level.WARNING, msg, ex);
                     }
                     if(_logger.isLoggable(Level.FINEST)) {
                         _logger.log(Level.FINEST,
@@ -2480,9 +2483,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 try {
                     wm.destroy();
                 } catch (Exception ex) {
-                    _logger.log(Level.WARNING,
-                        "[WebContainer] Context " + wm.getPath()
-                            + " threw exception in destroy()", ex);
+                    String msg = rb.getString(
+                        "webcontainer.webmodule.exceptionDuringDestroy");
+                    msg = MessageFormat.format(msg, wm.getPath(), vs.getName());
+                    _logger.log(Level.WARNING, msg, ex);
                 }
             }
         }
