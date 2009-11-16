@@ -36,4 +36,4 @@
 
 
 
-"<iframe id="upsell" scrolling="auto" frameborder="0" height="200" width="100%" src="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/v3_prelude.html#instance_urn=$session{productInstanceURN}"></iframe>
+"<iframe id="upsell" scrolling="auto" frameborder="0" height="200" width="100%" src="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/v3.html#instance_urn=$session{productInstanceURN}"></iframe>
