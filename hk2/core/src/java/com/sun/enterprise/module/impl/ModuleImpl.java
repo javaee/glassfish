@@ -378,6 +378,9 @@ public final class ModuleImpl implements Module {
 
         //Logger.global.info("Module " + getName() + " resolved");
         state = ModuleState.RESOLVED;
+        for (ModuleLifecycleListener l : registry.getLifecycleListeners()) {
+            l.moduleResolved(this);
+        }
     }
 
     /**
