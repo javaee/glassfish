@@ -74,7 +74,11 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
     }
 
     protected Module newModule(ModuleDefinition moduleDef) {
-        return new ModuleImpl(this, moduleDef);
+        Module m = new ModuleImpl(this, moduleDef);
+        for (ModuleLifecycleListener l : getLifecycleListeners()) {
+            l.moduleInstalled(m);
+        }
+        return m;
     }
 
     public void parseInhabitants(

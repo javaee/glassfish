@@ -506,6 +506,12 @@ public class OSGiModulesRegistryImpl
         BundleListener bundleListener = new BundleListener() {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {
+                    case BundleEvent.INSTALLED:
+                        listener.moduleInstalled(getModule(event.getBundle()));
+                        break;
+                    case BundleEvent.UPDATED:
+                        listener.moduleUpdated(getModule(event.getBundle()));
+                        break;
                     case BundleEvent.RESOLVED:
                         listener.moduleResolved(getModule(event.getBundle()));
                         break;
