@@ -39,20 +39,19 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  * Unit test for
- * 
+ *
  *   https://glassfish.dev.java.net/issues/show_bug.cgi?id=590
  *   ("TLDs in EAR-bundled JARs not found")
  *
- * In this unit test, the nested mywar.war references mytaglib.jar,
- * on which it depends, from its META-INF/MANIFEST.MF file, as follows:
- *   Class-Path: mytaglib.jar
- *
- * This causes mytaglib.jar to be added to the list of URLs of the
- * WebappClassLoader created for mywar.war
+ * In this unit test, the nested mywar.war does not reference mytaglib.jar,
+ * on which it depends, explicitly from its META-INF/MANIFEST.MF file, but
+ * rather depends on it being visible by virtue of being stored in the EAR
+ * file's lib directory (the default directory for shared JAR files inside an
+ * EAR).
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "jsp-custom-taglib-jar-inside-ear-with-manifest-classpath";
+    private static final String TEST_NAME = "jsp-custom-taglib-jar-inside-ear-without-manifest-classpath";
 
     private static final String EXPECTED = "Hello, world!";
 
