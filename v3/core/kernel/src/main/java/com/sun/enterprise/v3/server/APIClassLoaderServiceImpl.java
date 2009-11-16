@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ModuleLifecycleListener;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Inject;
@@ -48,9 +49,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.net.URL;
 
 /**
@@ -67,10 +66,14 @@ import java.net.URL;
 public class APIClassLoaderServiceImpl implements PostConstruct {
 
     /*
-     * Implementation Note: This class depends on OSGi runtime, so
-     * not portable on HK2.
+     * Implementation Note:
+     * 1. This class depends on OSGi runtime, so not portable on HK2.
+     * 2. APIClassLoader maintains a blacklist, i.e., classes and resources that could not be loaded to avoid
+     * unnecessary delegation. It flushes that list everytime a new bundle is installed in the system.
+     * This takes care of performance problem in typical production use of GlassFish.
      */
-    private ClassLoader APIClassLoader;
+
+    private ClassLoader theAPIClassLoader;
     @Inject
     ModulesRegistry mr;
     private static final String APIExporterModuleName =
@@ -89,7 +92,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
 
     private void createAPIClassLoader() throws IOException {
         APIModule = mr.getModules(APIExporterModuleName).iterator().next();
-        assert(APIModule != null);
+        assert (APIModule != null);
         final ClassLoader apiModuleLoader = APIModule.getClassLoader();
         /*
          * We don't directly retrun APIModule's class loader, because
@@ -99,88 +102,162 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
          * wants to use delegation model so that we don't have to set
          * bootdelegation=* for OSGi bundles.
          */
-        APIClassLoader = new ClassLoader(apiModuleLoader.getParent()) {
-            @Override
-            public Class<?> loadClass(String name) throws ClassNotFoundException
-            {
-                return loadClass(name, false);
-            }
-
-            @Override
-            protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
-            {
-                // First, check if the class has already been loaded
-                Class c = findLoadedClass(name);
-                if (c == null) {
-                    if (!name.startsWith("java.")) { // java classes always come from parent
-                        try {
-                            c = apiModuleLoader.loadClass(name); // we ignore the resolution flag
-                        } catch (ClassNotFoundException cnfe) {
-                        }
-                    }
-                    if (c == null) {
-                        // Call super class implementation which takes care of
-                        // delegating to parent.
-                        c = super.loadClass(name, resolve);
-                    }
-                }
-                return c;
-            }
-
-            @Override
-            public URL getResource(String name)
-            {
-                URL url = null;
-                if (!name.startsWith("java/")) {
-                    if (name.equals(MAILCAP)) {
-                        // punch in for META-INF/mailcap files.
-                        // see issue #8426
-                        for (Module m : mr.getModules()) {
-                            if ((url = m.getClassLoader().getResource(name)) != null) {
-                                break;
-                            }
-                        }
-                    } else {
-                        url = apiModuleLoader.getResource(name);
-                    }
-                }
-                if (url == null) {
-                    // Either requested resource belongs to java/ namespace or
-                    // it was not found in any of the bundles, so call
-                    // super class implementation which will delegate to parent.
-                    url = super.getResource(name);
-                }
-                return url;
-            }
-
-            @Override
-            public Enumeration<URL> getResources(String name) throws IOException
-            {
-                List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
-                if (!name.startsWith("java/")) {
-                    if (name.equals(MAILCAP)) {
-                        // punch in for META-INF/mailcap files.
-                        // see issue #8426
-                        for (Module m : mr.getModules()) {
-                            enumerators.add(m.getClassLoader().getResources(name));
-                        }
-                    } else {
-                        enumerators.add(apiModuleLoader.getResources(name));
-                    }
-                }
-                // Either requested resource belongs to java/ namespace or
-                // it was not found in any of the bundles, so call
-                // super class implementation which will delegate to parent.
-                enumerators.add(super.getResources(name));
-                return new CompositeEnumeration(enumerators);
-            }
-        };
+        theAPIClassLoader = new APIClassLoader(apiModuleLoader);
         logger.logp(Level.FINE, "APIClassLoaderService", "createAPIClassLoader",
-                "APIClassLoader = {0}", new Object[]{APIClassLoader});
+                "APIClassLoader = {0}", new Object[]{theAPIClassLoader});
     }
 
     public ClassLoader getAPIClassLoader() {
-        return APIClassLoader;
+        return theAPIClassLoader;
     }
 
+    private class APIClassLoader extends ClassLoader {
+
+        // list of not found classes and resources.
+        // the string represents resource name, so foo/Bar.class for foo.Bar
+        private Set<String> blacklist;
+        private final ClassLoader apiModuleLoader;
+
+        public APIClassLoader(ClassLoader apiModuleLoader) {
+            super(apiModuleLoader.getParent());
+            this.apiModuleLoader = apiModuleLoader;
+            blacklist = new HashSet<String>();
+
+            // add a listener to manage blacklist in APIClassLoader
+            mr.register(new ModuleLifecycleListener() {
+                public void moduleInstalled(Module module) {
+                    clearBlackList();
+                }
+
+                public void moduleResolved(Module module) {
+                }
+
+                public void moduleStarted(Module module) {
+                }
+
+                public void moduleStopped(Module module) {
+                }
+
+                public void moduleUpdated(Module module) {
+                    clearBlackList();
+                }
+            });
+
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            return loadClass(name, false);
+        }
+
+        @Override
+        protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+            // First check if we know this can't be loaded
+            final String resourceName = convertToResourceName(name);
+            if (isBlackListed(resourceName)) {
+                throw new ClassNotFoundException(name);
+            }
+
+            // Then check if the class has already been loaded
+            Class c = findLoadedClass(name);
+            if (c == null) {
+                if (!name.startsWith("java.")) { // java classes always come from parent
+                    try {
+                        c = apiModuleLoader.loadClass(name); // we ignore the resolution flag
+                    } catch (ClassNotFoundException cnfe) {
+                    }
+                }
+                if (c == null) {
+                    // Call super class implementation which takes care of
+                    // delegating to parent.
+                    try {
+                        c = super.loadClass(name, resolve);
+                    } catch (ClassNotFoundException e) {
+                        addToBlackList(resourceName);
+                        throw e;
+                    }
+                }
+            }
+            return c;
+        }
+
+        @Override
+        public URL getResource(String name) {
+            if (isBlackListed(name)) return null;
+            URL url = null;
+            if (!name.startsWith("java/")) {
+                if (name.equals(MAILCAP)) {
+                    // punch in for META-INF/mailcap files.
+                    // see issue #8426
+                    for (Module m : mr.getModules()) {
+                        if ((url = m.getClassLoader().getResource(name)) != null) {
+                            break;
+                        }
+                    }
+                } else {
+                    url = apiModuleLoader.getResource(name);
+                }
+            }
+            if (url == null) {
+                // Either requested resource belongs to java/ namespace or
+                // it was not found in any of the bundles, so call
+                // super class implementation which will delegate to parent.
+                url = super.getResource(name);
+            }
+            if (url == null) {
+                addToBlackList(name);
+            }
+            return url;
+        }
+
+        @Override
+        public Enumeration<URL> getResources(String name) throws IOException {
+            List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
+            if (!name.startsWith("java/")) {
+                if (name.equals(MAILCAP)) {
+                    // punch in for META-INF/mailcap files.
+                    // see issue #8426
+                    for (Module m : mr.getModules()) {
+                        enumerators.add(m.getClassLoader().getResources(name));
+                    }
+                } else {
+                    enumerators.add(apiModuleLoader.getResources(name));
+                }
+            }
+            // Either requested resource belongs to java/ namespace or
+            // it was not found in any of the bundles, so call
+            // super class implementation which will delegate to parent.
+            enumerators.add(super.getResources(name));
+            return new CompositeEnumeration(enumerators);
+        }
+
+        @Override
+        public String toString() {
+            return "APIClassLoader";
+        }
+
+        /**
+         * Takes a class name as used in Class.forName and converts it to a resource name as used in
+         * ClassLoader.getResource
+         *
+         * @param className className to be converted
+         * @return equivalent resource name
+         */
+        private String convertToResourceName(String className) {
+            return className.replace('.', '/').concat(".class");
+        }
+
+        private boolean isBlackListed(String name) {
+            return blacklist.contains(name);
+        }
+
+        private synchronized void addToBlackList(String name) {
+            blacklist.add(name);
+        }
+
+        private synchronized void clearBlackList() {
+            blacklist.clear();
+        }
+
+    }
 }

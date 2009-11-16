@@ -163,6 +163,12 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         amxg.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
     }
 
+    public void moduleInstalled(Module module) {
+    }
+
+    public void moduleUpdated(Module module) {
+    }
+
     public void moduleResolved(Module module) {
         if (module == null) return;
         verifyModule(module);
