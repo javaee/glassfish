@@ -53,10 +53,12 @@ import javax.validation.constraints.NotNull;
 
 import com.sun.enterprise.config.serverbeans.customvalidators.FileRealmPropertyCheck;
 import com.sun.enterprise.config.serverbeans.customvalidators.LDAPRealmPropertyCheck;
+import com.sun.enterprise.config.serverbeans.customvalidators.JDBCRealmPropertyCheck;
 
 @Configured
 @FileRealmPropertyCheck
 @LDAPRealmPropertyCheck
+@JDBCRealmPropertyCheck
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-auth-realm"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-auth-realm")
