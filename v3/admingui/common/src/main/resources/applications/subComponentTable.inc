@@ -46,7 +46,6 @@ println("sectionDetail =  $attribute{sectionDetail}");
 <sun:table id="subcomponents"  title="$resource{i18n.ComponentTable.tableTitle}" style="padding: 10pt; width:95%" >
     <!beforeCreate
         getSubComponents(appName="#{appName}"  result="#{requestScope.listOfRows}");
-println("================ #{requestScope.listOfRows}");
     />
      <sun:tableRowGroup id="rowGroup1"  data={"$attribute{listOfRows}"} sourceVar="td">
         <sun:tableColumn headerText="$resource{i18n.ComponentTable.colModule}" sort="moduleName" rowHeader="$boolean{true}" id="colModule">
