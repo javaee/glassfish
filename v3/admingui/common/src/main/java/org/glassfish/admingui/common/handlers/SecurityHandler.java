@@ -182,9 +182,12 @@ public class SecurityHandler {
     })
     public static void saveRealm(HandlerContext handlerCtx) {
         String option = (String) handlerCtx.getInputValue("classnameOption");
-        List propList = (List)handlerCtx.getInputValue("propList");
+        List<Map<String,String>> propList = (List)handlerCtx.getInputValue("propList");
         Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
-        
+
+        if (attrMap==null){
+            attrMap = new HashMap();
+        }
         String classname = "";
         try{
           if(option.equals("predefine")){
@@ -236,9 +239,19 @@ public class SecurityHandler {
              Map<String, Object> cMap = new HashMap();
              cMap.put("Name", attrMap.get("Name"));
              cMap.put("Classname", attrMap.get("classname"));
+
+             Map[] propMaps = new Map[propList.size()];
+             int i=0;
+             for(Map oneProp: propList){
+                 if (oneProp.get("selected") != null){
+                     oneProp.remove("selected");
+                 }
+                 propMaps[i++] = oneProp;
+             }
+             cMap.put(Util.deduceType(Property.class), propMaps);
              AMXConfigProxy amx = V3AMX.getInstance().getConfig("server-config").getSecurityService();
              AMXConfigProxy child =  amx.createChild("auth-realm", cMap);
-             V3AMX.setProperties(child.objectName().toString(), propList, false);
+//             V3AMX.setProperties(child.objectName().toString(), propList, false);
           }
 
       }catch(Exception ex){
