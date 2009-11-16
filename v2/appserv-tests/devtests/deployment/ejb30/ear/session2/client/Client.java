@@ -239,6 +239,7 @@ public class Client extends ClientSuper {
 
         } catch(Exception e) {
             e.printStackTrace();
+            System.exit(1);
         }
         
     	return;
