@@ -573,38 +573,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _embedded.start();
         } catch (LifecycleException le) {
             _logger.log(Level.SEVERE,
-                               "Unable to start web container", le);
+                "webcontainer.exceptionDuringEmbeddedStart", le);
             return;
         } finally {
             // Restore original context classloader
             Thread.currentThread().setContextClassLoader(current);
         }
-
-        /*
-        if (_reloadingEnabled) {
-            // Enable dynamic reloading (via the .reload file) for all
-            // standalone web-modules that are marked as enabled
-
-            Applications appsBean = null;
-            try {
-                appsBean = ServerBeansFactory.getApplicationsBean(_configContext);
-            } catch (ConfigException e) {
-               String msg = rb.getString("webcontainer.appsConfigError");
-               _logger.log(Level.SEVERE, msg, e);
-            }
-
-            _reloadManager = new StandaloneWebModulesManager(_id,
-                                                             _modulesRoot,
-                                                             _pollInterval);
-            if (appsBean != null) {
-                com.sun.enterprise.config.serverbeans.WebModule[] wmBeans = appsBean.getWebModule();
-                if (wmBeans != null && wmBeans.length > 0) {
-                    _reloadManager.addWebModules(wmBeans);
-                }
-            }
-
-        }
-        */
     }
 
     public void event(Event event) {
@@ -632,7 +606,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             _embedded.stop();
         } catch(LifecycleException le) {
-            _logger.log(Level.SEVERE, "Unable to stop web container", le);
+            _logger.log(Level.SEVERE,
+                "webcontainer.exceptionDuringEmbeddedStop", le);
             return;
         }
     }
