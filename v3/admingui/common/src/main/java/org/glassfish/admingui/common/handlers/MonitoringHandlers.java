@@ -494,17 +494,16 @@ public class MonitoringHandlers {
         handlerCtx.setOutputValue("firstValue",  firstval);
      }
 
-      @Handler(id = "getAppName",
+    @Handler(id = "getAppName",
       input={
         @HandlerInput(name="name",   type=String.class, required=true)},
        output = {
         @HandlerOutput(name = "appName", type = String.class)
        })
-        public static void getAppName(HandlerContext handlerCtx) {
+    public static void getAppName(HandlerContext handlerCtx) {
         String name = (String) handlerCtx.getInputValue("name");
         AMXProxy amx = V3AMX.getInstance().getApplications();
         Map<String, AMXProxy> applications = amx.childrenMap("application");
-        List result = new ArrayList();
         String appName = "";
         for (AMXProxy oneApp : applications.values()) {
             Map<String, AMXProxy> modules = oneApp.childrenMap("module");
