@@ -89,8 +89,8 @@ public interface Ssl extends Singleton, ConfigElement, PropertiesAccess
     public String getClassname();
     public void   setClassname(String val);
    
-    public String getTrustMaxCertLengthBytes();
-    public void   setTrustMaxCertLengthBytes(String val);
+    public String getTrustMaxCertLength();
+    public void   setTrustMaxCertLength(String val);
    
     public String getClientAuth();
     public void   setClientAuth(String val);
