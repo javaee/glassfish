@@ -25,12 +25,6 @@ public class HelloEJB implements Hello {
     @AroundInvoke
     private Object interceptBusinessMethod(InvocationContext invCtx) {
 	try {
-System.out.println("NNN" + invCtx.getContextData());
-Exception e = new Exception();
-e.printStackTrace();
- if (invCtx.getContextData() instanceof javax.xml.ws.handler.MessageContext){
-            System.out.println("ContextDataMap is an instance of javax.xml.ws.handler.MessageContext ");
-}
            Map<String, Object> map = invCtx.getContextData();
            map.put("intVal", new Integer(45));
            map.put("longVal", new Long(1234));
