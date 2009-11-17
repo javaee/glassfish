@@ -41,6 +41,7 @@
             saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
                 convertToFalse="#{pageSession.convertToFalseList}"
             );
+            saveBeanAttributes(objectNameStr="#{pageSession.resourceRefObjectNameStr}", attrs="#{pageSession.resourceRef}", convertToFalse={"Enabled"});
             if(#{pageSession.has2Objects}){
                 saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr2}", attrs="#{pageSession.valueMap2}", skipAttrs="#{pageSession.skipAttrsList2}",
                     convertToFalse="#{pageSession.convertToFalseList2}"
@@ -70,9 +71,9 @@
         createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
             attrs="#{pageSession.valueMap}", convertToFalse="#{pageSession.convertToFalseList}", result => $attribute{objStr});
 
-        createResourceRef(resourceName="#{pageSession.valueMap['Name']}");
+        // resource is always enabled.  resource-ref toggles
+        createResourceRef(resourceName="#{pageSession.valueMap['Name']}", enabled="#{!empty pageSession.resourceRef['Enabled']}");
 
-        // TODO: We might need to add something here to create the resource-ref, but I'm not seeing any examples of how
         if (#{pageSession.hasPropertyTable}){
             getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
             getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});

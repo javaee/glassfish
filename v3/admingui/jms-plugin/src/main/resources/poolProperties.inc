@@ -34,11 +34,6 @@
  holder.
 -->
 <sun:propertySheet id="propertySheet">
-    <event>
-        <!beforeCreate
-            setAttribute(key="enabled" value="#{true}");
-        />
-    </event>
     <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.common.GeneralSettings}">
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}">
             <sun:textField id="jndiProp" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['Name']}" required="#{true}" rendered="#{!edit}" />
@@ -56,7 +51,7 @@
             <sun:textField id="descProp" columns="$int{55}" text="#{pageSession.valueMap['Description']}" />
         </sun:property>
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{enabled}" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.resourceRef['Enabled']}" selectedValue="true"/>
         </sun:property>
 
         "<br /><br />

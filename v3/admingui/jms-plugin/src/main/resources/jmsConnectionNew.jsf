@@ -53,7 +53,10 @@
 
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
             getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.valueMap2}")
+            getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server", childType="resource-ref", valueMap="#{pageSession.resourceRef}");
+
             mapPut(map="#{pageSession.valueMap}", key="ResourceAdapterName", value="jmsra");
+            mapPut(map="#{pageSession.valueMap2}", key="Enabled", value="#{true}");
 
             //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{false}" );

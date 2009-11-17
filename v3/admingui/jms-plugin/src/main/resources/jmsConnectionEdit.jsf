@@ -62,9 +62,11 @@
             setPageSessionAttribute(key="convertToFalseList" value={"FailAllConnections", "IsConnectionValidationRequired"});
 
             setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=connector-connection-pool,name=#{pageSession.Name}");
+            setPageSessionAttribute(key="resourceRefObjectNameStr", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
 
             getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
             getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+            getProxyAttrs(objectNameStr="#{pageSession.resourceRefObjectNameStr}",  valueMap="#{pageSession.resourceRef}");
 
             //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
@@ -83,9 +85,10 @@
 #include "/common/shared/alertMsg.inc"
     <!-- Page Title -->
         <sun:title id="propertyContentPage" title="$resource{i18njms.connectionFactory.editPageTitle}" helpText="$resource{i18njms.connectionFactory.editPageTitleHelp}">
-            <sun:button id="loadDefaults" style="margin-left: 8pt" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+            <sun:button id="loadDefaults" style="margin-left: 8pt" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
                 <!command
-                    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+                    getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}", childType="#{pageSession.childType}", orig="#{pageSession.valueMap}", valueMap="#{pageSession.valueMap}")
+                    getDefaultProxyAttrs( parentObjectNameStr="amx:pp=/domain/servers,type=server,name=server", childType="resource-ref",  orig="#{pageSession.resourceRef}", valueMap="#{pageSession.resourceRef}");
                 />
             </sun:button>
             <!facet pageButtonsTop>
