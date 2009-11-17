@@ -175,8 +175,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_UNLOADED)) {
             ApplicationInfo appInfo = (ApplicationInfo)event.hook();
 
-            // TODO move bootstrap shutdown logic here
-
             Application app = appInfo.getMetaData(Application.class);
 
             if( app != null ) {
@@ -235,8 +233,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     @Override
     public WeldApplicationContainer load(WeldContainer container, DeploymentContext context) {
 
-        // TODO *** change this logic to share one instance of web beans bootstrap per application ***
-
         ReadableArchive archive = context.getSource();
 
         // See if a WeldBootsrap has already been created - only want one per app.
@@ -285,18 +281,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             deploymentImpl.scanArchive(archive, ejbs);
         }
 
-        // Register EE injection manager at the bean deployment archive level.
-        // We use the generic InjectionService service to handle all EE-style
-        // injection instead of the per-dependency-type InjectionPoint approach.
-        // TODO change this to register for each bean deployment archive
-        InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
-        InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr);
-        Iterator bdaIter = deploymentImpl.getBeanDeploymentArchives().iterator();
-        while (bdaIter.hasNext()) {
-            BeanDeploymentArchive bda = (BeanDeploymentArchive)bdaIter.next();
-            bda.getServices().add(InjectionServices.class, injectionServices);
-        }
-
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
             wDesc.setExtensionProperty(WELD_EXTENSION, "true");
@@ -306,9 +290,18 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
         BundleDescriptor bundle = (wDesc != null) ? wDesc : ejbBundle;
         if( bundle != null ) {
-            // TODO change logic to support multiple 299 enabled modules in app
-//            bundleToBeanDeploymentArchive.put(bundle, deploymentImpl.getBeanDeploymentArchives().iterator().next());
+
             BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getURI().getPath());
+
+            // Register EE injection manager at the bean deployment archive level.
+            // We use the generic InjectionService service to handle all EE-style
+            // injection instead of the per-dependency-type InjectionPoint approach.
+            // Each InjectionServicesImpl instance knows its associated GlassFish bundle.
+
+            InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
+            InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr, bundle);
+
+            bda.getServices().add(InjectionServices.class, injectionServices);
             bundleToBeanDeploymentArchive.put(bundle, bda); 
         }
         

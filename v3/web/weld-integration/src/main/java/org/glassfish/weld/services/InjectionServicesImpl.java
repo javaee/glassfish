@@ -59,8 +59,12 @@ public class InjectionServicesImpl implements InjectionServices {
 
     private InjectionManager injectionManager;
 
-    public InjectionServicesImpl(InjectionManager injectionMgr) {
+    // Associated bundle context
+    private BundleDescriptor bundleContext;
+
+    public InjectionServicesImpl(InjectionManager injectionMgr, BundleDescriptor context) {
         injectionManager = injectionMgr;
+        bundleContext = context;
     }
 
 
@@ -78,10 +82,10 @@ public class InjectionServicesImpl implements InjectionServices {
 
             ManagedBeanDescriptor mbDesc = null;
 
-            JndiNameEnvironment injectionEnv = componentEnv;
+            JndiNameEnvironment injectionEnv = (JndiNameEnvironment) bundleContext;
+            
             Object target = injectionContext.getTarget();
             String targetClass = target.getClass().getName();
-
 
             if( componentEnv == null ) {
                 throw new IllegalStateException("No valid EE environment for injection of " + targetClass);
@@ -94,29 +98,17 @@ public class InjectionServicesImpl implements InjectionServices {
 
                 EjbDescriptor ejbDesc = (EjbDescriptor) componentEnv;
 
-                if( !containerServices.isEjbManagedObject(ejbDesc, target.getClass())) {
+                if( containerServices.isEjbManagedObject(ejbDesc, target.getClass())) {
+                    injectionEnv = componentEnv;
+                } else {
 
-                    BundleDescriptor topLevelBundle = (BundleDescriptor)
-                            ejbDesc.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
-
-                    if( topLevelBundle instanceof WebBundleDescriptor ) {
-
-                        // If this is taking place within the context of an ejb packaged in a
-                        // .war, we can always just use the single .war-level component env
-                        injectionEnv = (WebBundleDescriptor) topLevelBundle;
-
-                    } else {
+                    if( bundleContext instanceof EjbBundleDescriptor ) {
 
                         // Check if it's a @ManagedBean class within an ejb-jar.  In that case,
                         // special handling is needed to locate the EE env dependencies
-                        mbDesc = ejbDesc.getEjbBundleDescriptor().getManagedBeanByBeanClass(targetClass);
-
-                        if( mbDesc == null ) {
-                            injectionEnv = ejbDesc.getEjbBundleDescriptor();
-                        }
-                    }
+                        mbDesc = bundleContext.getManagedBeanByBeanClass(targetClass);
+                    }                    
                 }
-
             }
 
             if( mbDesc != null ) {
