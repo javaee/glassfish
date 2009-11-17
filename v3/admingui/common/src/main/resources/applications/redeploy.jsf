@@ -36,93 +36,19 @@
 <!-- applications/redeploy.jsf -->
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n.redeploy.pageTitle}" guiTemplateOnLoad="uploadInit();">
 <!define name="content">
-    <event>
-    <!beforeCreate
-        getRequestValue(key="appName" value=>$page{appName});
-        //test the app still exists.
-        proxyExist(objectNameStr="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}" exist="#{requestScope.exist}")
-        if (! #{requestScope.exist}){
-            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
-        }
-        createMap(result="#{pageSession.deployMap}")
-        mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");
-        setPageSessionAttribute(key="convertToFalse" value={"keepSessions", "precompilejsp", "verify"})
-    />
-    </event>
-<sun:form id="form" method="POST" enctype="multipart/form-data">  
-#include "/common/shared/alertMsg.inc"
-    <sun:title id="title" title="$resource{i18n.redeploy.pageTitle}" helpText="$resource{i18n.redeploy.pageTitleHelp}">
-        <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="uploadButton" text="$resource{i18n.button.OK}"
-                onClick="javascript:
-                    if(getTextElement('#{pageSession.radioChoosenId}').value=='client') {
-                        result = (checkFileInputRequired('#{fileuploadId}', '#{reqMsg}'));
-                    } else {
-                        result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
-                    }
-                    if(result == true) {
-                            if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}'))
-                                return submitAndDisable(this, '$resource{i18n.button.Processing}', '_top');
-                    }
-                    return false;"
-                 >
-            <!command
-                compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
-                if (${needUpload}){
-                    uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile=>$attribute{filePath}, origPath=>$attribute{origPath});
-                }
-                if (! ${needUpload}){
-                    setAttribute(key="origPath", value="#{dirPath}");
-                    setAttribute(key="filePath", value="#{dirPath}");
-                }
-                redeploy(filePath="$attribute{filePath}"  , origPath="$attribute{origPath}" deployMap="#{pageSession.deployMap}" convertToFalse="#{pageSession.convertToFalse}");
-                gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
-        </sun:button>
-        <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
-            onClick="admingui.ajax.loadPage({url:'{request.contextPath}/common/applications/applications.jsf'}); return false;">
-        //    <!command
-        //        println("cancel");
-        //        gf.navigate(page="{request.contextPath}/common/applications/applications.jsf");
-        //    />
-        </sun:button>
-    </sun:panelGroup>
-    </facet>
-    </sun:title>
-    <sun:propertySheet id="redeploy" >
-            
-#include "/common/applications/fileComponent.jsf"
-    "<br/><br/>
-    <sun:propertySheetSection >
-            <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.appName}">
-                <sun:staticText id="name" text="#{appName}"/>
-            </sun:property>
-
-            <sun:property>
-                <sun:staticText text="" />
-            </sun:property>
-            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}" >
-                <sun:checkbox selected="#{pageSession.deployMap['keepSessions']}" selectedValue="true" label=" " />
-            </sun:property>
-
-            <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.server.PrecompileHelp}">
-                <sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.deployMap['precompilejsp']}" selectedValue="true" />
-            </sun:property>
-
-            <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
-                    <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.deployMap['verify']}" selectedValue="true" />
-            </sun:property>
-
-            </sun:propertySheetSection>
-</sun:propertySheet>
-
+<f:verbatim>
+    <script type="text/javascript">
+	document.body.style.cursor = 'auto';
+    </script>
+    <iframe src="/common/applications/redeployFrame.jsf?#{request.queryString}" style="overflow:auto; width:100%; height:100%; border:0px;">
+    </iframe>
+</f:verbatim>
+    <sun:form>
 	<sun:hidden id="helpKey" value="$resource{help.redeploy}" />
     </sun:form>
-#include "/common/applications/uploadJS.inc"
- </define>
+</define>
 </composition>

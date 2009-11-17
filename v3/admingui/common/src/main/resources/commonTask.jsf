@@ -40,21 +40,12 @@
     getProductInstanceURN();
 #include "/common/sysnet/regInit.inc"
 />
-<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}">
 <!define name="content">
     <sun:script>
-        <f:verbatim>
-            function showWindow() {
-                var popup = document.getElementById("#{popupId}");
-                if (popup) {
-                    popup.style.visibility='visible';
-                }
-            }
-            admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
-        </f:verbatim>
+	"admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
     </sun:script>
-    "<div style="min-height: 500px; overflow: auto;">
-
+    "<div style="height:100%; background-color:#B6C6D6; #{pageSession.contentCSS}">
       <sun:form id="form"> 
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
@@ -108,7 +99,6 @@
         <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
       </sun:form>
       "</div>
-      "<div style="height: 3px">&#160;</div>
       <!--  Customizing pe bottom frame -->
           <event>
           <!afterCreate

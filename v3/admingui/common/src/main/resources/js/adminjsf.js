@@ -1037,11 +1037,11 @@ admingui.help = {
 	var helpLink = "/common/help/help.jsf";
 	var helpKeys = admingui.util.findNodes(document,
 	    function(node, name) {
-		if ((typeof(node.name) === "undefined") || (node.name == null)) {
+		if ((typeof(node.id) === "undefined") || (node.id == null)) {
 		    return false;
 		}
-		var pos = node.name.lastIndexOf(':');
-		var shortName = (pos > -1) ? node.name.substring(pos+1) : node.name;
+		var pos = node.id.lastIndexOf(':');
+		var shortName = (pos > -1) ? node.id.substring(pos+1) : node.id;
 		return (shortName == name);
 	    },
 	    "helpKey");
@@ -1719,17 +1719,19 @@ function getSelectedValueFromForm(theForm, field) {
     var selectedValue = null;
     var testField = null;
     var name = null;
-    for (var i = 0; i < theForm.elements.length; i++) {
-        testField = theForm.elements[i];
-        name = testField.name;
-        if (name == null) {
-            continue;
-        }  
-        name = name.substr(name.lastIndexOf(".")+1);
-        if ((name == field) && testField.checked) {
-            selectedValue = testField.value;
-            break;
-        }
+    if (theForm) {
+	for (var i = 0; i < theForm.elements.length; i++) {
+	    testField = theForm.elements[i];
+	    name = testField.name;
+	    if (name == null) {
+		continue;
+	    }  
+	    name = name.substr(name.lastIndexOf(".")+1);
+	    if ((name == field) && testField.checked) {
+		selectedValue = testField.value;
+		break;
+	    }
+	}
     }
     return selectedValue;
 }
@@ -2217,6 +2219,7 @@ admingui.ajax = {
             }
 	    */
         } else if (node.nodeName == 'TITLE') {
+	    // bareLayout.xhtml handles this for ajax requests...
 	    recurse = false;
         } else if (node.nodeName == 'SCRIPT') {
 	    recurse = false;  // don't walk scripts

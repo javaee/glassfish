@@ -39,9 +39,6 @@
 #Background: # 5382a1 
 
 <sun:markup rendered="#{askRegistration}" tag="div" id="popup" style="height: 286px; width: 423px; z-index: 9999; background-image: url('#{request.contextPath}/resource/images/regReminderBackground.png'); background-color: #FFFFFF; background-repeat: no-repeat; position: absolute; top: 100px; margin: auto;  display: none; font-family:Arial, Helvetica, sans-serif;">
-    <!beforeCreate
-        setAttribute(key="contextRoot" value="#{request.contextPath}");
-    />
     <!afterCreate
         setAttribute(key="popupId" value="$this{clientId}");
     />
@@ -76,10 +73,6 @@
     <sun:script>
 	<f:verbatim>
 	    function initReminderBox() {
-		// Call the old onLoad (1 time)
-//		window.oldRegOnload();
-		window.oldRegOnload = function() {};
-
 		// Center it
 		var popup = document.getElementById('${popupId}');
                 if (popup != null) {
@@ -91,9 +84,6 @@
                 }
 	    }
 	    window.onresize = initReminderBox;
-	    window.oldRegOnload = window.onload;
-	    //window.onload = initReminderBox;
-	    initReminderBox();
 	</f:verbatim>
     </sun:script>
 </sun:markup>

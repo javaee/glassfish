@@ -62,6 +62,7 @@ import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
@@ -510,17 +511,33 @@ public class CommonHandlers {
      * @return
      */
     private static String handleBareAttribute(FacesContext ctx, String url) {
+	// Get Page Session...
+	UIViewRoot root = ctx.getViewRoot();
+	Map<String, Serializable> pageSession =
+	    PageSessionResolver.getPageSession(ctx, root);
+	if (pageSession == null) {
+	    pageSession = PageSessionResolver.createPageSession(ctx, root);
+	}
         String request = (String) ctx.getExternalContext().getRequestParameterMap().get("bare");
-	if (!"true".equalsIgnoreCase(request)) {
+	if (request != null) {
+	    // It was specified, use this.
+	    if (request.equalsIgnoreCase("true")) {
+		url = addQueryStringParam(url, "bare", "true");
+		request = "true";
+	    } else {
+		request = "false";
+	    }
+	    pageSession.put("bare", request);
+	} else {
 	    // Get the Page Session Map
-	    Map<String, Serializable> map =
-		PageSessionResolver.getPageSession(ctx, null);
-	    Object pageSessionValue = map.get("bare");
-	    if (!Boolean.TRUE.equals(pageSessionValue)) {
-		return url;
+	    Object pageSessionValue = pageSession.get("bare");
+	    if (Boolean.TRUE.equals(pageSessionValue)) {
+		url = addQueryStringParam(url, "bare", "true");
+	    } else {
+		pageSession.put("bare", "false");
 	    }
 	}
-        return addQueryStringParam(url, "bare", "true");
+	return url;
     }
 
     /**

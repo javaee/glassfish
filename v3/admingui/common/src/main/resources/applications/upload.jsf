@@ -44,9 +44,12 @@
     <script type="text/javascript">
 	document.body.style.cursor = 'auto';
     </script>
-    <iframe src="/common/applications/uploadFrame.jsf?tpl=iframe" style="overflow:auto; width:100%; height:100%; border:0px;">
+    <iframe src="/common/applications/uploadFrame.jsf" style="overflow:auto; width:100%; height:100%; border:0px;">
     </iframe>
 </f:verbatim>
+    <sun:form>
+	<sun:hidden id="helpKey" value="$resource{help.uploadDev}" />
+    </sun:form>
 //#include "/common/applications/uploadJS.inc"
 </define>
 </composition>

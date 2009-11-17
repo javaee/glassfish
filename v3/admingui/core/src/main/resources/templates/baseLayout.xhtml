@@ -83,8 +83,8 @@
 	    </f:verbatim>
 	</sun:head>
 
-	<sun:body styleClass="yui-skin-sam" 
-		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);admingui.ajax.processElement(window, document.getElementById('content'), false);#{guiOnLoad};#{guiTemplateOnLoad};">
+	<sun:body style="display:none;" styleClass="yui-skin-sam" 
+		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);admingui.ajax.processElement(window, document.getElementById('content'), false);document.body.style.display='block';#{guiOnLoad};#{guiTemplateOnLoad};">
 "	    <div class="yui-skin-sam"><div id="gfLayoutTop"><div class="header_main">
 //                "<a class="skip" href="#navigation" alt="Skip masthead" title="Skip masthead">Skip Masthead</a>
 			<sun:form id="af" prependId="false">
