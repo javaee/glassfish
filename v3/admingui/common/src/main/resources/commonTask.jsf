@@ -65,7 +65,7 @@
                             onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');"
                             onKeyPress1="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');">
             </sun:commonTask>
-            <sun:commonTask
+            <sun:commonTask rendered="#{!sessionScope._noNetwork}"
                             text="$resource{i18n.tree.support}"
                             toolTip="$resource{i18n.tree.support}"
                             infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=support.html"
@@ -112,9 +112,11 @@
       <!--  Customizing pe bottom frame -->
           <event>
           <!afterCreate
-              getClientId(component="$this{component}" clientId=>$attribute{homeId})
-              getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
-              includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
+              if (!#{sessionScope._noNetwork}) {
+                  getClientId(component="$this{component}" clientId=>$attribute{homeId})
+                  getUIComponent(clientId="#{homeId}"  component=>$attribute{component})
+                  includeFirstIntegrationPoint(type="org.glassfish.admingui:upsellframepe" root="#{component}");
+              }
           />
           </event>
 </define>

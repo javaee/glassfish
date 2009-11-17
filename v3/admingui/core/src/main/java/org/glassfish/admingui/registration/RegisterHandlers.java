@@ -118,6 +118,9 @@ public class RegisterHandlers {
     }
 
     private static RegistrationStatus getRegistrationStatus() {
+        if ((Boolean) GuiUtil.getSessionValue("_noNetwork")){
+            return RegistrationStatus.REGISTERED;
+        }
         RegistrationStatus regStatus = RegistrationStatus.NOT_REGISTERED;
         try {
             RegistrationService regService = getRegistrationService();
@@ -134,6 +137,9 @@ public class RegisterHandlers {
     }
 
     private static RegistrationReminder getRegistrationReminder() {
+        if ((Boolean) GuiUtil.getSessionValue("_noNetwork")){
+            return RegistrationReminder.DONT_ASK_FOR_REGISTRATION;
+        }
         try {
             RegistrationService regService = getRegistrationService();
             if ( regService.getRegistrationStatus() == RegistrationStatus.REGISTERED){

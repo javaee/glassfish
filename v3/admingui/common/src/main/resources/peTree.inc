@@ -120,7 +120,7 @@ update tool    updatetool 800
             </facet>
         </sun:treeNode>
 
-        <sun:treeNode id="support"
+        <sun:treeNode id="support" rendered="#{!sessionScope._noNetwork}"
                 text="$resource{i18n.tree.support}"
                 url="/common/sysnet/support.jsf"
                 >
@@ -128,7 +128,7 @@ update tool    updatetool 800
                     <sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  
                         border="0" immediate="true" alt="$resource{i18n.tree.support}"/>
                 </facet>
-            </sun:treeNode>
+        </sun:treeNode>
 
         <!--  ===================================== Application Server  ======================  -->
         <sun:treeNode id="applicationServer"

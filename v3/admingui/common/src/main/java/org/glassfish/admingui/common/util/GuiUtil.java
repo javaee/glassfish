@@ -155,6 +155,7 @@ public class GuiUtil {
             //should never get here.
             sessionMap.put("serverName", "");
         }
+        sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
         sessionMap.put("appServerVersion", V3AMX.getInstance().getDomainRoot().getApplicationServerFullVersion());
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
