@@ -74,7 +74,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private static final String ARG_QUERY_PARAM_NAME = "arg";
     private static final String PROP_QUERY_PARAM_NAME = "prop";
     private static final String VMARG_QUERY_PARAM_NAME = "vmarg";
-    private static final String ACC_ARG_QUERY_PARAM_NAME = "acc";
+    private static final String ACC_ARG_QUERY_PARAM_NAME = "accarg";
 
     private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
 
@@ -290,7 +290,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      * currently-active ORBs to which the ACC could attempt to bootstrap.
      * @return
      */
-    private String targetServerSetting() {
+    private String targetServerSetting(final Properties props) {
         String port = null;
         for (IiopListener listener : iiopService.getIiopListener()) {
             if (listener.getId().equals(DEFAULT_ORB_LISTENER_ID)) {
@@ -298,7 +298,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
                 break;
             }
         }
-        return "-targetserver=${request.host}:" + port;
+        return props.getProperty("request.host") + ":" + port;
     }
 
     private void processQueryParameters(String queryString, final Properties answer) {
@@ -316,8 +316,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         QueryParams arguments = new ArgQueryParams();
         QueryParams properties = new PropQueryParams();
         QueryParams vmArguments = new VMArgQueryParams();
-        QueryParams accArguments = new ACCArgQueryParams(targetServerSetting());
-        QueryParams [] paramTypes = new QueryParams[] {arguments, properties, vmArguments};
+        QueryParams accArguments = new ACCArgQueryParams(targetServerSetting(answer));
+        QueryParams [] paramTypes = new QueryParams[] {arguments, properties, vmArguments, accArguments};
 
         for (String param : queryParams) {
             for (QueryParams qpType : paramTypes) {
@@ -478,11 +478,11 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
         public ACCArgQueryParams(final String targetServerSetting) {
             super (ACC_ARG_QUERY_PARAM_NAME);
-            this.targetServerSetting = targetServerSetting;
+            this.targetServerSetting = "arg=-targetserver,arg=" + targetServerSetting;
         }
 
         public void processValue(String value) {
-            settings.append(commaIfNeeded(settings.length())).append(value);
+            settings.append(commaIfNeeded(settings.length())).append("arg=").append(value);
         }
 
         public String toString() {

@@ -307,6 +307,15 @@ public abstract class AppClientDeployerHelper {
     }
 
     private URI expandedDirURI(final URI submoduleURI) {
+        /*
+         * The submodule URI (xxx.jar) might actually already be an expanded
+         * directory.
+         */
+        final URI possibleExpandedDirURI = dc().getSource().getParentArchive().getURI().resolve(submoduleURI);
+        final File possibleExpandedDir = new File(possibleExpandedDirURI);
+        if (possibleExpandedDir.exists() && possibleExpandedDir.isDirectory()) {
+            return submoduleURI;
+        }
         final String uriText = submoduleURI.toString().replace("/", "__");
         int lastDot = uriText.lastIndexOf('.');
         return URI.create(uriText.substring(0, lastDot) + "_" + uriText.substring(lastDot + 1));

@@ -90,6 +90,8 @@ public class FacadeLaunchable implements Launchable {
             LogDomains.ACC_LOGGER);
 
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(FacadeLaunchable.class);
+    private static final boolean isJWSLaunch = Boolean.getBoolean("appclient.is.jws");
+
     private final String mainClassNameToLaunch;
     private final URI[] classPathURIs;
     private ReadableArchive facadeClientRA;
@@ -273,7 +275,15 @@ public class FacadeLaunchable implements Launchable {
              * load the descriptor.
              */
             final AppClientArchivist archivist = getArchivist();
-            archivist.setAnnotationProcessingRequested(true);
+            /*
+             * Anno processing is currently file-based.  But during Java Web
+             * Start launches, the JARs which Java Web Start has downloaded are
+             * not accessible as File objects.  Until the anno processing is
+             * generalized we suppress the anno processing during Java Web
+             * Start launches.
+             */
+            archivist.setAnnotationProcessingRequested( ! isJWSLaunch);
+
             final ACCClassLoader tempLoader = new ACCClassLoader(loader.getURLs(), loader.getParent());
             archivist.setClassLoader(tempLoader);
 
@@ -415,11 +425,12 @@ public class FacadeLaunchable implements Launchable {
                         ! Launchable.LaunchableUtil.matchesName(moduleID,
                             groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName))) {
 
-                    logger.log(Level.WARNING, "appclient.singleNestedClientNoMatch",
+                    logger.log(Level.WARNING, MessageFormat.format(
+                            logger.getResourceBundle().getString("appclient.singleNestedClientNoMatch"),
                             new Object[]{groupFacadeURI, knownClientNames.toString(),
                                          knownMainClasses.toString(),
                                          callerSpecifiedMainClassName,
-                                         callerSpecifiedAppClientName});
+                                         callerSpecifiedAppClientName}));
                 }
             } else if (Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
                 facade = new FacadeLaunchable(habitat, clientFacadeRA,

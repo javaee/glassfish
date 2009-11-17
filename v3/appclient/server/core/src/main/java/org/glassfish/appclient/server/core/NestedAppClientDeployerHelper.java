@@ -906,6 +906,18 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 final Collection<FullAndPartURIs> downloadsForThisArtifact,
                 final Collection<FullAndPartURIs> downloadsForReferencedArtifacts) throws IOException {
 
+            /*
+             * Add the JAR to the collection that must be downloaded to support
+             * the Java Web Start launch.  If the JAR is already signed it is
+             * simply added to the signed JAR manager.  If it is not signed by
+             * the developer then we sign it now so Java Web Start will be OK
+             * granting it the necessary permissions.
+             */
+            final URI fileURI = physicalFile().toURI();
+            DownloadableArtifacts.FullAndPartURIs fileDependency =
+                    new FullAndPartURIs(fileURI, canonicalURIWithinEAR());
+            downloadsForReferencedArtifacts.add(fileDependency);
+            signedJARManager.addJAR(fileURI);
             recordArtifactAsProcessed(artifactURIsProcessed, downloadsForThisArtifact);
 
             Manifest jarManifest;
