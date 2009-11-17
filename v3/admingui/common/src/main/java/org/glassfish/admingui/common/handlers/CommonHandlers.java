@@ -338,13 +338,16 @@ public class CommonHandlers {
         @HandlerOutput(name="LongResult", type=Long.class)}
     )    
     public void longAdd(HandlerContext handlerCtx) {
-    	// Get the inputs
-	Long long1 = (Long)handlerCtx.getInputValue("Long1");
-	Long long2 = (Long)handlerCtx.getInputValue("Long2");
-
-	// Add the 2 numbers together
-	Long result = new Long(long1.longValue()+long2.longValue());
-
+        Long result = new Long(0);
+        try{
+            // Get the inputs
+            Long long1 = (Long)handlerCtx.getInputValue("Long1");
+            Long long2 = (Long)handlerCtx.getInputValue("Long2");
+            // Add the 2 numbers together
+            result = new Long(long1.longValue()+long2.longValue());
+        }catch(Exception ex){
+            GuiUtil.getLogger().warning("Exception in longAdd, return 0 ");
+        }
 	// Set the result
 	handlerCtx.setOutputValue("LongResult", result);
     }
