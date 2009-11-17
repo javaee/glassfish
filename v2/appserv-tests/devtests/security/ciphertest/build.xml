@@ -28,9 +28,12 @@
     </target>
 
     <target name="setup" depends="init-common, prepare-store-common">
-        <copy file="testsetup.asadmin.template" tofile="testsetup.asadmin"/>
+	<property name="https.1.port" value="1${https.port}" />
+	<property name="https.2.port" value="2${https.port}" />
+	<copy file="testsetup.asadmin.template" tofile="testsetup.asadmin" overwrite="true"/>
         <replace file="testsetup.asadmin">
-            <replacefilter token="@HTTPSPORT@" value="${https.port}"/>
+            <replacefilter token="@HTTPS1PORT@" value="${https.1.port}"/>
+            <replacefilter token="@HTTPS2PORT@" value="${https.2.port}"/>
         </replace>
 
         <antcall target="asadmin-batch-common">
