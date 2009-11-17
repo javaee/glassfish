@@ -93,20 +93,6 @@ public class EjbMonitoringProbeProvider {
             @ProbeParam("modName") String modName,
             @ProbeParam("ejbName") String ejbName) {}
 
-    @Probe(name="beanActivatedEvent")
-    public void ejbBeanActivatedEvent(
-            @ProbeParam("beanId") long beanId,
-            @ProbeParam("appName") String appName,
-            @ProbeParam("modName") String modName,
-            @ProbeParam("ejbName") String ejbName) {}
-
-    @Probe(name="beanPassivatedEvent")
-    public void ejbBeanPassivatedEvent(
-            @ProbeParam("beanId") long beanId,
-            @ProbeParam("appName") String appName,
-            @ProbeParam("modName") String modName,
-            @ProbeParam("ejbName") String ejbName) {}
-
     @Probe(name="messageDeliveredEvent")
     public void messageDeliveredEvent(
             @ProbeParam("beanId") long beanId,

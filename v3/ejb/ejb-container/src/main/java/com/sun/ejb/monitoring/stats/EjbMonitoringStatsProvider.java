@@ -206,29 +206,6 @@ public abstract class EjbMonitoringStatsProvider {
         }
     }
 
-    @ProbeListener("glassfish:ejb:bean:beanActivatedEvent")
-    public void ejbBeanActivatedEvent(
-            @ProbeParam("beanId") long beanId,
-            @ProbeParam("appName") String appName,
-            @ProbeParam("modName") String modName,
-            @ProbeParam("ejbName") String ejbName) {
-        //if (isValidRequest(appName, modName, ejbName)) {
-        if (this.beanId == beanId) {
-            log ("ejbBeanActivatedEvent");
-        }
-    }
-
-    @ProbeListener("glassfish:ejb:bean:beanPassivatedEvent")
-    public void ejbBeanPassivatedEvent(
-            @ProbeParam("beanId") long beanId,
-            @ProbeParam("appName") String appName,
-            @ProbeParam("modName") String modName,
-            @ProbeParam("ejbName") String ejbName) {
-        if (this.beanId == beanId) {
-            log ("ejbBeanPassivatedEvent");
-        }
-    }
-
     @ManagedAttribute(id="createcount")
     @Description( "Number of times EJB create method is called")
     public CountStatistic getCreateCount() {
