@@ -106,8 +106,9 @@ public class EjbPoolStatsProvider {
     }
 
     public void register() {
+        String invokerId = EjbMonitoringUtils.getInvokerId(appName, moduleName, beanName);
         String node = EjbMonitoringUtils.registerSubComponent(
-                appName, moduleName, beanName, "bean-pool", this);
+                appName, moduleName, beanName, "bean-pool", this, invokerId);
         if (node != null) {
             registered = true;
         }

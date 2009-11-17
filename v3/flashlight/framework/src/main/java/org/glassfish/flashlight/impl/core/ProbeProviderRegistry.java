@@ -76,6 +76,10 @@ public class ProbeProviderRegistry {
         return providerMap.get(FlashlightUtils.makeName(moduleProviderName, moduleName, probeProviderName));
     }
 
+    public FlashlightProbeProvider getProbeProvider(Class clz) {
+        return classProviderMap.get(clz);
+    }
+    
     public FlashlightProbeProvider getProbeProvider(FlashlightProbeProvider fpp) {
         return providerMap.get(FlashlightUtils.makeName(fpp));
     }
@@ -92,7 +96,17 @@ public class ProbeProviderRegistry {
             throw new IllegalStateException("Provider already mapped " + qname);
         }
 
+        if (classProviderMap.putIfAbsent(clz, provider) != null) {
+            throw new IllegalStateException("Provider already mapped " + qname);
+        }
+
         return provider;
+    }
+
+    public void unregisterProbeProvider(Object provider) {
+        FlashlightProbeProvider fpp = classProviderMap.remove(provider.getClass());
+        String qname = FlashlightUtils.makeName(fpp);
+        providerMap.remove(qname);
     }
 
     private static ProbeProviderRegistry _me =
@@ -100,4 +114,6 @@ public class ProbeProviderRegistry {
 
     private ConcurrentMap<String, FlashlightProbeProvider> providerMap =
             new ConcurrentHashMap<String, FlashlightProbeProvider>();
+    private ConcurrentMap<Class, FlashlightProbeProvider> classProviderMap =
+            new ConcurrentHashMap<Class, FlashlightProbeProvider>();
 }

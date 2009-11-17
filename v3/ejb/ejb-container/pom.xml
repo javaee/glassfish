@@ -79,7 +79,7 @@
                     <archive>
                         <manifestEntries>
                             <probe-provider-class-names>
-                                org.glassfish.ejb.security.application.EjbSecurityProbeProvider,com.sun.ejb.monitoring.probes.EjbMonitoringProbeProvider,com.sun.ejb.monitoring.probes.EjbTimedObjectProbeProvider,com.sun.ejb.monitoring.probes.EjbPoolProbeProvider
+                                org.glassfish.ejb.security.application.EjbSecurityProbeProvider
                             </probe-provider-class-names>
                         </manifestEntries>
                     </archive>
@@ -228,6 +228,7 @@
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-codegen</artifactId>
+            <version>${glassfish-corba.version}</version>
 	    <optional>true</optional> 
         </dependency>
         <dependency>

@@ -95,6 +95,7 @@ public class FlashlightProbe
 
     }
 
+
     private boolean isMethodStatic() {
         boolean isMethodStatic = false;
         try {
@@ -153,11 +154,18 @@ public class FlashlightProbe
             return;
         }
 
-        for (ProbeClientInvoker invoker : invokerList) {
+        if (parent != null) {
+            parent.fireProbe(params);
+        }
+
+        int sz = invokerList.size();
+
+        for (int i=0; i<sz; i++) {
+            ProbeClientInvoker invoker = invokerList.get(i);
             if(invoker != null) {
                 invoker.invoke(params);
             }
-        }
+        } 
     }
 
     public boolean isEnabled() {
@@ -204,6 +212,14 @@ public class FlashlightProbe
         return probeDesc;
     }
 
+    public static String getProbeDesc(String moduleProviderName,
+                                    String moduleName,
+                                    String probeProviderName,
+                                    String probeName){
+        return (moduleProviderName + ":" + moduleName + ":" +
+                probeProviderName + ":" + probeName);
+    }
+
     public Class getProviderClazz() {
 		return providerClazz;
 	}
@@ -248,6 +264,10 @@ public class FlashlightProbe
         return hidden;
     }
 
+    public void setParent(FlashlightProbe parent) {
+        this.parent = parent;
+    }
+
     private void initInvokerList() {
         Set<Map.Entry<Integer, ProbeClientInvoker>> entries = invokers.entrySet();
 
@@ -284,5 +304,6 @@ public class FlashlightProbe
         LogDomains.getLogger(FlashlightProbe.class, LogDomains.MONITORING_LOGGER);
     public final static LocalStringManagerImpl localStrings =
                             new LocalStringManagerImpl(FlashlightProbe.class);
+    private FlashlightProbe parent = null;
 }
 

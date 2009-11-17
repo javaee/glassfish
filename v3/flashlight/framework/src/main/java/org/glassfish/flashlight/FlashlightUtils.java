@@ -270,6 +270,27 @@ public class FlashlightUtils {
     }
 
 
+    /*
+        Will replace special characters with ascii codes
+        (to avoid problems during class creation)
+     */
+    public static String getUniqueInvokerId(String suffix) {
+        StringBuilder sb = new StringBuilder("_");
+        if (suffix != null) {
+            suffix = suffix.replace(".", "-");
+            suffix = suffix.replace(":", "-");
+            suffix = suffix.replace("-", "_");
+            String[] input = suffix.split("\\W");
+            for (String str : input) {
+                sb.append(str).append("_");
+            }
+        }
+
+        return sb.toString();
+    }
+
+
+
     private static void ok() {
         if(habitat == null || monConfig == null) {
             String errStr = localStrings.getLocalString("habitatNotSet", "Internal Error: habitat was not set in {0}", FlashlightUtils.class);

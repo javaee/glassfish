@@ -45,7 +45,9 @@ package com.sun.ejb.containers.util.pool;
 
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.monitoring.probes.EjbPoolProbeProvider;
+import com.sun.ejb.monitoring.stats.EjbMonitoringUtils;
 import com.sun.enterprise.util.Utility;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -162,7 +164,20 @@ public abstract class AbstractPool
         this.appName = appName;
         this.modName = modName;
         this.ejbName = ejbName;
-        poolProbeNotifier = new EjbPoolProbeProvider();
+        try {
+            ProbeProviderFactory probeFactory = EjbContainerUtilImpl.getInstance().getProbeProviderFactory();
+            String invokerId = EjbMonitoringUtils.getInvokerId(appName, modName, ejbName);
+            poolProbeNotifier = probeFactory.getProbeProvider(EjbPoolProbeProvider.class, invokerId);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Got poolProbeNotifier: " + poolProbeNotifier.getClass().getName());
+            }
+        } catch (Exception ex) {
+            poolProbeNotifier = new EjbPoolProbeProvider();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error getting the EjbPoolProbeProvider");
+            }
+        }
+
     }
     
     /**
@@ -339,7 +354,7 @@ public abstract class AbstractPool
             }
             _logger.log(Level.FINE,"[AbstractPool]: Pool closed....");
             list = new ArrayList();
-
+            unregisterProbeProvider();
             Utility.setContextClassLoader(origLoader);
         }
         
@@ -547,5 +562,16 @@ public abstract class AbstractPool
             .append("MS=").append(maxPoolSize);
     
         return sbuf.toString();
+    }
+    
+    protected void unregisterProbeProvider () {
+            try {
+                ProbeProviderFactory probeFactory = EjbContainerUtilImpl.getInstance().getProbeProviderFactory();
+                probeFactory.unregisterProbeProvider(poolProbeNotifier);
+            } catch (Exception ex) {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "Error getting the EjbPoolProbeProvider");
+                }
+            }
     }
 }

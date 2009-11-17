@@ -109,7 +109,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         catch(RuntimeException rte) {
             logger.log(Level.WARNING, "ListenerRegistrationFailed",
                             new Object[] {spInfo.getStatsProvider().getClass().getName()});
-            logger.log(Level.WARNING, null, rte);
+            if (logger.isLoggable(Level.FINE))
+                logger.log(Level.FINE, "Listener registration failed", rte);
             FutureStatsProviders.add(spInfo);
         }
     }

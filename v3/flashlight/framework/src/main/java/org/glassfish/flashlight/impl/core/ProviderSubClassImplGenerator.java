@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.security.ProtectionDomain;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class ProviderSubClassImplGenerator {
@@ -26,14 +27,18 @@ public class ProviderSubClassImplGenerator {
 
     private Class providerClazz;
 
+    private static AtomicInteger counter = new AtomicInteger();
+
     public ProviderSubClassImplGenerator(Class providerClazz, String invokerId) {
         this.providerClazz = providerClazz;
         this.invokerId = invokerId;
     }
 
-    public <T> Class<T> generateAndDefineClass(Class<T> providerClazz, String generatedClassName, String invokerId) {
+    public <T> Class<T> generateAndDefineClass(Class<T> providerClazz, String invokerId) {
 
+        int id = counter.incrementAndGet();
         String providerClassName = providerClazz.getName().replace('.', '/');
+        String generatedClassName = providerClassName + invokerId + "_" + id;
         byte[] provClassData = null;
         try {
             InputStream is = providerClazz.getClassLoader().getResourceAsStream(providerClassName + ".class");
@@ -54,7 +59,7 @@ public class ProviderSubClassImplGenerator {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
         byte[] classData = null;
         ProbeProviderSubClassGenerator sgen = new ProbeProviderSubClassGenerator(cw,
-                providerClassName, invokerId);
+                invokerId, "_" + id);
         cr.accept(sgen, 0);
         classData = cw.toByteArray();
 
@@ -62,10 +67,10 @@ public class ProviderSubClassImplGenerator {
 
         SubClassLoader scl = new SubClassLoader(providerClazz.getClassLoader());
         try {
-            scl.defineClass(generatedClassName, classData, pd);
-
-            System.out.println("**** DEFINE CLASS SUCCEEDED for " + generatedClassName);
-            return (Class<T>) scl.loadClass(generatedClassName);
+            String gcName = scl.defineClass(generatedClassName, classData, pd);
+            if (logger.isLoggable(Level.FINE))
+                logger.fine("**** DEFINE CLASS SUCCEEDED for " + gcName + "," + generatedClassName);
+            return (Class<T>) scl.loadClass(gcName);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -79,11 +84,12 @@ public class ProviderSubClassImplGenerator {
             super(cl);
         }
 
-        void defineClass(String className, byte[] data, ProtectionDomain pd)
+        String defineClass(String className, byte[] data, ProtectionDomain pd)
                 throws Exception {
 
             className = className.replace('/', '.');
             super.defineClass(className, data, 0, data.length, pd);
+            return className;
         }
     }
 
@@ -94,17 +100,19 @@ public class ProviderSubClassImplGenerator {
         String superClassName;
         String token;
         ClassVisitor cv;
+        String id;
 
-        ProbeProviderSubClassGenerator(ClassVisitor cv, String superClassName, String token) {
+        ProbeProviderSubClassGenerator(ClassVisitor cv, String token, String id) {
             super(cv);
+            this.id = id;
             this.cv = cv;
-            this.superClassName = superClassName;
             this.token = token;
         }
 
         @Override
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            super.visit(version, access, superClassName + token, signature, superClassName, interfaces);    //To change body of overridden methods use File | Settings | File Templates.
+            this.superClassName = name;
+            super.visit(version, access, name + token + id, signature, name, interfaces);
         }
 
         @Override
@@ -131,7 +139,7 @@ public class ProviderSubClassImplGenerator {
 
                 return null;
             } else {
-            return super.visitMethod(access, name, desc, signature, strings);    //To change body of overridden methods use File | Settings | File Templates.
+            return super.visitMethod(access, name, desc, signature, strings);
             }
         }
     }

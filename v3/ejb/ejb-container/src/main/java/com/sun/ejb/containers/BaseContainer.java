@@ -78,6 +78,7 @@ import com.sun.ejb.monitoring.stats.*;
 import com.sun.ejb.monitoring.probes.*;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.glassfish.external.probe.provider.PluginPoint;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -1752,6 +1753,7 @@ public abstract class BaseContainer
 
        return !skipPreInvokeAuth;
     }
+
 
     /**
      * Called from EJBObject/EJBHome before invoking on EJB.
@@ -4265,16 +4267,25 @@ public abstract class BaseContainer
         registryMediator.undeploy();
         registryMediator = null;
         ejbMethodStatsManager = null;
+        try {
+            ejbProbeListener.unregister();
+            ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
+            probeFactory.unregisterProbeProvider(ejbProbeNotifier);
 
-        ejbProbeListener.unregister();
-        if (timerProbeListener != null) {
-            timerProbeListener.unregister();
-        }
-        if (poolProbeListener != null) {
-            poolProbeListener.unregister();
-        }
-        if (cacheProbeListener != null) {
-            cacheProbeListener.unregister();
+            if (timerProbeListener != null) {
+                timerProbeListener.unregister();
+                probeFactory.unregisterProbeProvider(timerProbeNotifier);
+            }
+            if (poolProbeListener != null) {
+                poolProbeListener.unregister();
+            }
+            if (cacheProbeListener != null) {
+                cacheProbeListener.unregister();
+            }
+        } catch (Exception ex) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error unregistering the ProbeProvider");
+            }
         }
     }
     /**
@@ -5288,7 +5299,20 @@ public abstract class BaseContainer
 	}
 
         // Always create to avoid NPE
-        ejbProbeNotifier = new EjbMonitoringProbeProvider();
+        try {
+            ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
+            String invokerId = EjbMonitoringUtils.getInvokerId(appName, modName, ejbName);
+            ejbProbeNotifier = probeFactory.getProbeProvider(EjbMonitoringProbeProvider.class, invokerId);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Got ProbeProvider: " + ejbProbeNotifier.getClass().getName());
+            }
+        } catch (Exception ex) {
+            ejbProbeNotifier = new EjbMonitoringProbeProvider();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error getting the EjbMonitoringProbeProvider");
+            }
+        }
+
     }
 
     protected void populateMethodMonitorMap() {
@@ -5361,9 +5385,21 @@ public abstract class BaseContainer
         if( isTimedObject() ) {
             //toMonitorProps = new TimedObjectMonitorableProperties();
 	    //registryMediator.registerProvider( toMonitorProps );
-            timerProbeNotifier = new EjbTimedObjectProbeProvider();
+            String invokerId = EjbMonitoringUtils.getInvokerId(containerInfo.appName, containerInfo.modName, containerInfo.ejbName);
+            try {
+                ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
+                timerProbeNotifier = probeFactory.getProbeProvider(EjbTimedObjectProbeProvider.class, invokerId);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.INFO, "Got TimerProbeProvider: " + timerProbeNotifier.getClass().getName());
+                }
+            } catch (Exception ex) {
+                timerProbeNotifier = new EjbTimedObjectProbeProvider();
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.INFO, "Error getting the TimerProbeProvider");
+                }
+            }
             timerProbeListener = new EjbTimedObjectStatsProvider(
-                    containerInfo.appName, containerInfo.modName, containerInfo.ejbName);
+                    containerInfo.appName, containerInfo.modName, containerInfo.ejbName, getContainerId());
             timerProbeListener.register();
 	}
         _logger.log(Level.FINE, "[BaseContainer] registered timer monitorable");
@@ -5468,7 +5504,6 @@ public abstract class BaseContainer
 
 
     }
-
 
 } //BaseContainer{}
 

@@ -56,5 +56,11 @@ public interface ProbeProviderFactory {
     public <T> T getProbeProvider(String moduleName, String providerName, String appName, Class<T> clazz)
             throws InstantiationException, IllegalAccessException;
 
+    public void unregisterProbeProvider(Object probeProvider);
+
     public void processXMLProbeProviders(ClassLoader cl, String xml, boolean inBundle);
+
+    public void addProbeProviderEventListener(ProbeProviderEventListener listener);
+
+    public void removeProbeProviderEventListener(ProbeProviderEventListener listener);
 }

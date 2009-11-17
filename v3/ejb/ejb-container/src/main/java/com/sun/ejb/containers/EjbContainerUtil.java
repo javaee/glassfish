@@ -60,6 +60,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 /**
  * @author Mahesh Kannan
@@ -145,4 +146,7 @@ public interface EjbContainerUtil {
     public boolean isEJBLite();
 
     public boolean isEmbeddedServer();
+
+    public ProbeProviderFactory getProbeProviderFactory();
+
 }

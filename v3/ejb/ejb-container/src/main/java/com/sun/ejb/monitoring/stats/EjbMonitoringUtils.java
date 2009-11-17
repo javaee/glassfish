@@ -64,11 +64,11 @@ public class EjbMonitoringUtils {
 
 
     static String registerComponent(String appName, String moduleName, 
-                String beanName, Object listener) {
+                String beanName, Object listener, String invokerId) {
         String beanSubTreeNode = getBeanNode(appName, moduleName, beanName);
         try {
             StatsProviderManager.register(EJB_MONITORING_NODE, 
-                    PluginPoint.APPLICATIONS, beanSubTreeNode, listener);
+                    PluginPoint.APPLICATIONS, beanSubTreeNode, listener, null, invokerId);
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "[**EjbMonitoringUtils**] Could not register listener for " 
                     + "appName: " + appName + "; modName: " + moduleName + "; beanName: " + beanName, ex);
@@ -79,15 +79,15 @@ public class EjbMonitoringUtils {
         return beanSubTreeNode;
     }
 
-    static String registerSubComponent(String appName, String moduleName, 
-            String beanName, String subNode, Object listener) {
+    static String registerSubComponent(String appName, String moduleName,
+            String beanName, String subNode, Object listener, String invokerId) {
         String subTreeNode = getBeanNode(appName, moduleName, beanName) + NODE + subNode;
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("SUB-NODE NAME: " + subTreeNode);
         }
         try {
              StatsProviderManager.register(EJB_MONITORING_NODE, 
-                    PluginPoint.APPLICATIONS, subTreeNode, listener);
+                    PluginPoint.APPLICATIONS, subTreeNode, listener, null, invokerId);
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "[**EjbMonitoringUtils**] Could not register subnode ["
                     + subNode + "] listener for appName: " + appName 
@@ -99,14 +99,14 @@ public class EjbMonitoringUtils {
         return subTreeNode;
     }
 
-    static String registerMethod(String parentNode, String mname, Object listener) {
+    static String registerMethod(String parentNode, String mname, Object listener, String invokerId) {
         String subTreeNode = parentNode + METHOD_NODE + mname;
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("METHOD NODE NAME: " + subTreeNode);
         }
         try {
             StatsProviderManager.register(EJB_MONITORING_NODE,
-                    PluginPoint.APPLICATIONS, subTreeNode, listener);
+                    PluginPoint.APPLICATIONS, subTreeNode, listener, null, invokerId);
         } catch (Exception ex) {
             _logger.log(Level.SEVERE, "[**EjbMonitoringUtils**] Could not register method "
                     + "listener for " + subTreeNode, ex);
@@ -147,6 +147,10 @@ public class EjbMonitoringUtils {
             _logger.fine("BEAN NODE NAME: " + beanSubTreeNode);
         }
         return beanSubTreeNode;
+    }
+
+    public static String getInvokerId(String appName, String modName, String beanName) {
+        return "_" + appName + "_" + modName + "_" + beanName;
     }
 
 }

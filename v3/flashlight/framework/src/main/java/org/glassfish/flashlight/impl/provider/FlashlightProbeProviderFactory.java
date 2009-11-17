@@ -86,6 +86,8 @@ public class FlashlightProbeProviderFactory
     @Inject
     Habitat habitat;
 
+    private List<ProbeProviderEventListener> listeners = new ArrayList<ProbeProviderEventListener>();
+
     private final static Set<FlashlightProbeProvider> allProbeProviders = new HashSet<FlashlightProbeProvider>();
     private static final Logger logger =
         LogDomains.getLogger(FlashlightProbeProviderFactory.class, LogDomains.MONITORING_LOGGER);
@@ -191,7 +193,16 @@ public class FlashlightProbeProviderFactory
         String origProbeProviderName = probeProviderName;
         Class<T> oldProviderClazz = providerClazz;
 
+        ProbeProviderRegistry ppRegistry = ProbeProviderRegistry.getInstance();
+        FlashlightProbeProvider genericProvider = null;
         if (invokerId != null) {
+            getProbeProvider( moduleProviderName,  moduleName,
+    		 probeProviderName, null, providerClazz);
+            genericProvider = new FlashlightProbeProvider(
+                moduleProviderName, moduleName, probeProviderName, providerClazz);
+            genericProvider = ppRegistry.getProbeProvider(genericProvider);
+
+            invokerId = FlashlightUtils.getUniqueInvokerId(invokerId);
             probeProviderName += invokerId;
             try {
                 providerClazz = getGeneratedProbeProviderClass(oldProviderClazz, invokerId);
@@ -201,7 +212,6 @@ public class FlashlightProbeProviderFactory
                 providerClazz = oldProviderClazz;
             }
         }
-        ProbeProviderRegistry ppRegistry = ProbeProviderRegistry.getInstance();
         FlashlightProbeProvider provider = new FlashlightProbeProvider(
                 moduleProviderName, moduleName, probeProviderName, providerClazz);
         if (logger.isLoggable(Level.FINE)) {
@@ -216,6 +226,8 @@ public class FlashlightProbeProviderFactory
 
         if(alreadyExists != null) {
             T inst = (T) alreadyExists.getProviderClass().newInstance();
+            notifyListenersOnAdd(moduleProviderName, moduleName,
+                    probeProviderName, invokerId, providerClazz, inst);
             return inst;
         }
 
@@ -235,6 +247,19 @@ public class FlashlightProbeProviderFactory
                     probeParamNames, m.getParameterTypes(), self, hidden);
             probe.setProviderJavaMethodName(m.getName());
             provider.addProbe(probe);
+
+            if (invokerId != null) {
+                if (genericProvider != null) {
+                    String probeDescriptor = FlashlightProbe.getProbeDesc(moduleProviderName, moduleName, origProbeProviderName, probeName);
+                    if (probeDescriptor != null) {
+                        FlashlightProbe fp = genericProvider.getProbe(probeDescriptor);
+                        if (fp != null) {
+                             probe.setParent(fp);
+                        }
+                    }
+
+                }
+            }
         }
 
         handleDTrace(provider);
@@ -252,7 +277,10 @@ public class FlashlightProbeProviderFactory
             try {
                 tClazz = (Class<T>) (providerClazz.getClassLoader()).loadClass(generatedClassName);
                 //System.out.println ("Reusing the Generated class");
-                return (T) tClazz.newInstance();
+                T inst = (T) tClazz.newInstance();
+                notifyListenersOnAdd(moduleProviderName, moduleName,
+                        probeProviderName, invokerId, providerClazz, inst);
+                return inst;
             } catch (ClassNotFoundException cnfEx) {
                 //Ignore
             }
@@ -271,28 +299,41 @@ public class FlashlightProbeProviderFactory
                 provider, tClazz);
 
         T inst = (T) tClazz.newInstance();
+        notifyListenersOnAdd(moduleProviderName, moduleName,
+                probeProviderName, invokerId, providerClazz, inst);
         return inst;
+    }
+
+
+
+    public void unregisterProbeProvider(Object probeProvider) {
+        try {
+            ProbeProviderRegistry ppRegistry = ProbeProviderRegistry.getInstance();
+            FlashlightProbeProvider fProbeProvider =
+                    ppRegistry.getProbeProvider(probeProvider.getClass());
+            ProbeRegistry probeRegistry = ProbeRegistry.getInstance();
+            for (FlashlightProbe probe : fProbeProvider.getProbes()) {
+                probeRegistry.unregisterProbe(probe);
+            }
+            ppRegistry.unregisterProbeProvider(probeProvider);
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.WARNING))
+                logger.log(Level.WARNING, "unregisterProbeProvider exception ", t);
+        }
     }
 
     private <T> Class<T> getGeneratedProbeProviderClass(Class<T> oldProviderClazz, String invokerId) {
         String generatedClassName = oldProviderClazz.getName() + invokerId;
 
         Class<T> genClazz = null;
-        try {
-            genClazz = (Class<T>) (oldProviderClazz.getClassLoader()).loadClass(generatedClassName);
-            //System.out.println ("Reusing the Generated class");
-            return genClazz;
-        } catch (Exception cnfEx) {
-            //Ignore
-        }
 
         try {
             ProviderSubClassImplGenerator gen = new ProviderSubClassImplGenerator(
                     oldProviderClazz, invokerId);
 
-            genClazz = gen.generateAndDefineClass(oldProviderClazz, generatedClassName, invokerId);
+            genClazz = gen.generateAndDefineClass(oldProviderClazz, invokerId);
 
-            System.out.println("** Loaded generated provider: " + genClazz.getName());
+            //System.out.println("** Loaded generated provider: " + genClazz.getName());
             return genClazz;
         } catch (Throwable cnfEx) {
             throw new RuntimeException(cnfEx);
@@ -326,6 +367,25 @@ public class FlashlightProbeProviderFactory
         }
 
     }
+
+    private <T> void notifyListenersOnAdd(String moduleProviderName, String moduleName,
+                String probeProviderName, String invokerId,
+                Class<T> providerClazz, T provider) {
+        for (ProbeProviderEventListener listener : listeners) {
+            listener.probeProviderAdded(moduleProviderName, moduleName,
+                probeProviderName, invokerId, providerClazz, provider);
+        }
+    }
+
+    @Override
+    public void addProbeProviderEventListener(ProbeProviderEventListener listener) {
+        listeners.add(listener);
+    }
+ 
+    @Override
+    public void removeProbeProviderEventListener(ProbeProviderEventListener listener) {
+        listeners.remove(listener);
+    } 
 
     @Override
 	public String toString() {

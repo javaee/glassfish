@@ -57,6 +57,7 @@ public class ProbeRegistry {
     }
 
     public void unregisterProbe(FlashlightProbe probe) {
+        probeDesc2ProbeMap.remove(probe.getProbeDesc());
         probeMap.remove(probe.getId());
     }
 

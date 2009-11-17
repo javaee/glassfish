@@ -90,6 +90,7 @@ public class EjbCacheStatsProvider {
     private String appName = null;
     private String moduleName = null;
     private String beanName = null;
+    private String invokerId = null;
     private boolean registered = false;
     private EJBCacheStatsProvider delegate;
 
@@ -100,6 +101,7 @@ public class EjbCacheStatsProvider {
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
+        this.invokerId = EjbMonitoringUtils.getInvokerId(appName, moduleName, beanName);
 
         long now = System.currentTimeMillis();
 
@@ -119,7 +121,7 @@ public class EjbCacheStatsProvider {
 
     public void register() {
         String node = EjbMonitoringUtils.registerSubComponent(
-                appName, moduleName, beanName, "bean-cache", this);
+                appName, moduleName, beanName, "bean-cache", this, invokerId);
         if (node != null) {
             registered = true;
         }

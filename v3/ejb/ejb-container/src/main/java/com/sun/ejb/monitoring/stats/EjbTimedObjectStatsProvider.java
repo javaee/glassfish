@@ -72,18 +72,21 @@ public class EjbTimedObjectStatsProvider {
     private String appName = null;
     private String moduleName = null;
     private String beanName = null;
+    private long beanId = 0L;
     private boolean registered = false;
 
     public EjbTimedObjectStatsProvider(String appName, String moduleName,
-            String beanName) {
+            String beanName, long beanId) {
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
+        this.beanId = beanId;
     }
 
     public void register() {
+        String invokerId = EjbMonitoringUtils.getInvokerId(appName, moduleName, beanName);
         String node = EjbMonitoringUtils.registerSubComponent(
-                appName, moduleName, beanName, "timers", this);
+                appName, moduleName, beanName, "timers", this, invokerId);
         if (node != null) {
             registered = true;
         }

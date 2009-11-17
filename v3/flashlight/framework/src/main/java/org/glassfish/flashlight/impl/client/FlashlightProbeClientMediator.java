@@ -66,6 +66,7 @@ import java.util.logging.Level;
 import java.io.PrintWriter;
 import java.io.File;
 import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
+import org.glassfish.flashlight.FlashlightUtils;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.tools.attach.VirtualMachine;
@@ -149,7 +150,9 @@ public class FlashlightProbeClientMediator
 
         List<ProbeClientMethodHandle>   pcms                                = new ArrayList<ProbeClientMethodHandle>();
         List<FlashlightProbe>           probesRequiringClassTransformation  = new ArrayList<FlashlightProbe>();
-
+        if (invokerId != null) {
+            invokerId = FlashlightUtils.getUniqueInvokerId(invokerId);
+        }
         registerJavaListener(listener, pcms, probesRequiringClassTransformation, invokerId);
         transformProbes(listener, probesRequiringClassTransformation);
 
@@ -176,8 +179,9 @@ public class FlashlightProbeClientMediator
         List<MethodProbe> methodProbePairs = 
             handleListenerAnnotations(listener.getClass(), invokerId);
 
-        if(methodProbePairs.isEmpty())
+        if(methodProbePairs.isEmpty()) {
             return;
+        }
 
         for(MethodProbe mp : methodProbePairs) {
             FlashlightProbe probe = mp.probe;
@@ -230,8 +234,9 @@ public class FlashlightProbeClientMediator
             throw new RuntimeException(errStr);
         }
 
-        if(isAgentAttached())
+        if(isAgentAttached()) {
             submit2BTrace(bArr);
+        }
     }
 
     /**
@@ -261,7 +266,6 @@ public class FlashlightProbeClientMediator
                               strArr[3];
             }
             FlashlightProbe probe = probeRegistry.getProbe(probeString);
-
             if (probe == null) {
                 String errStr = localStrings.getLocalString("probeNotRegistered",
                                     "Probe is not registered: {0}", probeString);

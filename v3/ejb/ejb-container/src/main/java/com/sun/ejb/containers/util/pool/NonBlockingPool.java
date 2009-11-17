@@ -86,8 +86,6 @@ public class NonBlockingPool
     private int		  resizeTaskCount;
     private int		  timerTaskCount;
 
-    private long beanId;
-
     protected NonBlockingPool() {
     }
 
@@ -364,6 +362,7 @@ public class NonBlockingPool
                 _logger.log(Level.FINE,"Pool-"+poolName+"]: Pool closed....");
             }
             list.clear(); 
+            unregisterProbeProvider();
 
             Utility.setContextClassLoader(origLoader);
 

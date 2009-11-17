@@ -72,6 +72,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.persistence.common.Java2DBProcessorHelper;
 import org.glassfish.persistence.common.DatabaseConstants;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
@@ -166,6 +167,9 @@ public class EjbContainerUtilImpl
 
     @Inject
     private EjbAsyncInvocationManager ejbAsyncInvocationManager;
+
+    @Inject
+    ProbeProviderFactory probeProviderFactory;
 
     private  static EjbContainerUtil _me;
 
@@ -542,5 +546,9 @@ public class EjbContainerUtilImpl
             }
         }
         return resource;
+    }
+
+    public ProbeProviderFactory getProbeProviderFactory() {
+        return probeProviderFactory;
     }
 }

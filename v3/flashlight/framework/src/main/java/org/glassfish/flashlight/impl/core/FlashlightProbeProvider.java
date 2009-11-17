@@ -102,6 +102,10 @@ public class FlashlightProbeProvider implements ProbeProviderInfo{
         probes.put(probe.getProbeDesc(), probe);
     }
 
+    public FlashlightProbe getProbe(String probeDescriptor) {
+        return (probes.get(probeDescriptor));
+    }
+
     public Collection<FlashlightProbe> getProbes() {
         return probes.values();
     }

@@ -109,15 +109,16 @@ public abstract class EjbMonitoringStatsProvider {
     }
 
     public void register() {
+        String invokerId = EjbMonitoringUtils.getInvokerId(appName, moduleName, beanName);
         String beanSubTreeNode = EjbMonitoringUtils.registerComponent(
-                appName, moduleName, beanName, this);
+                appName, moduleName, beanName, this, invokerId);
         if (beanSubTreeNode != null) {
             registered = true;
             for (Method m : methodMonitorMap.keySet()) {
                 EjbMethodStatsProvider monitor = methodMonitorMap.get(m);
                 if (!monitor.isRegistered()) {
                     String node = EjbMonitoringUtils.registerMethod(beanSubTreeNode,
-                            monitor.getStringifiedMethodName(), monitor);
+                            monitor.getStringifiedMethodName(), monitor, invokerId);
                     if (node != null) {
                         monitor.registered();
                     }

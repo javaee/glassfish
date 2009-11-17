@@ -51,6 +51,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.monitoring.ContainerMonitoring;
 import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
+import org.glassfish.flashlight.provider.ProbeProviderEventListener;
 import org.glassfish.flashlight.provider.ProbeRegistry;
 import org.glassfish.internal.api.Init;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
@@ -163,12 +164,6 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         amxg.listenForDomainRoot(ManagementFactory.getPlatformMBeanServer(), spmd);
     }
 
-    public void moduleInstalled(Module module) {
-    }
-
-    public void moduleUpdated(Module module) {
-    }
-
     public void moduleResolved(Module module) {
         if (module == null) return;
         verifyModule(module);
@@ -198,6 +193,14 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             removeProvider(module);
         }
         */
+    }
+
+    // noop to satisfy interface
+    public void moduleInstalled(Module module) {
+    }
+
+    // noop to satisfy interface
+    public void moduleUpdated(Module module) {
     }
 
     private void addProvider(Module module) {
@@ -507,6 +510,8 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         }
         //Start registering the cached StatsProviders and also those that are coming in new
         setStatsProviderManagerDelegate();
+        //register probeprocee listener
+        probeProviderFactory.addProbeProviderEventListener(new ProcessProbes());
     }
 
     private void disableMonitoringForProbeProviders() {
@@ -524,5 +529,12 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             return false;
 
         return true;
+    }
+
+    private class ProcessProbes implements ProbeProviderEventListener {
+        public <T> void probeProviderAdded(String moduleProviderName, String moduleName,
+                String probeProviderName, String invokerId, Class<T> providerClazz, T provider) {
+            handleFutureStatsProviders();
+        }
     }
 }
