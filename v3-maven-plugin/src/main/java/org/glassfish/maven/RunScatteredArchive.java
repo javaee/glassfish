@@ -48,6 +48,7 @@ import org.glassfish.api.embedded.EmbeddedDeployer;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.api.embedded.ScatteredArchive.Builder;
+import org.glassfish.api.embedded.ContainerBuilder;
 
 
 
@@ -82,6 +83,10 @@ public class RunScatteredArchive extends AbstractDeployMojo{
         try {
             super.setClassPathProperty();
             Server server = Util.getServer(serverID, instanceRoot, installRoot, configFile, autoDelete);
+            if (port != -1)
+                server.createPort(port);
+
+            server.addContainer(ContainerBuilder.Type.all);
 
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
