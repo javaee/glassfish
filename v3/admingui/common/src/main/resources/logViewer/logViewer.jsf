@@ -90,6 +90,8 @@
         setPageSessionAttribute(key="logFile" value="#{pageSession.valueMap['file']}");
                    
     }
+    urlencode(value="#{pageSession.logFile}" encoding="UTF-8" result="#{pageSession.encodedLogFile}");
+
     getLogResultsTable(InstanceName="#{instanceName}", LogDateSortDirection="#{false}", FromRecord="#{fromRecord}", AfterRecord="#{afterRecord}", LogFileName="#{logFile}", LogLevel="#{logLevel}", OnlyLevel="#{requestScope.onlyLevel}", DateEnabled="#{requestScope.dateEnabled}", FromDate="#{requestScope.fromDate}", FromTime="#{requestScope.fromTime}", ToDate="#{requestScope.toDate}", ToTime="#{requestScope.toTime}", Loggers="#{logentries}", CustomLoggers="#{requestScope.customLogger}", Nvp="#{requestScope.nvp}", NumToDisplay="#{requestScope.numToDisplay}",  TruncateMessage="#{requestScope.truncate}",  result=>$attribute{tableList}, FirstLogRow=>$page{firstRecord}, LastLogRow=>$page{lastRecord}, HasResults=>$page{hasResults});
     getFirstLastRecord(FirstRecord="#{firstRecord}", LastRecord="#{lastRecord}", First=>$page{first}, Last=>$page{last})
         />   
@@ -350,7 +352,7 @@
             <staticText id="messageCol" value="#{td.value.message}"/>
             <sun:hyperlink id="logDetail" text="$resource{i18nc.logViewer.moreInfoLinkText}"
             onClick="javascript:
-            var logDetailWin = window.open('logEntryDetail.jsf?instanceName=#{instanceName}&logLevel=#{td.value.level}&logFile=#{logFile}&recNumber=#{td.value.recNumber}','LogDetail','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
+            var logDetailWin = window.open('logEntryDetail.jsf?instanceName=#{instanceName}&logLevel=#{td.value.level}&logFile=#{pageSession.encodedLogFile}&recNumber=#{td.value.recNumber}','LogDetail','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
             logDetailWin.focus();return false;" />
         </sun:tableColumn>        
         <sun:tableColumn headerText="$resource{i18nc.logViewer.loggerLabel}" rowHeader="$boolean{true}" sort="#{td.value.logger}" id="col4">
