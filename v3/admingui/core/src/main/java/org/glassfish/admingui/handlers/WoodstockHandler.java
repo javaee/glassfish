@@ -519,34 +519,33 @@ public class WoodstockHandler {
     }
 
     private static OptionGroup getMenuOptions(List values, String label, String label2, boolean addLabel) {
+	if (values == null) {
+	    return null;
+	}
         ArrayList nList = new ArrayList();
         Option[] groupedOptions3 = new Option[0];
         Collections.sort(values);
         ListIterator nl = values.listIterator();
-        if (values == null) {
-            return null;
-        } else {
-            while (nl.hasNext()) {
-                String name = (String) nl.next();
-                if (addLabel && label2.equals("")) {
-                    if(!label.equals(name)){
-                        nList.add(new Option(label+"/" + name, name));
-                    } else {
-                        nList.add(new Option(name, name));
-                    }
+	while (nl.hasNext()) {
+	    String name = (String) nl.next();
+	    if (addLabel && label2.equals("")) {
+		if(!label.equals(name)){
+		    nList.add(new Option(label+"/" + name, name));
+		} else {
+		    nList.add(new Option(name, name));
+		}
 
-                } else if(addLabel && !label2.equals("")) {
-                    nList.add(new Option(label2+"/"+label+"/" + name, name));
-                } else {
-                    nList.add(new Option(name, name));
-                }
-            }
-            groupedOptions3 = (Option[]) nList.toArray(new Option[nList.size()]);
-            OptionGroup jumpGroup3 = new OptionGroup();
-            jumpGroup3.setLabel(label);
-            jumpGroup3.setOptions(groupedOptions3);
-            return jumpGroup3;
-        }
+	    } else if(addLabel && !label2.equals("")) {
+		nList.add(new Option(label2+"/"+label+"/" + name, name));
+	    } else {
+		nList.add(new Option(name, name));
+	    }
+	}
+	groupedOptions3 = (Option[]) nList.toArray(new Option[nList.size()]);
+	OptionGroup jumpGroup3 = new OptionGroup();
+	jumpGroup3.setLabel(label);
+	jumpGroup3.setOptions(groupedOptions3);
+	return jumpGroup3;
     }
 
     private Option[] jumpMenuOptions = null;
