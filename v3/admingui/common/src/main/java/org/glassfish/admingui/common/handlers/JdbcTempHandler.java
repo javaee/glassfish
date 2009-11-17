@@ -216,14 +216,14 @@ public class JdbcTempHandler {
                 List dsl = new ArrayList();
                 try {
                     String classname = "";
-                    GuiUtil.getLogger().info("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
+                    GuiUtil.getLogger().fine("======= getJdbcDriverClassNames(" + dbVendor + ", " + resType + ")");
                     Map<String, Object> dcn = V3AMX.getInstance().getConnectorRuntime().getJdbcDriverClassNames(dbVendor, resType);
-                    GuiUtil.getLogger().info("======= returns " + ((dcn == null)? "NULL" : " Map of size " + dcn.size()));
+                    GuiUtil.getLogger().fine("======= returns " + ((dcn == null)? "NULL" : " Map of size " + dcn.size()));
                     if (dcn != null) {
                         dsl = new ArrayList((Set) dcn.get(JDBC_DRIVER_CLASS_NAMES_KEY));
-                        GuiUtil.getLogger().info("=======  # of items for JDBC_DRIVER_CLASS_NAMES_KEY  " + dsl.size() );
+                        GuiUtil.getLogger().fine("=======  # of items for JDBC_DRIVER_CLASS_NAMES_KEY  " + dsl.size() );
                         for(int i=0; i< dsl.size(); i++){
-                            System.out.println( "classname[" + i + "] : " + dsl.get(i));
+                            GuiUtil.getLogger().fine( "classname[" + i + "] : " + dsl.get(i));
                         }
                     }
                     
@@ -241,14 +241,14 @@ public class JdbcTempHandler {
                         extra.put("dsClassname", Boolean.TRUE);
                         extra.put("DatasourceClassname", dslName);
                     }
-                    GuiUtil.getLogger().info("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType +")");
+                    GuiUtil.getLogger().fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + dslName + "\"," + resType +")");
                     Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(dslName, resType);
                     if (result != null) {
                         Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
-                        GuiUtil.getLogger().info("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+                        GuiUtil.getLogger().fine("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
                     }else {
-                        GuiUtil.getLogger().info("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+                        GuiUtil.getLogger().fine("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
                 } catch (Exception ex) {
@@ -281,14 +281,14 @@ public class JdbcTempHandler {
         String resType = (String) extra.get("ResType");
         String classname = (String) extra.get("DatasourceClassname");
         List<Map<String, String>> noprops = new ArrayList<Map<String, String>>();
-        GuiUtil.getLogger().info("===== getConnectionDefinitionPropertiesAndDefaults(\"" + classname + "\"," + resType + ")");
+        GuiUtil.getLogger().fine("===== getConnectionDefinitionPropertiesAndDefaults(\"" + classname + "\"," + resType + ")");
         Map result = (Map) V3AMX.getInstance().getConnectorRuntime().getConnectionDefinitionPropertiesAndDefaults(classname, resType);
         if (result != null) {
             Map<String, String> props = (Map) result.get(CONN_DEFINITION_PROPS_KEY);
-            GuiUtil.getLogger().info("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
+            GuiUtil.getLogger().fine("=======  getConnectionDefinitionPropertiesAndDefaults returns # of properties: " + props.size());
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", GuiUtil.convertMapToListOfMap(props));
         } else {
-            GuiUtil.getLogger().info("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
+            GuiUtil.getLogger().fine("======= getConnectionDefinitionPropertiesAndDefaults returns NULL");
             handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
         }
     }

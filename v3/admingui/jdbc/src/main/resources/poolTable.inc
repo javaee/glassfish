@@ -58,7 +58,7 @@
             />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colPoolName}" sort="Name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.Name}" 
             url="#{pageSession.editLink}?name=#{td.value.Name}" />
     </sun:tableColumn>
