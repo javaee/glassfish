@@ -190,7 +190,7 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
             return null;
         }
 
-        private static List<String> getMethods = null;
+        private final static List<String> getMethods = new ArrayList<String>();
 
         public static String getMonitoringLevel(MonitoringService ms, String name) {
 
@@ -208,9 +208,8 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
             // getters of ModuleMonitoringLevel.
             // For performance, the method names are cached when this is run first time.
 
-            if (getMethods == null) {
-              getMethods = new ArrayList<String>();
-              synchronized (getMethods) {
+          synchronized (getMethods) {
+            if (getMethods.isEmpty()) {
                 for (Method method : ModuleMonitoringLevels.class.getDeclaredMethods()) {
                     // If it is a getter store it in the list
                     String str = method.getName();
@@ -218,8 +217,8 @@ public interface MonitoringService extends ConfigBeanProxy, Injectable, Property
                         getMethods.add(str);
                     }
                 }
-              }
             }
+          }
 
             // strip - part from name
             String rName = name.replaceAll("-", "");

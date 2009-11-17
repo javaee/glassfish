@@ -178,8 +178,9 @@ public class GenericCRUDCommand implements AdminCommand, PostConstruct, CommandM
                 return null;
             }
 
-            public boolean isOptional(Param annotation) {
-                return annotation.optional();
+            @Override
+            public boolean isOptional(AnnotatedElement annotatedElement, Param param) {
+                return param.optional();
             }
         });
 

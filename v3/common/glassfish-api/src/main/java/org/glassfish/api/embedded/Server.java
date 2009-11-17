@@ -213,7 +213,7 @@ public class Server {
         if (builder.fileSystem==null || builder.fileSystem.instanceRoot==null) {
             File f;
             try {
-                f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("user.dir")));
+                f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("java.io.tmpdir")));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1066,8 +1066,16 @@ public class ASURLClassLoader
 
             if (obj instanceof URLEntry) {
                 URLEntry e = (URLEntry) obj;
-                if (source.equals(e.source)) {
-                    tf = true;
+                try {
+ 	 	            //try comparing URIs
+ 	 	            if (source.toURI().equals(e.source.toURI())) {
+ 	 	                tf = true;
+ 	 	            }
+ 	 	        } catch (URISyntaxException e1) {
+                    //fall back to comparing URLs
+                    if (source.equals(e.source)) {
+                        tf = true;
+                    }
                 }
             }
 
@@ -1078,7 +1086,12 @@ public class ASURLClassLoader
          * Since equals is overridden, we need to override hashCode as well.
          */
         public int hashCode() {
-            return source.hashCode();
+            try {
+ 	 	        return source.toURI().hashCode();
+ 	 	    } catch (URISyntaxException e) {
+ 	 	        //fall back to URL's hashCode
+                return source.hashCode();
+            }
         }
 
     }

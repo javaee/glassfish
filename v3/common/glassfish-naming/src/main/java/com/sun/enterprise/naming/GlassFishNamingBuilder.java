@@ -111,7 +111,7 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
 
     public Lifecycle getLifecycle()
     {
-        return Lifecycle.START;
+        return Lifecycle.SERVER;
     }
 
     private Class loadClass(String className) throws ClassNotFoundException
