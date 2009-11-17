@@ -138,6 +138,7 @@ public class TOCItem {
      *	    The <code>text</code> and <code>expand</code> values are not used
      *	    to test for equality.</p>
      */
+    @Override
     public boolean equals(Object obj) {
 	boolean result = false;
 	if (obj instanceof TOCItem) {
@@ -146,11 +147,20 @@ public class TOCItem {
 	return result;
     }
 
+    /**
+     *	<p> This method is overriden to help ensure consistency for equals()
+     *	    comparisons.  As such it simply returns the hashCode of the String
+     *	    (target) that is used in the equals comparison.</p>
+     */
+    @Override
+    public int hashCode() {
+	return getTarget().hashCode();
+    }
+
     @Override
     public String toString() {
         return getText() + " " + getTarget();
     }
-
 
 
     private boolean expand;
