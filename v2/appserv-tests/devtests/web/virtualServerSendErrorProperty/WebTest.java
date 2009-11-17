@@ -57,8 +57,8 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
 
     private static final String TEST_NAME =
         "virtual-server-send-error-property";
@@ -76,21 +76,18 @@ public class WebTest {
     public static void main(String[] args) {
         stat.addDescription("Unit test for 6324911");
         WebTest webTest = new WebTest(args);
-        webTest.doTest();
-        stat.printSummary(TEST_NAME);
-    }
-
-    public void doTest() {     
-        try { 
-            invokeServlet();
+        try {
+            webTest.doTest();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
             ex.printStackTrace();
         }
+
+        stat.printSummary(TEST_NAME);
     }
 
-    private void invokeServlet() throws Exception {
-        
+    private void doTest() throws Exception {
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         String get = "GET /nonexistent HTTP/1.0\n";
@@ -114,12 +111,8 @@ public class WebTest {
             }
         }
 
-        if (statusHeaderFound && bodyLineFound) {
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } else {
-            System.err.println("Missing response status or body line");
-            stat.addStatus(TEST_NAME, stat.FAIL);
+        if (!statusHeaderFound || !bodyLineFound) {
+            throw new Exception("Missing response status or body line");
         }
-
     }
 }
