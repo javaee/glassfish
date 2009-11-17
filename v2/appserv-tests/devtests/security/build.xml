@@ -45,7 +45,7 @@
         <ant dir="container-auth" target="all"/>
 	<ant dir="jmac" target="all"/>
 <!--	<ant dir="wss" target="all"/> -->
-<!--	<ant dir="ciphertest" target="all"/> -->
+	<ant dir="ciphertest" target="all"/> 
 	<ant dir="standalone" target="all"/>
 	<ant dir="simpleMultiRoleMapping" target="all"/>
 	<ant dir="multiRoleMapping" target="all"/>
