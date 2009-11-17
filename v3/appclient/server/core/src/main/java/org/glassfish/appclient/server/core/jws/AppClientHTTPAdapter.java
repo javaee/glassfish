@@ -203,7 +203,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
         gResp.setDateHeader(LAST_MODIFIED_HEADER_NAME, instanceTimestamp.getTime());
         gResp.setDateHeader(DATE_HEADER_NAME, System.currentTimeMillis());
-        gResp.setContentType(mimeType(relativeURIString));
+        gResp.setContentType(dc.getMimeType());
         gResp.setStatus(HttpServletResponse.SC_OK);
 
         /*
