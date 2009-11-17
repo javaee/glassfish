@@ -27,19 +27,18 @@ import javax.transaction.xa.Xid;
  * @author	Qingqing Ouyang
  */
 @Connector(
+   /*moduleName="My Simple RAR",*/
    displayName = "Simple Resource Adapter",
    vendorName = "Java Software",
    eisType = "Generic Type",
    version = "1.0Alpha"
 )
-public class SimpleResourceAdapterImpl 
+public class SimpleResourceAdapterImpl extends AbstractResourceAdapter 
 implements ResourceAdapter, java.io.Serializable {
 
     private BootstrapContext ctx;
     private WorkManager wm;
-    private String testName;
 
-    private boolean debug = true;
     private Work work;
 
     public SimpleResourceAdapterImpl () {
@@ -105,24 +104,6 @@ implements ResourceAdapter, java.io.Serializable {
         ((WorkDispatcher) work).stop();
     }
   
-    public String getTestName() {
-        return testName;
-    }
-
-    @ConfigProperty(
-            defaultValue = "ConfigPropertyForRA",
-            type = java.lang.String.class
-    )
-    public void setTestName(String name) {
-        debug("setTestName called... name = " + name);
-        testName = name;
-    }
-
-    public void
-    debug (String message) {
-        if (debug)
-            System.out.println("[SimpleResourceAdapterImpl] ==> " + message);
-    }
 
     public XAResource[] getXAResources(ActivationSpec[] specs) 
         throws ResourceException {

@@ -7,22 +7,9 @@ import javax.resource.spi.ConfigProperty;
 @AdministeredObject(
         adminObjectInterfaces = {connector.MyAdminObject.class}
 )
-public class MyAdminObject implements java.io.Serializable {
+public class MyAdminObject extends AbstractAdminObject implements java.io.Serializable {
 
-    @ConfigProperty(
-            defaultValue = "NORESET",
-            type = java.lang.String.class
-    )
-    private String resetControl;
     private Integer expectedResults;
-
-    public void setResetControl (String value) {
-        resetControl = value;
-    }
-
-    public String getResetControl () {
-        return resetControl;
-    }
 
     @ConfigProperty(
             type = java.lang.Integer.class,
@@ -37,8 +24,8 @@ public class MyAdminObject implements java.io.Serializable {
     }
 
     public void initialize() {
-	System.out.println("[MyAdminObject] Initializing the Controls to false:"+resetControl);
-        if (resetControl.equals("BEGINNING")) {
+	System.out.println("[MyAdminObject] Initializing the Controls to false:"+getResetControl());
+        if (getResetControl().equals("BEGINNING")) {
             synchronized (Controls.readyLock){
                 Controls.done=false;
             }
