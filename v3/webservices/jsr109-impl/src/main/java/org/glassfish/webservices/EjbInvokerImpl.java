@@ -49,39 +49,33 @@ import java.util.HashMap;
  */
 public class EjbInvokerImpl extends InvokerImpl {
     
-    private HashMap methodMap = null;
-    private Class endpointImplClass;
-    
-    public EjbInvokerImpl(Class endpointImpl, Invoker core, 
+    private final HashMap<Method,Method> methodMap = new HashMap<Method,Method>();
+
+    public EjbInvokerImpl(Class endpointImpl, Invoker core,
             Object inv, WebServiceContextImpl w) {
         super(core, inv, w);
-        endpointImplClass = endpointImpl;
+
+        Class proxyClass = invokeObject.getClass();
+        for(Method x : endpointImpl.getMethods()) {
+            try {
+                Method mappedMethod =
+                    proxyClass.getMethod(x.getName(), x.getParameterTypes());
+                methodMap.put(x, mappedMethod);
+            } catch (NoSuchMethodException noex) {
+                // We do not take any action because these may be excluded @WebMethods
+                // or EJB business methods that are not @WebMethods etc
+            }
+        }
     }
-    
+
     /**
      * Here is where we actually call the endpoint method
      */
-    public Object invoke(Packet p, Method m, Object... args ) 
+    public Object invoke(Packet p, Method m, Object... args )
                                 throws InvocationTargetException, IllegalAccessException {
-        if(methodMap == null) {
-            methodMap = new HashMap();
-            Class proxyClass = invokeObject.getClass();
-            for(Method x : endpointImplClass.getMethods()) {
-                try {
-                    Method mappedMethod = 
-                        proxyClass.getMethod(x.getName(), x.getParameterTypes());
-                    methodMap.put(x, mappedMethod);
-                } catch (NoSuchMethodException noex) {
-                    // We do not take any action because these may be excluded @WebMethods
-                    // or EJB business methods that are not @WebMethods etc
-                    continue;
-                }
-            }            
-        }
-        Method mappedMethod = 
-                (Method) methodMap.get(m);
+        Method mappedMethod = methodMap.get(m);
         if(mappedMethod != null)
             return(super.invoke(p, mappedMethod,  args));
-        throw new IllegalAccessException("Unable to find invocation method");
+        throw new IllegalAccessException("Unable to find invocation method for "+m+". Map="+methodMap);
     }
 }
