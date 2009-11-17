@@ -103,7 +103,8 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
         // TODO This doesn't seem to match the ReadableArchive for a stand-alone ejb-jar.
         // It might only be true for an ejb-jar wihtin an .ear.  Revisit when officially
         // adding support for .ears
-        if (!isWeldArchive && archive.getName().endsWith(EXPANDED_JAR_SUFFIX)) {
+        String archiveName = archive.getName();
+        if (!isWeldArchive && archiveName != null && archiveName.endsWith(EXPANDED_JAR_SUFFIX)) {
             isWeldArchive = isEntryPresent(archive, META_INF_BEANS_XML);
         }
 
