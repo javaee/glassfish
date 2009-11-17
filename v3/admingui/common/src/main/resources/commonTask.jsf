@@ -42,6 +42,11 @@
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}">
 <!define name="content">
+    <f:verbatim>
+	<style type="text/css">
+	    div .guiPageContent {padding-left:0px; padding-right:0px;}
+	</style>
+    </f:verbatim>
     <sun:script>
 	"admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
     </sun:script>
