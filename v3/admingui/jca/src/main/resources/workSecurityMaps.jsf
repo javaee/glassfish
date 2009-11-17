@@ -54,7 +54,7 @@
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njca.msg.JS.confirmDeleteSM}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/jca/workSecurityMapNew.jsf");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/workSecurityMaps.jsf");
-        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/workSecurityMapEdit.jsf?dummy");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njca.workSecurityMaps.tableTitle}");
     />
     </event>
