@@ -38,18 +38,16 @@ package com.sun.enterprise.web.jsp;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.servlet.ServletContext;
 import javax.servlet.jsp.tagext.JspTag;
-
 import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.catalina.core.StandardContext;
 import org.glassfish.jsp.api.ResourceInjector;
 import org.glassfish.internal.api.ServerContext;
-
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.web.WebModule;
@@ -127,7 +125,6 @@ public class ResourceInjectorImpl implements ResourceInjector {
      * @throws Exception if an error occurs during injection
      */
     public void inject(JspTag handler) throws Exception {
-
         if( desc != null ) {
             injectionMgr.injectInstance(handler, desc);
         }
@@ -146,8 +143,10 @@ public class ResourceInjectorImpl implements ResourceInjector {
             try {
                 injectionMgr.invokeInstancePreDestroy(handler, desc);
             } catch (Exception e) {
-                _logger.log(Level.WARNING, "Exception during invocation of " +
-                    "@PreDestroy on JSP tag handler " + handler, e);
+                String msg = _rb.getString(
+                    "webcontainer.exceptionDuringJspTagHandlerPredestroy");
+                msg = MessageFormat.format(msg, handler);
+                _logger.log(Level.WARNING, msg, e);
             }
         }
     }
