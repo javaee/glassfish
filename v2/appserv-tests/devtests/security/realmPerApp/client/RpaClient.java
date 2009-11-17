@@ -12,7 +12,7 @@ import javax.naming.*;
 import javax.rmi.PortableRemoteObject;
 import org.omg.CORBA.ORB;
 import com.sun.enterprise.security.LoginContext;
-import com.sun.enterprise.security.auth.login.common.LoginException;
+//import com.sun.enterprise.security.auth.login.common.LoginException;
 import java.rmi.RemoteException;
 import java.security.*;
 
