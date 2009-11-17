@@ -77,7 +77,12 @@ public class WebTest {
         stat.addDescription("Unit test for 6324911");
         WebTest webTest = new WebTest(args);
         try {
-            webTest.doTest();
+            webTest.doTest("/nonexistent", "HTTP/1.1 404 MY404",
+                "<web-app xmlns=");
+            webTest.doTest(webTest.contextRoot + "/test500?sendError=true",
+                "HTTP/1.1 500 MY500", "<web-app xmlns=");
+            webTest.doTest(webTest.contextRoot + "/test500?sendError=false",
+                "HTTP/1.1 500 MY500", "<web-app xmlns=");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -87,27 +92,41 @@ public class WebTest {
         stat.printSummary(TEST_NAME);
     }
 
-    private void doTest() throws Exception {
+    private void doTest(String target, String status, String body)
+            throws Exception {
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
-        String get = "GET /nonexistent HTTP/1.0\n";
+        String get = "GET " + target + " HTTP/1.0\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
-        
-        InputStream is = sock.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
 
         boolean statusHeaderFound = false;
-        boolean bodyLineFound = false;
-        String line = null;
-        while ((line = bis.readLine()) != null) {
-            System.out.println(line);
-            if ("HTTP/1.1 404 MY404".equals(line)) {
-                statusHeaderFound = true;
+        boolean bodyLineFound = false;        
+        BufferedReader br = null;
+        try {
+            InputStream is = sock.getInputStream();
+            br = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+                if (status.equals(line)) {
+                    statusHeaderFound = true;
+                }
+                if (line.startsWith(body)) {
+                    bodyLineFound = true;
+                }
+                if (statusHeaderFound && bodyLineFound) {
+                    break;
+                }
             }
-            if (line.startsWith("<web-app xmlns=")) {
-                bodyLineFound = true;
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ioe) {
+                    // Ignore
+                }
             }
         }
 

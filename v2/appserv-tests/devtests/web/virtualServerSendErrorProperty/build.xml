@@ -77,6 +77,11 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.send-error_1=&quot;path=${admin.domain.dir}/${admin.domain}/config/default-web.xml reason=MY404 code=404&quot;"/>
         </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.send-error_2=&quot;path=${admin.domain.dir}/${admin.domain}/config/default-web.xml reason=MY500 code=500&quot;"/>
+        </antcall>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />
@@ -110,6 +115,11 @@
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.send-error_1="/>
+        </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="${appserver.instance.name}.http-service.virtual-server.server.property.send-error_2="/>
         </antcall>
     </target>
 
