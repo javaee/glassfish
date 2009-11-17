@@ -1165,8 +1165,8 @@ public class PECoyoteConnector extends Connector {
             if (ssl.getTrustAlgorithm() != null) {
                 setTrustAlgorithm(ssl.getTrustAlgorithm());
             }
-            if (ssl.getTrustMaxCertLengthBytes() != null) {
-                setTrustMaxCertLength(ssl.getTrustMaxCertLengthBytes());
+            if (ssl.getTrustMaxCertLength() != null) {
+                setTrustMaxCertLength(ssl.getTrustMaxCertLength());
             }
         }
     }

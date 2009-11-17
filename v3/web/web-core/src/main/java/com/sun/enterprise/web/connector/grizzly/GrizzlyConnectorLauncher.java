@@ -506,7 +506,7 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
      * Set the <code>Selector</code> times out value.
      */
     public void setSelectorTimeout(int selectorTimeout){
-        SelectorThread.setSelectorTimeout(selectorTimeout);
+        selectorThread.setSelectorTimeout(selectorTimeout);
     }
 
 
@@ -514,7 +514,7 @@ public class GrizzlyConnectorLauncher extends CoyoteConnectorLauncher {
      * Return the <code>Selector</code> times out value.
      */
     public int getSelectorTimeout(){
-        return SelectorThread.getSelectorTimeout();
+        return selectorThread.getSelectorTimeout();
     }
 
 

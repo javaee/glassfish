@@ -41,10 +41,12 @@ import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.http.SelectorThreadHandler;
 import com.sun.grizzly.util.Copyable;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.logging.Level;
 
 /**
  * Monitoring aware {@link SelectorThreadHandler} implementation.
@@ -75,6 +77,16 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
         MonitorableSelectorHandler copyHandler = (MonitorableSelectorHandler) copy;
         copyHandler.grizzlyMonitoring = grizzlyMonitoring;
         copyHandler.monitoringId = monitoringId;
+    }
+
+    @Override
+    public void preSelect(Context ctx) throws IOException {
+        try {
+            super.preSelect(ctx);
+        } catch (BindException e) {
+            logger.log(Level.FINE, "Can not bind server socket", e);
+            ctx.getController().notifyException(e);
+        }
     }
 
     @Override

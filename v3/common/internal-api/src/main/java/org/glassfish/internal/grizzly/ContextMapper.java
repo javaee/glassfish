@@ -57,12 +57,14 @@ public class ContextMapper extends Mapper {
      */
     @Override
     public void addWrapper(final String hostName, final String contextPath, final String path,
-        final Object wrapper, final boolean jspWildCard, final String servletName) {
-        super.addWrapper(hostName, contextPath, path, wrapper, jspWildCard, servletName);
+        final Object wrapper, final boolean jspWildCard, final String servletName,
+        final boolean isEmptyPathSpecial) {
+        super.addWrapper(hostName, contextPath, path, wrapper, jspWildCard,
+                servletName, isEmptyPathSpecial);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Wrapper-Host: " + hostName + " contextPath " + contextPath
                 + " wrapper " + wrapper + " path " + path + " jspWildcard " + jspWildCard +
-                " servletName " + servletName);
+                " servletName " + servletName + " isEmptyPathSpecial " + isEmptyPathSpecial);
         }
     }
 

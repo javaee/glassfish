@@ -74,7 +74,7 @@
         <sun:textField id="trustedAlg" columns="$int{20}" text="#{pageSession.valueMap['TrustAlgorithm']}" />
      </sun:property>
      <sun:property id="maxCertLength"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.trustMaxCert}" helpText="$resource{i18n.ssl.trustMaxCertHelp}" >
-        <sun:textField id="maxCertLength" columns="$int{20}" text="#{pageSession.valueMap['TrustMaxCertLengthBytes']}" />
+        <sun:textField id="maxCertLength" columns="$int{20}" text="#{pageSession.valueMap['TrustMaxCertLength']}" />
      </sun:property>
      <sun:property id="trustStore"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.ssl.trustStore}" helpText="$resource{i18n.ssl.trustStoreHelp}" >
         <sun:textField id="trustStore" columns="$int{20}" text="#{pageSession.valueMap['TrustStore']}" />

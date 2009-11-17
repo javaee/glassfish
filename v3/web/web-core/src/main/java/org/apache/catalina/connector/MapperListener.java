@@ -715,7 +715,7 @@ public class MapperListener
             boolean jspWildCard = (wrapperName.equals("jsp")
                                    && mappings[i].endsWith("/*"));
             mapper.addWrapper(hostName, contextName, mappings[i], wrapper,
-                              jspWildCard, wrapperName);
+                              jspWildCard, wrapperName, true);
         }
 
     }
