@@ -12,6 +12,9 @@ import org.jvnet.hk2.config.types.Property;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +67,8 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 @Service
 public final class GenericJavaConfigListener implements PostConstruct, ConfigListener {
     @Inject JavaConfig jc;
-    List<String> oldProps;
+    
+    volatile List<String> oldProps;
     /* Implementation note: See 6028*/
     
     @Inject 
@@ -75,7 +79,9 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             oldProps = new ArrayList<String>(jc.getJvmOptions()); //defensive copy
         }
     }
-    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+    
+    /* force serial behavior; don't allow more than one thread to make a mess here */
+    public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         final UnprocessedChangeEvents unp = ConfigSupport.sortAndDispatch(events, new Changed() {
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
                 NotProcessed result = null;
@@ -90,19 +96,11 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
                 }
                 else if ( t instanceof JavaConfig )
                 {
-                    JavaConfig njc = (JavaConfig) t; //this must not throw ClassCastException
+                    final JavaConfig njc = (JavaConfig) t; 
                     logFine(type, njc);
                     
-                    if ( oldProps.size() == njc.getJvmOptions().size() )
-                    {
-                        // the JavaConfig itself has changed 
-                        result = new NotProcessed("A java-config attribute was changed, restart required");
-                    }
-                    else
-                    {
-                        result = handle(oldProps, njc.getJvmOptions());
-                        oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
-                    }
+                    result = handle(oldProps, njc.getJvmOptions() );
+                    oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
                 }
                 else {
                     throw new IllegalArgumentException( "Unknown interface: " + tc.getName() );
@@ -130,56 +128,99 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         }
     }
     
-    private NotProcessed handle(List<String> olds, List<String> news) {
-        if (olds.size() > news.size()) { //removal
-            List<String> removals = olds.subList(news.size(), olds.size()); //backed by olds
-            NotProcessed np = getNotProcessedRemovals(removals);
-            return np;
-        } else if (olds.size() < news.size()) { //addition
-            List<String> adds = news.subList(olds.size(), news.size()); //backed by news ;)
-            NotProcessed np = getNotProcessedAdds(adds);
-            return np;
-        } else {
-            //nothing should be "NotProcessed" as this implies no change to system properties, VM options
-            return null;
-        }
+    private NotProcessed handle(List<String> old, List<String> cur) {
+        NotProcessed np = null;
+        
+        final Set<String> added = new HashSet<String>(cur);
+        added.removeAll(old);
+        
+        final Set<String> removed = new HashSet<String>(old);
+        removed.removeAll(cur);
+        
+        return getNotProcessed(removed, added);
     }
     //using C-style ;)
     private static final String SYS_PROP_REGEX = "=";
     
-    private NotProcessed getNotProcessedRemovals(List<String> removals) {
-        //look at the list, see if you can really clear every item from "System", 
-        // otherwise say you are unable to do so
-        String npReason = "";
-        for(String s : removals) {
-            if (possiblyDynamicallyReconfigurable(s)) {
-                String[] nv = s.split(SYS_PROP_REGEX);
-                System.clearProperty(nv[0].substring(2));  //finally!
-            } else {
-                npReason += ("Removal of: " + s + " can not take effect without server restart, ");
+    private String[] nvp(final String s) {
+        final String[] nv = s.split(SYS_PROP_REGEX);
+        final String name  = nv[0];
+        final String value = s.substring(name.length());
+        
+        return new String[] { name, value };
+    }
+    
+    private NotProcessed getNotProcessed(
+        final Set<String> removals,
+        final Set<String> additions)
+    {
+        //look at the list, clear and/or add system properties 
+        // otherwise they require server restart
+        final int propLen = "-D".length();
+        
+        final List<String> reasons = new ArrayList<String>();
+        for( final String removed : removals) {
+            final String[] nv = nvp(removed);
+            final String name  = nv[0];
+            
+            if (possiblyDynamicallyReconfigurable(removed)) {
+                System.clearProperty(name.substring(propLen));
+            }
+            else {
+                // detect a removal/addition which is really a change
+                String newItem = null;
+                for( final String added : additions ) {
+                    if ( name.equals( nvp(added)[0] ) ) {
+                        newItem = added;
+                        additions.remove(added);
+                        break;
+                    }
+                }
+                String msg = null;
+                if ( newItem != null ) {
+                    msg = "Change from '" + removed + "' to '" + newItem + "' cannot take effect without server restart";
+                }
+                else {
+                    msg = "Removal of: " + removed + " cannot take effect without server restart";
+                }
+                reasons.add(msg);
             }
         }
-        if (npReason.length() != 0)
-            return new NotProcessed(npReason);
+        
+        // process any remaining additions
+        for( final String added : additions) {
+            final String[] nv = nvp(added);
+            final String   name  = nv[0];
+            final String   newValue = nv[1];
+            
+            if (possiblyDynamicallyReconfigurable(added)) {
+                System.setProperty( name.substring(propLen), newValue );
+            }
+            else {
+                reasons.add( "Addition of: '" + added + "' cannot take effect without server restart" );
+            }
+        }
+        
+        
+        if ( reasons.size() != 0) {
+            return new NotProcessed( toString(reasons) );
+        }
         return null;
     }
     
-    private NotProcessed getNotProcessedAdds(List<String> adds) {
-        //look at the list, see if you can really set every item in "System", 
-        // otherwise say you are unable to do so
-        String npReason = "";
-        for(String s : adds) {
-            if (possiblyDynamicallyReconfigurable(s)) {
-                String[] nv = s.split(SYS_PROP_REGEX);
-                System.setProperty(nv[0].substring(2), nv[1]);  //finally!
-            } else {
-                npReason += ("Setting of: " + s + " can not take effect without server restart, ");
+    private static String toString( final List<String> items ) {
+        final StringBuffer buf = new StringBuffer();
+        final String delim = ", ";
+        for( final String s : items ) {
+            if ( buf.length() != 0 ) {
+                buf.append(delim);
             }
+            buf.append(s);
         }
-        if (npReason.length() != 0)
-            return new NotProcessed(npReason);
-        return null;        
+        
+        return buf.toString();
     }
+
     
     /** Determines with some confidence level if a particular String denotes
      *  a system property that can be set in the current JVM's (i.e. the JVM where
