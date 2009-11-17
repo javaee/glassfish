@@ -40,12 +40,12 @@
         />
     </event>
     <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18n.common.GeneralSettings}">
-        <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
+        <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}">
             <sun:textField id="jndiProp" styleClass="required" columns="$int{55}" text="#{pageSession.valueMap['Name']}" required="#{true}" rendered="#{!edit}" />
             <sun:staticText text="#{pageSession.valueMap['Name']}" required="#{true}" rendered="#{edit}"/>
         </sun:property>
-        <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}" rendered="#{edit}">
-            <sun:staticText text="#{pageSession.valueMap['Name']}" required="#{true}"/>
+        <sun:property id="nameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" rendered="#{edit}">
+            <sun:staticText text="#{pageSession.JndiName}"/>
         </sun:property>
         <sun:property id="resType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}">
             <sun:dropDown id="resType" selected="#{pageSession.valueMap['ConnectionDefinitionName']}" rendered="#{!edit}"

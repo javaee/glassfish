@@ -52,9 +52,9 @@
             setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain,type=resources");
             setPageSessionAttribute(key="childType" value="connector-connection-pool");
             setPageSessionAttribute(key="childType2" value="connector-resource");
-            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
-            filterTable(table="#{requestScope.listOfRows}", key="ResourceAdapterName", value="jmsra")
-
+            //getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+            //filterTable(table="#{requestScope.listOfRows}", key="ResourceAdapterName", value="jmsra")
+            getJMSFactoriesTable(result="#{requestScope.listOfRows}");
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njms.resourcesTable.connectionFactories}");
             setPageSessionAttribute(key="editLink" value="/jms/jmsConnectionEdit.jsf");
             setPageSessionAttribute(key="createLink" value="/jms/jmsConnectionNew.jsf");

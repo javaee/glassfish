@@ -46,6 +46,12 @@
         <!beforeCreate
             getRequestValue(key="name" value="#{pageSession.Name}");
             urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+
+            //if we come here from the table, we have the JndiName which we should use since that is the correct one for sure.
+            //if from the tree, may need to calculate it. For now, we just use the same pool name.
+            //Actually the tree just shows all connector Connection pool which is not correct. For now, we leave as is.
+            getRequestValue(key="jndiName" value="#{pageSession.JndiName}", default="#{pageSession.Name}");
+
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/jmsConnectionEdit.jsf?name=#{pageSession.encodedName}");
             setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsConnections.jsf");
 

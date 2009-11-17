@@ -55,15 +55,23 @@
                           onClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"/>
         </sun:tableColumn>
 
-        <sun:tableColumn id="colName" headerText="$resource{i18njms.resourcesTable.colJndiName}" sort="Name" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{!isConnPage}" sort="Name" rowHeader="$boolean{true}">
             <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}" />
+        </sun:tableColumn>
+
+        <sun:tableColumn id="colPoolName" headerText="$resource{i18njms.resourcesTable.colPoolName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
+            <sun:hyperlink id="link" text="#{td.value.Name}" url="#{pageSession.editLink}?name=#{td.value.Name}&jndiName=#{td.value.JndiName}" />
+        </sun:tableColumn>
+
+        <sun:tableColumn id="jndiName" headerText="$resource{i18njms.resourcesTable.colJndiName}" rendered="#{isConnPage}" sort="Name" rowHeader="$boolean{true}">
+            <sun:staticText id="jndi" text="#{td.value.JndiName}"  />
         </sun:tableColumn>
 
         <sun:tableColumn id="colEnabled1" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{isConnPage}" sort="Enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{requestScope.connRes and requestScope.resourceRef}">
                 <!event type="beforeEncode">
-                    getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.connRes}");
-                    getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.Name}", attrName="Enabled", value="#{requestScope.resourceRef}");
+                    getProxyAttribute(objectNameStr="amx:pp=/domain/resources,type=connector-resource,name=#{td.value.JndiName}", attrName="Enabled", value="#{requestScope.connRes}");
+                    getProxyAttribute(objectNameStr="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{td.value.JndiName}", attrName="Enabled", value="#{requestScope.resourceRef}");
                 </event>
             </staticText>
         </sun:tableColumn>
@@ -84,7 +92,7 @@
             <h:outputText id="resType" value="#{td.value.ResType}"/>
         </sun:tableColumn>
 
-        <sun:tableColumn id="colTypeDesc" headerText="$resource{i18njms.resourcesTable.colDesc}" sort="Description" rowHeader="$boolean{true}">
+        <sun:tableColumn id="colTypeDesc" headerText="$resource{i18njms.resourcesTable.colDesc}" sort="Description" rendered="#{!isConnPage}" rowHeader="$boolean{true}">
             <h:outputText id="typeDesc" value="#{td.value.Description}" />
         </sun:tableColumn>
 
