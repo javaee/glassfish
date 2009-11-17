@@ -45,6 +45,11 @@
 
   <name>Maven Embedded GlassFish Plugin</name>
 
+  <scm>
+      <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/maven-plugin</connection>
+      <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/maven-plugin</developerConnection>
+  </scm>
+
   <build>
   <defaultGoal>install</defaultGoal>
     <plugins>
