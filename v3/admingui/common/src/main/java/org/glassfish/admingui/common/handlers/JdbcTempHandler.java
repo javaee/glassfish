@@ -55,7 +55,6 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +62,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 
+import org.glassfish.admin.amx.intf.config.ConnectorConnectionPool;
+import org.glassfish.admin.amx.intf.config.ConnectorResource;
+import org.glassfish.admin.amx.intf.config.Resources;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.V3AMX;
 
@@ -383,6 +385,37 @@ public class JdbcTempHandler {
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+
+     @Handler(id = "getJMSFactoriesTable",
+        output = {
+            @HandlerOutput(name = "result", type = java.util.List.class)})
+    public static void getJMSFactoriesTable(HandlerContext handlerCtx) {
+        final Resources resources = V3AMX.getInstance().getResources();
+
+        Map<String, ConnectorResource> conResources = resources.getConnectorResource();
+        List result = new ArrayList();
+
+        for(ConnectorResource cr : conResources.values()){
+            String poolName = cr.getPoolName();
+            if (GuiUtil.isEmpty(poolName)){
+                continue;   //this is a required attribute, shouldn't happen.
+            }
+            ConnectorConnectionPool ccPool = resources.getConnectorConnectionPool().get(poolName);
+            if (ccPool == null){
+                continue; //any resource should have a pool, so this shouldn't happen.
+            }
+            if (ccPool.getResourceAdapterName().equals("jmsra")){
+                Map oneRow = new HashMap();
+                oneRow.put("selected", false);
+                oneRow.put("Name", poolName);
+                oneRow.put("JndiName", cr.getName());
+                oneRow.put("ConnectionDefinitionName", ccPool.getConnectionDefinitionName());
+                oneRow.put("Description", GuiUtil.isEmpty(ccPool.getDescription())? "" : ccPool.getDescription());
+                result.add(oneRow);
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+     }
 
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     //public static final  String SET_KEY = "SetKey";
