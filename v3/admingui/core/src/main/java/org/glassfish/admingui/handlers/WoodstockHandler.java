@@ -388,8 +388,6 @@ public class WoodstockHandler {
     public void populateApplicationsMonitorDropDown(HandlerContext handlerCtx) {
         List aList = (List) handlerCtx.getInputValue("AppsList");
         ArrayList menuList = new ArrayList();
-        ArrayList appsList = new ArrayList();
-        Option[] groupedOptions1 = new Option[0];
         String firstItem = null;
         String title = null;
         if (aList != null) {
