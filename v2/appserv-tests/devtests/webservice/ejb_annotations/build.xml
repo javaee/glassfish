@@ -19,7 +19,9 @@
 	<ant dir="msgctxt" target="all"/>
 -->
 	<ant dir="libdependent" target="all"/>
+	<ant dir="messagectxt" target="all"/>
 	<ant dir="singleton" target="all"/>
+	<ant dir="msgctxinterceptor" target="all"/>
 	<ant dir="ejbwebservicesinwar" target="all"/>
 	<ant dir="ejbwebservicesinwar-2" target="all"/>
 	<ant dir="async" target="all"/>
