@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security.auth.realm;
 
+import com.sun.enterprise.config.serverbeans.AuthRealm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -105,11 +106,12 @@ public class RealmsManager {
 
         return retval;
     }
-    
-    void removeFromLoadedRealms(String realmName) {
-        loadedRealms.remove(realmName);
-        probeProvider.realmRemovedEvent(realmName);
-        
+
+    public void removeFromLoadedRealms(String realmName) {
+        Realm r = loadedRealms.remove(realmName);
+        if (r != null) {
+            probeProvider.realmRemovedEvent(realmName);
+        }
     }
 
     void putIntoLoadedRealms(String realmName, Realm realm) {

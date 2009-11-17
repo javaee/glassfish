@@ -52,6 +52,7 @@ import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
@@ -85,7 +86,10 @@ public class SecurityConfigListener implements ConfigListener, PostConstruct {
     private AuditModule[] auditModules;
     
     @Inject
-    private MessageSecurityConfig[] messageSecConfigs; 
+    private MessageSecurityConfig[] messageSecConfigs;
+
+    @Inject
+    private RealmsManager realmsManager;
     
     private String auditEnabled = null;
     private String defaultRealm = null;
@@ -255,6 +259,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
      */
     public void authRealmUpdated(AuthRealm instance) {
         try {
+            realmsManager.removeFromLoadedRealms(instance.getName());
             createRealm(instance);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
