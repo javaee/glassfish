@@ -53,7 +53,6 @@
         if (! #{requestScope.dPage}){
             mapGet(Map="#{requestScope.editMap}"  Key="other"  Value="#{requestScope.dPage}")
         }
-        println("requestScope.dPage = #{requestScope.dPage}");
         gf.redirect(page="#{request.contextPath}/#{requestScope.dPage}?appName=#{pageSession.encodedAppName}")
      />
     </event>
