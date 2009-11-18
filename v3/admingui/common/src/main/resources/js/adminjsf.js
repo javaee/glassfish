@@ -2433,7 +2433,7 @@ admingui.woodstock = {
 		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
 	    }
 	}
-	admingui.ajax.postAjaxRequest(jumpDropdown.parentNode);
+	admingui.ajax.postAjaxRequest(jumpDropdown);
         return false;
     },
 
