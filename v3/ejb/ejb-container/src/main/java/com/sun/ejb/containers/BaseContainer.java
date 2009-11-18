@@ -3992,6 +3992,20 @@ public abstract class BaseContainer
         //callFlowAgent.endTime();
     }
 
+    final void onEjbMethodStart(int methodIndex) {
+        Method method = ejbIntfMethods[methodIndex];
+        if (method != null) {
+            onEjbMethodStart(method);
+        }
+    }
+
+    final void onEjbMethodEnd(int methodIndex, Throwable th) {
+        Method method = ejbIntfMethods[methodIndex];
+        if (method != null) {
+            onEjbMethodEnd(method, th);
+        }
+    }
+
     final void onEjbMethodStart(Method method) {
         ejbProbeNotifier.ejbMethodStartEvent(getContainerId(),
                 callFlowInfo.getApplicationName(),

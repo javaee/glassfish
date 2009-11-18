@@ -216,44 +216,63 @@ public final class EJBLocalObjectInvocationHandler
         // Return value is null if target method returns void.
         Object returnValue = null;
 
+        int methodIndex = -1;
+        Exception caughtException = null;
         // Can only be remove, isIdentical, getEJBLocalHome, or getPrimaryKey,
         // so optimize by comparing as few characters as possible.
-        switch(methodName.charAt(0)) {
-            case 'r' :
-
-                // void remove();
-
-                super.remove();
-                break;
-
-            case 'i' :
-
-                // boolean isIdentical(EJBLocalObject)
-
-                // Convert the param into an EJBLocalObjectImpl.  Can't 
-                // assume it's an EJBLocalObject for an ejb that was deployed
-                // using dynamic proxies.
-                EJBLocalObject other = (EJBLocalObject) args[0];
-                EJBLocalObjectImpl otherImpl = 
-                    EJBLocalObjectImpl.toEJBLocalObjectImpl(other);
-                    
-                returnValue = new Boolean(super.isIdentical(otherImpl));
-                break;
-
-            case 'g' :
-
-                if( methodName.charAt(3) == 'E' ) {
-                    // EJBLocalHome getEJBLocalHome();
-                    returnValue = super.getEJBLocalHome(); 
-                } else {
-                    // Object getPrimaryKey();
-                    returnValue = super.getPrimaryKey();
-                }
-                break;
-
-            default :
-
-                throw new EJBException("unknown method = " + methodName);
+        try {
+            switch(methodName.charAt(0)) {
+                case 'r' :
+    
+                    // void remove();
+    
+                    methodIndex = container.EJBLocalObject_remove;
+                    container.onEjbMethodStart(methodIndex);
+                    super.remove();
+                    break;
+    
+                case 'i' :
+    
+                    // boolean isIdentical(EJBLocalObject)
+    
+                    // Convert the param into an EJBLocalObjectImpl.  Can't 
+                    // assume it's an EJBLocalObject for an ejb that was deployed
+                    // using dynamic proxies.
+                    EJBLocalObject other = (EJBLocalObject) args[0];
+                    EJBLocalObjectImpl otherImpl = 
+                        EJBLocalObjectImpl.toEJBLocalObjectImpl(other);
+                        
+                    methodIndex = container.EJBLocalObject_isIdentical;
+                    container.onEjbMethodStart(methodIndex);
+                    returnValue = new Boolean(super.isIdentical(otherImpl));
+                    break;
+    
+                case 'g' :
+    
+                    if( methodName.charAt(3) == 'E' ) {
+                        // EJBLocalHome getEJBLocalHome();
+                        methodIndex = container.EJBLocalObject_getEJBLocalHome;
+                        container.onEjbMethodStart(methodIndex);
+                        returnValue = super.getEJBLocalHome(); 
+                    } else {
+                        // Object getPrimaryKey();
+                        methodIndex = container.EJBLocalObject_getPrimaryKey;
+                        container.onEjbMethodStart(methodIndex);
+                        returnValue = super.getPrimaryKey();
+                    }
+                    break;
+    
+                default :
+    
+                    throw new EJBException("unknown method = " + methodName);
+            }
+        } catch (Exception ex) {
+            caughtException = ex;
+            throw ex;
+        } finally {
+            if (methodIndex != -1) {
+                container.onEjbMethodEnd(methodIndex,caughtException);
+            }
         }
 
         return returnValue;

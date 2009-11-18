@@ -345,26 +345,46 @@ final class EJBHomeInvocationHandler
         // are called with the frequency that this would be an issue,
         // but it's worth considering.
 
-        if( methodName.equals("getEJBMetaData") ) {
-
-            returnValue = super.getEJBMetaData();
-
-        } else if( methodName.equals("getHomeHandle") ) {
-
-            returnValue = super.getHomeHandle();
-
-        } else if( methodName.equals("remove") ) {
-
-            if( args[0] instanceof javax.ejb.Handle ) {
-                super.remove((javax.ejb.Handle)args[0]);
+        int methodIndex = -1;
+        Exception caughtException = null;
+        BaseContainer container = (BaseContainer) getContainer();
+        try {
+            if( methodName.equals("getEJBMetaData") ) {
+    
+                methodIndex = container.EJBHome_getEJBMetaData;
+                container.onEjbMethodStart(methodIndex);
+                returnValue = super.getEJBMetaData();
+    
+            } else if( methodName.equals("getHomeHandle") ) {
+    
+                methodIndex = container.EJBHome_getHomeHandle;
+                container.onEjbMethodStart(methodIndex);
+                returnValue = super.getHomeHandle();
+    
+            } else if( methodName.equals("remove") ) {
+    
+                if( args[0] instanceof javax.ejb.Handle ) {
+                    methodIndex = container.EJBHome_remove_Handle;
+                    container.onEjbMethodStart(methodIndex);
+                    super.remove((javax.ejb.Handle)args[0]);
+                } else {
+                    methodIndex = container.EJBHome_remove_Pkey;
+                    container.onEjbMethodStart(methodIndex);
+                    super.remove(args[0]);
+                }
+    
             } else {
-                super.remove(args[0]);
+    
+               throw new RemoteException("unknown EJBHome method = " + methodName);
+    
             }
-
-        } else {
-
-           throw new RemoteException("unknown EJBHome method = " + methodName);
-
+        } catch (Exception ex) {
+            caughtException = ex;
+            throw ex;
+        } finally {
+            if (methodIndex != -1) {
+                container.onEjbMethodEnd(methodIndex, caughtException);
+            }
         }
 
         return returnValue;

@@ -236,35 +236,57 @@ public final class EJBObjectInvocationHandler
         // turns out to be a bottleneck.  I don't think these methods
         // are called with the frequency that this would be an issue,
         // but it's worth considering.
+        int methodIndex = -1;
+        Exception caughtException = null;
 
-        if( methodName.equals("getEJBHome") ) {
+        try {
+            if( methodName.equals("getEJBHome") ) {
+    
+                methodIndex = container.EJBObject_getEJBHome;
+                container.onEjbMethodStart(methodIndex);
+                returnValue = super.getEJBHome();
+    
+            } else if( methodName.equals("getHandle") ) {
+    
+                methodIndex = container.EJBObject_getHandle;
+                container.onEjbMethodStart(methodIndex);
+                returnValue = super.getHandle();
+    
+            } else if( methodName.equals("getPrimaryKey") ) {
+    
+                methodIndex = container.EJBObject_getPrimaryKey;
+                container.onEjbMethodStart(methodIndex);
+                returnValue = super.getPrimaryKey();
+    
+            } else if( methodName.equals("isIdentical") ) {
+    
+                // boolean isIdentical(EJBObject)
+                // Convert the param into an EJBObject.           
+                EJBObject other = (EJBObject) args[0];
+    
+                methodIndex = container.EJBObject_isIdentical;
+                container.onEjbMethodStart(methodIndex);
+                returnValue = new Boolean(super.isIdentical(other));
+    
+            } else if( methodName.equals("remove") ) {
+    
+                methodIndex = container.EJBObject_remove;
+                container.onEjbMethodStart(methodIndex);
+                super.remove();
+    
+            } else {
+    
+                throw new RemoteException("unknown EJBObject method = " 
+                                          + methodName);
+            }
 
-            returnValue = super.getEJBHome();
-
-        } else if( methodName.equals("getHandle") ) {
-
-            returnValue = super.getHandle();
-
-        } else if( methodName.equals("getPrimaryKey") ) {
-
-            returnValue = super.getPrimaryKey();
-
-        } else if( methodName.equals("isIdentical") ) {
-
-            // boolean isIdentical(EJBObject)
-            // Convert the param into an EJBObject.           
-            EJBObject other = (EJBObject) args[0];
-
-            returnValue = new Boolean(super.isIdentical(other));
-
-        } else if( methodName.equals("remove") ) {
-
-            super.remove();
-
-        } else {
-
-            throw new RemoteException("unknown EJBObject method = " 
-                                      + methodName);
+        } catch (Exception ex) {
+            caughtException = ex;
+            throw ex;
+        } finally {
+            if (methodIndex != -1) {
+                container.onEjbMethodEnd(methodIndex, caughtException);
+            }
         }
 
         return returnValue;
