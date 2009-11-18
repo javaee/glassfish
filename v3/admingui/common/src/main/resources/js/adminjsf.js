@@ -1187,6 +1187,41 @@ admingui.help = {
 	}
     },
 
+    switchTab: function(tabElement, toShow, toHide) {
+	// 
+	// Perform an ajax request on the tab panel element
+	// 
+
+	// set up the parameters to the ajax request
+	var props = {}; 
+	var tabsetId = document.getElementById('tabForm:helpTabs').id;
+	props.render = tabsetId;
+	props.execute = tabElement.id + ', ' + tabsetId;
+	props[tabElement.id + '_submittedField'] = tabElement.id;
+
+	// launch the request
+	jsf.ajax.request(tabElement, null, props);
+
+	// 
+	// Use DOM to show/hide the proper tree
+	// 
+
+	var tree = document.getElementById(toHide);
+	tree.style.display = "none";
+	tree = document.getElementById(toShow);
+	tree.style.display = "block";
+    },
+
+    loadHelpPageFromContextRef: function(contextRef, targetNode) {
+	if (typeof contextRef == 'undefined' || contextRef === "") {
+	    contextRef = "docinfo.html";
+	}
+	// Derive the prefix somehow
+	//contextRef = prefix + contextRef;
+	admingui.help.showHelpPage(contextRef, targetNode);
+	admingui.help.nav.selectTreeNodeWithURL(contextRef);
+    },
+
     nav: {
 	TREE_ID: "tocTree",
 	lastTreeNodeSelected: null,

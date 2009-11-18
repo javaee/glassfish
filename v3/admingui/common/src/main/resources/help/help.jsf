@@ -47,60 +47,15 @@
     <sun:head title="$resource{i18n.helpWindowTitle}" debug="false" parseOnLoad="false">
 	<sun:link url="/resource/common/help/help.css" />
 	<sun:script url="/resource/common/js/adminjsf.js" />
-<f:verbatim>
-<script type="text/javascript">
-function loadHelpPageFromContextRef(contextRef, targetNode) {
-    if (typeof contextRef == 'undefined' || contextRef === "") {
-        contextRef = "docinfo.html";
-    }
-    // Derive the prefix somehow
-    //contextRef = prefix + contextRef;
-    admingui.help.showHelpPage(contextRef, targetNode);
-    admingui.help.nav.selectTreeNodeWithURL(contextRef);
-}
-
-admingui.tab = {
-switchTab: function(tabElement, toShow, toHide) {
-  // 
-  // Perform an ajax request on the tab panel element
-  // 
-
-  // set up the parameters to the ajax request
-  var props = {}; 
-  var tabsetId = document.getElementById('tabForm:helpTabs').id;
-  props.render = tabsetId;
-  props.execute = tabElement.id + ', ' + tabsetId;
-  props[tabElement.id + '_submittedField'] = tabElement.id;
-
-  // launch the request
-  jsf.ajax.request(tabElement, null, props);
-
-  // 
-  // Use DOM to show/hide the proper tree
-  // 
-
-  var tree = document.getElementById(toHide);
-  tree.style.display = "none";
-  tree = document.getElementById(toShow);
-  tree.style.display = "block";
-}
-
-}
-</script>
-</f:verbatim>
 	<h:outputScript name="jsf.js" library="javax.faces" target="head" />
-	<f:verbatim>
-	    <style type="text/css">
-	    </style>
-	</f:verbatim>
     </sun:head>
-    <sun:body id="bodyTag" style="display:none;" onLoad="admingui.help.fixTreeOnclick(document.getElementById('tocTree')); admingui.help.fixTreeOnclick(document.getElementById('indexTree')); loadHelpPageFromContextRef('#{param.contextRef}', 'helpContent'); document.getElementById('bodyTag').style.display='block';">
+    <sun:body id="bodyTag" style="display:none;" onLoad="admingui.help.fixTreeOnclick(document.getElementById('tocTree')); admingui.help.fixTreeOnclick(document.getElementById('indexTree')); admingui.help.loadHelpPageFromContextRef('#{param.contextRef}', 'helpContent'); document.getElementById('bodyTag').style.display='block';">
 	"<div id="menuContent" class="helpMenuBox">
 	    <sun:form id="tabForm">
 
 	    <sun:tabSet id="helpTabs">
-		<sun:tab id="tableOfContents" text="Table of Contents" onClick="admingui.tab.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}" /> // FIXME: I18N
-		<sun:tab id="idx" text="Index" onClick="admingui.tab.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}" /> // FIXME: I18N
+		<sun:tab id="tableOfContents" text="Table of Contents" onClick="admingui.help.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}" /> // FIXME: I18N
+		<sun:tab id="idx" text="Index" onClick="admingui.help.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}" /> // FIXME: I18N
 	    </sun:tabSet>
 	    </sun:form>
 	    <dynamicTreeNode id="tocTree" 
