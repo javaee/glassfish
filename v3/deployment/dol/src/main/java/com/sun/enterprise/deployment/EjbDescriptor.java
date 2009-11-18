@@ -124,7 +124,8 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     private Set roleReferences = new HashSet();
     private EjbBundleDescriptor bundleDescriptor;
     // private EjbIORConfigurationDescriptor iorConfigDescriptor = new EjbIORConfigurationDescriptor();
-    private Set iorConfigDescriptors = new OrderedSet();
+    private Set<EjbIORConfigurationDescriptor> iorConfigDescriptors =
+            new OrderedSet<EjbIORConfigurationDescriptor>();
     //private Set methodDescriptors = new HashSet();
     private String ejbClassName;
 
@@ -1138,7 +1139,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         return null;
     }
 
-    public Set getIORConfigurationDescriptors() {
+    public Set<EjbIORConfigurationDescriptor> getIORConfigurationDescriptors() {
         return iorConfigDescriptors;
     }
 
@@ -2472,6 +2473,37 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         }
     }
 
+    /**
+     * This method determines if all the mechanisms defined in the
+     * CSIV2 CompoundSecMechList structure require protected
+     * invocations.
+     */
+    public boolean allMechanismsRequireSSL() {
 
+        for (EjbIORConfigurationDescriptor iorDesc : iorConfigDescriptors) {
+
+            if (EjbIORConfigurationDescriptor.REQUIRED.equalsIgnoreCase
+                    (iorDesc.getConfidentiality())) {
+                continue;
+
+            } else if (EjbIORConfigurationDescriptor.REQUIRED.equalsIgnoreCase
+                    (iorDesc.getConfidentiality())) {
+
+                continue;
+
+            } else if (EjbIORConfigurationDescriptor.REQUIRED.equalsIgnoreCase
+                    (iorDesc.getEstablishTrustInTarget())) {
+                continue;
+
+            } else if (EjbIORConfigurationDescriptor.REQUIRED.equalsIgnoreCase
+                    (iorDesc.getEstablishTrustInClient())) {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
 }
     
