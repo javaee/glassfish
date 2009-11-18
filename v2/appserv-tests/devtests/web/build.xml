@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="475"/>
+    <property name="TOTAL_EXPECTED" value="476"/>
 
     &commonSetup;
     &commonBuild;
@@ -83,6 +83,7 @@
         <ant dir="jspScriptletSyntaxErrorCorrectErrorMessage" target="all"/>
         <ant dir="jspCustomTagAttributeOfArrayType" target="all"/>
         <ant dir="jspCustomTaglibJarInsideEarWithManifestClassPath" target="all"/>
+        <ant dir="jspCustomTaglibJarInsideEarWithoutManifestClassPath" target="all"/>
         <ant dir="jspCommentedOutPageDirective" target="all"/>
         <ant dir="jspCommentedOutPageDirective1" target="all"/>
         <ant dir="jspScriptletAfterScriptlessTag" target="all"/>
