@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -150,17 +150,43 @@ public class GeneratorResource {
 
     }
 
+
     private void genHeader(BufferedWriter out) throws IOException {
-        out.write("/**\n");
-        out.write("* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
-        out.write("* Copyright 2009 Sun Microsystems, Inc. All rights reserved.\n");
-        out.write("* Generated code from the com.sun.enterprise.config.serverbeans.*\n");
-        out.write("* config beans, based on  HK2 meta model for these beans\n");
-        out.write("* see generator at org.admin.admin.rest.GeneratorResource\n");
-        out.write("* Very soon, this generated code will be replace by asm or even better...more dynamic logic.\n");
-        out.write("* Ludovic Champenois ludo@dev.java.net\n");
-        out.write("*\n");
-        out.write("**/\n");
+        out.write("/*\n");
+        out.write(" * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
+        out.write(" *\n");
+        out.write(" * Copyright 2009 Sun Microsystems, Inc. All rights reserved.\n");
+        out.write(" *\n");
+        out.write(" * The contents of this file are subject to the terms of either the GNU\n");
+        out.write(" * General Public License Version 2 only (\"GPL\") or the Common Development\n");
+        out.write(" * and Distribution License(\"CDDL\") (collectively, the \"License\").  You\n");
+        out.write(" * may not use this file except in compliance with the License. You can obtain\n");
+        out.write(" * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html\n");
+        out.write(" * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific\n");
+        out.write(" * language governing permissions and limitations under the License.\n");
+        out.write(" *\n");
+        out.write(" * When distributing the software, include this License Header Notice in each\n");
+        out.write(" * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.\n");
+        out.write(" * Sun designates this particular file as subject to the \"Classpath\" exception\n");
+        out.write(" * as provided by Sun in the GPL Version 2 section of the License file that\n");
+        out.write(" * accompanied this code.  If applicable, add the following below the License\n");
+        out.write(" * Header, with the fields enclosed by brackets [] replaced by your own\n");
+        out.write(" * identifying information: \"Portions Copyrighted [year]\n");
+        out.write(" * [name of copyright owner]\"\n");
+        out.write(" *\n");
+        out.write(" * Contributor(s):\n");
+        out.write(" *\n");
+        out.write(" * If you wish your version of this file to be governed by only the CDDL or\n");
+        out.write(" * only the GPL Version 2, indicate your decision by adding \"[Contributor]\n");
+        out.write(" * elects to include this software in this distribution under the [CDDL or GPL\n");
+        out.write(" * Version 2] license.\"  If you don't indicate a single choice of license, a\n");
+        out.write(" * recipient has the option to distribute your version of this file under\n");
+        out.write(" * either the CDDL, the GPL Version 2 or to extend the choice of license to\n");
+        out.write(" * its licensees as provided above.  However, if you add GPL Version 2 code\n");
+        out.write(" * and therefore, elected the GPL Version 2 license, then the option applies\n");
+        out.write(" * only if the new code is made subject to such option by the copyright\n");
+        out.write(" * holder.\n");
+        out.write(" */\n");
     }
     private HashMap<String, String> genSingleFiles = new HashMap<String, String>();
     private HashMap<String, String> genListFiles = new HashMap<String, String>();
@@ -181,6 +207,7 @@ public class GeneratorResource {
         try {
             file.createNewFile();
         } catch (Exception e) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
         }
 
 
@@ -283,6 +310,7 @@ public class GeneratorResource {
         try {
             file.createNewFile();
         } catch (Exception e) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
         }
 
 
@@ -384,6 +412,7 @@ public class GeneratorResource {
                             }
                         }
                     } catch (Exception e) {
+                        Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
                     }
 
 
@@ -776,7 +805,9 @@ public class GeneratorResource {
         File file = new File(commandResourceFileName);
         try {
             file.createNewFile();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
+        }
 
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
@@ -877,7 +908,9 @@ public class GeneratorResource {
         File file = new File(resourceFileName);
         try {
             file.createNewFile();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, e.getMessage());
+        }
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);
 
