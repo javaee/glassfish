@@ -2480,6 +2480,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
      */
     public boolean allMechanismsRequireSSL() {
 
+        if(iorConfigDescriptors== null || iorConfigDescriptors.isEmpty()){
+            return false;
+        }
+        
         for (EjbIORConfigurationDescriptor iorDesc : iorConfigDescriptors) {
 
             if (EjbIORConfigurationDescriptor.REQUIRED.equalsIgnoreCase

@@ -154,8 +154,6 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
     static final int EJBID_OFFSET = 0;
     private static final int INSTANCEKEYLEN_OFFSET = 8;
     private static final int INSTANCEKEY_OFFSET = 12;
- 
-
 
     POARemoteReferenceFactory(EjbContainerFacade container, POAProtocolMgr protocolMgr,
 			      ORB orb, boolean remoteHomeView, String id) {
@@ -332,23 +330,16 @@ public final class POARemoteReferenceFactory extends org.omg.CORBA.LocalObject
 		    + "] for jndi name: " + usePassByReference);
 	    }
 
-      
-
-
-        /** TODO
 	    // DisableClearTextIIOP policy which sets IIOP Profile port to 0
 	    // if EJB allows only SSL invocations
-	    CSIV2TaggedComponentInfo ctc = new CSIV2TaggedComponentInfo(orb);
-	    Set iorDescSet = ejbDescriptor.getIORConfigurationDescriptors();
-        if ( ctc.allMechanismsRequireSSL(iorDescSet) ) {
+	    if ( ejbDescriptor.allMechanismsRequireSSL() ) {
 	        if (logger.isLoggable(Level.FINE)) {
 		        logger.log(Level.WARNING,
 			   ".createReferenceFactory: " + poaId + " " + repoid
 			   + ": adding ZeroPortPolicy");
 	        }
 	        policies.add(ZeroPortPolicy.getPolicy());
-        }
-        **/
+	    }
 
 
 	    if (logger.isLoggable(Level.FINE)) {
