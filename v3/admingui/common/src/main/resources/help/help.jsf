@@ -46,7 +46,7 @@
 <sun:html>
     <sun:head title="$resource{i18n.helpWindowTitle}" debug="false" parseOnLoad="false">
 	<sun:link url="/resource/common/help/help.css" />
-	<sun:script url="/resource/common/help/help.js" />
+	<sun:script url="/resource/common/js/adminjsf.js" />
 <f:verbatim>
 <script type="text/javascript">
 function loadHelpPageFromContextRef(contextRef, targetNode) {
@@ -99,16 +99,8 @@ switchTab: function(tabElement, toShow, toHide) {
 	    <sun:form id="tabForm">
 
 	    <sun:tabSet id="helpTabs">
-		<sun:tab id="tableOfContents" text="Table of Contents" onClick="admingui.tab.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}"> // FIXME: I18N
-		    <ui:event type="command">
-			println("toc");
-		    </ui:event>
-		</sun:tab>
-		<sun:tab id="idx" text="Index" onClick="admingui.tab.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}"> // FIXME: I18N
-		    <ui:event type="command">
-			println("Index");
-		    </ui:event>
-		</sun:tab>
+		<sun:tab id="tableOfContents" text="Table of Contents" onClick="admingui.tab.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}" /> // FIXME: I18N
+		<sun:tab id="idx" text="Index" onClick="admingui.tab.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}" /> // FIXME: I18N
 	    </sun:tabSet>
 	    </sun:form>
 	    <dynamicTreeNode id="tocTree" 
@@ -137,31 +129,5 @@ switchTab: function(tabElement, toShow, toHide) {
     </div>
 </f:verbatim>
     </sun:body>
-
-<!-- 
-
---- help_jsf.edburns	2009-10-01 22:49:23.000000000 -0400
-+++ help.jsf	2009-10-01 22:51:53.000000000 -0400
-@@ -70,12 +70,12 @@
- 	    </sun:tabSet>
- 	    </sun:form>
- 	    <dynamicTreeNode
--		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeIndexAdaptor"
-+		treeAdaptorClass="org.glassfish.admingui.common.help.HelpTreeAdaptor"
- 		toc="$attribute{toc}">
--		    <ui:event type="beforeCreate">
-+		    <!beforeCreate
-     setPageSessionAttribute(key="newVR" value="set");
--			getHelpIndex(locale="en", index="#{requestScope.toc}");
--		    </ui:event>
-+			getHelpTOC("en" toc="#{requestScope.toc}");
-+		    />
- 	    </dynamicTreeNode>
- 	"</div>
- 	"<div id="helpContent" class="helpContentBox">
-
-
--->
-
 </sun:html>
 </sun:page>

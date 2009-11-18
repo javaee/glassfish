@@ -959,7 +959,10 @@ admingui.nav = {
         var index = id.lastIndexOf(":");
         while (index > -1) {
             id = id.substring(0, index);
-            YAHOO.util.Dom.setStyle(id+"_children", "display", "block");
+	    var toSetStyle = document.getElementById(id+"_children");
+	    if (toSetStyle) {
+		toSetStyle.style.display = "block";
+	    }
             index = id.lastIndexOf(":");
         }
     },
@@ -1033,6 +1036,128 @@ admingui.nav = {
 admingui.help = {
     pluginId : null,
 
+    showHelpPage: function(url, targetNode) {
+	if (targetNode) {
+	    if (typeof(targetNode) === 'string') {
+		// We have a String
+		targetNode = document.getElementById(targetNode);
+	    }
+	}
+	if (targetNode) {
+	    var req = admingui.ajax.getXMLHttpRequestObject();
+	    if (req) {
+		req.onreadystatechange =
+		    function() {
+			if (req.readyState == 4) {
+			    // Make a tempoary elemnt to contain the help content
+			    var tmpDiv = document.createElement("div");
+			    tmpDiv.innerHTML = req.responseText;
+
+			    // Fix URLs in the help content...
+			    admingui.help.fixHelpURLs(url, tmpDiv);
+
+			    // Show the help content...
+			    targetNode.innerHTML = tmpDiv.innerHTML;
+			}
+		    };
+		req.open("GET", url, true);
+		req.send("");
+	    }
+	}
+    },
+
+    fixTreeOnclick: function(node) {
+	if ((node.nodeType == 1) && (node.nodeName == "A")) {
+	    if (node.href) {
+		node.oldonclick = null;
+		if (node.onclick) {
+		    node.oldonclick = node.onclick;
+		}
+		node.onclick = function () { if (this.oldonclick != null) { this.oldonclick(); } admingui.help.showHelpPage(this.href, 'helpContent'); return false; };
+	    }
+	} else {
+	    // Not a href, so walk its children
+	    for (var idx=node.childNodes.length-1; idx>-1; idx--) {
+		admingui.help.fixTreeOnclick(node.childNodes[idx]);
+	    }
+	}
+    },
+
+    fixHelpURLs: function(baseURL, node) {
+	// Walk the DOM looking for "A" nodes, repair their URLs
+	if ((node.nodeType == 1) && (node.nodeName == "A")) {
+	    var relPath = node.getAttribute("href");
+	    if (relPath) {
+		if (relPath.indexOf("#") == 0) {
+		    // In-page link...
+		    return;
+		}
+		if (relPath.indexOf("://") !== -1) {
+		    // Full URL or IE7...
+		    if (relPath.indexOf(window.location.href) == 0) {
+			// Same Path...
+			if (relPath.indexOf("#") == -1) {
+			    // Not an in-page link, make it one...
+			    node.href = "#";
+			}
+
+			// Nothing to do here...
+			return;
+		    }
+		    var idx = relPath.indexOf("/common/help/");
+		    if (idx != -1) {
+			// IE7 does not give the real value, but instead tranlates it
+			// all urls will be relative to "/common/help/" in this case,
+			// so strip it off...
+			relPath = relPath.substring(idx+13);
+		    } else {
+			if (relPath.indexOf(window.location.hostname) != -1) {
+			    // From same host... Assume IE7 messed up URL
+			    idx = relPath.indexOf('/', relPath.indexOf('://') + 3);
+			    relPath = "../../../" + relPath.substring(idx+1);
+			} else {
+			    // Must be a real external URL...
+			    if ((node.target == null)
+				    || (node.target == "")
+				    || (typeof(node.target) === "undefined")) {
+				// Default external targets to _blank
+				node.target = "_blank";
+			    }
+			    return;
+			}
+		    }
+		}
+
+		// Fix for Issue #: 11017
+		if ((idx = relPath.indexOf('#')) != -1) {
+		    // Remove '#' from IE Ajax URLs b/c IE can't handle it!!
+		    relPath = relPath.substring(0, idx);
+		}
+
+		// Take filename off baseURL
+		baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
+
+		// Remove leading ../'s
+		while (relPath.indexOf("../") != -1) {
+		    relPath = relPath.substring(3);
+		    var idx = baseURL.lastIndexOf("/");
+		    if (idx != 0) {
+			baseURL = baseURL.substring(0, idx);
+		    }
+		}
+
+		// Fix href...
+		node.href = baseURL + "/" + relPath;
+		node.setAttribute("onclick", "admingui.help.showHelpPage('" + node.href + "', 'helpContent'); return false;");
+	    }
+	} else {
+	    // Not a href, so walk its children
+	    for (var idx=node.childNodes.length-1; idx>-1; idx--) {
+		admingui.help.fixHelpURLs(baseURL, node.childNodes[idx]);
+	    }
+	}
+    },
+
     launchHelp: function(url) {
 	var helpLink = "/common/help/help.jsf";
 	var helpKeys = admingui.util.findNodes(document,
@@ -1059,6 +1184,47 @@ admingui.help = {
 	var win = window.open(url, "HelpWindow" , "width=800, height=530, resizable");
 	if (win) {
 	    win.focus();
+	}
+    },
+
+    nav: {
+	TREE_ID: "tocTree",
+	lastTreeNodeSelected: null,
+	
+	/**
+	 *	This function selects a treeNode matching the given URL.
+	 */
+	selectTreeNodeWithURL: function(url) {
+	    var tree = document.getElementById(admingui.help.nav.TREE_ID);
+	    var matches = admingui.util.findNodes(tree, admingui.nav.matchURL, url);
+	    if (matches) {
+		// FIXME: Find "best" match... this will be needed if the URL
+		// is ambiguous, which may happen if post requests occur which
+		// leave off QUERY_STRING data that is needed to identify the
+		// URL.  It's probably best to leave the highlighting alone in
+		// many of these cases... perhaps search for the nearest match
+		// to the currently selected node.  Anyway, for now I will
+		// ignore this until we need to fix it...
+		// FIXME: This really should highlight the selected node.
+		admingui.help.nav.selectTreeNode(document.getElementById(matches[0].id));
+	    } 
+	},
+
+	/**
+	 *	This function selects the given treeNode.
+	 */
+	selectTreeNode: function(treeNode) {
+	    var tree = document.getElementById(admingui.help.nav.TREE_ID);// admingui.help.nav.getTree(treeNode);
+	    if (tree) {
+		try {
+		    admingui.nav.clearTreeSelection(admingui.help.nav.TREE_ID);
+		    tree.clearAllHighlight(tree.id);
+		    tree.selectTreeNode(treeNode.id);
+		    admingui.nav.expandNode(treeNode);
+		} catch (err) {
+		    //console.log(err);
+		}
+	    }
 	}
     }
 };
