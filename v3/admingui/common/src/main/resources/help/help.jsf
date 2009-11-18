@@ -54,8 +54,8 @@
 	    <sun:form id="tabForm">
 
 	    <sun:tabSet id="helpTabs">
-		<sun:tab id="tableOfContents" text="Table of Contents" onClick="admingui.help.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}" /> // FIXME: I18N
-		<sun:tab id="idx" text="Index" onClick="admingui.help.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}" /> // FIXME: I18N
+		<sun:tab id="tableOfContents" text="$resource{i18n.helpWindowTOC}" onClick="admingui.help.switchTab(this, 'tocTree', 'indexTree'); return false;" url="#{null}" />
+		<sun:tab id="idx" text="$resource{i18n.helpWindowIndex}" onClick="admingui.help.switchTab(this, 'indexTree', 'tocTree'); return false;" url="#{null}" />
 	    </sun:tabSet>
 	    </sun:form>
 	    <dynamicTreeNode id="tocTree" 
