@@ -130,7 +130,7 @@
 
   <target name="javamail.download" description="Download JavaMail 1.4.3" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.javamail">
-          <dependency groupId="javax.mail" artifactId="mail" version="1.4.3-rc1"/>
+          <dependency groupId="javax.mail" artifactId="mail" version="1.4.3"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
