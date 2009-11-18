@@ -101,14 +101,8 @@
    
 
     <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{false}" rowHeader="$boolean{true}" id="col4">
-        <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
-            onClick="window.open('#{td.value.launchLink}','ViewerWindow','width='+.60*screen.width+',height='+.60*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;"
-         >
-        <!command
-            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-        />
-        </sun:hyperlink>
-
+        <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}" url="#{td.value.launchLink}"
+            onClick="window.open('#{td.value.launchLink}','ViewerWindow','width='+.60*screen.width+',height='+.60*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes'); return false;" />
 
         <!--TODO-V3-CLUSTER
         <!if $session{supportCluster}>
