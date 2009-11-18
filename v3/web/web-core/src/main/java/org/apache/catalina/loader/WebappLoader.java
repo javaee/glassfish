@@ -322,9 +322,7 @@ public class WebappLoader
      * 4985680 What is that ???
      */
     public DefaultContext getDefaultContext() {
-
         return (this.defaultContext);
-
     }
 
 
@@ -346,9 +344,7 @@ public class WebappLoader
      * Return the debugging detail level for this component.
      */
     public int getDebug() {
-
         return (this.debug);
-
     }
 
 
@@ -358,12 +354,10 @@ public class WebappLoader
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-
         int oldDebug = this.debug;
         this.debug = debug;
         support.firePropertyChange("debug", Integer.valueOf(oldDebug),
                                    Integer.valueOf(this.debug));
-
     }
 
 
@@ -372,9 +366,7 @@ public class WebappLoader
      * our ClassLoader.
      */
     public boolean getDelegate() {
-
         return (this.delegate);
-
     }
 
 
@@ -385,12 +377,10 @@ public class WebappLoader
      * @param delegate The new flag
      */
     public void setDelegate(boolean delegate) {
-
         boolean oldDelegate = this.delegate;
         this.delegate = delegate;
         support.firePropertyChange("delegate", Boolean.valueOf(oldDelegate),
                                    Boolean.valueOf(this.delegate));
-
     }
 
 
@@ -400,9 +390,7 @@ public class WebappLoader
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
     public String getInfo() {
-
         return (info);
-
     }
 
 
@@ -410,9 +398,7 @@ public class WebappLoader
      * Return the ClassLoader class name.
      */
     public String getLoaderClass() {
-
         return (this.loaderClass);
-
     }
 
 
@@ -422,9 +408,7 @@ public class WebappLoader
      * @param loaderClass The new ClassLoader class name
      */
     public void setLoaderClass(String loaderClass) {
-
         this.loaderClass = loaderClass;
-
     }
 
 
@@ -432,9 +416,7 @@ public class WebappLoader
      * Return the reloadable flag for this Loader.
      */
     public boolean getReloadable() {
-
         return (this.reloadable);
-
     }
 
 
@@ -451,7 +433,6 @@ public class WebappLoader
         support.firePropertyChange("reloadable",
                                    Boolean.valueOf(oldReloadable),
                                    Boolean.valueOf(this.reloadable));
-
     }
 
 
@@ -469,9 +450,7 @@ public class WebappLoader
      * @param listener The listener to add
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-
         support.addPropertyChangeListener(listener);
-
     }
 
 
@@ -511,9 +490,7 @@ public class WebappLoader
      * String are immutable).
      */
     public String[] findRepositories() {
-
         return repositories.clone();
-
     }
 
     public String[] getRepositories() {
@@ -537,9 +514,7 @@ public class WebappLoader
      * such that the loaded classes should be reloaded?
      */
     public boolean modified() {
-
         return (classLoader.modified());
-
     }
 
 
@@ -559,9 +534,7 @@ public class WebappLoader
      * @param listener The listener to remove
      */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-
         support.removePropertyChangeListener(listener);
-
     }
 
 
@@ -569,13 +542,11 @@ public class WebappLoader
      * Return a String representation of this component.
      */
     public String toString() {
-
-        StringBuffer sb = new StringBuffer("WebappLoader[");
+        StringBuilder sb = new StringBuilder("WebappLoader[");
         if (container != null)
             sb.append(container.getName());
         sb.append("]");
         return (sb.toString());
-
     }
 
 
@@ -588,9 +559,7 @@ public class WebappLoader
      * @param listener The listener to add
      */
     public void addLifecycleListener(LifecycleListener listener) {
-
         lifecycle.addLifecycleListener(listener);
-
     }
 
 
@@ -609,9 +578,7 @@ public class WebappLoader
      * @param listener The listener to remove
      */
     public void removeLifecycleListener(LifecycleListener listener) {
-
         lifecycle.removeLifecycleListener(listener);
-
     }
 
     private boolean initialized=false;
@@ -645,7 +612,6 @@ public class WebappLoader
         if( container == null ) {
             // JMX created the loader
             // TODO
-
         }
     }
 
@@ -776,7 +742,6 @@ public class WebappLoader
         classLoader = null;
 
         destroy();
-
     }
 
 
@@ -1173,56 +1138,54 @@ public class WebappLoader
             }
         }
 
-        StringBuffer classpath = new StringBuffer();
+        StringBuilder classpath = new StringBuilder();
 
         // Assemble the class path information from our class loader chain
         ClassLoader loader = getClassLoader();
-        int layers = 0;
-        int n = 0;
+        boolean first = true;
         while (loader != null) {
             if (!(loader instanceof URLClassLoader)) {
-                String cp=getClasspath( loader );
-                if (cp == null) {
-                    if (log.isLoggable(Level.FINEST)) {
-                        log.finest("Unknown loader " + loader +
-                            " of type " + loader.getClass() +
-                            " for container " + container);
-                    }
-                    break;
-                } else {
-                    if (n > 0) 
+                String cp = getClasspath(loader);
+                if (cp != null) {
+                    if (!first) {
                         classpath.append(File.pathSeparator);
+                    } else {
+                        first = false;
+                    }
                     classpath.append(cp);
-                    n++;
                 }
-                break;
-                //continue;
+            } else {
+                URL[] repositories = ((URLClassLoader) loader).getURLs();
+                for (int i = 0; i < repositories.length; i++) {
+                    if (repositories[i] == null) {
+                        continue;
+                    }
+                    String repository = repositories[i].toString();
+                    if (repository.startsWith("file://")) {
+                        repository = repository.substring(7);
+                    } else if (repository.startsWith("file:")) {
+                        repository = repository.substring(5);
+                    } else if (repository.startsWith("jndi:")) {
+                        repository = servletContext.getRealPath(
+                            repository.substring(5));
+                    } else {
+                        continue;
+                    }
+                    if (!repository.isEmpty()) {
+                        if (!first) {
+                            classpath.append(File.pathSeparator);
+                        } else {
+                            first = false;
+                        }
+                        classpath.append(repository);
+                    }
+                }
             }
-            URL repositories[] =
-                ((URLClassLoader) loader).getURLs();
-            for (int i = 0; i < repositories.length; i++) {
-                String repository = repositories[i].toString();
-                if (repository.startsWith("file://"))
-                    repository = repository.substring(7);
-                else if (repository.startsWith("file:"))
-                    repository = repository.substring(5);
-                else if (repository.startsWith("jndi:"))
-                    repository =
-                        servletContext.getRealPath(repository.substring(5));
-                else
-                    continue;
-                if (repository == null)
-                    continue;
-                if (n > 0)
-                    classpath.append(File.pathSeparator);
-                classpath.append(repository);
-                n++;
-            }
+
             loader = loader.getParent();
-            layers++;
         }
 
-        this.classpath=classpath.toString();
+        this.classpath = classpath.toString();
 
         // Store the assembled class path as a servlet context attribute
         servletContext.setAttribute(Globals.CLASS_PATH_ATTR,
