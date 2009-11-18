@@ -57,6 +57,25 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     protected Boolean precompilejsp;
 
 /**
+ * @parameter expression="${dbvendorname}"
+ */
+    protected String dbvendorname;
+
+/**
+ * @parameter expression="${createtables}"
+ */
+    protected Boolean createtables;
+/**
+ * @parameter expression="${dropandcreatetables}"
+ */
+    protected Boolean dropandcreatetables;
+
+/**
+ * @parameter expression="${libraries}"
+ */
+    protected String libraries;
+
+/**
  * @parameter expression="${virtualservers}"
  */
     protected String virtualservers;
@@ -72,6 +91,14 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
             cmdParams.precompilejsp = precompilejsp;
         if (virtualservers != null)
             cmdParams.virtualservers = virtualservers;
+        if (dbvendorname != null)
+            cmdParams.dbvendorname = dbvendorname;
+        if (createtables != null)
+            cmdParams.createtables = createtables;
+        if (dropandcreatetables != null)
+            cmdParams.dropandcreatetables = dropandcreatetables;
+        if (libraries != null)
+            cmdParams.libraries = libraries;
     }
 
 }
