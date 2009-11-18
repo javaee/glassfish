@@ -37,8 +37,8 @@ package com.sun.enterprise.security.jmac.provider.config;
 
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.security.SecurityConfigListener;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
+import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,7 +46,6 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.Changed;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -65,15 +64,11 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 @Scoped(Singleton.class)
 public class MessageSecurityConfigEventListenerImpl implements ConfigListener {
 
-    @Inject
-    private Logger logger;
+    private static Logger logger = LogDomains.getLogger(MessageSecurityConfigEventListenerImpl.class,LogDomains.SECURITY_LOGGER);
     
     @Inject
     private SecurityService service;
     
-    @Inject
-    private Habitat habitat;
-
     /**
     * @param event - Event to be processed.
     * @throws AdminEventListenerException when the listener is unable to
@@ -81,8 +76,10 @@ public class MessageSecurityConfigEventListenerImpl implements ConfigListener {
     */    
     public <T extends ConfigBeanProxy> NotProcessed handleUpdate(T instance) {
 	NotProcessed np = null;
-        logger.log(Level.INFO, "MessageSecurityConfigEventListenerImpl - " +
-		"handleUpdate called");
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "MessageSecurityConfigEventListenerImpl - " +
+                    "handleUpdate called");
+        }
 	//Handle only the MessageSecurityConfig.
 	if (instance instanceof MessageSecurityConfig) {
 	    GFServerConfigProvider.loadConfigContext(service);
@@ -100,8 +97,10 @@ public class MessageSecurityConfigEventListenerImpl implements ConfigListener {
     */
     public <T extends ConfigBeanProxy> NotProcessed handleDelete(T instance) {
 	NotProcessed np = null;
-        logger.log(Level.INFO, "MessageSecurityConfigEventListenerImpl - " +
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "MessageSecurityConfigEventListenerImpl - " +
 		"handleDelete called");
+        }
 	if (instance instanceof MessageSecurityConfig) {
 	    GFServerConfigProvider.loadConfigContext(service);
 	} else {
@@ -118,8 +117,10 @@ public class MessageSecurityConfigEventListenerImpl implements ConfigListener {
     */
     public <T extends ConfigBeanProxy> NotProcessed handleCreate(T instance) {
 	NotProcessed np = null;
-        logger.log(Level.INFO, "MessageSecurityConfigEventListenerImpl - " +
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "MessageSecurityConfigEventListenerImpl - " +
 		"handleCreate called");
+        }
 	if (instance instanceof MessageSecurityConfig) {
 	    GFServerConfigProvider.loadConfigContext(service);
 	} else {
