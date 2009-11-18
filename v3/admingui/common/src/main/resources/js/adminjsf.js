@@ -754,6 +754,8 @@ admingui.nav = {
     },
 
     requestTreeUpdate: function(source, event, nodeId, params, previousState) {
+	// Ping header to make sure header stays "fresh"
+	admingui.ajax.pingHeader();
         jsf.ajax.request(source, event, {
             execute: "treeForm treeForm:update",
             render: nodeId + " " + nodeId + "_children",
@@ -1235,6 +1237,7 @@ admingui.help = {
 	props[tabElement.id + '_submittedField'] = tabElement.id;
 
 	// launch the request
+	// Note: in help window, don't ping -- only 1 JSF page
 	jsf.ajax.request(tabElement, null, props);
 
 	// 
@@ -2171,6 +2174,7 @@ admingui.table = {
 
 admingui.ajax = {
     lastPageLoaded : '',
+    ajaxCount: 0,
 
     getXMLHttpRequestObject: function() {
 	var reqObj = null;
@@ -2277,6 +2281,8 @@ admingui.ajax = {
 	    // Make cursor spin... (only do this when we're handling the response)
 	    document.body.style.cursor = 'wait';
 	}
+	// Ping header to make sure header stays "fresh"
+	admingui.ajax.pingHeader();
 	jsf.ajax.request(component, null, params);
     },
 
@@ -2564,6 +2570,7 @@ admingui.ajax = {
 	    if ((src == null) || (typeof(src) === 'undefined')) {
 		alert("'execButton' not found!  Unable to submit JSF2 Ajax Request!");
 	    } else {
+		// Don't ping b/c this is from the header and therefor is a ping
 		jsf.ajax.request(src, null,
 		    {
 			execute: 'execButton',
@@ -2573,7 +2580,6 @@ admingui.ajax = {
 			d: depth,
 			a: params,
 			onevent: func,
-			// FIXME: async: false does not work in JSF 2 as of 10/21/2009
 			async: async
 		    });
 	    }
@@ -2584,6 +2590,26 @@ admingui.ajax = {
 
     getResource: function(path, callback) {
 	admingui.ajax.invoke("gf.serveResource", {path:path, content:content}, callback, 1, true);
+    },
+
+    /**
+     *	This ensure the header "page" (view state data) stays in JSF's history
+     */
+    pingHeader: function() {
+	// Ping every 6 Ajax requests...
+	if ((++admingui.ajax.ajaxCount) > 5) {
+	    // Reset counter...
+	    admingui.ajax.ajaxCount = 0;
+
+	    // Get element from header form...
+	    var src = document.getElementById('execButton');
+	    var options = {
+		// noop
+		execute: '@none',
+		render: '@none'
+	    };
+	    jsf.ajax.request(src, null, options);
+	}
     }
 }
 
