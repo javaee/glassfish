@@ -64,6 +64,11 @@ public class LogDomains
     /**
      * Field
      */
+    public static final String STD_LOGGER = DOMAIN_ROOT + "enterprise.system.std";
+
+    /**
+     * Field
+     */
     public static final String TOOLS_LOGGER = DOMAIN_ROOT + "enterprise.system.tools";
 
     /**

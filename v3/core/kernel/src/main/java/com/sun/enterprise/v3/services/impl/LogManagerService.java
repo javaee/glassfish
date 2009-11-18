@@ -90,10 +90,7 @@ import java.util.logging.Logger;
 
 @Service
 @Scoped(Singleton.class)
-public class LogManagerService implements Init, PostConstruct, PreDestroy {
-
-    @Inject
-    Logger logger;    
+public class LogManagerService implements Init, PostConstruct, PreDestroy {   
 
     @Inject
     ServerEnvironmentImpl env;
@@ -114,6 +111,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     LoggingConfigImpl loggingConfig;
 
     final Map <String, Handler> gfHandlers = new HashMap <String,Handler>();
+    Logger logger = LogDomains.getLogger(LogManagerService.class,LogDomains.CORE_LOGGER);
     
     /**
      * Initialize the loggers
@@ -130,7 +128,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         File logging = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
         System.setProperty("java.util.logging.config.file", logging.getAbsolutePath());
         // reset settings
-
 
         try {
             if (!logging.exists()) {
@@ -166,12 +163,12 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
             }
 
         } catch (java.io.IOException ex) {
-            logger.log(Level.WARNING, "Cannot read logging properties file : ", ex);
+            logger.log(Level.WARNING, "logging.read.error", ex);
 
         } catch (ClassNotFoundException exc){
-            logger.log(Level.WARNING, "Cannot load specified formatter class file : ", formatterClassname);
+            logger.log(Level.WARNING, "logging.formatter.load ", formatterClassname);
         } catch (Exception e) {
-           logger.log(Level.WARNING, "Exception thrown while setting ConsoleHandler formatter : ", e);
+           logger.log(Level.WARNING, "logging.set.formatter ", e);
         }
 
         Collection<Handler> handlers = habitat.getAllByContract(Handler.class);
@@ -210,13 +207,16 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
         }
 
+
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
-        LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
+        Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
+        LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
         LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
         System.setOut(pout);
 
-        los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
+        Logger _elogger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
+        los = new LoggingOutputStream(_elogger, Level.SEVERE);
         LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
         System.setErr(perr);
         
@@ -256,9 +256,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
                             }
 
-                            logger.log(Level.INFO,"Updated log levels for loggers.");
+                            logger.log(Level.INFO,"logging.update.levels");
                         } catch (IOException e) {
-                            logger.log(Level.SEVERE, "Cannot read logging.properties file : ", e);
+                            logger.log(Level.SEVERE, "logging.read.error", e);
                         }
                     }
 
