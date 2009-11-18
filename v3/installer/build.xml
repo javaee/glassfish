@@ -22,14 +22,9 @@
 		<antcall target="do_processing">
 			<param name="bundle.name" value="GlassFishV3WebProfilePreview" />
 			<param name="sourcezip.name" value="../distributions/glassfish/target/web-ips-installer.zip" />
+			<param name="sourcezip.ml.name" value="../distributions/glassfish/target/web-ips-ml-installer.zip" />
 			<param name="selfextractexe.name" value="glassfish-web" />
-		</antcall>
-
-	<!-- Build multi-lingual installer -->
-		<antcall target="do_processing">
-			<param name="bundle.name" value="GlassFishV3WebProfilePreview" />
-			<param name="sourcezip.name" value="../distributions/glassfish/target/web-ips-ml-installer.zip" />
-			<param name="selfextractexe.name" value="glassfish-web-ml" />
+			<param name="selfextractexe.ml.name" value="glassfish-web-ml" />
 		</antcall>
 
 		<!-- Build GlassFish Enterprise Server v3 Preview distribution. -->
@@ -37,14 +32,9 @@
 		<antcall target="do_processing">
 			<param name="bundle.name" value="GlassFishV3Preview" />
 			<param name="sourcezip.name" value="../distributions/glassfish/target/glassfish-ips-installer.zip" />
+			<param name="sourcezip.ml.name" value="../distributions/glassfish/target/glassfish-ips-ml-installer.zip" />
 			<param name="selfextractexe.name" value="glassfish-full" />
-		</antcall>
-
-	<!-- Build multi-lingual installer -->
-		<antcall target="do_processing">
-			<param name="bundle.name" value="GlassFishV3Preview" />
-			<param name="sourcezip.name" value="../distributions/glassfish/target/glassfish-ips-ml-installer.zip" />
-			<param name="selfextractexe.name" value="glassfish-full-ml" />
+			<param name="selfextractexe.ml.name" value="glassfish-full-ml" />
 		</antcall>
 
 		<antcall target="push_zip_artifact_to_repository"/>
@@ -90,11 +80,12 @@
 	<!-- Extract Open Installer's resource.zip file. -->
 	<target name="extract_resource_zip" description="Extract resource.zip">
 		<!-- Explode the resources.zip to enable installer to refer the contents -->
-		<unzip src="${resources.zip}" dest="${stage.dir}/${bundle.name}">
-			<patternset>
-				<exclude name="**/ui_*.prefs"/>
-			</patternset>
-		</unzip>
+		<unzip src="${resources.zip}" dest="${stage.dir}/${bundle.name}"/>
+		<delete>
+			<fileset dir="${stage.dir}/${bundle.name}">
+				<include name="**/ui_*.prefs"/>
+			</fileset>
+		</delete>
 	</target>
 
 	<!-- No changes are required for resource.zip, so just copy to the CD image. -->
@@ -106,11 +97,12 @@
 	<!-- Extract Open Installer's engine.zip file. -->
 	<target name="extract_engine_zip" description="Extract engine.zip">
 		<!-- Explode the engine.zip to repack -->
-		<unzip src="${engine.zip}" dest="${stage.dir}/${bundle.name}_engine_tmp" >
-			<patternset>
-				<exclude name="**/ResourceMsgs_*.properties"/>
-			</patternset>
-		</unzip>
+		<unzip src="${engine.zip}" dest="${stage.dir}/${bundle.name}_engine_tmp"/>
+		<delete>
+			<fileset dir="${stage.dir}/${bundle.name}_engine_tmp">
+				<include name="**/ResourceMsgs_*.properties"/>
+			</fileset>
+		</delete>
 	</target>
 
 
@@ -239,6 +231,7 @@
 		<delete dir="${stage.dir}/${bundle.name}/install" />
 
 		<!-- Windows -->
+		<copy tofile="${stage.dir}/${bundle.name}/Product/Packages/glassfish.zip" file="${sourcezip.name}" overwrite="true"/>
 		<zip destfile="${stage.dir}/installer_distro.zip" basedir="${stage.dir}/${bundle.name}" />
 		<copy tofile="${stage.dir}/${selfextractexe.name}.exe" file="${basedir}/src/${bundle.name}/resources/wrappers/setup.exe" overwrite="true" />
 		<concat append="true" encoding="ISO-8859-1" destfile="${stage.dir}/${selfextractexe.name}.exe">
@@ -246,7 +239,18 @@
 		</concat>
 		<delete file="${stage.dir}/installer_distro.zip"/>
 
+		<!-- Create ML bundle -->
+		<!-- Update GlassFish bundle with L10n bundle -->
+		<copy tofile="${stage.dir}/${bundle.name}/Product/Packages/glassfish.zip" file="${sourcezip.ml.name}" overwrite="true"/>
+		<zip destfile="${stage.dir}/installer_distro_ml.zip" basedir="${stage.dir}/${bundle.name}" />
+		<copy tofile="${stage.dir}/${selfextractexe.ml.name}.exe" file="${basedir}/src/${bundle.name}/resources/wrappers/setup.exe" overwrite="true" />
+		<concat append="true" encoding="ISO-8859-1" destfile="${stage.dir}/${selfextractexe.ml.name}.exe">
+			<fileset dir="${stage.dir}" includes="installer_distro_ml.zip" />
+		</concat>
+		<delete file="${stage.dir}/installer_distro_ml.zip"/>
+
 		<!-- Unix -->
+		<copy tofile="${stage.dir}/${bundle.name}/Product/Packages/glassfish.zip" file="${sourcezip.name}" overwrite="true"/>
 		<jar jarfile="${stage.dir}/installer_distro.jar" basedir="${stage.dir}/${bundle.name}">
 		</jar>
 		<copy tofile="${stage.dir}/${selfextractexe.name}.sh" file="${basedir}/src/${bundle.name}/resources/wrappers/wrapper.sh" overwrite="true" />
@@ -255,7 +259,16 @@
 		</concat>
 		<delete file="${stage.dir}/installer_distro.jar"/>
 
-
+		<!-- Create ML bundle -->
+		<!-- Update GlassFish bundle with L10n bundle -->
+		<copy tofile="${stage.dir}/${bundle.name}/Product/Packages/glassfish.zip" file="${sourcezip.ml.name}" overwrite="true"/>
+		<jar jarfile="${stage.dir}/installer_distro_ml.jar" basedir="${stage.dir}/${bundle.name}">
+		</jar>
+		<copy tofile="${stage.dir}/${selfextractexe.ml.name}.sh" file="${basedir}/src/${bundle.name}/resources/wrappers/wrapper.sh" overwrite="true" />
+		<concat append="true" encoding="ISO-8859-1" destfile="${stage.dir}/${selfextractexe.ml.name}.sh">
+			<fileset dir="${stage.dir}" includes="installer_distro_ml.jar" />
+		</concat>
+		<delete file="${stage.dir}/installer_distro_ml.jar"/>
 	</target>
 
 	<target name="push_zip_artifact_to_repository" description="Pushing the distros created to be used for internal builds">
