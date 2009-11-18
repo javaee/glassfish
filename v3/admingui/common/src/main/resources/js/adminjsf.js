@@ -908,33 +908,68 @@ admingui.nav = {
      *	This function selects a treeNode matching the given URL.
      */
     selectTreeNodeWithURL: function(url) {
-//        var strip = function(needle, haystack) {
-//            if (typeof haystack == 'undefined') {
-//                return haystack;
-//            }
-//            if (haystack.indexOf(needle) > -1) {
-//                haystack = haystack.replace(needle, "");
-//            }
-//            return haystack;
-//        }
         var location = window.location;
         var base = location.protocol + "//" + location.host;
         url = url.replace("?bare=true", "");
         url = url.replace("&bare=true", "");
         url = url.replace(base, "");
-        
+
         var tree = document.getElementById(admingui.nav.TREE_ID);
-        var matches = admingui.util.findNodes(tree, admingui.nav.matchURL, url);
+        var qmark = url.indexOf("?");
+        var matches = admingui.util.findNodes(tree, admingui.nav.matchURL,
+            (qmark > -1) ? url.substring(0, qmark) : url);
         if (matches) {
-            // FIXME: Find "best" match... this will be needed if the URL
-            // is ambiguous, which may happen if post requests occur which
-            // leave off QUERY_STRING data that is needed to identify the
-            // URL.  It's probably best to leave the highlighting alone in
-            // many of these cases... perhaps search for the nearest match
-            // to the currently selected node.  Anyway, for now I will
-            // ignore this until we need to fix it...
-            admingui.nav.selectTreeNode(admingui.nav.getContainingTreeNode(matches[0]));
+            var bestMatch = matches[0];
+            if (qmark > -1) {
+                var params = admingui.nav.createObjectFromQueryString(url);
+
+                var hiscore = 0;
+                for (var i = 0; i < matches.length; i++) {
+                    var score = admingui.nav.compareQueryString(params, matches[i].href);
+                    if (score > hiscore) {
+                        hiscore = score;
+                        bestMatch = matches[i];
+                    }
+                }
+            }
+            admingui.nav.selectTreeNode(admingui.nav.getContainingTreeNode(bestMatch));
         }
+    },
+
+    compareQueryString: function (params, url) {
+        var score = 0;
+        var qmark = url.indexOf("?");
+        if (qmark > -1) {
+            var otherParams = admingui.nav.createObjectFromQueryString(url);
+            admingui.util.log("params = " + params);
+            for (var key in params) {
+                if (typeof params[key] == "function") {
+                    continue;
+                }
+                if (otherParams[key] === params[key]) {
+                    score++;
+                }
+            }
+        }
+
+        return score;
+    },
+
+    createObjectFromQueryString: function(url) {
+        var params = null;
+        var qmark = url.indexOf("?");
+        if (qmark > -1) {
+            params = Object();
+            var pieces = url.substring(qmark+1).split("&");
+            for (var i = 0; i < pieces.length; i++) {
+                var equals = pieces[i].indexOf("=");
+                var key = pieces[i].substring(0, equals);
+                var value = pieces[i].substring(equals+1);
+                params[key] = value;
+            }
+        }
+
+        return params;
     },
 
     /**

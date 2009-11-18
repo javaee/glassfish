@@ -43,6 +43,14 @@
 </event>
 
 // Need to write the title so it is updated in the browser.
+//******************************************************************************
+// Do not put a script as the first element on the page. IE will ignore it.
+//******************************************************************************
+"<div class="guiPageContent">
+    <!insert name="content">
+	Content Missing!
+    </insert>
+"</div>
 <f:verbatim>
 <script type="text/javascript">
     var loc = top.window.location.href;
@@ -50,19 +58,12 @@
     if (index > -1) {
         top.window.location = loc.substring(0, index);
     }
+
     admingui.help.pluginId = '#{pluginId}';
-</script>
-<div class="guiPageContent">
-</f:verbatim>
-    <!insert name="content">
-	Content Missing!
-    </insert>
-<f:verbatim>
-</div>
-<script type="text/javascript">
+    document.title = "#{guiTitle}";
+
     #{guiOnLoad};
     #{guiTemplateOnLoad};
     #{requestScope.reloadJS}
-    document.title = "#{guiTitle}";
 </script>
 </f:verbatim>
