@@ -55,6 +55,9 @@
     setPageSessionAttribute(key="convertToFalseList" value={"Enabled", "Debug"});
     setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
     getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+    
+    setPageSessionAttribute(key="parentObjectNameStr2" value="amx:pp=/domain/servers,type=server,name=server");
+    setPageSessionAttribute(key="childType2" value="resource-ref");
     //set the following for including buttons.inc
     setPageSessionAttribute(key="edit" value="#{true}" );
     setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
