@@ -117,8 +117,12 @@ a:hover{text-decoration:underline;}
 .previous {
     color: #16387c;
     font-size: 1.4em;
-    padding: 10px;
+    padding: 15px;
 }
+.moreInfo {
+    padding: 20px;
+}
+
 .previous:hover {text-decoration:underline;}
 .next {
     color: #16387c;

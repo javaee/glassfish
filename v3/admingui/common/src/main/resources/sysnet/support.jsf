@@ -128,7 +128,7 @@
 </sun:script>
 <f:verbatim>
     <div id="maincontainer">
-        <div id="newsBlogs" class="md1" style1="margin-left: 20px; width: 90%;">
+        <div id="newsBlogs" class="md1" style="margin-left: 20px; width: 90%;">
             <div class="hd">
                 <h2>$resource{i18nc.support.newsBlogs}</h2>
             </div>
@@ -137,7 +137,7 @@
 </f:verbatim>
                     <jmaki:widget name="jmaki.blockList" id="aqua" args="{filter: 'admin.blockList.RSSFilter', count:1}" service="/xhp?key=aquarium" template="/resources/jmaki/blockList/aquarium.htm" />
 <f:verbatim>
-                    <br clear="all"><a href="$resource{i18nc.support.aquariumLink}" target="_blank">$resource{i18nc.support.moreAquarium}</a>
+                    <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.aquariumLink}" target="_blank">$resource{i18nc.support.moreAquarium}</a></div>
                 </div>
             </div>
         </div>
@@ -160,7 +160,7 @@
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="$resource{i18nc.support.eventsLink}" target="_blank">$resource{i18nc.support.moreDevEvents}</a>
+                            <div class="moreInfo"><a href="$resource{i18nc.support.eventsLink}" target="_blank">$resource{i18nc.support.moreDevEvents}</a></div>
                         </div>
                     </div>
                 </div>
@@ -182,7 +182,7 @@
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=techtips&count=20" args="{count:4}" template="/resources/jmaki/blockList/techtips.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18nc.support.tipsLink}" target="_blank">$resource{i18nc.support.moreTechTips}</a>
+                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.tipsLink}" target="_blank">$resource{i18nc.support.moreTechTips}</a></div>
                         </div>
                     </div>
                 </div>
@@ -198,7 +198,7 @@
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" service="/xhp?key=javaee" args="{count:2}" template="/resources/jmaki/blockList/javaee.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18nc.support.javaeeLink}" target="_blank">$resource{i18nc.support.moreEnterpriseArticles}</a>
+                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.javaeeLink}" target="_blank">$resource{i18nc.support.moreEnterpriseArticles}</a></div>
                         </div>
                     </div>
                 </div>
@@ -222,7 +222,7 @@
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18nc.support.devNewsLink}" target="_blank">$resource{i18nc.support.sunDevNews}</a>
+                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.devNewsLink}" target="_blank">$resource{i18nc.support.sunDevNews}</a></div>
                         </div>
                     </div>
                 </div>
@@ -240,7 +240,7 @@
                             <jmaki:widget name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?key=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="#{IssueQuery}" target="_blank">$resource{i18nc.support.moreIssues}</a>
+                            <div class="moreInfo"><a href="#{IssueQuery}" target="_blank">$resource{i18nc.support.moreIssues}</a></div>
                         </div>
                     </div>
                 </div>
@@ -256,7 +256,7 @@
                             <jmaki:widget name="jmaki.blockList" id="business" service="/xhp?key=gfbusiness" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="$resource{i18nc.support.businessLink}" target="_blank">$resource{i18nc.support.moreBusiness}</a>
+                            <div class="moreInfo"><a href="$resource{i18nc.support.businessLink}" target="_blank">$resource{i18nc.support.moreBusiness}</a></div>
                         </div>
                     </div>
                 </div>
@@ -299,7 +299,7 @@
                             <jmaki:widget name="jmaki.blockList" id="blogs" service="/xhp?key=stories" args="{count:1}" template="/resources/jmaki/blockList/blogs.htm" />
     <f:verbatim>
                             <br clear="all">
-                            <a href="$resource{i18nc.support.storyLink}" target="_blank">$resource{i18nc.support.moreStories}</a>
+                            <div class="moreInfo"><a href="$resource{i18nc.support.storyLink}" target="_blank">$resource{i18nc.support.moreStories}</a></div>
                         </div>
                     </div>
                 </div>
@@ -328,7 +328,7 @@
     </f:verbatim>
                             <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
     <f:verbatim>
-                            <br clear="all"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a>
+                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a></div>
                         </div>
                     </div>
                 </div>
