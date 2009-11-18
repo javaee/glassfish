@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,7 +62,6 @@ import java.io.File;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.ejb.api.EJBInvocation;
 
 
 /**
@@ -121,7 +120,7 @@ public class EjbRuntimeEndpointInfo {
 
     public Object prepareInvocation(boolean doPreInvoke)
         throws Exception {
-        ComponentInvocation inv = null;
+        ComponentInvocation inv;
         AdapterInvocationInfo adapterInvInfo = new AdapterInvocationInfo();
         // For proper injection of handlers, we have to configure handler
         // after invManager.preInvoke but the Invocation.contextData has to be set
@@ -311,10 +310,6 @@ public class EjbRuntimeEndpointInfo {
         //does not have the jaxwsContextDelegate set
         //set it using this method
         addWSContextInfo(wsCtxt);
-        if (inv != null) {
-            EJBInvocation ejbInv = (EJBInvocation) inv;
-            ejbInv.setWebServiceContext(wsCtxt);
-        }
 
         adapterInvInfo.setAdapter(adapter);
         return adapterInvInfo;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@ package org.glassfish.ejb.api;
 import java.lang.reflect.Method;
 import javax.ejb.EJBContext;
 import javax.xml.rpc.handler.MessageContext;
-import javax.xml.ws.WebServiceContext;
 
 /**
  * This interface provides access to the exported portions of the
@@ -122,5 +121,4 @@ public interface EJBInvocation {
 
     public void setWebServiceMethod(Method method);
     public Method getWebServiceMethod();
-    public void setWebServiceContext(WebServiceContext webServiceContext);
 }
