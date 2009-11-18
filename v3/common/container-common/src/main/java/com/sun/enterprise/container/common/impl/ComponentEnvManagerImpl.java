@@ -1000,6 +1000,12 @@ public class ComponentEnvManagerImpl
 
         private EjbReferenceDescriptor ejbRef;
 
+        private volatile EjbNamingReferenceManager ejbRefMgr;
+
+        private volatile Object cachedResult = null;
+
+        private Boolean cacheable;
+
         // Note : V2 had a limited form of ejb-ref caching.  It only applied
         // to EJB 2.x Home references where the target lived in the same application
         // as the client.  It's not clear how useful that even is and it's of limited
@@ -1014,12 +1020,25 @@ public class ComponentEnvManagerImpl
                 throws NamingException {
 
             Object result = null;
-            EjbNamingReferenceManager ejbRefMgr = habitat.getByContract(EjbNamingReferenceManager.class);
+            if (ejbRefMgr == null) {
+                synchronized (this) {
+                    if (ejbRefMgr == null) {
+                        ejbRefMgr = habitat.getByContract(EjbNamingReferenceManager.class);
+                        cacheable = new Boolean(ejbRefMgr.isEjbReferenceCacheable(ejbRef));
+                    }
+                }
+            }
 
             if (ejbRefMgr != null) {
-
-                result = ejbRefMgr.resolveEjbReference(ejbRef, ctx);
-
+                if ((cacheable != null) && (cacheable.booleanValue() == true)) {
+                    if (cachedResult != null) {
+                        result = cachedResult;
+                    } else {
+                        result = cachedResult = ejbRefMgr.resolveEjbReference(ejbRef, ctx);
+                    }
+                } else {
+                    result = ejbRefMgr.resolveEjbReference(ejbRef, ctx);
+                }
             }
 
             if( result == null ) {

@@ -187,8 +187,13 @@ public class EjbNamingReferenceManagerImpl
     }
 
     public boolean isEjbReferenceCacheable(EjbReferenceDescriptor ejbRefDesc) {
+        // Ejb-ref is only eligible for caching if it refers to the legacy
+        // Home view and it is resolved to an ejb within the same application.
+        return ( (!ejbRefDesc.isEJB30ClientView()) &&
+                 (ejbRefDesc.getEjbDescriptor() != null) );
+
         // caching not enabled.
-        return false;
+        //return false;
     }
 
 
