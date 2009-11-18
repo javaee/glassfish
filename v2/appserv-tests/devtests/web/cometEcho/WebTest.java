@@ -33,12 +33,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.*;
 
-import com.sun.ejte.ccl.reporter.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 /*
  * Unit test for comet: echo.
@@ -47,8 +62,7 @@ public class WebTest {
 
     private static final String TEST_NAME = "comet-echo";
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
 
     private String host;
     private String port;

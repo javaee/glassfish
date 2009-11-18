@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 
 public class SimpleReporterAdapter implements Serializable {
@@ -18,7 +19,7 @@ public class SimpleReporterAdapter implements Serializable {
     public static final String FAIL = "fail";
     private static final Pattern TOKENIZER;
     private final boolean debug = true;
-    private final Map<String, String> testCaseStatus = new TreeMap<String, String>();
+    private final Map<String, String> testCaseStatus = new LinkedHashMap<String, String>();
     private String testSuiteName = getTestSuiteName();
     private String testSuiteID = testSuiteName + "ID";
     private String testSuiteDescription;
