@@ -51,14 +51,13 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.beans.PropertyVetoException;
-
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -76,10 +75,14 @@ public class DeleteProtocol implements AdminCommand {
     @Param(name="protocolname", primary=true)
     String protocolName;
 
-    Protocol protocolToBeRemoved = null;
+    Protocol protocol = null;
     
     @Inject
     Configs configs;
+
+    @Inject
+    Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -95,13 +98,9 @@ public class DeleteProtocol implements AdminCommand {
         Protocols protocols = networkConfig.getProtocols();
 
         try {
-            for (Protocol protocol : protocols.getProtocol()) {
-                if (protocolName.equalsIgnoreCase(protocol.getName())) {
-                    protocolToBeRemoved = protocol;
-                }
-            }
+            protocol = habitat.getComponent(Protocol.class, protocolName);
 
-            if (protocolToBeRemoved == null) {
+            if (protocol == null) {
                 report.setMessage(localStrings.getLocalString(
                     "delete.protocol.notexists", "{0} protocol doesn't exist",
                     protocolName));
@@ -112,10 +111,9 @@ public class DeleteProtocol implements AdminCommand {
             // check if the protocol to be deleted is being used by
             // any network listener
 
-            List<NetworkListener> nwlsnrList =
-                protocolToBeRemoved.findNetworkListeners();
+            List<NetworkListener> nwlsnrList = protocol.findNetworkListeners();
             for (NetworkListener nwlsnr : nwlsnrList) {
-                if (protocolToBeRemoved.getName().equals(nwlsnr.getProtocol())) {
+                if (protocol.getName().equals(nwlsnr.getProtocol())) {
                     report.setMessage(localStrings.getLocalString(
                         "delete.protocol.beingused", 
                         "{0} protocol is being used in the network listener {1}",
@@ -128,8 +126,8 @@ public class DeleteProtocol implements AdminCommand {
             ConfigSupport.apply(new SingleConfigCode<Protocols>() {
                 public Object run(Protocols param)
                 throws PropertyVetoException, TransactionFailure {
-                    param.getProtocol().remove(protocolToBeRemoved);
-                    return protocolToBeRemoved;
+                    param.getProtocol().remove(protocol);
+                    return protocol;
                 }
             }, protocols);
             

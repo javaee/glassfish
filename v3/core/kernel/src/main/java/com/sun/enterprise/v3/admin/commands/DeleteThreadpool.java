@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -58,6 +59,8 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 
 import com.sun.grizzly.config.dom.ThreadPool;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Protocol;
 import com.sun.enterprise.config.serverbeans.ThreadPools;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -80,6 +83,9 @@ public class DeleteThreadpool implements AdminCommand {
     @Inject
     Configs configs;
 
+    @Inject
+    Habitat habitat;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -94,10 +100,23 @@ public class DeleteThreadpool implements AdminCommand {
         ThreadPools threadPools = config.getThreadPools();
 
         if(!isThreadPoolExists(threadPools)) {
-            report.setMessage(localStrings.getLocalString("delete.threadpool" +
-                    ".notexists", "Thread Pool named {0} does not exist.", threadpool_id));
+            report.setMessage(localStrings.getLocalString("delete.threadpool.notexists",
+                "Thread Pool named {0} does not exist.", threadpool_id));
             report.setActionExitCode(ExitCode.FAILURE);
             return;
+        }
+
+        ThreadPool pool = habitat.getComponent(ThreadPool.class, threadpool_id);
+        List<NetworkListener> nwlsnrList = pool.findNetworkListeners();
+        for (NetworkListener nwlsnr : nwlsnrList) {
+            if (pool.getName().equals(nwlsnr.getThreadPool())) {
+                report.setMessage(localStrings.getLocalString(
+                    "delete.threadpool.beingused",
+                    "{0} threadpool is being used in the network listener {1}",
+                    threadpool_id, nwlsnr.getName()));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
         }
 
         try {
