@@ -83,10 +83,11 @@
 	    </f:verbatim>
 	</sun:head>
 
-	<sun:body style="display:none;" styleClass="yui-skin-sam" 
-		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);admingui.ajax.processElement(window, document.getElementById('content'), false);document.body.style.display='block';#{guiOnLoad};#{guiTemplateOnLoad};">
+	<sun:body style="height:100%;" styleClass="yui-skin-sam" 
+		  onLoad="admingui.ajax.processElement(window, document.getElementById('leftNav'), false);admingui.ajax.processElement(window, document.getElementById('content'), false);document.getElementById('blank').style.display='none';#{guiOnLoad};#{guiTemplateOnLoad};">
+"<div id="blank" style="position:fixed; top:0px; left:0px; height:100%; width:100%; background-color: #FFF; z-index:99999;">&nbsp;</div>
 "	    <div class="yui-skin-sam"><div id="gfLayoutTop"><div class="header_main">
-//                "<a class="skip" href="#navigation" alt="Skip masthead" title="Skip masthead">Skip Masthead</a>
+//                "<a class="skip" href="#navigation" alt="Skip to Navigation Menu" title="Skip to Navigation Menu">Skip to Navigation Menu</a>
 			<sun:form id="af" prependId="false">
 			    <event id="restartCheck">
 				<ui:event type="beforeEncode">
@@ -114,7 +115,7 @@
 "		    </div></div>
 
 "		<div id="gfLayoutLeft">
-"               <a class="skip" name="navigation">Past masthead</a><a class="skip" href="#contentArea" alt="Skip navigation" title="Skip navigation">Skip navigation</a>
+"               <a name="navigation"></a><a class="skip" href="#contentArea" alt="$resource{i18n.skipto.content}" title="$resource{i18n.skipto.content}">$resource{i18n.skipto.content}</a>
 "                       <div id="leftNav">
                             <!insert name="guiLeftNav" />
 "                       </div>
@@ -122,7 +123,7 @@
 
 "		<div id="gfLayoutCenter" style="height:100%;">
 		    <!-- Content -->
-                    "<a class="skip" name="contentArea">Content Area</a>
+                    "<a name="contentArea"></a>
 		    <sun:markup tag="div" id="content" style="height:100%;">
 			<!insert name="guiTemplateContent">
 			    <!insert name="content">
@@ -247,7 +248,7 @@
 	var layout = new YAHOO.widget.Layout({
 	   units: [
 	       { position : 'top', body : 'gfLayoutTop', height : 115, scroll : false, gutter1 : '5px', resize : false, collapse : false},
-	       { position : 'left', body : 'gfLayoutLeft', width : 250, scroll : true, gutter1 : '5px', resize : true, header : 'Tree', collapse : true},
+	       { position : 'left', body : 'gfLayoutLeft', width : 250, scroll : true, gutter1 : '5px', resize : true, header : '$resource{i18n.peTree}', collapse : true},
 	       { position : 'center', body : 'gfLayoutCenter', gutter1 : '5px', scroll : true}
 	   ]
 	});
