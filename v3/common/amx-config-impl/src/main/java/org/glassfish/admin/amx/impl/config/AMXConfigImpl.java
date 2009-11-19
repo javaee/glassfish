@@ -1609,7 +1609,7 @@ public class AMXConfigImpl extends AMXImplBase
         
         final String attributeType = String.class.getName();
         
-        getLogger().info( getObjectName() + " -- " + attributeName + " = " + newValue + " <== " + oldValue );
+        getLogger().fine( getObjectName() + " -- " + attributeName + " = " + newValue + " <== " + oldValue );
         
         // if ( getListenerCount() == 0 ) return;
         

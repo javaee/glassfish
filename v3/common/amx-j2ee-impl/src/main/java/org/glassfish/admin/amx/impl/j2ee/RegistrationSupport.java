@@ -277,7 +277,7 @@ final class RegistrationSupport
             top = registerAppClient(parentMBean, meta, appConfig, desc);
         }
 
-        ImplUtil.getLogger().info("Registered JSR 77 MBeans for application/module: " + top);
+        ImplUtil.getLogger().fine("Registered JSR 77 MBeans for application/module: " + top);
         return top;
     }
     
@@ -601,7 +601,7 @@ final class RegistrationSupport
         final ApplicationInfo appInfo = appRegistry.get(appName);
         if (appInfo == null)
         {
-            ImplUtil.getLogger().info("Unable to get ApplicationInfo for application: " + appName);
+            ImplUtil.getLogger().fine("Unable to get ApplicationInfo for application: " + appName);
             return null;
         }
         final Application app = appInfo.getMetaData(Application.class);
@@ -689,7 +689,7 @@ final class RegistrationSupport
         final Class<J2EEManagedObjectImplBase> implClass = CONFIG_RESOURCE_TYPES.get(configType);
         if (implClass == null)
         {
-            ImplUtil.getLogger().info("Unrecognized resource type for JSR 77 purposes: " + amxConfig.objectName());
+            ImplUtil.getLogger().fine("Unrecognized resource type for JSR 77 purposes: " + amxConfig.objectName());
             return null;
         }
         final Class<J2EEManagedObject> intf = (Class) ClassUtil.getFieldValue(implClass, "INTF");
@@ -750,13 +750,13 @@ final class RegistrationSupport
             {
                 if ( type.equals( mResourceRefType ) )
                 {
-                    ImplUtil.getLogger().info("New ResourceRef MBEAN registered: " + objectName);
+                    ImplUtil.getLogger().fine("New ResourceRef MBEAN registered: " + objectName);
                     final ResourceRef ref = mProxyFactory.getProxy(objectName, ResourceRef.class);
                     processResourceRef(ref);
                 }
                 else if ( type.equals( mApplicationRefType ) )
                 {
-                    ImplUtil.getLogger().info( "NEW ApplicationRef MBEAN registered: " + objectName);
+                    ImplUtil.getLogger().fine( "NEW ApplicationRef MBEAN registered: " + objectName);
                     final ApplicationRef ref = mProxyFactory.getProxy(objectName, ApplicationRef.class);
                     processApplicationRef(ref);
                 }
@@ -769,7 +769,7 @@ final class RegistrationSupport
                     final ObjectName mbean77 = mConfigRefTo77.remove(objectName);
                     if (mbean77 != null)
                     {
-                        ImplUtil.getLogger().info( "Unregistering MBEAN for ref: " + objectName);
+                        ImplUtil.getLogger().fine( "Unregistering MBEAN for ref: " + objectName);
                         try
                         {
                             mMBeanServer.unregisterMBean(mbean77);

@@ -317,7 +317,7 @@ public final class AMXStartupService
         {
             try
             {
-                ImplUtil.getLogger().info("AMXStartupServiceNew.AMXLoaderThread: loading: " + mLoader.getClass().getName());
+                ImplUtil.getLogger().fine("AMXStartupServiceNew.AMXLoaderThread: loading: " + mLoader.getClass().getName());
                 mTop = mLoader.loadAMXMBeans();
                 //ImplUtil.getLogger().info( "AMXStartupService.AMXLoaderThread: loaded: "  + mLoader.getClass().getName() );
             }
