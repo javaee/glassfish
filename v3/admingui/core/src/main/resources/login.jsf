@@ -49,8 +49,8 @@
     <title>$resource{i18n.loginPageTitle}</title>
 <script type="text/javascript">
     if (document.getElementById('layout-doc') != null) {
-	// FIXME: This should use requestURI or whatever is necessary to preserve the original request -- do not hard-code to login.jsf or any other page
-        window.location = "#{request.scheme}://#{request.serverName}:#{request.serverPort}/login.jsf";
+	// Just refresh the page... login will take over
+        window.location = window.location;
     }
 </script>
 </f:verbatim>
