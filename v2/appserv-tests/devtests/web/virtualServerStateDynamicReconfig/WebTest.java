@@ -69,10 +69,10 @@ public class WebTest {
     private static final String ON_RESPONSE = "Success!";
 
     private static final String DISABLED_RESPONSE
-        = "HTTP/1.1 403 Virtual server myvs has been disabled";
+        = "HTTP/1.1 403 WEB0208: Virtual server myvs has been disabled";
 
     private static final String OFF_RESPONSE
-        = "HTTP/1.1 404 Virtual server myvs has been turned off";
+        = "HTTP/1.1 404 WEB0209: Virtual server myvs has been turned off";
 
     private String host;
     private String port;
