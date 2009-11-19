@@ -1293,25 +1293,25 @@ public class WebModule extends PwcWebModule {
 
         if ((bean != null) && (bean.sizeWebProperty() > 0)) {
             WebProperty[] props = bean.getWebProperty();
-            for(WebProperty prop : props) {
+            for (WebProperty prop : props) {
                 String name = prop.getAttributeValue("name");
                 String value = prop.getAttributeValue("value");
-                if(name == null || value == null) {
+                if (name == null || value == null) {
                     throw new IllegalArgumentException(
                         rb.getString("webcontainer.nullWebProperty"));
                 }
-                if("singleThreadedServletPoolSize".equalsIgnoreCase(name)) {
+                if ("singleThreadedServletPoolSize".equalsIgnoreCase(name)) {
                     int poolSize = getSTMPoolSize();
                     try {
                         poolSize = Integer.parseInt(value);
                     } catch(NumberFormatException e) {
-                        Object[] params =
-                            {value, contextPath, Integer.toString(poolSize)};
-                        logger.log(Level.WARNING,
-                            "webcontainer.invalidServletPoolSize",
-                            params);
+                        String msg = rb.getString(
+                            "webcontainer.invalidServletPoolSize");
+                        msg = MessageFormat.format(msg, value,
+                            contextPath, Integer.toString(poolSize));
+                        logger.log(Level.WARNING, msg, e);
                     }
-                    if(poolSize > 0) {
+                    if (poolSize > 0) {
                         setSTMPoolSize(poolSize);
                     }
 
@@ -1326,14 +1326,10 @@ public class WebModule extends PwcWebModule {
                 } else if("reuseSessionID".equalsIgnoreCase(name)) {
                     boolean reuse = ConfigBeansUtilities.toBoolean(value);
                     setReuseSessionID(reuse);
-                    if(reuse) {
-                        Object[] params = {
-                            contextPath,
-                            vs.getID()
-                        };
-                        logger.log(Level.WARNING,
-                            "webcontainer.sessionIDsReused",
-                            params);
+                    if (reuse) {
+                        String msg = rb.getString("webcontainer.sessionIDsReused");
+                        msg = MessageFormat.format(msg, contextPath, vs.getID());
+                        logger.log(Level.WARNING, msg);
                     }
                     // END S1AS8PE 4817642
                 } else if("useResponseCTForHeaders".equalsIgnoreCase(name)) {

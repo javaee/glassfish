@@ -2139,7 +2139,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             "webcontainer.webmodule.exceptionDuringDestroy");
                         msg = MessageFormat.format(msg, contextRoot,
                             host.getName());
-
                         _logger.log(Level.WARNING, msg, ex);
                     }
                     if(_logger.isLoggable(Level.FINEST)) {

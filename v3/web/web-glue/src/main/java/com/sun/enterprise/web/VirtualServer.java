@@ -1107,8 +1107,8 @@ public class VirtualServer extends StandardHost {
                 if (errorParams[j].startsWith("path=")) {
                     if (path != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.sendErrorMultipleElement",
-                                    new Object[] { propValue, "path" });
+                            "webcontainer.sendErrorMultipleElement",
+                            new Object[] { propValue, getID(), "path" });
                     }
                     path = errorParams[j].substring("path=".length());
                 }
@@ -1116,8 +1116,8 @@ public class VirtualServer extends StandardHost {
                 if (errorParams[j].startsWith("reason=")) {
                     if (reason != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.sendErrorMultipleElement",
-                                    new Object[] { propValue, "reason" });
+                            "webcontainer.sendErrorMultipleElement",
+                            new Object[] { propValue, getID(), "reason" });
                     }
                     reason = errorParams[j].substring("reason=".length());
                 }
@@ -1125,8 +1125,8 @@ public class VirtualServer extends StandardHost {
                 if (errorParams[j].startsWith("code=")) {
                     if (status != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.sendErrorMultipleElement",
-                                    new Object[] { propValue, "code" });
+                            "webcontainer.sendErrorMultipleElement",
+                            new Object[] { propValue, getID(), "code" });
                     }
                     status = errorParams[j].substring("code=".length());
                 }
@@ -1134,8 +1134,8 @@ public class VirtualServer extends StandardHost {
 
             if (path == null || path.length() == 0) {
                 _logger.log(Level.WARNING,
-                            "webcontainer.sendErrorMissingPath",
-                            propValue);
+                    "webcontainer.sendErrorMissingPath",
+                    new Object[] { propValue, getID() });
             }
 
             errorPage = new ErrorPage();
@@ -1189,8 +1189,8 @@ public class VirtualServer extends StandardHost {
                 if (redirectParams[j].startsWith("from=")) {
                     if (from != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.redirectMultipleElement",
-                                    new Object[] { propValue, "from" });
+                            "webcontainer.redirectMultipleElement",
+                            new Object[] { propValue, getID(), "from" });
                     }
                     from = redirectParams[j].substring("from=".length());
                 }
@@ -1198,8 +1198,8 @@ public class VirtualServer extends StandardHost {
                 if (redirectParams[j].startsWith("url=")) {
                     if (url != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.redirectMultipleElement",
-                                    new Object[] { propValue, "url" });
+                            "webcontainer.redirectMultipleElement",
+                            new Object[] { propValue, getID(), "url" });
                     }
                     url = redirectParams[j].substring("url=".length());
                 }
@@ -1207,8 +1207,8 @@ public class VirtualServer extends StandardHost {
                 if (redirectParams[j].startsWith("url-prefix=")) {
                     if (urlPrefix != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.redirectMultipleElement",
-                                    new Object[] { propValue, "url-prefix" });
+                            "webcontainer.redirectMultipleElement",
+                            new Object[] { propValue, getID(), "url-prefix" });
                     }
                     urlPrefix = redirectParams[j].substring(
                                                     "url-prefix=".length());
@@ -1217,8 +1217,8 @@ public class VirtualServer extends StandardHost {
                 if (redirectParams[j].startsWith("escape=")) {
                     if (escape != null) {
                         _logger.log(Level.WARNING,
-                                    "webcontainer.redirectMultipleElement",
-                                    new Object[] { propValue, "escape" });
+                            "webcontainer.redirectMultipleElement",
+                            new Object[] { propValue, getID(), "escape" });
                     }
                     escape = redirectParams[j].substring("escape=".length());
                 }
@@ -1226,22 +1226,22 @@ public class VirtualServer extends StandardHost {
 
             if (from == null || from.length() == 0) {
                 _logger.log(Level.WARNING,
-                            "webcontainer.redirectMissingFrom",
-                            propValue);
+                        "webcontainer.redirectMissingFrom",
+                        new Object[] { propValue, getID() });
             }
 
             // Either url or url-prefix (but not both!) must be present
             if ((url == null || url.length() == 0)
                     && (urlPrefix == null || urlPrefix.length() == 0)) {
                 _logger.log(Level.WARNING,
-                            "webcontainer.redirectMissingUrlOrUrlPrefix",
-                            propValue);
+                        "webcontainer.redirectMissingUrlOrUrlPrefix",
+                        new Object[] { propValue, getID() });
             }
             if (url != null && url.length() > 0
                     && urlPrefix != null && urlPrefix.length() > 0) {
                 _logger.log(Level.WARNING,
-                            "webcontainer.redirectBothUrlAndUrlPrefix",
-                            propValue);
+                    "webcontainer.redirectBothUrlAndUrlPrefix",
+                    new Object[] { propValue, getID() });
             }
 
             boolean escapeURI = true;
@@ -1252,8 +1252,8 @@ public class VirtualServer extends StandardHost {
                     escapeURI = false;
                 } else {
                     _logger.log(Level.WARNING,
-                                "webcontainer.redirectInvalidEscape",
-                                propValue);
+                        "webcontainer.redirectInvalidEscape",
+                        new Object[] { propValue, getID() });
                 }
             }
 
