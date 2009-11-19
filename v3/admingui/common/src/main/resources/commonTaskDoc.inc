@@ -39,33 +39,28 @@
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.qstart}"
         toolTip="$resource{i18n.commonTasks.task.qstart.toolTip}"
-        onClick="javascript:var win=window.open('$resource{i18n.commonTasks.doc.qstart}','_blank');win.focus(); return false;"
-        onKeyPress="javascript:var win=window.open('$resource{i18n.commonTasks.doc.qstart}','_blank');win.focus(); return false;">
+        onClick="var win=window.open('$resource{i18n.commonTasks.doc.qstart}','_blank');if (win) {win.focus();}; return false;">
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.adminGuide}"
         toolTip="$resource{i18n.commonTasks.task.adminGuide.toolTip}"
-        onClick="javascript:var win=window.open('$resource{i18n.commonTasks.doc.adminGuide}','_blank');win.focus(); return false;"
-        onKeyPress="javascript:var win=window.open('$resource{i18n.commonTasks.doc.adminGuide}','_blank');win.focus(); return false;">
+        onClick="var win=window.open('$resource{i18n.commonTasks.doc.adminGuide}','_blank');if (win) {win.focus();}; return false;">
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.devGuide}"
         toolTip="$resource{i18n.commonTasks.task.devGuide.toolTip}"
-        onClick="javascript:var win=window.open('$resource{i18n.commonTasks.doc.devGuide}','_blank');win.focus(); return false;"
-        onKeyPress="javascript:var win=window.open('$resource{i18n.commonTasks.doc.devGuide}','_blank');win.focus(); return false;">
+        onClick="var win=window.open('$resource{i18n.commonTasks.doc.devGuide}','_blank');if (win) {win.focus();}; return false;">
     </sun:commonTask>
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.deployGuide}"
         toolTip="$resource{i18n.commonTasks.task.deployGuide.toolTip}"
-        onClick="javascript:var win=window.open('$resource{i18n.commonTasks.doc.deployGuide}','_blank');win.focus(); return false;"
-        onKeyPress="javascript:var win=window.open('$resource{i18n.commonTasks.doc.deployGuide}','_blank');win.focus(); return false;">
+        onClick="var win=window.open('$resource{i18n.commonTasks.doc.deployGuide}','_blank');if (win) {win.focus();}; return false;">
     </sun:commonTask>
 <!--
     <sun:commonTask
         text="$resource{i18n.commonTasks.task.deployPlanningGuide}"
         toolTip="$resource{i18n.commonTasks.task.deployPlanningGuide.toolTip}"
-        onClick="javascript:var win=window.open('$resource{i18n.commonTasks.doc.deployPlanningGuide}','_blank');win.focus(); return false;"
-        onKeyPress="javascript:var win=window.open('$resource{i18n.commonTasks.doc.deployPlanningGuide}','_blank');win.focus(); return false;">
+        onClick="var win=window.open('$resource{i18n.commonTasks.doc.deployPlanningGuide}','_blank');if (win) {win.focus();}; return false;">
     </sun:commonTask> 
 -->                       
 </sun:commonTasksGroup>
