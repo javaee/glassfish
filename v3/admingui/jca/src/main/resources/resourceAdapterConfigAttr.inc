@@ -49,7 +49,7 @@
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['Name']}" labels="$pageSession{connectorList}"
                     required="#{true}" submitForm="#{true}" immediate="#{true}" >
                 <!beforeCreate
-                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
+                     getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
                 <!command

@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
         setPageSessionAttribute(key="childType" value="connector-connection-pool");
         getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.tmpMap}")
-        getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}")
+        getApplicationBySnifferType(type="connector" result="#{requestScope.rarList}")
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{requestScope.modList}")
         addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
         getConnectorConnectionPoolWizard(

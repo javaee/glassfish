@@ -57,7 +57,7 @@
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
-        getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{requestScope.rarList}");
+        getApplicationBySnifferType(type="connector"  result="#{requestScope.rarList}");
         addSystemConnectors(rarList="#{requestScope.rarList}" result="#{pageSession.modList}")
 
         getConnectionDefinitionsForRA(resourceAdapter="#{pageSession.valueMap.ResourceAdapterName}" result="#{pageSession.cdList}");

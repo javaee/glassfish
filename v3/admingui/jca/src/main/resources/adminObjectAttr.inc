@@ -61,7 +61,7 @@
         <sun:property id="resAdaptorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}" helpText="$resource{i18njca.adminObjectResource.resourceAdapterHelp}">
             <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['ResAdapter']}" labels="$pageSession{connectorList}"  values="$pageSession{connectorList}" required="#{true}" submitForm="#{true}" immediate="#{true}">
                 <!beforeCreate
-                     getApplicationBySnifferType(type="connector" fullName="#{false}" result="#{pageSession.connectorList}")
+                     getApplicationBySnifferType(type="connector"  result="#{pageSession.connectorList}")
                      listAdd(list="#{pageSession.connectorList}" value="jmsra")
                 />
                 <!afterCreate

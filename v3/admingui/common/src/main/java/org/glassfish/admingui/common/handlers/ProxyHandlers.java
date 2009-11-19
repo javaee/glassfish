@@ -688,7 +688,7 @@ public class ProxyHandlers {
      *
      *  <p> Input  value: "type" -- the name of the sniffer
      *  <p> Input  value: "fullName" -- boolean that indicates if the returned name should be presented as application#module name
-     *  <p> or just the module name.   eg. myApp#myModule  vs  myModule
+     *  <p> or just the module name.   eg. myApp#myModule  vs  myModule.  Default to "true"
      *  <p> Input value: "result"  -- Type: <code> java.util.List</code></p>
      *	@param	handlerCtx	The HandlerContext.
      */
@@ -702,7 +702,7 @@ public class ProxyHandlers {
         String type = (String) handlerCtx.getInputValue("type");
         Boolean fullName = (Boolean) handlerCtx.getInputValue("fullName");
         if (fullName == null) {
-            fullName = false;
+            fullName = true;
         }
 
         AMXProxy amx = V3AMX.getInstance().getApplications();
