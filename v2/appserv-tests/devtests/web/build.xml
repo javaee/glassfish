@@ -315,9 +315,6 @@
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="commonsLogging" target="all"/>
         <ant dir="commonsLoggingLocalAndGlobal" target="all"/>
-<!-- XXX temporarily commented out, see IT 7125
-        <ant dir="commonsLoggingLocalOverrideGlobal" target="all"/>
--->
         <ant dir="contextXmlConfig" target="all"/> 
         <ant dir="contextPathXmlConfig" target="all"/>
         <ant dir="cookieValueWithSpaces" target="all"/>
