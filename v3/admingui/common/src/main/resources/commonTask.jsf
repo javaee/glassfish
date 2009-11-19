@@ -42,14 +42,6 @@
 />
 <!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}">
 <!define name="content">
-    <f:verbatim>
-	<style type="text/css">
-	    div .guiPageContent {padding-left:0px; padding-right:0px;}
-	</style>
-    </f:verbatim>
-    <sun:script>
-	"admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
-    </sun:script>
     "<div style="height:100%; background-color:#B6C6D6; #{pageSession.contentCSS}">
       <sun:form id="form"> 
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
@@ -102,7 +94,22 @@
 #include "/common/sysnet/regReminder.inc"
         <sun:hidden id="helpKey" value="$resource{help.commonTask}" />
       </sun:form>
-      "</div>
+
+<f:verbatim>
+    </div>
+    <style type="text/css">
+	div .guiPageContent {padding-left:0px; padding-right:0px;}
+    </style>
+<!--[if IE]>
+    <style type="text/css">
+	.Btn1_sun4, .Btn1Hov_sun4, .Btn1Dis_sun4, .Btn2_sun4, .Btn2Hov_sun4, .Btn2Dis_sun4 {padding: 1px 0px 1px 0px;}
+    </style>
+<![endif]-->
+</f:verbatim>
+<sun:script>
+    "admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
+</sun:script>
+
       <!--  Customizing pe bottom frame -->
           <event>
           <!afterCreate

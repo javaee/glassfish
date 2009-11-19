@@ -56,18 +56,18 @@
 
 		<div style="text-align: center;">
     </f:verbatim>
-        <h:commandButton value="$resource{i18n.button.register}" styleClass="Btn1_sun4"
-            onclick="admingui.ajax.loadPage({url:'#{request.contextPath}/common/sysnet/registration.jsf'}); return false;"
-            onkeypress="javascript: return false;">
-        </h:commandButton>
-        <h:commandButton value="$resource{i18n.button.regRemind}" styleClass="Btn2_sun4"
-            onclick="document.getElementById('${popupId}').style.visibility='hidden'; setCookie('appServerRegistrationRemindLaterCookie', 'true', 14); admingui.ajax.invoke('setRegistrationRemindLater', {}); return false;"
-	    primary="#{false}"
-            onkeypress="javascript: return true;">
-        </h:commandButton>
-        <h:commandButton value="$resource{i18n.button.regNever}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.invoke('setRegistrationDontAsk', {}); return false;" primary="false" onkeypress="javascript: return true;">
-        </h:commandButton>
-	<h:commandButton value="$resource{i18n.button.Cancel}" styleClass="Btn2_sun4" onclick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.invoke('setSessionAttribute', {key:'dontAskRegistrationInThisSession', value:'true'}); return false;" primary="false"  onkeypress="javascript: return true;" />
+	<sun:button
+	    text="$resource{i18n.button.register}"
+	    onClick="admingui.ajax.loadPage({url:'#{request.contextPath}/common/sysnet/registration.jsf'}); return false;" />
+        <sun:button
+	    text="$resource{i18n.button.regRemind}" primary="false"
+            onClick="document.getElementById('${popupId}').style.visibility='hidden'; setCookie('appServerRegistrationRemindLaterCookie', 'true', 14); admingui.ajax.invoke('setRegistrationRemindLater', {}); return false;" />
+        <sun:button
+	    text="$resource{i18n.button.regNever}" primary="false"
+	    onClick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.invoke('setRegistrationDontAsk', {}); return false;" />
+	<sun:button
+	    text="$resource{i18n.button.Cancel}" primary="false"
+	    onClick="document.getElementById('${popupId}').style.visibility='hidden'; admingui.ajax.invoke('setSessionAttribute', {key:'dontAskRegistrationInThisSession', value:'true'}); return false;" />
 	"</div>
 
     <sun:script>
