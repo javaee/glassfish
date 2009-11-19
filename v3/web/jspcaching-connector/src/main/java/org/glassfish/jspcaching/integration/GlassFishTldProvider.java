@@ -37,6 +37,7 @@
 package org.glassfish.jspcaching.integration;
 
 import java.net.*;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.*;
 import java.util.regex.Pattern;
@@ -68,6 +69,8 @@ public class GlassFishTldProvider
     private static final Logger logger =
         LogDomains.getLogger(GlassFishTldProvider.class,
             LogDomains.WEB_LOGGER);
+
+    private static final ResourceBundle rb = logger.getResourceBundle();
 
     @Inject
     ServerContext serverContext;
@@ -136,8 +139,9 @@ public class GlassFishTldProvider
                         try {
                             uris[i] = urls[i].toURI();
                         } catch(URISyntaxException e) {
-                            logger.log(Level.WARNING, "Ignoring " + urls[i],
-                                e);
+                            String msg = rb.getString("tldProvider.ignoreUrl");
+                            msg = MessageFormat.format(msg, urls[i]);
+                            logger.log(Level.WARNING, msg, e);
                         }
                     }
                 }

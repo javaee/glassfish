@@ -1776,7 +1776,7 @@ public class WebappClassLoader
                 try {
                     DriverManager.deregisterDriver(driver);
                 } catch (SQLException e) {
-                    logger.log(Level.WARNING, "SQL driver deregistration failed", e);
+                    logger.log(Level.WARNING, "webappClassLoader.sqlDriverDeregistrationError", e);
                 }
             }
         }
@@ -2323,8 +2323,9 @@ public class WebappClassLoader
             }
             binaryStream.close();
         } catch (Exception e) {
-            logger.log(Level.WARNING,
-                "Unable to read data for class with name " + name, e);
+            String msg = rb.getString("webappClassLoader.readClassError");
+            msg = MessageFormat.format(msg, name);
+            logger.log(Level.WARNING, msg, e);
             return;
         }
 
@@ -2599,7 +2600,7 @@ public class WebappClassLoader
         try {
             m = (Map) fld.get(null);
         } catch (IllegalAccessException iae) {
-            logger.log(Level.WARNING, "Unable to purge bean classes from BeanELResolver", iae);
+            logger.log(Level.WARNING, "webappClassLoader.unablePurgeBeanClasses", iae);
             return;
         }
 
