@@ -101,7 +101,7 @@ public class ResourceAdapterConfigParserImpl implements ConnectorConfigParser {
         Properties introspectedVals = null;
         if (className != null && className.length() != 0) {
             introspectedVals = configParserUtil.introspectJavaBean(
-                    className, ddVals);
+                    className, ddVals, false, rarName);
             mergedVals = configParserUtil.mergeProps(ddVals, introspectedVals);
         }
         return mergedVals;

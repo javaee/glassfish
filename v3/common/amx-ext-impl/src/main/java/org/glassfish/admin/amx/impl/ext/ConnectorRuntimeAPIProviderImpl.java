@@ -49,6 +49,8 @@ import org.jvnet.hk2.component.Habitat;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+
 import javax.resource.ResourceException;
 
 /**
@@ -148,6 +150,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getConnectionDefinitionNames(String rarName)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         final String[] conDefnNames;
@@ -171,6 +174,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getMCFConfigProps(String rarName, String connectionDefName)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -193,7 +197,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getAdminObjectInterfaceNames(String rarName)
     {
-
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -216,6 +220,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getAdminObjectClassNames(String rarName, String intfName)
     {
+        rarName = getActualRAName(rarName);
 
         final Map<String, Object> result = new HashMap<String, Object>();
 
@@ -239,6 +244,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getResourceAdapterConfigProps(String rarName)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -261,6 +267,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getAdminObjectConfigProps(String rarName, String adminObjectIntf, String adminObjectClass)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -284,6 +291,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getAdminObjectConfigProps(String rarName, String adminObjectIntf)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -306,6 +314,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getConnectorConfigJavaBeans(String rarName, String connectionDefName, String type)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -329,6 +338,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     public Map<String, Object> getActivationSpecClass(String rarName,
                                                       String messageListenerType)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -351,7 +361,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
 
     public Map<String, Object> getMessageListenerTypes(String rarName)
     {
-
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -375,7 +385,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     public Map<String, Object> getMessageListenerConfigProps(String rarName,
                                                              String messageListenerType)
     {
-
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -400,6 +410,7 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
     public Map<String, Object> getMessageListenerConfigPropTypes(String rarName,
                                                                  String messageListenerType)
     {
+        rarName = getActualRAName(rarName);
         final Map<String, Object> result = new HashMap<String, Object>();
 
         try
@@ -646,4 +657,14 @@ public final class ConnectorRuntimeAPIProviderImpl extends AMXImplBase
         return result;
     }
 
+    private static String getActualRAName(String rarName){
+        //handle only embedded rars
+        if(rarName != null && rarName.contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER)){
+            if(rarName.endsWith(ConnectorConstants.RAR_EXTENSION)){
+                int index = rarName.lastIndexOf(ConnectorConstants.RAR_EXTENSION);
+                return rarName.substring(0,index);
+            }
+        }
+        return rarName;
+    }
 }

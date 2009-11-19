@@ -39,6 +39,7 @@ package com.sun.enterprise.connectors.util;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.connectors.*;
 import com.sun.enterprise.connectors.ConnectorRuntime;
+import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.*;
 
@@ -142,7 +143,8 @@ public class ConnectorConfigParserUtils {
     public Properties introspectJavaBean(String className, Set ddPropsSet, 
                     boolean associateResourceAdapter, String resourceAdapterName)
                        throws ConnectorRuntimeException {
-        Class loadedClass = loadClass(className);
+        Class loadedClass = loadClass(className, resourceAdapterName);
+
         Object loadedInstance = instantiate(loadedClass);
         try {
             if (associateResourceAdapter) {
@@ -238,10 +240,10 @@ public class ConnectorConfigParserUtils {
      */
 
     public Properties introspectJavaBeanReturnTypes(
-        String className,Set ddPropsSet) throws ConnectorRuntimeException 
+        String className,Set ddPropsSet, String rarName) throws ConnectorRuntimeException
     {
 
-        Class loadedClass = loadClass(className);
+        Class loadedClass = loadClass(className, rarName);
         Object loadedInstance = instantiate(loadedClass);
         Method[] methods = loadedClass.getMethods();
         if(methods == null) {
@@ -451,18 +453,31 @@ public class ConnectorConfigParserUtils {
      * Throws ConnectorRuntimeException if loading or instantiation fails.
      */
 
-    private Class loadClass(String className) 
+    private Class loadClass(String className, String resourceAdapterName)
                    throws ConnectorRuntimeException 
     {
-        ClassLoader classLoader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
+        Class loadedClass = null;
         try {
-            return classLoader.loadClass(className);
-        } catch(ClassNotFoundException ce) {
-            _logger.log(Level.FINE,
-                 "rardeployment.class_not_found",className);
-            throw new ConnectorRuntimeException(
-                    "ClassNot Found : " + className);
+            if(ConnectorsUtil.belongsToSystemRA(resourceAdapterName)){
+                ClassLoader classLoader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
+                loadedClass = classLoader.loadClass(className);
+            }else{
+                //try loading via ClassLoader of the RAR from ConnectorRegistry
+                ConnectorApplication app = ConnectorRegistry.getInstance().getConnectorApplication(resourceAdapterName);
+                if(app == null){
+                    throw new ConnectorRuntimeException("RAR ["+resourceAdapterName+"] is not yet initialized");
+                }
+                loadedClass = app.getClassLoader().loadClass(className);
+            }
+        } catch (ClassNotFoundException e1) {
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(e1.getMessage());
+            cre.initCause(e1);
+            throw cre;
         }
+        //TODO Need to introduce the same behavior as v2 (below) instead of using classloader from registry (above)
+        //try loading via RARUtils
+        //loadedClass = RARUtils.loadClassFromRar(resourceAdapterName, className);
+        return loadedClass;
     }
     /**
      * Instantiates the class 

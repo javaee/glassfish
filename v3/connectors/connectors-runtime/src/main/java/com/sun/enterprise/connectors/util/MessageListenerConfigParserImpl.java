@@ -198,7 +198,7 @@ public class MessageListenerConfigParserImpl implements
         String className = messageListener.getActivationSpecClass();
         if(className != null && className.length() != 0) {
             Properties introspectedVals = configParserUtil.introspectJavaBean(
-                               className,ddVals);
+                               className,ddVals, false, rarName);
             mergedVals = configParserUtil.mergeProps(ddVals,introspectedVals);
         }
         return mergedVals;
@@ -216,7 +216,7 @@ public class MessageListenerConfigParserImpl implements
      *           If messagelistener type is not found in ra.xml
      */
     public Properties getJavaBeanReturnTypes(ConnectorDescriptor desc, 
-               String messageListenerType) throws ConnectorRuntimeException 
+               String messageListenerType, String rarName) throws ConnectorRuntimeException
     {
 
         if(desc == null || messageListenerType == null) {
@@ -256,7 +256,7 @@ public class MessageListenerConfigParserImpl implements
         String className = messageListener.getActivationSpecClass();
         if(className != null && className.length() != 0) {
             Properties introspectedVals = 
-               configParserUtil.introspectJavaBeanReturnTypes(className,ddVals);
+               configParserUtil.introspectJavaBeanReturnTypes(className,ddVals, rarName);
             mergedVals = configParserUtil.mergePropsReturnTypes(
                                               ddVals,introspectedVals);
         }

@@ -696,6 +696,9 @@ public class ConnectorsUtil {
     }
 
     public static Map<String,String> convertPropertiesToMap(Properties properties){
+        if(properties == null){
+            properties = new Properties();
+        }
         return new TreeMap<String, String>((Map) properties);
     }
 

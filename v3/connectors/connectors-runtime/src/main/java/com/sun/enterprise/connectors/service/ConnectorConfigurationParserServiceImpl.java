@@ -355,7 +355,7 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
                 ConnectorConfigParserFactory.getParser(
                 ConnectorConfigParser.MSL);
             return messagelistenerConfigParser.getJavaBeanReturnTypes(
-                    desc, messageListenerType);
+                    desc, messageListenerType, rarName);
         } else {
             return null;
         }

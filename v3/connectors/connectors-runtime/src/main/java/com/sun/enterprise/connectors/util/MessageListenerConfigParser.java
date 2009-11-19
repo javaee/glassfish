@@ -82,5 +82,5 @@ public interface MessageListenerConfigParser extends ConnectorConfigParser {
      *           If messagelistener type is not found in ra.xml
      */
     public Properties getJavaBeanReturnTypes(ConnectorDescriptor desc,
-          String messageListenerType) throws ConnectorRuntimeException;
+          String messageListenerType, String rarName) throws ConnectorRuntimeException;
 }
