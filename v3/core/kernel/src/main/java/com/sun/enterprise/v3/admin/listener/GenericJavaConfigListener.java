@@ -145,9 +145,19 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     private String[] nvp(final String s) {
         final String[] nv = s.split(SYS_PROP_REGEX);
         final String name  = nv[0];
-        final String value = s.substring(name.length());
+        String value = s.substring(name.length());
+        if ( value.startsWith("=") ) {
+            value = value.substring(1);
+        }
         
         return new String[] { name, value };
+    }
+    
+    static final String DPREFIX = "-D";
+    
+    private static String stripPrefix(final String s)
+    {
+        return s.startsWith(DPREFIX) ? s.substring(DPREFIX.length()) : s;
     }
     
     private NotProcessed getNotProcessed(
@@ -156,7 +166,6 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     {
         //look at the list, clear and/or add system properties 
         // otherwise they require server restart
-        final int propLen = "-D".length();
         
         final List<String> reasons = new ArrayList<String>();
         for( final String removed : removals) {
@@ -164,7 +173,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             final String name  = nv[0];
             
             if (possiblyDynamicallyReconfigurable(removed)) {
-                System.clearProperty(name.substring(propLen));
+                System.clearProperty(stripPrefix(name));
             }
             else {
                 // detect a removal/addition which is really a change
@@ -194,7 +203,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             final String   newValue = nv[1];
             
             if (possiblyDynamicallyReconfigurable(added)) {
-                System.setProperty( name.substring(propLen), newValue );
+                System.setProperty( stripPrefix(name), newValue );
             }
             else {
                 reasons.add( "Addition of: '" + added + "' cannot take effect without server restart" );
@@ -229,7 +238,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
      *  or "-Djavax." is not dynamically settable.
      */
     private boolean possiblyDynamicallyReconfigurable(String s) {
-        if (s.startsWith ("-D") && !s.startsWith("-Djava.")
+        if (s.startsWith(DPREFIX) && !s.startsWith("-Djava.")
             && !s.startsWith("-Djavax.")) 
             return true;
         return false;
