@@ -55,7 +55,12 @@ import org.apache.catalina.startup.ContextConfig;
 //import org.openide.util.Lookup;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.WebBundleDescriptor; 
@@ -67,7 +72,16 @@ import com.sun.web.server.WebContainerListener;
 /**
  * Represents an embedded Catalina web container within the Application Server.
  */
-public final class EmbeddedWebContainer extends Embedded {
+
+@Service(name="com.sun.enterprise.web.EmbeddedWebContainer")
+@Scoped(Singleton.class)
+public final class EmbeddedWebContainer extends Embedded implements PostConstruct {
+    
+    @Inject
+    private Habitat habitat;
+    
+    @Inject
+    private ServerContext serverContext;
 
     protected static final Logger _logger
         = LogDomains.getLogger(EmbeddedWebContainer.class, LogDomains.WEB_LOGGER);
@@ -77,14 +91,10 @@ public final class EmbeddedWebContainer extends Embedded {
     private WebContainerFeatureFactory webContainerFeatureFactory;
 
     private WebContainer webContainer;
-    
-    private ServerContext serverContext;
 
     private InvocationManager invocationManager;
 
     private InjectionManager injectionManager;
-
-    private final Habitat habitat;
 
     /*
      * The value of the 'file' attribute of the log-service element
@@ -97,21 +107,26 @@ public final class EmbeddedWebContainer extends Embedded {
     private String logLevel;
 
     private FileLoggerHandler logHandler;
- 
-    // ------------------------------------------------------------ Constructor
-
-    public EmbeddedWebContainer(WebContainer webContainer,
-                                String logServiceFile,
-                                String logLevel,
-                                FileLoggerHandler logHandler) {
-
-        super();
+    
+    void setWebContainer(WebContainer webContainer) {
         this.webContainer = webContainer;
+    }
+        
+    void setLogServiceFile(String logServiceFile) {
         this.logServiceFile = logServiceFile;
+    }
+        
+    void setLogLevel(String logLevel) {
         this.logLevel = logLevel;
+    }
+            
+    void setLogHandler(FileLoggerHandler logHandler) {
         this.logHandler = logHandler;
-        this.serverContext = webContainer.getServerContext();
-        habitat = serverContext.getDefaultHabitat();
+    }
+    
+    // --------------------------------------------------------- Public Methods
+    
+    public void postConstruct() {
         webContainerFeatureFactory = habitat.getByContract(
                 WebContainerFeatureFactory.class);
         invocationManager = habitat.getByContract(
@@ -120,9 +135,6 @@ public final class EmbeddedWebContainer extends Embedded {
                 InjectionManager.class);
     }
     
-
-    // --------------------------------------------------------- Public Methods
-
     /**
      * Creates a virtual server.
      *

@@ -182,6 +182,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     Domain domain;
+    
+    @Inject
+    private Habitat habitat;
 
     @Inject
     ServerContext _serverContext;
@@ -346,8 +349,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected SessionProbeProvider sessionProbeProvider = null;
     protected WebModuleProbeProvider webModuleProbeProvider = null;
 
-    protected Habitat habitat;
-
     protected WebConfigListener configListener = null;
 
     // Indicates whether we are being shut down
@@ -377,8 +378,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void postConstruct() {
 
         createProbeProviders();
-
-        habitat = _serverContext.getDefaultHabitat();
 
         injectionMgr = habitat.getByContract(InjectionManager.class);
         invocationMgr = habitat.getByContract(InvocationManager.class);
@@ -457,8 +456,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.SEVERE, "webContainer.unableDetermineServerLogLocation", ioe);
         }
 
-        _embedded = new EmbeddedWebContainer(this, logServiceFile,
-            logLevel, logHandler);
+        _embedded = habitat.getByType(EmbeddedWebContainer.class);
+        _embedded.setWebContainer(this);
+        _embedded.setLogServiceFile(logServiceFile);
+        _embedded.setLogLevel(logLevel);
+        _embedded.setLogHandler(logHandler);
 
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -473,7 +475,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _embedded.addEngine(engine);
         ((StandardEngine) engine).setDomain(_serverContext.getDefaultDomainName());
         engine.setName(_serverContext.getDefaultDomainName());
-
+        
         /*
          * Set the server info. 
          * By default, the server info is taken from Version#getVersion.
@@ -2341,7 +2343,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public Engine getEngine() {
         return _embedded.getEngines()[0];
     }
-
+    
 
     /**
      * Registers the given ad-hoc path at the given context root.
