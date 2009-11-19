@@ -324,6 +324,11 @@ public class LogFilter {
     public static LogFile getLogFile( String fileName ) {
         // No need to check for null or zero length string as the
         // test is already done before.
+        if (fileName.contains("${com.sun.aas.instanceRoot}")){
+            String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+            String f = fileName.replace("${com.sun.aas.instanceRoot}",instanceRoot );
+            fileName = f;
+        }
         String logFileName = fileName.trim( );
         LogFile logFile = (LogFile) logFileCache.get( fileName );
         String parent = null;
