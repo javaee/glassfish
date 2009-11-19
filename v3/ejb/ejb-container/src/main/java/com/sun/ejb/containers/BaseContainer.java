@@ -384,6 +384,7 @@ public abstract class BaseContainer
     protected EjbTimedObjectStatsProvider   timerProbeListener;
     protected EjbTimedObjectProbeProvider   timerProbeNotifier;
     protected EjbPoolStatsProvider          poolProbeListener;
+    protected EjbCacheProbeProvider         cacheProbeNotifier;
     protected EjbCacheStatsProvider         cacheProbeListener;
 
     protected ContainerInfo                 containerInfo;
@@ -4295,6 +4296,9 @@ public abstract class BaseContainer
             }
             if (cacheProbeListener != null) {
                 cacheProbeListener.unregister();
+                if (cacheProbeNotifier != null) {
+                    probeFactory.unregisterProbeProvider(cacheProbeNotifier);
+                }
             }
         } catch (Exception ex) {
             if (_logger.isLoggable(Level.FINE)) {

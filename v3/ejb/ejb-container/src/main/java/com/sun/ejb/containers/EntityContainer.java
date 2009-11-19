@@ -402,7 +402,7 @@ public class EntityContainer
 		    (BaseCache) readyStore, confMaxCacheSize);
 	    //registryMediator.registerProvider(cacheStatsProvider);
             cacheProbeListener = new EjbCacheStatsProvider(cacheStatsProvider,
-                    containerInfo.appName, containerInfo.modName,
+                    getContainerId(), containerInfo.appName, containerInfo.modName,
                     containerInfo.ejbName);
             cacheProbeListener.register();
 	}

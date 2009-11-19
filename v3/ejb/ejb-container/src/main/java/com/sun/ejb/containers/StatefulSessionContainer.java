@@ -103,6 +103,9 @@ import static com.sun.ejb.containers.EJBContextImpl.BeanState;
 
 import com.sun.ejb.monitoring.stats.StatefulSessionBeanStatsProvider;
 import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+import com.sun.ejb.monitoring.stats.EjbMonitoringUtils;
+import com.sun.ejb.monitoring.probes.EjbCacheProbeProvider;
+import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 /**
  * This class provides container functionality specific to stateful
@@ -324,9 +327,25 @@ public final class StatefulSessionContainer
         super.registerMonitorableComponents();
         super.populateMethodMonitorMap();
         cacheProbeListener = new EjbCacheStatsProvider(sessionBeanCache,
-                containerInfo.appName, containerInfo.modName,
+                getContainerId(), containerInfo.appName, containerInfo.modName,
                 containerInfo.ejbName);
         cacheProbeListener.register();
+
+        try {
+            ProbeProviderFactory probeFactory = ejbContainerUtilImpl.getProbeProviderFactory();
+            String invokerId = EjbMonitoringUtils.getInvokerId(containerInfo.appName,
+                    containerInfo.modName, containerInfo.ejbName);
+            cacheProbeNotifier = probeFactory.getProbeProvider(EjbCacheProbeProvider.class, invokerId);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Got ProbeProvider: " + cacheProbeNotifier.getClass().getName());
+            }
+        } catch (Exception ex) {
+            cacheProbeNotifier = new EjbCacheProbeProvider();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Error getting the EjbMonitoringProbeProvider");
+            }
+        }
+
 /** 
         sfsbStoreMonitor = registryMediator.registerProvider(
                 sfsbStoreManager.getMonitorableSFSBStoreManager(),
@@ -2079,6 +2098,9 @@ public final class StatefulSessionContainer
                         return false;
                     }
                     // TODO sfsbStoreMonitor.incrementPassivationCount(true);
+                    cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
+                            containerInfo.appName, containerInfo.modName,
+                            containerInfo.ejbName, true);
                     transactionManager.componentDestroyed(sc);
 
                     decrementRefCountsForEEMs(sc);
@@ -2145,6 +2167,9 @@ public final class StatefulSessionContainer
                     }
                 } catch (java.io.NotSerializableException nsEx) {
                     // TODO sfsbStoreMonitor.incrementPassivationCount(false);
+                    cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
+                            containerInfo.appName, containerInfo.modName,
+                            containerInfo.ejbName, false);
                     _logger.log(Level.WARNING, "Error during passivation: "
                             + sc + "; " + nsEx);
                     _logger.log(Level.FINE, "sfsb passivation error", nsEx);
@@ -2156,6 +2181,9 @@ public final class StatefulSessionContainer
                     }
                 } catch (Throwable ex) {
                     // TODO sfsbStoreMonitor.incrementPassivationCount(false);
+                    cacheProbeNotifier.ejbBeanPassivatedEvent(getContainerId(),
+                            containerInfo.appName, containerInfo.modName,
+                            containerInfo.ejbName, false);
                     _logger.log(Level.WARNING, "ejb.sfsb_passivation_error",
                             new Object[]{ejbDescriptor.getName() + " <==> " + sc});
                     _logger.log(Level.WARNING, "sfsb passivation error. Key: "
@@ -2819,9 +2847,14 @@ public final class StatefulSessionContainer
             _logger.log(Level.FINE, "StatefulContainer Removing expired sessions....");
             long val = sfsbStoreManager.removeExpiredSessions();
 
+            cacheProbeNotifier.ejbExpiredSessionsRemovedEvent(getContainerId(),
+                    containerInfo.appName, containerInfo.modName,
+                    containerInfo.ejbName, val);
+/**
             if( sfsbStoreMonitor != null ) {
                 sfsbStoreMonitor.incrementExpiredSessionsRemoved(val);
             }
+**/
             _logger.log(Level.FINE, "StatefulContainer Removed " + val + " sessions....");
 
         } catch (SFSBStoreManagerException sfsbEx) {

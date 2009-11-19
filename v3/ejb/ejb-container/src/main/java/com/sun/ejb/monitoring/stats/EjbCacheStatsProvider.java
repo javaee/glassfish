@@ -60,7 +60,7 @@ import org.glassfish.gmbal.*;
 @Description("Bean Cache Statistics")
 public class EjbCacheStatsProvider {
 
-    private CountStatisticImpl expiredStat = new CountStatisticImpl(
+    private CountStatisticImpl expiredSessionsRemovedStat = new CountStatisticImpl(
             "NumExpiredSessionsRemoved", "count", 
             "Provides a count value reflecting the number of expired sessions "
                 + "that were removed from the bean cache.");
@@ -87,21 +87,21 @@ public class EjbCacheStatsProvider {
     private static final Logger _logger =
             EjbContainerUtilImpl.getInstance().getLogger();
 
+    private long beanId;
     private String appName = null;
     private String moduleName = null;
     private String beanName = null;
-    private String invokerId = null;
     private boolean registered = false;
     private EJBCacheStatsProvider delegate;
 
-    public EjbCacheStatsProvider(EJBCacheStatsProvider delegate, String appName, 
-            String moduleName, String beanName) {
+    public EjbCacheStatsProvider(EJBCacheStatsProvider delegate, long beanId,
+            String appName, String moduleName, String beanName) {
 
         this.delegate = delegate;
+        this.beanId = beanId;
         this.appName = appName;
         this.moduleName = moduleName;
         this.beanName = beanName;
-        this.invokerId = EjbMonitoringUtils.getInvokerId(appName, moduleName, beanName);
 
         long now = System.currentTimeMillis();
 
@@ -120,6 +120,7 @@ public class EjbCacheStatsProvider {
     }
 
     public void register() {
+        String invokerId = EjbMonitoringUtils.getInvokerId(appName, moduleName, beanName);
         String node = EjbMonitoringUtils.registerSubComponent(
                 appName, moduleName, beanName, "bean-cache", this, invokerId);
         if (node != null) {
@@ -158,28 +159,53 @@ public class EjbCacheStatsProvider {
     @ManagedAttribute(id="numexpiredsessionsremoved")
     @Description( "Number of expired sessions removed by the cleanup thread.")
     public CountStatistic getNumExpiredSessionsRemoved() {
-        expiredStat.setCount(delegate.getNumExpiredSessionsRemoved());
-        return expiredStat;
+        return expiredSessionsRemovedStat.getStatistic();
     }
 
     @ManagedAttribute(id="numpassivations")
     @Description( "Number of passivated beans")
     public CountStatistic getNumPassivations() {
-        passivations.setCount(delegate.getNumPassivations());
-        return passivations;
+        return passivations.getStatistic();
     }
 
     @ManagedAttribute(id="numpassivationerrors")
     @Description( "Number of errors during passivation.")
     public CountStatistic getNumPassivationErrors() {
-        passivationErrors.setCount(delegate.getNumPassivationErrors());
-        return passivationErrors;
+        return passivationErrors.getStatistic();
     }
 
     @ManagedAttribute(id="numpassivationsuccess")
     @Description( "Number of times passivation completed successfully.")
     public CountStatistic getNumPassivationSuccess() {
-        passivationSuccess.setCount(delegate.getNumPassivationSuccess());
         return passivationSuccess;
+    }
+
+    @ProbeListener("glassfish:ejb:cache:beanPassivatedEvent")
+    public void ejbBeanPassivatedEvent(
+            @ProbeParam("beanId") long beanId,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName,
+            @ProbeParam("success") boolean success) {
+        if (this.beanId == beanId) {
+            passivations.increment();
+            if (success) {
+                passivationSuccess.increment();
+            } else {
+                passivationErrors.increment();
+            }
+        }
+    }
+
+    @ProbeListener("glassfish:ejb:cache:expiredSessionsRemovedEvent")
+    public void ejbExpiredSessionsRemovedEvent(
+            @ProbeParam("beanId") long beanId,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName,
+            @ProbeParam("num") long num) {
+        if (this.beanId == beanId) {
+            expiredSessionsRemovedStat.increment(num);
+        }
     }
 }
