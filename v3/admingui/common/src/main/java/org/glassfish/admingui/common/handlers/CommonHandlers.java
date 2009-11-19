@@ -398,7 +398,14 @@ public class CommonHandlers {
         @HandlerOutput(name="loginUser", type=String.class)}
     )
     public void testLoginBypass(HandlerContext handlerCtx) {
-        String user = V3AMX.getInstance().getRealmsMgr().getAnonymousUser();
+        String user=null;
+        try{
+            user = V3AMX.getInstance().getRealmsMgr().getAnonymousUser();
+        }catch(Exception ex){
+            ex.printStackTrace();
+            GuiUtil.getLogger().severe("Cannot determine anonymous login.  Login enforced.");
+            user=null;
+        }
         handlerCtx.setOutputValue("byPass", (user==null)? Boolean.FALSE: Boolean.TRUE);
         handlerCtx.setOutputValue("loginUser", (user==null) ? "" : user);
     }
