@@ -69,6 +69,7 @@ import java.util.logging.Logger;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.sun.appserv.server.util.PreprocessorUtil;
 import com.sun.enterprise.util.Print;
@@ -102,10 +103,10 @@ public class ASURLClassLoader
     private List<URLEntry> urlSet = Collections.synchronizedList(new ArrayList());
 
     /** cache of not found resources */
-    private Map notFoundResources   = new HashMap();
+    private Map notFoundResources   = new ConcurrentHashMap();
 
     /** cache of not found classes */
-    private Map notFoundClasses     = new HashMap();
+    private Map notFoundClasses     = new ConcurrentHashMap();
 
     /** state flag to track whether this instance has been shut off.  */
     private boolean doneCalled = false;
