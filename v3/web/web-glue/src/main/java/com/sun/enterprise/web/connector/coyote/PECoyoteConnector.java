@@ -1099,23 +1099,39 @@ public class PECoyoteConnector extends Connector {
 
 
     /**
-     * Configures this connector with the given request-processing
-     * config.
+     * Configures this connector from the given thread-pool
+     * configuration bean.
      *
-     * @param pool http-service config to use
+     * @param pool the thread-pool configuration bean
      */
     public void configureThreadPool(ThreadPool pool){
         if (pool != null) {
             try {
-                setMaxProcessors(Integer.parseInt(pool.getMaxThreadPoolSize()));
-                setMinProcessors(Integer.parseInt(pool.getMinThreadPoolSize()));
-                setQueueSizeInBytes(Integer.parseInt(pool.getMaxQueueSize()));
-//                setProcessorWorkerThreadsTimeout(Integer.parseInt(
-//                    pool.getRequestTimeoutInSeconds()));
+                setMaxProcessors(Integer.parseInt(
+                    pool.getMaxThreadPoolSize()));
             } catch (NumberFormatException ex) {
-                _logger
-                    .log(Level.WARNING, "pewebcontainer.invalidRequestProcessingAttribute",
-                        ex);
+                String msg = _rb.getString(
+                    "webcontainer.invalidThreadPoolAttribute");
+                msg = MessageFormat.format(msg, "max-thread-pool-size");
+                _logger.log(Level.WARNING, msg, ex);
+            }
+            try {
+                setMinProcessors(Integer.parseInt(
+                    pool.getMinThreadPoolSize()));
+            } catch (NumberFormatException ex) {
+                String msg = _rb.getString(
+                    "webcontainer.invalidThreadPoolAttribute");
+                msg = MessageFormat.format(msg, "min-thread-pool-size");
+                _logger.log(Level.WARNING, msg, ex);
+            }
+            try {
+                setQueueSizeInBytes(Integer.parseInt(
+                    pool.getMaxQueueSize()));
+            } catch (NumberFormatException ex) {
+                String msg = _rb.getString(
+                    "webcontainer.invalidThreadPoolAttribute");
+                msg = MessageFormat.format(msg, "max-queue-size");
+                _logger.log(Level.WARNING, msg, ex);
             }
         }
     }

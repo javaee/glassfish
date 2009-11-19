@@ -428,10 +428,11 @@ public class WebModuleContextConfig extends ContextConfig {
                 namingMgr.unbindFromComponentNamespace(webBundleDescriptor);
             }
         } catch (javax.naming.NamingException ex) {
-            logger.log(Level.WARNING,
-                    "webModuleContextConfig.UnbindNamespaceError", context.getName());
-        }
-        
+            String msg = rb.getString(
+                "webModuleContextConfig.unbindNamespaceError");
+            msg = MessageFormat.format(msg, context.getName());
+            logger.log(Level.WARNING, msg, ex);
+        }        
     }
 
 
