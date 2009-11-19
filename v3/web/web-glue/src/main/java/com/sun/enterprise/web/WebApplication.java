@@ -91,8 +91,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             wmInfo, "null", props);
         props = null;
         if (results == null) {
-            logger.log(Level.SEVERE,
-                "Unknown error, loadWebModule returned null, file a bug");
+            logger.log(Level.SEVERE, "webApplication.unknownError");
             return false;
         }
 

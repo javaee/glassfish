@@ -391,8 +391,7 @@ public class WebModule extends PwcWebModule {
                         is, true, classLoader);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE,
-                               "Unable to create custom ObjectInputStream",
-                               e);
+                            "webModule.createCustomObjectInputStreamError", e);
                 }
             }
         }
@@ -419,8 +418,7 @@ public class WebModule extends PwcWebModule {
             oos = javaEEObjectStreamFactory.createObjectOutputStream(os, true);
         } catch (IOException ioe) {
             logger.log(Level.SEVERE,
-                       "Unable to create custom ObjectOutputStream",
-                       ioe);
+                    "webModule.createCustomObjectOutputStreamError", ioe);
             oos = new ObjectOutputStream(os);
         }
 
@@ -464,11 +462,9 @@ public class WebModule extends PwcWebModule {
     @Override
     public void setRealm(Realm realm) {
         if ((realm != null) && !(realm instanceof RealmAdapter)) {
-            logger.log(Level.SEVERE,
-                       "Realm " + realm.getClass().getName() +
-                       " not an instance of " +
-                       RealmAdapter.class.getName() +
-                       ", and will be ignored");
+            logger.log(Level.SEVERE, "vs.ignoreInvalidRealm",
+                    new Object[] { realm.getClass().getName(),
+                        RealmAdapter.class.getName() });
         } else {
             super.setRealm(realm);
         }
@@ -1055,9 +1051,6 @@ public class WebModule extends PwcWebModule {
                     }
                 }
                 else {
-                    String msg = rb.getString(
-                        "webmodule.valve.missingPropertyName");
-                    msg = MessageFormat.format(msg, new Object[] {valveName});
                     logger.log(Level.WARNING,
                         "webmodule.valve.missingPropertyName",
                         new Object[]{valveName, getName()});
@@ -1199,7 +1192,7 @@ public class WebModule extends PwcWebModule {
     void parseAlternateDocBase(String propName, String propValue) {
 
         if (propName == null || propValue == null) {
-            logger.log(Level.WARNING, "Null property name or value");
+            logger.log(Level.WARNING, "webModule.alternateDocBase.nullPropertyNameValue");
             return;
         }
 
@@ -1537,8 +1530,9 @@ public class WebModule extends PwcWebModule {
             props.setProperty(getObjectName(),
                                       gfEncoder.encode(baos.toByteArray()));
         } catch (Exception ex) {
-            logger.log(Level.WARNING, "Unable to save sessions for " +
-                       getName(), ex);
+            String msg = rb.getString("webModule.unableSaveSession");
+            msg = MessageFormat.format(msg, getName());
+            logger.log(Level.WARNING, msg, ex);
         }
     }
 
@@ -1566,9 +1560,9 @@ public class WebModule extends PwcWebModule {
                     gfDecoder.decodeBuffer(sessions));
                 manager.readSessions(bais);
             } catch (Exception ex) {
-                logger.log(Level.WARNING, "Unable to restore sessions for " +
-                           getName(), ex);
-
+                String msg = rb.getString("webModule.unableRestoreSession");
+                msg = MessageFormat.format(msg, getName());
+                logger.log(Level.WARNING, msg, ex);
             }
             deploymentProperties.remove(getObjectName());
         }

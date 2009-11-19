@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.text.MessageFormat;
 
 import org.apache.catalina.Connector;
 import org.apache.catalina.ContainerListener;
@@ -238,9 +239,9 @@ public final class EmbeddedWebContainer extends Embedded {
             Class clazz = Class.forName(className);
             return (ContainerListener)clazz.newInstance();
         } catch (Throwable ex){
-            _logger.log(Level.SEVERE,
-                        "Unable to instantiate ContainerListener of type " +
-                        className, ex);          
+            String msg = rb.getString("embedded.loadListener");
+            msg = MessageFormat.format(msg, className);
+            _logger.log(Level.SEVERE, msg, ex);
         }
         return null;
     }

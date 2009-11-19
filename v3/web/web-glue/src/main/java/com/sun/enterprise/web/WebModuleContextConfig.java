@@ -428,7 +428,8 @@ public class WebModuleContextConfig extends ContextConfig {
                 namingMgr.unbindFromComponentNamespace(webBundleDescriptor);
             }
         } catch (javax.naming.NamingException ex) {
-            logger.log(Level.WARNING, context.getName() + " failed to unbind namespace");
+            logger.log(Level.WARNING,
+                    "webModuleContextConfig.UnbindNamespaceError", context.getName());
         }
         
     }

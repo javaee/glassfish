@@ -1114,7 +1114,7 @@ public class PECoyoteConnector extends Connector {
 //                    pool.getRequestTimeoutInSeconds()));
             } catch (NumberFormatException ex) {
                 _logger
-                    .log(Level.WARNING, " Invalid request-processing attribute",
+                    .log(Level.WARNING, "pewebcontainer.invalidRequestProcessingAttribute",
                         ex);
             }
         }

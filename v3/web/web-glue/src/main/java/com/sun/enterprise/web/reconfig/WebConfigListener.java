@@ -134,7 +134,7 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                     } 
                     container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
-                    logger.log(Level.SEVERE, "Exception processing HttpService config change", le);
+                    logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);
                 }
                 return null;
             }

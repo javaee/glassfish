@@ -1024,7 +1024,7 @@ public class VirtualServer extends StandardHost {
      * Adds the <code>Valve</code> with the given class name to this
      * VirtualServer.
      *
-     * @param valveName The valve's fully qualified class name
+     * @param valveName The valve's fully qualified class nam
      */
     protected void addValve(String valveName) {
         Object valve = loadInstance(valveName);
@@ -1033,9 +1033,7 @@ public class VirtualServer extends StandardHost {
         } else if (valve instanceof GlassFishValve) {
             addValve((GlassFishValve) valve);
         } else {
-            _logger.log(Level.WARNING,
-                        "Object of type classname " + valveName +
-                        " not an instance of Valve or GlassFishValve");
+            _logger.log(Level.WARNING, "webcontainer.notAValve", valveName);
         }
     }
 
@@ -1604,11 +1602,9 @@ public class VirtualServer extends StandardHost {
     @Override
     public void setRealm(Realm realm) {
         if ((realm != null) && !(realm instanceof RealmAdapter)) {
-            _logger.log(Level.SEVERE,
-                        "Realm " + realm.getClass().getName() +
-                        " not an instance of " +
-                        RealmAdapter.class.getName() +
-                        ", and will be ignored");
+            _logger.log(Level.SEVERE, "vs.ignoreInvalidRealm",
+                    new Object[] { realm.getClass().getName(),
+                        RealmAdapter.class.getName()});
         } else {
             super.setRealm(realm);
         }

@@ -47,7 +47,9 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.logging.LogDomains;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.management.ObjectName;
@@ -65,6 +67,7 @@ import org.jvnet.hk2.component.Habitat;
 public class GrizzlyConfig implements MonitoringLevelListener{
     private final static Logger logger
         = LogDomains.getLogger(GrizzlyConfig.class, LogDomains.WEB_LOGGER);
+    private static final ResourceBundle rb = logger.getResourceBundle();
     
     /**
      * The mbean server used to lookup Grizzly.
@@ -160,9 +163,9 @@ public class GrizzlyConfig implements MonitoringLevelListener{
                 "disableMonitoring";
             invokeGrizzly(methodToInvoke);
         } catch (Exception ex) {
-            logger.log(Level.WARNING,
-                "selectorThread.initMonitoringException",
-                 new Object[]{new Integer(port),ex});
+            String msg = rb.getString("selectorThread.initMonitoringException");
+            msg = MessageFormat.format(msg, new Integer(port));
+            logger.log(Level.WARNING, msg, ex);
         }
     } 
     
@@ -225,7 +228,9 @@ public class GrizzlyConfig implements MonitoringLevelListener{
                                    signature);
             }
         } catch ( Exception ex ){
-            logger.log(Level.SEVERE, "Exception while invoking mebean server operation " + methodToInvoke, ex);
+            String msg = rb.getString("grizzlyConfig.invokeMBeanException");
+            msg = MessageFormat.format(msg, methodToInvoke); 
+            logger.log(Level.SEVERE, msg, ex);
             //throw new RuntimeException(ex);
         }
     }

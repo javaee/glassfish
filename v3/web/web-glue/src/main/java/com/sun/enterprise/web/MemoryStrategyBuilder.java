@@ -39,6 +39,7 @@ package com.sun.enterprise.web;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ArrayList;
+import java.text.MessageFormat;
 import org.apache.catalina.Context;
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
@@ -87,10 +88,9 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
                         sessionIdGeneratorClassname).newInstance();
                 mgr.setUuidGenerator(generator);
             } catch (Exception ex) {
-                _logger.log(Level.SEVERE,
-                            "Unable to load session uuid generator "
-                            + sessionIdGeneratorClassname,
-                            ex);
+                String msg = _rb.getString("webcontainer.unableLoadSessionUUIdGenerator");
+                msg = MessageFormat.format(msg, sessionIdGeneratorClassname);
+                _logger.log(Level.SEVERE, msg, ex);
             }
         }
         // END CR 6275709

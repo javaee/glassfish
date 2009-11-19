@@ -39,6 +39,7 @@ package com.sun.enterprise.web;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -57,6 +58,7 @@ public abstract class BasePersistenceStrategyBuilder
 
     protected static final Logger _logger = LogDomains.getLogger(
             BasePersistenceStrategyBuilder.class, LogDomains.WEB_LOGGER);
+    protected static final ResourceBundle _rb = _logger.getResourceBundle();
 
     protected String directory = null;
     protected String DEFAULT_SESSION_FILENAME = "SESSIONS.ser";

@@ -413,7 +413,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ParserUtils.setDtdResourcePrefix(dtds.toURI().toURL().toString());
             ParserUtils.setEntityResolver(habitat.getComponent(EntityResolver.class, "web"));
         } catch(MalformedURLException e) {
-            _logger.log(Level.SEVERE, "Exception setting the schemas/dtds location", e);
+            _logger.log(Level.SEVERE, "webContainer.exceptionSetSchemasDtdsLocation", e);
         }
 
         instanceName = _serverContext.getInstanceName();
@@ -454,9 +454,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 logLevel = logProps.get("org.apache.catalina.level");
             }
         } catch (IOException ioe) {
-            _logger.log(Level.SEVERE,
-                        "Unable to determine location of server.log file",
-                        ioe);
+            _logger.log(Level.SEVERE, "webContainer.unableDetermineServerLogLocation", ioe);
         }
 
         _embedded = new EmbeddedWebContainer(this, logServiceFile,
@@ -1495,8 +1493,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         try {
             loadWebModule(vs, wmInfo, "null", null);
         } catch (Throwable t) {
-            _logger.log(Level.SEVERE,
-                        "Error loading web module " + wmInfo.getName(), t);
+            String msg = rb.getString("webContainer.loadWebModuleError");
+            msg = MessageFormat.format(msg, wmInfo.getName());
+            _logger.log(Level.SEVERE, msg, t);
         }
     }
 
@@ -1763,7 +1762,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             ctx.setContextRoot(wbd.getContextRoot());
         } else {
             // Should never happen.
-            _logger.log(Level.WARNING, "Unable to set context root", wmInfo);
+            _logger.log(Level.WARNING, "webContainer.unableSetContextRoot", wmInfo);
         }
 
         //
@@ -2180,9 +2179,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         if (!hasBeenUndeployed) {
-            _logger.log(Level.SEVERE,
-                    "[WebContainer] Undeployment failed for context "
-                    + contextRoot);
+            _logger.log(Level.SEVERE, "webContaienr.undeployError", contextRoot);
         }
     }
 
@@ -2229,9 +2226,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         if (!hasBeenSuspended){
-            _logger.log(Level.WARNING,
-                    "[WebContainer] Unable to disable web module at " +
-                    "context root " + contextRoot);
+            _logger.log(Level.WARNING, "webContainer.disableWebModuleError", contextRoot);
         }
 
         return hasBeenSuspended;
@@ -2638,9 +2633,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 try {
                     virtualServer.destroy();
                 } catch (Exception e) {
-                    _logger.log(Level.WARNING,
-                        "Error during destruction of virtual server "
-                            + virtualServer.getID(), e);
+                    String msg = rb.getString("webContainer.destroyVsError");
+                    msg = MessageFormat.format(msg, virtualServer.getID());
+                    _logger.log(Level.WARNING, msg, e);
                 }
             }
         }
@@ -2660,8 +2655,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         final VirtualServer vs = (VirtualServer)getEngine().findChild(vsBean.getId());
 
         if (vs ==null) {
-            _logger.log(Level.WARNING, "Virtual server " + vsBean.getId() +
-                    " cannot be updated, because it does not exist");
+            _logger.log(Level.WARNING, "webContainer.cannotUpdateNonExistenceVs", vsBean.getId());
             return;
         }
 
@@ -3052,7 +3046,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 try {
                     updateConnector(httpListener, httpService);
                 } catch (LifecycleException le) {
-                    _logger.log(Level.SEVERE, "Exception processing HttpService config change", le);
+                    _logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);
                 }
             }
         }
