@@ -71,8 +71,7 @@
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
               toolTip="$resource{i18n.commonTasks.task.subscriptions.toolTip}"
-              onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;"
-              onKeyPress1="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');win.focus(); return false;">
+              onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');if (win) {win.focus();}; return false;">
             </sun:commonTask>
           </sun:commonTasksGroup>
 
