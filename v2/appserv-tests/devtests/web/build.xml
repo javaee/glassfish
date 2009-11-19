@@ -474,7 +474,7 @@
         <ant dir="sslMultiSelector" target="all"/>
         <ant dir="httpRequestIgnoreInvalidAcceptLanguageHeader" target="all"/>
         <ant dir="sslServerName" target="all"/>
-<!-- Exclude for prelude, since port unification not supported, see IT 4675
+<!-- Exclude since port unification is not supported in v3, see IT 4675
         <ant dir="wrongTransport" target="all"/>
 -->
         <ant dir="maxKeepAliveRequests" target="all"/>
