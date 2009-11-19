@@ -930,9 +930,9 @@ public final class EJBSecurityManager
             getPolicyFactory().getPolicyConfiguration(this.contextId, true);
 
             if (wasInService) {
-                probeProvider.policyDestructionStartedEvent(ejbName);
+                //probeProvider.policyDestructionStartedEvent(ejbName);
                 probeProvider.policyDestructionEvent(contextId);
-                probeProvider.policyDestructionEndedEvent(ejbName);
+                //probeProvider.policyDestructionEndedEvent(ejbName);
                 policy.refresh();
             }
 	    /* 
@@ -950,9 +950,9 @@ public final class EJBSecurityManager
             _logger.log(Level.WARNING, msg, pce);
         }
         ejbSFM.getManager(contextId,ejbName,true);
-        probeProvider.securityManagerDestructionStartedEvent(ejbName);
+        //probeProvider.securityManagerDestructionStartedEvent(ejbName);
         probeProvider.securityManagerDestructionEvent(ejbName);
-        probeProvider.securityManagerDestructionEndedEvent(ejbName);
+        //probeProvider.securityManagerDestructionEndedEvent(ejbName);
     }
 
     /**

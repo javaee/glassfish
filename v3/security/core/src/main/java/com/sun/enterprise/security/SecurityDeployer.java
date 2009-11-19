@@ -200,9 +200,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                 }
                 String cid = SecurityUtil.getContextID(webBD);
                 SecurityUtil.generatePolicyFile(cid);
-                websecurityProbeProvider.policyCreationStartedEvent(webBD.getModuleID());
+                //websecurityProbeProvider.policyCreationStartedEvent(webBD.getModuleID());
                 websecurityProbeProvider.policyConfigurationCreationEvent(cid);
-                websecurityProbeProvider.policyCreationEndedEvent(webBD.getModuleID());
+                //websecurityProbeProvider.policyCreationEndedEvent(webBD.getModuleID());
             }
         } catch (Exception se) {
             String msg = "Error in generating security policy for " +
@@ -223,9 +223,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             for (EjbBundleDescriptor ejbBD : ejbDescriptors) {
                 String pcid = SecurityUtil.getContextID(ejbBD);
                 SecurityUtil.generatePolicyFile(pcid);
-                ejbProbeProvider.policyCreationStartedEvent(ejbBD.getModuleID());
+                //ejbProbeProvider.policyCreationStartedEvent(ejbBD.getModuleID());
                 ejbProbeProvider.policyCreationEvent(pcid);
-                ejbProbeProvider.policyCreationEndedEvent(ejbBD.getModuleID());
+                //ejbProbeProvider.policyCreationEndedEvent(ejbBD.getModuleID());
             }
         } catch (Exception se) {
             String msg = "Error in committing security policy for ejbs of " +
@@ -346,9 +346,9 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         for (int i = 0; managers !=
                 null && i < managers.size(); i++) {
             try {
-                websecurityProbeProvider.securityManagerDestructionStartedEvent(appName);
+                //websecurityProbeProvider.securityManagerDestructionStartedEvent(appName);
                 websecurityProbeProvider.securityManagerDestructionEvent(appName);
-                websecurityProbeProvider.securityManagerDestructionEndedEvent(appName);
+                //websecurityProbeProvider.securityManagerDestructionEndedEvent(appName);
                 managers.get(i).destroy();
                 cleanUpDone =
                         true;
