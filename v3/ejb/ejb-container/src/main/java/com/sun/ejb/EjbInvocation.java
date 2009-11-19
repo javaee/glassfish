@@ -2,7 +2,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -497,11 +497,16 @@ public class EjbInvocation
         InterceptorUtil.checkSetParameters(params, getMethod());
         this.methodParams = params;
     }
-    
-    //The following method is not part of InvocationContext interface
-    //  but needed for JAXWS message context propagation
-    public void setContextData(WebServiceContext context) {
-        this.webServiceContext = context;
+
+    /*
+     * Method takes Object to decouple EJBInvocation interface
+     * from jaxws (which isn't available in all profiles).
+     */
+    public void setWebServiceContext(Object webServiceContext) {
+        // shouldn't be necessary, but to be safe
+        if (webServiceContext instanceof WebServiceContext) {
+            this.webServiceContext = (WebServiceContext) webServiceContext;
+        }
     }
     
     /**
