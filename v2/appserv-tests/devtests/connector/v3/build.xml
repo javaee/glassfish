@@ -229,6 +229,9 @@
 
         <echo message="@@## Annotated Connector1.5 ##@@"/>
         <ant dir="annotation-connector1.5" target="${connector-target}"/>
+ 
+        <echo message="@@## Annotated Connector - mixed mode (ra.xml as well annotations) ##@@"/>
+        <ant dir="annotation-connector-mixedmode" target="${connector-target}"/>
 
         <echo message="@@## force-deploy-rar ##@@"/>
         <ant dir="force-deploy-rar" target="${connector-target}"/>
