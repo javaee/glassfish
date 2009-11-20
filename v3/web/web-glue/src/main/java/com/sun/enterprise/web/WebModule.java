@@ -1524,9 +1524,9 @@ public class WebModule extends PwcWebModule {
         try {
             manager.writeSessions(baos);
             props.setProperty(getObjectName(),
-                                      gfEncoder.encode(baos.toByteArray()));
+                              gfEncoder.encode(baos.toByteArray()));
         } catch (Exception ex) {
-            String msg = rb.getString("webModule.unableSaveSession");
+            String msg = rb.getString("webModule.unableToSaveSessionsDuringRedeploy");
             msg = MessageFormat.format(msg, getName());
             logger.log(Level.WARNING, msg, ex);
         }
@@ -1556,7 +1556,7 @@ public class WebModule extends PwcWebModule {
                     gfDecoder.decodeBuffer(sessions));
                 manager.readSessions(bais);
             } catch (Exception ex) {
-                String msg = rb.getString("webModule.unableRestoreSession");
+                String msg = rb.getString("webModule.unableToRestoreSessionsDuringRedeploy");
                 msg = MessageFormat.format(msg, getName());
                 logger.log(Level.WARNING, msg, ex);
             }
