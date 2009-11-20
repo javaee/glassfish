@@ -22,7 +22,7 @@ public class SimpleBMPClient {
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
-
+        stat.addDescription("Running Datasource40 tests");
         if (simpleBMP.test1()) {
             stat.addStatus(testSuite + "test1 : ", stat.PASS);
         } else {
