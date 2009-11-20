@@ -36,7 +36,7 @@ own identifying information: Portions Copyright [yyyy]
         <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
     </antcall>
     <antcall target="install-l10n-packages">
-        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+        <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
     </antcall>
 </target>
 
