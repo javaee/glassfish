@@ -247,7 +247,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
             return className.replace('.', '/').concat(".class");
         }
 
-        private boolean isBlackListed(String name) {
+        private synchronized boolean isBlackListed(String name) {
             return blacklist.contains(name);
         }
 
