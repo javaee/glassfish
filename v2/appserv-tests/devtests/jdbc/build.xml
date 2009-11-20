@@ -51,6 +51,7 @@
 	<ant dir="nonacc" target="all"/>
 	<ant dir="lazyassoc" target="all"/>
 	<ant dir="markconnectionasbad.local" target="all"/>
+	<ant dir="markconnectionasbad.xa" target="all"/>
 	<ant dir="statementwrapper" target="all"/>
 	<ant dir="maxconnectionusage" target="all"/>
 	<ant dir="multipleusercredentials" target="all"/>
