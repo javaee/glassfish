@@ -943,7 +943,7 @@ admingui.nav = {
         var qmark = url.indexOf("?");
         if (qmark > -1) {
             var otherParams = admingui.nav.createObjectFromQueryString(url);
-            admingui.util.log("params = " + params);
+            //admingui.util.log("params = " + params);
             for (var key in params) {
                 if (typeof params[key] == "function") {
                     continue;
@@ -2191,6 +2191,11 @@ admingui.ajax = {
     },
 
     get: function(url, targetId, callback) {
+	// Ping header to make sure header stays "fresh"
+	if (targetId && (targetId == 'content')) {
+	    admingui.ajax.pingHeader();
+	}
+
 	var req = admingui.ajax.getXMLHttpRequestObject();
 	if (req) {
 	    req.targetId = targetId;
@@ -2219,7 +2224,7 @@ admingui.ajax = {
     loadPage : function (args) {
         var url = admingui.ajax.modifyUrl(args.url);
         //args.lastPage = document.getElementById(admingui.nav.TREE_ID).getSelectedTreeNode;
-	admingui.util.log("Loading " + url + " via ajax.");
+	//admingui.util.log("Loading " + url + " via ajax.");
 
 	// Make cursor spin...
 	document.body.style.cursor = 'wait';
@@ -2419,7 +2424,7 @@ admingui.ajax = {
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
-                    admingui.util.log("*NOT* replacing href for " + node.id);
+                    //admingui.util.log("*NOT* replacing href for " + node.id);
                     shouldReplace = false;
                 }
                 if (shouldReplace) {
