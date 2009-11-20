@@ -162,14 +162,17 @@ public class ListDataStructure implements DataStructure {
      * @param resource ResourceHandle
      */
     public void removeResource(ResourceHandle resource) {
+        boolean removed = false;
         synchronized (resources) {
             synchronized (free) {
                 free.remove(resource);
-                resources.remove(resource);
+                removed = resources.remove(resource);
             }
         }
-        dynSemaphore.release();
-        handler.deleteResource(resource);
+        if(removed) {
+            dynSemaphore.release();
+            handler.deleteResource(resource);
+        }
     }
 
     /**

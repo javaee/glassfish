@@ -158,6 +158,14 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
         ResourceReferenceDescriptor ref = poolmgr.getResourceReference(jndiNameToUse);
 
+        if (ref != null) {
+            String shareableStr = ref.getSharingScope();
+
+            if (shareableStr.equals(ref.RESOURCE_UNSHAREABLE)) {
+                resourceShareable = false;
+            }
+        }
+
         //TODO V3 refactor all the 3 cases viz, no res-ref, app-auth, cont-auth.
         if (ref == null) {
             getLogger().log(Level.FINE, "poolmgr.no_resource_reference", jndiNameToUse);

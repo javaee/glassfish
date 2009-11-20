@@ -135,13 +135,16 @@ public class RWLockDataStructure implements DataStructure {
      * {@inheritDoc}
      */
     public void removeResource(ResourceHandle resource) {
+        boolean removed = false;
         writeLock.lock();
         try {
-            resources.remove(resource);
+            removed = resources.remove(resource);
         } finally {
             writeLock.unlock();
         }
-        handler.deleteResource(resource);
+        if(removed) {
+            handler.deleteResource(resource);
+        }
     }
 
     /**
