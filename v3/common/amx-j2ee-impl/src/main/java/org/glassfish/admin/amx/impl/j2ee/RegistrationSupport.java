@@ -580,7 +580,15 @@ final class RegistrationSupport
         final Map<String, ApplicationRef> appRefConfigs = mServerConfig.getApplicationRef();
         for (final ApplicationRef ref : appRefConfigs.values())
         {
-            final ObjectName objectName = processApplicationRef(ref);
+            try
+            {
+                final ObjectName objectName = processApplicationRef(ref);
+            }
+            catch( final Exception e )
+            {
+                // log it: we want to continue with other apps, even if this one had a problem
+                ImplUtil.getLogger().log( Level.INFO, "Exception registering application: " + ref.getName(), e);
+            }
         }
     }
     
