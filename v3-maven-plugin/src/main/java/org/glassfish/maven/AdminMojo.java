@@ -81,10 +81,12 @@ public class AdminMojo extends AbstractServerMojo  {
 
     private ParameterMap getParameterMap() {
         ParameterMap pMap = new ParameterMap();
-        Iterator iter = commandparameters.keySet().iterator();
-        while(iter.hasNext()) {
-            String key = (String)iter.next();
-            pMap.add(key, (String)commandparameters.get(key));
+        if (commandparameters != null) {
+            Iterator iter = commandparameters.keySet().iterator();
+            while(iter.hasNext()) {
+                String key = (String)iter.next();
+                pMap.add(key, (String)commandparameters.get(key));
+            }
         }
         return pMap;
     }
