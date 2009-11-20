@@ -359,6 +359,7 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
                 }else
                     setProperty(props, "serverName", serverName);
             }
+            setProperty(props, "encodedText", GuiUtil.encode((String)props.get("text"), null, null));
 // We are using "childActionListener" for the hyperlink, not the TreeNode
 //	    setProperty(props, "actionListener", desc.getOption("childActionListener"));
 	    setProperty(props, "expanded", desc.getOption("childExpanded"));

@@ -6,7 +6,7 @@
         attributeName="name"
         childImageURL="/resource/jca/images/connector.png"
         childExpanded="$boolean{false}"
-        childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.text}"
+        childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.attributes.encodedText}"
         text="$resource{i18njca.tree.resourceAdapterConfigs}"
         url="/jca/resourceAdapterConfigs.jsf"
         >

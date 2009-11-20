@@ -435,6 +435,7 @@ public class V3AMX {
                     for(String attrName : attrs.keySet()){
                         oneRow.put(attrName, getA(attrs, attrName, convert));
                     }
+                    oneRow.put("encodedName", GuiUtil.encode(oneChild.getName(), null,null) );
                     result.add(oneRow);
                 }catch(Exception ex){
                     GuiUtil.getLogger().info("getChildrenMapForTableList():  ");
