@@ -59,9 +59,9 @@ public class AdminMojo extends AbstractServerMojo  {
     protected String command;
 
 /**
- * @parameter expression="${parameters}"
+ * @parameter
  */
-    protected ParameterMap parameters;
+    protected Map commandparameters;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -73,10 +73,19 @@ public class AdminMojo extends AbstractServerMojo  {
             CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
             ActionReport report = server.getHabitat().getComponent(ActionReport.class);
             runner.getCommandInvocation(command, report).
-                    parameters(parameters).execute();
+                    parameters(getParameterMap()).execute();
         } catch (Exception ex) {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }
     }
 
+    private ParameterMap getParameterMap() {
+        ParameterMap pMap = new ParameterMap();
+        Iterator iter = commandparameters.keySet().iterator();
+        while(iter.hasNext()) {
+            String key = (String)iter.next();
+            pMap.add(key, (String)commandparameters.get(key));
+        }
+        return pMap;
+    }
 }
