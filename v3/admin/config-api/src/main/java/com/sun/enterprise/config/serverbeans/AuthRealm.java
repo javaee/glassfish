@@ -154,7 +154,7 @@ public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
         @PropertyDesc(name="db-password",
             description="The database password in the realm instead of that in the jdbc-connection-pool. " +
                 "Prevents other applications from looking up the database, getting a connection, and browsing the user table"),
-        @PropertyDesc(name="digest-algorithm", values={"MD5", "none", "SHA"},
+        @PropertyDesc(name="digest-algorithm", defaultValue="MD5", values={"MD5", "none", "SHA"},
             description="Any algorithm supported in the JDK"),
         @PropertyDesc(name="encoding", values={"Hex", "Base64"},
             description="Specifies the encoding. If digest-algorithm is specified, the default is Hex, otherwise no encoding is specified"),
