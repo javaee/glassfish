@@ -68,7 +68,7 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
+<!--        <plugins>
             <plugin>
                 <groupId>com.sun.enterprise</groupId>
                 <artifactId>hk2-maven-plugin</artifactId>
@@ -80,7 +80,7 @@
                     </archive>
                 </configuration>
             </plugin>
-        </plugins> 
+        </plugins> -->
     </build>
     <dependencies>
         <dependency>
