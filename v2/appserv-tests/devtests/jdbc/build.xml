@@ -70,6 +70,7 @@
 	<ant dir="dmmcf.markconnectionasbad.xa" target="all"/>
 	<ant dir="dmmcf.appclient" target="all"/>
 	<ant dir="tracingsql" target="all"/>
+	<ant dir="datasource40" target="all"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>
@@ -318,6 +319,12 @@
 	<record name="tracingsql.output" action="start"/>
 	<ant dir="tracingsql" target="all"/>
 	<record name="tracingsql.output" action="stop"/>
+    </target>
+
+    <target name="datasource40">
+	<record name="datasource40.output" action="start"/>
+	<ant dir="datasource40" target="all"/>
+	<record name="datasource40.output" action="stop"/>
     </target>
 
     <target name="usage">
