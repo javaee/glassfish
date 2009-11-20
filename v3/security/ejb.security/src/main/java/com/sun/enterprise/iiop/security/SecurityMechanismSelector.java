@@ -152,12 +152,12 @@ public final class SecurityMechanismSelector implements PostConstruct {
     
     public void postConstruct() {
         try {
-            orbHelper = habitat.getComponent(GlassFishORBHelper.class);
+            orbHelper = Lookups.getGlassFishORBHelper(habitat);
             sslUtils = habitat.getComponent(SSLUtils.class);
             invMgr = habitat.getComponent(InvocationManager.class);
 	    // Initialize client security config
 	    String s = 
-		(String)(orbHelper.getCSIv2Props()).get(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED);
+		(String)(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED);
 	    if ( s != null && s.equals("true") ) {
 		sslRequired = true;
 	    }
@@ -168,7 +168,8 @@ public final class SecurityMechanismSelector implements PostConstruct {
 					    new EjbIORConfigurationDescriptor();
 	    EjbIORConfigurationDescriptor iorDesc2 = 
 					    new EjbIORConfigurationDescriptor();
-	    String serverSslReqd = (String)(orbHelper.getCSIv2Props()).get(GlassFishORBHelper.ORB_SSL_SERVER_REQUIRED);
+	    String serverSslReqd =
+                    (String)(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_SSL_SERVER_REQUIRED);
 	    if ( serverSslReqd != null && serverSslReqd.equals("true") ) {
 		iorDesc.setIntegrity(EjbIORConfigurationDescriptor.REQUIRED);
 		iorDesc.setConfidentiality(
@@ -178,7 +179,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
 					EjbIORConfigurationDescriptor.REQUIRED);
 	    }
 	    String clientAuthReq = 
-		(String)(orbHelper.getCSIv2Props()).get(GlassFishORBHelper.ORB_CLIENT_AUTH_REQUIRED);
+		(String)(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_CLIENT_AUTH_REQUIRED);
 	    if ( clientAuthReq != null && clientAuthReq.equals("true") ) {
 		// Need auth either by SSL or username-password.
 		// This sets SSL clientauth to required.
