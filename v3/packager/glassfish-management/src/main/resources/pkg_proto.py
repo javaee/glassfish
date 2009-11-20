@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -43,8 +43,8 @@ pkg = {
     "name"          : "glassfish-management",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Management",
-                        "pkg.description" : "GlassFish administration and monitoring base module. The base monitoring includes JVM and Threadpool monitoring. It also provides the core monitoring infrastructre needed by other monitoring modules. "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish REST Management",
+                        "pkg.description" : "REST based GlassFish management and monitoring interface. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
