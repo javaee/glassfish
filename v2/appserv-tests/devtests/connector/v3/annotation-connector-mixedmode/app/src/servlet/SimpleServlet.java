@@ -76,7 +76,7 @@ public class SimpleServlet extends HttpServlet {
             out.println("END_OF_EXECUTION");
             out.flush();
         }
-        System.out.println("annotation-connector15ID");
+        System.out.println("annotation-connector16-mixed-modeID");
 
         debug("EXITING... STATUS = " + res);
         return res;

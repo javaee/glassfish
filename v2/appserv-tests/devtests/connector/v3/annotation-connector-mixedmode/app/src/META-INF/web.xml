@@ -3,7 +3,7 @@
 <!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN' 'http://java.sun.com/j2ee/dtds/web-app_2_3.dtd'>
 
 <web-app>
-  <display-name>annotation-connector15</display-name>
+  <display-name>annotation-connector16-mixed-mode</display-name>
   <distributable></distributable>
   <servlet>
     <servlet-name>SimpleServlet</servlet-name>

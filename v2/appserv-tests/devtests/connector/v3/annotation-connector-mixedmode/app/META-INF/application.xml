@@ -6,12 +6,12 @@
   <display-name>GenericMessageDrivenBean</display-name>
   <description>Application description</description>
   <module>
-    <ejb>annotation-connector15-ejb.jar</ejb>
+    <ejb>annotation-connector16-mixed-mode-ejb.jar</ejb>
   </module>
   <module>
      <web>
-     <web-uri>annotation-connector15-web.war</web-uri>
-      <context-root>annotation-connector15</context-root>
+     <web-uri>annotation-connector16-mixed-mode-web.war</web-uri>
+      <context-root>annotation-connector16-mixed-mode</context-root>
     </web>
   </module>
 </application>

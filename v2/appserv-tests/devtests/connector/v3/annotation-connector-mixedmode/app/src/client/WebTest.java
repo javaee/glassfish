@@ -7,7 +7,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 public class WebTest {
-    private static final String TEST_NAME = "Annotated Connector 1.6 test";
+    private static final String TEST_NAME = "Connector1.6-mixed-mode-annotation-test";
     static SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
     static int count;
 
@@ -56,9 +56,9 @@ private static void goGet(String host, int port,
                     String status = line.substring(index+1);
 
                     if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus("Connector 1.6 - annotation mixed mode - test - " + count, stat.PASS);
+                        stat.addStatus(" Connector1.6-mixed-mode-annotation : test-" + count, stat.PASS);
                     } else {
-                        stat.addStatus("Connector 1.6 - annotation mixed mode - test - " + count, stat.FAIL);
+                        stat.addStatus(" Connector1.6-mixed-mode-annotation : test-" + count, stat.FAIL);
                     }
                 }
 

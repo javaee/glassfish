@@ -76,7 +76,7 @@
 <!--
   <target name="runtest" depends="init-common">
     <antcall target="runclient-common">
-	<param name="appname" value="annotation-connector15" />
+	<param name="appname" value="annotation-connector16-mixed-mode" />
     </antcall>
   </target>
 -->

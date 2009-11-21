@@ -32,12 +32,12 @@
         <param name="ejb-jar.xml" value="META-INF/ejb-jar.xml" />
         <param name="ejbjar.classes" value="mdb/*.class, beans/*.class, connector/*.class" />
         <param name="sun-ejb-jar.xml" value="META-INF/sun-ejb-jar.xml" />
-        <param name="appname" value="annotation-connector15" />
+        <param name="appname" value="annotation-connector16-mixed-mode" />
     </antcall>
 
       <antcall target="webclient-war-common">
       <param name="hasWebclient" value="yes"/>
-          <param name="appname" value="annotation-connector15" />
+          <param name="appname" value="annotation-connector16-mixed-mode" />
           <param name="web.xml" value="META-INF/web.xml" />
           <param name="sun-web.xml" value="META-INF/sun-web.xml" />
       <param name="webclient.war.classes" value="servlet/*.class, beans/*.class"/>

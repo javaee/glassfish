@@ -63,7 +63,7 @@ public class Client   {
             ex.printStackTrace();
             res = "TEST FAILED";
         }
-        stat.printSummary("annotation-connector15ID");
+        stat.printSummary("annotation-connector16-mixed-modeID");
 
         
         debug("EXITING... STATUS = " + res);
