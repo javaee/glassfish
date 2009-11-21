@@ -847,7 +847,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 final Collection<FullAndPartURIs> downloadsForThisArtifact,
                 final Collection<FullAndPartURIs> downloadsForReferencedArtifacts) throws IOException {
 
-            recordArtifactAsProcessed(artifactURIsProcessed, downloadsForThisArtifact);
+            artifactURIsProcessed.add(canonicalURIWithinEAR());
 
             /*
              * Iterate through this directory and its subdirectories, marking
