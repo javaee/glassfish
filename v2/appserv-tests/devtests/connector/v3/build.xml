@@ -260,6 +260,9 @@
         <echo message="@@## rar-accessibility ##@@"/>
         <ant dir="rar-accessibility" target="all"/>
 
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="all"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
