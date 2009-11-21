@@ -13,6 +13,8 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
@@ -71,13 +73,43 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     volatile List<String> oldProps;
     /* Implementation note: See 6028*/
     
+    volatile Map<String,String>  oldAttrs;
+    
     @Inject 
     Logger logger; //gets a root logger, which is ok for now.
     
     public void postConstruct() {
         if(jc != null && jc.getJvmOptions() != null) {
             oldProps = new ArrayList<String>(jc.getJvmOptions()); //defensive copy
+            
+            oldAttrs = collectAttrs(jc);
         }
+    }
+        
+    /**
+        Get attributes as a Map so that we can do an easy compare of old vs new and
+        also emit a useful change message.
+        <p>
+        This list must contain all attributes that are relevant to restart-required.
+     */
+    private static final Map<String,String> collectAttrs(final JavaConfig jc)
+    {
+        final Map<String,String> values = new HashMap<String,String>();
+        values.put( "JavaHome", jc.getJavaHome() );
+        values.put( "DebugEnabled", jc.getDebugEnabled() );
+        values.put( "DebugOptions", jc.getDebugOptions() );
+        values.put( "RmicOptions", jc.getRmicOptions() );
+        values.put( "JavacOptions", jc.getJavacOptions() );
+        values.put( "ClasspathPrefix", jc.getClasspathPrefix() );
+        values.put( "ClasspathSuffix", jc.getClasspathSuffix() );
+        values.put( "ServerClasspath", jc.getServerClasspath() );
+        values.put( "SystemClasspath", jc.getSystemClasspath() );
+        values.put( "NativeLibraryPathPrefix", jc.getNativeLibraryPathPrefix() );
+        values.put( "NativeLibraryPathSuffix", jc.getNativeLibraryPathSuffix() );
+        values.put( "BytecodePreprocessors", jc.getBytecodePreprocessors() );
+        values.put( "EnvClasspathIgnored", jc.getEnvClasspathIgnored() );
+        
+        return values;
     }
     
     /* force serial behavior; don't allow more than one thread to make a mess here */
@@ -86,21 +118,31 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> tc, T t) {
                 NotProcessed result = null;
                 
-                if ( t instanceof Profiler )
-                {
+                if ( t instanceof Profiler ) {
                     result = new NotProcessed("Creation or changes to a profiler require restart");
                 }
-                else if ( t instanceof Property )
-                {
+                else if ( t instanceof Property ) {
                     result = new NotProcessed("Addition of properties to JavaConfig requires restart");
                 }
-                else if ( t instanceof JavaConfig )
-                {
+                else if ( t instanceof JavaConfig ) {
                     final JavaConfig njc = (JavaConfig) t; 
                     logFine(type, njc);
                     
-                    result = handle(oldProps, njc.getJvmOptions() );
-                    oldProps = new ArrayList<String>(((JavaConfig)t).getJvmOptions()); //defensive copy, required step
+                    // we must *always* check the jvm options, no way to know except by comparing,
+                    // plus we should send an appropriate message back for each removed/added item
+                    final List<String> curProps = new ArrayList<String>( njc.getJvmOptions() );
+                    final boolean jvmOptionsWereChanged = ! oldProps.equals(curProps);
+                    final List<String> reasons = handle(oldProps, curProps);
+                    oldProps = curProps;
+                    
+                    // something in the JavaConfig itself changed
+                    // to do this well, we ought to keep a list of attributes, so we can make a good message
+                    // saying exactly which attribute what changed
+                    final Map<String,String> curAttrs = collectAttrs(njc);
+                    reasons.addAll( handleAttrs( oldAttrs, curAttrs ) );
+                    oldAttrs = curAttrs;
+                    
+                    result = reasons.size() == 0 ? null : new NotProcessed( GenericJavaConfigListener.toString(reasons) );
                 }
                 else {
                     throw new IllegalArgumentException( "Unknown interface: " + tc.getName() );
@@ -128,7 +170,31 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         }
     }
     
-    private NotProcessed handle(List<String> old, List<String> cur) {
+    private List<String>
+    handleAttrs( final Map<String,String> old, final Map<String,String> cur) {
+        if ( old.size() != cur.size() ) {
+            throw new IllegalArgumentException();
+        }
+        
+        // find all the differences and generate helpful messages
+        final List<String> reasons = new ArrayList<String>();
+        for( final String key : old.keySet() ) {
+            final String oldValue = old.get(key);
+            final String curValue = cur.get(key);
+            
+            final boolean changed = (oldValue == null && curValue != null) ||
+                                    (oldValue != null && curValue == null) ||
+                                    (oldValue != null && ! oldValue.equals(curValue));
+            if ( changed ) {
+                reasons.add( "JavaConfig attribute '" + key + "' was changed from '" + oldValue + "' to '" + curValue + "'");
+            }
+        }
+        return reasons;
+    }
+
+
+    
+    private List<String> handle(List<String> old, List<String> cur) {
         NotProcessed np = null;
         
         final Set<String> added = new HashSet<String>(cur);
@@ -160,7 +226,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
         return s.startsWith(DPREFIX) ? s.substring(DPREFIX.length()) : s;
     }
     
-    private NotProcessed getNotProcessed(
+    private List<String> getNotProcessed(
         final Set<String> removals,
         final Set<String> additions)
     {
@@ -210,11 +276,7 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
             }
         }
         
-        
-        if ( reasons.size() != 0) {
-            return new NotProcessed( toString(reasons) );
-        }
-        return null;
+        return reasons;
     }
     
     private static String toString( final List<String> items ) {
