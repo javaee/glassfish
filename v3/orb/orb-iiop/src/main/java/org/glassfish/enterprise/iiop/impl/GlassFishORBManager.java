@@ -165,6 +165,7 @@ public final class GlassFishORBManager {
 
     // ORB configuration constants
     private static final String DEFAULT_SERVER_ID = "100";
+    private static final String ACC_DEFAULT_SERVER_ID = "101";
     private static final String DEFAULT_MAX_CONNECTIONS = "1024";
     private static final String GLASSFISH_INITIALIZER =
             "org.glassfish.enterprise.iiop.impl.GlassFishORBInitializer";
@@ -479,8 +480,14 @@ public final class GlassFishORBManager {
             setFOLBProperties(orbInitProperties);
 
             // Standard OMG Properties.
+            String orbDefaultServerId = DEFAULT_SERVER_ID;
+            if (!processType.isServer() && !processType.isStandaloneServer()) {
+                orbDefaultServerId = ACC_DEFAULT_SERVER_ID;
+            }
+
             orbInitProperties.put(ORBConstants.ORB_SERVER_ID_PROPERTY,
-                    DEFAULT_SERVER_ID);
+                    orbDefaultServerId);
+
             orbInitProperties.put(OMG_ORB_CLASS_PROPERTY, ORB_CLASS);
 
             orbInitProperties.put(
