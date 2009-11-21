@@ -92,7 +92,6 @@ public class SecurityServiceImpl implements SecurityService {
     protected static final Logger _logger = LogDomains.getLogger(SecurityServiceImpl.class,
         LogDomains.SECURITY_LOGGER);
     
-    private static final Base64 base64Helper = new Base64();
     private static final String AUTHORIZATION_HEADER = "authorization";
     
     public Object mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc) {
@@ -118,7 +117,6 @@ public class SecurityServiceImpl implements SecurityService {
         //If authentication succeeds, the proper value will be set later in
         //this method.
         boolean authenticated = false;
-        boolean hasAuthMeth = true;
         try {
             if (context != null) {
                 context.setUserPrincipal(null);
@@ -127,18 +125,20 @@ public class SecurityServiceImpl implements SecurityService {
             WebServiceEndpoint endpoint = epInfo.getEndpoint();
 
             String method = hreq.getMethod();
+            String rawAuthInfo = hreq.getHeader(AUTHORIZATION_HEADER);
             if (method.equals("GET") || !endpoint.hasAuthMethod()) {
-                hasAuthMeth = false;
+            //if (method.equals("GET") || rawAuthInfo == null) {
+                authenticated = true;
                 return true;
             }
 
             WebPrincipal webPrincipal = null;
             String endpointName = endpoint.getEndpointName();
-
-            if (endpoint.hasBasicAuth()) {
-                String rawAuthInfo = hreq.getHeader(AUTHORIZATION_HEADER);
+            if (endpoint.hasBasicAuth() || rawAuthInfo != null) {
+                //String rawAuthInfo = hreq.getHeader(AUTHORIZATION_HEADER);
                 if (rawAuthInfo == null) {
                     sendAuthenticationEvents(false, hreq.getRequestURI(), null);
+                    authenticated = false;
                     return false;
                 }
 
@@ -189,7 +189,7 @@ public class SecurityServiceImpl implements SecurityService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            if (hasAuthMeth && auditManager != null && auditManager.isAuditOn()) {
+            if (auditManager != null && auditManager.isAuditOn()) {
                 auditManager.ejbAsWebServiceInvocation(
                         epInfo.getEndpoint().getEndpointName(), authenticated);
             }
@@ -205,7 +205,7 @@ public class SecurityServiceImpl implements SecurityService {
             String authString = rawAuthInfo.substring(6).trim();
             // Decode and parse the authorization credentials
             String unencoded =
-                new String(base64Helper.decode(authString.getBytes()));
+                new String(Base64.decode(authString.getBytes()));
             int colon = unencoded.indexOf(':');
             if (colon > 0) {
                 usernamePassword = new String[2];
