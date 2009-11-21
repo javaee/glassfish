@@ -11,10 +11,9 @@
 <!--	<ant dir="prepkged-svc-1" target="all"/>-->
 	<ant dir="dol-override-1" target="all"/>
         <ant dir="webservices13-addressing" target="all"/>
-        <ant dir="webserviceref-lookup" target="all"/>
+<!--        <ant dir="webserviceref-lookup" target="all"/>-->
         <ant dir="webservices13-addressing-2" target="all"/>
         <ant dir="webservices13-addressing-appclient" target="all"/>
-        <ant dir="webservices13-respectbinding" target="all"/>
 	<ant dir="provider" target="all"/>
 	<ant dir="svchandler-1" target="all"/>
 	<ant dir="svchandler-2" target="all"/>
@@ -32,6 +31,7 @@
 	<ant dir="wsdltojava" target="all"/>
 	<ant dir="wsctxt" target="all"/>
 	<ant dir="mappedname" target="all"/>
+        <ant dir="webservices13-respectbinding" target="all"/>
 <!--	<ant dir="async" target="all"/>-->
 	<!--<ant dir="mbyte" target="all"/>-->
 <!--	<ant dir="postconstruct" target="all"/>

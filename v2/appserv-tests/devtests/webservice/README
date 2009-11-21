@@ -6,13 +6,13 @@ web service unit tests
 3. Expected results are :
 
      [exec] ************************
-     [exec] PASSED=         92
+     [exec] PASSED=         56
      [exec] ------------  =========
      [exec] FAILED=          0
      [exec] ------------  =========
-     [exec] DID NOT RUN=   4
+     [exec] DID NOT RUN=  0
      [exec] ------------  =========
-     [exec] Total Expected=96
+     [exec] Total Expected=56
      [exec] ************************
 
 
@@ -22,10 +22,4 @@ None
 
 DID NOT RUN :
 
-1. annotations/externalwsdl - 1 test - test needs to be changed as per spec changes
-2. ejb_annotations/provider - 1 test - test needs to be changed as per spec changes
-3. ejb_annotations/wsnameejbname - 1 test - test passes when run alone; fails when run with all other tests - need to investigate this further
-4. annotation/mbyte -1 test test needs to be changed based on bug 2536
-
-WORKAROUNDS REQUIRED : None
 

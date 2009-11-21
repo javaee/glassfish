@@ -3,7 +3,7 @@
 <sun-web-app>
  <context-root>WebServiceTestServlet</context-root>
  <servlet>
-  <servlet-name>WebServiceTestServlet</servlet-name>
+  <servlet-name>test.webservice.WebServiceTestImpl</servlet-name>
   <webservice-endpoint>
    <port-component-name>Port</port-component-name>
    <debugging-enabled>true</debugging-enabled>

@@ -25,11 +25,11 @@
         <ant dir="jaxrpc-hello-web" target="all"/>
 <!--	<ant dir="googleserver" target="all"/>--> <!-- 3 tests -->
         <ant dir="xsdany" target="all"/> <!-- 1 test -->
-        <ant dir="webstub_properties" target="all"/> <!-- 1 test -->
         <ant dir="filter_urlhandling" target="all"/> <!-- 1 test -->
     <!--    <ant dir="security" target="all"/>-->         <!-- 9 test -->
 <!--	<ant dir="simplefault" target="all"/>
 	<ant dir="handler" target="all"/> 
+        <ant dir="webstub_properties" target="all"/> 
 	<ant dir="servlethandler" target="all"/>--> 
 	<ant dir="annotations" target="all"/>
 	<ant dir="ejb_annotations" target="all"/>

@@ -38,7 +38,7 @@ public class Client {
         } catch(Exception e) {
             System.out.println("Failure " + e.getMessage());
             e.printStackTrace();
-            stat.addStatus("rpcencoded-oneway Dynamic Proxy", stat.FAIL);                    
+            stat.addStatus("web-stubs-properties Dynamic Proxy", stat.FAIL);                    
         }
     }
  

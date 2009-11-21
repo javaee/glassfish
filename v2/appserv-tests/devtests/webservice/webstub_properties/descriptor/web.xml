@@ -5,12 +5,12 @@
     <param-value>stubprops.TestServlet</param-value>
   </context-param>
  <servlet>
-  <servlet-name>WebServiceTestServlet</servlet-name>
+  <servlet-name>test.webservice.WebServiceTestImpl</servlet-name>
   <servlet-class>test.webservice.WebServiceTestImpl</servlet-class>
   <load-on-startup>0</load-on-startup>
  </servlet>
  <servlet-mapping>
-  <servlet-name>WebServiceTestServlet</servlet-name>
+  <servlet-name>test.webservice.WebServiceTestImpl</servlet-name>
   <url-pattern>/WebServiceTestService</url-pattern>
  </servlet-mapping>
   <service-ref>
