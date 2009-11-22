@@ -38,12 +38,12 @@
 
   <target name="testAddAdmin" depends="init-common">
     <antcall target="asadmin-common">
-      <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject --raname generic-ra --property ResetControl=BEGINNING"/>
+      <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject --raname '${prefix}generic-ra' --property ResetControl=BEGINNING"/>
       <param name="operand.props" value="eis/testAdmin"/>
     </antcall>
 
 <antcall target="asadmin-common">
-      <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject1 --raname generic-ra --property ResetControl=BEGINNING"/>
+      <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject1 --raname '${prefix}generic-ra' --property ResetControl=BEGINNING"/>
       <param name="operand.props" value="eis/testAdmin1"/>
     </antcall>
 

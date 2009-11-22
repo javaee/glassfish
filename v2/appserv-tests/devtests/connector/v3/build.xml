@@ -263,6 +263,9 @@
         <echo message="@@## beanvalidation-simple ##@@"/>
         <ant dir="beanvalidation-simple" target="all"/>
 
+        <echo message="@@## beanvalidation-simple ##@@"/>
+        <ant dir="beanvalidation-simple" target="embedded-all"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>

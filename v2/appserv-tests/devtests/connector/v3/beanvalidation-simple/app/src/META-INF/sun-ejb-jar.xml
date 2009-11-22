@@ -10,7 +10,10 @@ one/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
     <ejb>
       <ejb-name>GenericMessageBean</ejb-name>
       <mdb-resource-adapter>
+<!--
+This will be automatically detected (useful for embedded ra mode of the test)
         <resource-adapter-mid>generic-ra</resource-adapter-mid>
+-->
         <activation-config>
          <!-- override prop value -->
         <activation-config-property>
@@ -41,7 +44,7 @@ one/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
       </ior-security-config>
       <resource-ref>
         <res-ref-name>MyDB</res-ref-name>
-        <jndi-name>jdbc/XAPointbase</jndi-name>
+        <jndi-name>jdbc/connector-bean-validation-resource</jndi-name>
       </resource-ref>
       <gen-classes />
     </ejb>
@@ -66,7 +69,7 @@ one/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
       </ior-security-config>
       <resource-ref>
         <res-ref-name>MyDB</res-ref-name>
-        <jndi-name>jdbc/XAPointbase</jndi-name>
+        <jndi-name>jdbc/connector-bean-validation-resource</jndi-name>
       </resource-ref>
       <resource-env-ref>
         <resource-env-ref-name>eis/testAdmin</resource-env-ref-name>

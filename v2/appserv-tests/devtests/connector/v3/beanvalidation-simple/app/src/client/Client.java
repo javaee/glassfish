@@ -16,9 +16,13 @@ public class Client {
 
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
+    private String prefix = "";
 
     public Client(String[] args) {
         //super(args);
+        if(args != null && args.length > 0){
+            prefix = args[0];
+        }
     }
 
     public static void main(String[] args) {
@@ -46,9 +50,9 @@ public class Client {
                     //do not continue if one test failed
                     if (!pass) {
                         res = "SOME TESTS FAILED";
-                        stat.addStatus(" Bean-Validation-Connector Test - " + testCount, stat.FAIL);
+                        stat.addStatus(" " + prefix + "Connector-Bean-Validation Test - " + testCount, stat.FAIL);
                     } else {
-                        stat.addStatus(" Bean-Validation-Connector Test - " + testCount, stat.PASS);
+                        stat.addStatus(" " + prefix + "Connector-Bean-Validation Test - "+ testCount, stat.PASS);
                     }
                 } else {
                     break;
@@ -73,11 +77,11 @@ public class Client {
             runRABeanTest(5, res, testCount++,true);
 
         } catch (Exception ex) {
-            System.out.println(" Bean-Validation-Connector Test failed.");
+            System.out.println(" " + prefix + "Connector-Bean-Validation Test "+ " failed.");
             ex.printStackTrace();
             res = "TEST FAILED";
         }
-        stat.printSummary("Bean-Validation-Connector Test");
+        stat.printSummary(" " + prefix + "Connector-Bean-Validation Test ");
 
 
         debug("EXITING... STATUS = " + res);
@@ -89,9 +93,9 @@ public class Client {
         pass = testRABean(intValue, expectSuccess);
         if (!pass) {
             res = "SOME TESTS FAILED";
-            stat.addStatus(" Bean-Validation-Connector Test -" + testCount, stat.FAIL);
+            stat.addStatus(" " + prefix + "Connector-Bean-Validation Test - " + testCount, stat.FAIL);
         } else {
-            stat.addStatus(" Bean-Validation-Connector Test - " + testCount, stat.PASS);
+            stat.addStatus(" " + prefix + "Connector-Bean-Validation Test - " + testCount, stat.PASS);
         }
     }
 
@@ -110,9 +114,9 @@ public class Client {
 
         if (!pass) {
             res = "SOME TESTS FAILED";
-            stat.addStatus(" Bean-Validation-Connector Test -" + testCount, stat.FAIL);
+            stat.addStatus(" " + prefix + "Connector-Bean-Validation Test - " + testCount, stat.FAIL);
         } else {
-            stat.addStatus(" Bean-Validation-Connector Test - " + testCount, stat.PASS);
+            stat.addStatus(" " + prefix + "Connector-Bean-Validation Test - " + testCount, stat.PASS);
         }
     }
 
