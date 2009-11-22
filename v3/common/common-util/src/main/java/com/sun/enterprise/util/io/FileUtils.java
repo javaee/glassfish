@@ -56,6 +56,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.nio.channels.*;
 import java.nio.ByteBuffer;
+import java.util.regex.Pattern;
 
 
 public class FileUtils {
@@ -202,9 +203,9 @@ public class FileUtils {
         if (isLegalFilename(filename))
             return filename;
 
-        // let's use "__" to replace "/" so less chance
+        // let's use "__" to replace "/" and "\" (on Windows) so less chance
         // to collide with the actual name when reverting
-        filename = filename.replaceAll("/", "__");
+        filename = filename.replaceAll("[/" + Pattern.quote("\\") + "]", "__");
 
         for (int i = 0; i < ILLEGAL_FILENAME_CHARS.length; i++)
             filename = filename.replace(ILLEGAL_FILENAME_CHARS[i], REPLACEMENT_CHAR);
