@@ -57,9 +57,9 @@ private static void goGet(String host, int port,
                     String status = line.substring(index+1);
 
                     if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus("ID Connector 1.5 test - " + count, stat.PASS);
+                        stat.addStatus(" Connector 1.5 test - " + count, stat.PASS);
                     } else {
-                        stat.addStatus("ID Connector 1.5 test - " + count, stat.FAIL);
+                        stat.addStatus(" Connector 1.5 test - " + count, stat.FAIL);
                     }
                 }
 

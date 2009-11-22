@@ -37,15 +37,15 @@ public class Client   {
         try {
             res  = " TEST PASSED";
             test();
-            stat.addStatus("ID Connector ThreadPool test " , stat.PASS);
+            stat.addStatus(" Connector ThreadPool test " , stat.PASS);
         } catch (Exception ex) {
             System.out.println("Thread pool test failed.");
             ex.printStackTrace();
             res = "TEST FAILED";
-            stat.addStatus("ID Connector ThreadPool test " , stat.FAIL);
+            stat.addStatus(" Connector ThreadPool test " , stat.FAIL);
         }
 
-        stat.printSummary("connectorThreadPoolID");
+        stat.printSummary("Connector-ThreadPool");
 
         
         debug("EXITING... STATUS = " + res);

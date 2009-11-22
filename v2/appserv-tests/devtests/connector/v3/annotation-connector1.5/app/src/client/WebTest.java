@@ -57,9 +57,9 @@ private static void goGet(String host, int port,
                     String status = line.substring(index+1);
 
                     if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus("ID Annotated Connector 1.5 test - " + count, stat.PASS);
+                        stat.addStatus(" Annotated Connector test - " + count, stat.PASS);
                     } else {
-                        stat.addStatus("ID Annotated Connector 1.5 test - " + count, stat.FAIL);
+                        stat.addStatus(" Annotated Connector test - " + count, stat.FAIL);
                     }
                 }
 

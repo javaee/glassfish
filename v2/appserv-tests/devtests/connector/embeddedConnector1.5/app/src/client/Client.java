@@ -48,10 +48,10 @@ public class Client   {
                     //do not continue if one test failed
                     if (!pass) {
                         res = "SOME TESTS FAILED";
-                        stat.addStatus("ID Connector Embedded 1.5 test - " + testCount, stat.FAIL);
+                        stat.addStatus(" Embedded-Connector-1.5 test - " + testCount, stat.FAIL);
                         break;
                     } else {
-                        stat.addStatus("ID Connector Embedded 1.5 test - " + testCount, stat.PASS);
+                        stat.addStatus(" Embedded-Connector-1.5 test - " + testCount, stat.PASS);
 		    }
                 } else {
                     break;
@@ -65,7 +65,7 @@ public class Client   {
             res = "TEST FAILED";
         }
 
-        stat.printSummary("connector1.5EmbeddedID");
+        stat.printSummary("Embedded-Connector-1.5");
 
         
         debug("EXITING... STATUS = " + res);

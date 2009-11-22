@@ -48,9 +48,9 @@ public class Client   {
                     //do not continue if one test failed
                     if (!pass) {
                         res = "SOME TESTS FAILED";
-                        stat.addStatus("ID Connector 1.5 test - " + testCount, stat.FAIL);
+                        stat.addStatus(" Connector 1.5 test - " + testCount, stat.FAIL);
                     } else {
-                        stat.addStatus("ID Connector 1.5 test - " + testCount, stat.PASS);
+                        stat.addStatus(" Connector 1.5 test - " + testCount, stat.PASS);
 		    }
                 } else {
                     break;
@@ -63,7 +63,7 @@ public class Client   {
             ex.printStackTrace();
             res = "TEST FAILED";
         }
-        stat.printSummary("connector15ID");
+        stat.printSummary("connector15");
 
         
         debug("EXITING... STATUS = " + res);
