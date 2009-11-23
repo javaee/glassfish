@@ -102,7 +102,7 @@
 
                theOperations = (java.util.List )Scripting.getInterpreter().get("gOperations");
                String theProductList = "<HTML><body><font face='Sans-Serif' size='3'>";
-               theProductList = theProductList + "GlassFish v3 Preview" + "<ul>";
+               theProductList = theProductList + "GlassFish v3" + "<ul>";
                //  FIXME: This is temporary solution to remove duplicate operation entries.
                theSeenSet = new HashSet();
                boolean theRepairFlag = false;

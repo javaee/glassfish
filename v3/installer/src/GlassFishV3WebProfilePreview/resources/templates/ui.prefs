@@ -9,9 +9,9 @@
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PRODUCT_NAME=GlassFish v3 Web Profile Preview
+PRODUCT_NAME=GlassFish v3 Web Profile 
 
-app_title=GlassFish v3 Web Profile Preview
+app_title=GlassFish v3 Web Profile 
 # Text for Buttons
 btnCancel_text=Cancel
 btnExit_text=Exit
