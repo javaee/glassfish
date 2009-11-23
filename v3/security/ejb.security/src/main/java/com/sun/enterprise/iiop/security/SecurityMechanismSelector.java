@@ -69,7 +69,8 @@ import com.sun.corba.ee.spi.ior.iiop.IIOPAddress;
 import com.sun.corba.ee.spi.ior.iiop.IIOPProfileTemplate;
 import com.sun.corba.ee.spi.transport.SocketInfo;
 import com.sun.corba.ee.org.omg.CSIIOP.*;
-
+import org.ietf.jgss.Oid;
+import java.util.Enumeration;
 import sun.security.x509.X500Name;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.security.auth.login.LoginContextDriver;
@@ -459,6 +460,12 @@ public final class SecurityMechanismSelector implements PostConstruct {
     {
         SecurityContext context = null;   
 	ConnectionContext cc = new ConnectionContext();
+        //print CSIv2 mechanism definition in IOR
+        if (_traceIORs) {
+            _logger.info("\nCSIv2 Mechanism List:" +
+                    getSecurityMechanismString(ior));
+	}
+
         getSSLPort(ior, cc);
         setClientConnectionContext(cc); 
 
@@ -1560,5 +1567,142 @@ as_context_mech
     private boolean isACC() {
         return processEnv.getProcessType().equals(ProcessType.ACC);
     }
+
+    // property controls IOR tracing by clients]
+
+    private static final String traceIORsProperty =
+         "com.sun.enterprise.iiop.security.traceIORS";
+
+    private static final Hashtable<Integer,String> assocOptions;
+
+    private static final boolean _traceIORs = Boolean.getBoolean
+            (traceIORsProperty);
+
+    static {
+        assocOptions = new Hashtable<Integer,String>();
+    	assocOptions.put(new Integer(Integrity.value),"Integrity");
+	assocOptions.put(new Integer(Confidentiality.value),"Confidentiality");
+	assocOptions.put(new Integer(EstablishTrustInTarget.value),"EstablishTrustInTarget");
+	assocOptions.put(new Integer(EstablishTrustInClient.value),"EstablishTrustInClient");
+	assocOptions.put(new Integer(IdentityAssertion.value),"IdentityAssertion");
+	assocOptions.put(new Integer(DelegationByClient.value),"DelegationByClient");
+    }
+
+    public String getSecurityMechanismString(IOR ior) {
+        String rvalue = null;
+        try {
+            CompoundSecMech[] list = getCtc().getSecurityMechanisms(ior);
+            if (list != null) {
+		StringBuffer b = new StringBuffer();
+		for (int i = 0; i < list.length; i++) {
+		    CompoundSecMech m = list[i];
+		    b.append("\nCSIv2 CompoundSecMech[" + i + "]\n\tTarget Requires:");
+		    Enumeration<Integer> keys = assocOptions.keys();
+		    while (keys.hasMoreElements()) {
+			Integer j = keys.nextElement();
+			if (isSet(m.target_requires,j.intValue())) {
+			    b.append("\n\t\t" + assocOptions.get(j));
+			}
+		    }
+
+		    TLS_SEC_TRANS ssl = getCtc().getSSLInformation(m);
+		    if (ssl != null) {
+			b.append("\n\tTLS_SEC_TRANS\n\t\tTarget Requires:");
+			keys = assocOptions.keys();
+			while (keys.hasMoreElements()) {
+			    Integer j = keys.nextElement();
+			    if (isSet(ssl.target_requires,j.intValue())) {
+				b.append("\n\t\t\t" + assocOptions.get(j));
+			    }
+			}
+			b.append("\n\t\tTarget Supports:");
+			keys = assocOptions.keys();
+			while (keys.hasMoreElements()) {
+			    Integer j = keys.nextElement();
+			    if (isSet(ssl.target_supports,j.intValue())) {
+				b.append("\n\t\t\t" + assocOptions.get(j));
+			    }
+			}
+			TransportAddress[] aList= ssl.addresses;
+			for (int j = 0; j < aList.length; j++) {
+			    TransportAddress a = aList[j];
+			    b.append("\n\t\tAddress[" + j + "] Host Name: " +
+				     a.host_name + " port: " + a.port);
+			}
+		    }
+
+		    AS_ContextSec asContext = m.as_context_mech;
+		    if (asContext != null) {
+			b.append("\n\tAS_ContextSec\n\t\tTarget Requires:");
+			keys = assocOptions.keys();
+			while (keys.hasMoreElements()) {
+			    Integer j = keys.nextElement();
+			    if (isSet(asContext.target_requires,j.intValue())) {
+				b.append("\n\t\t\t" + assocOptions.get(j));
+			    }
+			}
+			b.append("\n\t\tTarget Supports:");
+			keys = assocOptions.keys();
+			while (keys.hasMoreElements()) {
+			    Integer j = keys.nextElement();
+			    if (isSet(asContext.target_supports,j.intValue())) {
+				b.append("\n\t\t\t" + assocOptions.get(j));
+			    }
+			}
+                        try {
+                            if (asContext.client_authentication_mech.length > 0) {
+                                Oid oid = new Oid(asContext.client_authentication_mech);
+                                b.append("\n\t\tclient_auth_mech_OID:" + oid);
+                            } else {
+                                b.append("\n\t\tclient_auth_mech_OID: undefined");
+                            }
+                        } catch (Exception e) {
+                            b.append("\n\t\tclient_auth_mech_OID: (invalid)" + e.getMessage());
+                        } finally {
+                            b.append("\n\t\ttarget_name:" + asContext.target_name);
+                        }
+		    }
+
+		    SAS_ContextSec sasContext = m.sas_context_mech;
+		    if (sasContext != null) {
+			b.append("\n\tSAS_ContextSec\n\t\tTarget Requires:");
+			keys = assocOptions.keys();
+			while (keys.hasMoreElements()) {
+			    Integer j = keys.nextElement();
+			    if (isSet(sasContext.target_requires,j.intValue())) {
+				b.append("\n\t\t\t" + assocOptions.get(j));
+			    }
+			}
+			b.append("\n\t\tTarget Supports:");
+			keys = assocOptions.keys();
+			while (keys.hasMoreElements()) {
+			    Integer j = keys.nextElement();
+			    if (isSet(sasContext.target_supports,j.intValue())) {
+				b.append("\n\t\t\t" + assocOptions.get(j));
+			    }
+			}
+			b.append("\n\t\tprivilege authorities:" + sasContext.privilege_authorities);
+			byte [][] nameTypes = sasContext.supported_naming_mechanisms;
+			for (int j = 0; j < nameTypes.length; j++) {
+			    if (nameTypes[j].length > 0) {
+                                Oid oid =  new Oid(nameTypes[j]);
+                                b.append("\n\t\tSupported Naming Mechanims[" + j + "]: " + oid);
+                            } else {
+                                b.append("\n\t\tSupported Naming Mechanims[" + j + "]:  undefined");
+                            }
+			}
+			b.append("\n\t\tsupported Identity Types:" + sasContext.supported_identity_types);
+		    }
+		}
+		b.append("\n\n");
+		rvalue = b.toString();
+            }
+	} catch (Exception e) {
+            e.printStackTrace();
+            return("Unexpected exception unset Property: " + traceIORsProperty);
+	}
+	return rvalue;
+    }
+
 }
 
