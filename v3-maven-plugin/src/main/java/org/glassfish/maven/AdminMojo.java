@@ -61,7 +61,7 @@ public class AdminMojo extends AbstractServerMojo  {
 /**
  * @parameter
  */
-    protected Map commandparameters;
+    protected Map commandParameters;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -81,11 +81,11 @@ public class AdminMojo extends AbstractServerMojo  {
 
     private ParameterMap getParameterMap() {
         ParameterMap pMap = new ParameterMap();
-        if (commandparameters != null) {
-            Iterator iter = commandparameters.keySet().iterator();
+        if (commandParameters != null) {
+            Iterator iter = commandParameters.keySet().iterator();
             while(iter.hasNext()) {
                 String key = (String)iter.next();
-                pMap.add(key, (String)commandparameters.get(key));
+                pMap.add(key, (String)commandParameters.get(key));
             }
         }
         return pMap;

@@ -58,13 +58,14 @@
           <goalPrefix>glassfish</goalPrefix>
           <app>test.war</app>
           <port>8080</port> 
+          <contextRoot>test</contextRoot> 
        </configuration>
   
        <executions>
           <execution>
              <phase>install</phase>
              <goals>
-                <goal>runweb</goal>
+           	<goal>run</goal>
               </goals>
           </execution>
        </executions>

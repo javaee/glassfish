@@ -48,8 +48,6 @@ import org.glassfish.api.embedded.ContainerBuilder;
  */
 public class StartMojo extends AbstractServerMojo {
 
-    ContainerBuilder.Type type = ContainerBuilder.Type.all;
-
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         try {
@@ -59,15 +57,11 @@ public class StartMojo extends AbstractServerMojo {
             if (port != -1)
                 server.createPort(port);
 
-
-            server.addContainer(type);
+            server.addContainer(getContainerBuilderType());
             server.start();
         } catch (Exception ex) {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }
     }
 
-    void setContainerType(ContainerBuilder.Type type) {
-        this.type = type;
-    }
 }

@@ -37,15 +37,11 @@
 
 package org.glassfish.maven;
 
-import java.io.*;
-
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.deployment.DeployCommandParameters;
 
 
 /**

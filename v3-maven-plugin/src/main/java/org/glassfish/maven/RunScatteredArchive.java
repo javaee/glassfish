@@ -59,10 +59,10 @@ import org.glassfish.api.embedded.ContainerBuilder;
 public class RunScatteredArchive extends AbstractDeployMojo{
 
 /**
- * @parameter expression="${rootdirectory}"
+ * @parameter expression="${rootDirectory}"
  * @required
  */
-    protected String rootdirectory;
+    protected String rootDirectory;
 /**
  * @parameter expression="${resources}"
  */
@@ -74,9 +74,9 @@ public class RunScatteredArchive extends AbstractDeployMojo{
     protected ArrayList<String> classpath = new ArrayList();
 
 /**
- * @parameter expression="${metadata}"
+ * @parameter expression="${metaData}"
  */
-    protected HashMap<String, File> metadata = new HashMap();
+    protected HashMap<String, File> metaData = new HashMap();
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -86,23 +86,23 @@ public class RunScatteredArchive extends AbstractDeployMojo{
             if (port != -1)
                 server.createPort(port);
 
-            server.addContainer(ContainerBuilder.Type.all);
+            server.addContainer(getContainerBuilderType());
 
             EmbeddedDeployer deployer = server.getDeployer();
             DeployCommandParameters cmdParams = new DeployCommandParameters();
             configureDeployCommandParameters(cmdParams);
 
-            File f = new File(rootdirectory);
+            File f = new File(rootDirectory);
             ScatteredArchive.Builder builder = new ScatteredArchive.Builder(name, f);
             if (resources == null) 
-                resources = rootdirectory;
+                resources = rootDirectory;
             builder.resources(new File(resources));
             if (classpath.isEmpty())
-                classpath.add(rootdirectory);
+                classpath.add(rootDirectory);
             for (String cp : classpath) {
                 builder.addClassPath(new File(cp).toURL());
             }
-            for (Map.Entry<String, File> entry : metadata.entrySet()) {
+            for (Map.Entry<String, File> entry : metaData.entrySet()) {
                 String key = entry.getKey();
                 File value = entry.getValue();
                 builder.addMetadata(key, value);
@@ -111,8 +111,8 @@ public class RunScatteredArchive extends AbstractDeployMojo{
             DeployCommandParameters dp = new DeployCommandParameters(f);
             if (name != null)
                 dp.name = name;
-            if (contextroot != null)
-                dp.contextroot = contextroot;
+            if (contextRoot != null)
+                dp.contextroot = contextRoot;
 
             while(true) {
                 String appName = deployer.deploy(builder.buildWar(), dp);

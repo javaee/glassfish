@@ -48,27 +48,27 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     protected String name;
 
 /**
- * @parameter expression="${contextroot}" 
+ * @parameter expression="${contextRoot}"
  */
-    protected String contextroot;
+    protected String contextRoot;
 /**
- * @parameter expression="${precompilejsp}" 
+ * @parameter expression="${precompileJsp}"
  */
-    protected Boolean precompilejsp;
+    protected Boolean precompileJsp;
 
 /**
- * @parameter expression="${dbvendorname}"
+ * @parameter expression="${dbVendorName}"
  */
-    protected String dbvendorname;
+    protected String dbVendorName;
 
 /**
- * @parameter expression="${createtables}"
+ * @parameter expression="${createTables}"
  */
-    protected Boolean createtables;
+    protected Boolean createTables;
 /**
- * @parameter expression="${dropandcreatetables}"
+ * @parameter expression="${dropAndCreateTables}"
  */
-    protected Boolean dropandcreatetables;
+    protected Boolean dropAndCreateTables;
 
 /**
  * @parameter expression="${libraries}"
@@ -76,27 +76,27 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     protected String libraries;
 
 /**
- * @parameter expression="${virtualservers}"
+ * @parameter expression="${virtualServers}"
  */
-    protected String virtualservers;
+    protected String virtualServers;
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
     void configureDeployCommandParameters(DeployCommandParameters cmdParams) {
         if (name != null)
             cmdParams.name = name;
-        if (contextroot != null)
-            cmdParams.contextroot = contextroot;
-        if (precompilejsp != null)
-            cmdParams.precompilejsp = precompilejsp;
-        if (virtualservers != null)
-            cmdParams.virtualservers = virtualservers;
-        if (dbvendorname != null)
-            cmdParams.dbvendorname = dbvendorname;
-        if (createtables != null)
-            cmdParams.createtables = createtables;
-        if (dropandcreatetables != null)
-            cmdParams.dropandcreatetables = dropandcreatetables;
+        if (contextRoot != null)
+            cmdParams.contextroot = contextRoot;
+        if (precompileJsp != null)
+            cmdParams.precompilejsp = precompileJsp;
+        if (virtualServers != null)
+            cmdParams.virtualservers = virtualServers;
+        if (dbVendorName != null)
+            cmdParams.dbvendorname = dbVendorName;
+        if (createTables != null)
+            cmdParams.createtables = createTables;
+        if (dropAndCreateTables != null)
+            cmdParams.dropandcreatetables = dropAndCreateTables;
         if (libraries != null)
             cmdParams.libraries = libraries;
     }

@@ -37,30 +37,32 @@
 
 package org.glassfish.maven;
 
-
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
-
+import org.glassfish.api.deployment.UndeployCommandParameters;
 
 /**
  * @goal undeploy
  */
-public class UndeployMojo extends AbstractMojo  {
-
-/**
- * @parameter expression="${serverID}" default-value="maven"
-*/
-    protected String serverID;
+public class UndeployMojo extends AbstractServerMojo  {
 
 /**
  * @parameter expression="${name}"
  *
  */
     protected String name;
+
+/**
+ * @parameter expression="${cascade}"
+ */
+    Boolean cascade;
+/**
+ * @parameter expression="${dropTables}"
+*/
+     Boolean dropTables;
 
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -71,12 +73,24 @@ public class UndeployMojo extends AbstractMojo  {
 
         try {
             EmbeddedDeployer deployer = server.getDeployer();
+            UndeployCommandParameters cmdParams = new UndeployCommandParameters();
+            configureUndeployCommandParameters(cmdParams);
             if (name != null)
-                deployer.undeploy(name, null);
+                deployer.undeploy(name, cmdParams);
             else
                 deployer.undeployAll();
         } catch (Exception ex) {
            throw new MojoExecutionException(ex.getMessage(),ex);
         }
     }
+
+    void configureUndeployCommandParameters(UndeployCommandParameters cmdParams) {
+        if (name != null)
+            cmdParams.name = name;
+        if (dropTables != null)
+            cmdParams.droptables = dropTables;
+        if (cascade != null)
+            cmdParams.cascade = cascade;
+    }
+
 }
