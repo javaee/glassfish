@@ -6,6 +6,7 @@
   <property file="${basedir}/javadoc.properties"/>
   <property name="external.dir" value="${basedir}/external" />
   <property name="build.javadocs" value="${basedir}/javadocs"/>
+  <property name="destfile.name" value="javadocee6.jar"/>
   <property name="Name" value="Java&lt;sup&gt;&lt;font size=-2&gt;TM&lt;/font&gt;&lt;/sup&gt; Platform, Enterprise Edition 6 " />
   <property name="Title" value="Java EE 6 - DRAFT" />
   <property name="remote.repository" value="http://maven.glassfish.org/content/groups/glassfish/" />
@@ -13,6 +14,10 @@
   <tstamp>
       <format property="TODAY" pattern="d-MMMM-yyyy hh:mm" locale="en,US"/>
   </tstamp>
+
+  <property name="build.v3.javadocs" value="${basedir}/build/v3/javadocs"/>
+  <property name="v3.Name" value="GlassFish v3" />
+  <property name="v3.Title" value="GlassFish v3 - DRAFT" />
 
   <path id="src.dir">
     <dirset dir="${basedir}">
@@ -47,12 +52,34 @@
     </dirset>
   </path>
 
+  <path id="v3.src.path">
+    <dirset dir="${basedir}">
+      <include name="external/hk2/**"/>
+      <include name="common/glassfish-api/src/main/java/**"/>
+      <include name="flashlight/framework/src/main/java/**"/>
+    </dirset>
+    <path refid="src.dir"/>
+  </path>
+
 
   <target name="default" description="Default target">
       <antcall target="checkout.source" />
       <antcall target="create-javadocs" />
       <antcall target="copy-jsf-image-files" />
       <antcall target="jar-javadoc" />
+  </target>
+
+  <target name="v3-javadocs" description="all javadocs including
+                         GlassFish specific javadocs">
+      <antcall target="checkout.source" />
+      <antcall target="create-v3-javadocs" />
+      <antcall target="copy-jsf-image-files">
+        <param name="build.javadocs" value="${build.v3.javadocs}"/>
+      </antcall>
+      <antcall target="jar-javadoc" >
+        <param name="build.javadocs" value="${build.v3.javadocs}"/>
+        <param name="destfile.name" value="glassfish-all.jar"/>
+      </antcall>
   </target>
 
 
@@ -71,8 +98,7 @@
         </artifact:install-provider>
   </target>
 
-  <target name="checkout.source" description="Checkout JavaEE6 source">
-      <antcall target="init" />
+  <target name="checkout.source" description="Checkout JavaEE6 source" depends="init">
       <antcall target="jaxr-api.checkout" />
       <antcall target="javamail.download" />
       <antcall target="jaxrpc.checkout" />
@@ -90,6 +116,7 @@
       <antcall target="uel.download" />
       <antcall target="bean-validator.checkout" />
       <antcall target="weld-api.download" />
+      <antcall target="hk2.download" />
   </target>
 
   <target name="init">
@@ -413,6 +440,42 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
+  <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
+          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="0.4.17" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/hk2" />
+      <copy todir="${external.dir}/hk2" verbose="true">
+          <fileset refid="sources.dependency.hk2" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/hk2"  >
+          <fileset dir="${external.dir}/hk2">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="flashlight.download" description="Download management-api" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.flashlight" >
+          <dependency groupId="org.glassfish.external" artifactId="management-api" version="3.0.0-b012" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/management-api" />
+      <copy todir="${external.dir}/management-api" verbose="true">
+          <fileset refid="sources.dependency.flashlight" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/mangement-api"  >
+          <fileset dir="${external.dir}/mangement-api">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
   <target name="clean-javadocs-dir" description="Delete JavaDocs directory">
           <delete dir="${build.javadocs}" quiet="true" />
   </target>
@@ -436,11 +499,70 @@ fileset refid of artifact:dependencies does not work in unjar
     </javadoc>
   </target>
 
+  <target name="create-v3-javadocs" description="Creates GlassFish v3 JavaDocs">
+    <antcall target="clean-javadocs-dir">
+      <param name="build.javadocs" value="${build.v3.javadocs}"/>
+    </antcall>
+    <mkdir dir="${build.v3.javadocs}"/>
+    <javadoc 
+             destdir="${build.v3.javadocs}"
+             Verbose="true"
+             maxmemory="2048m"
+             author="false"
+             version="true"
+             source="1.6"
+             encoding="ISO-8859-1"
+             windowtitle="${v3.Title}"
+             doctitle="&lt;h1&gt;${v3.Name} &lt;/h1&gt;&lt;p&gt;This document is the API specification for GlassFish v3."
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/JavaEE6platformspec_license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             Header="DRAFT" 
+             Footer="DRAFT" >
+
+       <group title="Java EE 6 Platform Packages" packages="javax.*"/>
+       <group title="GlassFish specific, Non-platform Packages"
+          packages="com.sun.*:org.jvnet.*:org.glassfish.*"/>
+       <link href="http://java.sun.com/javase/6/docs/api/"/>
+
+
+       <package name="javax.*"/>
+       <package name="com.sun.appserv.*"/>
+       <package name="com.sun.enterprise.module.*"/>
+       <package name="com.sun.hk2.*"/>
+       <package name="org.jvnet.*"/>
+       <package name="org.glassfish.api"/>
+       <package name="org.glassfish.api.admin.cli"/>
+       <package name="org.glassfish.api.event"/>
+       <package name="org.glassfish.api.invocation"/>
+       <!--
+           These throw a ClassCastException right now. Need to
+           investigate furher
+
+       <package name="com.sun.enterprise.security.*"/>
+       <package name="org.glassfish.flashlight.provider"/>
+       <package name="org.glassfish.flashlight.cli"/>
+       <package name="org.glassfish.flashlight.client"/>
+       -->
+
+       <excludepackage name="org.apache.*"/>
+       <excludepackage name="org.glassfish.api.jdbc.validation.*"/>
+       <excludepackage name="sample.*"/>
+       <excludepackage name="killer.*"/>
+       <excludepackage name="testing.*"/>
+       <excludepackage name="javax.xml.messaging.*"/>
+       <excludepackage name="javax.xml.registry.samples.*"/>
+       <excludepackage name="javax.xml.namespace.*"/>
+       <excludepackage name="com.sun.appserv.connectors.internal.*"/>
+       <excludepackage name="com.sun.enterprise.module.common_impl.*"/>
+       <excludepackage name="com.sun.enterprise.module.impl.*"/>
+       <sourcepath refid="v3.src.path"/>
+    </javadoc>
+  </target>
+
   <target name="copy-jsf-image-files" description="Copy JSF image files" >
-      <copy todir="javadocs/javax/faces">
+      <copy todir="${build.javadocs}/javax/faces">
           <fileset dir="${external.dir}/jsf/javax/faces" includes="**/*.jpg"/>
       </copy>
-      <copy todir="javadocs">
+      <copy todir="${build.javadocs}">
 <!--
 Per Ed Burns' request to not include drop the color coding for JSF docs so removing jsf-api.css file.
 Also removed 'stylesheetfile="jsf/jsf-api/jsf-api.css"' when generating the javadoc. 
@@ -450,7 +572,7 @@ Also removed 'stylesheetfile="jsf/jsf-api/jsf-api.css"' when generating the java
   </target>
 
   <target name="jar-javadoc" description="Bundle JavaEE6 jar" >
-      <jar destfile="${build.javadocs}/javadocee6.jar" basedir="${build.javadocs}"/>
+      <jar destfile="${build.javadocs}/${destfile.name}" basedir="${build.javadocs}"/>
   </target>
 </project>
 
