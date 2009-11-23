@@ -79,7 +79,7 @@ public class TransactionServicesImpl implements TransactionServices {
     public UserTransaction getUserTransaction() {
         try {
             InitialContext c = new InitialContext();
-            UserTransaction ut = (UserTransaction)c.lookup("javax.jts.UserTransaction");
+            UserTransaction ut = (UserTransaction)c.lookup("java:comp/UserTransaction");
             return ut;
         } catch (NamingException e) {
             return null;
