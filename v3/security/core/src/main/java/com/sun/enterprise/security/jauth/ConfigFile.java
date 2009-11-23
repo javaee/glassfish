@@ -37,6 +37,7 @@
 package com.sun.enterprise.security.jauth;
 
 import com.sun.enterprise.security.jmac.config.ConfigParser;
+import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import java.io.*;
 import java.util.*;
 
@@ -81,7 +82,7 @@ class ConfigFile extends AuthConfig {
 
     private static final Logger logger = LogDomains.getLogger(ConfigFile.class, LogDomains.SECURITY_LOGGER);
     ConfigFile() throws IOException {
-	String propertyValue = System.getProperty("configfile.parser");
+	String propertyValue = System.getProperty("config.parser");
 	if (propertyValue == null) {
 	    parserClassName = DEFAULT_PARSER_CLASS;
 	} else {
@@ -89,6 +90,9 @@ class ConfigFile extends AuthConfig {
 	}
 	this.epoch = 1;
 	parser = ConfigFile.loadParser(parserClassName);
+        if(parserClassName.equals(DEFAULT_PARSER_CLASS)){
+            parser.initialize(null);
+        }
     }
 
     /**
@@ -197,8 +201,8 @@ class ConfigFile extends AuthConfig {
 	
 	// get the module config info for this intercept
 
-	InterceptEntry intEntry = (InterceptEntry)configMap.get(intercept);
-	if (intEntry == null || intEntry.idMap == null) {
+	GFServerConfigProvider.InterceptEntry intEntry = (GFServerConfigProvider.InterceptEntry)configMap.get(intercept);
+	if (intEntry == null || intEntry.getIdMap() == null) {
 	    if (logger != null && logger.isLoggable(Level.FINE)) {
  		logger.fine("module config has no IDs configured for [" +
 				intercept +
@@ -209,8 +213,8 @@ class ConfigFile extends AuthConfig {
 
 	// look up the DD's provider ID in the module config
 
-	IDEntry idEntry = null;
-	if (id == null || (idEntry = (IDEntry)intEntry.idMap.get(id)) == null) {
+	GFServerConfigProvider.IDEntry idEntry = null;
+	if (id == null || (idEntry = (GFServerConfigProvider.IDEntry)intEntry.getIdMap().get(id)) == null) {
 
 	    // either the DD did not specify a provider ID,
 	    // or the DD-specified provider ID was not found
@@ -228,12 +232,12 @@ class ConfigFile extends AuthConfig {
 
 	    String defaultID;
 	    if (CLIENT.equals(type)) {
-		defaultID = intEntry.defaultClientID;
+		defaultID = intEntry.getDefaultClientID();
 	    } else {
-		defaultID = intEntry.defaultServerID;
+		defaultID = intEntry.getDefaultServerID();
 	    }
 
-	    idEntry = (IDEntry)intEntry.idMap.get(defaultID);
+	    idEntry = (GFServerConfigProvider.IDEntry)intEntry.getIdMap().get(defaultID);
 	    if (idEntry == null) {
 
 		// did not find a default provider ID
@@ -251,12 +255,12 @@ class ConfigFile extends AuthConfig {
 	// or we found a default module config
 
 	// check provider-type
-	if (idEntry.type.indexOf(type) < 0) {
+	if (idEntry.getType().indexOf(type) < 0) {
 	    if (logger != null && logger.isLoggable(Level.FINE)) {
  		logger.fine("request type [" +
 				type +
 				"] does not match config type [" +
-				idEntry.type +
+				idEntry.getType() +
 				"]");
 	    }
 	    return null;
@@ -265,11 +269,11 @@ class ConfigFile extends AuthConfig {
 	// check whether a policy is set
 	AuthPolicy reqP = (requestPolicy != null || responsePolicy != null) ?
 	    requestPolicy : 
-	    idEntry.requestPolicy;  //default;	
+	    new AuthPolicy(idEntry.getRequestPolicy());  //default;
 
 	AuthPolicy respP = (requestPolicy != null || responsePolicy != null) ?
 	    responsePolicy : 
-	    idEntry.responsePolicy;  //default;	
+	    new AuthPolicy(idEntry.getResponsePolicy());  //default;
 
 	// optimization: if policy was not set, return null
 	if (reqP == null && respP == null) {
@@ -281,15 +285,17 @@ class ConfigFile extends AuthConfig {
 
 	// return the configured modules with the correct policies
 
-	ConfigFile.Entry[] entries = new Entry[idEntry.modules.size()];
+//	ConfigFile.Entry[] entries = new Entry[idEntry.modules.size()];
+        ConfigFile.Entry[] entries = new Entry[1];
 	for (int i = 0; i < entries.length; i++) {
-	    AppConfigurationEntry aEntry =
-				(AppConfigurationEntry)idEntry.modules.get(i);
+// Login Bridge profile?
+//	    AppConfigurationEntry aEntry =
+//				(AppConfigurationEntry)idEntry.modules.get(i);
 	    entries[i] = new ConfigFile.Entry(reqP,
 					respP,
-					aEntry.getLoginModuleName(),
-					aEntry.getControlFlag(),
-					aEntry.getOptions());
+					idEntry.getModuleClassName(),
+					AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+					idEntry.getOptions());
 	}
 	    
 	if (logger != null && logger.isLoggable(Level.FINE)) {
@@ -518,7 +524,7 @@ class ConfigFile extends AuthConfig {
     /**
      * parsed Intercept entry
      */
-    static class InterceptEntry {
+   /* static class InterceptEntry {
 
 	String defaultClientID;
 	String defaultServerID;
@@ -531,12 +537,12 @@ class ConfigFile extends AuthConfig {
 	    this.defaultServerID = defaultServerID;
 	    this.idMap = idMap;
 	}
-    }
+    }*/
 
     /**
      * parsed ID entry
      */
-    static class IDEntry {
+    /*static class IDEntry {
 
 	private String type;  // provider type (client, server, client-server)
 	private AuthPolicy requestPolicy;
@@ -577,7 +583,7 @@ class ConfigFile extends AuthConfig {
 
 	    this.modules = modules;
 	}
-    }
+    } */
 
     /**
      * Default implementation of ClientAuthContext.

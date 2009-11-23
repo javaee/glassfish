@@ -71,6 +71,7 @@ public class ConfigXMLParser implements ConfigParser {
     private List<MessageSecurityConfig> msgSecConfigs = null;
 
     public ConfigXMLParser() throws IOException {
+        initialize(Util.getInstance().getAppClientMsgSecConfigs());
     }
 
     public void initialize(List<MessageSecurityConfig> msgConfigs) throws IOException {

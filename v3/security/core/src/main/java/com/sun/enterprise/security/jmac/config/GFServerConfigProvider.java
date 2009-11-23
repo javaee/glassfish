@@ -554,6 +554,12 @@ public class GFServerConfigProvider implements AuthConfigProvider {
         public void setIdMap(HashMap map) {
             idMap = map;
         }
+        public String getDefaultClientID(){
+            return defaultClientID;
+        }
+        public String getDefaultServerID(){
+            return defaultServerID;
+        }
     }
 
     /**
@@ -565,6 +571,26 @@ public class GFServerConfigProvider implements AuthConfigProvider {
         private MessagePolicy requestPolicy;
         private MessagePolicy responsePolicy;
         private Map options;
+
+        public String getModuleClassName() {
+            return moduleClassName;
+        }
+
+        public Map getOptions() {
+            return options;
+        }
+
+        public MessagePolicy getRequestPolicy() {
+            return requestPolicy;
+        }
+
+        public MessagePolicy getResponsePolicy() {
+            return responsePolicy;
+        }
+
+        public String getType() {
+            return type;
+        }
 
         public IDEntry(String type, String moduleClassName,
                 MessagePolicy requestPolicy,
