@@ -80,7 +80,7 @@ public class GrizzlyProxy implements NetworkProxy {
     private int portNumber;
 
     public final static String LEADER_FOLLOWER
-            = "com.sun.grizzly.disableLeaderFollower";
+            = "com.sun.grizzly.useLeaderFollower";
 
     public final static String AUTO_CONFIGURE
             = "com.sun.grizzly.autoConfigure";
