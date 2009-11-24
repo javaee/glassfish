@@ -84,7 +84,8 @@ public class Client {
         //XA and Non-XA resource within same transaction
         //non-xa resource and xa  resource together
         test3("jdbc/nonxaresource", "jdbc/xaresource");
-        
+       
+        test4("jdbc/nonxaresource", "jdbc/xaresource");	
         //openAndCloseConnection("jdbc/oraclexa", 40);
     }
     
@@ -156,7 +157,7 @@ public class Client {
             
             con = openConnections(dsName, count);
             insertRow(con);
-            closeConnections(con);
+            closeConnections(con, count);
             
             if(rollback)
                 ut.rollback();
@@ -191,6 +192,83 @@ public class Client {
         
     }
     
+    
+    public static void test4(String dsName, String xaDsName) {
+        UserTransaction ut = null;
+        try {
+            InitialContext ic = new InitialContext();
+            DataSource ds = (DataSource) ic.lookup(dsName);
+	    DataSource xads = (DataSource) ic.lookup(xaDsName);
+            printConnection(ds);
+            Connection[] con;
+	    Connection[] xaCon;
+
+	    isXA = false;
+            createTable(ds);
+            isXA = true;
+	    createTable(xads);
+
+	    isXA = false;
+            int count1 = getCount(ds);
+	    isXA = true;
+	    int xacount1 = getCount(xads);
+
+            System.out.println("count1 : " + count1 + " xacount1 : " + xacount1);
+            
+            ut = (UserTransaction) ic.lookup("java:comp/UserTransaction");
+            ut.begin();
+            
+            con = openConnections(dsName, count);
+	    xaCon = openConnections(xaDsName, 1);
+	    isXA = false;
+            insertRow(con);
+	    isXA = true;
+	    insertRow(xaCon);
+
+	    isXA = false;
+            closeConnections(con, count);
+
+	    isXA = true;
+	    closeConnections(xaCon, 1);
+            
+            if(rollback)
+                ut.rollback();
+            else
+                ut.commit();
+            
+	    isXA = false;
+            int count2=getCount(ds);
+	    isXA = true;
+	    int xacount2 = getCount(xads);
+            
+            System.out.println("count2 : " + count2 + " xacount2 : " + xacount2);
+            
+            int diff = count2 - count1;
+	    int xadiff = xacount2 - xacount1;
+
+            if((( diff == count && !rollback) || (diff == 0 && rollback)) && 
+			((xadiff == 1 && !rollback) || (xadiff == 0 && rollback)))
+                printStatus(true);
+            else
+                printStatus(false);
+            
+        } catch(Exception e){
+            printStatus(false);
+            e.printStackTrace();
+            if(ut != null){
+                try {
+                    ut.rollback();
+                } catch (IllegalStateException ex) {
+                    ex.printStackTrace();
+                } catch (SecurityException ex) {
+                    ex.printStackTrace();
+                } catch (SystemException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
+        
+    }
     
     
     public static void test3(String ds1Name, String ds2Name) {
@@ -420,13 +498,14 @@ public class Client {
         DataSource ds = (DataSource) ic.lookup(dsName);
         
         Connection[] con = new Connection[count];
-        for(int i=0; i < count; i++)
+        for(int i=0; i < count; i++) {
             con[i] = ds.getConnection();
-        
+	    System.out.println("con[" + i+ "]=" + con[i]);
+	}
         return con;
     }
     
-    private static void closeConnections(Connection[] con) throws SQLException {
+    private static void closeConnections(Connection[] con, int count) throws SQLException {
         for(int i=0; i < count; i++)
             con[i].close();
     }

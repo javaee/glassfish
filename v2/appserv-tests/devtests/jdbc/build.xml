@@ -54,6 +54,7 @@
 	<ant dir="markconnectionasbad.xa" target="all"/>
 	<ant dir="statementwrapper" target="all"/>
 	<ant dir="maxconnectionusage" target="all"/>
+	<ant dir="switchoffACCconnpooling" target="all"/>
 	<ant dir="multipleusercredentials" target="all"/>
         <ant dir="multiplecloseconnection" target="all"/>
 	<ant dir="statementtimeout" target="all"/>
