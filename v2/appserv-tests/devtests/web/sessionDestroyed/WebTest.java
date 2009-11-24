@@ -36,82 +36,83 @@
 import java.lang.*;
 import java.io.*;
 import java.net.*;
-
 import com.sun.ejte.ccl.reporter.*;
+
 /**
- * Unit Test for 4931092: HttpSessionListener implementors are called to late according to Servlet Spec.
+ * Unit Test for CR 4931092 ("HttpSessionListener implementors are called
+ * too late according to Servlet Spec").
  */
 public class WebTest {
     
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 1;
-    
-    static SimpleReporterAdapter stat=
+    private static final SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
+    private static final String TEST_NAME = "session-destroyed";
+    private static final String EXPECTED_RESPONSE = "SUCCESS";
 
-    public static void main(String args[]) {
+    private String host;
+    private String port;
+    private String contextRoot;
 
-        // The stat reporter writes out the test info and results
-        // into the top-level quicklook directory during a run.
-      
-        stat.addDescription("Standalone Session Destroyed war test");
-
-        String host = args[0];
-        String portS = args[1];
-        String contextRoot = args[2];
-
-        int port = new Integer(portS).intValue();
-        String name;
-        
-        try {
-            goGet(host, port, "DESTROYED", contextRoot + "/ServletTest" );
-            
-            if (count != EXPECTED_COUNT){
-                stat.addStatus("web-sessionDestroyed", stat.FAIL);
-            }           
-        } catch (Throwable t) {
-            t.printStackTrace();
-            stat.addStatus("web-sessionDestroyed", stat.FAIL);
-        }
-
-        stat.printSummary("web/sessionDestroyed---> expect 1 PASS");
+    public WebTest(String[] args) {
+        host = args[0];
+        port = args[1];
+        contextRoot = args[2];
     }
 
-    private static void goGet(String host, int port,
-                              String result, String contextPath)
-         throws Exception {
-        Socket s = new Socket(host, port);
-        OutputStream os = s.getOutputStream();
+    public static void main(String args[]) {
+        stat.addDescription("Unit test for CR 4931092");
 
-        System.out.println(("GET " + contextPath + " HTTP/1.0\n"));
-        os.write(("GET " + contextPath + " HTTP/1.0\n").getBytes());
-        os.write("\n".getBytes());
-        
-        InputStream is = s.getInputStream();
-        BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
+        WebTest webTest = new WebTest(args);
 
-        try{
-            int index;
-            while ((line = bis.readLine()) != null) {
-                index = line.indexOf(result);
-                System.out.println(line);
-                if (index != -1) {
-                    index = line.indexOf(":");
-                    String status = line.substring(index+1);
-                    
-                    if (status.equalsIgnoreCase("PASS")){
-                        stat.addStatus("web-sessionDestroyed: " + line.substring(0,index), stat.PASS);
-                    } else {
-                        stat.addStatus("web-sessionDestroyed: " + line.substring(0,index), stat.FAIL);                       
-                    }
-                    count++;
-                } 
+        try {
+            webTest.goGet();
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+
+        stat.printSummary();
+    }
+
+    private void goGet() throws Exception {
+
+        URL url = new URL("http://" + host  + ":" + port + contextRoot +
+            "/ServletTest");
+        System.out.println("Connecting to: " + url.toString());
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Unexpected return code: " + responseCode);
+        }
+
+        InputStream is = null;
+        BufferedReader input = null;
+        try {
+            is = conn.getInputStream();
+            input = new BufferedReader(new InputStreamReader(is));
+            String line = input.readLine();
+            if (!EXPECTED_RESPONSE.equals(line)) {
+                throw new Exception("Wrong response. Expected: " +
+                    EXPECTED_RESPONSE + ", received: " + line);
             }
-        } catch( Exception ex){
-            ex.printStackTrace();   
-            throw new Exception("Test UNPREDICTED-FAILURE");
-         }
-   }
-  
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException ioe) {
+                // ignore
+            }
+        }
+    }
 }
