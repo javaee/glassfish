@@ -537,6 +537,7 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="org.glassfish.external.probe.provider.*"/>
        <package name="org.glassfish.external.statistics"/>
        <package name="org.glassfish.external.statistics.annotations"/>
+       <package name="org.glassfish.api.embedded.*"/>
        <!--
            These throw a ClassCastException right now. Need to
            investigate furher
