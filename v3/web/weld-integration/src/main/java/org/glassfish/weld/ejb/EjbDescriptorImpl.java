@@ -39,6 +39,8 @@ package org.glassfish.weld.ejb;
 
 import org.jboss.weld.ejb.spi.BusinessInterfaceDescriptor;
 
+import javax.ejb.Local;
+
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.EjbRemovalInfo;
@@ -98,6 +100,19 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
 
             EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
             Set<String> localNames = sessionDesc.getLocalBusinessClassNames();
+
+            // Add superinterfaces that are also marked as Local
+            Set<String> extraNames = new HashSet<String>();
+            for(String local : localNames) {
+                try {
+                    Class localClass = sessionDesc.getEjbBundleDescriptor().getClassLoader().loadClass(local);
+                    addIfLocal(localClass.getInterfaces(), extraNames);
+                } catch(ClassNotFoundException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            localNames.addAll(extraNames);
 
             // Include the no-interface Local view
             if( sessionDesc.isLocalBean() ) {
@@ -212,4 +227,12 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
     }
     */
 
+    private void addIfLocal(Class[] interfaces, Set<String> names) {
+        for(Class next : interfaces) {
+            if( next.getAnnotation(Local.class) != null ) {
+                names.add(next.getName());
+            }
+            addIfLocal(next.getInterfaces(), names);
+        }
+    }
 }
