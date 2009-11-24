@@ -40,7 +40,7 @@
     setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks");
     setAttribute(key="helpKey" value="$resource{help_uc.uc.update}");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.update.pageTitle}">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.update.pageTitle}" guiOnLoad="admingui.help.pluginId = 'common';">
 <!define name="content">
     <event>
     <!beforeCreate

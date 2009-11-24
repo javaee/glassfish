@@ -42,7 +42,7 @@
     setAttribute(key="useBottomTitle" value="true" );
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.licensePg.Title}">>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.licensePg.Title}" guiOnLoad="admingui.help.pluginId = 'common';">
 <!define name="content">
 
 #include "/common/shared/alertMsg.inc"      

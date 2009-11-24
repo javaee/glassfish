@@ -41,7 +41,7 @@
         setResourceBundle(key="help_uc" bundle="org.glassfish.updatecenter.admingui.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}');">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}'); admingui.help.pluginId = 'common';">
 <!define name="content">
  
             <sun:form id="propertyForm">

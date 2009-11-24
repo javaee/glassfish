@@ -35,7 +35,7 @@
 -->
 <!-- applications/appEdit.inc -->
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" guiTemplateOnLoad="admingui.help.pluginId = 'common';">
 <!define name="content">
     <event>
     <!beforeCreate

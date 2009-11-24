@@ -41,7 +41,7 @@
     setAttribute(key="helpKey" value="$resource{help_uc.uc.installed}");
 />
 //<sun:page id="page1">
-<!composition template="/templates/default.layout" guiTitle="$resource{i18nUC.updateCenter.installed.pageTitle}">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18nUC.updateCenter.installed.pageTitle}" guiOnLoad="admingui.help.pluginId = 'common';">
 <!define name="content">
     <event>
     <!beforeCreate
