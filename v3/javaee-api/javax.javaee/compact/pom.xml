@@ -44,6 +44,7 @@
                 <artifactItem>
                   <groupId>javax.mail</groupId>
                   <artifactId>mail</artifactId>
+                  <version>1.4.3</version>
                   <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/tmp</outputDirectory>
