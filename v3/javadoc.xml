@@ -57,6 +57,7 @@
       <include name="external/hk2/**"/>
       <include name="common/glassfish-api/src/main/java/**"/>
       <include name="flashlight/framework/src/main/java/**"/>
+      <include name="external/management-api-sources/**"/>
     </dirset>
     <path refid="src.dir"/>
   </path>
@@ -533,6 +534,9 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="org.glassfish.api.admin.cli"/>
        <package name="org.glassfish.api.event"/>
        <package name="org.glassfish.api.invocation"/>
+       <package name="org.glassfish.external.probe.provider.*"/>
+       <package name="org.glassfish.external.statistics"/>
+       <package name="org.glassfish.external.statistics.annotations"/>
        <!--
            These throw a ClassCastException right now. Need to
            investigate furher
