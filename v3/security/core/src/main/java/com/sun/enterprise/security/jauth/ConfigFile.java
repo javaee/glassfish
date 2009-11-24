@@ -90,9 +90,7 @@ class ConfigFile extends AuthConfig {
 	}
 	this.epoch = 1;
 	parser = ConfigFile.loadParser(parserClassName);
-        if(parserClassName.equals(DEFAULT_PARSER_CLASS)){
-            parser.initialize(null);
-        }
+        parser.initialize(null);
     }
 
     /**

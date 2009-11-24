@@ -74,8 +74,10 @@ import com.sun.enterprise.security.jmac.provider.ClientAuthConfig;
 import com.sun.enterprise.security.jmac.provider.ServerAuthConfig;
 import com.sun.enterprise.web.WebModule;
 import com.sun.xml.rpc.spi.runtime.StreamingHandler;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.soap.SOAPMessage;
 import org.jvnet.hk2.annotations.Inject;
 
 /**
@@ -93,7 +95,9 @@ public class SecurityServiceImpl implements SecurityService {
         LogDomains.SECURITY_LOGGER);
     
     private static final String AUTHORIZATION_HEADER = "authorization";
-    
+
+    private static ThreadLocal<WeakReference<SOAPMessage>> req = new ThreadLocal<WeakReference<SOAPMessage>>();
+ 
     public Object mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc) {
         try {
 	    // merge message security policy from domain.xml and sun-specific
@@ -261,11 +265,16 @@ public class SecurityServiceImpl implements SecurityService {
         ServerAuthConfig authConfig = (ServerAuthConfig) serverAuthConfig;
         if (authConfig != null) {
             ServerAuthContext sAC = authConfig.getAuthContext((StreamingHandler) implementor, context.getMessage());
+            req.set(new WeakReference<SOAPMessage>(context.getMessage()));
             if (sAC != null) {
                 try {
                     return WebServiceSecurity.validateRequest(context, sAC);
                 } catch (AuthException ex) {
                     _logger.log(Level.SEVERE, ex.getMessage(), ex);
+                    if (req.get() != null) {
+                        req.get().clear();
+                        req.set(null);
+                    }
                     throw new RuntimeException(ex);
                 }
             }
@@ -276,13 +285,21 @@ public class SecurityServiceImpl implements SecurityService {
     public void secureResponse(Object serverAuthConfig, StreamingHandler implementor,SOAPMessageContext msgContext) {
         if (serverAuthConfig != null) {
             ServerAuthConfig config = (ServerAuthConfig)serverAuthConfig;
-            ServerAuthContext sAC = config.getAuthContext(implementor, msgContext.getMessage());
-            if (sAC != null) {
-                try {
-                    WebServiceSecurity.secureResponse(msgContext, sAC);
-                } catch (AuthException ex) {
-                    _logger.log(Level.SEVERE, null, ex);
-                    throw new RuntimeException(ex);
+            SOAPMessage reqmsg = (req.get() != null) ? req.get().get() : msgContext.getMessage();
+            try{
+                ServerAuthContext sAC = config.getAuthContext(implementor, reqmsg);
+                if (sAC != null) {
+                    try {
+                        WebServiceSecurity.secureResponse(msgContext, sAC);
+                    } catch (AuthException ex) {
+                        _logger.log(Level.SEVERE, null, ex);
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }finally{
+                if(req.get() != null){
+                    req.get().clear();
+                    req.set(null);
                 }
             }
 
