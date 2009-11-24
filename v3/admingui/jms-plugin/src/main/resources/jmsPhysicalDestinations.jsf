@@ -50,6 +50,7 @@
             setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationEdit.jsf");
             setPageSessionAttribute(key="viewPage" value="#{request.contextPath}/jms/jmsPhysicalDestinationStats.jsf");
 
+	    <!-- Ok to use #{param} here because targetName is not used at all... should clean up -->
             getPhysicalDestinations(targetName="#{param.name}", result=>$attribute{listOfRows});
         />
     </event>

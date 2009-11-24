@@ -75,6 +75,7 @@ update tool    updatetool 800
             setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 
 	    // Find the old component
+	    <!-- It is safe to use #{param} in this handler -->
             convertStringToMap(str="#{param.params}", delimiter="&", result="params");
 
 	    getUIComponent(clientId="#{params.updateTreeNode}", component="#{oldComp}");

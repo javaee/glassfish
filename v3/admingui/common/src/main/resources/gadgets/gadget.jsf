@@ -31,6 +31,7 @@ Title: #{pageSession.gadget.gadgetModulePrefs.title}
 -->
 <h:outputText id="tmp" escape="false" value="#{pageSession.gadget.text}">
     <!afterCreate
+	<!-- It is safe to use #{param} in this handler -->
 	gf.getGadgetModule("#{param.gadget}" module="#{pageSession.gadget}");
     />
 </h:outputText>

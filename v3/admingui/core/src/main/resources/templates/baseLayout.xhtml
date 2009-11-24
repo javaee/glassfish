@@ -107,6 +107,7 @@
 			    </event>
 			    <h:commandButton id="execButton" text="na" style="display:none;">
 				<ui:event type="command">
+				    <!-- Ok to use #{param} here -->
 				    gf.invokeHandler(handler="#{param.h}" args="#{param.a}" depth="#{param.d}" values="#{requestScope.execResp}");
 				</ui:event>
 			    </h:commandButton>
