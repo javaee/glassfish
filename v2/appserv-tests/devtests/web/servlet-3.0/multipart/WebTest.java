@@ -39,20 +39,14 @@ import java.net.*;
 
 import com.sun.ejte.ccl.reporter.*;
 
-public class WebTest
-{
+public class WebTest {
     
-    private static URLConnection conn = null;
-    private static URL url;
-    private static int count = 0;
-    
-    static SimpleReporterAdapter stat=
+    private static final SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
-    
+    private static final String TEST_NAME = "multipart";
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
 
         stat.addDescription("Unit test for multipart request");
 
@@ -61,22 +55,22 @@ public class WebTest
         String contextRoot = args[2];
 
         String testdir = System.getenv("APS_HOME") +
-                             "/devtests/web/servlet-3.0/multipart/";
+            "/devtests/web/servlet-3.0/multipart/";
 
         int port = new Integer(portS).intValue();
         try {
             goPost(host, port, contextRoot + "/ServletTest", testdir);
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Throwable t) {
-            stat.addStatus("multiPartTest", stat.FAIL);
-            System.out.println("Exception: " + t);
+            stat.addStatus(TEST_NAME, stat.FAIL);
+            t.printStackTrace();
         }
 
-        stat.printSummary("MultipartTest");
+        stat.printSummary(TEST_NAME);
     }
 
     private static void goPost(String host, int port, String contextPath,
-             String dir)
-         throws Exception
+             String dir) throws Exception
     {
         // First compose the post request data
         ByteArrayOutputStream ba = new ByteArrayOutputStream();
@@ -152,9 +146,7 @@ public class WebTest
                 }
             }
             if (expectedCount != 8 || failCount > 0) {
-                stat.addStatus("multiPartTest", stat.FAIL);
-            } else { 
-                stat.addStatus("multiPartTest", stat.PASS);
+                throw new Exception("Wrong expected count");
             }
         } finally {
             try {
