@@ -459,18 +459,18 @@ fileset refid of artifact:dependencies does not work in unjar
   </target>
 
   <target name="flashlight.download" description="Download management-api" depends="initialize.maven" >
-      <artifact:dependencies sourcesFilesetId="sources.dependency.flashlight" >
-          <dependency groupId="org.glassfish.external" artifactId="management-api" version="3.0.0-b012" classifier="sources" />
+      <artifact:dependencies filesetId="sources.dependency.flashlight" >
+          <dependency groupId="org.glassfish.external" artifactId="management-api-sources" version="3.0.0-b012" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
-      <mkdir dir="${external.dir}/management-api" />
-      <copy todir="${external.dir}/management-api" verbose="true">
+      <mkdir dir="${external.dir}/management-api-sources" />
+      <copy todir="${external.dir}/management-api-sources" verbose="true">
           <fileset refid="sources.dependency.flashlight" />
           <mapper type="flatten" />
       </copy>
-      <unjar dest="${external.dir}/mangement-api"  >
-          <fileset dir="${external.dir}/mangement-api">
+      <unjar dest="${external.dir}/management-api-sources"  >
+          <fileset dir="${external.dir}/management-api-sources">
               <include name="**/*.jar"/>
           </fileset>
       </unjar>
