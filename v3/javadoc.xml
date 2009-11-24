@@ -538,14 +538,14 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="org.glassfish.external.statistics"/>
        <package name="org.glassfish.external.statistics.annotations"/>
        <package name="org.glassfish.api.embedded.*"/>
+       <package name="org.glassfish.flashlight.provider"/>
+       <package name="org.glassfish.flashlight.cli"/>
+       <package name="org.glassfish.flashlight.client"/>
        <!--
            These throw a ClassCastException right now. Need to
            investigate furher
 
        <package name="com.sun.enterprise.security.*"/>
-       <package name="org.glassfish.flashlight.provider"/>
-       <package name="org.glassfish.flashlight.cli"/>
-       <package name="org.glassfish.flashlight.client"/>
        -->
 
        <excludepackage name="org.apache.*"/>
