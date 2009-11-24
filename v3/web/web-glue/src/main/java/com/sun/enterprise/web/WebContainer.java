@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.*;
 import javax.servlet.jsp.JspFactory;
+import javax.servlet.jsp.tagext.JspTag;
 import com.sun.appserv.server.util.Version;
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -662,24 +663,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return webModuleProbeProvider;
     }
 
-
     public String getName() {
         return "Web";
     }
-
 
     public Class<? extends WebDeployer> getDeployer() {
         return WebDeployer.class;
     }
 
-
     public WebConnector getJkConnector() {
         return jkConnector;
     }
 
-
     /**
-     * Instantiates the given Servlet class for the given WebModule
+     * Instantiates and injects the given Servlet class for the given
+     * WebModule
      */
     <T extends Servlet> T createServletInstance(WebModule module,
                 Class<T> clazz) throws Exception {
@@ -692,9 +690,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-
     /**
-     * Instantiates the given Filter class for the given WebModule
+     * Instantiates and injects the given Filter class for the given
+     * WebModule
      */
     <T extends Filter> T createFilterInstance(WebModule module,
                 Class<T> clazz) throws Exception {
@@ -707,9 +705,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-
     /**
-     * Instantiates the given EventListener class for the given WebModule
+     * Instantiates and injects the given EventListener class for the
+     * given WebModule
      */
     <T extends java.util.EventListener> T createListenerInstance(
                 WebModule module, Class<T> clazz) throws Exception {
@@ -722,6 +720,20 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+    /**
+     * Instantiates and injects the given tag handler class for the given
+     * WebModule
+     */
+    public <T extends JspTag> T createTagHandlerInstance(WebModule module,
+                Class<T> clazz) throws Exception {
+        WebComponentInvocation inv = new WebComponentInvocation(module);
+        try {
+            invocationMgr.preInvoke(inv);
+            return (T) injectionMgr.createManagedObject(clazz);
+        } finally {
+            invocationMgr.postInvoke(inv);
+        }
+    }
 
     /**
      * Use an network-listener subelements and creates a corresponding
@@ -1627,8 +1639,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             } catch (Exception e) {
                 String msg = rb.getString(
                     "webcontainer.invalidEncodedContextRoot");
-                msg = MessageFormat.format(msg,
-                    new Object[] { wmName, wmContextPath });
+                msg = MessageFormat.format(msg, wmName, wmContextPath);
                 throw new Exception(msg);            
             }
         }

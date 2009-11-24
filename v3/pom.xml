@@ -91,7 +91,7 @@
         <management-api.version>1.1-rev-1</management-api.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
         <jsp-api.version>2.2</jsp-api.version>
-        <jsp-impl.version>2.2</jsp-impl.version>
+        <jsp-impl.version>2.2.1-b01</jsp-impl.version>
         <el-api.version>2.2</el-api.version>
         <el-impl.version>2.2</el-impl.version>
         <jstl-impl.version>1.2</jstl-impl.version>

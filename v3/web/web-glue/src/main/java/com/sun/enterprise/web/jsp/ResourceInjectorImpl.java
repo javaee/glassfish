@@ -54,8 +54,7 @@ import com.sun.enterprise.web.WebModule;
 import com.sun.logging.LogDomains; 
 
 /**
- * SJSAS implementation of the org.glassfish.jsp.api.ResourceInjector
- * interface.
+ * Implementation of org.glassfish.jsp.api.ResourceInjector
  *
  * @author Jan Luehe
  */
@@ -67,76 +66,40 @@ public class ResourceInjectorImpl implements ResourceInjector {
 
     private InjectionManager injectionMgr;
     private JndiNameEnvironment desc;
+    private WebModule webModule;
 
-    /**
-     * Associates this ResourceInjector with the component environment of the
-     * given servlet context.
-     *
-     * @param servletContext The servlet context 
-     */
-    public void setContext(ServletContext servletContext) {
-
-        if (!(servletContext instanceof ApplicationContextFacade)) {
-            return;
+    public ResourceInjectorImpl(WebModule webModule) {
+        this.webModule = webModule;
+        this.desc = webModule.getWebBundleDescriptor();
+        ServerContext serverContext = webModule.getServerContext();
+        if (serverContext == null) {
+            throw new IllegalStateException(
+                    _rb.getString("resource.injector.noservercontext"));
         }
-
-        final ApplicationContextFacade contextFacade =
-            (ApplicationContextFacade) servletContext;
-
-        StandardContext context = null;
-
-        if (System.getSecurityManager() != null) {
-            context = (StandardContext) AccessController.doPrivileged(
-                    new PrivilegedAction() {
-                public Object run() {
-                    return contextFacade.getUnwrappedContext();
-                }
-            });
-        } else {
-            context = contextFacade.getUnwrappedContext();
-        }
-
-        if (context != null && context instanceof WebModule) {
-            WebModule wm = (WebModule)context;
-            ServerContext serverContext = wm.getServerContext();
-            if (serverContext == null) {
-                throw new IllegalStateException(
-                        _rb.getString("resource.injector.noservercontext"));
-            }
-            if (injectionMgr == null) {
-                injectionMgr = serverContext.getDefaultHabitat().getByContract(
-                         InjectionManager.class);
-            }
-            desc = wm.getWebBundleDescriptor();
-        }
+        this.injectionMgr = serverContext.getDefaultHabitat().getByContract(
+            InjectionManager.class);
     }
 
-   
     /**
-     * Injects the injectable resources from the component environment 
-     * associated with this ResourceInjectorImpl into the given 
-     * tag handler instance.
+     * Instantiates and injects the given tag handler class.
      *
-     * <p>Any @PostConstruct methods on the class (and super-classes)
-     * of the instance will be invoked after injection.
+     * @param clazz the TagHandler class to be instantiated and injected
      *
-     * @param handler The tag handler instance to be injected
-     *
-     * @throws Exception if an error occurs during injection
+     * @throws Exception if an error has occurred during instantiation or
+     * injection
      */
-    public void inject(JspTag handler) throws Exception {
-        if( desc != null ) {
-            injectionMgr.injectInstance(handler, desc);
-        }
+    public <T extends JspTag> T createTagHandlerInstance(Class<T> clazz)
+            throws Exception {
+        return webModule.getWebContainer().createTagHandlerInstance(
+            webModule, clazz);
     }
-
 
     /**
      * Invokes any @PreDestroy methods defined on the instance's class
      * (and super-classes).
      *
-     * @param handler The tag handler instance whose @PreDestroy methods
-     * to call
+     * @param handler The tag handler instance whose PreDestroy-annotated
+     * method to call
      */
     public void preDestroy(JspTag handler) {
         if (desc != null) {

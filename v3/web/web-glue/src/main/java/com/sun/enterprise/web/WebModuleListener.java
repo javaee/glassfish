@@ -238,8 +238,8 @@ final class WebModuleListener
         // Override any log setting with the container wide logging level
         wrapper.addInitParameter("logVerbosityLevel",getJasperLogLevel());
 
-        ResourceInjectorImpl resourceInjector = new ResourceInjectorImpl();
-        resourceInjector.setContext(webModule.getServletContext());
+        ResourceInjectorImpl resourceInjector = new ResourceInjectorImpl(
+            webModule);
         webModule.getServletContext().setAttribute(
                 "com.sun.appserv.jsp.resource.injector",
                 resourceInjector);
