@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+        <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+        <!ENTITY testproperties SYSTEM "file:./build.properties">
+        <!ENTITY run SYSTEM "file:./../../../config/run.xml">
+        <!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
+        <!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
+        ]>
+
+<project name="mix" default="usage" basedir=".">
+
+
+    &commonSetup;
+    &commonBuild;
+    &run;
+    &testproperties;
+
+    <!--&eeSetup;
+    &eeProperties;
+    &testproperties;-->
+
+    <target name="all" depends="build,deploy, run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes"
+                   value="**/*.class"/>
+            <param name="appclientjar.classes"
+                   value="**/SimpleBMP.class, **/SimpleBMPHome.class,**/*Client*.class"/>
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="create-jdbc-stuff"/>
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/create_pointbase.sql"/>
+        </antcall>
+
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="1"/>
+        </antcall>
+
+        <antcall target="restart-derby"/>
+
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="2"/>
+        </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.is_connection_validation_required=true"/>
+        </antcall>
+
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.connection_validation_method=custom-validation"/>
+        </antcall>
+
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.${poolname}.validation_classname=org.glassfish.api.jdbc.validation.DerbyConnectionValidation"/>
+        </antcall>
+
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="3"/>
+        </antcall>
+
+	<antcall target="restart-derby"/>
+
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="4"/>
+        </antcall>
+
+        <antcall target="execute-sql-common">
+            <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="delete-jdbc-stuff"/>
+        <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <target name="create-jdbc-stuff" depends="init-common">
+
+        <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="${poolname}"/>
+            <param name="db.class" value="org.apache.derby.jdbc.ClientDataSource"/>
+            <param name="jdbc.resource.type" value="javax.sql.DataSource"/>
+            <param name="jdbc.resource.name" value="${resourcename}"/>
+        </antcall>
+
+    </target>
+
+    <target name="delete-jdbc-stuff" depends="init-common">
+        <antcall target="delete-jdbc-resource-common">
+            <param name="jdbc.resource.name" value="${resourcename}"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+            <param name="jdbc.conpool.name" value="${poolname}"/>
+        </antcall>
+    </target>
+    <target name="restart-derby">
+        <antcall target="stop-derby"/>
+        <!--<sleep seconds="10"/>-->
+        <antcall target="start-derby"/>
+        <!--<sleep seconds="10"/>-->
+    </target>
+
+    <target name="start-derby">
+        <echo message="Starting Derby DB Server ..."/>
+        <parallel>
+            <java classname="org.apache.derby.drda.NetworkServerControl"
+                  classpath="${db.classpath}" fork="true" spawn="true">
+                <arg line="-h 0.0.0.0 -p 1527 start"/>
+                <jvmarg value="-Dderby.system.home=${env.S1AS_HOME}/databases"/>
+            </java>
+        </parallel>
+    </target>
+
+    <target name="stop-derby">
+        <echo message="Stopping Derby DB Server ..."/>
+        <parallel>
+            <java classname="org.apache.derby.drda.NetworkServerControl"
+                  classpath="${db.classpath}" failonerror="true" fork="true">
+                <arg line="-h 0.0.0.0 -p 1527 shutdown"/>
+            </java>
+        </parallel>
+    </target>
+
+
+</project>
