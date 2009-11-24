@@ -252,7 +252,7 @@ final class RegistrationSupport
             final ObjectName objectName = registerEjbModuleAndItsComponents(parentMBean, meta, appConfig, desc);
             if (isStandalone)
             {
-                assert (top != null);
+                assert (top == null);
                 top = objectName;
             }
         }
@@ -262,18 +262,20 @@ final class RegistrationSupport
             final ObjectName objectName = registerWebModuleAndItsComponents(parentMBean, meta, appConfig, desc);
             if (isStandalone)
             {
-                assert (top != null);
+                assert (top == null);
                 top = objectName;
             }
         }
 
         for (final ConnectorDescriptor desc : application.getRarDescriptors())
         {
+            assert top == null;
             top = registerResourceAdapterModuleAndItsComponents(parentMBean, meta, appConfig, desc, appLocation);
         }
 
         for (final ApplicationClientDescriptor desc : application.getApplicationClientDescriptors())
         {
+            assert top == null;
             top = registerAppClient(parentMBean, meta, appConfig, desc);
         }
 
@@ -308,7 +310,6 @@ final class RegistrationSupport
             meta.setDeploymentDescriptor( xmlDesc );
         }
         final String moduleName = ejbBundleDescriptor.getModuleName();
-        final String applicationName = getApplicationName(ejbBundleDescriptor);
         final String appLocation = appConfig.getLocation();
         
         final AMXConfigProxy moduleConfig = getModuleConfig(appConfig, moduleName );
@@ -431,23 +432,6 @@ final class RegistrationSupport
     {
         final String appLocation = appConfig.getLocation();
         
-        // get the string for deployment descriptor file
-        // fix for CTS bug# 6411637
-        // if resource adapter module name is one of connector system apps
-        // then set the location of deployment descriptor to the original
-        // location and not the generated directory. These system apps are
-        // directly loaded without generating descriptors
-        String modLocation = "";
-        if (bundleDesc.getModuleDescriptor().isStandalone())
-        {
-            modLocation = appLocation + File.separator + DescriptorConstants.RAR_DD_ENTRY;
-        }
-        else
-        {
-            final String moduleName = bundleDesc.getUniqueFriendlyId();
-            modLocation = appLocation + File.separator + moduleName + File.separator + DescriptorConstants.RAR_DD_ENTRY;
-        }
-
         final String xmlDesc = getDeploymentDescriptor(bundleDesc);
         if ( xmlDesc != null )
         {
@@ -474,107 +458,12 @@ final class RegistrationSupport
             meta.setDeploymentDescriptor( xmlDesc );
         }
 
-        String applicationName = null;
-        if (bundleDesc.getApplication() != null)
-        {
-            if (!bundleDesc.getModuleDescriptor().isStandalone())
-            {
-                applicationName = bundleDesc.getApplication().getRegistrationName();
-            }
-        }
-        if (applicationName == null)
-        {
-            applicationName = bundleDesc.getName();
-        }
+        final String moduleName = bundleDesc.getModuleDescriptor().getModuleName();
 
-        return registerJ2EEChild(parentMBean, meta, AppClientModule.class, AppClientModuleImpl.class, applicationName);
+        return registerJ2EEChild(parentMBean, meta, AppClientModule.class, AppClientModuleImpl.class, moduleName);
     }
 
-    private String getApplicationName(final BundleDescriptor bd)
-    {
-        String applicationName = "null";
-
-        if (bd.getModuleDescriptor().isStandalone())
-        {
-            return applicationName;
-        }
-        else
-        {
-            if (bd.getApplication() != null)
-            {
-                applicationName = bd.getApplication().getRegistrationName();
-                if (applicationName == null)
-                {
-                    applicationName = "null";
-                }
-            }
-        }
-        return applicationName;
-    }
-
-    /* get module location */
-    private String getModuleLocation(
-            final BundleDescriptor bd,
-            final String j2eeType)
-    {
-        String modLocation = null;
-        final String ddRoot = bd.getApplication().getGeneratedXMLDirectory();
-        final String fs = File.separator;
-
-        if (bd.getModuleDescriptor().isStandalone())
-        {
-            final String moduleName = bd.getApplication().getRegistrationName();
-
-            if (j2eeType.equals("AppClientModule"))
-            {
-                modLocation = ddRoot + fs + DescriptorConstants.APP_CLIENT_DD_ENTRY;
-            }
-            else if (j2eeType.equals("EJBModule"))
-            {
-                modLocation = ddRoot + fs + DescriptorConstants.EJB_DD_ENTRY;
-            }
-            else if (j2eeType.equals("WebModule"))
-            {
-                modLocation = ddRoot + fs + DescriptorConstants.WEB_DD_ENTRY;
-            }
-            else if (j2eeType.equals("ResourceAdapterModule"))
-            {
-                modLocation = ddRoot + fs + DescriptorConstants.RAR_DD_ENTRY;
-            }
-            else
-            {
-                throw new IllegalArgumentException(j2eeType);
-            }
-        }
-        else
-        {
-            final String moduleName = bd.getUniqueFriendlyId();
-
-            if (j2eeType.equals("AppClientModule"))
-            {
-                modLocation = ddRoot + fs + moduleName + fs + DescriptorConstants.APP_CLIENT_DD_ENTRY;
-            }
-            else if (j2eeType.equals("EJBModule"))
-            {
-                modLocation = ddRoot + fs + moduleName + fs + DescriptorConstants.EJB_DD_ENTRY;
-            }
-            else if (j2eeType.equals("WebModule"))
-            {
-                modLocation = ddRoot + fs + moduleName + fs + DescriptorConstants.WEB_DD_ENTRY;
-            }
-            else if (j2eeType.equals("ResourceAdapterModule"))
-            {
-                modLocation = ddRoot + fs + moduleName + fs + DescriptorConstants.RAR_DD_ENTRY;
-            }
-            else
-            {
-                throw new IllegalArgumentException(j2eeType);
-            }
-        }
-
-        return modLocation;
-    }
-
+  
     protected void registerApplications()
     {
         final Map<String, ApplicationRef> appRefConfigs = mServerConfig.getApplicationRef();
