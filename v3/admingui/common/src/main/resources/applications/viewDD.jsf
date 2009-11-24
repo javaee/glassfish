@@ -66,13 +66,13 @@
     <sun:propertySheet id="propertySheet">
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.appName}">
-                <sun:staticText id="name" text="#{param.appName}"/>
+                <sun:staticText escape="true" id="name" text="#{pageSession.appName}"/>
             </sun:property>
             <sun:property id="module"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.moduleName}">
-                <sun:staticText id="module" text="#{param.moduleName}"/>
+                <sun:staticText  escape="true" id="module" text="#{pageSession.moduleName}"/>
             </sun:property>
             <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.application.modulePath}">
-                <sun:staticText id="path" text="#{param.ddPath}"/>
+                <sun:staticText  escape="true" id="path" text="#{pageSession.ddPath}"/>
             </sun:property>
         </sun:propertySheetSection>
 

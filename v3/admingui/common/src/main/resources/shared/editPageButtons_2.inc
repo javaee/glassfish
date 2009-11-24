@@ -54,12 +54,16 @@
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
                     onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                if(#{pageSession.hasRadioButtons}){
-                    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
-                        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
-                    }
 
-                }
+                <!--
+                // no page defines hasRadioButtons yet, so we commen this out.
+                // when need to use this, we have to ensure that we don't refer to #{param , should go through getRequestValue
+                //if(#{pageSession.hasRadioButtons}){
+                //    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
+                //        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
+                //    }
+                //}
+                -->
                 if(#{pageSession.hasPropertySheet}){
                     saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"

@@ -52,21 +52,6 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/ejb-lite/configuration/ejbContainerGeneral.jsf?configName=#{pageSession.configName}");
-
-        //mainly for radio button
-        <!--
-        setPageSessionAttribute(key="radioButtonCount" value="1" );
-        setPageSessionAttribute(key="hasRadioButtons" value="#{true}" );
-        setPageSessionAttribute(key="radioButtonNames" value={"commitOptGrp"});
-        setPageSessionAttribute(key="attrNames" value={"CommitOption"})
-        #setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
-        if(#{pageSession.hasRadioButtons}){
-                    forLoop(end="#{pageSession.radioButtonCount}" varName="i"){
-                        setValueExpression(expression="#{pageSession.valueMap[requestScope.attrNames[i]]}"   value="#{param[requestScope.RadioButtonNames[i]]}");
-                    }
-
-                }
-        -->
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{true}" );

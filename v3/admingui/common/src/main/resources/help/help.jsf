@@ -41,6 +41,7 @@
 	gf.navigate("#{requestScope.newVR}");
     }
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    getRequestValue(key="contextRef" value="#{pageSession.contextRef}" );
 </ui:event>
 <sun:page>
 <sun:html>
@@ -49,7 +50,7 @@
 	<sun:script url="/resource/common/js/adminjsf.js" />
 	<h:outputScript name="jsf.js" library="javax.faces" target="head" />
     </sun:head>
-    <sun:body id="bodyTag" style="display:none;" onLoad="admingui.help.fixTreeOnclick(document.getElementById('tocTree')); admingui.help.fixTreeOnclick(document.getElementById('indexTree')); admingui.help.loadHelpPageFromContextRef('#{param.contextRef}', 'helpContent'); document.getElementById('bodyTag').style.display='block';">
+    <sun:body id="bodyTag" style="display:none;" onLoad="admingui.help.fixTreeOnclick(document.getElementById('tocTree')); admingui.help.fixTreeOnclick(document.getElementById('indexTree')); admingui.help.loadHelpPageFromContextRef('#{pageSession.contextRef}', 'helpContent'); document.getElementById('bodyTag').style.display='block';">
 	"<div id="menuContent" class="helpMenuBox">
 	    <sun:form id="tabForm">
 

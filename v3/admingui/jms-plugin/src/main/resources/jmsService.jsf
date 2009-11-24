@@ -42,9 +42,7 @@
 <!define name="content">
     <event>
         <!beforeCreate
-            if ("!#{pageSession.configName}") {
-                setPageSessionAttribute(key="configName", value="$requestParameter{configName}");
-            }
+            getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/jms/jmsService.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
             setAttribute(key="edit" value="#{true}");
             setPageSessionAttribute(key="hasPropertySheet" value="#{true}");

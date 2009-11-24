@@ -240,13 +240,11 @@ public class JmsHandlers {
 
     @Handler(id="getPhysicalDestinations",
         input={
-            @HandlerInput(name="targetName", type=String.class, required=true),
             @HandlerInput(name="selectedRows", type=List.class)},
         output={
             @HandlerOutput(name="result", type=java.util.List.class)}
      )
     public static void getPhysicalDestinations(HandlerContext handlerCtx){
-        String configName = ((String)handlerCtx.getInputValue("targetName"));
         ObjectName[] objectNames = null;
         List result = new ArrayList();
         try{

@@ -34,15 +34,17 @@
 	    <f:param name="tagName" value="#{_tag.tagName}" />
 	    <h:outputText escape="true" value="#{_tag.tagName}" />
 	    <!command
-		setSessionAttribute(key="queryTag", value="#{param.tagName}");
-		gf.queryTags(tagName="#{param.tagName}", results=>$session{tagResults});
+                getRequestValue(key="tagName" value="#{requestScope.tagName}" );
+		setSessionAttribute(key="queryTag", value="#{requestScope.tagName}");
+		gf.queryTags(tagName="#{requestScope.tagName}", results=>$session{tagResults});
 		redirect("#{request.contextPath}/#{pageSession.tagViewId}");
 	    />
 	</h:commandLink>
 	<h:commandLink id="delTag" styleClass="removeTag" value="X" title="Delete Tag">
 	    <f:param name="tagToDel" value="#{_tag.tagName}" />
 	    <!command
-		gf.removeTag(tagName="#{param.tagToDel}", tagViewId="#{pageSession.tagViewId}");
+                getRequestValue(key="tagToDel" value="#{requestScope.tagToDel}" );
+		gf.removeTag(tagName="#{requestScope.tagToDel}", tagViewId="#{pageSession.tagViewId}");
 		redirect("#{request.contextPath}/#{pageSession.tagViewId}");
 	    />
 	</h:commandLink>
