@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish Verifier Tool",
-                        "pkg.description" : "GlassFish Verifier Description Placeholder. "+conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish Verifier Tool checks a Java EE application file, including Java classes and deployment descriptors, for compliance with Java EE specifications. "+conf.glassfish_description_long,
                         "info.classification" :  conf.glassfish_info_classification,
                       },
     "depends"       : { 
