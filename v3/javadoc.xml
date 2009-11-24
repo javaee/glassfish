@@ -424,7 +424,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="weld-api.download" description="Download Weld API" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.weld-api" >
-          <dependency groupId="org.jboss.weld" artifactId="weld-api" version="1.0.0-SP1" classifier="sources" />
+          <dependency groupId="org.jboss.weld" artifactId="weld-api" version="1.0-CR1" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
