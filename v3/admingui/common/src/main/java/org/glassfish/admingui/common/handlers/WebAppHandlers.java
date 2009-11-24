@@ -580,6 +580,23 @@ public class WebAppHandlers {
         }
     }
 
+   @Handler(id = "disableApplication",
+        input = {
+            @HandlerInput(name = "appName", type = String.class, required = true)
+        })
+    public static void disableApplication(HandlerContext handlerCtx) {
+        String appName = (String) handlerCtx.getInputValue("appName");
+        //We have to set the domain.xml application-ref to enabled first before calling df, otherwise, it will
+        //think that this app has been disabled and becomes no-op.
+        V3AMX.getInstance().getApplicationRef("server", appName).setEnabled("true");
+        if (DeployUtil.enableApp(appName, handlerCtx, false)){
+            //as expected.
+        }else{
+            GuiUtil.getLogger().warning("Disable Application failed for : " + appName);
+        }
+    }
+
+
    //This is called when user change the default web module of a VS.
    //Need to ensure this VS is in the application-ref virtual server list. If not add it and restart the app for
    //change to take into effect.  refer to issue#8671

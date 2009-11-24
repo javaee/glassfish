@@ -330,7 +330,7 @@ public class DeploymentHandler {
 
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         boolean enabled = ((Boolean) handlerCtx.getInputValue("enabled")).booleanValue();
-        System.out.println("===================== changeAppStatus ============= enabled = " + enabled);
+        GuiUtil.getLogger().fine("changeAppStatus:  enabled = " + enabled);
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
         //Hard coding to server, fix me for actual targets in EE.
         List selectedRows = (List) obj;

@@ -93,7 +93,7 @@
                 checkRequired(id="form1:jdbcSection:groupTable:groupTable" , '#{reqMsg}' )  &&  
                 checkRequired(id="form1:jdbcSection:groupName:groupName" , '#{reqMsg}' );  
         }  
-        return true; 
+        return showAlert('$resource{i18n.msg.JS.realm.needClassName}');
     }  
     if(opt == 'input' ){ 
 	cla = getTextElement('#{classnameTextId}').value;  

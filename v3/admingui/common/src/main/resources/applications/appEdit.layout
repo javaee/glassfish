@@ -52,7 +52,7 @@
         setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
         getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
         getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap2['Enabled']}")
-
+        setPageSessionAttribute(key="origState" value="#{pageSession.valueMap2['Enabled']}");
         getProxyProperties(objectNameStr="#{pageSession.objectNameStr}"  result="#{pageSession.propMap}");
 
         if (! #{pageSession.hasPageTitle}){
@@ -88,6 +88,7 @@
                     convertToFalse="#{pageSession.convertToFalseList}"
                     onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                 );
+
                 saveBeanAttributes(objectNameStr="#{pageSession.appRefObjectName}"  attrs="#{pageSession.valueMap2}"
                     skipAttrs="#{pageSession.skipAttrsList2}"
                     convertToFalse="#{pageSession.convertToFalseList2}"
@@ -95,9 +96,14 @@
                 );
                 propMapToList(propMap="#{pageSession.propMap}" convertToFalse="#{pageSession.convertToFalseProp}" propList="#{requestScope.propList}")
                 setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="#{requestScope.propList}" );
-                getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{requestScope.Enable}")
-                if (#{requestScope.Enable}){
-                    restartApplication(appName="#{pageSession.appName}");
+                compare(obj1="#{pageSession.origState}" obj2="#{valueMap2['Enabled']}" objEqual="#{requestScope.noChange}");
+                if (!#{requestScope.noChange}){
+                    if (#{valueMap2['Enabled']}){
+                        restartApplication(appName="#{pageSession.appName}");
+                    }
+                    if (!#{valueMap2['Enabled']}){
+                        disableApplication(appName="#{pageSession.appName}");
+                    }
                 }
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
