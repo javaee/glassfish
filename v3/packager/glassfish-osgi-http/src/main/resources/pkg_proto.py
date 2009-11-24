@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish OSGi HTTP Service",
-                        "pkg.description" : "GlassFish OSGi HTTP Service description. "+conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish OSGi HTTP Service bundle is an implementation of org.osgi.service.http package version 1.2.0. The HTTP Service allows other bundles in the OSGi environment to dynamically register resources and servlets into the URI namespace of HTTP Service. To learn more about this service, please refer to the javadocs for this package available at http://www.osgi.org/javadoc/r4v42/org/osgi/service/http/package-summary.html. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
