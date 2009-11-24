@@ -915,7 +915,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
              */
             final URI fileURI = physicalFile().toURI();
             DownloadableArtifacts.FullAndPartURIs fileDependency =
-                    new FullAndPartURIs(fileURI, canonicalURIWithinEAR());
+                    new FullAndPartURIs(fileURI, earDirUserURI(dc()).resolve(canonicalURIWithinEAR()));
             downloadsForReferencedArtifacts.add(fileDependency);
             signedJARManager.addJAR(fileURI);
             recordArtifactAsProcessed(artifactURIsProcessed, downloadsForThisArtifact);
