@@ -534,6 +534,7 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="org.glassfish.api.admin.cli"/>
        <package name="org.glassfish.api.event"/>
        <package name="org.glassfish.api.invocation"/>
+       <package name="org.glassfish.api.deployment.*"/>
        <package name="org.glassfish.external.probe.provider.*"/>
        <package name="org.glassfish.external.statistics"/>
        <package name="org.glassfish.external.statistics.annotations"/>
