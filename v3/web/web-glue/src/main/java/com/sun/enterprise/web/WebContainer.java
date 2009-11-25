@@ -671,6 +671,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return WebDeployer.class;
     }
 
+    InvocationManager getInvocationManager() {
+        return invocationMgr;
+    }
+
     public WebConnector getJkConnector() {
         return jkConnector;
     }

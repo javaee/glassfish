@@ -265,5 +265,40 @@
             <artifactId>websecurity</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <scope>provided</scope>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-osgi-bundle</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-spi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.collections</groupId>
+                    <artifactId>google-collections</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 </project>

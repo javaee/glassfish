@@ -44,6 +44,9 @@ import java.util.List;
 import java.util.Map;
 import java.net.URI;
 import java.io.File;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Globals;
@@ -52,6 +55,7 @@ import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
+import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.web.TldProvider;
 
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
@@ -282,7 +286,29 @@ final class WebModuleListener
         // Configure JSP monitoring
         webModule.getServletContext().setAttribute(
             "org.glassfish.jsp.monitor.probeEmitter",
-            new JspProbeEmitterImpl(webModule));        
+            new JspProbeEmitterImpl(webModule));
+
+        // Pass BeanManager's ELResolver as ServletContext attribute
+        // (see IT 11168)
+        InvocationManager invocationMgr =
+            webContainer.getInvocationManager();
+        WebComponentInvocation inv = new WebComponentInvocation(webModule);
+        try {
+            invocationMgr.preInvoke(inv);
+            InitialContext context = new InitialContext();
+            BeanManager beanManager = (BeanManager)
+                context.lookup("java:comp/BeanManager");
+            if (beanManager != null) {
+                webModule.getServletContext().setAttribute(
+                    "org.glassfish.jsp.beanManagerELResolver",
+                    beanManager.getELResolver());
+            }
+        } catch (NamingException e) {
+            // Ignore
+        } finally {
+            invocationMgr.postInvoke(inv);
+        }
+
     }
 
     /**
