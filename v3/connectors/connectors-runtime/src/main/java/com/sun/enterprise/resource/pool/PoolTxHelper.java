@@ -102,6 +102,24 @@ public class PoolTxHelper {
     }
 
     /**
+     * Check whether a local transaction is in progress.
+     * 
+     * @return true if a local transaction is in progress.
+     */
+    public boolean isLocalTransactionInProgress() {
+        boolean result = false;
+        try {
+            JavaEETransaction txn = (JavaEETransaction) ConnectorRuntime.getRuntime().getTransaction();
+            if(txn != null) {
+                result = txn.isLocalTx();
+            }
+        } catch (SystemException e) {
+            _logger.log(Level.FINE, "Exception while checking whether a local " +
+                    "transaction is in progress while using pool : "+poolName, e);            
+        }
+        return result;
+    }
+    /**
      * Check whether the local resource in question is the one participating in transaction.
      *
      * @param h ResourceHandle

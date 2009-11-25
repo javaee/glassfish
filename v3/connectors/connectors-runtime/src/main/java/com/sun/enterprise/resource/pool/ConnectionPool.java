@@ -929,11 +929,12 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         setResourceStateToFree(h);  // mark as not busy
         state.touchTimestamp();
 
-        if (state.isUnenlisted() || (poolTxHelper.isNonXAResource(h)
+        if (state.isUnenlisted() || (poolTxHelper.isNonXAResource(h) && 
+                poolTxHelper.isLocalTransactionInProgress() 
                 && poolTxHelper.isLocalResourceEligibleForReuse(h))) {
             freeUnenlistedResource(h);
         }
-
+        
         if (poolLifeCycleListener != null) {
             poolLifeCycleListener.connectionReleased();
         }
