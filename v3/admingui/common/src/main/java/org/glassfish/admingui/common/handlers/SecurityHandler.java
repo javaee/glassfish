@@ -596,7 +596,7 @@ public class SecurityHandler {
         Map<String, ProviderConfig> providers = msgConfig.childrenMap(ProviderConfig.class);
         for(ProviderConfig pp : providers.values()){
             if (type.contains(pp.getProviderType())){
-                result.add(pp.getName());
+                result.add(com.sun.jsftemplating.util.Util.htmlEscape(pp.getName()));
             }
         }
         result.add(0, "");

@@ -41,15 +41,15 @@
 
 <sun:propertySheetSection id="generalSheet" label="$resource{i18njdbc.jdbcPool.general}">
     <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-        <sun:staticText id="Jndi" text="#{wizardPoolExtra.Name}" />
+        <sun:staticText escape="true" id="Jndi" text="#{wizardPoolExtra.Name}" />
     </sun:property>
 
     <sun:property id="resTypeWizProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resType}"  >
-        <sun:staticText id="resType" text="#{wizardPoolExtra.ResType}"  />
+        <sun:staticText escape="true" id="resType" text="#{wizardPoolExtra.ResType}"  />
     </sun:property>
 
     <sun:property id="dbProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.dbVendor}"  >
-        <sun:staticText id="db" text="#{wizardPoolExtra.DBVendor}"/>
+        <sun:staticText escape="true" id="db" text="#{wizardPoolExtra.DBVendor}"/>
     </sun:property>
 
     <sun:property id="dsProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.datasource}" helpText="$resource{i18njdbc.jdbcPool.datasourceHelpEnter}">

@@ -584,7 +584,9 @@ public class ProxyHandlers {
             List result = new ArrayList();
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
             Map<String, AMXProxy> childrenMap = amx.childrenMap(type);
-            result.addAll(childrenMap.keySet());
+	    for (String key : childrenMap.keySet()) {
+		result.add(com.sun.jsftemplating.util.Util.htmlEscape(key));
+	    }
             handlerCtx.setOutputValue("result", result);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);

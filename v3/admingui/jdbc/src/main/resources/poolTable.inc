@@ -65,15 +65,15 @@
 
 
     <sun:tableColumn headerText="#{resHeader}" sort="ResType" rowHeader="$boolean{true}" id="col22">
-        <staticText id="resType"  value="#{td.value.ResType}" />
+        <sun:staticText escape="true" id="resType"  value="#{td.value.ResType}" />
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colClassname}"  rowHeader="$boolean{true}" id="col3">
-        <staticText id="datasourceClassname"  value="#{td.value.DatasourceClassname}#{td.value.DriverClassname}" />
+        <sun:staticText escape="true" id="datasourceClassname"  value="#{td.value.DatasourceClassname}#{td.value.DriverClassname}" />
     </sun:tableColumn>  
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <staticText id="typeDesc" value="#{td.value.Description}" />
+        <sun:staticText escape="true" id="typeDesc" value="#{td.value.Description}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>

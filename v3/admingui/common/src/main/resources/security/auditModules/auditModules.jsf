@@ -94,7 +94,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
-        <staticText id="classnameCol" value="#{td.value.Classname}" />
+        <sun:staticText escape="true" id="classnameCol" value="#{td.value.Classname}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

@@ -92,12 +92,12 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n_web.transport.classnameCol}" sort="Classname"  rowHeader="$boolean{true}" id="classname">
-        <staticText id="classname" value="#{td.value.Classname}" />
+        <sun:staticText escape="true" id="classname" value="#{td.value.Classname}" />
     </sun:tableColumn>
 
 
     <sun:tableColumn headerText="$resource{i18n_web.transport.byteBufferTypeCol}" sort="ByteBufferType" rowHeader="$boolean{true}" id="byteType">
-        <staticText id="byteType" value="#{td.value.ByteBufferType}" />
+        <sun:staticText escape="true" id="byteType" value="#{td.value.ByteBufferType}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

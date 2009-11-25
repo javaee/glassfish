@@ -95,7 +95,7 @@
      
     
     <sun:tableColumn headerText="$resource{i18njmail.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <staticText id="typeDesc" value="#{td.value.Description}" />
+        <sun:staticText escape="true" id="typeDesc" value="#{td.value.Description}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>

@@ -43,7 +43,7 @@
     <!-- Text Field section -->        
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="jndiStaticProp" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:staticText id="Jndi" text="#{pageSession.Name}"/> 
+            <sun:staticText escape="true" id="Jndi" text="#{pageSession.Name}"/> 
         </sun:property>   
 
         <sun:property id="jndiTextProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >

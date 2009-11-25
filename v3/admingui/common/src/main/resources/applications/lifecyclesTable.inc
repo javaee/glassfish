@@ -111,7 +111,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn  headerText="$resource{i18n.deployTable.classnameCol}" sort="className" rowHeader="$boolean{true}" id="col4">
-        <staticText id="className" value="#{td.value.className}" />
+        <sun:staticText escape="true" id="className" value="#{td.value.className}" />
     </sun:tableColumn>
 
 <!--

@@ -93,13 +93,13 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18n.common.Enabled}"   sort="Enabled" rowHeader="$boolean{true}" id="col2">
-        <staticText id="enableCol" value="#{td.value.Enabled}" />
+        <sun:staticText escape="true" id="enableCol" value="#{td.value.Enabled}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18n.common.NtwkAddress}"  sort="Address"  rowHeader="$boolean{true}" id="col3">
-        <staticText id="ntwkAddrCol" value="#{td.value.Address}" />
+        <sun:staticText escape="true" id="ntwkAddrCol" value="#{td.value.Address}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18n.common.listPort}"  sort="Port"  rowHeader="$boolean{true}" id="col4">
-        <staticText id="portCol" value="#{td.value.Port}" />
+        <sun:staticText escape="true" id="portCol" value="#{td.value.Port}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

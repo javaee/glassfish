@@ -79,11 +79,11 @@
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.resourcesTable.Host}" rowHeader="$boolean{true}" id="colHost">
-            <staticText id="hostCol" rendered="#{hasHost}" value="#{td.value.Host}" />
+            <sun:staticText escape="true" id="hostCol" rendered="#{hasHost}" value="#{td.value.Host}" />
         </sun:tableColumn>
 
         <sun:tableColumn headerText="$resource{i18njms.edJmsHost.colPort}" rowHeader="$boolean{true}" id="colPort">
-            <staticText id="portCol" rendered="#{hasPort}" value="#{td.value.Port}" />
+            <sun:staticText escape="true" id="portCol" rendered="#{hasPort}" value="#{td.value.Port}" />
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>

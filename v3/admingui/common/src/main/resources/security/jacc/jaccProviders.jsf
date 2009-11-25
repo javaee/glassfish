@@ -93,7 +93,7 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.jacc.colPolicyProvider}"  rowHeader="$boolean{true}" id="col6">
-        <staticText id="classnameCol"  value="#{td.value.PolicyProvider}" />
+        <sun:staticText escape="true" id="classnameCol" value="#{td.value.PolicyProvider}" />
     </sun:tableColumn>
   </sun:tableRowGroup>
 </sun:table>

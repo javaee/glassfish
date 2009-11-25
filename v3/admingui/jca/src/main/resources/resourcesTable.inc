@@ -69,7 +69,7 @@
     </sun:tableColumn>-->
 
     <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="Enabled" rowHeader="$boolean{true}" id="col22">
-        <staticText id="typeCol" value="#{td.value.Enabled}" />
+        <sun:staticText escape="true" id="typeCol" value="#{td.value.Enabled}" />
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colPool}" sort="PoolName" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
@@ -78,7 +78,7 @@
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colResType}" sort="ResType" rendered="#{pageSession.hasResType}"  rowHeader="$boolean{true}" id="coltype">
-        <staticText id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.ResType}" />
+        <sun:staticText escape="true" id="typeCol" rendered="#{pageSession.hasResType}" value="#{td.value.ResType}" />
     </sun:tableColumn>
 
     <!-- TODO enable when we enable cluster support
@@ -100,7 +100,7 @@
      
     
     <sun:tableColumn headerText="$resource{i18njca.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">
-        <staticText id="typeDesc" value="#{td.value.Description}" />
+        <sun:staticText escape="true" id="typeDesc" value="#{td.value.Description}" />
     </sun:tableColumn>
     
   </sun:tableRowGroup>

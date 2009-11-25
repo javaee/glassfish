@@ -71,7 +71,7 @@
  <sun:propertySheet id="propertySheet">
      <sun:propertySheetSection id="propertySheetSection">
          <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
-             <sun:staticText id="AuthLayer" text="#{pageSession.Name}" />
+             <sun:staticText escape="true" id="AuthLayer" text="#{pageSession.Name}" />
          </sun:property>
      </sun:propertySheetSection>
  </sun:propertySheet>
@@ -105,15 +105,15 @@
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvType}" sort="ProviderType" rowHeader="$boolean{true}" id="col2">
-        <staticText id="provType" value="#{td.value.ProviderType}" />
+        <sun:staticText escape="true" id="provType" value="#{td.value.ProviderType}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.defaultProviderCol}" sort="default" rowHeader="$boolean{true}" id="col3">
-        <staticText id="default" value="#{td.value.default}" />
+        <sun:staticText escape="true" id="default" value="#{td.value.default}" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colClassName}" sort="ClassName" rowHeader="$boolean{true}" id="col4">
-        <staticText id="defaultclientprov" value="#{td.value.ClassName}" />
+        <sun:staticText escape="true" id="defaultclientprov" value="#{td.value.ClassName}" />
     </sun:tableColumn>
 
   </sun:tableRowGroup>

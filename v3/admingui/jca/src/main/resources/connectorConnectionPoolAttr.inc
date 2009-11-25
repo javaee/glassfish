@@ -42,15 +42,15 @@ holder.
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="generalPropertySheet"  label="$resource{i18n.common.GeneralSettings}">
         <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-            <sun:staticText id="Jndi" text="#{wizardPoolExtra.Name}" />
+            <sun:staticText escape="true" id="Jndi" text="#{wizardPoolExtra.Name}" />
         </sun:property>
 
         <sun:property id="resAdapterNewProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.common.resourceAdapter}"  >
-            <sun:staticText id="resAdapter" text="#{wizardPoolExtra.ResourceAdapterName}"  />
+            <sun:staticText escape="true" id="resAdapter" text="#{wizardPoolExtra.ResourceAdapterName}"  />
         </sun:property>
 
         <sun:property id="connectionDefNewProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorConnectionPool.connectionDefinitionName}" >
-            <sun:staticText id="connectionDef" text="#{wizardPoolExtra.ConnectionDefinitionName}"  />
+            <sun:staticText escape="true" id="connectionDef" text="#{wizardPoolExtra.ConnectionDefinitionName}"  />
         </sun:property>
 
         <sun:property id="pingProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.ping}" helpText="$resource{i18njca.jcaPool.pingHelp}">
@@ -68,27 +68,27 @@ holder.
         <sun:property id="initSizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}"
             label="$resource{i18njca.jcaPool.initPoolSize}" helpText="$resource{i18njca.jcaPool.initPoolSizeHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{sessionScope.wizardMap.SteadyPoolSize}" />
-            <sun:staticText id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
+            <sun:staticText escape="true" id="con1" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="maxProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxPoolSize}" helpText="$resource{i18njca.jcaPool.maxPoolSizeHelp}">
             <sun:textField id="ds2" styleClass="integer" columns="$int{10}" text="#{sessionScope.wizardMap.MaxPoolSize}" />
-            <sun:staticText id="con2" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
+            <sun:staticText escape="true" id="con2" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="resizeProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.poolResize}" helpText="$resource{i18njca.jcaPool.poolResizeHelp}">
             <sun:textField id="ds3" styleClass="integer" columns="$int{10}" text="#{sessionScope.wizardMap.PoolResizeQuantity}" />
-            <sun:staticText id="con3" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
+            <sun:staticText escape="true" id="con3" style="padding: 8pt" text="$resource{i18n.common.Connections}"/>
         </sun:property>
 
         <sun:property id="idleProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.idleTimeout}" helpText="$resource{i18njca.jcaPool.idleTimeoutHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{sessionScope.wizardMap.IdleTimeoutInSeconds}" />
-            <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+            <sun:staticText escape="true" id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
         </sun:property>
 
         <sun:property id="maxWaitProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.maxWait}" helpText="$resource{i18njca.jcaPool.maxWaitHelp}">
             <sun:textField id="ds" styleClass="integer" columns="$int{10}" text="#{sessionScope.wizardMap.MaxWaitTimeInMillis}" />
-            <sun:staticText id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
+            <sun:staticText escape="true" id="mil" style="padding: 8pt" text="$resource{i18n.common.Milliseconds}"/>
         </sun:property>
     </sun:propertySheetSection>
 
