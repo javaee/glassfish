@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.net.URI;
 import java.io.File;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Globals;
@@ -54,21 +53,20 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.glassfish.api.web.TldProvider;
-import org.glassfish.loader.util.ASClassLoaderUtil;
-import org.glassfish.weld.*;
-import org.jboss.weld.bootstrap.WeldBootstrap;
-import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
 import com.sun.enterprise.web.Constants;
 import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.web.cache.CacheManager;
+import org.glassfish.loader.util.ASClassLoaderUtil;
+//import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
+//import com.sun.enterprise.server.PersistenceUnitLoader;
+//import com.sun.enterprise.config.ConfigException;
 
 /**
  * Startup event listener for a <b>Context</b> that configures the properties
@@ -284,26 +282,7 @@ final class WebModuleListener
         // Configure JSP monitoring
         webModule.getServletContext().setAttribute(
             "org.glassfish.jsp.monitor.probeEmitter",
-            new JspProbeEmitterImpl(webModule));
-  
-        // Pass BeanManager's ELResolver as ServletContext attribute
-        WeldDeployer weldDeployer = webContainer.getWeldDeployer();
-        WebBundleDescriptor webBundleDesc =
-            webModule.getWebBundleDescriptor();
-        BundleDescriptor bundleDesc = (BundleDescriptor)
-            webBundleDesc.getModuleDescriptor().getDescriptor();
-        BeanDeploymentArchive bda =
-            weldDeployer.getBeanDeploymentArchiveForBundle(bundleDesc);
-        WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(
-            wbd.getApplication());
-        if (bda != null && bootstrap != null) {
-            BeanManager beanManager = bootstrap.getManager(bda);
-            if (beanManager != null) {
-                webModule.getServletContext().setAttribute(
-                    "org.glassfish.jsp.beanManagerELResolver",
-                    beanManager.getELResolver());
-            }
-        }
+            new JspProbeEmitterImpl(webModule));        
     }
 
     /**
