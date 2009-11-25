@@ -300,8 +300,6 @@ public class WeldApplication extends Application {
             InitialContext context = new InitialContext();
             return (BeanManager) context.lookup("java:comp/BeanManager");
         } catch (NamingException e) {
-System.out.println("NAMING EXCEPTION:");
-e.printStackTrace();
             return null;
         }
 
