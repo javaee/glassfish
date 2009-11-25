@@ -63,7 +63,6 @@
                 <include>org.glassfish:bean-validator</include>
                 <include>org.jboss.weld:weld-osgi-bundle</include>
                 <include>org.glassfish.web:jstl-impl</include>
-                <include>javax.xml:webservices-api-osgi</include>
             </includes>
         </dependencySet>
     </dependencySets>

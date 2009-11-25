@@ -35,6 +35,7 @@
                     <exclude>**/*.map</exclude>
                     <exclude>**/*.providers</exclude>
                     <exclude>org/**</exclude>
+                    <exclude>javax/xml/crypto/**</exclude>
                 </excludes>
             </unpackOptions>
             <includes>
@@ -67,7 +68,7 @@
                 <include>com.sun.messaging.mq:jaxm-api</include>
                 <include>org.glassfish.web:jstl-impl</include>
                 <include>javax.xml:webservices-api-osgi</include>
-                <include>org.glassfish:javax.xml.registry</include>
+                <include>com.sun.xml.ws:webservices-osgi</include>
             </includes>
         </dependencySet>
     </dependencySets>
