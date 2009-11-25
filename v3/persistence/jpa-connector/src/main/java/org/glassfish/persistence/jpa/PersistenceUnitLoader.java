@@ -217,8 +217,13 @@ public class PersistenceUnitLoader {
             //Return if instructed by System property
             return;
         }
+        boolean upgradeTopLinkEssentialsProperties = false;
         String providerClassName = pud.getProvider();
-        if( "oracle.toplink.essentials.PersistenceProvider".equals(providerClassName) ||
+
+        if (providerClassName == null || providerClassName.isEmpty() ) {
+            // This might be a JavaEE app running against V2 and relying in provider name being defaulted.
+            upgradeTopLinkEssentialsProperties = true;
+        } else if( "oracle.toplink.essentials.PersistenceProvider".equals(providerClassName) ||
                 "oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider".equals(providerClassName) ) {
             try {
                 providerContainerContractInfo.getClassLoader().loadClass(providerClassName);
@@ -231,17 +236,20 @@ public class PersistenceUnitLoader {
 
                 // Change the provider name
                 pud.setProvider(defaultProvider);
+                upgradeTopLinkEssentialsProperties = true;
+            }
+        }
 
-                // For each "toplink*" property, add a "eclipselink* property
-                final String TOPLINK = "toplink";
-                final String ECLIPSELINK = "eclipselink";
-                Properties properties = pud.getProperties();
-                for (Map.Entry entry : properties.entrySet()) {
-                    String key = (String) entry.getKey();
-                    if(key.startsWith(TOPLINK) ) {
-                        String translatedKey = ECLIPSELINK + key.substring(TOPLINK.length());
-                        pud.addProperty(translatedKey, entry.getValue());
-                    }
+        if (upgradeTopLinkEssentialsProperties) {
+            // For each "toplink*" property, add a "eclipselink* property
+            final String TOPLINK = "toplink";
+            final String ECLIPSELINK = "eclipselink";
+            Properties properties = pud.getProperties();
+            for (Map.Entry entry : properties.entrySet()) {
+                String key = (String) entry.getKey();
+                if(key.startsWith(TOPLINK) ) {
+                    String translatedKey = ECLIPSELINK + key.substring(TOPLINK.length());
+                    pud.addProperty(translatedKey, entry.getValue());
                 }
             }
         }
