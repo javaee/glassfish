@@ -10,17 +10,17 @@
     <!--<parent>-->
     <!--<groupId>org.glassfish</groupId>-->
     <!--<artifactId>glassfish-parent</artifactId>-->
-    <!--<version>3.0-SNAPSHOT</version>-->
+    <!--<version>3.1-SNAPSHOT</version>-->
     <!--</parent>-->
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.tests</groupId>
     <artifactId>web-all-embedded-test</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <name>Test for glassfish-embedded-web</name>
 
     <properties>
-        <project.version>3.0-SNAPSHOT</project.version>
+        <project.version>3.1-SNAPSHOT</project.version>
     </properties>
 
     <dependencies>

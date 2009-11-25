@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.glassfish.appclient</groupId>
         <artifactId>client</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>appclient-scripts</artifactId>

@@ -41,7 +41,7 @@
     <parent>
         <groupId>org.glassfish.extras</groupId>
         <artifactId>extras</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>glassfish-embedded-static-shell-frag</artifactId>

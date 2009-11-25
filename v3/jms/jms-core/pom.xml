@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -12,7 +12,7 @@
     <artifactId>jms-core</artifactId>
     <name>JMS Module</name>
     <packaging>hk2-jar</packaging>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
  <developers>
         <developer>
             <id>sats</id>
@@ -43,27 +43,27 @@
       <dependency>
           <groupId>org.glassfish.common</groupId>
           <artifactId>internal-api</artifactId>
-	  <version>3.0-SNAPSHOT</version>
+	  <version>3.1-SNAPSHOT</version>
       </dependency>		    
       <dependency>
           <groupId>org.glassfish.connectors</groupId>
           <artifactId>connectors-internal-api</artifactId>
-	  <version>3.0-SNAPSHOT</version>
+	  <version>3.1-SNAPSHOT</version>
       </dependency>		    
          <dependency>
              <groupId>org.glassfish.connectors</groupId>
              <artifactId>connectors-inbound-runtime</artifactId>
-             <version>3.0-SNAPSHOT</version>
+             <version>3.1-SNAPSHOT</version>
          </dependency>
          <dependency>
 	      <groupId>org.glassfish.connectors</groupId>
 	      <artifactId>connectors-runtime</artifactId>
-	      <version>3.0-SNAPSHOT</version>
+	      <version>3.1-SNAPSHOT</version>
          </dependency>
          <dependency>
 	 	<groupId>org.glassfish.admin</groupId>
 	 	<artifactId>admin-util</artifactId>
-		<version>3.0-SNAPSHOT</version>
+		<version>3.1-SNAPSHOT</version>
          </dependency>
          
    </dependencies>

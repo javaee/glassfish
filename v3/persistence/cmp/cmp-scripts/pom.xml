@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.glassfish.persistence.cmp</groupId>
         <artifactId>cmp</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>cmp-scripts</artifactId>
