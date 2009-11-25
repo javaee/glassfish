@@ -124,6 +124,7 @@ import org.glassfish.web.admin.monitor.SessionProbeProvider;
 import org.glassfish.web.admin.monitor.WebModuleProbeProvider;
 import org.glassfish.web.admin.monitor.WebStatsProviderBootstrap;
 import org.glassfish.web.valve.GlassFishValve;
+import org.glassfish.weld.WeldDeployer;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -216,6 +217,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     JavaEEObjectStreamFactory javaEEObjectStreamFactory;
+
+    @Inject
+    private WeldDeployer weldDeployer;
 
     @Inject
     FileLoggerHandler logHandler;
@@ -1973,7 +1977,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
-
     /**
      * Utility Method to access the ServerContext
      */
@@ -1981,16 +1984,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return _serverContext;
     }
 
-
     ServerConfigLookup getServerConfigLookup() {
         return serverConfigLookup;
     }
 
+    WeldDeployer getWeldDeployer() {
+        return weldDeployer;
+    }
 
     File getLibPath() {
         return instance.getLibPath();
     }
-
 
     /**
      * The application id for this web module
@@ -2000,7 +2004,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         return wm.getID();
     }
 
-
     /**
      * Return the Absolute path for location where all the deployed
      * standalone modules are stored for this Server Instance.
@@ -2008,7 +2011,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public File getModulesRoot() {
         return _modulesRoot;
     }
-
 
     /**
      * Get the persistence frequency for this web module
