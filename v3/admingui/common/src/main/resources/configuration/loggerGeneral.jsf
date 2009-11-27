@@ -54,7 +54,8 @@
 <sun:title id="propertyContentPage" title="$resource{i18nc.log.LoggingSettings}" helpText="$resource{i18nc.log.LoggingSettingsHelp}" >
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
+            <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     saveLoggingAttributes(attrs="#{pageSession.valueMap}");
                     prepareSuccessfulMsg();
