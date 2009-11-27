@@ -603,7 +603,8 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
                 dataSourceProperties.add(property);
             }
 
-            if (desc.getUrl() != null) {
+            //process URL only when standard properties are not set
+            if (desc.getUrl() != null && !isStandardPropertiesSet(desc)) {
                 DataSourceProperty property = convertProperty(("url"),
                         String.valueOf(desc.getUrl()));
                 dataSourceProperties.add(property);
@@ -622,6 +623,14 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
             }
 
             return dataSourceProperties;
+        }
+
+        private boolean isStandardPropertiesSet(DataSourceDefinitionDescriptor desc){
+            boolean result = false;
+            if(desc.getServerName() != null && desc.getDatabaseName() != null && desc.getPortNumber() != -1 ){
+                result = true;
+            }
+            return result;
         }
 
         public Property getProperty(String name) {
