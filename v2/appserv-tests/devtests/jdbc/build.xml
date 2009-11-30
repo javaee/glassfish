@@ -72,6 +72,8 @@
 	<ant dir="dmmcf.appclient" target="all"/>
 	<ant dir="tracingsql" target="all"/>
 	<ant dir="datasource40" target="all"/>
+	<ant dir="custom-validation" target="all"/>
+	<ant dir="custom-validation-1" target="all"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>
