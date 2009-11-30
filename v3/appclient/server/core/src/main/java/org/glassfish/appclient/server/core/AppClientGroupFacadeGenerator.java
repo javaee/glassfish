@@ -158,9 +158,15 @@ public class AppClientGroupFacadeGenerator {
         }
 
         try {
+            /*
+             * Pass the EAR's generated/xml directory for where to generated the
+             * group facade.  Because the directories are flattened, even if the
+             * client is actually x/y/z.jar its expanded directory will be just
+             * one level lower than the EAR's directory.
+             */
             generateAndRecordEARFacade(
                     dc,
-                    dc.getScratchDir("xml"),
+                    dc.getScratchDir("xml").getParentFile(),
                     generatedEARFacadeName(application.getRegistrationName()), 
                         appClientGroupListSB.toString());
             recordGroupFacadeGeneration();

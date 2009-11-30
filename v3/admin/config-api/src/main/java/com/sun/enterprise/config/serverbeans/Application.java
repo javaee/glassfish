@@ -296,6 +296,10 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
                 deploymentProps.setProperty(ServerTags.CONTEXT_ROOT,
                     instance.getContextRoot());
             }
+            if (instance.getDirectoryDeployed() != null) {
+                deploymentProps.setProperty(ServerTags.DIRECTORY_DEPLOYED,
+                    instance.getDirectoryDeployed());
+            }
             return deploymentProps;            
         }
 
