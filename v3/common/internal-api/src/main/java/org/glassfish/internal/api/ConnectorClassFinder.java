@@ -44,20 +44,23 @@ import com.sun.enterprise.loader.ASURLClassLoader;
  */
 public class ConnectorClassFinder extends ASURLClassLoader implements DelegatingClassLoader.ClassFinder {
 
-        private DelegatingClassLoader.ClassFinder librariesClassFinder;
-        private String raName;
+        private final DelegatingClassLoader.ClassFinder librariesClassFinder;
+        private volatile String raName;
 
     public ConnectorClassFinder(ClassLoader parent, String raName,
-                                              DelegatingClassLoader.ClassFinder librariesClassFinder){
+                                              DelegatingClassLoader.ClassFinder finder){
             super(parent);
             this.raName = raName;
+            
             // There should be better approach to skip libraries Classloader when none specified.
             // casting to DelegatingClassLoader is not a clean approach
-            if(librariesClassFinder!= null && (librariesClassFinder instanceof DelegatingClassLoader)){
-                if(((DelegatingClassLoader)librariesClassFinder).getDelegates().size() > 0){
-                    this.librariesClassFinder = librariesClassFinder;
+            DelegatingClassLoader.ClassFinder libcf = null;
+            if(finder!= null && (finder instanceof DelegatingClassLoader)){
+                if(((DelegatingClassLoader)finder).getDelegates().size() > 0){
+                    libcf = finder;
                 }
             }
+            this.librariesClassFinder = libcf;
         }
 
     public Class<?> findClass(String name) throws ClassNotFoundException {

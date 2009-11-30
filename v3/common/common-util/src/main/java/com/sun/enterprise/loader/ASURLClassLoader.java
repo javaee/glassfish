@@ -96,30 +96,46 @@ public class ASURLClassLoader
         extends URLClassLoader
         implements JasperAdapter, InstrumentableClassLoader, PreDestroy {
 
+    /*
+       NOTE: various variables are 'final' to enjoy the JVM thread visibility guaranteed for 'final'.
+       These variables cannot be nulled out because of this, but the contents are cleared (for Map/Vector).
+       This is actually a hidden benefit, because there are places in the code where these variables
+       are being used but they could be nulled out while being used.
+       Another benefit is that there is no synchronization needed to get the Map/Vector/List itself.
+    */
+    
     /** logger for this class */
-    static Logger _logger=LogDomains.getLogger(ASURLClassLoader.class, LogDomains.LOADER_LOGGER);
+    private static final Logger _logger=LogDomains.getLogger(ASURLClassLoader.class, LogDomains.LOADER_LOGGER);
 
     /** list of url entries of this class loader */
-    private List<URLEntry> urlSet = Collections.synchronizedList(new ArrayList());
+    private final List<URLEntry> urlSet = Collections.synchronizedList(new ArrayList<URLEntry>());
 
     /** cache of not found resources */
-    private Map notFoundResources   = new ConcurrentHashMap();
+    private final Map<String,String> notFoundResources   = new ConcurrentHashMap<String,String>();
 
     /** cache of not found classes */
-    private Map notFoundClasses     = new ConcurrentHashMap();
+    private final Map<String,String> notFoundClasses     = new ConcurrentHashMap<String,String>();
 
-    /** state flag to track whether this instance has been shut off.  */
-    private boolean doneCalled = false;
-    /** snapshot of classloader state at the time done was called */
-    private String doneSnapshot;
+    /**
+        State flag to track whether this instance has been shut off.
+    
+        Note: 'volatile' *does not by itself eliminate a race condition* similar to null-check idiom bug.
+    */
+    private volatile boolean doneCalled = false;
+    
+    /**
+        snapshot of classloader state at the time done was called.
+        <p>
+        Must be 'volatile'; not all access is within 'synchronized' eg it is used in toString().
+    */
+    private volatile String doneSnapshot;
 
     /** streams opened by this loader */
-    private Vector<SentinelInputStream> streams = null;
+    private final Vector<SentinelInputStream> streams = new Vector<SentinelInputStream>();
 
-    private ArrayList<ClassFileTransformer> transformers =
-            new ArrayList<ClassFileTransformer>(1);
+    private final ArrayList<ClassFileTransformer> transformers = new ArrayList<ClassFileTransformer>(1);
 
-    private static StringManager sm = 
+    private final static StringManager sm = 
         StringManager.getManager(ASURLClassLoader.class);
 
     /**
@@ -144,6 +160,7 @@ public class ASURLClassLoader
     }
 
     public boolean isDone() {
+        // method need not by 'synchronized' because 'doneCalled' is 'volatile'.
         return doneCalled;
     }
 
@@ -157,52 +174,67 @@ public class ASURLClassLoader
     /**
      * This method should be called to free up the resources.
      * It helps garbage collection.
+     *
+     * Must be synchronized for:
+         (a) visibility of variables
+         (b) race condition while checking 'doneCalled'
+         (c) only one caller should close the zip files,
+         (d) done should occur only once and set the flag when done.
+         (e) shoudl not return 'true' when a previous thread might still
+         be in the process of executing the method.
      */
     public void done() {
-
+        // This works because 'doneCalled' is 'volatile'
         if( doneCalled ) {
             return;
         }
 
-        // Capture the fact that the classloader is now effectively disabled.
-        // First create a snapshot of our state.  This should be called
-        // before setting doneCalled = true.
-        doneSnapshot = "ASURLClassLoader.done() called ON " + this.toString()
-            + "\n AT " + new Date() +
-            " \n BY :" + Print.printStackTraceToString();
-        doneCalled = true;
+        // the above optimized check for 'doneCalled=true' is a race condition.
+        // The lock must now be acquired, and 'doneCalled' rechecked.
+        synchronized(this) {
+            if( doneCalled ) {
+                return;
+            }
+            
+            // Capture the fact that the classloader is now effectively disabled.
+            // First create a snapshot of our state.  This should be called
+            // before setting doneCalled = true.
+            doneSnapshot = "ASURLClassLoader.done() called ON " + this.toString()
+                + "\n AT " + new Date() +
+                " \n BY :" + Print.printStackTraceToString();
+            
+            // Presumably OK to set this flag now while the rest of the cleanup proceeeds,
+            // because we've taken the snapshot.
+            doneCalled = true;
 
-        // closes the jar handles and sets the url entries to null
-        int i = 0;
-        while (i < this.urlSet.size()) {
-            URLEntry u = (URLEntry) this.urlSet.get(i);
-            if (u.zip != null) {
-                try {
-                    u.zip.reallyClose();
-                } catch (IOException ioe) {
-                    _logger.log(Level.INFO, formatMsg("loader.asurlclassloader_exc_closing_URLEntry", u.source),
-                                ioe);
+            // closes the jar handles and sets the url entries to null
+            int i = 0;
+            while (i < this.urlSet.size()) {
+                URLEntry u = (URLEntry) this.urlSet.get(i);
+                if (u.zip != null) {
+                    try {
+                        u.zip.reallyClose();
+                    } catch (IOException ioe) {
+                        _logger.log(Level.INFO, formatMsg("loader.asurlclassloader_exc_closing_URLEntry", u.source),
+                                    ioe);
+                    }
                 }
+                if (u.table != null) {
+                    u.table.clear();
+                    u.table = null;
+                }
+                u = null;
+                i++;
             }
-            if (u.table != null) {
-                u.table.clear();
-                u.table = null;
-            }
-            u = null;
-            i++;
+
+            closeOpenStreams();
+
+            // clears out the tables
+            // Clear all values.  Becaused fields are 'final' (for thread safety), cannot null them
+            if (this.urlSet != null)            { this.urlSet.clear();            }
+            if (this.notFoundResources != null) { this.notFoundResources.clear(); }
+            if (this.notFoundClasses != null)   { this.notFoundClasses.clear();   }
         }
-
-        closeOpenStreams();
-
-        // clears out the tables
-        if (this.urlSet != null)            { this.urlSet.clear();            }
-        if (this.notFoundResources != null) { this.notFoundResources.clear(); }
-        if (this.notFoundClasses != null)   { this.notFoundClasses.clear();   }
-
-        // sets all the objects to null
-        this.urlSet              = null;
-        this.notFoundResources   = null;
-        this.notFoundClasses     = null;
     }
 
 
@@ -214,7 +246,7 @@ public class ASURLClassLoader
      * @param file the File to use in creating the URL
      * @throws IOException in case of errors converting the file to a URL
      */
-    public synchronized void appendURL(File file) throws IOException {
+    public void appendURL(File file) throws IOException {
         try {
             appendURL(file.toURI().toURL());
         } catch (MalformedURLException mue) {
@@ -298,6 +330,11 @@ public class ASURLClassLoader
     /**
      * Returns the urls of this class loader.
      *
+     * Method is 'synchronized' to avoid the  thread-unsafe null-check idiom idiom, also
+     * protects the caller from simultaneous changes while iterating,
+     * by returning a URL[] (copy) rather than the original.  Also protects against
+     * changes to 'urlSet' while iterating over it.
+     *
      * @return    the urls of this class loader or an empty array
      */
     public synchronized URL[] getURLs() {
@@ -368,7 +405,7 @@ public class ASURLClassLoader
 //        }
     }
 
-    public synchronized void addTransformer(ClassFileTransformer transformer) {
+    public void addTransformer(ClassFileTransformer transformer) {
         transformers.add(transformer);
     }
 
@@ -449,15 +486,25 @@ public class ASURLClassLoader
 
         return (URL) result;
     }
-
+    
     public URL findResource(String name) {
 
+        // quick quick that relies on 'doneCalled' being 'volatile'
         if( doneCalled ) {
             _logger.log(Level.WARNING,
                     formatMsg("loader.asurlclassloader_find_resource_after_done", name, this.toString()),
                     new Throwable());
             return null;
         }
+                
+        // This code is dubious, because it iterates over items that could
+        // be changing via another thread.   It appears that since 'urlSet' cannot shrink
+        // that the iteration at least won't go out of bounds.  And it's probably OK
+        // if more than one thread adds the same resource to 'notFoundResources'.
+        //
+        // HOWEVER, there is still a race condition from the check for 'doneCalled' above.
+        // That's OK for 'notFoundResources', but it could lead to an ArrayIndexOutOfBounds
+        // excpetion for 'urlSet', should the set be cleared while looping.
 
         // resource is in the not found list
         String nf = (String) notFoundResources.get(name);
@@ -466,18 +513,19 @@ public class ASURLClassLoader
         }
 
         int i = 0;
-        while (i < this.urlSet.size()) {
+        synchronized(this) {
+            while (i < this.urlSet.size()) {
+                final URLEntry u = this.urlSet.get(i);
 
-            URLEntry u = (URLEntry) this.urlSet.get(i);
+                if (!u.hasItem(name)) {
+                    i++;
+                    continue;
+                }
 
-            if (!u.hasItem(name)) {
+                final URL url = findResource0(u, name);
+                if (url != null) return url;
                 i++;
-                continue;
             }
-
-            URL url = findResource0(u, name);
-            if (url != null) return url;
-            i++;
         }
 
         // add resource to the not found list
@@ -489,8 +537,13 @@ public class ASURLClassLoader
     /**
      * Returns an enumeration of java.net.URL objects
      * representing all the resources with the given name.
+     *
+     * This method is synchronized to avoid (a) race condition checking 'doneCalled', 
+     * (b) changes to contents or length of 'resourcesList' and/or 'notFoundResources' while iterating
+     * over them, (c) thread visibility to all of the above.
      */
-    public Enumeration<URL> findResources(String name) throws IOException {
+    public synchronized Enumeration<URL>
+    findResources(String name) throws IOException {
         if( doneCalled ) {
             _logger.log(Level.WARNING,
                         "loader.asurlclassloader_done_already_called",
@@ -500,20 +553,18 @@ public class ASURLClassLoader
         List<URL> resourcesList = new ArrayList<URL>();
 
         // resource is in the not found list
-        String nf = (String) notFoundResources.get(name);
+        final String nf = (String) notFoundResources.get(name);
         if (nf != null && nf.equals(name) ) {
             return (new Vector(resourcesList)).elements();
         }
 
-
-
-        for (Iterator iter = this.urlSet.iterator(); iter.hasNext();) {
-                        URLEntry urlEntry = (URLEntry) iter.next();
-            URL url = findResource0(urlEntry, name);
+        for (Iterator<URLEntry> iter = this.urlSet.iterator(); iter.hasNext();) {
+            final URLEntry urlEntry = iter.next();
+            final URL url = findResource0(urlEntry, name);
             if (url != null) {
                 resourcesList.add(url);
             }
-                }
+        }
 
         if (resourcesList.size() == 0) {
             // add resource to the not found list
@@ -548,9 +599,9 @@ public class ASURLClassLoader
             StringTokenizer st = new StringTokenizer(cp, " ");
 
             while (st.hasMoreTokens()) {
-                String entry = st.nextToken();
+                final String entry = st.nextToken();
 
-                File newFile = new File(file.getParentFile(), entry);
+                final File newFile = new File(file.getParentFile(), entry);
 
                 // add to class path of this class loader
                 try {
@@ -622,12 +673,18 @@ public class ASURLClassLoader
         return (byte[]) result;
     }
 
+    /** THREAD SAFETY: what happens when more than one thread requests the same class
+        and thus works on the same classData?  Or defines the same package?  Maybe
+        the same work just gets done twice, and that's all.
+        CAUTION: this method might be overriden, and subclasses must be cautious (also)
+        about thread safety.
+     */
     protected Class findClass(String name) throws ClassNotFoundException {
         ClassData classData = findClassData(name);
         // Instruments the classes if the profiler's enabled
         if (PreprocessorUtil.isPreprocessorEnabled()) {
             // search thru the JARs for a file of the form java/lang/Object.class
-            String entryName = name.replace('.', '/') + ".class";
+            final String entryName = name.replace('.', '/') + ".class";
             classData.classBytes = PreprocessorUtil.processClass(entryName, classData.classBytes);
         }
 
@@ -662,14 +719,14 @@ public class ASURLClassLoader
 
         // Loop though the transformers here!!
         try {
-            ArrayList<ClassFileTransformer> xformers = (ArrayList<ClassFileTransformer>) transformers.clone();
-            for (ClassFileTransformer transformer : xformers) {
+            final ArrayList<ClassFileTransformer> xformers = (ArrayList<ClassFileTransformer>) transformers.clone();
+            for ( final ClassFileTransformer transformer : xformers) {
 
                 // see javadocs of transform().
                 // It expects class name as java/lang/Object
                 // as opposed to java.lang.Object
-                String internalClassName = name.replace('.','/');
-                byte[] transformedBytes = transformer.transform(this, internalClassName, null,
+                final String internalClassName = name.replace('.','/');
+                final byte[] transformedBytes = transformer.transform(this, internalClassName, null,
                         classData.pd, classData.classBytes);
                 if(transformedBytes!=null){ // null indicates no transformation
                     _logger.logp(Level.INFO, "ASURLClassLoader",
@@ -696,11 +753,15 @@ public class ASURLClassLoader
      * This method is responsible for locating the url from the class bytes
      * have to be read and reading the bytes. It does not actually define
      * the Class object.
+     * <p>
+     * To preclude a race condition on checking 'doneCalled', as well as transient errors
+     * if done() is called while running, this method is 'synchronized'.
+     
      * @param name class name in java.lang.Object format
      * @return class bytes as well protection domain information
      * @throws ClassNotFoundException
      */
-    protected ClassData findClassData(String name) throws ClassNotFoundException {
+    protected synchronized ClassData findClassData(String name) throws ClassNotFoundException {
 
         if( doneCalled ) {
             _logger.log(Level.WARNING,
@@ -783,8 +844,9 @@ public class ASURLClassLoader
         buffer.append(getClassLoaderName() + " : \n");
         if( doneCalled ) {
             buffer.append("doneCalled = true" + "\n");
-            if( doneSnapshot != null ) {
-                buffer.append("doneSnapshot = " + doneSnapshot);
+            String snapshot = doneSnapshot; // MUST use temp for thread safety; could go null after checking
+            if( snapshot != null ) {
+                buffer.append("doneSnapshot = " + snapshot);
             }
         } else {
             buffer.append("urlSet = " + this.urlSet + "\n");
@@ -829,7 +891,7 @@ public class ASURLClassLoader
      *
      * @author fkieviet
      */
-    private static class ProtectedJarFile extends JarFile {
+    private static final class ProtectedJarFile extends JarFile {
         /**
          * Constructor
          *
@@ -870,24 +932,28 @@ public class ASURLClassLoader
     /**
      * URL entry - keeps track of the url resources.
      */
-    protected static class URLEntry {
+    protected static final class URLEntry {
+        /** the url, ensure thread visibility by making it 'final' */
+        final URL source;
 
-        /** the url */
-        URL source      = null;
+        /** file of the url, 
+            ensure thread visibility by making it 'volatile' */
+        volatile File file       = null;
 
-        /** file of the url */
-        File file       = null;
+        /** jar file if url is a jar else null, 
+            ensure thread visibility by making it 'volatile'  */
+        volatile ProtectedJarFile zip     = null;
 
-        /** jar file if url is a jar else null */
-        ProtectedJarFile zip     = null;
+        /** true if url is a jar, 
+            ensure thread visibility by making it 'volatile'  */
+        volatile boolean isJar  = false;
 
-        /** true if url is a jar */
-        boolean isJar  = false;
+        /** ensure thread visibility by making it 'volatile'  */
+        volatile Hashtable<String,String> table = null;
 
-        Hashtable<String,String> table = null;
-
-        /** ProtectionDomain with signers if jar is signed */
-        ProtectionDomain pd = null;
+        /** ProtectionDomain with signers if jar is signed, 
+            ensure thread visibility by making it 'volatile'  */
+        volatile ProtectionDomain pd = null;
 
         URLEntry(URL url) {
             source = url;
@@ -1102,9 +1168,6 @@ public class ASURLClassLoader
      *@return Vector<SentinelInputStream> holding open streams
      */
     private Vector<SentinelInputStream> getStreams() {
-        if (streams == null) {
-            streams = new Vector<SentinelInputStream>();
-        }
         return streams;
     }
 
@@ -1113,8 +1176,9 @@ public class ASURLClassLoader
      *<p>
      *This method should be invoked when the loader will no longer be used
      *and the app will no longer explicitly close any streams it may have opened.
+     * Must be synchnronized to (a) avoid race condition checking 'streams'.
      */
-    private void closeOpenStreams() {
+    private synchronized void closeOpenStreams() {
         if (streams != null) {
 
             SentinelInputStream[] toClose = streams.toArray(new SentinelInputStream[streams.size()]);
@@ -1126,7 +1190,6 @@ public class ASURLClassLoader
                 }
             }
             streams.clear();
-            streams = null;
         }
     }
 
@@ -1137,8 +1200,8 @@ public class ASURLClassLoader
      * @author vtsyganok
      * @author tjquinn
      */
-    protected class SentinelInputStream extends FilterInputStream {
-        private boolean closed;// = false;
+    protected final class SentinelInputStream extends FilterInputStream {
+        private volatile boolean closed = false;
         private final Throwable throwable;
 
         /**
@@ -1164,6 +1227,9 @@ public class ASURLClassLoader
         /**
          * Invoked by Garbage Collector. If underlying InputStream was not closed properly,
          * the stack trace of the constructor will be logged!
+         * 
+         * 'closed' is 'volatile', but it's a race condition to check it and how this code
+         * relates to _close() is unclear.
          */
         protected void finalize() throws Throwable {
             if (!closed && this.in != null){
@@ -1179,7 +1245,12 @@ public class ASURLClassLoader
             super.finalize();
         }
 
-        private void _close() throws IOException {
+        private synchronized void _close() throws IOException {
+            if ( closed ) {
+                return;
+            }
+            // race condition with above check, but should have no harmful effects
+            
             closed = true;
             getStreams().remove(this);
             super.close();
@@ -1205,9 +1276,8 @@ public class ASURLClassLoader
      * @author fkieviet
      */
     private class InternalJarURLConnection extends JarURLConnection {
-        private URL mURL;
-        private URLEntry mRes;
-        private String mName;
+        private final URLEntry mRes;
+        private final String mName;
 
         /**
          * Constructor
@@ -1257,9 +1327,10 @@ public class ASURLClassLoader
      * @author fkieviet
      */
     private class InternalURLStreamHandler extends URLStreamHandler {
-        private URL mURL;
-        private URLEntry mRes;
-        private String mName;
+        /** must be 'volatile' for thread visibility */
+        private volatile URL   mURL;
+        private final URLEntry mRes;
+        private final String mName;
 
         /**
          * Constructor
@@ -1274,8 +1345,9 @@ public class ASURLClassLoader
 
         /**
          * @see java.net.URLStreamHandler#openConnection(java.net.URL)
+         * Should this method allow opening more than one connection?
          */
-        protected URLConnection openConnection(URL u) throws IOException {
+        protected URLConnection openConnection(final URL u) throws IOException {
             if (u != mURL) { // ref compare on purpose
                 // This should never happen
                 throw new IOException("Cannot open a foreign URL; this.url=" + mURL
@@ -1292,6 +1364,11 @@ public class ASURLClassLoader
          * @param url URL
          */
         public void tieUrl(URL url) {
+            // is it OK to call this twice and whack the variable a second time?
+            if ( mURL != null )
+            {
+                throw new IllegalStateException("Setting the URL more than once not allowed" );
+            }
             mURL = url;
         }
     }
@@ -1300,9 +1377,12 @@ public class ASURLClassLoader
      * This class is used as return value of findClassIntenal method  to return
      * both class bytes and protection domain.
      */
-    private static class ClassData {
-        protected byte[] classBytes;
-        protected ProtectionDomain pd;
+    private static final class ClassData {
+        /** must be 'volatile' to ensure thread visibility */
+        protected volatile byte[] classBytes;
+        
+        /** must be 'final' to ensure thread visibility */
+        protected final ProtectionDomain pd;
 
         ClassData(byte[] classData, ProtectionDomain pd) {
             this.classBytes = classData;
@@ -1320,12 +1400,13 @@ public class ASURLClassLoader
      * Motivation behind this class is discussed at
      * https://glassfish.dev.java.net/issues/show_bug.cgi?id=237.
      */
-    private static class DelegatingClassLoader extends SecureClassLoader {
+    private static final class DelegatingClassLoader extends SecureClassLoader {
 
         /**
          * The application class loader which is used to read class data.
+         * Made 'final' to ensure thread visibility.
          */
-        private ASURLClassLoader delegate = null;
+        private final ASURLClassLoader delegate;
 
         /**
          * Create a new instance.
@@ -1392,6 +1473,5 @@ public class ASURLClassLoader
         }
 
     }
-
-
 }
+
