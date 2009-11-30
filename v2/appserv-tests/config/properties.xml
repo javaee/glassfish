@@ -126,8 +126,8 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
 
 <target name="setToolWin" if="isWindows">  
   <property name="APPCLIENT" value="${env.S1AS_HOME}/bin/appclient.bat"/>
-  <!--<property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin.bat"/>-->
-  <property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin"/>
+  <property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin.bat"/>
+  <!--<property name="ASADMIN" value="${env.S1AS_HOME}/bin/asadmin"/>-->
   <property name="ASANT" value="${env.S1AS_HOME}/bin/asant.bat"/>
   <property name="CAPTURESCHEMA" 
       value="${env.S1AS_HOME}/bin/capture-schema.bat"/>
