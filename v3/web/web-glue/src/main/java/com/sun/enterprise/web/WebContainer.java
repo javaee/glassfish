@@ -43,6 +43,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.servlet.*;
 import javax.servlet.jsp.JspFactory;
 import javax.servlet.jsp.tagext.JspTag;
@@ -571,6 +572,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Thread.currentThread().setContextClassLoader(
             getClass().getClassLoader());
         try {
+            /*
+             * Trigger a call to sun.awt.AppContext.getAppContext().
+             * This will pin the classloader of this class in memory
+             * and fix a memory leak affecting instances of WebappClassLoader
+             * that was caused by a JRE implementation change in 1.6.0_15
+             * onwards. See IT 11110
+             */
+            ImageIO.getCacheDirectory();
             _embedded.start();
         } catch (LifecycleException le) {
             _logger.log(Level.SEVERE,
