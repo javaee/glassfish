@@ -95,6 +95,13 @@ import java.util.logging.Level;
 
 import com.sun.logging.LogDomains;
 
+import javax.servlet.Servlet;
+import javax.servlet.Filter;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletRequestListener;
+import javax.servlet.http.HttpSessionListener;
+import javax.enterprise.inject.spi.AnnotatedType;
+
 @Service
 public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationContainer> 
     implements PostConstruct, EventListener {
@@ -123,6 +130,12 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     private Map<BundleDescriptor, BeanDeploymentArchive> bundleToBeanDeploymentArchive =
             new HashMap<BundleDescriptor, BeanDeploymentArchive>();
 
+    private static final Class<?>[] NON_CONTEXT_CLASSES = {
+            Servlet.class, ServletContextListener.class, Filter.class,
+            HttpSessionListener.class, ServletRequestListener.class
+            // TODO need to add more classes
+    };
+
     @Override
     public MetaData getMetaData() {
         return new MetaData(true, null, new Class[] {Application.class});
@@ -150,6 +163,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 try {
                     bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
                     bootstrap.startInitialization();
+                    fireProcessInjectionTargetEvents(bootstrap, deploymentImpl);
                     bootstrap.deployBeans();
                 } catch (Throwable t) {
                     DeploymentException de = new DeploymentException(t.getMessage());
@@ -201,6 +215,28 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     _logger.log(Level.WARNING, "JCDI shutdown error", e);
                 }
                 appInfo.addTransientAppMetaData(WELD_SHUTDOWN, "true");
+            }
+        }
+    }
+
+    /*
+     * We are only firing ProcessInjectionTarget<X> for non-contextual EE
+     * components and not using the InjectionTarget<X> from the event during
+     * instance creation in JCDIServiceImpl.java
+     * TODO weld would provide a better way to do this, otherwise we may need
+     * TODO to store InjectionTarget<X> to be used in instance creation
+     */
+    private void fireProcessInjectionTargetEvents(WeldBootstrap bootstrap, DeploymentImpl impl) {
+        List<BeanDeploymentArchive> bdaList = impl.getBeanDeploymentArchives();
+        for(BeanDeploymentArchive bda : bdaList) {
+            Collection<Class<?>> bdaClasses = bda.getBeanClasses();
+            for(Class<?> bdaClazz: bdaClasses) {
+                for(Class<?> nonClazz : NON_CONTEXT_CLASSES) {
+                    if (nonClazz.isAssignableFrom(bdaClazz)) {
+                        AnnotatedType at = bootstrap.getManager(bda).createAnnotatedType(bdaClazz);
+                        bootstrap.getManager(bda).fireProcessInjectionTarget(at);
+                    }
+                }
             }
         }
     }
