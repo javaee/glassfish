@@ -51,12 +51,12 @@
     </target>
 
     <target name="run" depends="init-common">
-        <property name="myhttps.host" value="localhost"/>
-        <property name="myhttps.port" value="8181"/>
+        <!-- <property name="myhttps.host" value="localhost"/>
+         <property name="myhttps.port" value="8181"/> -->
         <java classname="devtests.security.WebSSLClient">
             <sysproperty key="javax.net.debug1" value="ssl,handshake,data,trustmanager"   />
-            <arg value="${myhttps.host}"/>
-            <arg value="${myhttps.port}"/>
+            <arg value="${http.host}"/>
+            <arg value="${https.port}"/>
             <arg value="${contextroot}"/>
             <arg value="${mykeystore.db.file}"/>
             <arg value="${mytruststore.db.file}"/>
