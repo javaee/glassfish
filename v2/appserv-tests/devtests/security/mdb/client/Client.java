@@ -36,8 +36,11 @@ public class Client {
     @Resource(name="MsgBeanQueue", mappedName="jms/security_mdb_InQueue")
     private static javax.jms.Queue msgBeanQueue;
 
-    @Resource(name="ClientQueue", mappedName="foo")
-    private static javax.jms.Queue clientQueue;
+//    @Resource(name="ClientQueue", mappedName="foo")
+//    private static javax.jms.Queue clientQueue;
+@Resource(name="ClientQueue", mappedName="jms/security_mdb_OutQueue") 
+private static javax.jms.Queue clientQueue;
+
 
     private QueueConnection queueCon;
     private QueueSession queueSession;
@@ -114,7 +117,7 @@ public class Client {
         message.setIntProperty("num", 2);
         sendMsgs((javax.jms.Queue) dest, message, num);
 
-        System.out.println("Waiting for queue message");
+/*        System.out.println("Waiting for queue message");
         Message recvdmessage = queueReceiver.receive(TIMEOUT);
         if( recvdmessage != null ) {
             System.out.println("Received message : " + 
@@ -122,7 +125,7 @@ public class Client {
         } else {
             System.out.println("timeout after " + TIMEOUT + " seconds");
             throw new JMSException("timeout" + TIMEOUT + " seconds");
-        }
+        }*/
     }
 }
 
