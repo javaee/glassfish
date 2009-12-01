@@ -26,7 +26,7 @@ public class Which {
                 try {
                     return new File(jarFile.toURI());
                 } catch (URISyntaxException e) {
-                    throw new IllegalArgumentException("Incorrect bootstrap class URI: "+jarFile, e);
+                    return new File(jarFile.getPath());
                 }
             } catch (IOException e) {
                 throw new IllegalArgumentException("Cannot open jar file "+resource, e);
