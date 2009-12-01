@@ -109,7 +109,18 @@ public class MethodMetaData {
     }
 
 
+    public boolean isFileUploadOperation() {
+        return __isFileUploadOperation;
+    }
+
+
+    public void setIsFileUploadOperation(boolean isFileUploadOperation) {
+        __isFileUploadOperation = isFileUploadOperation;
+    }
+
+
     HashMap<String, ParameterMetaData> __parameterMetaData;
     HashMap<String, ParameterMetaData> __queryParamMetaData;
     String __description;
+    boolean __isFileUploadOperation = false;
 }

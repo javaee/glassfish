@@ -114,7 +114,8 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
 
         //do not display empty child resources array
         if ((proxy.getDom().getElementNames().size() > 0) ||
-                (proxy.getCommandResourcesPaths().length > 0)) {
+                (proxy.getCommandResourcesPaths().length > 0) ||
+                     ("applications".equals(getName(uriInfo.getPath(), '/')))) {
             result = result + ",";
             result = result + "\n\n" + indent;
             result = result + quote(getResourcesKey()) + ":[";
@@ -152,6 +153,15 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
             String[][] commandResourcesPaths, String indent) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
+
+        //expose ../applications/application resource to enable deployment
+        //when no applications deployed on server
+        if (elementNames.isEmpty()) {
+            if("applications".equals(getName(uriInfo.getPath(), '/'))) {
+                elementNames.add("application");
+            }
+        }
+
         for (String elementName : elementNames) {
             try {
                 ///List<Dom> elements = proxy.nodeElements(elementName);

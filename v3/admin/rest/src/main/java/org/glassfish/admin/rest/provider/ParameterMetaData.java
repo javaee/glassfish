@@ -66,5 +66,16 @@ public class ParameterMetaData {
     }
 
 
+    public boolean isFileParameter() {
+        return __isFileParameter;
+    }
+
+
+    public void setIsFileParameter(boolean isFileParameter) {
+        __isFileParameter = isFileParameter;
+    }
+
+
     HashMap<String, String> __metaData;
+    boolean __isFileParameter = false;
 }

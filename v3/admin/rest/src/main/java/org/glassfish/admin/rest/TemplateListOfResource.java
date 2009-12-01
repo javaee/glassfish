@@ -173,6 +173,70 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
         }
     }
 
+
+    //called in case of POST on application resource (deployment).
+    //resourceToCreate is the name attribute if provided.
+    private Response CreateResource(HashMap<String, String> data, String resourceToCreate) {
+        try {
+            if (data.containsKey("error")) {
+                String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
+                        "Unable to parse the input entity. Please check the syntax.");
+                return __resourceUtil.getResponse(400, /*parsing error*/
+                        errorMessage, requestHeaders, uriInfo);
+            }
+
+            __resourceUtil.purgeEmptyEntries(data);
+
+            //Command to execute
+            String commandName = getPostCommand();
+            __resourceUtil.defineDefaultParameters(data);
+
+            if ((resourceToCreate == null) || (resourceToCreate.equals(""))) {
+                String newResourceName = data.get("DEFAULT");
+                if (newResourceName.contains("/")) {
+                    newResourceName = __resourceUtil.getName(newResourceName, '/');
+                } else {
+                    if (newResourceName.contains("\\")) {
+                        newResourceName = __resourceUtil.getName(newResourceName, '\\');
+                    }
+                }
+                resourceToCreate = uriInfo.getAbsolutePath() +
+                    "/" + newResourceName;
+            } else {
+                resourceToCreate = uriInfo.getAbsolutePath() +
+                    "/" + resourceToCreate;
+            }
+
+            if (null != commandName) {
+                ActionReport actionReport = __resourceUtil.runCommand(commandName,
+                    data, RestService.getHabitat());
+
+                ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+                if (exitCode == ActionReport.ExitCode.SUCCESS) {
+                    String successMessage =
+                        localStrings.getLocalString("rest.resource.create.message",
+                            "\"{0}\" created successfully.", new Object[] {resourceToCreate});
+                    return __resourceUtil.getResponse(201, //201 - created
+                         successMessage, requestHeaders, uriInfo);
+                }
+
+                String errorMessage = getErrorMessage(data, actionReport);
+                return __resourceUtil.getResponse(400, /*400 - bad request*/
+                    errorMessage, requestHeaders, uriInfo);
+            }
+            String message =
+                localStrings.getLocalString("rest.resource.post.forbidden",
+                    "POST on \"{0}\" is forbidden.", new Object[] {resourceToCreate});
+            return __resourceUtil.getResponse(403, //403 - forbidden
+                 message, requestHeaders, uriInfo);
+
+        } catch (Exception e) {
+            throw new WebApplicationException(e,
+                Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     /*
      * allows for remote files to be put in a tmp area and we pass the
      * local location of this file to the corresponding command instead of the content of the file
@@ -185,15 +249,15 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA) 
-    public void post(FormDataMultiPart formData) {
+    public Response post(FormDataMultiPart formData) {
             /* data passed to the generic command running
              *
              * */
             HashMap<String, String> data = TemplateResource.createDataBasedOnForm(formData);
-            CreateResource(data); //execute the deploy command with a copy of the file locally
+            return CreateResource(data, data.get("name")); //execute the deploy command with a copy of the file locally
 
     }
- 
+
     @OPTIONS 
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_HTML, MediaType.APPLICATION_XML})
     public OptionsResult options() {
@@ -209,6 +273,9 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
                 MethodMetaData postMethodMetaData = __resourceUtil.getMethodMetaData(
                     command, RestService.getHabitat(), RestService.logger);
                 postMethodMetaData.setDescription("Create");
+                if (__resourceUtil.getResourceName(uriInfo).equals("Application")) {
+                    postMethodMetaData.setIsFileUploadOperation(true);
+                }
                 optionsResult.putMethodMetaData("POST", postMethodMetaData);
             }
         } catch (Exception e) {

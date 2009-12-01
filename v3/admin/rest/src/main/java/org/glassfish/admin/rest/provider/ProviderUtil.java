@@ -340,6 +340,9 @@ public class ProviderUtil extends Util {
             while (iterator.hasNext()) {
                 parameter = iterator.next();
                 parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+                if ((methodMetaData.isFileUploadOperation()) && (parameter.equals("id"))) {
+                    parameterMetaData.setIsFileParameter(true);
+                }
                 result = result +
                     getHtmlRespresentationForParameter(parameter, parameterMetaData);
             }
@@ -353,8 +356,11 @@ public class ProviderUtil extends Util {
         }
 
         if (!result.equals("")) {
+            //set encType if file upload operation
+            String encType = methodMetaData.isFileUploadOperation() ?
+                " enctype=\"multipart/form-data\"" : "" ;
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
-                "\" method=\"" + /*commandMethod*/"post" + "\">" +  //hack-1 : support delete method for html
+                "\" method=\"" + /*commandMethod*/"post\"" + encType + ">" +  //hack-1 : support delete method for html
                 "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
 
             //hack-1 : support delete method for html
@@ -495,6 +501,9 @@ public class ProviderUtil extends Util {
     static private String getHtmlRespresentationForParameter(String parameter,
             ParameterMetaData parameterMetaData, String parameterValue) {
         String result = parameter;
+        //set appropriate type of input field. In can be of type file or text
+        //file type is used in case of deploy operation
+        String parameterType = parameterMetaData.isFileParameter() ? "file" : "text";
         
         //indicate mandatory field with * super-script
         if (parameterMetaData.getAttributeValue(Constants.OPTIONAL).equalsIgnoreCase("false")) {
@@ -534,7 +543,7 @@ public class ProviderUtil extends Util {
         if (keyAttribute) {
             if (hasValue) {
                 result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
-                    parameterValue + "\" type=\"text\" disabled=\"disabled\"></dd>";
+                    parameterValue + "\" type=\"" + parameterType + "\" disabled=\"disabled\"></dd>";
             } else {
                 //control should never reach here.
             }
@@ -562,9 +571,9 @@ public class ProviderUtil extends Util {
                 //use text box
                 if (hasValue) {
                     result = result + "<dd><input name=\"" + parameter + "\" value =\"" +
-                        parameterValue + "\" type=\"text\"></dd>";
+                        parameterValue + "\" type=\"" +  parameterType + "\"></dd>";
                 } else {
-                    result = result + "<dd><input name=\"" + parameter + "\" type=\"text\"></dd>";
+                    result = result + "<dd><input name=\"" + parameter + "\" type=\"" + parameterType + "\"></dd>";
                 }
             }
         }

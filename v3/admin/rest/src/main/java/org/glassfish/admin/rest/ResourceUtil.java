@@ -94,6 +94,22 @@ public class ResourceUtil extends Util {
         }
     }
 
+
+    /**
+     * Adjust the input parameters. In case of POST and DELETE methods, user
+     * can provide id or DEFAULT parameter for primary parameter(i.e the
+     * object to create or delete). This method is used to rename primary
+     * parameter name to DEFAULT irrespective of what user provides.
+     */
+    public void defineDefaultParameters(HashMap<String, String> data) {
+        if (data != null) {
+            if (!(data.containsKey("DEFAULT"))) {
+                renameParameter(data, "id", "DEFAULT");
+            }
+        }
+    }
+
+
     /**
      * Returns the name of the command associated with
      * this resource,if any, for the given operation.

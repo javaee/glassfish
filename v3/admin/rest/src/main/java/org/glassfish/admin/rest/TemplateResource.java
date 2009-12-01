@@ -307,7 +307,20 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                     //save it and mark it as delete on exit.
                     InputStream fileStream = n.getValueAs(InputStream.class);
                     String mimeType = n.getMediaType().toString();
-                    File f = saveFile(n.getContentDisposition().getFileName(), mimeType, fileStream);
+
+                    //Use just the filename without complete path. File creation
+                    //in case of remote deployment failing because fo this.
+                    String fileName = n.getContentDisposition().getFileName();
+                    ResourceUtil resourceUtil = new ResourceUtil();
+                    if (fileName.contains("/")) {
+                        fileName = resourceUtil.getName(fileName, '/');
+                    } else {
+                        if (fileName.contains("\\")) {
+                            fileName = resourceUtil.getName(fileName, '\\');
+                        }
+                    }
+
+                    File f = saveFile(fileName, mimeType, fileStream);
                     f.deleteOnExit();
                     //put only the local path of the file in the same field.
                     data.put(fieldName, f.getAbsolutePath());

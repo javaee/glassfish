@@ -122,6 +122,15 @@ public class GetResultHtmlProvider extends ProviderUtil implements MessageBodyWr
     private String getResourcesLinks(Dom proxy, String[][] commandResourcesPaths) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
+
+        //expose ../applications/application resource to enable deployment
+        //when no applications deployed on server
+        if (elementNames.isEmpty()) {
+            if("applications".equals(getName(uriInfo.getPath(), '/'))) {
+                elementNames.add("application");
+            }
+        }
+
         for (String elementName : elementNames) { //for each element
             try {
                 result = result + "<a href=\"" + getElementLink(uriInfo, elementName) + "\">";

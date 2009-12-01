@@ -117,7 +117,9 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
 
        //do not display empty child resources array
         if ((proxy.getDom().getElementNames().size() > 0) ||
-                (proxy.getCommandResourcesPaths().length > 0)) {
+                (proxy.getCommandResourcesPaths().length > 0) ||
+                     ("applications".equals(getName(uriInfo.getPath(), '/')))) {
+
             result = result + "\n\n" + indent;
             result = result + getStartXmlElement(getResourcesKey().replace(' ', '-'));
             result = result + getResourcesLinks(proxy.getDom(),
@@ -155,6 +157,15 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
             String[][] commandResourcesPaths, String indent) {
         String result = "";
         Set<String> elementNames = proxy.getElementNames();
+
+        //expose ../applications/application resource to enable deployment
+        //when no applications deployed on server
+        if (elementNames.isEmpty()) {
+            if("applications".equals(getName(uriInfo.getPath(), '/'))) {
+                elementNames.add("application");
+            }
+        }
+
         for (String elementName : elementNames) { //for each element
             try {
                     result = result + "\n" + indent;
