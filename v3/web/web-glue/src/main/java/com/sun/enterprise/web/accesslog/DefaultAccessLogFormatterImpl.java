@@ -39,20 +39,11 @@ package com.sun.enterprise.web.accesslog;
 import java.nio.CharBuffer;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import org.apache.catalina.Container;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Request;
@@ -107,8 +98,16 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
     private static final int HEADER_BY_NAME_PREFIX_LEN
         = HEADER_BY_NAME_PREFIX.length();
     private static final String HEADERS_BY_NAME_PREFIX = "headers.";
-    private static final int HEADERS_BY_NAME_PREFIX_LEN
-        = HEADERS_BY_NAME_PREFIX.length();
+    private static final int HEADERS_BY_NAME_PREFIX_LEN =
+        HEADERS_BY_NAME_PREFIX.length();
+    private static final String RESPONSE_HEADER_BY_NAME_PREFIX =
+        "response.header.";
+    private static final int RESPONSE_HEADER_BY_NAME_PREFIX_LEN =
+        RESPONSE_HEADER_BY_NAME_PREFIX.length();
+    private static final String RESPONSE_HEADERS_BY_NAME_PREFIX =
+        "response.headers.";
+    private static final int RESPONSE_HEADERS_BY_NAME_PREFIX_LEN =
+        RESPONSE_HEADERS_BY_NAME_PREFIX.length();
     private static final String HEADER_AUTH = "header.auth";
     private static final String HEADER_DATE = "header.date";
     private static final String HEADER_IF_MOD_SINCE = "header.if-mod-since";
@@ -132,7 +131,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
      * List of access log pattern components
      */
     private LinkedList<String> patternComponents;
-
 
     /**
      * Constructor.
@@ -182,7 +180,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         };
     }
 
-
     /**
      * Appends an access log entry line, with info obtained from the given
      * request and response objects, to the given CharBuffer.
@@ -195,8 +192,10 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
                                Response response,
                                CharBuffer charBuffer) {
 
-        ServletRequest req = request.getRequest();
-        HttpServletRequest hreq = (HttpServletRequest) req;
+        HttpServletRequest hreq = (HttpServletRequest)
+            request.getRequest();
+        HttpServletResponse hres = (HttpServletResponse)
+            response.getResponse();
 
         for (int i=0; i<patternComponents.size(); i++) {
             String pc = patternComponents.get(i);
@@ -213,9 +212,9 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
             } else if (AUTH_USER_NAME.equals(pc)) {
                 appendAuthUserName(charBuffer, hreq);
             } else if (CLIENT_DNS.equals(pc)) {
-                appendClientDNS(charBuffer, req);
+                appendClientDNS(charBuffer, hreq);
             } else if (CLIENT_NAME.equals(pc)) {
-                appendClientName(charBuffer, req);
+                appendClientName(charBuffer, hreq);
             } else if (COOKIE.equals(pc)) {
                 appendCookie(charBuffer, hreq);
             } else if (COOKIES.equals(pc)) {
@@ -274,12 +273,17 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
                 appendHeadersByName(charBuffer,
                                     pc.substring(HEADERS_BY_NAME_PREFIX_LEN),
                                     hreq);
+            } else if (pc.startsWith(RESPONSE_HEADER_BY_NAME_PREFIX)) {
+                appendResponseHeaderByName(charBuffer,
+                    pc.substring(RESPONSE_HEADER_BY_NAME_PREFIX_LEN), hres);
+            } else if (pc.startsWith(RESPONSE_HEADERS_BY_NAME_PREFIX)) {
+                appendResponseHeadersByName(charBuffer,
+                    pc.substring(RESPONSE_HEADERS_BY_NAME_PREFIX_LEN), hres);
             }
 
             charBuffer.put(SPACE);
         }
     }
-
 
     /*
      * Parses the access log pattern (that was specified via setPattern) into
@@ -341,7 +345,9 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
                     && !USER_AGENT.equals(component) 
                     && !VS_ID.equals(component)
                     && !component.startsWith(HEADER_BY_NAME_PREFIX)
-                    && !component.startsWith(HEADERS_BY_NAME_PREFIX)) {
+                    && !component.startsWith(HEADERS_BY_NAME_PREFIX)
+                    && !component.startsWith(RESPONSE_HEADER_BY_NAME_PREFIX)
+                    && !component.startsWith(RESPONSE_HEADERS_BY_NAME_PREFIX)) {
                 _logger.log(
                     Level.SEVERE,
                     "peaccesslogvalve.invalidAccessLogPatternComponent",
@@ -358,7 +364,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
 
         return list;
     }
-
 
     /*
      * Appends the string representation of the value of the request
@@ -382,7 +387,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         }
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the string representation of the value of the session
@@ -414,7 +418,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the client host name of the given request to the given char
      * buffer.
@@ -428,7 +431,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(value);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the client DNS of the given request to the given char
@@ -444,7 +446,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the authenticated user (if any) to the given char buffer.
      */
@@ -457,7 +458,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(user);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the current date to the given char buffer.
@@ -477,7 +477,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends info about the given request to the given char buffer.
      */
@@ -495,14 +494,12 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the response status to the given char buffer.
      */
     private void appendResponseStatus(CharBuffer cb, Response response) {
         cb.put(String.valueOf(((HttpResponse) response).getStatus()));
     }
-
 
     /*
      * Appends the content length of the given response to the given char
@@ -511,7 +508,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
     private void appendResponseLength(CharBuffer cb, Response response) {
         cb.put("" + response.getContentCount());
     }
-
 
     /*
      * Appends the value of the 'user-agent' header of the given request to
@@ -526,7 +522,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(ua);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the time (in milliseconds) it has taken to service the given
@@ -548,7 +543,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the value of the 'referer' header of the given request to
      * the given char buffer.
@@ -562,7 +556,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(referer);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the Accept header of the given request to the given char
@@ -578,7 +571,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the Authorization header of the given request to the given char
      * buffer.
@@ -593,7 +585,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the Date header of the given request to the given char buffer.
      */
@@ -606,7 +597,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(date);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the If-Modified-Since header of the given request to the
@@ -622,7 +612,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(ifModSince);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the value of the header with the specified name in the given
@@ -645,6 +634,27 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
+    /*
+     * Appends the value of the header with the specified name in the given
+     * response to the given char buffer, or
+     * NULL-RESPONSE-HEADER-<headerName> if no header with the given name
+     * is present in the response.
+     */
+    private void appendResponseHeaderByName(CharBuffer cb,
+                                            String headerName,
+                                            HttpServletResponse hres) {
+        if (headerName == null) {
+            throw new IllegalArgumentException("Null response header name");
+        }
+
+        cb.put(QUOTE);
+        String value = hres.getHeader(headerName);
+        if (value == null) {
+            value = "NULL-RESPONSE-HEADER-" + headerName.toUpperCase();
+        }
+        cb.put(value);
+        cb.put(QUOTE);
+    }
 
     /*
      * Appends the values (separated by ";") of all headers with the
@@ -680,6 +690,36 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
+    /*
+     * Appends the values (separated by ";") of all headers with the
+     * specified name in the given response to the given char buffer, or
+     * NULL-RESPONSE-HEADERS-<headerName> if no headers with the given name
+     * are present in the response.
+     */
+    private void appendResponseHeadersByName(CharBuffer cb,
+            String headerName, HttpServletResponse hres) {
+        if (headerName == null) {
+            throw new IllegalArgumentException("Null response header name");
+        }
+
+        cb.put(QUOTE);
+        boolean first = true;
+        Collection<String> values = hres.getHeaders(headerName);
+        if (values != null) {
+            for (String value : values) {
+                if (first) {
+                    first = false;
+                } else {
+                    cb.put(";");
+                }
+                cb.put(value);
+            }
+        }
+        if (first) {
+            cb.put("NULL-RESPONSE-HEADERS-" + headerName.toUpperCase());
+        }
+        cb.put(QUOTE);
+    }
 
     /*
      * Appends the name and value (separated by '=') of the first cookie
@@ -696,7 +736,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(cookie);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the name and value (separated by '=') of all cookies
@@ -719,7 +758,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the value of the first cookie in the given request to the
      * given char buffer, or NULL-COOKIE-VALUE if no cookies are present
@@ -735,7 +773,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(cookieValue);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the value of the first cookie with the given cookie name to the
@@ -767,7 +804,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(cookieValue);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the value of all cookies with the given cookie name to the
@@ -801,7 +837,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the HTTP method of the given request to the given char buffer.
      */
@@ -815,7 +850,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the URI of the given request to the given char buffer.
      */
@@ -828,7 +862,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(uri);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the HTTP protocol version of the given request to the given
@@ -844,7 +877,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(QUOTE);
     }
 
-
     /*
      * Appends the query string of the given request to the given char buffer.
      */
@@ -857,7 +889,6 @@ public class DefaultAccessLogFormatterImpl extends AccessLogFormatter {
         cb.put(query);
         cb.put(QUOTE);
     }
-
 
     /*
      * Appends the id of the virtual server with which this access log valve
