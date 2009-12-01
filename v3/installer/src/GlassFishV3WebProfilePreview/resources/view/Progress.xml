@@ -58,7 +58,6 @@
 	  <apt:slideResource>/view/jwsdp_4.png</apt:slideResource>
 	  <apt:slideResource>/view/jwsdp_5.png</apt:slideResource>
 	  <apt:slideResource>/view/jwsdp_6.png</apt:slideResource>
-	  <apt:slideResource>/view/jwsdp_7.png</apt:slideResource>
         </apt:slideShow>
       </apt:visual>
     </apt:property>
