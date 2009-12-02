@@ -31,7 +31,7 @@ own identifying information: Portions Copyright [yyyy]
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
 <property name="title" value="GlassFish v3"/>
-<property name="description" value="GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform."/>
+<property name="description" value="GlassFish v3 is the first Java EE 6 compatible application server, has a modular, lightweight, extensible architecture built on OSGi, and improves developer productivity by retaining HTTP session state on application redeployment."/>
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 <property name="dev.authority" value="dev.glassfish.org"/>
 <property name="contrib.authority" value="contrib.glassfish.org"/>
@@ -192,7 +192,7 @@ own identifying information: Portions Copyright [yyyy]
     </exec>
 
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property description 'GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform.'"/>
+        <arg line="set-property description 'GlassFish v3 is the first Java EE 6 compatible application server, has a modular, lightweight, extensible architecture built on OSGi, and improves developer productivity by retaining HTTP session state on application redeployment.'"/>
     </exec>
    
 </target>
