@@ -24,7 +24,7 @@ public class ProbeServlet extends HttpServlet {
     private ProbeClientMediator listenerRegistrar;
 
     private void fireProbe() {
-        myProbeMethod1("fired-probe", new Random(System.nanoTime()).nextInt());
+        myProbeMethod1("fired-probe");
     }
 
     // all boilerplate below...
@@ -50,8 +50,8 @@ public class ProbeServlet extends HttpServlet {
     } 
 
     @Probe(name="myProbe1")
-    public void myProbeMethod1(String s, int i) {
-        System.out.println("myProbeMethod called with " + s + ", " + i);
+    public void myProbeMethod1(String s) {
+        System.out.println("myProbeMethod called with " + s);
     }
 
     @Override
