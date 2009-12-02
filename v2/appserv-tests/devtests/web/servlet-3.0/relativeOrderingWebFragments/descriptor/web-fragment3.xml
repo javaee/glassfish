@@ -34,7 +34,10 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<web-fragment>
+<web-fragment xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
+    version="3.0"> 
   <name>C</name>
   <ordering>
       <before><name>A</name><name>B</name></before>
