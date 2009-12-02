@@ -8,9 +8,9 @@
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-PRODUCT_NAME=GlassFish v3 
+PRODUCT_NAME=GlassFish v3
 
-app_title=GlassFish v3 
+app_title=GlassFish v3
 
 # Text for Buttons
 btnCancel_text=Cancel
