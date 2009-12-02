@@ -8,7 +8,7 @@ import org.glassfish.external.probe.provider.annotations.ProbeListener;
 
 public class MyProbeListener {
     @ProbeListener("fooblog:samples:ProbeServlet:myProbe1")
-    public void probe1(String s) {
+    public void probe1(String s, int i) {
         System.out.println("@@@@@@@@@@@@@@@@@@@  PROBE LISTENER HERE!!!!   @@@@@@@@@@@@@@@@@@@@@@@");
     }
 }
