@@ -81,7 +81,7 @@
                 />
         </sun:button>
         <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}" immediate="true"
-            onClick="top.admingui.ajax.loadPage({url:'{request.contextPath}/common/applications/applications.jsf'}); return false;">
+            onClick="top.admingui.ajax.loadPage({url:'#{request.contextPath}/common/applications/applications.jsf'}); return false;">
         //    <!command
         //        println("cancel");
         //        gf.navigate(page="{request.contextPath}/common/applications/applications.jsf");
