@@ -456,9 +456,7 @@ public class WebappClassLoader
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-
         this.debug = debug;
-
     }
 
 
@@ -466,9 +464,7 @@ public class WebappClassLoader
      * Return the "delegate first" flag for this class loader.
      */
     public boolean getDelegate() {
-
         return (this.delegate);
-
     }
 
 
@@ -544,9 +540,7 @@ public class WebappClassLoader
      * Return the JAR path.
      */
     public String getJarPath() {
-
         return this.jarPath;
-
     }
 
 
@@ -554,9 +548,7 @@ public class WebappClassLoader
      * Change the Jar path.
      */
     public void setJarPath(String jarPath) {
-
         this.jarPath = jarPath;
-
     }
 
 
@@ -825,6 +817,7 @@ public class WebappClassLoader
     /**
      * Render a String representation of this object.
      */
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("WebappClassLoader (delegate=");
@@ -854,7 +847,8 @@ public class WebappClassLoader
      *
      * @exception ClassNotFoundException if the class was not found
      */
-    public Class<?> findClass(String name) throws ClassNotFoundException {
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
 
         if (logger.isLoggable(Level.FINER))
             logger.finer("    findClass(" + name + ")");
@@ -992,6 +986,7 @@ public class WebappClassLoader
      *
      * @param name Name of the resource to be found
      */
+    @Override
     public URL findResource(String name) {
 
         if (logger.isLoggable(Level.FINER))
@@ -1034,6 +1029,7 @@ public class WebappClassLoader
      *
      * @exception IOException if an input/output error occurs
      */
+    @Override
     public Enumeration<URL> findResources(String name) throws IOException {
 
         if (logger.isLoggable(Level.FINER))
@@ -1117,6 +1113,7 @@ public class WebappClassLoader
      *
      * @param name Name of the resource to return a URL for
      */
+    @Override
     public URL getResource(String name) {
 
         if (logger.isLoggable(Level.FINER))
@@ -1201,6 +1198,7 @@ public class WebappClassLoader
      *
      * @param name Name of the resource to return an input stream for
      */
+    @Override
     public InputStream getResourceAsStream(String name) {
 
         if (logger.isLoggable(Level.FINER))
@@ -1285,6 +1283,7 @@ public class WebappClassLoader
     /**
      * Finds all the resources with the given name.
      */
+    @Override
     public Enumeration<URL> getResources(String name) throws IOException {
 
 	final Enumeration[] enums = new Enumeration[2];
@@ -1343,6 +1342,7 @@ public class WebappClassLoader
      *
      * @exception ClassNotFoundException if the class was not found
      */
+    @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
 
         if (logger.isLoggable(Level.FINER)) {
@@ -1512,7 +1512,8 @@ public class WebappClassLoader
      *
      * @exception ClassNotFoundException if the class was not found
      */
-    public Class<?> loadClass(String name, boolean resolve)
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException {
 
         Class<?> clazz = loadClass(name);
@@ -1537,6 +1538,7 @@ public class WebappClassLoader
      * @param codeSource where the code was loaded from
      * @return PermissionCollection for CodeSource
      */
+    @Override
     protected PermissionCollection getPermissions(CodeSource codeSource) {
 
         String codeUrl = codeSource.getLocation().toString();
@@ -1563,6 +1565,7 @@ public class WebappClassLoader
      * along with any URLs subsequently appended by the addURL() method.
      * @return the search path of URLs for loading classes and resources.
      */
+    @Override
     public URL[] getURLs() {
 
         if (repositoryURLs != null) {
