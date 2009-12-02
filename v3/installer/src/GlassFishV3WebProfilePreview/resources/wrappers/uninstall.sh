@@ -141,8 +141,17 @@ fireUninstaller() {
 cd ${CWD}/install/bin
 #Pass in any additional arguments passed to the script.
 ./uninstaller -s ${CWD}/var/install/config/glassfish -m file://${CWD}/install/metadata -p Default-Product-ID=glassfish -p Pkg-Format=zip -J "-Dorg.openinstaller.provider.configurator.class=org.openinstaller.provider.conf.InstallationConfigurator" ${ARGS} 
+EXIT_CODE=$?
+if [ -f /bin/rm ]
+then
+	if [ -d ${CWD}/.org.opensolaris,pkg ]
+	then
+		/bin/rm -rf ${CWD}/.org.opensolaris,pkg ]
+	fi
+fi
 #Pass the exit code from OI back to the env.
-exit $?
+
+exit ${EXIT_CODE}
 }
 
 # Starts here..
