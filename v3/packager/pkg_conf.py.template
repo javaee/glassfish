@@ -31,5 +31,5 @@ javahelp_version="2.0.2,0-0"
 
 #description
 glassfish_description="GlassFish v3 Application Server"
-glassfish_description_long="GlassFish v3 is the reference implementation of Java EE 6 Platform as defined by JCP (Java Community Process, www.jcp.org). In addition to the latest Java EE standards, GlassFish v3 includes scripting support built on top of the new modular GlassFish kernel running on OSGi platform."
+glassfish_description_long="GlassFish v3 is an application server created using modular, lightweight, extensible architecture built on OSGi.  It is the first implementation of Java EE 6 standard and is a great developer platform, starts fast, is easy to use and has extensions to support dynamic languages like jRuby. "
 glassfish_info_classification="Application Servers"
