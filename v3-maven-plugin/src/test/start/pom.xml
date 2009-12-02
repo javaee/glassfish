@@ -51,6 +51,7 @@
       <plugin>
         <groupId>org.glassfish</groupId>
         <artifactId>maven-embedded-glassfish-plugin</artifactId>
+	<version>3.0-SNAPSHOT</version>
         <configuration>
           <goalPrefix>glassfish</goalPrefix>
        </configuration>
