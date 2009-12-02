@@ -487,7 +487,13 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
         if (parseLevelsBoolean(enabledStr)) {
             logger.log(Level.INFO,
                         "enableStatsMonitoring", new Object[] {enabledStr});
-            spmd.enableStatsProviders(propName);
+            try {
+                spmd.enableStatsProviders(propName);
+            } catch(RuntimeException rte) {
+                logger.log(Level.INFO, rte.getMessage());
+                if (logger.isLoggable(Level.FINE))
+                    logger.log(Level.FINE, "", rte);
+            }
         } else {
             logger.log(Level.INFO,
                         "disableStatsMonitoring");
