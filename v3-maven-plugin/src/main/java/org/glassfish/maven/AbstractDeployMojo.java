@@ -65,20 +65,11 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
  * @parameter expression="${createTables}"
  */
     protected Boolean createTables;
-/**
- * @parameter expression="${dropAndCreateTables}"
- */
-    protected Boolean dropAndCreateTables;
 
 /**
  * @parameter expression="${libraries}"
  */
     protected String libraries;
-
-/**
- * @parameter expression="${virtualServers}"
- */
-    protected String virtualServers;
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
@@ -89,14 +80,10 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
             cmdParams.contextroot = contextRoot;
         if (precompileJsp != null)
             cmdParams.precompilejsp = precompileJsp;
-        if (virtualServers != null)
-            cmdParams.virtualservers = virtualServers;
         if (dbVendorName != null)
             cmdParams.dbvendorname = dbVendorName;
         if (createTables != null)
             cmdParams.createtables = createTables;
-        if (dropAndCreateTables != null)
-            cmdParams.dropandcreatetables = dropAndCreateTables;
         if (libraries != null)
             cmdParams.libraries = libraries;
     }
