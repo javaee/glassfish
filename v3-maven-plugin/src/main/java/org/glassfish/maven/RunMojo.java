@@ -100,10 +100,12 @@ public class RunMojo extends AbstractDeployMojo {
                 String appName = deployer.deploy(deployArchive, cmdParams);
                 System.out.println("Hit ENTER to redeploy, X to exit");
                 String str = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                if (str.equalsIgnoreCase("X"))
-                    break;
+
                 undeployCommandParameters.name = appName;
                 deployer.undeploy(appName, undeployCommandParameters);
+
+                if (str.equalsIgnoreCase("X"))
+                    break;
             }
         } catch(Exception e) {
            throw new MojoExecutionException(e.getMessage(),e);
