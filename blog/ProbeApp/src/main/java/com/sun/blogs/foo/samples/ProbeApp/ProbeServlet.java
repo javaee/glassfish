@@ -11,26 +11,29 @@ import org.glassfish.flashlight.client.ProbeClientMediator;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 
 /**
- *
  * @author Byron Nevins
  */
 
 @ProbeProvider (moduleProviderName="fooblog", moduleName="samples", probeProviderName="ProbeServlet")
 
 public class ProbeServlet extends HttpServlet {
-
     @Resource
     private ProbeProviderFactory probeProviderFactory;
 
     @Resource
     private ProbeClientMediator listenerRegistrar;
 
+    private void fireProbe() {
+        myProbeMethod1("fired-probe", new Random(System.nanoTime()).nextInt());
+    }
+
+    // all boilerplate below...
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        fireProbe();
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        myProbeMethod1("hello at " + new Date());
         try {
             out.println("<html>");
             out.println("<head>");
@@ -47,8 +50,8 @@ public class ProbeServlet extends HttpServlet {
     } 
 
     @Probe(name="myProbe1")
-    public void myProbeMethod1(String s) {
-        System.out.println("ProbeServlet PROBE-1 here!!! " + s);
+    public void myProbeMethod1(String s, int i) {
+        System.out.println("myProbeMethod called with " + s + ", " + i);
     }
 
     @Override
@@ -104,5 +107,6 @@ public class ProbeServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
 
 }
