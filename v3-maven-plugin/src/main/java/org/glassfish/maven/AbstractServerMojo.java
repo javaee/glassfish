@@ -144,7 +144,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         String classPath = "";
 
         for( Artifact a : (Set<Artifact>)project.getPluginArtifacts()) {
-            a.setVersion("3.0-SNAPSHOT");
+            String version = a.getVersion();
+            // version should be specified in pom.xml, as a good practice. Default to 3.0 if none was specified ??.
+            if (version == null || version.equals("RELEASE"))
+                a.setVersion("3.0");
+            
             // get the plugin artifact and find the MavenProject (POM)
             MavenProject pluginProject = projectBuilder.buildFromRepository(a, project.getRemoteArtifactRepositories(), localRepository);
             List ea = resolveEmbeddedArtifacts(pluginProject);
