@@ -1,3 +1,10 @@
+<!--
+  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  
+  Use is subject to License Terms
+--> 
 <!ENTITY % optiontype "(STRING | BOOLEAN | PASSWORD | FILE_PATH | FILE | DIRECTORY | PROPERTY | PROPERTIES)">
 <!-- maps to OptionType Enumeration -->
 <!ENTITY % boolean "(TRUE | FALSE)">
