@@ -169,7 +169,7 @@ public class PECoyoteConnector extends Connector {
     /**
      * Set the number of <code>Selector</code> used by Grizzly.
      */
-    public int selectorReadThreadsCount = 0;
+    private int selectorReadThreadsCount = 0;
     
     /**
      * The default response-type
@@ -516,14 +516,12 @@ public class PECoyoteConnector extends Connector {
         return useDirectByteBuffer;
     }
 
-    
     public void setProcessorWorkerThreadsTimeout(int timeout){
         processorWorkerThreadsTimeout = timeout;
         setProperty("processorWorkerThreadsTimeout", 
                     String.valueOf(timeout));        
     }
-    
-    
+        
     public int getProcessorWorkerThreadsTimeout(){
         return processorWorkerThreadsTimeout;
     }
@@ -532,11 +530,15 @@ public class PECoyoteConnector extends Connector {
         return minProcessorWorkerThreadsIncrement;
     }
  
-    public void setSelectorReadThreadsCount(int selectorReadThreadsCount){
+    public void setSelectorReadThreadsCount(int selectorReadThreadsCount) {
+        this.selectorReadThreadsCount = selectorReadThreadsCount;
         setProperty("selectorReadThreadsCount", 
-                     String.valueOf(selectorReadThreadsCount)); 
+                    String.valueOf(selectorReadThreadsCount)); 
     }
     
+    public int getSelectorReadThreadsCount() {
+        return selectorReadThreadsCount;
+    }
     
     /**
      * Set the default response type used. Specified as a semi-colon
@@ -582,8 +584,7 @@ public class PECoyoteConnector extends Connector {
             grizzlyMonitor.registerMonitoringLevelEvents();
         }
     }
-    
-    
+        
     public void stop() throws LifecycleException {
         super.stop(); 
         if ( grizzlyMonitor != null ) {
@@ -591,27 +592,29 @@ public class PECoyoteConnector extends Connector {
             grizzlyMonitor=null;
         }
     }
-   //------------------------------------------------- FileCache config -----/
 
-   
+    //------------------------------------------------- FileCache config -----/
+
     /**
      * The timeout in seconds before remove a <code>FileCacheEntry</code>
      * from the <code>fileCache</code>
      */
-    public void setSecondsMaxAge(int sMaxAges){
+    public void setSecondsMaxAge(int sMaxAges) {
         secondsMaxAge = sMaxAges;
         setProperty("secondsMaxAge", String.valueOf(secondsMaxAge));        
     }
     
+    public int getSecondsMaxAge() {
+        return secondsMaxAge;
+    }
     
     /**
      * Set the maximum entries this cache can contains.
      */
     public void setMaxCacheEntries(int mEntries){
         maxCacheEntries = mEntries;
-        setProperty("maxCacheEntries", String.valueOf(maxCacheEntries));         
+        setProperty("maxCacheEntries", String.valueOf(maxCacheEntries));
     }
-
     
     /**
      * Return the maximum entries this cache can contains.

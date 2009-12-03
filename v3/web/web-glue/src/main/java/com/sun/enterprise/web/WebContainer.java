@@ -1027,11 +1027,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     connector.setAuthPassthroughEnabled(
                                     ConfigBeansUtilities.toBoolean(propValue));
                 } else if ("ssl-session-timeout".equals(propName)) {
-                    connector.setSSLSessionTimeout(propValue);
+                    connector.setSslSessionTimeout(propValue);
                 } else if ("ssl3-session-timeout".equals(propName)) {
-                    connector.setSSL3SessionTimeout(propValue);
+                    connector.setSsl3SessionTimeout(propValue);
                 } else if ("ssl-cache-entries".equals(propName)) {
-                    connector.setSSLSessionCacheSize(propValue);
+                    connector.setSslSessionCacheSize(propValue);
                 } else if ("proxyHandler".equals(propName)) {
                     connector.setProxyHandler(propValue);
                 } else {
