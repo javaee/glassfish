@@ -104,7 +104,7 @@
         </sun:property>
 
        <sun:property id="Compression"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.http.Compression}" helpText="$resource{i18n_web.http.CompressionHelp}">
-            <sun:checkbox label="$resource{i18n_web.common.enabled}" selected="#{pageSession.httpMap['Compression']}" selectedValue="true" />
+            <sun:dropDown id="Compression" selected="#{pageSession.httpMap['Compression']}" labels={"on","off","force"} />
         </sun:property>
 
 
