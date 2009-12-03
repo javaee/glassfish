@@ -68,7 +68,7 @@
     </target>
 
     <target name="all" depends="init-common, build">
-        <java classname="org.glassfish.devtests.web.asadmindeletes.WebTest" classpath="${test}"/>
+        <java classname="org.glassfish.devtests.web.httpcompression.HttpCompressionTest" classpath="${test}"/>
     </target>
 
     <target name="usage">

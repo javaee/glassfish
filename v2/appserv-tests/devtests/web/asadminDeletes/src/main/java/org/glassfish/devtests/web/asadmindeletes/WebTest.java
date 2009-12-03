@@ -35,119 +35,49 @@
  */
 package org.glassfish.devtests.web.asadmindeletes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import com.sun.appserv.test.util.results.SimpleReporterAdapter;
+import com.sun.appserv.test.BaseDevTest;
 
 /*
  * Unit test for asadmin deletes.
  */
-public class WebTest {
-    private static final String TEST_NAME = "asadmin-deletes";
-    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
+public class WebTest extends BaseDevTest {
     private final String name = System.currentTimeMillis() + "";
-    private final PrintWriter writer;
-
-    public WebTest() throws FileNotFoundException {
-        writer = new PrintWriter("test.out");
-    }
+    private static final boolean DEBUG = false;
 
     public static void main(String[] args) throws FileNotFoundException {
-        stat.addDescription("Unit test for deleting referenced domain.xml entities");
         new WebTest().run();
     }
 
+    @Override
+    protected String getTestName() {
+        return "asadmin-deletes";
+    }
+
+    @Override
+    protected String getTestDescription() {
+        return "Unit test for deleting referenced domain.xml entities";
+    }
+
     public void run() {
-        asadmin2("create-threadpool", false, "create-threadpool", name);
-        asadmin2("create-transport", false, "create-transport", name);
-        asadmin2("create-protocol", false, "create-protocol", name);
-        asadmin2("create-http", false, "create-http", "--default-virtual-server", "server", name);
-        asadmin2("create-network-listener", false, "create-network-listener",
+        report("create-threadpool", asadmin("create-threadpool", name));
+        report("create-transport", asadmin("create-transport", name));
+        report("create-protocol", asadmin("create-protocol", name));
+        report("create-http", asadmin("create-http", "--default-virtual-server", "server", name));
+        report("create-network-listener", asadmin("create-network-listener",
             "--listenerport", "10000",
             "--protocol", name,
             "--threadpool", name,
             "--transport", name,
-            name);
-        asadmin2("delete-threadpool", true, "delete-threadpool", name);
-        asadmin2("delete-transport", true, "delete-transport", name);
-        asadmin2("delete-protocol", true, "delete-protocol", name);
-        asadmin2("delete-network-listener", false, "delete-network-listener", name);
-        asadmin2("delete-protocol-2", false, "delete-protocol-2", name);
-        asadmin2("delete-threadpool-2", false, "delete-threadpool", name);
-        asadmin2("delete-transport-2", false, "delete-transport", name);
+            name));
+        report("delete-referenced-threadpool", !asadmin("delete-threadpool", name));
+        report("delete-referenced-transport", !asadmin("delete-transport", name));
+        report("delete-referenced-protocol", !asadmin("delete-protocol", name));
+        report("delete-network-listener", asadmin("delete-network-listener", name));
+        report("delete-unreferenced-protocol", asadmin("delete-protocol", name));
+        report("delete-unreferenced-threadpool", asadmin("delete-threadpool", name));
+        report("delete-unreferenced-transport", asadmin("delete-transport", name));
         stat.printSummary();
     }
-
-    private void asadmin2(String step, boolean shouldFail, final String... args) {
-        List<String> command = new ArrayList<String>();
-        command.add("asadmin");
-//        command.add("--echo=true");
-//        command.add("--terse=true");
-        command.addAll(Arrays.asList(args));
-        ProcessBuilder builder = new ProcessBuilder(command);
-        String status = SimpleReporterAdapter.FAIL;
-        Process process = null;
-        boolean failed = false;
-        try {
-            process = builder.start();
-            InputStream inStream = process.getInputStream();
-            InputStream errStream = process.getErrorStream();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayOutputStream err = new ByteArrayOutputStream();
-            try {
-                final byte[] buf = new byte[1000];
-                int read;
-                while ((read = inStream.read(buf)) != -1) {
-                    out.write(buf, 0, read);
-                }
-                while ((read = errStream.read(buf)) != -1) {
-                    err.write(buf, 0, read);
-                }
-            } finally {
-                errStream.close();
-                inStream.close();
-            }
-            String outString = new String(out.toByteArray()).trim();
-            String errString = new String(err.toByteArray()).trim();
-            failed = outString.matches("Command.*failed\\.");
-//            if (failed) {
-                print(outString, "out");
-                print(errString, "err");
-//            }
-            if(failed) {
-                status = shouldFail ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL;
-            } else {
-                status = shouldFail ? SimpleReporterAdapter.FAIL : SimpleReporterAdapter.PASS;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (shouldFail) {
-                status = SimpleReporterAdapter.PASS;
-            }
-        } finally {
-            if (process != null) {
-                process.destroy();
-            }
-        }
-        write(String.format("*** %s (shouldFail=%b, failed=%b) ==> %s", step, shouldFail, failed, status));
-        stat.addStatus(step, status);
-    }
-
-    private void print(final String string, final String name) {
-        if (string.length() != 0) {
-            write(String.format("*** %s = \"%s\"", name, string));
-        }
-    }
-
-    private void write(final String out) {
-        writer.println(out);
-        writer.flush();
-    }
-
 }

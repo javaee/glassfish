@@ -18,7 +18,7 @@ public class SimpleReporterAdapter implements Serializable {
     public static final String DID_NOT_RUN = "did_not_run";
     public static final String FAIL = "fail";
     private static final Pattern TOKENIZER;
-    private final boolean debug = true;
+    private final boolean debug = false;
     private final Map<String, String> testCaseStatus = new LinkedHashMap<String, String>();
     private String testSuiteName = getTestSuiteName();
     private String testSuiteID = testSuiteName + "ID";

@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="481"/>
+    <property name="TOTAL_EXPECTED" value="483"/>
 
     &commonSetup;
     &commonBuild;
@@ -386,9 +386,7 @@
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
         <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
-<!-- XXX temporarily commented out, see IT 7391
         <ant dir="pipelineQueueFull" target="all"/>
--->
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
@@ -407,6 +405,7 @@
         <ant dir="monitorWebRequest" target="all"/>
         <ant dir="monitorHttpService" target="all"/>
         <ant dir="monitorServletInstance" target="all"/>
+        <ant dir="asadminDeletes" target="all"/>
     </target>
 
     <target name="security">
@@ -483,6 +482,7 @@
         <ant dir="readLineWithMaxLength" target="all"/>
         <ant dir="httpResponseErrorMessage" target="all"/>
         <ant dir="redirectWithRootWildCardUrlPattern" target="all"/>
+        <ant dir="httpCompression" target="all"/>
     </target>
 
     <target name="comet">
