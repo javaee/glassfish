@@ -8,7 +8,9 @@
   <property name="build.javadocs" value="${basedir}/javadocs"/>
   <property name="destfile.name" value="javadocee6.jar"/>
   <property name="Name" value="Java&lt;sup&gt;&lt;font size=-2&gt;TM&lt;/font&gt;&lt;/sup&gt; Platform, Enterprise Edition 6 " />
-  <property name="Title" value="Java EE 6 - DRAFT" />
+  <!-- set empty if non-DRAFT -->
+  <property name="DRAFT" value="DRAFT" />
+  <property name="Title" value="Java EE 6 ${DRAFT}" />
   <property name="remote.repository" value="http://maven.glassfish.org/content/groups/glassfish/" />
   <property name="maven.repo.local" value="${user.home}/.m2/repository" />
   <tstamp>
@@ -17,7 +19,7 @@
 
   <property name="build.v3.javadocs" value="${basedir}/build/v3/javadocs"/>
   <property name="v3.Name" value="GlassFish v3" />
-  <property name="v3.Title" value="GlassFish v3 - DRAFT" />
+  <property name="v3.Title" value="GlassFish v3 ${DRAFT}" />
 
   <path id="src.dir">
     <dirset dir="${basedir}">
@@ -56,8 +58,12 @@
     <dirset dir="${basedir}">
       <include name="external/hk2/**"/>
       <include name="common/glassfish-api/src/main/java/**"/>
+      <include name="common/amx-core/src/main/java/**"/>
+      <include name="common/amx-config/src/main/java/**"/>
+      <include name="common/amx-j2ee/src/main/java/**"/>
       <include name="flashlight/framework/src/main/java/**"/>
       <include name="external/management-api-sources/**"/>
+      <include name="external/appclient-tmp/**"/>
     </dirset>
     <path refid="src.dir"/>
   </path>
@@ -71,8 +77,8 @@
   </target>
 
   <target name="v3-javadocs" description="all javadocs including
-                         GlassFish specific javadocs">
-      <antcall target="checkout.source" />
+                         GlassFish specific javadocs"
+                         depends="checkout.source,appclient-source">
       <antcall target="create-v3-javadocs" />
       <antcall target="copy-jsf-image-files">
         <param name="build.javadocs" value="${build.v3.javadocs}"/>
@@ -80,6 +86,9 @@
       <antcall target="jar-javadoc" >
         <param name="build.javadocs" value="${build.v3.javadocs}"/>
         <param name="destfile.name" value="glassfish-all.jar"/>
+      </antcall>
+      <antcall target="clean-javadocs-dir">
+        <param name="build.javadocs" value="${external.dir}/appclient-tmp"/>
       </antcall>
   </target>
 
@@ -93,7 +102,7 @@
         <path id="maven-ant-tasks.classpath" path="${basedir}/maven-ant-tasks-2.0.9.jar" />
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
                  classpathref="maven-ant-tasks.classpath" />
-        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.7">
+        <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.9">
         <artifact:remoteRepository id="nexus.repository" url="${remote.repository}" />
         <artifact:localRepository path="${maven.repo.local}"/>
         </artifact:install-provider>
@@ -118,6 +127,7 @@
       <antcall target="bean-validator.checkout" />
       <antcall target="weld-api.download" />
       <antcall target="hk2.download" />
+      <antcall target="flashlight.download" />
   </target>
 
   <target name="init">
@@ -413,7 +423,7 @@ fileset refid of artifact:dependencies does not work in unjar
   </target>
 
   <target name="bean-validator.checkout" description="Checkout BeanValidator workspace"> 
-      <echo message="checkout UEL from ${bean-validator.svn.url}." />
+      <echo message="checkout Bean validation from ${bean-validator.svn.url}." />
       <!-- checkout BeanValidator source -->
       <exec executable="svn" dir="${basedir}" >
 	  <arg line="checkout" />
@@ -443,7 +453,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
-          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="0.4.17" classifier="sources" />
+          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -477,6 +487,18 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
+  <target name="appclient-source">
+    <mkdir dir="${external.dir}/appclient-tmp"/>
+    <copy
+    todir="${external.dir}/appclient-tmp/" overwrite="true">
+      <fileset dir="${basedir}/appclient/client/acc-config/target/generated-sources/xjc/">
+        <exclude name="**/Adapter*.java"/>
+      </fileset>
+    </copy>
+    <copy todir="${external.dir}/appclient-tmp/org/glassfish/appclient/client/acc" overwrite="true"
+        file="${basedir}/appclient/client/acc/src/main/java/org/glassfish/appclient/client/acc/AppClientContainer.java"/>
+  </target>
+
   <target name="clean-javadocs-dir" description="Delete JavaDocs directory">
           <delete dir="${build.javadocs}" quiet="true" />
   </target>
@@ -494,9 +516,9 @@ fileset refid of artifact:dependencies does not work in unjar
              encoding="ISO-8859-1"
              windowtitle="${Title}"
              doctitle="&lt;h1&gt;${Name} &lt;br&gt;API Specification&lt;/h1&gt;&lt;p&gt;This document is the API specification for version 6 of the Java&lt;sup&gt;TM&lt;/sup&gt; Platform, Enterprise Edition."
-             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/JavaEE6platformspec_license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
-             Header="DRAFT" 
-             Footer="DRAFT" >
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             Header="${DRAFT}" 
+             Footer="${DRAFT}" >
     </javadoc>
   </target>
 
@@ -515,9 +537,9 @@ fileset refid of artifact:dependencies does not work in unjar
              encoding="ISO-8859-1"
              windowtitle="${v3.Title}"
              doctitle="&lt;h1&gt;${v3.Name} &lt;/h1&gt;&lt;p&gt;This document is the API specification for GlassFish v3."
-             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/JavaEE6platformspec_license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
-             Header="DRAFT" 
-             Footer="DRAFT" >
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             Header="${DRAFT}" 
+             Footer="${DRAFT}" >
 
        <group title="Java EE 6 Platform Packages" packages="javax.*"/>
        <group title="GlassFish specific, Non-platform Packages"
@@ -525,13 +547,17 @@ fileset refid of artifact:dependencies does not work in unjar
        <link href="http://java.sun.com/javase/6/docs/api/"/>
 
 
+       <!--
+       -->
        <package name="javax.*"/>
        <package name="com.sun.appserv.*"/>
        <package name="com.sun.enterprise.module.*"/>
        <package name="com.sun.hk2.*"/>
+       <package name="com.sun.enterprise.security.audit.*"/>
        <package name="org.jvnet.*"/>
        <package name="org.glassfish.api"/>
        <package name="org.glassfish.api.admin.cli"/>
+       <package name="org.glassfish.api.amx.*"/>
        <package name="org.glassfish.api.event"/>
        <package name="org.glassfish.api.invocation"/>
        <package name="org.glassfish.api.deployment.*"/>
@@ -542,12 +568,9 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="org.glassfish.flashlight.provider"/>
        <package name="org.glassfish.flashlight.cli"/>
        <package name="org.glassfish.flashlight.client"/>
-       <!--
-           These throw a ClassCastException right now. Need to
-           investigate furher
-
-       <package name="com.sun.enterprise.security.*"/>
-       -->
+       <package name="org.glassfish.appclient.client.acc.*"/>
+       <package name="org.glassfish.external.amx.*"/>
+       <package name="org.glassfish.admin.amx.*"/>
 
        <excludepackage name="org.apache.*"/>
        <excludepackage name="org.glassfish.api.jdbc.validation.*"/>
