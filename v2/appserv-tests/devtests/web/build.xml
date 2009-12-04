@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="483"/>
+    <property name="TOTAL_EXPECTED" value="481"/>
 
     &commonSetup;
     &commonBuild;
@@ -464,10 +464,14 @@
         <ant dir="keepAliveTimeoutZero" target="all"/>
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
+<!-- Temporarily commented out due to IT 11219
         <ant dir="defaultResponseType" target="all"/>
+-->
         <ant dir="httpListenerAdminReconfig" target="all"/>
         <ant dir="headerBufferSize" target="all"/>
+<!-- Temporarily commented out due to IT 11219
         <ant dir="defaultContentType" target="all"/>
+-->
         <ant dir="headerBufferFull" target="all"/>
         <ant dir="dosSlowClient" target="all"/>
         <ant dir="sslMultiSelector" target="all"/>
