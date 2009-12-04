@@ -37,18 +37,14 @@
 */ 
 --> 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.glassfish</groupId>
   <artifactId>maven-glassfish-plugin-tester</artifactId>
-  <packaging>pom</packaging>
   <version>3.0-SNAPSHOT</version>
-
-  <name>Maven deploy test</name>
-
-
+  <name>Maven test</name>
 
   <build>
-  <defaultGoal>install</defaultGoal>
 
     <plugins>
       <plugin>
@@ -74,23 +70,14 @@
     </plugins>
  
   </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>2.0</version>
-    </dependency>
-
-  </dependencies>
-
-
-
+   
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/glassfish/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>
 
