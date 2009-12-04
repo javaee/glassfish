@@ -406,7 +406,7 @@ public class UpdateCenterHandlers {
             install=true;
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         if (obj == null){
-            System.out.println("updateCenterProcess: No row selected for ");
+            GuiUtil.getLogger().fine("updateCenterProcess: No row selected for"  + install);
             return;
         }
         List<Map> selectedRows = (List) obj;
@@ -499,8 +499,8 @@ public class UpdateCenterHandlers {
             }
          }catch(Exception ex){
             count = -1;
-            System.out.println("error in getting update component list");
-            //System.out.println(ex.getMessage());
+            GuiUtil.getLogger().warning("error in getting update component list");
+            GuiUtil.getLogger().warning(ex.getMessage());
          }
          Integer countInt = Integer.valueOf(count);
          GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
@@ -572,8 +572,7 @@ public class UpdateCenterHandlers {
             image = new Image (new File (ucDir));
             refreshCatalog(image);
         }catch(Exception ex){
-            System.out.println("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
-            //ex.printStackTrace();
+             GuiUtil.getLogger().warning("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
         }
         return image;
     }
@@ -586,7 +585,8 @@ public class UpdateCenterHandlers {
                 image.refreshCatalogs();
             }
         }catch(Exception ex){
-            System.out.println("Cannot refresh Catalog : " + ex.getMessage());
+            GuiUtil.getLogger().warning( ex.getMessage());
+            GuiUtil.getLogger().warning(GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "ProxySetupHelp"));
         }
     } 
 
