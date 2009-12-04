@@ -405,7 +405,7 @@
         <ant dir="monitorWebRequest" target="all"/>
         <ant dir="monitorHttpService" target="all"/>
         <ant dir="monitorServletInstance" target="all"/>
-        <ant dir="asadminDeletes" target="all"/>
+        <!-- ant dir="asadminDeletes" target="all"/ -->
     </target>
 
     <target name="security">
@@ -486,7 +486,7 @@
         <ant dir="readLineWithMaxLength" target="all"/>
         <ant dir="httpResponseErrorMessage" target="all"/>
         <ant dir="redirectWithRootWildCardUrlPattern" target="all"/>
-        <ant dir="httpCompression" target="all"/>
+        <!-- ant dir="httpCompression" target="all"/ -->
     </target>
 
     <target name="comet">
