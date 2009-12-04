@@ -36,12 +36,12 @@
 
 
 <!initPage 
-    setResourceBundle(key="web" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="common" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help_web" bundle="org.glassfish.common.admingui.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{web.monitoring.Title}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{common.monitoring.Title}" >
 <!define name="content">
 <event>
     <!beforeCreate
@@ -52,14 +52,14 @@
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         setPageSessionAttribute(key="convertToFalseList" value={"DtraceEnabled", "MonitoringEnabled", "MbeanEnabled"});
         getMonitorLevels(objectName="amx:pp=/domain/configs/config[server-config]/monitoring-service,type=module-monitoring-levels" monitorCompList="#{requestScope.tableList}")
-        getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
+        //getValidMonitorLevels(monitorLevelList="#{pageSession.levelList}")
         
     />
 </event>
 
             <sun:form id="form1">
 #include "/common/shared/alertMsg.inc"
-<sun:title id="title" title="$resource{web.monitoring.Title}"  helpText="$resource{web.monitoring.PageHelp}">
+<sun:title id="title" title="$resource{common.monitoring.Title}"  helpText="$resource{common.monitoring.PageHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}" >
@@ -81,20 +81,20 @@
 </sun:title>
 <sun:propertySheet id="propertySheet">
     <sun:propertySheetSection id="propertSectionTextField">
-        <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monService}"  helpText="$resource{web.monitoring.monServiceHelp}">
+        <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monService}"  helpText="$resource{common.monitoring.monServiceHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MonitoringEnabled']}" selectedValue="true" />
         </sun:property>
-        <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.monMbeans}"  helpText="$resource{web.monitoring.monMbeansHelp}">
+        <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monMbeans}"  helpText="$resource{common.monitoring.monMbeansHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['MbeanEnabled']}" selectedValue="true" />
         </sun:property>
-        <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{web.monitoring.DTrace}" helpText="$resource{web.monitoring.DTraceHelp}">
+        <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.DTrace}" helpText="$resource{common.monitoring.DTraceHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['DtraceEnabled']}" selectedValue="true" />
         </sun:property>
         "<br /><br />
     </sun:propertySheetSection>
 </sun:propertySheet>
 <!-- Table .... -->
-<sun:table id="basicTable"  style="padding: 10pt" title="$resource{web.monitoring.MonitorLevelTableTitle}"  sortPanelToggleButton="#{false}"
+<sun:table id="basicTable"  style="padding: 10pt" title="$resource{common.monitoring.MonitorLevelTableTitle}"  sortPanelToggleButton="#{false}"
              deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
             selectMultipleButton="$boolean{true}"
@@ -108,13 +108,7 @@
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
-
-
-        <sun:dropDown id="change" selected="#{changeValue}" label="$resource{web.monitoring.Level}" submitForm="#{false}" immediate="#{false}" labels="$pageSession{newLevelList}">
-            <!beforeCreate
-                addEmptyFirstElement(in="#{pageSession.levelList}"  out="#{pageSession.newLevelList}")
-            />
-        </sun:dropDown>
+         <sun:dropDown id="change" selected="#{changeValue}" label="$resource{common.monitoring.Level}" submitForm="#{false}" immediate="#{false}"  values={"", "OFF", "LOW", "HIGH"}  labels={"", "$resource{common.monitoring.Off}" , "$resource{common.monitoring.Low}", "$resource{common.monitoring.High}" } />
         <sun:button id="button1" text="$resource{i18n.button.changeLevel}" disabled="#{true}" primary="#{true}" >
         <!command
             getUIComponent(clientId="$pageSession{tableableRowGroupId}", component=>$attribute{tableRowGroup});
@@ -136,12 +130,12 @@
                 onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
             />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.MonitorCompNameCol}" sort="monCompName" rowHeader="$boolean{false}" id="col2">
+        <sun:tableColumn headerText="$resource{common.monitoring.MonitorCompNameCol}" sort="monCompName" rowHeader="$boolean{false}" id="col2">
             <sun:staticText id="col1St" text="#{td.value.monCompName}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{web.monitoring.MonitorCompLevelCol}" sort="level" rowHeader="$boolean{false}" id="col3">
-            //<sun:textField columns="$int{30}" id="col1St" value="#{td.value.level}" />
-            <sun:dropDown id="level" selected="#{td.value.level}" labels="$pageSession{levelList}" />
+        <sun:tableColumn headerText="$resource{common.monitoring.MonitorCompLevelCol}" sort="level" rowHeader="$boolean{false}" id="col3">
+            <sun:dropDown id="level" selected="#{td.value.level}" values={"OFF", "LOW", "HIGH"}  labels={ "$resource{common.monitoring.Off}" , "$resource{common.monitoring.Low}", "$resource{common.monitoring.High}" } />
+
         </sun:tableColumn>
         "<br/>
     </sun:tableRowGroup>
