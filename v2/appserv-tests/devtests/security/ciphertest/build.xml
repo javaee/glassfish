@@ -23,7 +23,7 @@
 			ant all (Executes all ciphertests)
 	</echo>
     </target>
-    
+
     <target name="all" depends="build, setup, deploy,run, undeploy, unsetup">
     </target>
 
@@ -101,96 +101,105 @@
 
     <target name="runciphertest-1" depends="init-common">
 
+      <property name="https.1.port" value="1${https.port}" />
+      <property name="https.2.port" value="2${https.port}" />
+      
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_RC4_128_MD5"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_MD5"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_DES_CBC_SHA"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_EXPORT_WITH_RC4_40_MD5"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_MD5"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_SHA"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_SHA"/>
-        <param name="https.port"         value="1${https.port}"/>
+        <param name="https.port"         value="${https.1.port}"/>
       </antcall>
     </target>
 
 
     <target name="runciphertest-2" depends="init-common">
-      <antcall target="cipher-test">
+     
+     <property name="https.1.port" value="1${https.port}" />
+     <property name="https.2.port" value="2${https.port}" />
+ 
+     <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_DES_CBC_SHA"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_DES_CBC_SHA"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_EXPORT_WITH_RC4_40_MD5"/>
         <param name="enable-cipher"      value="SSL_RSA_EXPORT_WITH_RC4_40_MD5"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_NULL_MD5"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_MD5"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_RC4_128_SHA"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_SHA"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_NULL_SHA"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_SHA"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_MD5"/>
-        <param name="https.port"         value="2${https.port}"/>
+        <param name="https.port"         value="${https.2.port}"/>
       </antcall>
     </target>
 
-    <target name="runciphertest-3" depends="init-common">
-      <antcall target="cipher-test">
+    <target name="runciphertest-3" depends="init-common">    
+     <property name="https.1.port" value="1${https.port}" />   
+     <property name="https.2.port" value="2${https.port}" />
+     <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_DH_anon_WITH_RC4_128_MD5"/>
       </antcall>
