@@ -62,7 +62,7 @@ public interface VirtualServer extends Lifecycle {
      * 
      * @return the id of this <tt>VirtualServer</tt>
      */
-    public String getId();
+    public String getID();
     
     /**
      * Gets the docroot of this <tt>VirtualServer</tt>.

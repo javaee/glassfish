@@ -46,8 +46,7 @@ import java.util.ArrayList;
 import java.util.logging.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.ConfigException;
-import org.glassfish.api.embedded.web.WebBuilder;
+import org.glassfish.api.embedded.web.*;
 import org.glassfish.api.embedded.web.config.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -56,6 +55,7 @@ import org.jvnet.hk2.component.*;
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Lifecycle;
+import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
@@ -71,26 +71,16 @@ import org.omg.CORBA.DynAnyPackage.*;
  * @author Amy Roh
  */
 @Service
-public class EmbeddedWebContainer implements 
-        org.glassfish.api.embedded.web.EmbeddedWebContainer {
+public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     @Inject
     Habitat habitat;
     
     private static Logger log = 
-            Logger.getLogger(EmbeddedWebContainer.class.getName());
+            Logger.getLogger(EmbeddedWebContainerImpl.class.getName());
       
     
     // ----------------------------------------------------------- Constructors
-      
-    
-    public EmbeddedWebContainer() {
-        //embedded = new Embedded();
-        //embedded.setUseNaming(false);
-        //engine = embedded.createEngine();
-        //embedded.addEngine(engine);
-        
-    }
     
 
     // ----------------------------------------------------- Instance Variables
@@ -98,6 +88,8 @@ public class EmbeddedWebContainer implements
     Inhabitant<? extends org.glassfish.api.container.Container> webContainer;
 
     private VirtualServer defaultVirtualServer = null;
+    
+    Inhabitant<?> embeddedInhabitant;
     
     private Embedded embedded = null;
     
@@ -152,65 +144,53 @@ public class EmbeddedWebContainer implements
      */
     public void start() throws LifecycleException {
    
-        /*log.info("EmbeddedWebContainer is starting");
-        int port = 8080;
-        String webListenerId = "http-listener-1";
-        String virtualServerId = "server";
-        String hostName = "localhost";
-    
-        try { 
-            if (createDefaultConfig()) {
-                engine.setName(defaultDomain);
-                ((StandardEngine)engine).setDomain(defaultDomain);
-                engine.setDefaultHost(virtualServerId);
-                engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
-            
-                WebListener webListener = 
-                    createWebListener(webListenerId, WebListener.class);
-                webListener.setPort(port);
-                webListener.setDefaultHost(virtualServerId);
-                webListener.setDomain(defaultDomain);
-                WebListener[] webListeners = new WebListener[1];
-                webListeners[0] = webListener;
-            
-                File docRoot = getPath();
-                defaultVirtualServer = (VirtualServer)
-                        createVirtualServer(virtualServerId, docRoot, webListeners);
-                defaultVirtualServer.addAlias(hostName);
-                engine.addChild(defaultVirtualServer);
-            
-                Context context = (Context) createContext(docRoot, null);
-                defaultVirtualServer.addChild(context);
-                                
-                embedded.addEngine(engine);
-      
-                //addWebListener(webListener);
-            }
-            
-            embedded.start();
-            
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new LifecycleException(e);
+        if (log.isLoggable(Level.INFO)) { 
+            log.info("EmbeddedWebContainer is starting");
         }
-        */
-
+        
         webContainer = habitat.getInhabitant(org.glassfish.api.container.Container.class,
                 "com.sun.enterprise.web.WebContainer");
         if (webContainer==null) {
             log.severe("Cannot find webcontainer implementation");
             throw new LifecycleException(new Exception("Cannot find web container implementation"));
         }
+        
+        embeddedInhabitant = habitat.getInhabitantByType("com.sun.enterprise.web.EmbeddedWebContainer");
+        if (embeddedInhabitant==null) {
+            log.severe("Cannot find embedded implementation");
+            throw new LifecycleException(new Exception("Cannot find embedded implementation"));
+        }
+        
         // force the start
         try {
             webContainer.get();
+            embedded = (Embedded)embeddedInhabitant.get();
+            Engine[] engines = embedded.getEngines();
+            if (engines!=null) {
+                engine = engines[0];
+            } else {
+                throw new LifecycleException(new Exception("Cannot find engine implementation"));
+            }
+        
+            int port = 8080;
+            String webListenerId = "http-listener-1";
+            String virtualServerId = "server";
+            String hostName = "localhost";
+            File docRoot = getPath();
+        
+            VirtualServer vs = findVirtualServer(virtualServerId);
+            if (vs!=null) {
+                defaultVirtualServer = vs;
+            } else {
+                defaultVirtualServer = createVirtualServer(virtualServerId, docRoot);
+                addVirtualServer(defaultVirtualServer);
+            }
         } catch (Exception e) {
             throw new LifecycleException(e);
         }
-
     }
 
+    
     /**
      * Stops this <tt>EmbeddedWebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
@@ -228,15 +208,18 @@ public class EmbeddedWebContainer implements
            } catch (Exception e) {
                throw new LifecycleException(e);
            }
+       }       
+       
+       if (webContainer!=null && webContainer.isInstantiated()) {
+           try {
+               webContainer.release();
+           } catch (Exception e) {
+               throw new LifecycleException(e);
+           }
        }
-/*        try {
-            embedded.stop();
-        } catch (org.apache.catalina.LifecycleException e) {
-            throw new LifecycleException(e);
-        }
-*/
     }
    
+    
     /**
      * Creates a <tt>Context</tt>, configures it with the given
      * docroot and classloader, and registers it with the default
@@ -254,13 +237,15 @@ public class EmbeddedWebContainer implements
      *
      * @return the new <tt>Context</tt>
      */
-    public org.glassfish.api.embedded.web.Context createContext(File docRoot, 
-                                String contextRoot, ClassLoader classLoader) {
+    public Context createContext(File docRoot, String contextRoot, 
+            ClassLoader classLoader) {
         
-        log.info("Creating context '" + contextRoot + "' with docBase '" +
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Creating context '" + contextRoot + "' with docBase '" +
                      docRoot.getPath() + "'");
+        }
 
-        Context context = new Context();
+        ContextImpl context = new ContextImpl();
         context.setDocBase(docRoot.getPath());
         context.setPath(contextRoot);
         if (classLoader != null) {
@@ -273,9 +258,15 @@ public class EmbeddedWebContainer implements
         ContextConfig config = new ContextConfig();
         ((Lifecycle) context).addLifecycleListener(config);
         
-        defaultVirtualServer.addChild((Container)context);
+        try {
+            if (defaultVirtualServer!=null) {
+                defaultVirtualServer.addContext(context, contextRoot);
+            }
+        } catch (Exception ex) {
+            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
+        }
         
-        return (org.glassfish.api.embedded.web.Context) context;
+        return context;
         
     }
 
@@ -300,14 +291,16 @@ public class EmbeddedWebContainer implements
      *
      * @see VirtualServer#addContext
      */
-    public org.glassfish.api.embedded.web.Context createContext(File docRoot, 
-            ClassLoader classLoader) {
+    public Context createContext(File docRoot, ClassLoader classLoader) {
         
         String contextRoot = "";
-        log.info("Creating context '" + contextRoot + "' with docBase '" +
+        
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Creating context '" + contextRoot + "' with docBase '" +
                 docRoot.getPath() + "'");
+        }
 
-        Context context = new Context();
+        ContextImpl context = new ContextImpl();
         context.setDocBase(docRoot.getPath());
         context.setPath(contextRoot);
         if (classLoader != null) {
@@ -317,10 +310,14 @@ public class EmbeddedWebContainer implements
                     Thread.currentThread().getContextClassLoader());
         }       
         
+        Realm realm = habitat.getByContract(Realm.class);
+        // XXX
+        context.setRealm(realm);
+        
         ContextConfig config = new ContextConfig();
         ((Lifecycle) context).addLifecycleListener(config);
         
-        return (org.glassfish.api.embedded.web.Context) context;
+        return context;
         
     }
 
@@ -356,12 +353,13 @@ public class EmbeddedWebContainer implements
      * of this class
      * </ul>
      */
-    public <T extends org.glassfish.api.embedded.web.WebListener> T 
-            createWebListener(String id, Class<T> c) 
+    public <T extends WebListener> T createWebListener(String id, Class<T> c) 
             throws InstantiationException, IllegalAccessException {
         
         T webListener = null;
-        log.info("Creating connector "+id);
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Creating connector "+id);
+        }
         
         try {
             webListener = c.newInstance();
@@ -389,8 +387,8 @@ public class EmbeddedWebContainer implements
      * @throws LifecycleException if the given <tt>webListener</tt> fails
      * to be started
      */
-    public void addWebListener(org.glassfish.api.embedded.web.WebListener webListener)
-        throws ConfigException, LifecycleException {
+    public void addWebListener(WebListener webListener) 
+            throws ConfigException, LifecycleException {
         
         if (findWebListener(webListener.getId())==null) {
             embedded.addConnector((Connector)webListener);            
@@ -398,7 +396,10 @@ public class EmbeddedWebContainer implements
             throw new ConfigException("Connector with name '"+
                     webListener.getId()+"' already exsits");           
         }
-        log.info("Added connector "+webListener.getId());
+        
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Added connector "+webListener.getId());
+        }
         
     }
 
@@ -411,7 +412,7 @@ public class EmbeddedWebContainer implements
      * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
      * registered with this <tt>EmbeddedWebContainer</tt>
      */
-    public org.glassfish.api.embedded.web.WebListener findWebListener(String id) {
+    public WebListener findWebListener(String id) {
         
         WebListener webListener = null;
         for (Connector connector : embedded.findConnectors()) {
@@ -420,7 +421,7 @@ public class EmbeddedWebContainer implements
             }
         }
         
-        return (org.glassfish.api.embedded.web.WebListener) webListener;
+        return webListener;
         
     }
 
@@ -431,10 +432,9 @@ public class EmbeddedWebContainer implements
      * @return the (possibly empty) collection of <tt>WebListener</tt>
      * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
-    public Collection<org.glassfish.api.embedded.web.WebListener> getWebListeners() {
+    public Collection<WebListener> getWebListeners() {
         
-        org.glassfish.api.embedded.web.WebListener[] connectors = 
-                (org.glassfish.api.embedded.web.WebListener[]) embedded.findConnectors();
+        WebListener[] connectors = (WebListener[]) embedded.findConnectors();
         
         return Arrays.asList(connectors);
         
@@ -450,11 +450,11 @@ public class EmbeddedWebContainer implements
      * @throws LifecycleException if an error occurs during the stopping
      * or removal of the given <tt>webListener</tt>
      */
-    public void removeWebListener(org.glassfish.api.embedded.web.WebListener webListener)
+    public void removeWebListener(WebListener webListener)
         throws LifecycleException {
         
         try {
-            embedded.removeConnector((org.apache.catalina.Connector)webListener);
+            embedded.removeConnector((Connector)webListener);
         } catch (org.apache.catalina.LifecycleException e) {
             throw new LifecycleException(e);
         }
@@ -472,11 +472,14 @@ public class EmbeddedWebContainer implements
      * 
      * @return the new <tt>VirtualServer</tt> instance
      */
-    public org.glassfish.api.embedded.web.VirtualServer createVirtualServer(String id,
-        File docRoot, org.glassfish.api.embedded.web.WebListener...  webListeners) {
+    public VirtualServer createVirtualServer(String id,
+        File docRoot, WebListener...  webListeners) {
         
-        log.info("Created virtual server "+id+" with ports ");
-        VirtualServer virtualServer = new VirtualServer();
+        
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Created virtual server "+id+" with ports ");
+        }
+        VirtualServerImpl virtualServer = new VirtualServerImpl();
         virtualServer.setName(id);
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
@@ -501,22 +504,32 @@ public class EmbeddedWebContainer implements
      * 
      * @return the new <tt>VirtualServer</tt> instance
      */    
-    public org.glassfish.api.embedded.web.VirtualServer createVirtualServer(String id, 
-            File docRoot) {
+    public VirtualServer createVirtualServer(String id, File docRoot) {
         
-        log.info("Created virtual server "+id+" with ports ");
-        VirtualServer virtualServer = new VirtualServer();
+        
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Created virtual server "+id);
+        }
+        VirtualServerImpl virtualServer = new VirtualServerImpl();
         virtualServer.setName(id);
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
+        }     
+        Ports ports = habitat.getComponent(Ports.class);
+        int[] portsArray = null;
+        if (ports != null) {
+            Collection<Port> coll = ports.getPorts();
+            portsArray = new int[coll.size()];
+            int i=0;
+            for (Port port:coll) {
+                portsArray[i] = port.getPortNumber();
+                if (log.isLoggable(Level.INFO)) {
+                    log.info("port = "+portsArray[i]);
+                }
+                i++;
+            }
+            virtualServer.setPorts(portsArray);
         }
-        Connector[] connectors = embedded.findConnectors();
-        int[] ports = new int[connectors.length];
-        for (int i=0; i<connectors.length; i++) {
-            ports[i] = ((org.apache.catalina.connector.Connector)connectors[i]).getPort();
-            log.info(""+ports[i]);
-        }
-        virtualServer.setPorts(ports);
         
         return virtualServer;
         
@@ -537,27 +550,20 @@ public class EmbeddedWebContainer implements
      * @throws LifecycleException if the given <tt>virtualServer</tt> fails
      * to be started
      */
-    public void addVirtualServer(org.glassfish.api.embedded.web.VirtualServer virtualServer)
+    public void addVirtualServer(VirtualServer virtualServer)
         throws ConfigException, LifecycleException {
         
-        Engine[] engines = embedded.getEngines();
-        if (engines.length==0) {
-            Engine engine = embedded.createEngine();
-            engine.setName(defaultDomain);
-            ((StandardEngine)engine).setDomain(defaultDomain);
-            engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
-            embedded.addEngine(engine);
-        }
-        engines = embedded.getEngines();
-        if (engines[0].findChild(virtualServer.getId())!=null) {
+        if (findVirtualServer(virtualServer.getID())!=null) {
             throw new ConfigException("VirtualServer with id "+
-                    virtualServer.getId()+" is already registered");
+                    virtualServer.getID()+" is already registered");
+          
         } else {
-            
-            engines[0].setDefaultHost(virtualServer.getId());
-            engines[0].addChild((Container)virtualServer);
+            engine.setDefaultHost(virtualServer.getID());
+            engine.addChild((Container)virtualServer);
         }
-        log.info("Added virtual server "+virtualServer.getId());
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Added virtual server "+virtualServer.getID());
+        }
         
     }
 
@@ -572,9 +578,7 @@ public class EmbeddedWebContainer implements
      */
     public VirtualServer findVirtualServer(String id) {
         
-        Engine[] engines = embedded.getEngines();
-        
-        return (VirtualServer)engines[0].findChild(id);
+        return (VirtualServer)engine.findChild(id);
         
     }
 
@@ -585,11 +589,9 @@ public class EmbeddedWebContainer implements
      * @return the (possibly empty) collection of <tt>VirtualServer</tt>
      * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
-    public Collection<org.glassfish.api.embedded.web.VirtualServer> getVirtualServers(){
+    public Collection<VirtualServer> getVirtualServers(){
                 
-        Engine[] engines = embedded.getEngines();
-        org.glassfish.api.embedded.web.VirtualServer[] virtualServers = 
-                (org.glassfish.api.embedded.web.VirtualServer[]) engines[0].findChildren();
+        VirtualServer[] virtualServers = (VirtualServer[]) engine.findChildren();
         
         return Arrays.asList(virtualServers);
         
@@ -605,11 +607,10 @@ public class EmbeddedWebContainer implements
      * @throws LifecycleException if an error occurs during the stopping
      * or removal of the given <tt>virtualServer</tt>
      */
-    public void removeVirtualServer(org.glassfish.api.embedded.web.VirtualServer virtualServer)
-        throws LifecycleException {
+    public void removeVirtualServer(VirtualServer virtualServer) 
+            throws LifecycleException {
            
-        Engine[] engines = embedded.getEngines();
-        engines[0].removeChild((Container)virtualServer);
+        engine.removeChild((Container)virtualServer);
    
     }   
       
@@ -641,22 +642,6 @@ public class EmbeddedWebContainer implements
      */
     public void setLogLevel(Level level) {
         log.setLevel(level);
-    }
-    
-    public boolean createDefaultConfig() {
-        
-        Engine[] engines = embedded.getEngines();
-        if (engines.length==0 || engines[0]==null) {
-            return true;
-        }      
-        
-        if (embedded.findConnectors().length>0 && 
-                engines[0].findChildren().length>0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-   
+    }   
     
 }

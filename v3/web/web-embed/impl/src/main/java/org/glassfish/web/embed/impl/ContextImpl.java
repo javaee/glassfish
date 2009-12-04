@@ -45,6 +45,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.web.Context;
 import org.glassfish.api.embedded.web.config.SecurityConfig;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.Constants;
@@ -57,7 +58,7 @@ import org.apache.catalina.core.StandardContext;
  * @author Amy Roh
  */
 // TODO: Add support for configuring environment entries
-public class Context extends StandardContext implements org.glassfish.api.embedded.web.Context {
+public class ContextImpl extends StandardContext implements Context {
 
 
     // ----------------------------------------------------- Instance Variables

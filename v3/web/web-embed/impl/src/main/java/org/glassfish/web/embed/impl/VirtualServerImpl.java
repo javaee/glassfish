@@ -48,7 +48,7 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.web.ConfigException;
+import org.glassfish.api.embedded.web.*;
 import org.glassfish.api.embedded.web.config.VirtualServerConfig;
 import org.glassfish.web.valve.GlassFishValve;
 import org.apache.catalina.authenticator.SingleSignOn;
@@ -64,8 +64,7 @@ import org.apache.catalina.authenticator.SingleSignOn;
  * 
  * @author Amy Roh
  */
-public class VirtualServer extends StandardHost implements 
-        org.glassfish.api.embedded.web.VirtualServer {
+public class VirtualServerImpl extends StandardHost implements VirtualServer {
 
     
     private static Logger log = 
@@ -77,7 +76,7 @@ public class VirtualServer extends StandardHost implements
      * Default constructor that simply gets a handle to the web container
      * subsystem's logger.
      */
-    public VirtualServer() {
+    public VirtualServerImpl() {
         super();
         accessLogValve = new AccessLogValve();
         accessLogValve.setContainer(this);
@@ -126,7 +125,7 @@ public class VirtualServer extends StandardHost implements
      * 
      * @return the id of this <tt>VirtualServer</tt>
      */
-    public String getId() {
+    public String getID() {
         return getName();
     }
     
@@ -146,7 +145,7 @@ public class VirtualServer extends StandardHost implements
      * @return the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      */
-    public Collection<org.glassfish.api.embedded.web.WebListener> getWebListeners() {
+    public Collection<WebListener> getWebListeners() {
         // TODO
         return null;        
     }
@@ -166,9 +165,17 @@ public class VirtualServer extends StandardHost implements
      * @throws LifecycleException if the given <tt>context</tt> fails
      * to be started
      */
-    public void addContext(org.glassfish.api.embedded.web.Context context, String contextRoot)
-        throws ConfigException, LifecycleException {
+    public void addContext(Context context, String contextRoot) 
+            throws ConfigException, LifecycleException {
+        
+        if (findContext(contextRoot)!=null) {
+            throw new ConfigException("Context with context "+
+                    context+" is already registered");
+        }
         addChild((Container)context);
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Added context "+context.getContextPath());
+        }
     }
 
     /**
@@ -180,7 +187,7 @@ public class VirtualServer extends StandardHost implements
      * @throws LifecycleException if an error occurs during the stopping
      * or removal of the given <tt>context</tt>
      */
-    public void removeContext(org.glassfish.api.embedded.web.Context context) {
+    public void removeContext(Context context) {
         removeChild((Container)context);
     }
 
@@ -197,7 +204,7 @@ public class VirtualServer extends StandardHost implements
         Context context = null;
         Context[] contexts = (Context[]) findChildren();
         for (Context c : contexts) {
-            if (c.getPath().equals(contextRoot)) {
+            if (c.getContextPath().equals(contextRoot)) {
                 context = c;
             }
         }
@@ -211,9 +218,8 @@ public class VirtualServer extends StandardHost implements
      * @return the (possibly empty) collection of <tt>Context</tt>
      * instances registered with this <tt>VirtualServer</tt>
      */
-    public Collection<org.glassfish.api.embedded.web.Context> getContexts() {
-        org.glassfish.api.embedded.web.Context[] contexts = 
-                (org.glassfish.api.embedded.web.Context[]) findChildren();
+    public Collection<Context> getContexts() {
+        Context[] contexts = (Context[]) findChildren();
         return Arrays.asList(contexts);
     }
     
@@ -551,5 +557,5 @@ public class VirtualServer extends StandardHost implements
     public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
         this.defaultWebXmlLocation = defaultWebXmlLocation;
     }
-
+    
 }
