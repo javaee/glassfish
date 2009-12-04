@@ -357,7 +357,7 @@ Variables Used:
     <fileset dir="${build.classes.dir}">
 	<include name="META-INF/sun-application.xml"/>
     </fileset>
-    <fileset dir="${env.APS_HOME}/lib" includes="reporter.jar"/>
+    <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
   </ear>        
 </target>
 
