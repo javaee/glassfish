@@ -52,11 +52,12 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "jsp-custom-taglib-jar-inside-ear-with-manifest-classpath";
+    private static final String TEST_NAME =
+        "jsp-custom-taglib-jar-inside-ear-with-manifest-classpath";
 
-    private static final String EXPECTED = "Hello, world!";
+    private static final String EXPECTED = "Hello! Hello, world!";
 
-    private static SimpleReporterAdapter stat =
+    private static final SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
     private String host;
