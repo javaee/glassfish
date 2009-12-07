@@ -54,7 +54,7 @@ public class Multipart {
     private final long maxFileSize;
     private final long maxRequestSize;
     private final int fileSizeThreshold;
-    private final File repository;
+    private File repository;
     private ProgressListener listener;
 
     private final HttpServletRequest request;
@@ -68,11 +68,15 @@ public class Multipart {
         this.maxFileSize = maxFileSize;
         this.maxRequestSize = maxRequestSize;
         this.fileSizeThreshold = fileSizeThreshold;
-        if (location == null || location.length() == 0) {
-            repository = (File) request.getServletContext().getAttribute(
+        repository = (File) request.getServletContext().getAttribute(
                                 "javax.servlet.context.tempdir");
-        } else {
-            repository = new File(location);
+        if (location != null && location.length() != 0) {
+            File tempFile= new File(location);
+            if (tempFile.isAbsolute()) {
+                repository = tempFile;
+            } else {
+                repository = new File(repository, location);
+            }
         }
     }
 
