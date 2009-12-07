@@ -115,6 +115,7 @@ import org.apache.catalina.core.ApplicationHttpRequest;
 import org.apache.catalina.core.ApplicationHttpResponse;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.session.StandardSession;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.ParameterMap;
 import org.apache.catalina.util.StringManager;
@@ -3862,6 +3863,74 @@ public class Request
         notes.put(Globals.SESSION_TRACKER, sessionTracker);
     }
     // END GlassFish 896
+
+    /** 
+     * lock the session associated with this request
+     * this will be a foreground lock
+     * checks for background lock to clear
+     * and does a decay poll loop to wait until
+     * it is clear; after 5 times it takes control for 
+     * the foreground
+     *
+     * @param request
+     *
+     * @return the session that's been locked
+     */     
+    public Session lockSession() {
+        Session sess = getSessionInternal(false);
+        // Now lock the session
+        if (sess != null) {
+            long pollTime = 200L;
+            int maxNumberOfRetries = 7;
+            int tryNumber = 0;
+            boolean keepTrying = true;
+            boolean lockResult = false;
+            StandardSession haSess = (StandardSession) sess;
+            // Try to lock up to maxNumberOfRetries times.
+            // Poll and wait starting with 200 ms.
+            while(keepTrying) {
+                lockResult = haSess.lockForeground();
+                if(lockResult) {
+                    keepTrying = false;
+                    break;
+                }
+                tryNumber++;
+                if(tryNumber < maxNumberOfRetries) {
+                    pollTime = pollTime * 2L;
+                    threadSleep(pollTime);
+                } else {
+                    // Tried to wait and lock maxNumberOfRetries times.
+                    // Unlock the background so we can take over.
+                    log.warning("This should not happen-breaking " +
+                        "background lock: sess =" + sess);
+                    haSess.unlockBackground();
+                }              
+            }
+        }
+
+        return sess;
+    }    
+    
+    private void threadSleep(long sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            ;
+        }
+    }    
+    
+    /** 
+     * unlock the session associated with this request
+     * @param request
+     */     
+    public void unlockSession() {
+        Session sess = getSessionInternal(false);
+        // Now unlock the session
+        if (sess != null) {
+            StandardSession haSess = (StandardSession) sess;
+            haSess.unlockForeground();
+        }        
+    }     
 
     /**
      * This class will be invoked by Grizzly when a suspend operation is either

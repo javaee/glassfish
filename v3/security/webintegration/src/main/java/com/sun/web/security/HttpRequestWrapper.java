@@ -58,7 +58,6 @@ import org.apache.catalina.Response;
 import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
 
-
 class HttpRequestWrapper extends HttpServletRequestWrapper 
         implements HttpRequest {
         
@@ -314,7 +313,6 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         return httpRequest.getJrouteId();
     }
 
-
     /**
      * Generate and return a new session ID.
      *
@@ -325,12 +323,19 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         return httpRequest.generateSessionId();
     }
 
-
     /**
      * Disables async support on this request.
      */
     public void disableAsyncSupport() {
         httpRequest.disableAsyncSupport();
+    }
+
+    public Session lockSession() {
+        return httpRequest.lockSession();
+    }
+
+    public void unlockSession() {
+        httpRequest.unlockSession();
     }
 
 }

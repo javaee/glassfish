@@ -80,101 +80,11 @@ public class PESessionLockingStandardPipeline extends WebPipeline {
     public void invoke(Request request, Response response)
         throws IOException, ServletException {
         
-        Session sess = this.lockSession(request);
+        Session sess = request.lockSession();
         try {
             super.invoke(request, response);
         } finally {
-            this.unlockSession(request);
+            request.unlockSession();
         }
     }    
-    
-    
-    /** 
-     * lock the session associated with this request
-     * this will be a foreground lock
-     * checks for background lock to clear
-     * and does a decay poll loop to wait until
-     * it is clear; after 5 times it takes control for 
-     * the foreground
-     *
-     * @param request
-     *
-     * @return the session that's been locked
-     */     
-    protected Session lockSession(Request request) {
-        Session sess = request.getSessionInternal(false);
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("IN LOCK_SESSION: sess =" + sess);
-        }
-        // Now lock the session
-        if(sess != null) {
-            long pollTime = 200L;
-            int maxNumberOfRetries = 7;
-            int tryNumber = 0;
-            boolean keepTrying = true;
-            boolean lockResult = false;
-            if(_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("locking session: sess =" + sess);
-            }
-            StandardSession haSess = (StandardSession) sess;
-            // Try to lock up to maxNumberOfRetries times.
-            // Poll and wait starting with 200 ms.
-            while(keepTrying) {
-                lockResult = haSess.lockForeground();
-                if(lockResult) {
-                    keepTrying = false;
-                    break;
-                }
-                tryNumber++;
-                if(tryNumber < maxNumberOfRetries) {
-                    pollTime = pollTime * 2L;
-                    threadSleep(pollTime);
-                } else {
-                    // Tried to wait and lock maxNumberOfRetries times.
-                    // Unlock the background so we can take over.
-                    _logger.warning("this should not happen-breaking background lock: sess =" + sess);
-                    haSess.unlockBackground();
-                }              
-            }
-            if(_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("finished locking session: sess =" + sess);
-                _logger.finest("LOCK = " + haSess.getSessionLock());
-            }
-        }
-
-        return sess;
-    }    
-    
-    protected void threadSleep(long sleepTime) {
-
-        try {
-            Thread.sleep(sleepTime);
-        } catch (InterruptedException e) {
-            ;
-        }
-
-    }    
-    
-    /** 
-     * unlock the session associated with this request
-     * @param request
-     */     
-    protected void unlockSession(Request request) {
-        Session sess = request.getSessionInternal(false);
-        if(_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("IN UNLOCK_SESSION: sess = " + sess);
-        }
-        // Now unlock the session
-        if(sess != null) {
-            if(_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("unlocking session: sess =" + sess);
-            }
-            StandardSession haSess = (StandardSession) sess;
-            haSess.unlockForeground();
-            if(_logger.isLoggable(Level.FINEST)) {
-                _logger.finest("finished unlocking session: sess =" + sess);
-                _logger.finest("LOCK = " + haSess.getSessionLock());
-            }
-        }        
-    }     
 }
