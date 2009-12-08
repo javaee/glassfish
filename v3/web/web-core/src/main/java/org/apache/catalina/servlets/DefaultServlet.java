@@ -524,8 +524,8 @@ public class DefaultServlet
         // Append data specified in ranges to existing content for this
         // resource - create a temp. file on the local filesystem to
         // perform this operation
-        File tempDir = (File) getServletContext().getAttribute
-            ("javax.servlet.context.tempdir");
+        File tempDir = (File) getServletContext().getAttribute(
+            ServletContext.TEMPDIR);
         // Convert all '/' characters to '.' in resourcePath
         String convertedResourcePath = path.replace('/', '.');
         File contentFile = new File(tempDir, convertedResourcePath);
