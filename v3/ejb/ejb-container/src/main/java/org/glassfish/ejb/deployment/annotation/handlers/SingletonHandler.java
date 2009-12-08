@@ -1,6 +1,3 @@
-package org.glassfish.ejb.deployment.annotation.handlers;
-
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -36,6 +33,7 @@ package org.glassfish.ejb.deployment.annotation.handlers;
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.ejb.deployment.annotation.handlers;
 
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.apf.AnnotationInfo;
