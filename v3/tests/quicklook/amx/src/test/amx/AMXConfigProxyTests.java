@@ -568,7 +568,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         {
             final AMXConfigProxy prop2 = amx.createChild( propType, attrs );
             // should have thrown an exception; it's a duplicate
-            assert false : "More than one property with the same name can be created!";
+            assert false : "More than one property with the same name can be created, see issue #11272";
         }
         catch( final Exception e )
         {
@@ -618,7 +618,7 @@ public final class AMXConfigProxyTests extends AMXTestBase
         {
             final AMXConfigProxy prop2 = amx.createChild( propType, attrs );
             // should have thrown an exception; it's a duplicate
-            assert false : "More than one virtual server with the same name can be created!";
+            assert false : "More than one virtual server with the same name can be created, see issue #11272";
         }
         catch( final Exception e )
         {
