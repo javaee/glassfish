@@ -502,15 +502,10 @@ public final class AMXConfigProxyTests extends AMXTestBase
         assert ! getMBeanServerConnection(). isRegistered(objectName);
     }
     
-    private Config getServerConfig()
-    {
-        return getDomainConfig().getConfigs().getConfig().get("server-config");
-    }
-    
     @Test
     public void createProfilerTest()
     {
-        final JavaConfig javaConfig = getServerConfig().getJavaConfig();
+        final JavaConfig javaConfig = getDomainConfig().getConfigs().getConfig().get("server-config").getJavaConfig();
 
         final String profilerName = "AMXConfigProxyTests.TEST";
         final String type = Util.deduceType(Profiler.class);
@@ -532,104 +527,6 @@ public final class AMXConfigProxyTests extends AMXTestBase
         final ObjectName removed = javaConfig.removeChild(type);
         assert javaConfig.child(type)  == null : "Failed to remove profiler, child still exists";
     }
-    
-    
-    /** verify that the two properties with the same name cannot be created
-    This is a test of HK2, not AMX
-    */
-    @Test
-    public void duplicatePropertyTest()
-    {
-        final Domain amx = getDomainConfig();
-        
-        final String PROP_NAME = "AMXConfigProxyTests.TEST_PROP1";
-        final String propType = Util.deduceType(Property.class);
-        // remove any existing test element
-        if ( amx.childrenMap(Property.class).get(PROP_NAME) != null )
-        {
-            try
-            {
-                amx.removeChild( propType, PROP_NAME );
-                System.out.println( "Removed stale test config " + PROP_NAME );
-            }
-            catch( final Exception e )
-            {
-               assert false : "Unable to remove property " + PROP_NAME + ": " + e;
-            }
-        }
-        
-        final Map<String,Object> attrs = newPropertyMap(PROP_NAME);
-        
-        final AMXConfigProxy prop = amx.createChild( propType, attrs );
-        assert prop.getName().equals(PROP_NAME);
-        assert amx.childrenMap(Property.class).get(PROP_NAME) != null;
-        
-        try
-        {
-            final AMXConfigProxy prop2 = amx.createChild( propType, attrs );
-            // should have thrown an exception; it's a duplicate
-            assert false : "More than one property with the same name can be created, see issue #11272";
-        }
-        catch( final Exception e )
-        {
-            // good, it should not succeed
-        }
-        
-        
-        amx.removeChild( propType, PROP_NAME );
-        assert amx.childrenMap(Property.class).get(PROP_NAME) == null;
-    }
-    
-    
-    /** verify that the two virtual servers with the same name cannot be created
-    This is a test of HK2, not AMX 
-    */
-    @Test
-    public void duplicateVirtualServerTest()
-    {
-        final HttpService amx = getServerConfig().getHttpService();
-
-        final String VS_NAME = "AMXConfigProxyTests.TEST_VS";
-        final String propType = Util.deduceType(VirtualServer.class);
-        // remove any existing test element
-        if ( amx.childrenMap(Property.class).get(VS_NAME) != null )
-        {
-            try
-            {
-                amx.removeChild( propType, VS_NAME );
-                System.out.println( "Removed stale element " + VS_NAME );
-            }
-            catch( final Exception e )
-            {
-               assert false : "Unable to remove stale element " + VS_NAME + ": " + e;
-            }
-        }
-        
-        final Map<String,Object> attrs = MapUtil.newMap();
-        attrs.put( "Name", VS_NAME );
-        attrs.put( "docroot", "/foobar" );
-        attrs.put( "hosts", "localhost" );
-        
-        final AMXConfigProxy prop = amx.createChild( propType, attrs );
-        assert prop.getName().equals(VS_NAME);
-        assert amx.childrenMap(Property.class).get(VS_NAME) != null;
-        
-        try
-        {
-            final AMXConfigProxy prop2 = amx.createChild( propType, attrs );
-            // should have thrown an exception; it's a duplicate
-            assert false : "More than one virtual server with the same name can be created, see issue #11272";
-        }
-        catch( final Exception e )
-        {
-            // good, it should not succeed
-        }
-        
-        amx.removeChild( propType, VS_NAME );
-        assert amx.childrenMap(VirtualServer.class).get(VS_NAME) == null;
-    }
-
-
 }
 
 
