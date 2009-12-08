@@ -1333,7 +1333,7 @@ public class Connector
                 StandardEngine cb=(StandardEngine)container;
                 oname = createObjectName(domain, "Connector");
                 Registry.getRegistry(null, null)
-                    .registerComponent(this, oname, null);
+                    .registerComponent(this, oname, "org.apache.catalina.connector.Connector");
                 controller=oname;
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error registering connector ", e);

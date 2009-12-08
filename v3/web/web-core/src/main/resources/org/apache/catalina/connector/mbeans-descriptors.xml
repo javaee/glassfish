@@ -168,11 +168,6 @@
           description="The number of request processing threads that will be created"
                  type="int"/>
 
-    <attribute   name="minProcessors"
-          description="The minimum number of processors to start at
-                       initialization time"
-                 type="int"/>
-
     <attribute   name="port"
           description="The port number on which we listen for ajp13 requests"
                 type="int"/>
