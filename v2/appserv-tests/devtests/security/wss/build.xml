@@ -21,8 +21,8 @@
 
         <!-- JWS 2.0 -->
         <ant dir="gartner" target="all"/>
-<!--        <ant dir="roles" target="all"/>-->
-        <ant dir="roles2" target="all"/>
+        <ant dir="roles" target="all"/>
+<!--        <ant dir="roles2" target="all"/> -->
 <!--        <ant dir="ssl" target="all"/>-->
 <!--        <ant dir="sslclientcert" target="all"/>-->
 

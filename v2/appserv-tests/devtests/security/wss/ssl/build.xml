@@ -48,7 +48,7 @@
         <antcall target="wsimport">
             <param name="wsimport.VMARGS" value=" -Djavax.net.ssl.trustStore=${build.base.dir}/cacerts.jks -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
             <param name="wsimport.args"
-                value="-keep -d ${build.classes.dir}/client https://${s1asCN}:${https.port}/security-wss-ssl/webservice/WssSslServletService/HelloServlet?WSDL"/>
+                value="-keep -d ${build.classes.dir}/client https://localhost:${https.port}/security-wss-ssl/webservice/WssSslServletService/HelloServlet?WSDL"/>
         </antcall>
 
         <delete file="client/Client.java" failonerror="false"/>

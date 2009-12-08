@@ -5,12 +5,10 @@
 package com.sun.s1asdev.security.wss.roles.servletws;
 
 import javax.annotation.Resource;
-import javax.annotation.security.DeclareRoles;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceContext;
 
 @WebService(targetNamespace="http://servletws.roles.wss.security.s1asdev.sun.com", serviceName="WssRolesServletService")
-@DeclareRoles({"javaee", "webuser", "ejbuser"})
 public class HelloServlet {
     @Resource WebServiceContext wsContext;
 

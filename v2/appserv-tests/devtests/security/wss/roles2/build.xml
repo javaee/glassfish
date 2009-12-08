@@ -97,6 +97,7 @@
     <target name="run" depends="init-common">
         <exec executable="${APPCLIENT}">
             <env key="VMARGS" value="-Djavax.net.ssl.keyStore=${mykeystore.db.file} -Djavax.net.ssl.trustStore=${mytruststore.db.file} -Djavax.net.ssl.keyStorePassword=${ssl.password} -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
+            <arg line="-xml ${env.S1AS_HOME}/domains/domain1/config/sun-acc.xml" />
             <arg line="-client" />
             <arg line="${assemble.dir}/${appname}-clientClient.jar"/>
             <arg line="-texauth"/>
