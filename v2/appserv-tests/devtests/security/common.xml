@@ -367,7 +367,7 @@
 
 <target name="wsimport" depends="init-common,setJAXWSToolsForWin,setJAXWSToolsForUnix">
     <exec executable="${WSIMPORT}" failonerror="true" >
-        <env key="VMARGS" value="${wsimport.VMARGS}"/>
+        <env key="WSIMPORT_OPTS" value="${wsimport.VMARGS}"/>
         <arg line="${wsimport.args}" />
     </exec>
 </target>
