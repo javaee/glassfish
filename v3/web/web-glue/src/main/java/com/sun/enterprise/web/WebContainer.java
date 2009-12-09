@@ -1648,7 +1648,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         if (wmContextPath.indexOf('%') != -1) {
             try {
-                RequestUtil.URLDecode(wmContextPath, "UTF-8");
+                RequestUtil.urlDecode(wmContextPath, "UTF-8");
             } catch (Exception e) {
                 String msg = rb.getString(
                     "webcontainer.invalidEncodedContextRoot");

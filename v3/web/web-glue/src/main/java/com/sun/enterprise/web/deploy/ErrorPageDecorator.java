@@ -60,6 +60,6 @@ public class ErrorPageDecorator extends ErrorPage {
             setExceptionType(decoree.getExceptionType());
         }
 
-        setLocation(RequestUtil.URLDecode(decoree.getLocation()));
+        setLocation(RequestUtil.urlDecode(decoree.getLocation()));
     }
 }

@@ -101,7 +101,7 @@ public class ServletContainerInitializerUtil {
                 if (!"file".equals(classLoaderUrl.getProtocol())) {
                     continue;
                 }
-                File file = new File(Util.URLDecode(classLoaderUrl.getFile()));
+                File file = new File(Util.urlDecode(classLoaderUrl.getFile()));
                 try {
                     file = file.getCanonicalFile();
                 } catch (IOException e) {
@@ -249,7 +249,7 @@ public class ServletContainerInitializerUtil {
              */
             ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
             for(URL u : ((URLClassLoader)cl).getURLs()) {
-                String path = Util.URLDecode(u.getPath());
+                String path = Util.urlDecode(u.getPath());
                 try {
                     if(path.endsWith(".jar")) {
                         JarFile jf = new JarFile(path);

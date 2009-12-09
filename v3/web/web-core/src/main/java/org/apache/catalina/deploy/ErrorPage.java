@@ -186,7 +186,7 @@ public class ErrorPage implements Serializable {
         //        if ((location == null) || !location.startsWith("/"))
         //            throw new IllegalArgumentException
         //                ("Error Page Location must start with a '/'");
-        this.location = RequestUtil.URLDecode(location);
+        this.location = RequestUtil.urlDecode(location);
 
     }
 

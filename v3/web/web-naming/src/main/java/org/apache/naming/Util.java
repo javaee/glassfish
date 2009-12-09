@@ -135,8 +135,8 @@ public final class Util {
      * @exception IllegalArgumentException if a '%' character is not followed
      * by a valid 2-digit hexadecimal number
      */
-    public static String URLDecode(String str) {
-        return URLDecode(str, null);
+    public static String urlDecode(String str) {
+        return urlDecode(str, null);
     }
 
     /**
@@ -147,7 +147,7 @@ public final class Util {
      * @exception IllegalArgumentException if a '%' character is not followed
      * by a valid 2-digit hexadecimal number
      */
-    public static String URLDecode(String str, String enc) {
+    public static String urlDecode(String str, String enc) {
 
         if (str == null)
             return (null);
@@ -164,7 +164,7 @@ public final class Util {
             }
         } catch (UnsupportedEncodingException uee) {}
 
-        return URLDecode(bytes, enc);
+        return urlDecode(bytes, enc);
 
     }
 
@@ -175,8 +175,8 @@ public final class Util {
      * @exception IllegalArgumentException if a '%' character is not followed
      * by a valid 2-digit hexadecimal number
      */
-    public static String URLDecode(byte[] bytes) {
-        return URLDecode(bytes, null);
+    public static String urlDecode(byte[] bytes) {
+        return urlDecode(bytes, null);
     }
 
     /**
@@ -187,7 +187,7 @@ public final class Util {
      * @exception IllegalArgumentException if a '%' character is not followed
      * by a valid 2-digit hexadecimal number
      */
-    public static String URLDecode(byte[] bytes, String enc) {
+    public static String urlDecode(byte[] bytes, String enc) {
 
         if (bytes == null)
             return (null);

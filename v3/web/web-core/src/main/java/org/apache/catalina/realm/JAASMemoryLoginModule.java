@@ -280,7 +280,7 @@ public class JAASMemoryLoginModule extends MemoryRealm implements LoginModule, R
         String contextPath = hreq.getContextPath();
         if (contextPath.length() > 0)
             uri = uri.substring(contextPath.length());
-        uri = RequestUtil.URLDecode(uri); // Before checking constraints
+        uri = RequestUtil.urlDecode(uri); // Before checking constraints
         String method = hreq.getMethod();
         List<SecurityConstraint> constraints = context.getConstraints();
         synchronized(constraints) {

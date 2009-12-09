@@ -119,7 +119,7 @@ public class FilterMap implements Serializable {
     }
 
     public void setURLPattern(String urlPattern) {
-        this.urlPattern = RequestUtil.URLDecode(urlPattern);
+        this.urlPattern = RequestUtil.urlDecode(urlPattern);
     }
     
     public Set<DispatcherType> getDispatcherTypes() {

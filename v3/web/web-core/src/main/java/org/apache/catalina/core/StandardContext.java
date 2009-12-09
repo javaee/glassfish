@@ -1377,7 +1377,7 @@ public class StandardContext
         setName(RequestUtil.URLDecode(path));
          */
         // START GlassFish Issue 2339
-        setName(RequestUtil.URLDecode(path, "UTF-8"));
+        setName(RequestUtil.urlDecode(path, "UTF-8"));
         // END GlassFish Issue 2339
     }
 
@@ -3066,7 +3066,7 @@ public class StandardContext
 
         synchronized (servletMappings) {
             for (String pattern : urlPatterns) {
-                pattern = adjustURLPattern(RequestUtil.URLDecode(pattern));
+                pattern = adjustURLPattern(RequestUtil.urlDecode(pattern));
                 if (!validateURLPattern(pattern)) {
                     throw new IllegalArgumentException(sm.getString(
                         "standardContext.servletMap.pattern", pattern));
@@ -3133,7 +3133,7 @@ public class StandardContext
                 (sm.getString("standardContext.servletMap.name", name));
         }
 
-        pattern = adjustURLPattern(RequestUtil.URLDecode(pattern));
+        pattern = adjustURLPattern(RequestUtil.urlDecode(pattern));
         if (!validateURLPattern(pattern)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.servletMap.pattern", pattern));

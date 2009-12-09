@@ -63,13 +63,13 @@ public class LoginConfigDecorator extends LoginConfig {
     public LoginConfigDecorator(LoginConfiguration decoree){
         this.decoree = decoree;
         
-        String errorPage = RequestUtil.URLDecode(decoree.getFormErrorPage());
+        String errorPage = RequestUtil.urlDecode(decoree.getFormErrorPage());
         if (!errorPage.startsWith("/")){
             errorPage = "/" + errorPage;
         }
         setErrorPage(errorPage);
         
-        String loginPage = RequestUtil.URLDecode(decoree.getFormLoginPage());
+        String loginPage = RequestUtil.urlDecode(decoree.getFormLoginPage());
         if (!loginPage.startsWith("/")){
             loginPage = "/" + loginPage;
         }     

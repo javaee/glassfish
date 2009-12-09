@@ -138,7 +138,7 @@ public class LoginConfig implements Serializable {
         //        if ((errorPage == null) || !errorPage.startsWith("/"))
         //            throw new IllegalArgumentException
         //                ("Error Page resource path must start with a '/'");
-        this.errorPage = RequestUtil.URLDecode(errorPage);
+        this.errorPage = RequestUtil.urlDecode(errorPage);
     }
 
 
@@ -155,7 +155,7 @@ public class LoginConfig implements Serializable {
         //        if ((loginPage == null) || !loginPage.startsWith("/"))
         //            throw new IllegalArgumentException
         //                ("Login Page resource path must start with a '/'");
-        this.loginPage = RequestUtil.URLDecode(loginPage);
+        this.loginPage = RequestUtil.urlDecode(loginPage);
     }
 
 

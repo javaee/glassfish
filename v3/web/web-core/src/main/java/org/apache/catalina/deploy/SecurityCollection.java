@@ -242,7 +242,7 @@ public class SecurityCollection implements Serializable {
 
         if (pattern == null)
             return;
-        pattern = RequestUtil.URLDecode(pattern);
+        pattern = RequestUtil.urlDecode(pattern);
         String results[] = new String[patterns.length + 1];
         for (int i = 0; i < patterns.length; i++)
             results[i] = patterns[i];
