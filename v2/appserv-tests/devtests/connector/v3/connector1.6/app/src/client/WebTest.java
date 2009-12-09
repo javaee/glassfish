@@ -32,7 +32,7 @@ private static void goGet(String host, int port,
         try{
             long time = System.currentTimeMillis();
             Socket s = new Socket(host, port);
-            s.setSoTimeout(10000);
+            s.setSoTimeout(20000);
             OutputStream os = s.getOutputStream();
 
             contextPath += "?url=" + contextPath;

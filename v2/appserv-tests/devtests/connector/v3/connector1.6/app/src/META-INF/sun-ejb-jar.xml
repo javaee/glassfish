@@ -10,7 +10,6 @@ one/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
     <ejb>
       <ejb-name>GenericMessageBean</ejb-name>
       <mdb-resource-adapter>
-        <resource-adapter-mid>generic-ra</resource-adapter-mid>
         <activation-config>
          <!-- override prop value -->
         <activation-config-property>
