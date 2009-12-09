@@ -69,14 +69,14 @@ public class AdminMojo extends AbstractServerMojo  {
         if (server ==  null) {
             throw new MojoExecutionException("Embedded Server[" + serverID + "] not running" );
         }
-        try {
-            CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
-            ActionReport report = server.getHabitat().getComponent(ActionReport.class);
-            runner.getCommandInvocation(command, report).
-                    parameters(getParameterMap()).execute();
-        } catch (Exception ex) {
-           throw new MojoExecutionException(ex.getMessage(),ex);
-        }
+        CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
+        ActionReport report = server.getHabitat().getComponent(ActionReport.class);
+        runner.getCommandInvocation(command, report).
+                parameters(getParameterMap()).execute();
+        if (report.hasFailures())
+            throw new MojoExecutionException(report.getMessage());
+        if (report.hasWarnings())
+            System.out.println(report.getMessage());
     }
 
     private ParameterMap getParameterMap() {
