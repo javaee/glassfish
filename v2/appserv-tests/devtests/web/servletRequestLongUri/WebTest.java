@@ -38,14 +38,13 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /**
- * Unit test for testing very long request URI.
+ * Unit test for testing very long request URIs.
  *
  * There was a claim that an URI of length 3427 was correctly mapped to
- * the target servlet, whereas an URI of length 3428 was somehow "swallowed"
- * by the web container and no longer mapped to the target servlet and
- * resulting in a 200 response code.
+ * its target servlet, whereas an URI of length 3428 was somehow "swallowed"
+ * by the web container and no longer mapped to its target servlet.
  *
- * This purpose of this unit test is to make sure that this is not the case.
+ * The purpose of this unit test is to repute this claim.
  */
 public class WebTest {
 
