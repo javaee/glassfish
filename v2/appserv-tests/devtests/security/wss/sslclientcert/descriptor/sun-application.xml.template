@@ -2,6 +2,6 @@
 <sun-application>
   <security-role-mapping>
     <role-name>SECUSER</role-name>
-    <principal-name>CN=@HOST@, OU=Sun Java System Application Server, O=Sun Microsystems, L=Santa Clara, ST=California, C=US</principal-name>
+    <principal-name>CN=@HOST@, OU=GlassFish, O=Sun Microsystems, L=Santa Clara, ST=California, C=US</principal-name>
   </security-role-mapping>
 </sun-application>

@@ -24,7 +24,7 @@
         <ant dir="roles" target="all"/>
 <!--        <ant dir="roles2" target="all"/> -->
         <ant dir="ssl" target="all"/>
-<!--        <ant dir="sslclientcert" target="all"/>-->
+        <ant dir="sslclientcert" target="all"/>
 
         <record name="security-wss.output" action="stop" />    
     </target>
