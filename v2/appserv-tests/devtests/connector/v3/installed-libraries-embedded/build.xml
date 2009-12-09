@@ -6,7 +6,6 @@
 <!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
 <!ENTITY testproperties SYSTEM "./build.properties">
 <!ENTITY database SYSTEM "../../config/database.xml">
-<!ENTITY connectorcommon SYSTEM "../../config/connector-common.xml">
 ]>
 
 <project name="web-ejb-installed-libraries-embedded-App" default="usage" basedir=".">
@@ -16,7 +15,6 @@
     &commonBuild;
     &commonRun;
     &testproperties;
-    &connectorcommon;
 
 <!--
     <target name="all" depends="build,setup,deploy-war, run-war, undeploy-war, deploy-ear, run-ear, undeploy-ear, unsetup"/>

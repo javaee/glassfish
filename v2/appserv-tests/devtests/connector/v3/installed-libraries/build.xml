@@ -4,7 +4,6 @@
         <!ENTITY testproperties SYSTEM "./build.properties">
         <!ENTITY common SYSTEM "../../../../config/common.xml">
         <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
-        <!ENTITY connectorcommon SYSTEM "../../config/connector-common.xml">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -16,10 +15,14 @@
     -->
     &common;
     &testcommon;
-    &connectorcommon;
+    <property  name="mode" value=""/>
 
-    <target name="all-ext" depends="clean, build,build-rar-ext,deploy-rar,deploy,run,undeploy"/>
-    <target name="all--libraries" depends="clean, build,build-rar--libraries, deploy-rar--libraries, deploy, run,undeploy"/>
+    <target name="all-ext" depends="clean, build,build-rar-ext,deploy-rar,deploy,run,undeploy">
+        <property  name="mode" value=" (Extension-List) "/>
+    </target>
+    <target name="all--libraries" depends="clean, build,build-rar--libraries, deploy-rar--libraries, deploy, run,undeploy">
+        <property  name="mode" value=" (--libraries) "/>
+    </target>
 
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
@@ -169,6 +172,7 @@
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
+            <arg value="${mode}"/>
             <classpath>
              <pathelement location="${env.APS_HOME}/lib/reporter.jar"/>
              <pathelement location="."/>
