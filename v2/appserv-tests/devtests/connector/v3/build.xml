@@ -116,6 +116,18 @@
             <param name="connector-target" value="all"/>
         </antcall>
     </target>
+ 
+    <target name="all-with-security-manager">
+      <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+        </delete>
+        <antcall target="connector-with-security-manager">
+            <param name="connector-target" value="all"/>
+        </antcall>
+    </target>
 
     <target name="clean">
         <antcall target="connector">
@@ -157,6 +169,28 @@
         <antcall target="connector">
             <param name="connector-target" value="run"/>
         </antcall>
+    </target>
+
+    <target name="connector-with-security-manager">
+
+        <echo message="enabling security manager"/>
+        <antcall target="create-jvm-options">
+            <param name="option" value="-Djava.security.manager"/>
+        </antcall>
+ 
+        <antcall target="restart-server"/>
+        
+         <antcall target="connector">
+            <param name="connector-target" value="all"/>
+        </antcall>
+ 
+        <echo message="disabling security manager"/>
+        <antcall target="delete-jvm-options">
+            <param name="option" value="-Djava.security.manager"/>
+        </antcall>
+
+        <antcall target="restart-server"/>
+
     </target>
 
     <target name="connector">
