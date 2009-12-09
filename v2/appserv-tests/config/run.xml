@@ -75,7 +75,7 @@
         <arg line="--domaindir ${admin.domain.dir}"/>
         <arg line="--adminport ${admin.port}"/>
         <arg line="--instanceport ${http.port}"/>
-        <arg line="--adminuser ${admin.user}"/>
+        <arg line="--user ${admin.user}"/>
         <arg line="--passwordfile ${admin.password.file}"/>
         <arg line="--domainproperties orb.listener.port=${orb.port}" />
         <arg line="${admin.domain}"/>
