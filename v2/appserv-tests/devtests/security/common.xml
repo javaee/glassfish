@@ -8,13 +8,17 @@
 <property name="appserver.config.name" value="server-config"/>
 <property name="wsimport.VMARGS" value=""/>
 
-<target name="init-security-util">
-    <ant dir="${env.APS_HOME}/devtests/security/util" target="all"/>
+<target name="init-security-util" depends="gethostname">
+<!--    <ant dir="${env.APS_HOME}/devtests/security/util" target="all"/>
     <taskdef name="s1asCN" classname="devtests.security.util.S1ASCN" classpath="${env.APS_HOME}/devtests/security/util/build:${env.S1AS_HOME}/lib/appserv-rt.jar"/>
     <s1asCN/>
+    <echo message="s1as CN = ${s1asCN}"/> -->
+</target>
+<target name="gethostname">
+    <exec executable="hostname" osfamily="unix" failifexecutionfails="false" outputproperty="env.COMPUTERNAME"/>
+    <property name="s1asCN" value="${env.COMPUTERNAME}" />
     <echo message="s1as CN = ${s1asCN}"/>
 </target>
-
 <!-- Create auth realm -->
 <target name="create-auth-realm" depends="init-common">
     <echo message="Creating auth realm ${realmname} ..."/>
