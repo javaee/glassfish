@@ -98,6 +98,15 @@
     </plugins>
   </reporting>
 
+  <distributionManagement>
+      <repository>
+          <uniqueVersion>false</uniqueVersion>
+          <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
+          <id>rator.sfbay</id>
+          <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
+      </repository>
+  </distributionManagement>
+
   <repositories>
     <repository>
       <id>glassfish-repository</id>
