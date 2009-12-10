@@ -1,0 +1,36 @@
+# See issue 8474 for com.sun.ejb.portable: this is needed so that the ORB can unmarshal
+# HandleImpl.
+-exportcontents: \
+                        com.sun.ejb; \
+                        com.sun.ejb.portable; \
+                        com.sun.ejb.containers; \
+                        com.sun.ejb.spi.io; \
+                        com.sun.ejb.spi.container; \
+                        com.sun.appserv.ejb; version=${project.osgi.version}
+
+# See issue #10545 to know why we have explicitly added org.glassfish.apf.context
+# in Import-Package
+# Note that the CORBA and javax classes are needed so that dynamic RMI-IIOP
+# can create a stub for ReadOnlyEJBHome.
+Import-Package: \
+                        javax.xml.soap;resolution:=optional, \
+                        javax.xml.ws;resolution:=optional, \
+                        javax.xml.ws.handler;resolution:=optional, \
+                        javax.jws;resolution:=optional, \
+                        com.sun.corba.ee.spi.orbutil.codegen;resolution:=optional, \
+                        com.sun.corba.ee.impl.orbutil.codegen;resolution:=optional, \
+                        com.sun.corba.ee.spi.orbutil.copyobject;resolution:=optional, \
+                        com.sun.corba.ee.impl.orbutil.copyobject;resolution:=optional, \
+                        com.sun.corba.ee.spi.presentation.rmi;resolution:=optional, \
+                        org.omg.CORBA;resolution:=optional, \
+                        org.omg.CORBA.portable;resolution:=optional, \
+                        org.omg.CORBA_2_3.portable;resolution:=optional, \
+                        javax.rmi.CORBA;resolution:=optional, \
+                        com.sun.corba.ee.impl.presentation.rmi.codegen;resolution:=optional, \
+                        org.glassfish.apf.context, \
+                        *
+
+Bundle-SymbolicName: \
+                        ${project.groupId}.${project.artifactId}
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

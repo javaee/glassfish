@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jruby">
+
+    <integration-point
+        id="jruby_container"
+        type="org.glassfish.admingui:navNode"
+        priority="280"
+        parentId="configuration"
+        content="pluginTreeNodeJruby.jsf"
+    />
+
+    <!-- Add a link under the Configuration Page -->
+    <integration-point
+        id="jruby_ConfigurationLink"
+        type="org.glassfish.admingui:configuration"
+        priority="280"
+        parentId="propSheetSection"
+        content="configLinks.jsf"
+    />
+
+
+    <!-- add the property sheet for deployment page, specific for web app -->
+    <integration-point
+            id="jruby_deploy"
+            type="org.glassfish.admingui:uploadPropertySheet"
+            priority="100"
+            parentId="form"
+            content="deploymentJruby.jsf"
+    />
+
+     <integration-point
+            id="jruby_edit_app"
+            type="org.glassfish.admingui:editAppPage"
+            content="jruby:jruby/editJrubyApp.jsf"
+    />
+
+
+    <!-- add the dropdown option for selecting the type of app to deploy
+         in the form of  label:value
+     -->
+    <integration-point
+            id="jruby_deploy_type"
+            type="org.glassfish.admingui:appTypeDropdown"
+            priority="500"
+            parentId="form"
+            content="Ruby Application;jruby"
+    />
+
+    
+
+
+</console-config>

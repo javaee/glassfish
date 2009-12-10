@@ -1,0 +1,11 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
+
+java -Djava.endorsed.dirs="$AS_INSTALL_LIB/endorsed" -cp "$AS_INSTALL_LIB/webservices-osgi.jar:$AS_INSTALL_LIB/jaxb-osgi.jar" com.sun.tools.ws.WsGen "$@"

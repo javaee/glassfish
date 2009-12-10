@@ -1,0 +1,90 @@
+# This file contains GlassFish V2 asadmin commands that are NOT carried 
+# forward to GlassFish v3. This is a very simple file with one command name 
+# per line. Anything with a leading # '#' like this line is treated a comment.
+# An 'L' or 'R' at the end tells you if it's a Local or Remote command.
+# I know it is a maintenance headache, but this file is needed to move to a 
+# more sensible command line syntax and separation of command options
+# from asadmin program options. For details, see CLI spec for GlassFish v3.
+# Also see the companion list of commands -- supported-legacy-command-names
+backup-domain L
+restore-domain L
+list-backups L
+install-addons L
+uninstall-addons L
+create-persistence-resource R
+delete-persistence-resource R
+list-persistence-resources R
+reconfig R
+start-appserv L
+stop-appserv L
+display-error-statistics R
+display-error-distribution R
+publish-to-registry R
+unpublish-from-registry R
+list-registry-locations R
+generate-diagnostic-report R
+start-callflow-monitoring R
+stop-callflow-monitoring R
+create-management-rule R
+delete-management-rule R
+list-management-rules R
+create-node-agent L
+delete-node-agent L
+list-node-agents L
+start-node-agent L
+stop-node-agent L
+create-node-agent-config R
+delete-node-agent-config R
+create-instance R
+delete-instance R
+list-instances R
+start-instance R
+stop-instance R
+create-cluster R
+delete-cluster R
+list-clusters R
+start-cluster R
+stop-cluster R
+copy-config R
+delete-config R
+list-configs R
+create-application-ref R
+delete-application-ref R
+list-application-refs R
+create-resource-ref R
+delete-resource-ref R
+list-resource-refs R
+clear-status R
+list-status R
+configure-ha-cluster R
+remove-ha-cluster R
+create-ha-store R
+clear-ha-store R
+configure-ha-persistence R
+migrate-timers R
+create-repository-zip R (unsupported in v2 as well)
+apply-repository-zip R (unsupported in v2 as well)
+create-http-lb-config R
+delete-http-lb-config R
+list-http-lb-configs R
+create-http-lb-ref R
+delete-http-lb-ref R
+export-http-lb-config R
+enable-http-lb-server R
+disable-http-lb-server R
+enable-http-lb-application R
+disable-http-lb-application R
+create-http-lb R
+delete-http-lb R
+apply-http-lb-changes R
+create-http-health-checker R
+delete-http-health-checker R
+configure-lb-weight R
+get-health R
+get-hadb-info R
+set-hadb-info R
+is-hadb-installed R
+ping-hadb-agent R
+restart-hadb R
+start-hadb R
+stop-hadb R

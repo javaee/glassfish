@@ -1,0 +1,1 @@
+-exportcontents: org.glassfish.persistence.jpa; version=${project.osgi.version}

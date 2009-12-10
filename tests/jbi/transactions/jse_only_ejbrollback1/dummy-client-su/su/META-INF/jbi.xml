@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:javaee_ext="http://javaee.serviceengine.sun.com/endpoint/naming/extension" xmlns:ns0="http://endpoint/ejb" version="1.0">
+    <services binding-component="false">
+        <provides endpoint-name="javaee_HelloEJBPort" interface-name="ns0:HelloEJB" service-name="ns0:HelloEJBService"/>
+        <javaee_ext:ept-mappings>
+            <javaee_ext:ept-mapping>
+                <javaee_ext:java-ept endpoint-name="javaee_HelloEJBPort" interface-name="ns0:HelloEJB" service-name="ns0:HelloEJBService" type="provider"/>
+                <javaee_ext:wsdl-ept endpoint-name="HelloEJBPort" interface-name="ns0:HelloEJB" service-name="ns0:HelloEJBService" type="provider"/>
+            </javaee_ext:ept-mapping>
+        </javaee_ext:ept-mappings>
+        <javaee_ext:private-endpoints/>
+    </services>
+</jbi>

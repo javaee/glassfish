@@ -1,0 +1,11 @@
+<!composition template="/templates/default.layout"  guiTitle="${artifactId} Test Page">
+<!define name="content">
+    <sun:form id="${artifactId}Form">
+	<staticText value="This is a new page.  Here is the output of the test 'echo' handler: '#{pageSession.myVar}'">
+	    <ui:event type="beforeCreate">
+		${artifactId}.echo("ECHO THIS!" out="#{pageSession.myVar}");
+	    </ui:event>
+	</staticText>
+    </sun:form>
+</define>
+</composition>

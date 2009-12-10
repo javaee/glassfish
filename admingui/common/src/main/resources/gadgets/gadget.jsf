@@ -1,0 +1,41 @@
+<sun:html>
+<sun:head title="#{pageSession.gadget.gadgetModulePrefs.title}" debug="false" parseOnLoad="false">
+<f:verbatim>
+    <style type="text/css">
+.GlassFishGadget { border: 2px solid #3388DD; }
+.GlassFishGadget .menu { background-color: #55AAFF; }
+.GlassFishGadget .menu .controls { background-color: #99DDFF; float: right; border: 1px solid #114488;}
+    </style>
+</f:verbatim>
+    <sun:script url="/resource/common/js/gadget.js" />
+</sun:head>
+<sun:body>
+
+<f:verbatim>
+<div class="GlassFishGadget">
+<div class="menu">
+Title: #{pageSession.gadget.gadgetModulePrefs.title}
+<div class="controls">
+    <!-- FIXME: The close & properties buttons need to be defined here. -->
+</div>
+</div>
+
+<div class="content" style="width: 100%">
+</f:verbatim>
+
+<!--
+    FIXME: When I do <h:outputText value="#{fileContents}" /> it works
+    FIXME: correctly, but <staticText value="#{fileContents}" /> does not
+    FIXME: (which is a JSFT-template based component) - it is getting
+    FIXME: evaluated 2x.  I need to investigate this...
+-->
+<h:outputText id="tmp" escape="false" value="#{pageSession.gadget.text}">
+    <!afterCreate
+	<!-- It is safe to use #{param} in this handler -->
+	gf.getGadgetModule("#{param.gadget}" module="#{pageSession.gadget}");
+    />
+</h:outputText>
+
+"</div></div>
+</sun:body>
+</sun:html>

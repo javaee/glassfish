@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" 
+                        res-type="javax.sql.XADataSource" 
+                        name="test"
+                        max-pool-size="abc"
+                        pool-resize-quantity="0"
+                        steady-pool-size="${SIZE}">
+  </jdbc-connection-pool>

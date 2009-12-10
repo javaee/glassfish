@@ -1,0 +1,43 @@
+<!--
+  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  
+  Use is subject to License Terms
+--> 
+<!ENTITY % optiontype "(STRING | BOOLEAN | PASSWORD | FILE_PATH | FILE | DIRECTORY | PROPERTY | PROPERTIES)">
+<!-- maps to OptionType Enumeration -->
+<!ENTITY % boolean "(TRUE | FALSE)">
+<!-- maps to java.lang.Boolean -->
+<!ENTITY % cardinality "(ONE | MANY)">
+<!ENTITY % condition "(OR | AND)" >
+
+<!ELEMENT command-desc (option-desc*, operand-desc*)>
+<!ATTLIST command-desc
+          name CDATA #REQUIRED>
+
+<!ELEMENT option-desc (overriding-type?)>
+<!ATTLIST option-desc
+          name CDATA #REQUIRED
+          required %boolean; "FALSE"
+          type %optiontype; "STRING"
+          repeats %boolean; "FALSE"
+          symbol CDATA #IMPLIED
+          default-value CDATA #IMPLIED
+          legal-values CDATA #IMPLIED
+>
+
+<!ELEMENT operand-desc (overriding-type?)>
+<!ATTLIST operand-desc
+          name CDATA #REQUIRED
+          type %optiontype; "STRING"
+          cardinality %cardinality; "ONE">
+
+<!ELEMENT overriding-type (option-names, option-values)>
+<!ATTLIST overriding-type
+          type %optiontype; #REQUIRED
+          condition %condition; "OR">
+
+<!ELEMENT option-names (#PCDATA)> <!-- comma separated names -->
+
+<!ELEMENT option-values (#PCDATA)> <!-- comma separated values -->

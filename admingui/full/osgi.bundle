@@ -1,0 +1,1 @@
+-exportcontents: org.glassfish.full.admingui; version=${project.osgi.version}

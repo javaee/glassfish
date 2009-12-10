@@ -1,0 +1,4 @@
+-exportcontents: \
+                        com.sun.enterprise.transaction.api; \
+                        com.sun.enterprise.transaction.spi; version=${project.osgi.version}
+

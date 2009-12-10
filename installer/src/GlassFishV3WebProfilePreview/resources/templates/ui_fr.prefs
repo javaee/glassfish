@@ -1,0 +1,196 @@
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# 
+# Use is subject to License Terms
+#
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PRODUCT_NAME=Aper\u00e7u du profil Web GlassFish\u00a0v3
+
+app_title=Aper\u00e7u du profil Web GlassFish\u00a0v3
+# Text for Buttons
+btnCancel_text=Annuler
+btnExit_text=Quitter
+btnHelp_text=Aide
+btnBack_text=Pr\u00e9c\u00e9dent
+btnNext_text=Suivant
+
+# stuff that's used by templates regardless of viewmode
+mainpanel_bgcolor=e8e9ed
+navigpanel_image=/templates/LeftPanel.jpg
+logopanel_image=/templates/LogoPanel.jpg
+top_left_image=/templates/glassfish_logo.png
+bottom_left_image=/templates/community-logo.png
+icon_image=/templates/glassfishserver.gif
+
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+leftpanel_font=SanSerif-BOLD-13
+
+# Dynamic panel
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+dynamic_content_font=SanSerif-PLAIN-13
+dynamic_component_background=WHITE
+dynamic_component_foreground=666666
+dynamic_component_border_color=BLACK
+
+# Font for titles
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title1_font=SanSerif-BOLD-18
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title2_font=SanSerif-BOLD-20
+
+# Text color for titles
+title1_color=587993
+title2_color=BLACK
+
+# Text for titles
+title1_text=Bienvenue sur
+title2_text=GlassFish v3
+# Colors for content panel
+contentpanel_bordercolor=587993
+contentpanel_bgcolor=e8e9ed
+
+btnpanel_bgcolor=e8e9ed
+
+# Font for Buttons
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+button_font=SanSerif-PLAIN-11
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bienvenue sur l'assistant d'installation de ${PRODUCT_NAME}.&lt;BR&gt;&lt;BR&gt;Pour installer l'int\u00e9gralit\u00e9 de ${PRODUCT_NAME}, cliquez sur Suivant. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Avant d'installer ce produit, vous devez lire et accepter son contrat de licence d'utilisation&lt;/BODY&gt;&lt;/HTML&gt;
+
+
+License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Avez-vous lu et acceptez-vous de vous conformer \u00e0 tous les termes du contrat pr\u00e9c\u00e9dent de licence de logiciel &lt;BR&gt; ? Si vous cliquez sur &lt;B&gt;Annuler&lt;/B&gt; le programme d'installation &lt;BR&gt;se fermera sans installer les fichiers du produit.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+LICENSE_CHECKBOX_TOOLTIP=Cliquez pour accepter ou refuser la licence.
+
+LICENSE_CHECKBOX_TEXT=J'accepte
+
+LICENSE_ACCEPT_TOOLTIP=S\u00e9lectionnez cette option si vous acceptez les termes du contrat.
+
+LICENSE_ACCEPT_TEXT=J'accepte les termes du contrat de licence.
+
+LICENSE_DECLINE_TOOLTIP=S\u00e9lectionnez cette option si vous n'acceptez pas les termes du contrat.
+
+LICENSE_DECLINE_TEXT=Je n'accepte pas les termes du contrat de licence.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#DEFAULT_INSTALL_HOME=C:\Program Files\Sun
+INSTALL_HOME_LABEL=R\u00e9pertoire d\u2019installation
+INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Pr\u00e9cisez le r\u00e9pertoire du syst\u00e8me cible dans lequel installer ${PRODUCT_NAME}.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+SPECIFY_HOME_MSG=Pr\u00e9cisez le r\u00e9pertoire d'installation.
+INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Si le r\u00e9pertoire d'installation que vous pr\u00e9cisez n'existe pas, le programme d'installation le cr\u00e9era automatiquement.&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~C O N F I G   M O D E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  L10N SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L10N_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;S\u00e9lectionnez une option depuis la liste suivante :&lt;/BODY&gt;&lt;/HTML&gt;
+L10N_CHOICE_TEXT=Installez les langues pour les produits s\u00e9lectionn\u00e9s.
+INSTALL_L10N_TOOLTIP=S\u00e9lectionnez cette option pour installer les langues pour les produits s\u00e9lectionn\u00e9s.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;S\u00e9lectionnez une option depuis la liste suivante :&lt;/BODY&gt;&lt;/HTML&gt;
+
+
+JDK_HOME=R\u00e9pertoire de base de JDK
+SELECTED_JDK_TEXT=&lt;HTML&gt;&lt;BODY&gt;Le JDK s\u00e9lectionn\u00e9 est &lt;/BODY&gt;&lt;/HTML&gt;
+
+JDK_FROM_MEDIA_CHOICE_TEXT=Installez et utilisez la version SDK par d\u00e9faut de Java(TM).
+JDK_FROM_LIST_CHOICE_TEXT=S\u00e9lectionnez un SDK de Java(TM) dans la liste.
+JDK_TYPED_IN_CHOICE_TEXT=Saisissez l'emplacement du SDK de Java(TM).
+
+JDK_LIST_TOOLTIP=S\u00e9lectionnez un SDK de Java(TM) depuis la liste d\u00e9roulante.
+JDK_TYPE_IN_TOOLTIP=Saisissez l'emplacement du SDK de Java(TM) dans cette zone de texte.
+
+AVAILABLE_JDK=SDK de Java(TM) disponibles
+ALTERNATE_JDK=Emplacement de remplacement du SDK de Java(TM)
+
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Si une connexion est disponible, le programme d'installation essaiera de t\u00e9l\u00e9charger et de configurer l'outil de Mise \u00e0 jour pour cette installation.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;L'outil de mise \u00e0 jour v\u00e9rifie r\u00e9guli\u00e8rement si des mises \u00e0 jour sont disponibles et collecte des donn\u00e9es syst\u00e8me. Pour plus d'informations sur les donn\u00e9es collect\u00e9es, consultez &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt; page (http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3).&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY;font face='Sans-Serif'&gt;Configurez les param\u00e8tres d'administration du serveur. Indiquez le nom d'utilisateur et le mot de passe associ\u00e9s au serveur. Si vous souhaitez configurer le serveur pour les connexions non authentifi\u00e9es, laissez le champ du mot de passe vide.&lt;/font&gt;&lt;/p&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+#ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
+Configure les param\u00e8tres d'administration pour le serveur. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+ANONYMOUS=Configurez en tant qu'utilisateur anonyme
+NON_ANONYMOUS=Fournissez nom d'utilisateur et mot de passe 
+ADMIN_PORT_TOOL_TIP=Saisissez le port d'administration
+HTTP_PORT_TOOL_TIP=Saisissez le port listener HTTP
+ADMIN_USER_TOOL_TIP=Saisissez le nom d'utilisateur de l'administrateur
+ADMIN_PASSWORD_TOOL_TIP=Saisissez le mot de passe de l'administrateur
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADD_BUTTON_LABEL=Ajouter >
+ADD_ALL_BUTTON_LABEL=Tout Ajouter >>
+REMOVE_BUTTON_LABEL=< Supprimer
+REMOVE_ALL_BUTTON_LABEL=<< Tout Supprimer
+PSP_INTRO_TEXT=S\u00e9lectionnez les produits \u00e0 installer.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PAGE FLOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CONFIGURE_SELECT_MSG=Configurez les composants logiciel s\u00e9lectionn\u00e9s avec des donn\u00e9es par d\u00e9faut ou personnalis\u00e9es.
+EXPRESS=Express
+CUSTOM=Personnaliser
+SELECT_DESIRED_MODE_TEXT=&lt;HTML&gt;&lt;BODY&gt;
+            Select le mode de configuration.
+            &lt;/BODY&gt;&lt;/HTML&gt;
+CUSTOM_CDATA_TXT=Le mode &lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Personnaliser&lt;/B&gt; installe
+ the  le logiciel  et le configure avec les valeurs
+that que vous pr\u00e9ciserez dans les pages de configuration ci-apr\u00e8s.&lt;BR&gt;
+          &lt;/BODY&gt;&lt;/HTML&gt;
+EXPRESS_CDATA_TXT=Le mode &lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; installe le  logiciel et le configure avec ses valeurs par d\u00e9faut.
+CONFIGURE_SELECTED_COMPONENTS_MSG=Configurez les composants logiciel s\u00e9lectionn\u00e9s avec des donn\u00e9es par d\u00e9faut ou personnalis\u00e9es.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADMIN_USER_TEXT=Nom d'utilisateur
+ADMIN_PASSWORD_TEXT=Mot de passe
+ADMIN_PORT_TEXT=Port d'administration
+HTTP_PORT_TEXT=Port HTTP
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~U P D A T E T O O L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSTALL_UPDATE_TOOL_TEXT=Installer l'outil de mise \u00e0 jour
+ENABLE_UPDATE_TOOL_TEXT=Activer l'outil de mise \u00e0 jour
+PROXY_HOST_TEXT=H\u00f4te proxy
+PROXY_PORT_TEXT=Port proxy
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EMAIL=Adresse e-mail
+PASSWORD=Mot de passe
+REENTER_PASSWORD=Retapez le mot de passe.
+FIRSTNAME=Pr\u00e9nom
+LASTNAME=Nom
+COUNTRY=Pays
+COMPANYNAME=Nom de l'entreprise
+ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}Fournissez les informations suivantes pour cr\u00e9er un compte en ligne Sun. Tous les champs sont obligatoires.${BODY_END}
+ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}&lt;a href=http://www.sun.com/privacy/&gt;politique de confidentialit\u00e9 de Sun&lt;/a&gt;.${BODY_END}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+REGISTRATION_OPTIONS_HEADER=${BODY_START}Pourquoi m'inscrire ? Acc\u00e9dez facilement aux avantages tels que les :&lt;UL&gt;&lt;LI&gt; informations de patch et mises \u00e0 jour correctives&lt;/LI&gt;&lt;LI&gt; diffusions en ligne et didacticiels,&lt;/LI&gt;&lt;LI&gt; offres de support et de formations&lt;/LI&gt;&lt;/UL&gt;${BODY_END}
+CREATE_NEWACCT=Je n'ai pas de compte en ligne Sun. M'enregistrer.
+USE_EXISTINGACCT=J'ai d\u00e9j\u00e0 un compte en ligne Sun.
+USERNAME=Nom d'utilisateur
+USERPASSWORD=Mot de passe utilisateur
+SKIP_REGISTRATION=Ignorer l'enregistrement
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME}: Mise niveau \u00e0 logiciel&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPGRADE_ALLOW_TEXT=Mettre \u00e0 niveau
+UPGRADE_DECLINE_TEXT=Ne pas mettre \u00e0 niveau
+UPGRADE_ALLOW_TOOLTIP=S\u00e9lectionnez cette option pour mettre \u00e0 niveau le logiciel.
+UPGRADE_DECLINE_TOOLTIP=S\u00e9lectionnez cette option pour ne pas mettre \u00e0 niveau le logiciel.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# L10n: only translate the "Please wait" string.  leave the rest unchanged.
+PROGRESS_WAIT=Veuillez patienter...
+              
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+REGISTRATION_PROGRESS=Progression de l'enregistrement

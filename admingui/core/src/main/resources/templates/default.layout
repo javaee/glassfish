@@ -1,0 +1,7 @@
+<ui:event type="initPage">
+    <!-- Ok to use #{param} here -->
+    if ("!(#{param.bare}=#{null}) || !#{pageSession.bare}") {
+	setPageSessionAttribute(key="bare", value="#{param.bare == 'true'}");
+    }
+</ui:event>
+<!composition template="/templates/#{pageSession.bare == 'true' ? 'bareLayout.xhtml' : 'treeLayout.xhtml'}" />

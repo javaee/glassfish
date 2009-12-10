@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : configBindings.xml
+    Created on : January 23, 2009, 8:49 AM
+    Author     : tjquinn
+    Description:
+        Purpose of the document follows.
+-->
+
+
+
+<!--
+    The following custom bindings apply to the DTD
+-->
+<xml-java-binding-schema>
+    <!--
+        Various boolean values in the DTD accept true/false, yes/no, and 0/1.
+        Here is the custom conversion for those.
+    -->
+    <conversion name="boolean" type="boolean"
+        parse="org.glassfish.appclient.client.acc.config.util.XML.parseBoolean"
+        print="java.lang.Boolean.toString"/>
+
+    <conversion name="int" type="int"
+        parse="javax.xml.bind.DatatypeConverter.parseInt"
+        print="javax.xml.bind.DatatypeConverter.printInt"/>
+
+    <conversion name="providerType" type="java.lang.String"
+        parse="org.glassfish.appclient.client.acc.config.util.XML.parseProviderType" />
+
+    <conversion name="password" type="org.glassfish.appclient.client.acc.config.util.XML.Password"
+        parse="org.glassfish.appclient.client.acc.config.util.XML.Password.parse"
+        print="org.glassfish.appclient.client.acc.config.util.XML.Password.print" />
+
+    <element name="client-container" type="class" root="true">
+        <attribute name="send-password" property="SendPassword" convert="boolean"/>
+        
+    </element>
+
+    <element name="ssl" type="class">
+        <attribute name="ssl2-enabled" property="Ssl2Enabled" convert="boolean"/>
+        <attribute name="ssl3-enabled" property="Ssl3Enabled" convert="boolean"/>
+        <attribute name="tls-enabled" property="TlsEnabled" convert="boolean"/>
+        <attribute name="tls-rollback-enabled" property="TlsRollbackEnabled" convert="boolean"/>
+    </element>
+
+    <!--
+        Add a constructor for the generated class which accepts the host (address) and
+        port for the target server.
+    -->
+    <element name="target-server" type="class">
+        <attribute name="port" property="Port" convert="int"/>
+        <constructor properties="address port"/>
+    </element>
+
+    <element name="auth-realm" type="class">
+        <constructor properties="classname"/>
+    </element>
+
+    <element name="provider-config" type="class">
+        <attribute name="provider-type" property="ProviderType" convert="providerType"/>
+
+        <!--
+            The next two lines are commented because each, separately, causes
+            the JAXB code gen to fail.  So instead of using the enumerator we
+            use the providerType converter (as specified just above).
+        -->
+        <!-- <enumeration name="provider-type" members="client server client-server"/>  -->
+        <!-- <constructor properties="provider-id provider-type class-name"/> -->
+    </element>
+
+    <element name="client-credential" type="class">
+        <constructor properties="userName password realm"/>
+        <attribute name="password" property="Password" convert="password"/>
+    </element>
+
+<!--
+
+    <element name="request-policy" type="class">
+        <constructor properties="auth-source auth-recipient"/>
+    </element>
+
+    <element name="response-policy" type="class">
+        <constructor properties="auth-source auth-recipient"/>
+    </element>
+
+    <element name="message-security-config" type="class">
+        <constructor properties="auth-layer default-provider default-client-provider"/>
+    </element>
+-->
+</xml-java-binding-schema>
+
+<!--
+    The following custom bindings would apply to the XSD if there were one.
+-->
+<!--
+<bindings 
+    xmlns="http://java.sun.com/xml/ns/jaxb" version="2.1"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <bindings
+        schemaLocation="sun-application-client-container_1_2.xsd"
+        node="/xs:schema/xs:element[@name='client-container']">
+      <javaType
+            xmlType="BOOLEAN"
+            javaType="boolean"
+            parseMethod="org.glassfish.appclient.client.acc.XML.parseBoolean"
+            printMethod="javax.xml.bind.DatatypeConverter.printBoolean"
+            />
+
+  </bindings>
+</bindings>
+-->

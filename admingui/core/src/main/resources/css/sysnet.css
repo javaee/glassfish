@@ -1,0 +1,89 @@
+div.r1c1 {
+      position: absolute;
+      left: 5px;
+      top: 80px;
+      width: 500px;
+      height: 300px;
+      padding: 5px;
+}
+div.r1c2 {position: absolute;
+       left: 525px; 
+	   top: 80px; 
+	   width: 300px; 
+	   height: 100px; 
+	   padding: 5px;
+}
+div.r2c1 {position: absolute;
+       left: 5px; 
+	   top: 625px; 
+	   width: 300px; 
+	   /*height: 300px; */
+	   padding: 5px;
+	   border: 1px;
+	   overflow: hidden;
+}
+div.r2c2 {position: absolute;
+         left: 325px; 
+	 top: 400px; 
+	 width: 300px; 
+	 height: 300px; 
+	 padding: 5px;
+         border: 5px white groove;
+         font-size: 13pt;
+}
+.md1 {
+	background: #eeeeee;
+	border: 1px solid #b0bec7;
+}
+.g2v5 {
+background:#eeeeee;
+border:0pt none;
+height:2px;
+padding:0pt;
+}
+.littlearrows{background:url("#{request.contextPath}/sysnet/images/ar_dbl_blue.png") no-repeat top left;padding-left:10px
+}
+.javaeeStackContent {
+  padding-top : 2px;
+  padding-bottom: 2px;
+}
+.javaeeStack li {
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7x;
+  /* -opera-border-radius: 7px; */
+  border-radius: 7px;
+  padding : 2px;
+  margin-top : 2px;
+  margin-left : 2px;
+  margin-right : 2px;
+}
+.eventsStack li {
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7x;
+  /* -opera-border-radius: 7px; */
+  border-radius: 7px;
+  padding : 2px;
+  margin-top : 2px;
+  margin-left : 2px;
+  margin-right : 2px;
+}
+.eventsStackContent {
+  padding-top : 2px;
+  padding-bottom: 2px;
+  position: absolute;
+}
+.aquaStackContent {
+  padding-top : 2px;
+  padding-bottom: 2px;
+}
+.aquaStack li {
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7x;
+  /* -opera-border-radius: 7px; */
+  border-radius: 7px;
+  background : #eeeeee;
+  padding : 2px;
+  margin-top : 2px;
+  margin-left : 2px;
+  margin-right : 2px;
+}

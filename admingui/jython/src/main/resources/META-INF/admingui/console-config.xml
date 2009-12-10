@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jython">
+
+    <!-- add the property sheet for deployment page, specific for web app -->
+    <integration-point
+            id="jython_deploy"
+            type="org.glassfish.admingui:uploadPropertySheet"
+            priority="400"
+            parentId="form"
+            content="deploymentJython.jsf"
+    />
+
+     <integration-point
+            id="jython_edit_app"
+            type="org.glassfish.admingui:editAppPage"
+            content="jython:jython/editJythonApp.jsf"
+    />
+
+
+    <!-- add the dropdown option for selecting the type of app to deploy
+         in the form of  label:value
+     -->
+    <integration-point
+            id="jython_deploy_type"
+            type="org.glassfish.admingui:appTypeDropdown"
+            priority="600"
+            parentId="form"
+            content="Jython Application;jython"
+    />
+
+
+
+</console-config>

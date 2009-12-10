@@ -1,0 +1,7 @@
+-exportcontents: \
+                        org.apache.naming; \
+                        org.apache.naming.factory; \
+                        org.apache.naming.java; \
+                        org.apache.naming.resources; \
+                        org.apache.naming.resources.jndi; version=${project.osgi.version}
+

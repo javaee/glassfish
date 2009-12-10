@@ -1,0 +1,132 @@
+#!/bin/sh
+setEnv()
+{
+	export TEMP_DIR=./temp
+	export PUBLISH_DIR=./bin
+	export SCRIPTS_DIR=./scripts
+	
+}
+
+initialize()
+{
+ if [ -d ${TEMP_DIR} ] ; then
+  rm -rf ${TEMP_DIR}
+ fi
+ mkdir -p ${TEMP_DIR}
+ 
+ if [ -d ${PUBLISH_DIR} ] ; then
+  rm -rf ${PUBLISH_DIR}
+ fi
+ mkdir -p ${PUBLISH_DIR}
+ mkdir -p ${PUBLISH_DIR}/jars
+}
+
+askUser()
+{
+ echo "Produce mx.jar? (y for yes, n for no)"
+ read ans
+ if [ ${ans} == "y" ] ; then
+  echo "going ahead ..."
+ else
+  echo "bye"
+  exit 1
+ fi
+}
+
+
+copy()
+{
+    cp required-jars/jmxtools.jar ${TEMP_DIR}/jmxtools.jar
+	cp required-jars/jmxremote_optional.jar ${TEMP_DIR}/jmxremote_optional.jar
+	cp required-jars/javax77.jar ${TEMP_DIR}/javax77.jar
+	
+	cp jars/mx.jar ${TEMP_DIR}
+	cp jars/mx-optional.jar ${TEMP_DIR}
+}
+
+unjar()
+{
+	echo "Unjarring "$1"..."
+	jar xf $1
+}
+
+unjarAll()
+{
+	CWD=`pwd`
+	cd ${TEMP_DIR}
+	
+	unjar javax77.jar
+	unjar jmxtools.jar
+	unjar jmxremote_optional.jar
+	
+	unjar mx.jar
+	unjar mx-optional.jar
+	cd $CWD
+}
+
+jarMC()
+{
+	echo "Creating mx.jar..."
+	CWD=`pwd`
+	cd ${TEMP_DIR}
+	jar cf	mx.jar com javax META-INF
+	cd $CWD
+}
+
+
+copyScripts()
+{
+    cp ${SCRIPTS_DIR}/mx ${PUBLISH_DIR}
+    cp ${SCRIPTS_DIR}/mx.bat ${PUBLISH_DIR}
+    cp ${SCRIPTS_DIR}/*.mx ${PUBLISH_DIR}
+}
+
+cleanup()
+{
+	rm -rf ${TEMP_DIR}
+}
+
+
+#
+setEnv
+initialize
+#askUser
+#copy
+#unjarAll
+#jarMC
+#mv ${TEMP_DIR}/mx.jar $PUBLISH_DIR
+
+mvn install
+
+cp target/mx.jar $PUBLISH_DIR/jars
+
+export JARS_LOC=/v3/glassfishv3/glassfish/modules
+echo ""
+echo "---------  THIS WONT WORK IF THE PATH IS WRONG -----------"
+echo "Copying various GlassFish V3 jars from assumed location: " $JARS_LOC
+
+echo "Copying" $JARS_LOC/amx-core.jar
+cp $JARS_LOC/amx-core.jar $PUBLISH_DIR/jars
+cp $JARS_LOC/glassfish-api.jar $PUBLISH_DIR/jars
+cp $JARS_LOC/management-api.jar $PUBLISH_DIR/jars
+
+echo "Copying" $JARS_LOC/jmxremote_optional-repackaged.jar
+cp $JARS_LOC/jmxremote_optional-repackaged.jar $PUBLISH_DIR/jars/jmxremote_optional.jar
+
+echo "Copying" $JARS_LOC/$JARS_LOC/javax.management.j2ee.jar
+cp $JARS_LOC/javax.management.j2ee.jar $PUBLISH_DIR/jars
+
+echo ""
+
+
+copyScripts
+cleanup
+echo "Contents of" $PUBLISH_DIR
+ls -lR $PUBLISH_DIR
+
+echo ""
+
+#./bin/mx
+
+
+

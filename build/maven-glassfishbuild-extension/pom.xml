@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>org.glassfish.build</groupId>
+        <artifactId>build</artifactId>
+        <version>3.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>maven-glassfishbuild-extension</artifactId>
+    <packaging>jar</packaging>
+    <name>Maven extension for building GlassFish</name>
+    <description>
+        GlassFish build depends on properly functioning several custom lifecycle mappings and
+        artifact handlers. Because these are necessary to resolve dependencies and to run
+        "gf:run" goal and etc., it is critical that these extensions be made available to
+        Maven early on during Maven execution.
+
+        This definition was originally in maven-glassfish-plugin, which was integrated
+        into Maven POM through &lt;plugin&gt;/&lt;extensions&gt;true marking, but after
+        a series of debugging to resolve artifact resolution failure problems, it turns
+        out that that doesn't cause Maven to load components early enough.
+
+        I tried to circumbent the prolem by also registering the maven-glassfish-plugin
+        as an extension module (via &lt;build&gt;/&lt;extensions/&lt;extension&gt;), but that
+        apparently confuses Maven to no end --- I get build errors like this:
+
+          [INFO] Internal error in the plugin manager executing goal 'org.apache.maven.plugins:maven-jar-plugin:2.1:jar': Unable to find the mojo 'org.apache.maven.plugins:maven-jar-plugin:2.1:jar' in the plugin 'org.apache.maven.plugins:maven-jar-plugin'
+
+        This is obviously one of the problematic areas of Maven, so to avoid doing hack
+        over hack, I'm simply moving the component definitions to its own module.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
+    </dependencies>
+</project>

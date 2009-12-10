@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>console-tabtest-plugin</id>
+  <sources>
+    <source>src/main/java/TestHandlers.java</source>
+    <source>src/main/java/PluginConsoleProvider.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/resources/META-INF/admingui/console-config.xml</resource>
+    <resource>src/main/resources/META-INF/faces-config.xml</resource>
+    <resource>src/main/resources/testPage.jsf</resource>
+    <!--
+    <resource>src/main/resources/newTab1.jsf</resource>
+    <resource>src/main/resources/newTab2.jsf</resource>
+    <resource>src/main/resources/newTestTab1Page.jsf</resource>
+    <resource>src/main/resources/newTestTab2Page.jsf</resource>
+    -->
+    <resource>src/main/resources/treeNode.jsf</resource>
+  </resources>
+</archetype>

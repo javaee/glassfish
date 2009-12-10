@@ -1,0 +1,1 @@
+-exportcontents: org.glassfish.deployment.autodeploy; version=${project.osgi.version}

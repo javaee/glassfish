@@ -1,0 +1,69 @@
+<ui:event type="initPage">
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
+    if(!$session{supportCluster}) {
+	setPageSessionAttribute(key="configName" value="server-config");
+    }
+    getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
+</ui:event>
+<event>
+    <!-- Before Create must be inside a component, cannot be at page-level -->
+    <ui:event type="beforeCreate">
+	setPartialRequest("false");
+    </ui:event>
+    <ui:event type="beforeEncode">
+	<!-- Set request-scoped restart flag to compare w/ session -->
+	if (!$session{supportCluster}) {
+	    checkRestart(RestartRequired=>$attribute{restartRequired},
+		unprocessedChanges=>$attribute{unprocessedChanges});
+	}
+	if($session{supportCluster}) {
+	    setAttribute(key="restartRequired" value="$boolean{false}");
+	}
+	testLoginBypass(byPass="#{requestScope.byPassLogin}");
+	setSessionAttribute(key="showLogoutButton" value="#{! requestScope.byPassLogin}");
+	if ("!(#{requestScope.restartRequired})") {
+	    if ("!(#{sessionScope.showLogoutButton})") {
+		setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	    if ("#{sessionScope.showLogoutButton}") {
+		setAttribute(key="reloadJS" value="if (document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	}
+	if ("#{requestScope.restartRequired}") {
+	    if ("!(#{sessionScope.showLogoutButton})") {
+		setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	    if ("#{sessionScope.showLogoutButton}") {
+		setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
+	    }
+	}
+    </ui:event>
+</event>
+
+// Need to write the title so it is updated in the browser.
+//******************************************************************************
+// Do not put a script as the first element on the page. IE will ignore it.
+//******************************************************************************
+"<div class="guiPageContent">
+    <!insert name="content">
+	Content Missing!
+    </insert>
+"</div>
+<f:verbatim>
+<script type="text/javascript">
+    var loc = top.window.location.href;
+    var index = loc.indexOf("bare=true");
+    if (index > -1) {
+        top.window.location = loc.substring(0, index);
+    }
+
+    admingui.help.pluginId = '#{pluginId}';
+    document.title = "#{guiTitle}";
+
+    #{guiTemplateOnLoad};
+    #{guiOnLoad};
+    #{requestScope.reloadJS}
+</script>
+</f:verbatim>

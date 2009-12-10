@@ -1,0 +1,8 @@
+
+-exportcontents: \
+		org.glassfish.admin.amx.impl.j2ee; \
+		org.glassfish.admin.amx.impl.j2ee.loader; \
+		version=${project.osgi.version}
+		
+		
+

@@ -1,0 +1,5 @@
+-exportcontents: \
+		org.glassfish.admin.amx.ext.*
+		
+		
+

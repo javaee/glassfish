@@ -1,0 +1,37 @@
+<!--
+  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  
+  Use is subject to License Terms
+--> 
+
+<!--
+This is the root element of the runtime descriptor document.
+-->
+<!ELEMENT sun-application (web*, pass-by-reference?, unique-id?, security-role-mapping*) >
+
+<!ELEMENT web (web-uri, context-root)>
+<!ELEMENT web-uri (#PCDATA)>
+<!ELEMENT context-root (#PCDATA)>
+
+<!-- Pass by Reference semantics:  EJB spec requires pass by value,
+     which will be the default mode of operation. This can be set 
+     to true for non-compliant and possibly higher performance. 
+     For a stand-alone, this can be set at this level. By setting 
+     a similarly named element at sun-application, it can apply to 
+     all the enclosed ejb modules. Allowed values are true and 
+     false. Default will be false.
+ -->
+<!ELEMENT pass-by-reference (#PCDATA)>
+
+<!-- Automatically generated and updated at deployment/redeployment 
+     Needs to be unqiue in the system.
+  -->
+<!ELEMENT unique-id (#PCDATA)>
+
+<!ELEMENT security-role-mapping (role-name, (principal-name | group-name)+)>
+
+<!ELEMENT role-name (#PCDATA)>
+<!ELEMENT principal-name (#PCDATA)>
+<!ELEMENT group-name (#PCDATA)>

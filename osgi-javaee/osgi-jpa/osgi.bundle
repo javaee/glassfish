@@ -1,0 +1,3 @@
+-exportcontents: !*
+Bundle-Activator: org.glassfish.osgijpa.OSGiJPAActivator
+

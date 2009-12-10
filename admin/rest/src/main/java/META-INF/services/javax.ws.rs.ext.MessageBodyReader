@@ -1,0 +1,3 @@
+org.glassfish.admin.rest.provider.FormReader
+org.glassfish.admin.rest.provider.JsonHashMapProvider
+org.glassfish.admin.rest.provider.XmlHashMapProvider

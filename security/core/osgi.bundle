@@ -1,0 +1,42 @@
+-exportcontents: \
+                        com.iplanet.ias.security.auth.login; \
+                        com.sun.enterprise.security; \
+                        com.sun.enterprise.security.jauth; \
+                        com.sun.enterprise.security.audit; \
+                        com.sun.enterprise.security.auth.login; \
+                        com.sun.enterprise.security.authorize; \
+                        com.sun.enterprise.security.factory; \
+                        com.sun.enterprise.security.jmac; \
+                        com.sun.enterprise.security.jmac.callback; \
+                        com.sun.enterprise.security.jmac.config; \
+                        com.sun.enterprise.security.web.integration; \
+                        com.sun.enterprise.security.provider; \
+                        com.iplanet.ias.security.auth.realm; \
+                        com.sun.appserv.security; \
+                        com.sun.enterprise.security.auth.realm; \
+                        com.sun.enterprise.security.auth.realm.certificate; \
+                        com.sun.enterprise.security.auth.realm.file; \
+                        com.sun.enterprise.security.auth.realm.jdbc; \
+                        com.sun.enterprise.security.auth.realm.ldap; \
+                        com.sun.enterprise.security.auth.realm.solaris; \
+                        com.sun.enterprise.security.util; \
+                        com.sun.enterprise.common.iiop.security; \
+                        com.sun.enterprise.security.auth.digest.api; \
+                        com.sun.enterprise.security.auth.digest.impl; \
+                        com.sun.enterprise.security.auth.login.common; \
+                        com.sun.enterprise.security.common; \
+                        com.sun.logging.enterprise.system.core.security; \
+                        com.sun.enterprise.security.ssl; \
+                        com.sun.enterprise.server.pluggable; version=${project.osgi.version}
+Bundle-NativeCode: \
+        libsolsparcauth.so ; \
+        osname=SunOS ; \
+        osname=Solaris ; \
+        processor=sparc , \
+        libsolx86auth.so ; \
+        osname=SunOS ; \
+        osname=Solaris ; \
+        processor=x86 , \
+        *
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

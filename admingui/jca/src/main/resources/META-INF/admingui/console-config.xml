@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jca">
+    <integration-point
+            id="jcaNodes"
+            type="org.glassfish.admingui:navNode"
+            priority="200"
+            parentId="resources"
+            content="jcaTreeNode.jsf"
+    />
+    <integration-point
+            id="raconfigNode"
+            type="org.glassfish.admingui:navNode"
+            priority="220"
+            parentId="resources"
+            content="raconfigTreeNode.jsf"
+    />
+
+    <integration-point
+            id="jca_connectorService"
+            type="org.glassfish.admingui:navNode"
+            priority="750"
+            parentId="configuration"
+            content="pluginTreeNodeConnectorService.jsf"
+    />
+
+    <integration-point
+            id="jca_connectorServiceLink"
+            type="org.glassfish.admingui:configuration"
+            priority="750"
+            parentId="propSheetSection"
+            content="connectorServiceConfigLink.jsf"
+    />
+
+    <integration-point
+                id="jcaResourceLink"
+                parentId="propSheetSection"
+                type="org.glassfish.admingui:resources"
+                priority="200"
+                content="jcaResourceLink.jsf"
+    />
+        <!-- add the property sheet for deployment page, specific for app client app -->
+    <integration-point
+        id="jca_deploy"
+        type="org.glassfish.admingui:uploadPropertySheet"
+        priority="100"
+        parentId="form"
+        content="apps/deploymentRar.jsf"
+    />
+    <integration-point
+        id="jca_edit_app"
+        type="org.glassfish.admingui:editAppPage"
+        content="rar:jca/apps/editRar.jsf"
+    />
+
+    <!-- add the dropdown option for selecting the type of app to deploy
+         in the form of  label:value
+     -->
+    <integration-point
+        id="jca_deploy_type"
+        type="org.glassfish.admingui:appTypeDropdown"
+        priority="300"
+        parentId="form"
+        content="Connector Module ;rar"
+    />
+
+</console-config>

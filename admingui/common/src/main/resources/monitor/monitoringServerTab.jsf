@@ -1,0 +1,6 @@
+<sun:tab id="monitor_server" immediate="true" text="$resource{i18nc.server}" toolTip="$resource{i18nc.server} Tab">
+    <!command
+	setSessionAttribute(key="serverInstTabs" value="monitor_server");
+	gf.redirect(page="#{request.contextPath}/common/monitor/monitoringServerStatsPage.jsf");
+    />
+</sun:tab>

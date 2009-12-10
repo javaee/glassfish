@@ -1,0 +1,177 @@
+package com.sun.appserv.server.util;
+
+import org.glassfish.api.branding.Branding;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.component.PostConstruct;
+
+/**
+*
+* This class provides static methods to make accessable the version 
+* as well as the individual parts that make up the version
+*
+*/
+@Service
+@Scoped(Singleton.class)
+public class Version implements PostConstruct {
+
+    /**
+     * version strings populated during build
+     */
+    private static final String product_name          = "@PRODUCT_NAME@";
+    private static final String abbrev_product_name   = "@ABBREV_PRODUCT_NAME@";
+    private static String full_version                = "@FULL_VERSION@";
+    private static final String major_version         = "@MAJOR_VERSION@";
+    private static final String minor_version         = "@MINOR_VERSION@"; 
+    private static final String build_id              = "@BUILD_ID@";
+    private static final String version_prefix        = "@VERSION_PREFIX@";
+    private static final String version_suffix        = "@VERSION_SUFFIX@";
+
+    /**
+     * Check if Branding implementation exists and set the value for
+     * Branding interface variable
+     */
+    private static Branding br = null;
+
+    @Inject
+    private static Habitat mHabitat;
+
+    public void postConstruct() {
+        if (br == null) {
+            if (mHabitat != null) {
+                br = mHabitat.getByContract(Branding.class);
+            }
+        }
+
+        // construct full version
+        if ((minor_version != null) && (minor_version.length() > 0)) {
+            try {
+                if (Integer.parseInt(minor_version) > 0) {
+                    full_version = major_version + "." + minor_version;
+                } else {
+                    full_version = major_version;
+                }
+            } catch (NumberFormatException nfe) {
+                    full_version = major_version;
+            }
+        }
+    }
+
+    /**
+    * Returns version
+    */ 
+    public static String getVersion() {
+        if (br != null) {
+            return br.getVersion();
+        }
+        if (product_name == null)
+            return null;
+
+        StringBuffer sb = new StringBuffer(product_name);
+        if (ok(version_prefix))
+            sb.append(" ").append(version_prefix);
+        if (full_version != null) 
+            sb.append(full_version);
+        if (ok(version_suffix))
+            sb.append(" ").append(version_suffix);
+        return sb.toString();
+    }
+
+    /**
+    * Returns full version including build id
+    */
+    public static String getFullVersion() {
+        if (br != null) {
+            return br.getFullVersion();
+        }
+        return (getVersion() + " (build " + build_id + ")");
+    }
+
+    /**
+    * Returns abbreviated version.
+    */
+    public static String getAbbreviatedVersion() {
+        if (br != null) {
+            return br.getAbbreviatedVersion();
+        }
+        return abbrev_product_name;
+    }
+
+    /**
+    * Returns Major version
+    */ 
+    public static String getMajorVersion() {
+        if (br != null) {
+            return br.getMajorVersion();
+        }
+    	return major_version;
+    }
+
+    /**
+    * Returns Minor version
+    */ 
+    public static String getMinorVersion() {
+        if (br != null) {
+            return br.getMinorVersion();
+        }
+    	return minor_version;
+    }
+
+    /**
+    * Returns Build version
+    */ 
+    public static String getBuildVersion() {
+        if (br != null) {
+            return br.getBuildVersion();
+        }
+    	return build_id;
+    }
+
+    /**
+    * Returns version prefix
+    */ 
+    public static String getVersionPrefix() {
+        if (br != null) {
+            return br.getVersionPrefix();
+        }
+    	return version_prefix;
+    }
+
+    /**
+    * Returns version suffix
+    */ 
+    public static String getVersionSuffix() {
+        if (br != null) {
+            return br.getVersionSuffix();
+        }
+    	return version_suffix;
+    }
+
+    /**
+    * Returns Proper Product Name
+    */
+    public static String getProductName() {
+        if (br != null) {
+            return br.getProductName();
+        }
+    	return product_name;
+    }
+
+    /**
+    * Returns Abbreviated Product Name
+    */
+    public static String getAbbrevProductName() {
+        if (br != null) {
+            return br.getAbbrevProductName();
+        }
+    	return abbrev_product_name;
+    }
+
+    private static boolean ok(String s) {
+        return s != null && s.length() > 0;
+    }
+
+}

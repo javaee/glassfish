@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>jdbc-ra</artifactId>
+    <groupId>org.glassfish.jdbc.jdbc-ra</groupId>
+    <version>3.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
+  <artifactId>jdbc-ra</artifactId>
+  <name>Distribution Module for JDBC Resource Adapter</name>
+  <packaging>distribution-fragment</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+	<artifactId>maven-antrun-extended-plugin</artifactId>
+	<executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <configuration>
+	      <tasks>
+                <!-- Resolving jdbc-core, jdbc30 and jdbc40 artifacts -->			
+                <resolveArtifact artifactId="jdbc-core" groupId="org.glassfish.jdbc.jdbc-ra.jdbc-core" property="core.jar" />
+                <resolveArtifact artifactId="jdbc30" groupId="org.glassfish.jdbc.jdbc-ra.jdbc30" property="30.jar" />
+                <resolveArtifact artifactId="jdbc40" groupId="org.glassfish.jdbc.jdbc-ra.jdbc40" property="40.jar" />
+		<resolveArtifact artifactId="templates" groupId="org.glassfish.jdbc" property="templates.jar" />
+
+	        <unjar src="${core.jar}" dest="target/classes" />
+	        <unjar src="${30.jar}" dest="target/classes" />
+	        <unjar src="${40.jar}" dest="target/classes" />
+		<unjar src="${templates.jar}" dest="target/classes/templates" />
+
+		<!-- Creating jars/rars done using ant build.xml -->
+            	<property name="compile_classpath" refid="maven.compile.classpath" />
+	        <property name="build.compiler" value="extJavac" />
+	        <ant dir="." antfile="build.xml" target="all" />
+
+            	<!-- TODO: Kohsuke to come back here and make sure mvn install puts a zip file, not .distribution-fragment -->
+	        <attachArtifact file="target/jdbc-ra.zip" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+	</executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-core</groupId>
+      <artifactId>jdbc-core</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc40</groupId>
+      <artifactId>jdbc40</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc30</groupId>
+      <artifactId>jdbc30</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.jdbc</groupId>
+      <artifactId>templates</artifactId>
+      <version>${project.parent.version}</version>
+      <type>distribution-fragment</type>
+    </dependency>
+
+  </dependencies>
+</project>

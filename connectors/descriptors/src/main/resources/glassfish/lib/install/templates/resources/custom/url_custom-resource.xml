@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE resources PUBLIC "-//Sun Microsystems Inc.//DTD Application Server 9.0 Domain//EN" "*<install directory>/lib/dtds/sun-resources_1_3.dtd*">
+
+<!--
+    Copyright 2004-2009 Sun Microsystems, Inc.  All rights reserved.
+    Use is subject to license terms.
+
+    Template file to create URL Object provider custom resources.
+    By specifying the built-in "factory-class" as 
+    org.glassfish.resources.custom.factory.URLObjectFactory,
+    "res-type" as java.net.URL 
+    and any of the following combination of parameters to the Constructor
+     * protocol, host, port, file
+     * spec
+     * protocol, host, file
+    a custom-resource can be created that can provide URL instances to applications.
+
+    To learn more on custom resources,refer :
+
+    http://docs.sun.com/app/docs/doc/819-2554/ablld?l=en&a=view
+    
+    http://docs.sun.com/app/docs/doc/820-4332/create-custom-resource-1?a=view
+
+    http://docs.sun.com/app/docs/doc/820-4332/delete-custom-resource-1?a=view
+
+    http://docs.sun.com/app/docs/doc/820-4332/list-custom-resources-1?a=view 
+
+    For detailed explanation of attributes and elements of this resources xml
+    pl. refer to sun-resources_1_3.dtd
+
+
+    =========================================SAMPLE============================================
+
+
+    In the sample configuration below, 
+    custom-resource will provide a URL (java.net.URL) upon lookup
+
+    Applications can do  :
+
+    (java.net.URL)initialContext.lookup("custom/my-url")
+
+
+    Following command will create a resource using this template :
+
+    GLASSFISH_INSTALL_DIR/bin/asadmin add-resources <ABSOLUTE_PATH_TO_TEMPLATE_FILE>
+
+
+    <resources>
+        <custom-resource res-type="java.net.URL" jndi-name="custom/my-url" factory-class="org.glassfish.resources.custom.factory.URLObjectFactory">
+          <property name="protocol" value="http" />
+          <property name="host" value="java.sun.com" />
+          <property name="file" value="/index.html" />
+        </custom-resource>
+    </resources> 
+
+
+    =========================================SAMPLE============================================
+
+-->
+
+<resources>
+    <custom-resource res-type="java.net.URL" jndi-name="<RESOURCE_NAME>" factory-class="org.glassfish.resources.custom.factory.URLObjectFactory">
+      <property name="<PARAMETER_1>" value="<VALUE_1>" />
+      <property name="<PARAMETER_2>" value="<VALUE_2>" />
+      <property name="<PARAMETER_3>" value="<VALUE_3>" />
+    </custom-resource>
+</resources>
+

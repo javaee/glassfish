@@ -1,0 +1,5 @@
+-exportcontents: \
+                        com.sun.enterprise.admin.cli; \
+                        com.sun.enterprise.admin.cli.remote; \
+                        com.sun.enterprise.admin.cli.util; \
+                        org.glassfish.admin.cli.resources; version=${project.osgi.version}

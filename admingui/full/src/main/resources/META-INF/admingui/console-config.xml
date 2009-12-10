@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="full">
+    <integration-point
+        id="full_jmailNodes"
+        type="org.glassfish.admingui:navNode"
+        priority="400"
+        parentId="resources"
+        content="jmailTreeNode.jsf"
+    />
+    <integration-point
+                id="fullResourceLink"
+                parentId="propSheetSection"
+                type="org.glassfish.admingui:resources"
+                priority="400"
+                content="fullResourceLink.jsf"
+    />
+
+
+    <!-- add the property sheet for deployment page, specific for ear app -->
+    <integration-point
+        id="full_deploy_ear"
+        type="org.glassfish.admingui:uploadPropertySheet"
+        priority="100"
+        parentId="form"
+        content="apps/deploymentEar.jsf"
+    />
+    <integration-point
+        id="full_deploy_type-ear"
+        type="org.glassfish.admingui:appTypeDropdown"
+        priority="200"
+        parentId="form"
+        content="Enterprise Application ;ear"
+    />
+    <integration-point
+        id="full_edit_ear"
+        type="org.glassfish.admingui:editAppPage"
+        content="ear:full/apps/editEar.jsf"
+    />
+
+    <!-- add the property sheet for deployment page, specific for app client app -->
+    <integration-point
+        id="full_deploy_appClient"
+        type="org.glassfish.admingui:uploadPropertySheet"
+        priority="100"
+        parentId="form"
+        content="apps/deploymentAppClient.jsf"
+    />
+    <integration-point
+        id="full_deploy_type_appClient"
+        type="org.glassfish.admingui:appTypeDropdown"
+        priority="300"
+        parentId="form"
+        content="Application Client ;appClient"
+    />
+     <integration-point
+        id="full_edit_appClient"
+        type="org.glassfish.admingui:editAppPage"
+        content="appclient:full/apps/editAppClient.jsf"
+    />
+
+    <!-- add the property sheet for deployment page, specific for EJB Jar -->
+    <integration-point
+        id="full_deploy_ejbJar"
+        type="org.glassfish.admingui:uploadPropertySheet"
+        priority="100"
+        parentId="form"
+        content="apps/deploymentEjb.jsf"
+    />
+    <integration-point
+        id="full_deploy_type_ejbJar"
+        type="org.glassfish.admingui:appTypeDropdown"
+        priority="400"
+        parentId="form"
+        content="EJB Jar ;ejb"
+    />
+     <integration-point
+        id="full_edit_ejb"
+        type="org.glassfish.admingui:editAppPage"
+        content="ejb:full/apps/editEjb.jsf"
+    />
+
+</console-config>

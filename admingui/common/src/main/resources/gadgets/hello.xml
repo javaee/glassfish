@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<Module id="foo">
+    <ModulePrefs title="It really does read this." /> 
+    <UserPref name="test" default_value="abc" />
+    <Content type="html">
+	<![CDATA[ 
+	    <span id="hello">Hello!</span>
+	    <form>
+		<input type="text" id="name" onKeyUp="updateMessage(this.value);" />
+	    </form>
+	    <script type="text/javascript">
+		var prefs = new gadgets.Prefs("myPrefs");
+		function updateMessage(name) {
+		    var hello = document.getElementById('hello');
+		    hello.innerHTML = 'Hello ' + name + '!';
+		    prefs.set('name', name);
+		}
+	    </script>
+	]]>
+    </Content> 
+</Module>

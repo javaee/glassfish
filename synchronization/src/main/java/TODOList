@@ -1,0 +1,51 @@
+
+- manifest generator updates *creating manifest with excludes* (priority low)
+- fix admin server to deal with multiple manifests
+- fix load balancer
+	-- on reset remove it from balancer
+- what to do if the manifest is updated (high priority). this actually causes a lot of problems because what happens
+  we start grizzly client app and manifest changes do we stop 
+- test the restart stuff create a method that just throws an IOException and see what happens
+- on reset don't reinit everything have each context item have a reset method
+- create a visualization tool to watch the graph grow
+- change the load to queries per second that are served 
+------------------
+temp todo
+uncomment  read time out in agent
+auto stop admin server on das and client side
+
+tomorrow :
+- change the load to queries per second that are served 
+- have servers ping their children.
+- adapter integration
+- manifest 
+  -- Config listener
+  -- thread every 5 min
+- xml -dir to sync
+  -- config/ xyz.xml
+
+
+ssh iasengsol3.red.iplanet.com -l bk227254 - used to run admin server
+ssh iasengsol6.sfbay.sun.com -l bk227254 -
+ssh iasengsol7.sfbay.sun.com -l bk227254 -
+ssh glassfish-sparc-2.sfbay.sun.com -l bk227254
+ssh glassfish-sparc-4.sfbay.sun.com -l bk227254
+ssh glassfish-sparc-3.sfbay.sun.com -l bk227254 -
+ssh glassfish-x86-2.sfbay.sun.com -l bk227254
+
+
+iasengsol3
+java -cp sync.jar testing.StartClients 5 http://129.145.133.244:5555
+http://dhcp-usca14-133-244.sfbay.sun.com:59110
+aroot glassfish
+
+send email to lily chen
+iasengsol4.sfbay.sun.com 
+iasengsol11.sfbay.sun.com
+iasengsol12.sfbay.sun.com
+
+ping iasengsol4.red.iplanet.com
+asengsol11.red.iplanet.com
+asengsol12.red.iplanet.com
+can't ssh
+iasengsol1.sfbay.sun.com

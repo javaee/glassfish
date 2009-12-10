@@ -1,0 +1,2 @@
+-exportcontents: com.sun.enterprise.connectors.connector.module; version=${project.osgi.version}
+

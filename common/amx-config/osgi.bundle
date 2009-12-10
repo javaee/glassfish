@@ -1,0 +1,6 @@
+-exportcontents: \
+	org.glassfish.admin.amx.intf.config.*; \
+	org.glassfish.admin.amx.intf.config.grizzly.*; \
+	version=${project.osgi.version}
+
+

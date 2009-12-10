@@ -1,0 +1,6 @@
+-exportcontents: \
+                        org.glassfish.apf; \
+                        org.glassfish.apf.context; \
+                        org.glassfish.apf.factory; \
+                        org.glassfish.apf.impl; version=${project.osgi.version}
+

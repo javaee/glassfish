@@ -1,0 +1,1 @@
+-exportcontents: com.sun.enterprise.glassfish.bootstrap; version=${project.osgi.version}

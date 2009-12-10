@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# Copyright 1997-2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
+
+java -Dorg.osgi.framework.storage=/tmp/verifier-cache/ -Dorg.jvnet.hk2.osgimain.autostartBundles=osgi-adapter.jar -cp "$AS_INSTALL_LIB/glassfish.jar:$AS_INSTALL_LIB/verifier.jar" com.sun.enterprise.tools.verifier.VerifierOSGiMain $*

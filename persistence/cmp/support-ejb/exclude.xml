@@ -1,0 +1,26 @@
+<FindBugsFilter>
+    <!--
+         Request: Mitesh
+         Approval: Bill
+     -->
+    <Match>
+        <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbc.NameMapper"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+        <Priority value="1"/>
+    </Match>
+
+    <!--
+        Ignore all errors in these ANTLR generated classes.
+
+        Request: Marina
+        Approval: Bill
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbqlc.EJBQL"/>
+            <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbqlc.JDOQLCodeGeneration"/>
+            <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbqlc.Semantic"/>
+        </Or>
+        <Priority value="1"/>
+    </Match>
+</FindBugsFilter>

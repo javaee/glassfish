@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>jcmd/jmxcmd planned improvements</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">JCmd/JmxCmd Planned Improvements</h1>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 24 Feb 2004</font></p>
+<p>Planned improvements to <a href="./jcmd-index.html">JCmd</a>.</p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="17%"><b>Idea</b></td>
+    <td width="83%"><b>Discussion</b></td>
+  </tr>
+  <tr>
+    <td width="17%">Bean Scripting Framework</td>
+    <td width="83%">
+      <p>See: http://jakarta.apache.org/bsf/</p>
+      <p>Investigate applicability of BSF.</p>
+      <p>Update 24 Feb 2004: bsf is now integrated and scripting may be performed. 
+      </p>
+    </td>
+  </tr>
+</table>
+<p>Planned improvements to <a href="./jmxcmd-index.html">JMXCmd</a>.</p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="21%"><b>Idea</b></td>
+    <td width="79%"><b>Discussion</b></td>
+  </tr>
+  <tr>
+    <td width="21%">BSF MBean support</td>
+    <td width="79%">Extend BSF support to include MBeans. This requires proxy 
+      generation and registration of the proxy within the BSFManager</td>
+  </tr>
+  <tr> 
+    <td width="21%">Password encryption</td>
+    <td width="79%">Encrypt the passwords within a password file (--password-file 
+      option for the <a href="./jmxcmd-commands.html#Connect">connect</a> command). 
+      They are currently cleartext.</td>
+  </tr>
+  <tr> 
+    <td width="21%">RMI over TLS</td>
+    <td width="79%">Support secure RMI via TLS, both in the built-in connector, 
+      and for the built-in Provider</td>
+  </tr>
+  <tr> 
+    <td width="21%">Proxying results into local mbean server</td>
+    <td width="79%">Creating local proxies for the results of various commands 
+      so that they can be used as MBeans locally.</td>
+  </tr>
+  <tr> 
+    <td width="21%">I18N</td>
+    <td width="79%">Cleanup of code to be I18N compliant.</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,305 @@
+<html>
+<head>
+<title>jmxcmd Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">jmxcmd</h1>
+<h4 align="center">a command line interface for JMX</h4>
+<p><font size="-1">Author: <a href="mailto:/lloyd.chambers@sun.com">lloyd.chambers@sun.com</a><br>
+  Last updated: 28 May 2004<br>
+  <a href="./change-history.html">change history</a></font></p>
+<p><font size="-1" color="#FF0000">Mailing list: jmxcmd-interest@sun.com</font></p>
+<h2>1. Introduction</h2>
+<p><b><a href="./binaries.html">Go to the download page</a></b></p>
+<p>Jmxcmd is a command line interface (shell) for accessing JMX servers based 
+  upon the <a href="./jcmd-index.html">JCmd</a> command-line-interface framework. 
+  It supports the following:</p>
+<ul>
+  <li>all features of <a href="./jcmd-index.html">JCmd</a></li>
+  <li>access to attributes, operations, notifications for MBeans in one or more 
+    MBean servers.</li>
+  <li>an SPI for adding additional protocols (Connectors)</li>
+  <li>an extensible (pluggable) command set</li>
+  <li>a CLI compliant with SUSv3 and Sun Microsystems CLIP standards</li>
+  <li>invocation either from a shell or in interactive mode.</li>
+  <li> 
+    <p></p>
+    <p><a href="./planned-improvements.html">Improvements</a> are planned.</p>
+  </li>
+</ul>
+<p><b>Links:</b></p>
+<table width="95%" border="1">
+  <tr> 
+    <td width="24%"><b>Name</b></td>
+    <td width="76%"><b>Discussion</b></td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./jmxcmd-commands.html">jmxcmd commands</a></td>
+    <td width="76%">HTML documentation describing jmxcmd commands</td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./javadoc/index.html">Javadoc</a></td>
+    <td width="76%">All the Javadoc for jcmd and jmxcmd. Helpful if you want to 
+      write commands.</td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./HowToUseWithS1AS8.html">Using with JES Appserver 
+      8/8.1</a></td>
+    <td width="76%">Describes how to connect to the Java Enterprise System Appserver 
+      8.0 and 8.1</td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./jmxcmd-optional.html">extending jmxcmd</a></td>
+    <td width="76%">Documentation describing how to extend jcmd or jmxcmd</td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./planned-improvements.html">Improvements</a></td>
+    <td width="76%">Describes future planned improvments</td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./jcmd-index.html">jcmd main page</a></td>
+    <td width="76%">jmxcmd is built on the jcmd framework.</td>
+  </tr>
+  <tr> 
+    <td width="24%"><a href="./binaries.html">downloads</a></td>
+    <td width="76%">Download page for jcmd and jmxcmd</td>
+  </tr>
+  <tr> 
+    <td width="24%">&nbsp;</td>
+    <td width="76%">&nbsp;</td>
+  </tr>
+</table>
+<h2>2. Overview</h2>
+<p>The following sections discuss some key concepts used by jmxcmd which should 
+  be understood to use it effectively.</p>
+<h3>2.1 jmxcmd shell<a name="jmxcmdShell"></a></h3>
+<p>Jmxcmd may be invoked either conventionally via one's usual command shell, 
+  or in an interactive mode. Example:</p>
+<p><i>Single invocation</i>:</p>
+<p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jmxcmd get &quot;*&quot; 
+  &quot;*&quot;<br>
+  ...</font></p>
+<p><i>Interactive mode</i>:</p>
+<p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jmxcmd<br>
+  jmxcmd&gt; get * *<br>
+  ...</font></p>
+<p>Note that in the above examples, it was necessary to quote the &quot;*&quot; 
+  within the shell to force it to be passed literally to jmxcmd. This was not 
+  necessary within jmxcmd.</p>
+<p>State is saved by jmxcmd in the user's home directory. This makes it possible 
+  to issue commands that implicitly connect to the appropriate MBean server last 
+  specified as default.</p>
+<p>Most commands have abbreviations available; refer to the help for each command. 
+  All commands have both long and short names for command options (if any).</p>
+<p></p>
+<p></p>
+<h3>2.2 Using JMX ObjectNames<a name="UsingObjectNames"></a></h3>
+<p>JMX ObjectNames can be long and tedious. To address this, jmxcmd takes a 
+  two-pronged approach: (1) aliases (see <a href="#Aliases">Aliases</a>), and 
+  (2) shorthand notation. Shorthand notation is designed to be unambiguous, but 
+  still allow increased useability. The rules are as follows:</p>
+<table width="94%" border="1">
+  <tr> 
+    <td width="4%">#</td>
+    <td width="28%"><b>Rule</b></td>
+    <td width="39%"><b>Comments</b></td>
+    <td width="29%"><b>Restrictions</b></td>
+  </tr>
+  <tr> 
+    <td width="4%" height="28">1</td>
+    <td width="28%" height="28">JMX domain may be omitted</td>
+    <td width="39%" height="28">Absence of a ':' in the pattern is interepreted 
+      as meaning the default domain.</td>
+    <td width="29%" height="28"> 
+      <p> The presence of a ':' disables this shortcut.</p>
+      </td>
+  </tr>
+  <tr> 
+    <td width="4%">2</td>
+    <td width="28%"> 
+      <p>&quot;,*&quot; may be omitted at the end of a name</p>
+    </td>
+    <td width="39%">If the ObjectName does not match an MBean, an implicit &quot;,*&quot; 
+      is appended, and if exactly one MBean matches, then the match succeeds, 
+      otherwise it fails.</td>
+    <td width="29%">Adding the &quot;,* matches whatever would normally match 
+      as a pattern--0 or more MBeans.</td>
+  </tr>
+  <tr> 
+    <td width="4%">3</td>
+    <td width="28%">fully-specified name takes precedence</td>
+    <td width="39%">Specifying an ObjectName fully will always work correctly.</td>
+    <td width="29%">None.</td>
+  </tr>
+</table>
+<p>Examples:</p>
+<table width="93%" border="1">
+  <tr> 
+    <td width="48%"><b>Abbreviated Name</b></td>
+    <td width="52%"><b>Interpretation (in precedence order):</b></td>
+  </tr>
+  <tr> 
+    <td width="48%"><font size="-1" face="Courier New, Courier, mono">type=server</font></td>
+    <td width="52%"> 
+      <p><font size="-1" face="Courier New, Courier, mono">:type=server<br>
+        :type=server,*</font></p>
+    </td>
+  </tr>
+  <tr> 
+    <td width="48%"><font size="-1" face="Courier New, Courier, mono">type=server,*</font></td>
+    <td width="52%"><font size="-1" face="Courier New, Courier, mono">:type=server,*</font></td>
+  </tr>
+  <tr> 
+    <td width="48%"><font size="-1" face="Courier New, Courier, mono">:type=server</font></td>
+    <td width="52%"><font size="-1" face="Courier New, Courier, mono">:type=server<br>
+      :type=server,*</font></td>
+  </tr>
+  <tr> 
+    <td width="48%"><font size="-1" face="Courier New, Courier, mono">domain1:type=server,*</font></td>
+    <td width="52%"> 
+      <p><font size="-1">none--same as original since both domain and &quot;,*&quot; 
+        are specified</font></p>
+    </td>
+  </tr>
+</table>
+<p>&nbsp;</p><h3>2.3 Aliases<a name="Aliases"></a></h3>
+<p>MBean ObjectNames can be long and unwieldy. Additionally, it may be convenient 
+  to refer to more than one MBean either as a set of names or via a wildcard mechanism. 
+  For this and similar reasons, jmxcmd provides the notion of <i>objectname 
+  aliases</i>, hereafter referred to simply as <i>aliases</i>. An alias is simply 
+  a convenient variable which contains a value that resolves to zero or more MBean 
+  ObjectNames.</p>
+<p>Four commands are available for managing aliases. They include:</p>
+<ul>
+  <li><a href="./jmxcmd-commands.html#target-aliases">create-target-alias</a></li>
+  <li><a href="./jmxcmd-commands.html#target-aliases">delete-target-alias</a></li>
+  <li><a href="./jmxcmd-commands.html#target-aliases">resolve-target-alias</a></li>
+  <li><a href="./jmxcmd-commands.html#target-aliases">list-target-aliases</a></li>
+</ul>
+<p>For details on each command, click on its name. Once an alias has been established, 
+  it may be used in place of an ObjectName. Here is an example:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd &gt; get --attributes 
+  * MyMBeans</font></p>
+<p>The above invocation will show all attributes available on the MBeans referred 
+  to by the alias 'MyMBeans'. Aliases may be nested; they may contain other aliases 
+  and even a mix of aliases an ObjectName patterns. One minor restriction is in 
+  place--ObjectNames that contain a space character may not be aliased.</p>
+<h3>2.4 Default target<a name="DefaultTarget"></a></h3>
+<p>Most of the jmxcmd commands operation on MBeans, thus requiring and operand 
+  or operands specifying the MBeans. If an operand (target) is not given, then 
+  the default target is used. The default target is set using the <a href="./jmxcmd-commands.html#target">target</a> 
+  command.</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target server:*<br>
+  ...<br>
+  </font><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target MyMBeans</font></p>
+<h3>2.6 Specifying target(s)<a name="SpecifyingTargets"></a></h3>
+<p>Many commands take a list of targets upon which the operation acts, specified 
+  as operands to the command. A target may be a fully qualified ObjectName, an 
+  ObjectName pattern, or an alias, and there may be more than one of them. The 
+  set of these operands and ultimately what they resolve to defines the set of 
+  MBeans upon which the operation is performed. Certain special characters may 
+  be used with the targets:</p>
+<ul>
+  <li>the '!' character may be used to reverse the set that the target selects.</li>
+  <li>with more than one operand, the '+', '-' and '&amp;' characters modify the 
+    set of targets so far, from left to right. The '-' operator substracts the 
+    target from the set so far, the '+' operator adds to it (same as no qualifier), 
+    and the '&amp;' character performs a logical and of the target and the set 
+    so far.</li>
+</ul>
+<h4>Examples:</h4>
+<p>1. Displays all MBeans not denoted by the alias &quot;MyMBeans&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find !MyMBeans</font></p>
+<p>2. Displays all MBeans which have the property-pair &quot;category=config&quot; 
+  and that are also in the domain &quot;Test&quot;. In this example, the target 
+  &quot;category=config&quot; is an ObjectName pattern that matches any MBean 
+  containing a Property &quot;category&quot; with value &quot;config&quot;. The 
+  target &quot;&amp;Test:*&quot; further selects only those MBeans that are in 
+  the domain &quot;Test&quot;; the &quot;&amp;&quot; specifies the intersection 
+  of the &quot;Test:*&quot; expression with the &quot;category=config&quot; MBeans.</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find category=config 
+  &amp;Test:*</font></p>
+<p>3. Displays all MBeans that have an operation containing the string &quot;Test&quot;, 
+  &quot;test&quot;, or &quot;TEST&quot; or an attribute containing &quot;Count&quot; 
+  or &quot;count&quot; in the default domain that don't have an ObjectName property 
+  &quot;category=config&quot;:</p>
+<p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find --operations=*Test*,*test*,*TEST* 
+  --attributes=*count*,*Count* :* -category=config</font></p>
+<p></p>
+<h3>2.6 Providers<a name="Providers"></a></h3>
+<p>Not all servers uses the standard JSR 160 (Remote JMX) Connectors, and even 
+  if they do, they can still require their own product-specific information, such 
+  as authentication information. To work around both of these issues, the <a href="./jmxcmd-commands.html#providers">providers</a> 
+  command allows the additional of pluggable modules that know how to &quot;speak&quot; 
+  to the vendors server. By default, jmxcmd supports the standard JMXMP Connector.</p>
+<p>For information on writing a provider, <a href="./jmxcmd-optional.html#Providers">click 
+  here</a>.</p>
+<h2>3. Other Issues</h2>
+<p>The following sections discuss commonly asked questions or concerns.</p>
+<h3>3.1 Startup performance</h3>
+<p>See the discussion of <a href="./jcmd-index.html#StartupPerformance">startup 
+  performance for jcmd</a>. As jmxcmd is based on <a href="./jcmd-index.html">jcmd</a>, 
+  its startup performance is largely the same as jcmd. </p>
+<p>However, unlike <a href="./jcmd-index.html">jcmd</a>, most jmxcmd commands 
+  need to establish a network connection to an MBeanServer. In most cases, this 
+  cost is minimal and can be ignored for practical purposes. However, if SSL/TLS 
+  is being employed, the cost (especially in pure Java) can be substantial--on 
+  the order of 3-4X the startup time which can amount to 3 or 4 seconds or more 
+  on slow machines. As with jcmd, using interactive mode or the <a href="./jcmd-commands.html#source">source</a> 
+  command eliminates this as an issue. But if jmxcmd is being started for each 
+  individual command, then the performance can become a real issue. Let us now 
+  discuss how to eliminate this performance bottleneck.</p>
+<h4>3.1.1 Eliminating SSL/TLS connection speed as a performance bottleneck</h4>
+<p>The technique suggested in this section is to use jmxcmd as a proxy server, 
+  which will run without quitting, thus keeping alive the expensive SSL/TLS-based 
+  connections.</p>
+<p>Here is how to use jmxcmd as a proxy server::</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; start-mbean-server 
+  my-server<br>
+  MBean server my-server started.<br>
+  jmxcmd&gt; connect my-server<br>
+  Connection my-server (mbeanserver=my-server,PROTOCOL=inprocess) is now the active 
+  connection<br>
+  jmxcmd&gt; load-jmxmp-connector --port 9998<br>
+  Loaded and started connector: connector:name=jmxmp-connector-server,type=connector,port=9998<br>
+  </font></p>
+<p>At this point, jmxcmd is now running as a server with the standard jmxmp-based 
+  connector listening on port 9998. You may continue to use jmxcmd as usual while 
+  it is active as a server. The next step is to create proxies within the newly-created 
+  MBeanServer &quot;my-server&quot;. These proxies may refer to one or more MBeans 
+  in one or more MBean servers using one or more protocols. Refer to the <a href="./jmxcmd-commands.html#create-proxies">create-proxies</a> 
+  command for information on how to specify and create proxies. Because this instance 
+  of jmxcmd does not quit, the connections to these other servers stay alive, 
+  thus eliminating any overhead. Most likely if you want to use such a setup, 
+  you will want to place all the setup commands in a file which can be executed 
+  using the <a href="./jcmd-commands-index.html#source">source</a> command:</p>
+<p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; source my-server-setup.jmxcmd</font></p>
+<p>Presumably you went to this trouble so that you could issue single commands 
+  from your command shell or script without the SSL connection overhead. You would 
+  now proceed as follows:</p>
+<p><font size="-1" face="Courier New, Courier, mono">% jmxcmd connect --port 9998 
+  my-server<br>
+  Connection my-server (PROTOCOL=jmxmp,HOST=localhost,PORT=9998) is now the active 
+  connection<br>
+  % jmxcmd find *<br>
+  connector:name=jmxmp-connector-server,type=connector,port=9998<br>
+  JMImplementation:type=MBeanServerDelegate</font></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3>&nbsp;</h3>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><br>
+</p>
+<p>&nbsp;</p>
+<h4>&nbsp;</h4>
+</body>
+</html>

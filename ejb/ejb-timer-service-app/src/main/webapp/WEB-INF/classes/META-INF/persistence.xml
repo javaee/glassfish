@@ -1,0 +1,13 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+    <persistence-unit name="__EJB__Timer__App">
+          <jta-data-source>jdbc/__TimerPool</jta-data-source>
+          <mapping-file>__ejb_timer_mappings.xml</mapping-file>
+          <class>com.sun.ejb.containers.TimerState</class>
+          <exclude-unlisted-classes/>
+          <properties>
+            <property name="eclipselink.cache.shared.default" value="false"/>
+            <property name="eclipselink.weaving" value="false"/>
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2009 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+echo foo
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
+
+echo java   -Xms24m -Xmx96m  -cp "$AS_INSTALL_LIB/common-util.jar;$AS_INSTALL_LIB/cmp-utility.jar;$AS_INSTALL_LIB/cmp-support-ejb.jar;$AS_INSTALL_LIB/cmp-ejb-mapping.jar;$AS_INSTALL_LIB/dbschema-repackaged.jar;$CLASSPATH" com.sun.jdo.spi.persistence.support.ejb.util.CaptureSchemaWrapper $@
+java   -Xms24m -Xmx96m  -cp "$AS_INSTALL_LIB/common-util.jar:$AS_INSTALL_LIB/cmp-utility.jar:$AS_INSTALL_LIB/cmp-support-ejb.jar:$AS_INSTALL_LIB/cmp-ejb-mapping.jar:$AS_INSTALL_LIB/dbschema-repackaged.jar:$CLASSPATH" com.sun.jdo.spi.persistence.support.ejb.util.CaptureSchemaWrapper $@

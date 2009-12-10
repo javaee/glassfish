@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="web">
+        <integration-point 
+                id="web_container"
+                type="org.glassfish.admingui:navNode" 
+                priority="200"
+                parentId="configuration" 
+                content="configuration/pluginTreeNodeWebContainer.jsf"
+        />
+
+        <integration-point
+                id="web_httpService"
+                type="org.glassfish.admingui:navNode"
+                priority="450"
+                parentId="configuration"
+                content="configuration/pluginTreeNodeHttpService.jsf"
+        />
+
+        <integration-point
+                id="web_virtualServer"
+                type="org.glassfish.admingui:navNode"
+                priority="500"
+                parentId="configuration"
+                content="configuration/pluginTreeNodeVS.jsf"
+        />
+
+        <integration-point
+                id="web_grizzly"
+                type="org.glassfish.admingui:navNode"
+                priority="550"
+                parentId="configuration"
+                content="grizzly/pluginTreeNodeGrizzly.jsf"
+        />
+
+        <integration-point
+                id="web_threadPool"
+                type="org.glassfish.admingui:navNode"
+                priority="600"
+                parentId="configuration"
+                content="configuration/pluginTreeNodeThreadPool.jsf"
+        />
+
+
+        <!-- Add links under the Configuration Page  -->
+        <integration-point
+                id="web_containerConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="200"
+                parentId="propSheetSection"
+                content="configuration/webContainerConfigurationLink.jsf"
+        />
+        <integration-point
+                id="web_ConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="450"
+                parentId="propSheetSection"
+                content="configuration/configurationLink.jsf"
+        />
+
+
+        <!-- add the property sheet for deployment page, specific for web app -->
+        <integration-point
+                id="web_deploy"
+                type="org.glassfish.admingui:uploadPropertySheet"
+                priority="100"
+                parentId="form"
+                content="apps/deploymentWar.jsf"
+        />
+
+        <integration-point
+                id="web_edit_app"
+                type="org.glassfish.admingui:editAppPage"
+                content="war:web/apps/editWar.jsf"
+        />
+
+        <!-- add the dropdown option for selecting the type of app to deploy
+             in the form of  label:value
+         -->
+        <integration-point
+                id="web_deploy_type"
+                type="org.glassfish.admingui:appTypeDropdown"
+                priority="100"
+                parentId="form"
+                content="Web Application ;war"
+        />
+
+        
+
+
+        <!-- add the http ports to the Server General page -->
+        <integration-point
+                id="serverGeneral"
+                type="org.glassfish.admingui:serverInstGeneralPe"
+                priority="200"
+                parentId=""
+                content="serverPageNode.jsf"
+        />
+        
+        
+                
+        <!-- Add a Common Task under the 'Deployment' Task group -->
+        <!--
+        <integration-point 
+                id="webAppDeployment" 
+                type="org.glassfish.admingui:commonTask" 
+                priority="100"
+                parentId="deployment"
+                content="webApp/webAppDeploymentTask.jsf"/>
+        -->
+                
+        <!-- Add view monitoring data under the 'Monitoring' Task group 
+        <integration-point 
+                id="webViewMonitor" 
+                type="org.glassfish.admingui:commonTask" 
+                priority="100"
+                parentId="monitoring"
+                content="monitor/webViewMonitoringDataTask.jsf"/>-->
+                
+       
+</console-config>

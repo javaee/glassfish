@@ -1,0 +1,36 @@
+<!composition template="/templates/default.layout" guiTitle="Dashboard">
+<!define name="content">
+<!--
+    The following verbatim should be a gadget JSF component, which
+    should be iterated over according to the page layout
+-->
+<f:verbatim>
+<!--
+    Move this style stuff to a file...
+-->
+<style type="text/css">
+.left {float:left;width:49%;}
+.right {float:right;width:49%;}
+</style>
+
+<div class="left">
+    <iframe style="border:1px;width:100%;height:300px;" id="gadgetName" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/hello.xml">
+    </iframe>
+    <iframe style="border:1px;width:100%;height:300px;" id="gadgetName" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/goodbye.xml">
+    </iframe>
+</div>
+<div class="right">
+    <iframe style="border:0px;width:100%;height:300px;" id="gadgetName2" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/google.xml">
+    </iframe>
+    <iframe style="border:0px;width:100%;height:300px;" id="gadgetName3" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=/common/gadgets/log.xml">
+    </iframe>
+    <!--
+    TBD?:
+    <iframe style="border:0px;width:100%;height:300px;" id="gadgetName3" title="gadget desc" src="#{request.contextPath}/common/gadgets/gadget.jsf?gadget=http://www.google.com">
+    </iframe>
+    -->
+</div>
+</f:verbatim>
+</define>
+</composition>
+

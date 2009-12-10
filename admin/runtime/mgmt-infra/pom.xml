@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish.admin.runtime</groupId>
+        <artifactId>runtime</artifactId>
+        <version>3.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>rt-mgmt-infra</artifactId>
+    <packaging>hk2-jar</packaging>
+    <name>Runtime Management Infrastructure</name>
+    <description>Runtime Management Infrastructure Classes</description>
+
+    <dependencies>
+        <dependency>
+          <groupId>com.sun.enterprise</groupId>
+          <artifactId>auto-depends</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

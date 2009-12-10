@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="ejb-lite">
+        <integration-point 
+                id="ejb-lite_container"
+                type="org.glassfish.admingui:navNode" 
+                priority="250"
+                parentId="configuration" 
+                content="PluginTreeNodeEjbLite.jsf"
+        />
+        
+        <!-- Add a link under the Configuration Page -->
+        <integration-point 
+                id="ejbLiteConfigurationLink"
+                type="org.glassfish.admingui:configuration" 
+                priority="250"
+                parentId="propSheetSection"
+                content="configuration/ejbLiteConfigLink.jsf"
+        />
+                
+        <!-- Add a Common Task under the 'Deployment' Task group -->
+        <!--
+        <integration-point 
+                id="AppDeployment" 
+                type="org.glassfish.admingui:commonTask" 
+                priority="100"
+                parentId="deployment"
+		content="webApp/webAppDeploymentTask.jsf"
+	/>
+        -->
+</console-config>

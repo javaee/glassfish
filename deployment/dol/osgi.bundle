@@ -1,0 +1,27 @@
+-exportcontents: \
+                        com.sun.enterprise.deployment; \
+                        com.sun.enterprise.deployment.annotation.handlers; \
+                        com.sun.enterprise.deployment.annotation.impl; \
+                        com.sun.enterprise.deployment.types; \
+                        com.sun.enterprise.deployment.annotation.context; \
+                        com.sun.enterprise.deployment.annotation.introspection; \
+                        com.sun.enterprise.deployment.archivist; \
+                        com.sun.enterprise.deployment.interfaces; \
+                        com.sun.enterprise.deployment.io; \
+                        com.sun.enterprise.deployment.io.runtime; \
+                        com.sun.enterprise.deployment.node.runtime; \
+                        com.sun.enterprise.deployment.runtime; \
+                        com.sun.enterprise.deployment.runtime.common; \
+                        com.sun.enterprise.deployment.runtime.connector; \
+                        com.sun.enterprise.deployment.runtime.web; \
+                        com.sun.enterprise.deployment.util; \
+                        com.sun.enterprise.deployment.web; \
+                        com.sun.enterprise.deployment.xml; \
+                        com.sun.enterprise.repository; version=${project.osgi.version}
+
+# currently Application uses List<Resource> type, and bnd tool doesn't
+# generate Import-Package entry for Resource class. Remove this once
+# bnd tool is fixed.
+Import-Package: \
+                        org.glassfish.resource.common, \
+                        *

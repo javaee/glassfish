@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!--
+    Although this works... and we may do something like this in the short
+    term... this is not in the spirit of writing gadgets.  Data should be
+    retrieved via JS and displayed via JS.
+-->
+<Module id="foo">
+    <ModulePrefs title="Search Gadget" /> 
+    <UserPref name="NotUsed" default_value="abc" />
+    <Content type="html">
+	<![CDATA[ 
+	    <form action="http://www.google.com/search" name="f" target="_blank">
+		<input name="q" type="text" size="40" title="Google Search" />
+		<input name="btnG" type="submit" value="Google Search" />
+	    </form>
+	]]>
+    </Content> 
+</Module>

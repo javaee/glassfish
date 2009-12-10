@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+
+<project name="glassfish-embedded-all" default="create.distribution" basedir=".">
+    <property name="rootdir" value="target"/>
+    <property name="zipdir" value="${rootdir}/packager_zips"/>
+    <property name="jardir" value="${rootdir}/packager_jars"/>
+    <property name="modulesdir" value="${jardir}/glassfishv3/glassfish/modules"/>
+    <property name="filedir" value="${rootdir}/packager_files"/>
+<!--    <property name="finaljar" value="${rootdir}/glassfish-embedded-all.jar"/> -->
+ 
+
+    <target name="create.distribution">
+
+        <antcall target="makeJarDir"/>
+        <antcall target="removeJarsNotNeeded"/>
+        <antcall target="rejar"/>
+        <antcall target="addRars"/>
+
+        <attachArtifact file="${finaljar}"/>
+     </target>
+
+     <target name="makeJarDir">
+        <echo message="creating jar directory..."/>
+        <copy todir="${jardir}">
+            <fileset dir="${zipdir}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+        
+        <!-- The packager files are zips with jars inside -->
+        <unzip dest="${jardir}">
+            <fileset dir="${zipdir}">
+                <include name="*.zip"/>
+            </fileset>
+        </unzip>
+     </target>
+
+     <target name="removeJarsNotNeeded">
+	<delete file="${modulesdir}/javahelp.jar"/>
+	<delete file="${modulesdir}/upgrade-tool.jar"/>
+	<delete file="${modulesdir}/console-common-full-plugin.jar"/>
+	<delete file="${modulesdir}/console-corba-plugin.jar"/>
+	<delete file="${modulesdir}/console-ejb-lite-plugin.jar"/>
+	<delete file="${modulesdir}/console-ejb-plugin.jar"/>
+	<delete file="${modulesdir}/console-jca-plugin.jar"/>
+	<delete file="${modulesdir}/console-jdbc-plugin.jar"/>
+	<delete file="${modulesdir}/console-jms-plugin.jar"/>
+	<delete file="${modulesdir}/console-jruby-plugin.jar"/>
+	<delete file="${modulesdir}/console-jts-plugin.jar"/>
+	<delete file="${modulesdir}/console-web-plugin.jar"/>
+	<delete file="${modulesdir}/web-gui-plugin-common.jar"/>
+     </target>
+
+    <target name="rejar">
+       <echo message="rejarring and processing metadata..."/>
+        <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
+
+        <rejar destfile="${finaljar}" duplicate="preserve">
+            <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+            <manifest>
+                <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+            </manifest>
+        </rejar>
+    </target>
+    <target name="addRars" if="includeRars">
+        <echo message="adding rars"/>
+        <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
+        <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
+        <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>
+    </target>
+
+</project>

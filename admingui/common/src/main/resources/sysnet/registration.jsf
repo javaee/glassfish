@@ -1,0 +1,389 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+ <!-- 
+   # set the component required to false so that when register button is pressed, it won't enforce the required field
+   # there are some fields which may/may not required depending on whether account already exist
+   # use own JS to check requird field.
+   -->
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setComponentRequired(id="form1:pSheet:pSection:unameProp:userName" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:pswdProp:pswd" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:emailAdrProp:emailAdr" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:newPswdProp:newPswd" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:pswd2Prop:newPswd2" required="$boolean{false}" );
+    #setComponentRequired(id="form1:pSheet:pSection:screenName:screenName" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:firstName:firstName" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:lastName:lastName" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:companyName:companyName" required="$boolean{false}" );
+    setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{false}" );
+/>  
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.reg.PageTitle}"  guiOnLoad="showSS(); admingui.nav.selectTreeNodeById('treeForm:tree:registration');" >
+
+<!define name="content">
+    <event>
+        <!beforeCreate
+            setAttribute(key="accountGroup", value="hasAccount");
+            setAttribute(key="contextRoot" value="#{request.contextPath}");
+            setAttribute(key="samplePath" value="$attribute{contextRoot}/resource/common/sysnet/sample.html");
+            setAttribute(key="PageTitleHelp" value="$resource{i18nc.reg.PageTitleHelp, ${samplePath}}");
+        />
+    
+        <!beforeEncode
+            # need to put back the required image if there is any error in processing and the page is refreshed.
+            # we had turned off the requirement in initPage before.
+            setComponentRequired(id="form1:pSheet:pSection:unameProp:userName" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:pswdProp:pswd" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:emailAdrProp:emailAdr" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:newPswdProp:newPswd" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:pswd2Prop:newPswd2" required="$boolean{true}" );
+            #setComponentRequired(id="form1:pSheet:pSection:screenName:screenName" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:firstName:firstName" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:lastName:lastName" required="$boolean{true}" );
+            setComponentRequired(id="form1:pSheet:pSection:country:country" required="$boolean{true}" );
+        />
+    </event>
+
+            <sun:form id="form1" >
+#include "/common/shared/alertMsg.inc"                
+            <sun:title id="title1" title="$resource{i18nc.reg.PageTitle}" helpText="${PageTitleHelp}" />
+            <!-- PropertySheet .... -->
+            <sun:propertySheet id="pSheet" requiredFields="true">			 
+                <sun:propertySheetSection id="pSection" >
+                    <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{sheetId});
+                    />
+                            
+                    <sun:property id="existProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label=" "> 
+                        <sun:radioButton id="existAccount" name="accountGroup" label="$resource{i18nc.reg.hasAccount}" selected="${accountGroup}" selectedValue="hasAccount" 
+                        onClick="javascript: showNewAccount(false)" onKeyPress="javascript: return true;" />
+                    </sun:property>
+                     <sun:property id="unameProp" style="margin-left: 17pt;" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.userName}" helpText="$resource{i18nc.reg.userNameHelp}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{userNameId});
+                        />
+                        <sun:textField id="userName" styleClass="required" columns="$int{40}" text="#{requestScope.userName}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="pswdProp" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.pswd}" helpText="$resource{i18nc.reg.resetPswdHelp}" >                           
+                        <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{pswdId});
+                        />
+                        <sun:passwordField id="pswd" styleClass="required" columns="$int{40}" text="#{requestScope.pswd}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="space"  >                      
+                        <sun:label text=""/>
+                    </sun:property>
+                    
+                    <sun:property id="proxy" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.proxy}"  helpText="$resource{i18nc.reg.proxyHelp}">                           
+                        <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{proxyId});
+                        />
+                        <sun:textField id="proxy" columns="$int{40}" text="#{requestScope.proxy}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="port" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">                           
+                        <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{portId});
+                        />
+                        <sun:textField id="port"  columns="$int{8}" text="#{requestScope.port}" required="#{false}" />
+                        "</br>
+                    </sun:property>
+                    <sun:property  >
+                        <sun:label text=""/>
+                    </sun:property>
+                    
+                    <!--  Info for creating new account -->
+                    <sun:property id="newProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}" label=" "> 
+                        <sun:radioButton id="newAccount" name="accountGroup" label="$resource{i18nc.reg.doNotHaveAccount}" selected="${accountGroup}" selectedValue="createAccount" 
+                            onClick="javascript: showNewAccount(true)" onKeyPress="javascript: return true;" />
+                            "<br /><br />
+                    </sun:property>
+                    
+                     <sun:property id="emailAdrProp"  visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.emailAdr}" helpText="$resource{i18nc.reg.emailAdrHelp}" >                           
+                            <!afterCreate
+                                getClientId(component="$this{component}" clientId=>$page{emailAdrId});
+                            />
+                        <sun:textField id="emailAdr" styleClass="required" columns="$int{40}" text="#{requestScope.emailAdr}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="newPswdProp" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.pswd}">                           
+                            <!afterCreate
+                                getClientId(component="$this{component}" clientId=>$page{newPswdId});
+                            />
+                        <sun:passwordField id="newPswd" styleClass="required" columns="$int{40}" text="#{requestScope.newPswd}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="pswd2Prop" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.retypePswd}"  helpText="$resource{i18nc.reg.pswdHelp}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{newPswd2Id});
+                        />
+                        <sun:passwordField id="newPswd2" styleClass="required" columns="$int{40}" text="#{requestScope.newPswd2}" required="#{false}" />
+                         
+                    </sun:property>
+                    <!-- due to bug# 6627551
+                    <sun:property id="screenName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.screenName}" helpText="$resource{i18nc.reg.screenNameHelp}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{screenNameId});
+                        />
+                        <sun:textField id="screenName"  disabled="#{true}"  styleClass="required" columns="$int{40}" text="#{requestScope.screenName}" required="#{false}" />
+                    </sun:property>
+                    -->
+                    
+                     
+                    <sun:property id="firstName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.firstName}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{firstNameId});
+                        />
+                         <sun:textField id="firstName" styleClass="required" columns="$int{40}" text="#{requestScope.firstName}" required="#{false}" />
+                     </sun:property>
+                    
+                    <sun:property id="lastName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.lastName}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{lastNameId});
+                        />
+                        <sun:textField id="lastName" styleClass="required" columns="$int{40}" text="#{requestScope.lastName}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="companyName" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.companyName}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{companyNameId});
+                        />
+                        <sun:textField id="companyName" columns="$int{40}" text="#{requestScope.companyName}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="country" visible="#{false}"  style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.country}" >                           
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{countryId});
+                        />
+                        <sun:dropDown id="country" selected="#{country}" 
+                                labels="$attribute{countryLabels}" values="$attribute{countryValues}" >
+                        <!beforeCreate
+                            getCountryListForRegistration(labels=>$attribute{countryLabels}, values=>$attribute{countryValues});
+                        />
+                        </sun:dropDown>
+                    </sun:property>
+                    
+                    
+                    <sun:property id="newSpace"  >                      
+                        <sun:label text=""/>
+                    </sun:property>
+                    
+                    <sun:property id="newProxy" visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.proxy}"  helpText="$resource{i18nc.reg.proxyHelp}" >
+                        <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{newProxyId});
+                        />
+                        <sun:textField id="newProxy" columns="$int{40}" text="#{requestScope.newProxy}" required="#{false}" />
+                    </sun:property>
+                    
+                    <sun:property id="newPort" visible="#{false}" style="margin-left: 17pt" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18nc.reg.port}">
+                        <!afterCreate
+                        getClientId(component="$this{component}" clientId=>$page{newPortId});
+                        />
+                        <sun:textField id="newPort"  columns="$int{8}" text="#{requestScope.newPort}" required="#{false}" />
+                    </sun:property>
+                    <sun:property>
+                    <sun:textField  id="action" visible="$boolean{false}" text="#{pageSession.radioChoosen}">
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{radioChoosenId});
+                            setPageSessionAttribute(key="radioChoosen" value="start");
+                        />
+                    </sun:textField>
+                </sun:property>
+                    
+                    </sun:propertySheetSection>
+            </sun:propertySheet>
+            "<br/> <br/><div style="margin-left: 30px;">
+                "$resource{i18nc.reg.yourPrivacy}<br><br>
+                "$resource{i18nc.reg.privacy}
+                "<br>
+                "$resource{i18nc.reg.privacy2}
+            "</div>
+            <sun:title id="title2" >
+            <!facet pageButtonsBottom>
+                <sun:panelGroup id="bottomButtons">
+                    "<span style="left: 30px; position: absolute;"> $resource{i18nc.reg.agree}</span>
+                    <sun:button id="button2" text="$resource{i18n.button.register}"
+                        onClick=" if ( validateRegisterField(this.form) ){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } return false; " >
+                        <!afterCreate
+                            getClientId(component="$this{component}" clientId=>$page{button2Id});
+                        />
+                        <!command
+                             registerAS(
+                                userName="#{userName}", pswd="#{pswd}", proxy="#{proxy}" port="#{port}",
+                                emailAdr="#{emailAdr}", newPswd="#{newPswd}",
+                                screenName="#{screenName}", firstName="#{firstName}",lastName="#{lastName}",
+                                country="#{country}", companyName="#{companyName}" accountStatus="#{accountGroup}"
+                                newProxy="#{newProxy}" newPort="#{newPort}" );
+                             setSessionAttribute(key="showRegTreeNode" value="#{false}")
+                             gf.redirect(page="#{request.contextPath}/common/sysnet/support.jsf");
+                         />
+                    </sun:button>
+                </sun:panelGroup>
+                </facet>
+        </sun:title>
+        "<br />
+	<sun:hidden id="helpKey" value="$resource{help_common.registration}" />
+            </sun:form>
+        
+        
+        <f:verbatim>
+        <script type="text/javascript">
+            function showNewAccount(value) {
+                getTextElement('#{pageSession.radioChoosenId}').value = value;
+                webui.suntheme.common.setVisible('#{userNameId}', !value);
+                webui.suntheme.common.setVisible( '#{pswdId}', !value);
+                webui.suntheme.common.setVisible( '#{proxyId}', !value);
+                webui.suntheme.common.setVisible( '#{portId}', !value);
+                webui.suntheme.common.setVisible('#{emailAdrId}', value);
+                webui.suntheme.common.setVisible( '#{newPswdId}', value);
+                webui.suntheme.common.setVisible( '#{newPswd2Id}', value);
+                //webui.suntheme.common.setVisible( '#{screenNameId}', value);
+                webui.suntheme.common.setVisible( '#{firstNameId}', value);
+                webui.suntheme.common.setVisible( '#{lastNameId}', value);
+                webui.suntheme.common.setVisible( '#{companyNameId}', value);
+                webui.suntheme.common.setVisible( '#{countryId}', value);
+                webui.suntheme.common.setVisible( '#{newProxyId}', value);
+                webui.suntheme.common.setVisible( '#{newPortId}', value);
+            }
+            
+            function showAccountSection(which){
+                if(which == 'hasAccount'){
+                    showNewAccount(false);
+                }else{
+                    showNewAccount(true);
+                }
+            }
+
+            function showSS(){
+             var comp = getTextElement('#{pageSession.radioChoosenId}');
+             var value = comp.value;
+             if (value != 'start'){
+                showNewAccount(comp.value);
+                }
+            }
+
+            function validateRegisterField(form){
+                ss = getSelectedValueFromForm(form, 'accountGroup');
+                if( ss =='hasAccount'){
+                    test= (checkRequired('#{userNameId}:userName', '#{reqMsg}') && checkRequired('#{pswdId}:pswd',  '#{reqMsg}') ) ;
+                    if (!test){
+                        return test;
+                    }
+                    if (! checkProxyPort('#{portId}:port')){
+                        return false;
+                    }
+                    return true;
+                    
+                }
+                var comps = new Array();
+                var ix=0;
+                comps[0] = '#{emailAdrId}:emailAdr';
+                comps[1] = '#{newPswdId}:newPswd';
+                comps[2] = '#{newPswd2Id}:newPswd2';
+                //comps[3] = '#{screenNameId}:screenName';
+                comps[3] = '#{firstNameId}:firstName';
+                comps[4] = '#{lastNameId}:lastName';
+                for ( i=0; i< comps.length; i++) {
+                    if (! checkRequired(comps[i], '#{reqMsg}')){
+                        return false;
+                    }
+                }
+                
+                if (! checkEmailAdr('#{emailAdrId}:emailAdr')){
+                    return false;
+                }
+                
+                if (! checkMatchingPswd('#{newPswdId}:newPswd', '#{newPswd2Id}:newPswd2')){
+                    return false;
+                }
+                
+                if (! checkProxyPort('#{newPortId}:newPort')){
+                    return false;
+                }
+                    
+                return true;
+            }
+            
+            function checkEmailAdr(componentId){
+                var component = getTextElement(componentId);
+                var emailAdr = component.value;
+                if (( emailAdr.indexOf("@") == -1) || (emailAdr.indexOf("@") != emailAdr.lastIndexOf("@")) ||
+                    ( (emailAdr.indexOf("@")+1) == emailAdr.length)){
+                    alert('$resource{i18n.msg.JS.improperEmail}');
+                    component.select();
+                    component.focus();
+                    return false;
+                }
+                return true;
+            }
+            
+            function checkMatchingPswd(pswdId1, pswdId2){
+                var pswd = getTextElement(pswdId1);
+                var pswd2 = getTextElement(pswdId2);
+
+                if (pswd.value != pswd2.value){
+                    alert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
+                    pswd2.select();
+                    pswd2.focus();
+                    return false;
+                }
+                if (pswd.value.length <= 6){
+                    alert('$resource{i18nc.msg.JS.reg.passwordLength}');
+                    pswd.select();
+                    pswd.focus();
+                    return false;
+                }
+                return true;
+            }
+            
+            function checkProxyPort(componentId){
+                var component = getTextElement(componentId);
+                if (! checkForPortOrEmpty(component.value)) {
+                    component.select();
+                    component.focus();
+                    return showAlert('$resource{i18n.msg.JS.enterPortValue} '+  getLabel( component ));
+                }
+                return true;
+            }
+                    
+        </script>
+</f:verbatim>
+   </define>
+</composition>

@@ -1,0 +1,61 @@
+<!--
+  This module is meant to create a distribution fragement that contains
+  Eclipse Equinox configuration files. User can then just drop
+  Equinox framework jar in appropriate location and run GlassFish using
+  Equinox. 
+  osgi/
+    felix/
+    equinox/
+       org.eclipse.equinox.${version}.jar // This is the equinox framework jar
+       configuration/
+          config.ini
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+      <groupId>org.glassfish.osgi-platforms</groupId>
+      <artifactId>osgi-platforms</artifactId>
+      <version>3.0</version>
+      <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>equinox</artifactId>
+    <name>Eclipse Equinox configuration files</name>
+    <!-- This is a distribution fragement.
+         It is distributed as part of nucleus.
+    -->
+    <packaging>distribution-fragment</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+                <configuration>
+                    <tasks>
+                        <ant dir="." antfile="build.xml" target="create.bundle" />
+                    </tasks>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
+    </build>
+</project>

@@ -1,0 +1,3 @@
+-exportcontents: \
+                        com.sun.enterprise.backup; \
+                        com.sun.enterprise.backup.util; version=${project.osgi.version}

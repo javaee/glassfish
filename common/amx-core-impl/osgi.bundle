@@ -1,0 +1,9 @@
+-exportcontents: \
+		org.glassfish.admin.amx.impl.mbean; \
+		org.glassfish.admin.amx.impl.loader; \
+		org.glassfish.admin.amx.impl.path; \
+		org.glassfish.admin.amx.impl.util; \
+		org.glassfish.admin.amx.impl.cmd; \
+		version=${project.osgi.version}
+		
+

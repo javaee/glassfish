@@ -1,0 +1,16 @@
+<FindBugsFilter>
+    <!--
+         Request: Marina
+         Approval: Bill
+     -->
+    <Match>
+        <Class name="com.sun.jts.CosTransactions.SubCoordinator"/>
+        <Bug pattern="EC_UNRELATED_TYPES"/>
+        <Priority value="1"/>
+    </Match>
+    <Match>
+        <Class name="com.sun.enterprise.transaction.jts.OracleXAResource"/>
+        <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+        <Priority value="1"/>
+    </Match>
+</FindBugsFilter>

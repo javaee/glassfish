@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.0</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.jms</groupId>
+    <artifactId>jms-core</artifactId>
+    <name>JMS Module</name>
+    <packaging>hk2-jar</packaging>
+    <version>3.0</version>
+ <developers>
+        <developer>
+            <id>sats</id>
+            <name>Satish Kumar</name>
+            <url />
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+
+  <dependencies>
+      <dependency>
+          <groupId>org.glassfish.common</groupId>
+          <artifactId>internal-api</artifactId>
+	  <version>3.0</version>
+      </dependency>		    
+      <dependency>
+          <groupId>org.glassfish.connectors</groupId>
+          <artifactId>connectors-internal-api</artifactId>
+	  <version>3.0</version>
+      </dependency>		    
+         <dependency>
+             <groupId>org.glassfish.connectors</groupId>
+             <artifactId>connectors-inbound-runtime</artifactId>
+             <version>3.0</version>
+         </dependency>
+         <dependency>
+	      <groupId>org.glassfish.connectors</groupId>
+	      <artifactId>connectors-runtime</artifactId>
+	      <version>3.0</version>
+         </dependency>
+         <dependency>
+	 	<groupId>org.glassfish.admin</groupId>
+	 	<artifactId>admin-util</artifactId>
+		<version>3.0</version>
+         </dependency>
+         
+   </dependencies>
+  
+</project>

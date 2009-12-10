@@ -1,0 +1,155 @@
+<html>
+<head>
+    <!--
+
+  @(#)package.html
+  
+  Taken from http://java.sun.com/j2se/javadoc/writingdoccomments/package-template
+
+-->
+    <title> Package documentation for the ${component.title} component of the ${project.title} </title>
+
+</head>
+<body bgcolor="white">
+
+Provides for command line interface on the server side. This package contents are not related to the command line
+interface per se, but they are related to the command implementation classes on the server side.
+
+
+<h2>Package Specification</h2>
+
+The annotations and enums in this package are supposed to be used as described below.
+
+<ol>
+    <li>
+        To specify a required String option "--jndi-name", that cannot repeat on a command line:
+        <pre>
+            &#64;Option (name="jndi-name", symbol='j', required=true)
+            private volatile String jndiName;
+        </pre>
+        Such an option is specified as either "--jndi-name = jdbc/mysql" or "--jndi-name jdbc/mysql or
+        "-j=jdbc/mysql" or "-j jdbc/mysql" on the command line.
+    </li>
+    <li>
+        To specify an optional boolean option "force" that cannot repeat on a command line, you can either use:
+        <pre>
+            &#64;Option (symbol='f', type=OptionType.BOOLEAN, defaultValue="false", legalValues={"true", "false"})
+            private volatile String force;
+        </pre>
+        OR:
+        <pre>
+            &#64;Option (symbol='f' defaultValue=false)
+            private volatile boolean force;
+            OR:
+            &#64;Option (symbol='f')
+            private volatile boolean force = false;
+        </pre>
+
+        Such an option is specified as either "--force" or "-f" or "--no-force" or "--force=true" or "--force=false"
+        on the command line. Not specifying it on the command line makes it assume its deault value specified by the
+        value of the field (2nd case above) or the value of annotation field, defaultValue (1st case above).
+    </li>
+    <li>
+        To specify a required option that is secret (password) information, you should use:
+        <pre>
+            &#64;Option (type=OptionType.PASSWORD, required=true)
+            private volatile String password;
+        </pre>
+        Such an option is treated specially by the command line. Note the following in this regard:
+        <ul>
+            <li> The command line client shall reject specification of password on the command line as "--password
+            secret123". Such a specification is a syntax error, because the client knows that --password specifies
+            password information and it will not accept it on command line in plaintext.
+            </li>
+            <li> Such an option can be specied in a file named "password-file" as the value of a property
+            named AS_ADMIN_[option-name] (for compatibility reasons) or AS_ADMIN_[command-name][option-name].
+            </li>
+            <li> Such an option will be prompted for by the client if not specified in a file.</li>
+        </ul>
+    </li>
+    <li>
+        To specify a "property" (i.e. name=value) option that may or may not repeat, the command implementation
+        should specify it as a Map, e.g.
+        <pre>
+          &#64;Option (name="property" repeats=true/false, type=OptionType.PROPERTY)
+          private final Map &lt; String, String &gt; properties;
+        </pre>
+        Such an option can be specified as: --property prop1=value1 --property prop2=value2 or --property=name1=value1
+        --property=name2=value2 on the command line depdending on the value of <i>repeats</i>. Note that the type
+	PROPERTY is a special treatment for a commonly used pattern where command implementations need to process <i>properties</i>.
+        <p>
+        Any use of '=' in the property names and values needs to be escaped with a backslash.
+        </p>
+    </li>
+    <li>
+        To specify an option that specifies a number of properties, use OptionType.PROPERTIES when the properties are
+        delimited by a ':' (this is chosen for compatibility reasons). For example,
+        <pre>
+            &#64;Option (name="connection-properties", repeats=false, type=OptionType.PROPERTIES)
+            private final Map &lt; String, String &gt; properties;
+        </pre>
+        This can be specified as --connection-properties dbname=Oracle:url=jdbc\:localhost\:4456 which means there are
+        two properties with names dbname and url and values Oracle and jdbc:localhost:4456 respectively.   
+    </li>
+    <li>
+        To specify an option that represents a "file":
+        <pre>
+            &#64;Option (name="file", type=OptionType.FILE)
+            private volatile File f;                
+        </pre>
+        This option is specified as --file foo.jar and results in a binary file upload from the client to the server.
+        The file is uploaded in a specific area and that file is then injected into this variable.
+    </li>
+    <li>
+        To specify a required operand that's a string, use:
+        <pre>
+            &#64;Operand (required=true)
+            private volatile String server;
+        </pre>
+    </li>
+    <li>
+        To specify an operand whose type depends upon the value of another option:
+        <pre>
+        &#64;Operand (required=true, type=OptionType.FILE)
+        &#64;TypeOverride (type=OptionType.FILE_PATH, options="upload", values="false")
+        private volatile File f;
+        </pre>
+        This operand is interpreted as a file by default, but if another option ("--upload") is "false", then it is
+        just a path to a file. A FILE_PATH is treated specially by the client in that its absolute value is sent from the client
+        to the server.
+	<p>
+	Note that no dependency graph is calculated here. &#64;TypeOverride is intended for simple cases where there are 
+	primary options and others depend on them. 
+    </li>
+    <li>
+        To specify multiple operands that are all strings:
+        <pre>
+            &#64;Operand (type=OptionType.STRING, required=true)
+            private final String[] names;
+            OR:
+            &#64;Operand (type=OptionType.STRING, required=true)
+            private final List &lt; String &gt; names;
+        </pre>
+	Note that for the multiple operand case, you must use either a List or an Array. If a command does not have any field
+	annotated with &#64;Operand, it does not take any operand and if such a command line is presented with an operand (when
+	all options run out (no pun intended) what remain on the command line are operands) it is a syntax error.
+    </li>
+    <li>
+        To specify multiple operands that are all files:
+        <pre>
+            &#64;Operand (type=OptionType.FILE, required=true)
+            private final File[] files;
+            OR:
+            &#64;Operand (type=OptionType.FILE, required=true)
+            private final List &lt; File &gt; files;            
+        </pre>
+    </li>
+</ol>
+
+<h2>Related Documentation</h2>
+
+<!-- Put @see and @since tags down here. -->
+
+@since GlassFish v3 September 2009
+</body>
+</html>

@@ -1,0 +1,53 @@
+Package Contents:
+
+org.glassfish.synchronization.central - 
+---------------------------------------
+This package has the classes which are specific to the central server which 
+is the source of the synchronization process. Included in this package is the 
+Grizzly adapter specific to the central server, the Limit Balancer specific to
+the central server and the "Main" which is responsible, currently, for starting
+a new instance of grizzly server. Also included is a ping utility which pings
+all completed instances to verify they are still running.
+
+org.glassfish.synchronization.client - 
+---------------------------------------
+As labeled the client package includes all the classes which are in charge 
+of synchronizing the glassfish instances.  This package also includes, however,
+the classes which are intended to "mimic" v2 synchronization behavior. These
+are labeld with V2 in the class name to signify. 
+
+org.glassfish.synchronization.filemanagement - 
+-----------------------------------------------
+The file management package contains the packages which are in charge of file
+management in terms of recieving new files and creating zip files to serve
+to connected child nodes.  The major function included in this package is the 
+file caching which is also handled by the classes in this package.
+
+org.glassfish.synchronization.loadbalancer - 
+-----------------------------------------------
+The loadbalancer package contains the load balancing utilities and different
+load balancers.  
+
+org.glassfish.synchronization.manifest - 
+-----------------------------------------------
+This package includes the manifest manager and a download manager. This package
+tracks what pieces of the manifest have been received and what is still needed,
+while maintaining the manifest.
+
+org.glassfish.synchronization.message - 
+-----------------------------------------------
+This class contains all the message classes which are passed back and forth 
+during synchronization.
+
+org.glassfish.synchronization.util - 
+-----------------------------------------------
+This package contains the classes which are helper classes for the most part.
+These include the cookie manager and file/zip utilities.  Many of these classes
+are those that are passed around in the SyncContext object which is passed 
+around as well. 
+
+test- 
+-----------------------------------------------
+The test class is as it sounds and should be removed in production.  This class
+includes the starter classes which start the sync servers and also some older
+deprecated classes.

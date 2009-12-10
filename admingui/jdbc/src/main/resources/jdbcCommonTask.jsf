@@ -1,0 +1,10 @@
+
+<sun:commonTasksGroup title="$resource{i18n.commonTasks.group.Other}">
+    <sun:commonTask
+        text="$resource{i18n.commonTasks.task.connPool}"
+        toolTip="$resource{i18n.commonTasks.task.connPool.toolTip}"
+        infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=jdbcconnectionpoolnew1.html" 
+        onClick="admingui.nav.selectTreeNodeById('form:tree:resources:jdbcConnectionPool'); 
+        parent.location='#{facesContext.externalContext.requestContextPath}/jdbc/jdbcConnectionPoolNew1.jsf?cancelPage=#{request.contextPath}/common/commonTask.jsf'; return false;">
+    </sun:commonTask>
+</sun:commonTasksGroup> 

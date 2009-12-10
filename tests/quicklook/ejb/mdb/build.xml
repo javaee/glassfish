@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="mdb-test" default="all" basedir=".">
+
+<property file="build.properties"/>
+<property file="${ws.root}/build.properties"/>
+ 
+<description>Builds, tests, and runs the asadmin CLI restart, JDBC connection pool tests.</description>
+    <import file="${ws.root}/gfproject/build-impl.xml"/>
+    <import file="${ws.root}/gfproject/v3-targets.xml"/>
+    <import file="${ws.root}/gfproject/db-targets.xml"/>
+
+<target name="all" depends="build,runtest"/>
+
+<target name="build">
+   <antcall target="compile-util"/>
+   <antcall target="compile-tests"/>
+   <antcall target="build-impl"/>
+</target>
+
+<target  name="runtest">
+   <antcall target="runtest-impl">
+       <param name="testng.test.name" value="${testng.test.name}"/>
+       <param name="testng.testclient" value="MDBTests"/>
+   </antcall>
+</target>
+
+</project>

@@ -1,0 +1,195 @@
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# 
+# Use is subject to License Terms
+#
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PRODUCT_NAME=GlassFish v3 \u9884\u89c8
+
+app_title=GlassFish v3 \u9884\u89c8
+
+# Text for Buttons
+btnCancel_text=\u53d6\u6d88
+btnExit_text=\u9000\u51fa
+btnHelp_text=\u5e2e\u52a9
+btnBack_text=\u4e0a\u4e00\u6b65
+btnNext_text=\u4e0b\u4e00\u6b65
+
+# stuff that's used by templates regardless of viewmode
+mainpanel_bgcolor=e8e9ed
+navigpanel_image=/templates/LeftPanel.jpg
+logopanel_image=/templates/LogoPanel.jpg
+top_left_image=/templates/glassfish_logo.png
+bottom_left_image=/templates/community-logo.png
+icon_image=/templates/glassfishserver.gif
+
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+leftpanel_font=SanSerif-BOLD-13
+
+# Dynamic panel
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+dynamic_content_font=SanSerif-PLAIN-13
+dynamic_component_background=WHITE
+dynamic_component_foreground=666666
+dynamic_component_border_color=BLACK
+
+# Font for titles
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title1_font=SanSerif-BOLD-18
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title2_font=SanSerif-BOLD-20
+
+# Text color for titles
+title1_color=587993
+title2_color=BLACK
+
+# Text for titles
+title1_text=\u6b22\u8fce\u4f7f\u7528
+title2_text=GlassFish v3
+# Colors for content panel
+contentpanel_bordercolor=587993
+contentpanel_bgcolor=e8e9ed
+
+btnpanel_bgcolor=e8e9ed
+
+# Font for Buttons
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+button_font=SanSerif-PLAIN-11
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u6b22\u8fce\u4f7f\u7528 ${PRODUCT_NAME} \u5b89\u88c5\u3002&lt;BR&gt;&lt;BR&gt;\u8981\u5b89\u88c5\u5b8c\u6574\u7684 ${PRODUCT_NAME}\uff0c\u8bf7\u5355\u51fb\u201c\u4e0b\u4e00\u6b65\u201d\u3002&lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u5b89\u88c5\u672c\u4ea7\u54c1\u4e4b\u524d\uff0c\u60a8\u5fc5\u987b\u9605\u8bfb\u5e76\u63a5\u53d7\u672c\u4ea7\u54c1\u7684\u4f7f\u7528\u8bb8\u53ef\u534f\u8bae\u3002&lt;/BODY&gt;&lt;/HTML&gt;
+
+License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u60a8\u662f\u5426\u5df2\u9605\u8bfb\u5e76\u63a5\u53d7\u4e0a\u8ff0&lt;BR&gt;\u8f6f\u4ef6\u8bb8\u53ef\u534f\u8bae\u7684\u6240\u6709\u6761\u6b3e\uff1f\u5982\u679c\u5355\u51fb&lt;B&gt;\u53d6\u6d88&lt;/B&gt;\uff0c\u5b89\u88c5\u7a0b\u5e8f&lt;BR&gt;\u5c06\u9000\u51fa\uff0c\u800c\u4e0d\u4f1a\u5b89\u88c5\u4efb\u4f55\u4ea7\u54c1\u6587\u4ef6\u3002&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+LICENSE_CHECKBOX_TOOLTIP=\u5355\u51fb\u4ee5\u63a5\u53d7\u6216\u62d2\u7edd\u6b64\u8bb8\u53ef\u3002
+
+LICENSE_CHECKBOX_TEXT=\u6211\u63a5\u53d7
+
+LICENSE_ACCEPT_TOOLTIP=\u5982\u679c\u63a5\u53d7\u6b64\u534f\u8bae\uff0c\u8bf7\u9009\u62e9\u6b64\u9009\u9879\u3002
+
+LICENSE_ACCEPT_TEXT=\u6211\u63a5\u53d7\u8bb8\u53ef\u534f\u8bae\u4e2d\u7684\u6761\u6b3e\u3002
+
+LICENSE_DECLINE_TOOLTIP=\u5982\u679c\u4e0d\u63a5\u53d7\u6b64\u534f\u8bae\uff0c\u8bf7\u9009\u62e9\u6b64\u9009\u9879\u3002
+
+LICENSE_DECLINE_TEXT=\u6211\u4e0d\u63a5\u53d7\u8bb8\u53ef\u534f\u8bae\u4e2d\u7684\u6761\u6b3e\u3002
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#DEFAULT_INSTALL_HOME=C:\Program Files\Sun
+INSTALL_HOME_LABEL=\u5b89\u88c5\u76ee\u5f55
+INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u6307\u5b9a ${PRODUCT_NAME} \u5728\u76ee\u6807\u7cfb\u7edf\u4e0a\u7684\u5b89\u88c5\u76ee\u5f55\u3002&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+SPECIFY_HOME_MSG=\u6307\u5b9a\u5b89\u88c5\u76ee\u5f55\u3002
+INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u5982\u679c\u6307\u5b9a\u7684\u5b89\u88c5\u76ee\u5f55\u4e0d\u5b58\u5728\uff0c\u5b89\u88c5\u7a0b\u5e8f\u4f1a\u81ea\u52a8\u4e3a\u60a8\u521b\u5efa\u8be5\u76ee\u5f55\u3002&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~C O N F I G   M O D E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  L10N SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L10N_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\u4ece\u4ee5\u4e0b\u5217\u8868\u4e2d\u9009\u62e9\u4e00\u4e2a\u9009\u9879\uff1a&lt;/BODY&gt;&lt;/HTML&gt;
+L10N_CHOICE_TEXT=\u4e3a\u9009\u5b9a\u4ea7\u54c1\u5b89\u88c5\u8bed\u8a00\u3002
+INSTALL_L10N_TOOLTIP=\u9009\u62e9\u6b64\u9009\u9879\u6765\u4e3a\u9009\u5b9a\u4ea7\u54c1\u5b89\u88c5\u8bed\u8a00\u3002
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\u4ece\u4ee5\u4e0b\u5217\u8868\u4e2d\u9009\u62e9\u4e00\u4e2a\u9009\u9879\uff1a&lt;/BODY&gt;&lt;/HTML&gt;
+
+
+JDK_HOME=JDK \u4e3b\u76ee\u5f55
+SELECTED_JDK_TEXT=&lt;HTML&gt;&lt;BODY&gt;\u9009\u5b9a\u7684 JDK \u4e3a &lt;/BODY&gt;&lt;/HTML&gt;
+
+JDK_FROM_MEDIA_CHOICE_TEXT=\u5b89\u88c5\u5e76\u4f7f\u7528 Java(TM) SDK \u7684\u9ed8\u8ba4\u7248\u672c\u3002
+JDK_FROM_LIST_CHOICE_TEXT=\u4ece\u5217\u8868\u4e2d\u9009\u62e9 Java(TM) SDK\u3002
+JDK_TYPED_IN_CHOICE_TEXT=\u952e\u5165 Java(TM) SDK \u7684\u4f4d\u7f6e\u3002
+
+JDK_LIST_TOOLTIP=\u4ece\u4e0b\u62c9\u5217\u8868\u4e2d\u9009\u62e9 Java(TM) SDK\u3002
+JDK_TYPE_IN_TOOLTIP=\u5728\u6b64\u6587\u672c\u6846\u4e2d\u952e\u5165 Java(TM) SDK \u7684\u4f4d\u7f6e\u3002
+
+AVAILABLE_JDK=\u53ef\u7528\u7684 Java(TM) SDK
+ALTERNATE_JDK=\u5907\u7528\u7684 Java(TM) SDK \u4f4d\u7f6e
+
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u5982\u679c\u8fde\u63a5\u53ef\u7528\uff0c\u5b89\u88c5\u7a0b\u5e8f\u5c06\u5c1d\u8bd5\u4e3a\u672c\u6b21\u5b89\u88c5\u4e0b\u8f7d\u5e76\u914d\u7f6e Update Tool\u3002&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Update Tool \u4f1a\u5b9a\u671f\u68c0\u67e5\u53ef\u7528\u66f4\u65b0\uff0c\u5e76\u4f1a\u6536\u96c6\u67d0\u4e9b\u7cfb\u7edf\u6570\u636e\u3002\u6709\u5173\u6240\u6536\u96c6\u6570\u636e\u7684\u8be6\u7ec6\u4fe1\u606f\uff0c\u8bf7\u53c2\u89c1 &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt; \u9875\u9762 (http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3)\u3002&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY;font face='Sans-Serif'&gt;\u914d\u7f6e\u670d\u52a1\u5668\u7684\u7ba1\u7406\u8bbe\u7f6e\u3002\u8bf7\u63d0\u4f9b\u670d\u52a1\u5668\u7684\u7528\u6237\u540d\u548c\u5bc6\u7801\u3002\u5982\u679c\u8981\u4e3a\u672a\u9a8c\u8bc1\u7684\u767b\u5f55\u914d\u7f6e\u670d\u52a1\u5668\uff0c\u5219\u53ef\u4ee5\u4fdd\u7559\u5bc6\u7801\u5b57\u6bb5\u4e3a\u7a7a\u3002&lt;/font&gt;&lt;/p&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+#ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
+Configure \u670d\u52a1\u5668\u7684\u7ba1\u7406\u8bbe\u7f6e\u3002&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+ANONYMOUS=\u914d\u7f6e\u4e3a\u533f\u540d\u7528\u6237
+NON_ANONYMOUS=\u63d0\u4f9b\u7528\u6237\u540d\u548c\u5bc6\u7801 
+ADMIN_PORT_TOOL_TIP=\u8f93\u5165\u7ba1\u7406\u7aef\u53e3
+HTTP_PORT_TOOL_TIP=\u8f93\u5165 HTTP \u4fa6\u542c\u5668\u7aef\u53e3
+ADMIN_USER_TOOL_TIP=\u8f93\u5165\u7ba1\u7406\u5458\u7528\u6237\u540d
+ADMIN_PASSWORD_TOOL_TIP=\u8f93\u5165\u7ba1\u7406\u5458\u5bc6\u7801
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADD_BUTTON_LABEL=\u6dfb\u52a0 >
+ADD_ALL_BUTTON_LABEL=\u5168\u90e8\u6dfb\u52a0 >>
+REMOVE_BUTTON_LABEL=< \u5220\u9664
+REMOVE_ALL_BUTTON_LABEL=<< \u5168\u90e8\u5220\u9664
+PSP_INTRO_TEXT=\u9009\u62e9\u8981\u5b89\u88c5\u7684\u4ea7\u54c1\u3002
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PAGE FLOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CONFIGURE_SELECT_MSG=\u4f7f\u7528\u7f3a\u7701\u503c\u6216\u81ea\u5b9a\u4e49\u503c\u914d\u7f6e\u9009\u5b9a\u7684\u8f6f\u4ef6\u7ec4\u4ef6\u3002
+EXPRESS=\u5feb\u901f
+CUSTOM=\u81ea\u5b9a\u4e49
+SELECT_DESIRED_MODE_TEXT=&lt;HTML&gt;&lt;BODY&gt;
+            Select \u914d\u7f6e\u6a21\u5f0f\u3002
+            &lt;/BODY&gt;&lt;/HTML&gt;
+CUSTOM_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;\u81ea\u5b9a\u4e49&lt;/B&gt;\u6a21\u5f0f\u5c06\u5b89\u88c5
+ the  \u8f6f\u4ef6\u5e76\u4f7f\u7528\u540e\u7eed\u914d\u7f6e\u9875\u9762\u4e0a
+that \u6307\u5b9a\u7684\u503c\u914d\u7f6e\u8be5\u8f6f\u4ef6\u3002&lt;BR&gt;
+          &lt;/BODY&gt;&lt;/HTML&gt;
+EXPRESS_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;\u5feb\u901f&lt;/B&gt;\u6a21\u5f0f\u5c06\u5b89\u88c5\u8f6f\u4ef6\u5e76\u4f7f\u7528\u7f3a\u7701\u503c\u914d\u7f6e\u8be5\u8f6f\u4ef6\u3002
+CONFIGURE_SELECTED_COMPONENTS_MSG=\u4f7f\u7528\u7f3a\u7701\u503c\u6216\u81ea\u5b9a\u4e49\u503c\u914d\u7f6e\u9009\u5b9a\u7684\u8f6f\u4ef6\u7ec4\u4ef6\u3002
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADMIN_USER_TEXT=\u7528\u6237\u540d
+ADMIN_PASSWORD_TEXT=\u5bc6\u7801
+ADMIN_PORT_TEXT=\u7ba1\u7406\u7aef\u53e3
+HTTP_PORT_TEXT=Http \u7aef\u53e3
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~U P D A T E T O O L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSTALL_UPDATE_TOOL_TEXT=\u5b89\u88c5\u66f4\u65b0\u5de5\u5177
+ENABLE_UPDATE_TOOL_TEXT=\u542f\u7528\u66f4\u65b0\u5de5\u5177
+PROXY_HOST_TEXT=\u4ee3\u7406\u4e3b\u673a
+PROXY_PORT_TEXT=\u4ee3\u7406\u7aef\u53e3
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EMAIL=\u7535\u5b50\u90ae\u4ef6\u5730\u5740
+PASSWORD=\u5bc6\u7801
+REENTER_PASSWORD=\u91cd\u65b0\u952e\u5165\u5bc6\u7801
+FIRSTNAME=\u540d
+LASTNAME=\u59d3
+COUNTRY=\u56fd\u5bb6/\u5730\u533a
+COMPANYNAME=\u516c\u53f8\u540d\u79f0
+ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}\u63d0\u4f9b\u4ee5\u4e0b\u4fe1\u606f\u4ee5\u521b\u5efa Sun \u8054\u673a\u5e10\u6237\u3002\u6240\u6709\u5b57\u6bb5\u90fd\u662f\u5fc5\u586b\u5b57\u6bb5\u3002${BODY_END}
+ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}&lt;a href=http://www.sun.com/privacy/&gt;Sun \u7684\u9690\u79c1\u653f\u7b56&lt;/a&gt;\u3002${BODY_END}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+REGISTRATION_OPTIONS_HEADER=${BODY_START}\u4e3a\u4ec0\u4e48\u8981\u8fdb\u884c\u6ce8\u518c\uff1f\u53ef\u65b9\u4fbf\u5730\u53d6\u5f97\u5404\u79cd\u76ca\u5904\uff0c\u4f8b\u5982\uff1a&lt;UL&gt;&lt;LI&gt;\u4fee\u8865\u7a0b\u5e8f\u4fe1\u606f\u548c\u9519\u8bef\u66f4\u65b0\u3001&lt;/LI&gt;&lt;LI&gt;\u622a\u5c4f\u89c6\u9891\u548c\u6559\u7a0b\u3001&lt;/LI&gt;&lt;LI&gt;\u652f\u6301\u548c\u57f9\u8bad\u670d\u52a1&lt;/LI&gt;&lt;/UL&gt;${BODY_END}
+CREATE_NEWACCT=\u6211\u6ca1\u6709 Sun \u8054\u673a\u5e10\u6237\u3002\u6211\u8981\u6ce8\u518c\u3002
+USE_EXISTINGACCT=\u6211\u5df2\u7ecf\u62e5\u6709 Sun \u8054\u673a\u5e10\u6237\u3002
+USERNAME=\u7528\u6237\u540d
+USERPASSWORD=\u7528\u6237\u5bc6\u7801
+SKIP_REGISTRATION=\u8df3\u8fc7\u6ce8\u518c\u3002
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME}\uff1a\u5347\u7ea7\u8f6f\u4ef6&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPGRADE_ALLOW_TEXT=\u5347\u7ea7
+UPGRADE_DECLINE_TEXT=\u4e0d\u5347\u7ea7
+UPGRADE_ALLOW_TOOLTIP=\u9009\u62e9\u6b64\u9009\u9879\u4ee5\u5347\u7ea7\u8f6f\u4ef6\u3002
+UPGRADE_DECLINE_TOOLTIP=\u9009\u62e9\u6b64\u9009\u9879\u5219\u4e0d\u5347\u7ea7\u8f6f\u4ef6\u3002
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# L10n: only translate the "Please wait" string.  leave the rest unchanged.
+PROGRESS_WAIT=\u8bf7\u7a0d\u5019...
+              
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+REGISTRATION_PROGRESS=\u6ce8\u518c\u8fdb\u5ea6

@@ -1,0 +1,1 @@
+-exportcontents: org.glassfish.javaee.core.deployment; version=${project.osgi.version}

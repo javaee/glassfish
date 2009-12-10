@@ -1,0 +1,147 @@
+<target name="clean-common">
+  <echo message="common.xml: Cleaning test source files: ${build.base.dir}" 
+        level="verbose"/>
+  <delete dir="${build.base.dir}"/>
+  <delete dir="${assemble.dir}"/>	
+</target>
+
+<!-- Target to compile the java source files -->
+
+<target name="compile-common">
+  <mkdir dir="${build.classes.dir}"/>
+  <echo message="common.xml: Compiling test source files" level="verbose"/>
+  <mkdir dir="${src}"/>
+  <javac srcdir="${src}"
+    destdir="${build.classes.dir}"
+    classpath="${env.APS_HOME}/jbi/lib/reporter.jar:${env.S1AS_HOME}/modules/javax.ejb.jar:${env.S1AS_HOME}/modules/javax.servlet.jar"
+    debug="on"
+    failonerror="true"/>
+</target>
+
+<target name="compile-client">
+    <mkdir dir="${build.classes.dir}/client"/>
+    <echo message="wsimporting http://${http.host}:${http.port}/${test-wsdl-uri}"/>
+    <antcall target="wsimport">
+        <param name="wsimport.args"
+               value="-keep -d ${build.classes.dir}/client http://${http.host}:${http.port}/${test-wsdl-uri}"/>
+    </antcall>
+    <javac srcdir="." destdir="${build.classes.dir}/client"
+	    classpath="${env.APS_HOME}/jbi/lib/reporter.jar:${env.S1AS_HOME}/modules/javax.servlet.jar"
+            includes="${client-src}/**"/>
+</target>
+
+<!-- JBI Deploy and Undeploy -->
+
+    <target name="deploy-jbi-component-su">
+      <property name="base-dir" value="."/>
+      <property name="temp" value="${base-dir}/temp" />
+      <property name="su-dir" value="${base-dir}/${jbi-su-dir}"/> 
+      <mkdir dir="${temp}"/>
+      <jar basedir="${su-dir}/su" destfile="${temp}/${jbi-component-su}.jar"/>
+      <copy todir="${temp}">
+           <fileset dir="${su-dir}/assembly"/>
+      </copy>
+
+    <!--  <zip destfile="${assemble.dir}/${jbi-su-assembly}.zip" basedir="${temp}"/> -->
+      <jar destfile="${assemble.dir}/${jbi-su-assembly}.jar" basedir="${temp}">
+	<manifest>
+	    <attribute name="Bundle-Version" value="1.0" />
+	    <attribute name="Bundle-SymbolicName" value="${jbi-su-assembly}" />
+	    <attribute name="Bundle-Name" value="${jbi-su-assembly}" />
+	</manifest>
+      </jar>
+      <delete dir="${temp}"/>
+      <antcall target="autodeploy-service-assembly"/> 
+   <!--   <antcall target="deploy-service-assembly"/> --> 
+    </target>
+
+    <target name="autodeploy-service-assembly">
+      <copy file="${assemble.dir}/${jbi-su-assembly}.jar" todir="${deploy.dir}"/>
+      <sleep seconds="7"/>
+    </target>
+
+    <target name="deploy-service-assembly">
+      <echo message="Deploying ${jbi-su-assembly}." level="verbose"/>
+      <exec executable="${ASADMIN}">
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="deploy"/>
+        <arg line="${assemble.dir}/${jbi-su-assembly}.jar"/>
+      </exec>
+    </target>
+
+    <target name="undeploy-jbi-component-su">
+        <antcall target="autoundeploy-service-assembly"/> 
+  <!--      <antcall target="undeploy-service-assembly"/> -->
+    </target>
+
+    <target name="autoundeploy-service-assembly">
+	<delete file="${deploy.dir}/${jbi-su-assembly}.jar"/>
+	<sleep seconds="6"/>
+    </target>
+
+    <target name="undeploy-service-assembly">
+      <exec executable="${ASADMIN}">
+        <arg line="undeploy"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--host ${admin.host}"/>
+        <arg line="--port ${admin.port}"/>
+        <arg line="${jbi-su-assembly}"/>
+      </exec>
+    </target>
+
+<!--    <target name="stop-binding">
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target="stop-component">
+          <property name="jbi.component.name" value="${jbi.component.name}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+          <property name="jbi.task.fail.on.error" value="true"/>
+      </ant>
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target="shut-down-component">
+          <property name="jbi.component.name" value="${jbi.component.name}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+          <property name="jbi.task.fail.on.error" value="true"/>
+      </ant>
+    </target>
+    <target name="start-binding">
+      <ant dir="${jbi-installation}/bin" antfile="${jbi-installation}/bin/jbi_admin.xml" target="start-component">
+          <property name="jbi.component.name" value="${jbi.component.name}"/>
+          <property name="jbi.port" value="${jmx.port}"/>
+          <property name="jbi.task.fail.on.error" value="true"/>
+      </ant>
+    </target>
+-->
+
+<!-- ================================================================ -->
+<!-- Target to create the user in file realm the AppServ  -->
+<!-- ================================================================ -->
+<target name="create-user-common">
+<property name="user.password.file" value="asadminuserpassword.txt"/>
+<echo file="${user.password.file}" append="false">
+AS_ADMIN_USERPASSWORD=
+AS_ADMIN_PASSWORD=
+AS_ADMIN_ADMINPASSWORD=
+AS_ADMIN_MASTERPASSWORD=${master.password}
+</echo>
+  <exec executable="${ASADMIN}">
+    <arg line="create-file-user"/>
+    <arg line="--user ${admin.user} --passwordfile ${user.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
+    <arg line="--groups ${groups}"/>
+    <arg line="--authrealmname ${authrealmname}"/>
+    <arg line="${user}"/>
+  </exec>
+  <delete file="${user.password.file}" failonerror="false"/>
+</target>
+
+
+<!-- ================================================================ -->
+<!-- Target to delete the user in file realm the AppServ  -->
+<!-- ================================================================ -->
+<target name="delete-user-common">
+<echo message="Deleting user ${user} in file realm" level="verbose"/>
+<exec executable="${ASADMIN}">
+  <arg line="delete-file-user"/>
+  <arg line="${user}"/>
+</exec>
+</target>
+

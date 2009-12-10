@@ -1,0 +1,32 @@
+<FindBugsFilter>
+    <!--
+         Request: Mitesh
+         Approval: Bill
+     -->
+    <Match>
+        <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.Date"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+        <Priority value="1"/>
+    </Match>
+    <Match>
+        <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.HashSet"/>
+        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
+        <Priority value="1"/>
+    </Match>
+
+    <!--
+        Ignore all errors in these ANTLR generated classes.
+
+        Request: Marina
+        Approval: Bill
+    -->
+    <Match>
+        <Or>
+            <Class name="com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc.Optimizer"/>
+            <Class name="com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc.Semantic"/>
+            <Class name="com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc.JQL"/>
+            <Class name="com.sun.jdo.spi.persistence.support.sqlstore.query.jqlc.CodeGeneration"/>
+        </Or>
+        <Priority value="1"/>
+    </Match>
+</FindBugsFilter>

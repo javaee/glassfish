@@ -1,0 +1,6 @@
+<sun:tab id="monitor_appstats" immediate="true" text="$resource{web.appmonitoring}" toolTip="$resource{web.appmonitoring} Tab">
+    <!command
+	setSessionAttribute(key="serverInstTabs" value="monitor_appstats");
+	gf.redirect(page="#{request.contextPath}/monitor/monitoringAppStatsPage.jsf");
+    />
+</sun:tab>

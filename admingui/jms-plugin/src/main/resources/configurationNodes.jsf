@@ -1,0 +1,28 @@
+<gf:navNode id="jmsConfiguration"
+	    label="$resource{i18n.tree.javaMessageService}"
+	    toolTip="$resource{i18n.tree.javaMessageService}"
+            url="#{request.contextPath}/jms/jmsService.jsf?configName=server-config"
+	    icon="#{request.contextPath}/resource/images/jms.gif">
+    <dynamicTreeNode id="jmsHosts"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain/configs/config[server-config],type=jms-service"
+        amxChildType="jms-host"
+        attributeName="name"
+        childImageURL="/resource/jms/images/canister.gif"
+        childExpanded="$boolean{false}"
+        childURL="/jms/jmsHostEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
+        text="$resource{i18n.tree.jmsHosts}"
+        url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"
+        >
+        <!facet image>
+            <sun:iconHyperlink icon="TREE_FOLDER" url="#{request.contextPath}/jms/jmsHosts.jsf?configName=#{configName}"  border="$int{0}" immediate="$boolean{true}"
+                alt="$resource{i18n.tree.jmsHosts}"/>
+        </facet>
+    </dynamicTreeNode>
+
+    <gf:navNode id="jmsPhysDest"
+                label="$resource{i18n.tree.physicalDestinations}"
+                icon="#{request.contextPath}/resource/jms/images/tree_folder.gif"
+                url="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf">
+    </gf:navNode>
+</gf:navNode>

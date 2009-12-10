@@ -1,0 +1,18 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# Always use JDK 1.6 or higher
+AS_INSTALL=`dirname "$0"`/../glassfish
+AS_INSTALL_LIB="$AS_INSTALL/modules"
+. "${AS_INSTALL}/config/asenv.conf"
+JAVA=java
+#Depends upon Java from ../config/asenv.conf
+if [ ${AS_JAVA} ]; then
+    JAVA=${AS_JAVA}/bin/java
+fi
+
+exec "$JAVA" -jar "$AS_INSTALL_LIB/admin-cli.jar" "$@"
+

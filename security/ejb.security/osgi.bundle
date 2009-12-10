@@ -1,0 +1,5 @@
+-exportcontents: \
+                        com.sun.enterprise.iiop.security; version=${project.osgi.version}
+Import-Package: \
+                        com.sun.logging.enterprise.system.core.security, \
+                        *

@@ -1,0 +1,68 @@
+<sun:treeNode id="Connectors"
+        text="$resource{i18n.tree.connectors}"
+        url="/jca/jca.jsf"
+        imageURL="/resource/jca/images/connector.png"
+        >
+            
+        <dynamicTreeNode id="connectorResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="connector-resource"
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/connectorResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.connectorResources}"
+        url="/jca/connectorResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectorResources}"/>
+        </facet>
+        </dynamicTreeNode>                  
+        <dynamicTreeNode id="connectorConnectionPools"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="connector-connection-pool"
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/connectorConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.connectorConnectionPools}"
+        url="/jca/connectorConnectionPools.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/connectorConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectorConnectionPools}"/>
+        </facet>
+        </dynamicTreeNode>    
+        <dynamicTreeNode id="adminObjectResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="admin-object-resource"
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/adminObjectEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.adminObjectResources}"
+        url="/jca/adminObjectResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/adminObjectResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.adminObjectResources}"/>
+        </facet>
+        </dynamicTreeNode>  
+        <dynamicTreeNode id="workSecurityMaps"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="work-security-map"
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/workSecurityMapEdit.jsf?mapName=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.workSecurityMaps}"
+        url="/jca/workSecurityMaps.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/workSecurityMaps.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.workSecurityMaps}"/>
+        </facet>
+        </dynamicTreeNode>
+ </sun:treeNode> 
+

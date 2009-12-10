@@ -1,0 +1,4 @@
+-exportcontents: org.glassfish.deployment.admin; version=${project.osgi.version}
+# We don't want to have static dependency on verifier
+Import-Package: !com.sun.enterprise.tools.verifier.*, *
+DynamicImport-Package: com.sun.enterprise.tools.verifier 

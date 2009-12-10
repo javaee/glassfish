@@ -1,0 +1,2 @@
+-exportcontents: org.glassfish.ejb.api; \
+                 org.glassfish.ejb.spi; version=${project.osgi.version}

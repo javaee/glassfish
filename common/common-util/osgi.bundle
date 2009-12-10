@@ -1,0 +1,37 @@
+
+-exportcontents: \
+                        com.sun.appserv.ha.spi; \
+                        com.sun.appserv.ha.util; \
+                        com.sun.appserv.management.client.prefs; \
+                        com.sun.appserv.server.util; \
+                        com.sun.appserv.util.cache; \
+                        com.sun.appserv.util.cache.mbeans; \
+                        com.sun.common.util.logging; \
+                        com.sun.enterprise.admin.monitor.callflow; \
+                        com.sun.enterprise.loader; \
+                        com.sun.enterprise.security.integration; \
+                        com.sun.enterprise.security.store; \
+                        com.sun.enterprise.spi.io; \
+                        com.sun.enterprise.universal; \
+                        com.sun.enterprise.universal.collections; \
+                        com.sun.enterprise.universal.glassfish; \
+                        com.sun.enterprise.universal.i18n; \
+                        com.sun.enterprise.universal.io; \
+                        com.sun.enterprise.universal.process; \
+                        com.sun.enterprise.universal.xml; \
+                        com.sun.enterprise.util; \
+                        com.sun.enterprise.util.diagnostics; \
+                        com.sun.enterprise.util.i18n; \
+                        com.sun.enterprise.util.io; \
+                        com.sun.enterprise.util.net; \
+                        com.sun.enterprise.util.shared; \
+                        com.sun.enterprise.util.uuid; \
+                        com.sun.enterprise.util.zip; \
+                        com.sun.logging; \
+                        org.glassfish.admin.payload; \
+                        org.glassfish.quality; \
+                        org.glassfish.resource.common; \
+                        org.glassfish.security.common; \
+                        com.sun.logging.enterprise.system.core; \
+                        org.glassfish.server; version=${project.osgi.version}
+

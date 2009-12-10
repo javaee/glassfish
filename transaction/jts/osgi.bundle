@@ -1,0 +1,16 @@
+-exportcontents: \
+                        com.sun.jts.jta; \
+                        com.sun.jts.utils.RecoveryHooks; version=${project.osgi.version}
+Import-Package: \
+                        com.sun.corba.ee.org.omg.CORBA;resolution:=optional, \
+                        com.sun.corba.ee.impl.txpoa;resolution:=optional, \
+                        com.sun.corba.ee.impl.orbutil.closure;resolution:=optional, \
+                        com.sun.corba.ee.spi.oa.rfm;resolution:=optional, \
+                        com.sun.corba.ee.spi.orb;resolution:=optional, \
+                        com.sun.corba.ee.spi.orbutil.closure;resolution:=optional, \
+                        com.sun.corba.ee.spi.legacy.interceptor;resolution:=optional, \
+                        com.sun.corba.ee.spi.presentation.rmi;resolution:=optional, \
+                        com.sun.corba.ee.spi.resolver;resolution:=optional, \
+                        com.sun.enterprise.transaction;password=GlassFish, \
+                        *
+

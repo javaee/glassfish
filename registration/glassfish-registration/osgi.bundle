@@ -1,0 +1,1 @@
+-exportcontents: com.sun.enterprise.registration.glassfish; version=${project.osgi.version}

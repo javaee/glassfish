@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="glassfish v3, app client library fix-up" default="fixup.library" basedir=".">
+    <property name="mq.dir.path" value="../../mq"/>
+    <property name="mq.lib" value="${mq.dir.path}/lib"/>
+    <property name="jmsra.apps.dir" value="../lib/install/applications/jmsra"/>
+    <property name="mq.classpath.additions" value="${mq.lib}/imq.jar ${mq.lib}/imqadmin.jar ${mq.lib}/imqutil.jar ${mq.lib}/fscontext.jar ${jmsra.apps.dir}/imqjmsra.jar"/>
+
+    <property name="ds-jdbcra.classpath.additions" value="../lib/install/applications/__ds_jdbc_ra/__ds_jdbc_ra.jar"/>
+    <property name="cp-jdbcra.classpath.additions" value="../lib/install/applications/__cp_jdbc_ra/__cp_jdbc_ra.jar"/>
+    <property name="xa-jdbcra.classpath.additions" value="../lib/install/applications/__xa_jdbc_ra/__xa_jdbc_ra.jar"/>
+    <property name="dm-jdbcra.classpath.additions" value="../lib/install/applications/__dm_jdbc_ra/__dm_jdbc_ra.jar"/>
+    <property name="derby.jar.classpath.additions" value="../../javadb/lib/derby.jar ../../javadb/lib/derbyclient.jar ../../javadb/lib/derbynet.jar ../../javadb/lib/derbytools.jar ../../javadb/lib/derbyrun.jar"/>
+    <property name="jaxr-ra.classpath.additions" value="../lib/install/applications/jaxr-ra/jaxr-ra.jar"/>
+    <property name="classpath.additions" value="${mq.classpath.additions} ${ds-jdbcra.classpath.additions} ${cp-jdbcra.classpath.additions} ${xa-jdbcra.classpath.additions} ${dm-jdbcra.classpath.additions} ${derby.jar.classpath.additions} ${jaxr-ra.classpath.additions}"/>
+    <target name="fixup.library">
+        <unzip src="${output.dir}/${output.file}" dest="${stage.dir}">
+            <patternset>
+                <include name="META-INF/MANIFEST.MF"/>
+            </patternset>
+        </unzip>
+
+        <replace file="${classpath.file}">
+            <!-- replace the colons used as path separators with blanks -->
+            <replacefilter token=":" value=" "/>
+
+            <!-- replace incorrect entries ../modules/x.jar for JARs that will actually reside in the
+                 endorsed subdirectory with ../modules/endorsed/x.jar                -->
+
+            <replacefilter token="../modules/javax.annotation.jar" value="../modules/endorsed/javax.annotation.jar"/>
+            <replacefilter token="../modules/jaxb-api-osgi.jar" value="../modules/endorsed/jaxb-api-osgi.jar"/>
+            <replacefilter token="../modules/webservices-api-osgi.jar" value="../modules/endorsed/webservices-api-osgi.jar"/>
+        </replace>
+
+        <!-- define the classpath property -->
+        <property file="${classpath.file}"/>
+
+        <!--
+            Entries in zip (and JAR) files have two-second timestamp resolution.  The
+            next sleep makes sure that the time stamp on the updated manifest
+            file will later than the original manifest's time + two seconds;
+            this make sure the zip task will actually replacde the manifest
+            in the JAR file.
+
+            Also, the manifest task seems not to update the timestamp on the
+            manifest file, so we need to explicitly touch it after updating
+            the manifest.
+        -->
+        <sleep seconds="3"/>
+        <manifest mode="update" file="${stage.dir}/META-INF/MANIFEST.MF">
+            <attribute name="Class-Path" value="${classpath} ${classpath.additions}"/>
+        </manifest>
+        <touch file="${stage.dir}/META-INF/MANIFEST.MF"/>
+
+        <!-- Update the JAR file with the revised manifest -->
+        <zip destfile="${output.dir}/${output.file}" basedir="${stage.dir}" update="true" includes="META-INF/MANIFEST.MF"/>
+        <echo>Manifest Class-Path updated</echo>
+   </target>
+</project>

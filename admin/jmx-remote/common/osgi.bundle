@@ -1,0 +1,7 @@
+-exportcontents: \
+                        com.sun.enterprise.admin.jmx.remote; \
+                        com.sun.enterprise.admin.jmx.remote.comm; \
+                        com.sun.enterprise.admin.jmx.remote.internal; \
+                        com.sun.enterprise.admin.jmx.remote.notification; \
+                        com.sun.enterprise.admin.jmx.remote.protocol; \
+                        com.sun.enterprise.admin.jmx.remote.streams; version=${project.osgi.version}

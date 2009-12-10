@@ -1,0 +1,128 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!-- applications/appEdit.inc -->
+
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" guiTemplateOnLoad="admingui.help.pluginId = 'common';">
+<!define name="content">
+    <event>
+    <!beforeCreate
+        setSessionAttribute(key="appGeneralTabs" value="general");
+        getRequestValue(key="appName" value="#{pageSession.appName}");
+        urlencode(value="#{pageSession.appName}" encoding="UTF-8" result="#{pageSession.encodedAppName}");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/applications,type=application,name=#{pageSession.appName}");
+        //test is the app is still available.
+        proxyExist(objectNameStr="#{pageSession.objectNameStr}" exist="#{requestScope.exist}")
+        if (! #{requestScope.exist}){
+            gf.redirect(page="#{request.contextPath}/common/applications/applications.jsf");
+        }
+        getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+        setPageSessionAttribute(key="appRefObjectName" value="amx:pp=/domain/servers/server[server],type=application-ref,name=#{pageSession.appName}");
+        getProxyAttrs(objectNameStr="#{pageSession.appRefObjectName}" valueMap="#{pageSession.valueMap2}")
+        getApplicationEnabled(objectNameStr="#{pageSession.objectNameStr}" enabled="#{pageSession.valueMap2['Enabled']}")
+        setPageSessionAttribute(key="origState" value="#{pageSession.valueMap2['Enabled']}");
+        getProxyProperties(objectNameStr="#{pageSession.objectNameStr}"  result="#{pageSession.propMap}");
+
+        if (! #{pageSession.hasPageTitle}){
+            setPageSessionAttribute(key="pageTitle" value="$resource{i18n.enterpriseApplications.editPageTitle}");
+        }
+
+        if (! #{pageSession.hasPageTitleHelp}){
+            setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
+        }
+        setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+    />
+    </event>
+        <sun:form id="propertyForm">
+        
+#include "/common/applications/appGeneralTabs.inc"
+#include "/common/shared/alertMsg.inc"
+
+
+<!-- Page Title -->
+<sun:title id="propertyContentPage" title="#{pageTitle}" helpText="#{pageTitleHelp}" >
+    <!-- Buttons  -->
+    <!facet pageButtonsTop>
+    <sun:panelGroup id="topButtons">
+        <sun:button id="saveButton" text="$resource{i18n.button.Save}" primary="#{true}">
+            <!command
+                if (#{pageSession.showVS}){
+                    convertArrayToCommaString(array="#{pageSession.selectedVS}"  commaString="#{requestScope.tmp}");
+                    mapPut(map="#{pageSession.valueMap2}" key="VirtualServers" value="#{requestScope.tmp}");
+                }
+                saveBeanAttributes(objectNameStr="#{pageSession.objectNameStr}"  attrs="#{pageSession.valueMap}"
+                    skipAttrs="#{pageSession.skipAttrsList}"
+                    convertToFalse="#{pageSession.convertToFalseList}"
+                    onlyUseAttrs="#{pageSession.onlyUseAttrs}"
+                );
+
+                saveBeanAttributes(objectNameStr="#{pageSession.appRefObjectName}"  attrs="#{pageSession.valueMap2}"
+                    skipAttrs="#{pageSession.skipAttrsList2}"
+                    convertToFalse="#{pageSession.convertToFalseList2}"
+                    onlyUseAttrs="#{pageSession.onlyUseAttrs2}"
+                );
+                propMapToList(propMap="#{pageSession.propMap}" convertToFalse="#{pageSession.convertToFalseProp}" propList="#{requestScope.propList}")
+                setProxyProperties(objectNameStr="#{pageSession.objectNameStr}", propertyList="#{requestScope.propList}" );
+                compare(obj1="#{pageSession.origState}" obj2="#{valueMap2['Enabled']}" objEqual="#{requestScope.noChange}");
+                if (!#{requestScope.noChange}){
+                    if (#{valueMap2['Enabled']}){
+                        restartApplication(appName="#{pageSession.appName}");
+                    }
+                    if (!#{valueMap2['Enabled']}){
+                        disableApplication(appName="#{pageSession.appName}");
+                    }
+                }
+                prepareSuccessfulMsg();
+                gf.redirect(page="#{pageSession.editPage}?appName=#{pageSession.encodedAppName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+          />
+          </sun:button>
+          <sun:button id="cancelButton" text="$resource{i18n.button.Cancel}" primary="#{false}"  immediate="#{true}">
+            <!command
+                gf.redirect(page="#{request.contextPath}/applications/applications.jsf");
+            />
+        </sun:button>
+    </sun:panelGroup>
+    </facet>
+ </sun:title>
+
+<!insert name="editAppFields" />
+
+#include "/common/applications/subComponentTable.inc"
+
+	<sun:hidden id="helpKey" value="$resource{help.applicationEdit}" />
+        </sun:form>
+</define>
+</composition>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="glassfish-registration package creation" default="create.package" basedir=".">
+    <import file="${basedir}/../common-targets.xml"/>
+
+<target name="create.package">
+    <property name="package.name" value="glassfish-registration"/> 
+
+        
+	<graphDef id="all-modules" tolerateBrokenPOMs="true">
+		<scope level="compile,runtime">
+			<subtract>
+			    <fullGraph/>
+			     <subGraph groupID="org.glassfish.packager" artifactID="glassfish-upgrade">	
+	                         <scope level="compile,runtime"/>
+			     </subGraph>
+			 </subtract>
+		</scope>					 
+       </graphDef>
+
+       
+       <stage-module-jars graphid="all-modules" />
+       <stage-distribution-fragments graphid="all-modules" />
+
+
+       <if test="${compression}">
+	       <antcall target="pack.compression" />
+       </if>
+
+       <antcall target="create-zip-artifact"/>		
+	
+   </target>
+</project>
+

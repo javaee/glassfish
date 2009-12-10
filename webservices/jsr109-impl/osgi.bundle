@@ -1,0 +1,11 @@
+-exportcontents: \
+                        com.sun.enterprise.webservice; \
+                        org.glassfish.webservices; \
+                        org.glassfish.webservices.monitoring; version=${project.osgi.version}
+Import-Package: \
+                       com.sun.enterprise.deployment.*, \
+                       com.sun.enterprise.deployment.annotation.*, \
+                       javax.ejb;resolution:=optional, \
+                       * 
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

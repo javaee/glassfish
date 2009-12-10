@@ -1,0 +1,14 @@
+-exportcontents: \
+                        com.sun.enterprise.admin.monitor.jndi; \
+                        com.sun.enterprise.admin.monitor.registry; \
+                        com.sun.enterprise.admin.monitor.stats; \
+                        com.sun.enterprise.admin.monitor.stats.lb; \
+                        com.sun.enterprise.admin.monitor.util; \
+                        com.sun.enterprise.management.support; \
+                        org.glassfish.flashlight; \
+                        org.glassfish.flashlight.annotations; \
+                        org.glassfish.flashlight.datatree.factory; \
+                        org.glassfish.flashlight.statistics; \
+                        org.glassfish.flashlight.statistics.factory; \
+                        org.glassfish.admin.monitor; \
+                        org.glassfish.admin.monitor.cli; version=${project.osgi.version}

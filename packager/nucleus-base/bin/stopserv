@@ -1,0 +1,13 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+AS_INSTALL=`dirname "$0"`/..
+AS_INSTALL_LIB="$AS_INSTALL/modules"
+
+exec java -jar "$AS_INSTALL_LIB/admin-cli.jar" stop-domain "$@"
+
+

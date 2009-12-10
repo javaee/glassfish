@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jdbc">
+        <integration-point 
+                id="jdbcNodes" 
+                type="org.glassfish.admingui:navNode" 
+                priority="100" 
+                parentId="resources" 
+                content="jdbcTreeNode.jsf" 
+        />
+        <integration-point 
+                id="jdbcCommonTask" 
+                type="org.glassfish.admingui:commonTask" 
+                priority="500"
+                parentId="commonTasksSection"
+                content="jdbcCommonTask.jsf"
+        />
+        <integration-point 
+                id="jdbcResourceLink"
+                parentId="propSheetSection"
+                type="org.glassfish.admingui:resources" 
+                priority="100" 
+                content="jdbcResourceLink.jsf"
+        />        
+</console-config>

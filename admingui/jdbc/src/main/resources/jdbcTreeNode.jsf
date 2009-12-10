@@ -1,0 +1,37 @@
+<sun:treeNode id="JDBC"
+        text="$resource{i18n.tree.jdbc}"
+        url="/jdbc/jdbc.jsf"
+        imageURL="/resource/jdbc/images/JDBC.gif"
+        >
+        <dynamicTreeNode id="jdbcResources"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="jdbc-resource"
+        attributeName="name"
+        childImageURL="/resource/jdbc/images/JDBC.gif"
+        childExpanded="$boolean{false}"
+        childURL="/jdbc/jdbcResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+        text="$resource{i18n.tree.jdbcResources}"
+        url="/jdbc/jdbcResources.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcResources.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.jdbcResources}"/>
+        </facet>
+    </dynamicTreeNode>
+        <dynamicTreeNode id="connectionPoolResources"
+            treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+            objectName="amx:pp=/domain,type=resources"
+            amxChildType="jdbc-connection-pool"  
+            attributeName="name"
+            childImageURL="/resource/jdbc/images/JDBC.gif"
+            childExpanded="$boolean{false}"
+            childURL="/jdbc/jdbcConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
+            text="$resource{i18n.tree.connectionPools}"
+            url="/jdbc/jdbcConnectionPools.jsf"
+            >
+            <!facet image>
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectionPools}"/>
+            </facet>
+        </dynamicTreeNode>       
+ </sun:treeNode>
+    

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" xmlns:ns0="http://endpoint/ejb" version="1.0">
+    <services binding-component="false">
+        <consumes endpoint-name="HelloEJBPort" interface-name="ns0:HelloEJB" service-name="ns0:HelloEJBService"/>
+    </services>
+</jbi>

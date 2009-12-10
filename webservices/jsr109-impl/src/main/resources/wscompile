@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#
+# Copyright 1997-2008 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+
+AS_INSTALL=`dirname $0`/..
+AS_INSTALL_LIB=$AS_INSTALL/modules
+JAVAX_MAIL_JAR=$AS_INSTALL_LIB/mail.jar
+
+java -cp "$AS_INSTALL_LIB/webservices.jar:$AS_INSTALL_LIB/jaxb.jar:$JAVAX_MAIL_JAR:$JAVA_HOME/lib/tools.jar" com.sun.xml.rpc.tools.wscompile.Main "$@"

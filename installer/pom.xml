@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# 
+# Use is subject to License Terms
+#
+--> 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>3.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    
+    <groupId>org.glassfish.installer</groupId>
+    <artifactId>installer</artifactId>
+    <name>Glassfish Installer</name>
+    <packaging>distribution-base-zip</packaging>
+    <description>This pom describes how to build Glassfish Installer</description>
+
+    <build>
+        <plugins>
+            <plugin>
+		<groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+                <artifactId>maven-antrun-extended-plugin</artifactId>
+   		<executions>
+                   <execution>
+                     <phase>package</phase>
+                     <configuration>
+                       <tasks>
+                         <ant dir="." antfile="build.xml" target="all">
+			 </ant>
+                       </tasks>
+                     </configuration>
+		     <goals>
+                        <goal>run</goal>
+                     </goals>
+                  </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>sun.jdk</groupId>
+                        <artifactId>tools</artifactId>
+                        <version>1.6</version>
+                        <scope>system</scope>
+                        <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                    </dependency>
+                </dependencies>
+             </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
+    </build>
+    <dependencies>
+        <dependency>
+           <groupId>org.openinstaller</groupId>
+           <artifactId>engine</artifactId>
+           <version>0.9.4.6</version>
+           <type>zip</type>
+        </dependency> 
+        <dependency>
+           <groupId>org.openinstaller</groupId>
+           <artifactId>resources</artifactId>
+           <version>0.9.4.2</version>
+           <type>zip</type>
+        </dependency> 
+        <dependency>
+           <groupId>com.sun.pkg</groupId>
+           <artifactId>pkg-bootstrap</artifactId>
+         </dependency>
+         <dependency>
+           <groupId>com.sun.pkg</groupId>
+           <artifactId>pkg-client</artifactId>
+	</dependency> 
+	<dependency>
+            <groupId>org.glassfish.registration</groupId>
+            <artifactId>registration-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.registration</groupId>
+            <artifactId>registration-impl</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>sysnet-registration-repackaged</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>commons-codec-repackaged</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>        
+    </dependencies>
+</project>
+

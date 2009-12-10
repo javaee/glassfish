@@ -1,0 +1,6 @@
+-exportcontents: \
+                        org.glassfish.admingui; \
+                        org.glassfish.admingui.plugin; \
+                        org.glassfish.admingui.handlers; \
+                        org.glassfish.admingui.registration; \
+                        org.glassfish.admingui.util; version=${project.osgi.version}

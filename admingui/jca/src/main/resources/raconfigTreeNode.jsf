@@ -1,0 +1,19 @@
+
+    <dynamicTreeNode id="resourceAdapterConfigs"
+        treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
+        objectName="amx:pp=/domain,type=resources"
+        amxChildType="resource-adapter-config"
+        attributeName="name"
+        childImageURL="/resource/jca/images/connector.png"
+        childExpanded="$boolean{false}"
+        childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.attributes.encodedText}"
+        text="$resource{i18njca.tree.resourceAdapterConfigs}"
+        url="/jca/resourceAdapterConfigs.jsf"
+        >
+        <!facet image>
+            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jca/resourceAdapterConfigs.jsf"  border="$int{0}" immediate="$boolean{true}" />
+        </facet>
+        <!beforeCreate
+            setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
+        />
+    </dynamicTreeNode>

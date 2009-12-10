@@ -1,0 +1,7 @@
+-exportcontents: \
+                        com.sun.enterprise.connectors.work;\
+                        com.sun.enterprise.connectors.work.context;\
+                        com.sun.enterprise.connectors.work.monitor; version=${project.osgi.version}
+
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

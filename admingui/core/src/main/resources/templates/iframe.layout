@@ -1,0 +1,32 @@
+<ui:event type="initPage">
+    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
+    setResourceBundle(key="help" bundle="org.glassfish.admingui.core.Helplinks");
+    getProxyAttribute( objectNameStr="amx:pp=/ext,type=realms" attrName="AnonymousLogin" value="#{pageSession.anonLogin}" )
+    getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
+</ui:event>
+<sun:page>
+    <sun:html>
+	<ui:event type="beforeCreate">
+	    setPartialRequest("false");
+	</ui:event>
+	<sun:head title="#{guiTitle}" javaScript="true" debug="false" parseOnLoad="false">
+	    <h:outputScript name="jsf.js" library="javax.faces" target="head" />
+	    <sun:script url="/resource/common/js/adminjsf.js" />
+	    <!insert name="guiTemplateExtraHead" />
+	    <!insert name="guiExtraHead" />
+	</sun:head>
+	<sun:body onLoad="#{guiOnLoad}">
+	    <sun:markup tag="div" id="content" style="padding-left: 5px; padding-right: 5px;">
+		<!insert name="content">
+		    Content Missing!
+		</insert>
+	    </sun:markup>
+	    <f:verbatim>
+		<script type="text/javascript">
+		    #{guiOnLoad};
+		    #{guiTemplateOnLoad};
+		</script>
+	    </f:verbatim>
+	</sun:body>
+    </sun:html>
+</sun:page>

@@ -1,0 +1,5 @@
+-exportcontents: \
+                        org.glassfish.web.admin.cli; \
+                        org.glassfish.web.admin.monitor; version=${project.osgi.version}
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

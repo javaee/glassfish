@@ -1,0 +1,2 @@
+-exportcontents: \
+                        org.glassfish.jdbc.admin.cli; version=${project.osgi.version}

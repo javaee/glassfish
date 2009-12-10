@@ -1,0 +1,13 @@
+
+export CONFIG_FILE=$V3_RUN/glassfish/lib/appclient/appclientlogin.conf
+echo Using config file of $CONFIG_FILE
+export OPTIONS="-Djava.security.auth.login.config=$CONFIG_FILE"
+echo $OPTIONS
+echo ""
+
+export V3M=/v3/glassfishv3/glassfish/modules
+export MAIN=org.glassfish.admin.mejb.test.MEJBTest
+
+java $OPTIONS -cp $V3M/gf-client.jar:$V3M/javax.management.j2ee.jar:target/MEJB.jar:target/test-classes $MAIN
+
+

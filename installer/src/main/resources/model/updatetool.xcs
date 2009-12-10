@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# 
+# Use is subject to License Terms
+#
+--> 
+<oor:component-schema oor:version="1.1" oor:name="updatetool" oor:package="com.sun.PH"
+ xsi:schemaLocation="http://openoffice.org/2001/registry"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:oor="http://openoffice.org/2001/registry"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:if="http://openinstaller.org/config/V1"
+ xml:lang='en-US'>
+ <component>
+     <group oor:name="Configuration">
+         <prop oor:name="A_INSTALL_HOME" oor:type="xs:string" oor:transient="true">
+           <value if:eval=":[InstallHome.directory:INSTALL_HOME]"></value>
+           <info>
+             <desc xml:lang="en-US">Reference to InstallHome selected from InstallHome page</desc>
+           </info>
+        </prop>
+        <prop oor:name="BOOTSTRAP_UPDATETOOL" oor:type="xs:boolean">
+           <value>true</value>
+           <info>
+             <desc xml:lang="en-US">Bootstrap Updatetool during Installation</desc>
+           </info>
+        </prop> 
+        <prop oor:name="ALLOW_UPDATE_CHECK" oor:type="xs:boolean">
+           <value>true</value>
+           <info>
+             <desc xml:lang="en-US">Allow check for available updates</desc>
+           </info>
+        </prop> 
+        <prop oor:name="PROXY_HOST" oor:type="xs:string">
+           <value></value>
+           <info>
+             <desc xml:lang="en-US">Proxy Host value</desc>
+           </info>
+        </prop>  
+           <prop oor:name="PROXY_PORT" oor:type="xs:string">
+           <value></value>
+           <info>
+             <desc xml:lang="en-US">Proxy Host value</desc>
+           </info>
+        </prop>           
+     </group>
+ </component>
+ <if:desktop>
+    <if:shortcut name="Start Update Tool" type="APPLICATION" runInTerminal="false">
+	    <if:target path="updatetool/lib/updatetool-start" relative="INSTALL_HOME"/>
+         <if:location path="GlassFish v3 Prelude" relative="USER_START_MENU"/>
+	 <if:icon path="updatetool/vendor-packages/updatetool/images/application-update-tool.ico" relative="INSTALL_HOME"/>
+    </if:shortcut>    
+  </if:desktop>
+</oor:component-schema>

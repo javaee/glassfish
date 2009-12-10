@@ -1,0 +1,53 @@
+<html>
+<head>
+<title>How to use with JES Appserver</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<h1 align="center">Using jmxcmd with S1AS8PE</h1>
+<h4 align="center">&nbsp;</h4>
+<p><font size="-1">Author: lloyd.chambers@sun.com<br>
+  Last updated: 03 June 2004</font></p>
+<p><font size="-1"><b></b></font></p>
+<h2>1. Introduction</h2>
+<p>Please familiarize yourself with the <a href="jmxcmd-index.html">jmxcmd overview</a>.</p>
+<p>Here are step-by-step instructions for using jmxcmd with S1AS8 PE:</p>
+<p>1. Download the following files into the same directory:</p>
+<p><a href="./binaries/jmxcmd.jar">jmxcmd.jar</a><br>
+  <a href="./binaries/add-optional.jmxcmd">add-optional.jmxcmd</a></p>
+<p>Then download the system-appropriate script:</p>
+<p>Solaris: <a href="./binaries/jmxcmd">jmxcmd<br>
+  </a>Windows: <a href="./binaries/jmxcmd.bat">jmxcmd.bat</a></p>
+<h2>Via jmxmp connector</h2>
+<p>The jmxmp connector has been removed.</p>
+<h2>Via Generic RMI connector (Appserver 8.1, June 3 build or later):</h2>
+<p>The RMI connector is standard; you can connect this way:</p>
+<p><font face="Courier New, Courier, mono" size="-1">connect --host <i>host</i> 
+  --port 8686 --protocol rmi </font><font face="Courier New, Courier, mono" size="-1">--user 
+  admin --password-file <i>filename</i> --jndi-name /management/rmi-jmx-connector 
+  <i>name</i> </font></p>
+<h2><b>Via HTTP/RMI connector</b></h2>
+<p>Connecting this way requires loading the <font face="Courier New, Courier, mono" size="-1">JMXConnectorProvider</font> 
+  class for Appserver via the <font size="-1"> <font face="Courier New, Courier, mono"> 
+  add-provider</font></font> command. </p>
+<p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jmxcmd<br>
+  </font><font size="-1" face="Courier New, Courier, mono"># this only needs to 
+  be done once<br>
+  jmxcmd &gt; <b>add-provider</b> com.sun.enterprise.jmx.providers.SunJESAppserverProvider<br>
+  <br>
+  </font><font face="Courier New, Courier, mono" size="-1">jmxcmd &gt; <b>connect</b> 
+  --host <i>host</i> --port <i>1234</i> --protocol sun-as-http --user admin --password-file 
+  <i>filename</i> <i>name</i> </font> </p>
+Alternately, you can connect using RMI (note that the port differs from the HTTP 
+port):<font face="Courier New, Courier, mono" size="-1"><br>
+<br>
+jmxcmd &gt; <b>connect</b> --host <i>host</i> --port <i>8686</i> --protocol sun-as-rmi 
+--user admin --password-file <i>filename</i> <i>name</i> </font> 
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -1,0 +1,1 @@
+-exportcontents: org.glassfish.admin.runtime.jsr77; version=${project.osgi.version}

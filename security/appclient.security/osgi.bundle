@@ -1,0 +1,6 @@
+-exportcontents: \
+                        com.sun.enterprise.security.appclient; \
+			com.sun.enterprise.security.appclient.integration; version=${project.osgi.version}
+Import-Package: \
+                        com.sun.logging.enterprise.system.core.security, \
+                        *

@@ -1,0 +1,58 @@
+<!--
+  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  
+  Use is subject to License Terms
+--> 
+
+<!--
+  XML DTD for Sun Application Server specific Java EE Application
+  deployment descriptor. This is a companion DTD to application_5.xsd
+
+  It must include a DOCTYPE of the following form:
+
+  <!DOCTYPE sun-application PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 9.0 Java EE Application 5.0//EN" "http://www.sun.com/software/appserver/dtds/sun-application_5_0-0.dtd">
+
+-->
+
+<!--
+This is the root element of the runtime descriptor document.
+-->
+<!ELEMENT sun-application (web*, pass-by-reference?, unique-id?, security-role-mapping*, realm?) >
+
+<!ELEMENT web (web-uri, context-root)>
+<!ELEMENT web-uri (#PCDATA)>
+<!ELEMENT context-root (#PCDATA)>
+
+<!-- Pass by Reference semantics:  EJB spec requires pass by value,
+     which will be the default mode of operation. This can be set 
+     to true for non-compliant and possibly higher performance. 
+     For a stand-alone, this can be set at this level. By setting 
+     a similarly named element at sun-application, it can apply to 
+     all the enclosed ejb modules. Allowed values are true and 
+     false. Default will be false.
+ -->
+<!ELEMENT pass-by-reference (#PCDATA)>
+
+<!-- Automatically generated and updated at deployment/redeployment 
+     Needs to be unqiue in the system.
+  -->
+<!ELEMENT unique-id (#PCDATA)>
+
+<!ELEMENT security-role-mapping (role-name, (principal-name | group-name)+)>
+
+<!ELEMENT role-name (#PCDATA)>
+<!ELEMENT principal-name (#PCDATA)>
+<!ATTLIST principal-name class-name CDATA #IMPLIED>
+<!ELEMENT group-name (#PCDATA)>
+
+<!-- 
+  realm: Allows specifying an optional authentication realm name which will
+    be used to process all authentication requests associated with this
+    application. If this element is not specified (or if it is given but
+    does not match the name of a configured realm) then the default realm
+    set in the server instances security-service element will be used
+    instead.
+-->
+<!ELEMENT realm (#PCDATA)>

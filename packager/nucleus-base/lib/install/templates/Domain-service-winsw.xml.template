@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+    Use is subject to license terms.
+-->
+
+<!--
+    Document   : %%%ENTITY_NAME%%%Service.xml
+    Created on : %%%DATE_CREATED%%%
+    Author     : User and GlassFish Administration Team
+    Description: The Windows Service Wrapper configuration file for server %%%ENTITY_NAME%%%.
+-->
+
+<service>
+  <id>%%%NAME%%%</id>
+  <name>%%%ENTITY_NAME%%% GlassFish Server</name>
+  <description>GlassFish Server</description>
+  <executable>%%%AS_ADMIN_PATH%%%</executable>
+  <logpath>%%%LOCATION%%%/%%%ENTITY_NAME%%%/bin</logpath>
+  <logmode>reset</logmode>
+  <depend>tcpip</depend>
+  <startargument>start-domain</startargument>
+  <startargument>--verbose</startargument>
+  <startargument>--domaindir</startargument>
+  <startargument>%%%LOCATION%%%</startargument>
+ %%%CREDENTIALS_START%%%<startargument>%%%ENTITY_NAME%%%</startargument>
+  <stopargument>stop-domain</stopargument>
+  <stopargument>--domaindir</stopargument>
+  <stopargument>%%%LOCATION%%%</stopargument>
+ %%%CREDENTIALS_STOP%%%<stopargument>%%%ENTITY_NAME%%%</stopargument>
+</service>

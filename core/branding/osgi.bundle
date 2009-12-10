@@ -1,0 +1,1 @@
+-exportcontents: org.glassfish.branding; version=${project.osgi.version}

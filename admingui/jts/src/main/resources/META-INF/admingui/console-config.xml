@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jts">
+        <integration-point 
+                id="jts_node"
+                type="org.glassfish.admingui:navNode" 
+                priority="400"
+                parentId="configuration" 
+                content="pluginTreeNodeJts.jsf"
+        />
+
+        <!-- Add a link under the Configuration Page  -->
+        <integration-point
+                id="jts_ConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="400"
+                parentId="propSheetSection"
+                content="jtsConfigurationLink.jsf"
+        />
+</console-config>

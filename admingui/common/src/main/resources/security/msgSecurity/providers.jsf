@@ -1,0 +1,128 @@
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<!initPage
+    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.msgSecProvider.TableTitle}" >
+<!define name="content">
+    <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        getRequestValue(key="name" value="#{pageSession.Name}");
+        urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        setSessionAttribute(key="msgSecurityTabs" value="providers");
+        setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}]/security-service,type=message-security-config,name=#{pageSession.Name}");
+        setPageSessionAttribute(key="childType" value="provider-config");
+        getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="#{pageSession.childType}" result="#{requestScope.listOfRows}");
+        addDefaultProviderInfo(providerList="#{requestScope.listOfRows}",  msgSecurityName="#{pageSession.Name}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteMsgProviders}");
+        setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/providerNew.jsf?msgSecurityName=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf");
+        setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecProvider.TableTitle}");
+        setPageSessionAttribute(key="additionalDeleteHandler" value="checkMsgSecurityDefaultProvider");
+        setPageSessionAttribute(key="additionalDeleteHandlerArgs" value="msgSecurityName:#{pageSession.Name}");
+    />
+    </event>
+
+<sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+#include "msgSecurityTabs.inc"
+     <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.TableTitle}"
+                 helpText="$resource{i18nc.msgSecProvider.ListPageHelp}" />
+		 
+ <sun:propertySheet id="propertySheet">
+     <sun:propertySheetSection id="propertySheetSection">
+         <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
+             <sun:staticText escape="true" id="AuthLayer" text="#{pageSession.Name}" />
+         </sun:property>
+     </sun:propertySheetSection>
+ </sun:propertySheet>
+ "<br /> <br />
+<sun:table id="configs" title="#{tableTitle}"
+    deselectMultipleButton="$boolean{true}"
+    deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
+    selectMultipleButton="$boolean{true}"
+    selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+    <!afterCreate
+        getClientId(component="$this{component}" clientId=>$page{tableId});
+    />
+
+#include "/common/shared/listTableButtons.inc"
+
+   <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
+     <!afterCreate
+         getClientId(component="$this{component}" clientId=>$page{tableableRowGroupId});
+        />
+    <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+            <sun:checkbox id="select"
+                selected="#{td.value.selected}"
+                selectedValue="$boolean{true}"
+                onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
+            />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvId}" sort="Name" rowHeader="$boolean{true}" id="col1">
+        <sun:hyperlink id="authlayer" text="#{td.value.Name}"
+            url="#{editLink}?name=#{td.value.Name}&msgSecurityName=#{pageSession.Name}&configName=#{configName}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvType}" sort="ProviderType" rowHeader="$boolean{true}" id="col2">
+        <sun:staticText escape="true" id="provType" value="#{td.value.ProviderType}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.defaultProviderCol}" sort="default" rowHeader="$boolean{true}" id="col3">
+        <sun:staticText escape="true" id="default" value="#{td.value.default}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colClassName}" sort="ClassName" rowHeader="$boolean{true}" id="col4">
+        <sun:staticText escape="true" id="defaultclientprov" value="#{td.value.ClassName}" />
+    </sun:tableColumn>
+
+  </sun:tableRowGroup>
+</sun:table>
+
+	<sun:hidden id="helpKey" value="$resource{help_common.msgProviders}" />
+            </sun:form>
+//#include "/common/shared/changeButtonsJS.inc"
+
+</define>
+</composition>
+

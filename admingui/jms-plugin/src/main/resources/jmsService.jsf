@@ -1,0 +1,154 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!initPage
+    setResourceBundle(key="i18njms" bundle="org.glassfish.jms.admingui.Strings");
+    setResourceBundle(key="helpjms" bundle="org.glassfish.jms.admingui.Helplinks")
+/>
+
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njms.jms.Title}" >
+<!define name="content">
+    <event>
+        <!beforeCreate
+            getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
+            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/jms/jmsService.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
+            setAttribute(key="edit" value="#{true}");
+            setPageSessionAttribute(key="hasPropertySheet" value="#{true}");
+
+            setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs,type=config,name=#{pageSession.configName}");
+            setPageSessionAttribute(key="childType" value="jms-service");
+            setPageSessionAttribute(key="convertToFalseList" value={"ReconnectEnabled"});
+
+            setPageSessionAttribute(key="objectNameStr" value="amx:pp=/domain/configs/config[#{pageSession.configName}],type=jms-service");
+            //guiLog(message="***** objectNameStr = #{pageSession.objectNameStr}");
+            getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+            //guiLog(message="***** valueMap = #{pageSession.valueMap}");
+
+            getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+
+            setPageSessionAttribute(key="edit" value="#{true}" );
+            setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+            setPageSessionAttribute(key="showCancelButton" value="#{false}" );
+            setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+            setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+
+        />
+    </event>   
+<!-- TO DO: NEED TO ADD CHECK FOR PE OR EE IN ORDER TO POPULATE JMS HOST DROPDOWN  -->   
+<!-- TO DO: NEED TO ADD HANDLER FOR PING BUTTON ONCE MESSAGES ARE WORKING  -->  
+            <sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+                <!-- Page Title -->
+                <sun:title id="propertyContentPage" title="$resource{i18njms.jms.Title}" helpText="$resource{i18njms.jms.PageHelp}">
+#include "/common/shared/editPageButtons.inc"
+                    <sun:button id="pingButton" text="$resource{i18njms.jms.Ping}"
+                        onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
+                        <!command
+                            prepareSuccessfulMsg();
+                            createMap(result="#{attrs}");
+                            mapPut(map="#{attrs}", key="Name", value="tempConnectionPool");
+                            mapPut(map="#{attrs}", key="ConnectionDefinitionName", value="javax.jms.QueueConnectionFactory");
+                            mapPut(map="#{attrs}", key="ResourceAdapterName", value="jmsra");
+                            createProxy(parentObjectNameStr="amx:pp=/domain,type=resources",
+                                childType="connector-connection-pool", attrs="#{attrs}");
+                            pingJms(poolName="tempConnectionPool");
+                            deleteChild(objectNameStr="amx:pp=/domain,type=resources",type="connector-connection-pool",name="tempConnectionPool");
+                        />
+                    </sun:button>
+
+                    <!-- PropertySheet .... -->
+                    <sun:propertySheet id="propertySheet">			 
+                        <!-- Text Field section -->               
+                        <sun:propertySheetSection id="propertSectionTextField">
+                            <event>
+                              <!beforeCreate
+                                //getJmsHosts(ConfigName="#{configName}", Hosts=>$attribute{hosts});
+                              />   
+                            </event>
+                            // TODO: Figure what this needs to make it work. :(
+                            <sun:property id="typeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Type}" helpText="$resource{i18njms.jms.TypeHelp}">
+                                <sun:dropDown id="Type"  selected="#{pageSession.valueMap['Type']}" labels={"LOCAL" "REMOTE" "EMBEDDED"} values={"LOCAL" "REMOTE" "EMBEDDED"}/>
+                            </sun:property>
+                            <sun:property id="timeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Timeout}" helpText="$resource{i18njms.jms.TimeoutHelp}">
+                                <sun:textField id="Timeout" styleClass="integer" columns="$int{10}" text="#{pageSession.valueMap['InitTimeoutInSeconds']}" />
+                                <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+                            </sun:property>
+                            <sun:property id="argumentsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Arguments}" helpText="$resource{i18njms.jms.ArgumentsHelp}">
+                                <sun:textField id="Arguments" columns="$int{35}" text="#{pageSession.valueMap['StartArgs']}"/>
+                            </sun:property>
+                            <sun:property id="reconnectProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Reconnect}" helpText="$resource{i18njms.jms.ReconnectHelp}">
+                                <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ReconnectEnabled']}" selectedValue="true"/>
+                            </sun:property>
+                            <sun:property id="intervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Interval}" helpText="$resource{i18njms.jms.IntervalHelp}">
+                                <sun:textField id="Interval" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['ReconnectIntervalInSeconds']}" />
+                                <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>
+                            </sun:property>
+                            <sun:property id="attemptsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Attempts}" helpText="$resource{i18njms.jms.AttemptsHelp}">
+                                <sun:textField id="Attempts" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['ReconnectAttempts']}" />
+                            </sun:property>
+                            <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Host}" helpText="$resource{i18njms.jms.HostHelp}">
+                                <sun:dropDown id="Host" labels="$pageSession{jmsHostList}" selected="#{pageSession.valueMap['DefaultJmsHost']}">
+                                    <!beforeCreate
+                                        getChildrenByType(parentObjectNameStr="#{pageSession.objectNameStr}" type="jms-host" result="#{pageSession.jmsHosts}");
+            
+                                        getListBoxOptions(
+                                            availableList="#{pageSession.jmsHosts}",
+                                            selectedCommaString="name",
+                                            availableListResult="#{pageSession.jmsHostList}");
+                                        //guiLog(message="***** jmsHostList = #{pageSession.jmsHostList}");
+                                    />
+                                </sun:dropDown>
+                            </sun:property>
+                            <sun:property id="behaviorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Behavior}" helpText="$resource{i18njms.jms.BehaviorHelp}">
+                                <sun:dropDown id="Behavior" selected="#{pageSession.valueMap['AddresslistBehavior']}" labels={"random" "priority"} />
+                            </sun:property>
+                            <sun:property id="iterationsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Iterations}" helpText="$resource{i18njms.jms.IterationsHelp}">
+                                <sun:textField id="Iterations" styleClass="intAllowMinusOne" columns="$int{10}" text="#{pageSession.valueMap['AddresslistIterations']}" />
+                            </sun:property>
+                            <sun:property id="schemeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Scheme}" helpText="$resource{i18njms.jms.SchemeHelp}">
+                                <sun:textField id="Scheme" columns="$int{25}" text="#{pageSession.valueMap['MqScheme']}"/>
+                            </sun:property>
+                            <sun:property id="serviceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jms.Service}" helpText="$resource{i18njms.jms.ServiceHelp}">
+                                <sun:textField id="Service" columns="$int{25}" text="#{pageSession.valueMap['MqService']}"/>
+                            </sun:property>
+                            "<br /><br />
+                        </sun:propertySheetSection>
+                    </sun:propertySheet>    
+#include "/common/shared/propertyTable.inc"
+                </sun:title>
+	<sun:hidden id="helpKey" value="$resource{helpjms.jmsService}" />
+            </sun:form>
+</define>
+</composition>

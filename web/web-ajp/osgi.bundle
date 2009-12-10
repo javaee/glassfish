@@ -1,0 +1,5 @@
+-exportcontents: \
+                org.apache.jk.server.*; \
+                org.apache.jk.core.*; \
+                org.apache.jk.*; password="GlassFish"; mandatory:=password; version=${project.osgi.version}
+

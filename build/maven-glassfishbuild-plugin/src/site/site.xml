@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<project name="maven-glassfish-plugin">
+  <!--skin>
+    <groupId>com.sun.enterprise.glassfish</groupId>
+    <artifactId>maven-skin</artifactId>
+    <version>1.0</version>
+  </skin-->
+
+  <body>
+    <links>
+      <item name="Glassfish" href="http://glassfishi.dev.java.net/"/>
+    </links>
+
+    <menu>
+      <item name="Introduction" href="index.html"/>
+      <item name="Goals" href="plugin-info.html"/>
+    </menu>
+
+    <menu ref="reports"/>
+  </body>
+</project>

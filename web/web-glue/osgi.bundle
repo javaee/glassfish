@@ -1,0 +1,33 @@
+-exportcontents: \
+                        com.sun.appserv.web.cache; \
+                        com.sun.appserv.web.cache.filter; \
+                        com.sun.appserv.web.cache.mapping; \
+                        com.sun.appserv.web.taglibs.cache; \
+                        com.sun.enterprise.security.web; \
+                        com.sun.enterprise.util.logging; \
+                        com.sun.enterprise.web; \
+                        com.sun.enterprise.web.accesslog; \
+                        com.sun.enterprise.web.connector.coyote; \
+                        com.sun.enterprise.web.connector.extension; \
+                        com.sun.enterprise.web.deploy; \
+                        com.sun.enterprise.web.jsp; \
+                        com.sun.enterprise.web.logger; \
+                        com.sun.enterprise.web.logging.pwc; \
+                        com.sun.enterprise.web.monitor; \
+                        com.sun.enterprise.web.monitor.impl; \
+                        com.sun.enterprise.web.pluggable; \
+                        com.sun.enterprise.web.pwc; \
+                        com.sun.enterprise.web.pwc.connector.coyote; \
+                        com.sun.enterprise.web.reconfig; \
+                        com.sun.enterprise.web.session; \
+                        com.sun.enterprise.web.stats; \
+                        com.sun.enterprise.web.util; \
+                        com.sun.web.server; \
+                        org.glassfish.web; \
+                        version=${project.osgi.version}
+
+Import-Package: \
+                        com.sun.logging.enterprise.system.container.web, \
+                        *
+
+Bundle-Activator: org.glassfish.web.DirContextURLStreamHandlerService

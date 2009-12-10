@@ -1,0 +1,11 @@
+-exportcontents: \
+                            org.glassfish.flashlight.client; \
+                            org.glassfish.flashlight.impl.client; \
+                            org.glassfish.flashlight.provider; version=${project.osgi.version}
+
+DynamicImport-Package: \
+                        org.objectweb.asm;password=GlassFish, \
+                        org.objectweb.asm.commons;password=GlassFish \
+
+
+Bundle-Activator: org.glassfish.flashlight.impl.core.FlashlightBundleActivator

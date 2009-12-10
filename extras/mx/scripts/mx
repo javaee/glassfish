@@ -1,0 +1,109 @@
+#!/bin/sh
+# set up references to paths, jars, we'll need
+# _JMXRI should point to the jar file for the JMX Reference Implementation version 1.2
+# _JMXREMOTE should point to the jar file for the JSR 160 jar file, including the TCP connector
+
+# return the full path for any input directory name--partial, relative or full
+# resulting value is returned in the variable 'FULLPATH_RESULT'
+fullpath()
+{
+	if [ $# != 1 ]
+	then
+		echo "fullpath: exactly one argument required"
+		exit 1
+	fi
+	
+	DIR_IN=$1
+
+	CWD=`pwd`
+		if [ -d $DIR_IN ]
+		then
+			cd $DIR_IN
+		    FULLPATH_RESULT=`pwd`
+	    else
+	    	echo "Can't cd to " $DIR_IN
+	    	exit 1
+	    fi
+	
+	cd $CWD
+}
+
+
+#determine directory of this script
+fullpath `dirname $0`
+SCRIPT_DIR=$FULLPATH_RESULT
+
+
+# our jar file should be in the same directory as the script
+MAIN_JAR=$SCRIPT_DIR/jars/mx.jar
+if [ ! -f $MAIN_JAR ]
+then
+echo $MAIN_JAR " not found "
+exit
+fi
+
+# the classpath separator--if not set, choose a default
+if [ -z "$CLASSPATH_SEPARATOR" ]
+then
+	# not defined--look for telltale sign of Windows--the ":\" in our path
+	echo $SCRIPT_DIR | grep -e ":\\\\" -e ":/"
+	if [ $? = 0 ]
+	then
+		CPS=";"
+	else
+		CPS=":"
+	fi
+else
+	CPS=$CLASSPATH_SEPARATOR
+fi
+
+# echo "Classpath separator = " $CPS
+
+# 'D' is simply an abbreviation to keep things compact.
+JARS_DIR=$SCRIPT_DIR/jars
+OPTIONAL_JARS=$D/mx-optional.jar
+USER_JARS=$JARS_DIR/amx-core.jar${CPS}$JARS_DIR/glassfish-api.jar${CPS}$JARS_DIR/management-api.jar${CPS}$JARS_DIR/jmxremote_optional.jar${CPS}$JARS_DIR/javax.management.j2ee.jar
+
+#
+# Support jars are usually already incorporated, but can be separated out.
+#
+JMXREMOTE_OPTIONAL=$JARS_DIR/jmxremote_optional.jar
+JAVAX77_JAR=$JARS_DIR/javax77.jar
+SUPPORT_JARS=${JMXREMOTE_OPTIONAL}${CPS}${JAVAX77_JAR}
+
+_CLASSPATH=$MAIN_JAR${CPS}${OPTIONAL_JARS}${CPS}${USER_JARS}${CPS}${SUPPORT_JARS}
+
+#echo CLASSPATH=$_CLASSPATH
+#echo SCRIPT_DIR=$SCRIPT_DIR
+#echo JARS_DIR=$JARS_DIR
+
+# main routine to invoke
+_MAIN=com.sun.cli.jcmd.JCmdMain
+#_CLASSLOADER=com.sun.cli.jcmd.framework.FrameworkClassLoader
+
+if [ -z "$JAVA_HOME" ]
+then
+	echo "JAVA_HOME has not been set, using plain 'ol 'java'"
+	_JAVA=java
+else
+	_JAVA=$JAVA_HOME/bin/java
+fi
+
+#DEFINES="-Djava.system.class.loader=$_CLASSLOADER"
+
+
+_DEBUG=false
+
+#
+# Start it up...
+#
+#$_JAVA -version
+$_JAVA -ea -cp $_CLASSPATH ${DEFINES} $_MAIN boot --debug=$_DEBUG --name=mx -c com.sun.cli.jmxcmd.JMXCmdCmdMgr "${@}"
+
+
+exit $?
+
+
+
+
+

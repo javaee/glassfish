@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <servlet>
+      <servlet-name>BVIntegrationTestServlet</servlet-name>
+      <servlet-class>integration_test_servlet.BVIntegrationTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BVIntegrationTestServlet</servlet-name>
+        <url-pattern>/test/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>ValidatorFactoryInjectionTestServlet</servlet-name>
+      <servlet-class>integration_test_servlet.ValidatorFactoryInjectionTestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ValidatorFactoryInjectionTestServlet</servlet-name>
+        <url-pattern>/testInject/*</url-pattern>
+    </servlet-mapping>
+
+<!--
+  &lt;resource-env-ref&gt;
+    &lt;resource-env-ref-name&gt;java:comp/Validator&lt;/resource-env-ref-name&gt;
+    &lt;resource-env-ref-type&gt;javax.validation.Validator&lt;/resource-env-ref-type&gt;
+  &lt;/resource-env-ref&gt;
+  
+  &lt;resource-env-ref&gt;
+    &lt;resource-env-ref-name&gt;java:comp/ValidatorFactory&lt;/resource-env-ref-name&gt;
+    &lt;resource-env-ref-type&gt;javax.validation.ValidatorFactory&lt;/resource-env-ref-type&gt;
+  &lt;/resource-env-ref&gt;
+
+-->
+
+    
+</web-app>

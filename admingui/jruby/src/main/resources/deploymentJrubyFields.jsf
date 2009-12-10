@@ -1,0 +1,128 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!-- deploymentJrubyFields.jsf -->
+
+<sun:property id="nameProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" >
+    <sun:textField id="appName" columns="$int{40}" text="#{pageSession.jruby['name']}" styleClass="required" required="#{true}"
+        onChange="javascript: setAppName('#{appNameId}', this.value, window)">
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{appNameId});
+        />
+    </sun:textField>
+</sun:property>
+
+<sun:property id="cxp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.webApp.ContextRoot}" helpText="$resource{i18n.webApp.contextRootHelp}" >
+    <sun:textField id="ctx" columns="$int{40}" text="#{pageSession.jruby['contextroot']}" >
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{contextRootId});
+        />
+    </sun:textField>
+</sun:property>
+
+<sun:property id="enableProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.status}"  helpText="$resource{i18n.deploy.statusHelp}">
+	<sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.jruby['enabled']}" selectedValue="true" >
+        <!beforeCreate
+            mapPut(map="#{pageSession.jruby}", key="enabled", value="true" );
+        />
+    </sun:checkbox>
+</sun:property>
+
+
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.jruby['force']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="jhome" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.jrubyHome}" helpText="$resource{i18n_jruby.jrubyHomeHelp}">
+    <sun:textField id="jhome" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.home']}" />
+</sun:property>
+
+<sun:property id="jruntime" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtime}" helpText="$resource{i18n_jruby.runtimeHelp}">
+    <sun:textField id="jruntime" styleClass="integer" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.runtime']}" />
+</sun:property>
+
+<sun:property id="jruntime-mim" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtimeMin}" helpText="$resource{i18n_jruby.runtimeMinHelp}">
+    <sun:textField id="jruntime-mim" styleClass="integer" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.runtime.min']}" />
+</sun:property>
+
+<sun:property id="jruntime-max" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.runtimeMax}" helpText="$resource{i18n_jruby.runtimeMaxHelp}">
+    <sun:textField id="jruntime-max" styleClass="integer" columns="$int{40}" text="#{pageSession.jruby['PROPERTY-jruby.runtime.max']}" />
+</sun:property>
+
+<sun:property id="applicationType"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.appType}" helpText="$resource{i18n_jruby.appTypeHelp}">
+    <sun:dropDown id="applicationType" selected="#{pageSession.jruby['PROPERTY-jruby.applicationType']}"
+            labels={"$resource{i18n_jruby.appType.auto-detect}" , "rails", "merb", "sinatra"} values={"", "rails", "merb", "sinatra"} >
+        <!beforeCreate
+            mapPut(map="#{pageSession.jruby}", key="PROPERTY-jruby.applicationType", value="rails" );
+        />
+    </sun:dropDown>
+</sun:property>
+
+<sun:property id="rackEnv"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.rackEnv}" helpText="$resource{i18n_jruby.rackEnvHelp}">
+    <sun:dropDown id="rackEnv" selected="#{pageSession.jruby['PROPERTY-jruby.rackEnv']}" labels={"development", "production", "test"} />
+</sun:property>
+
+
+<sun:property id="jruby-mtSafe" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_jruby.mtSafe}" helpText="$resource{i18n_jruby.mtSafeHelp}">
+	<sun:dropDown id="applicationType" selected="#{pageSession.jruby['PROPERTY-jruby.MTSafe']}"
+            labels={"true ", "false  ", "default  "} values={"true", "false", "default"} >
+        <!beforeCreate
+            mapPut(map="#{pageSession.jruby}", key="PROPERTY-jruby.MTSafe", value="default" );
+        />
+    </sun:dropDown>
+</sun:property>
+
+
+<sun:property id="vsProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
+    <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
+        labels="$pageSession{availableVS}"
+        selected="#{pageSession.jruby['virtualservers']}" >
+        <!beforeCreate
+            getVsForDeployment(result="#{pageSession.vsList}");
+            getListBoxOptions(
+                availableList="#{pageSession.vsList}",
+                selectedCommaString="",
+                availableListResult="#{pageSession.availableVS}",
+                selectedOptions="#{pageSession.jruby['virtualservers']}"
+                addEmptyFirstChoice="true");
+        />
+    </sun:listbox>
+</sun:property>
+
+
+
+<sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18n.deploy.descHelp}" >
+	<sun:textField id="description" columns="$int{40}" text="#{pageSession.jruby['description']}" />
+</sun:property>

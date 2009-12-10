@@ -1,0 +1,4 @@
+-exportcontents: \
+                        com.sun.enterprise.admin.servermgmt; \
+                        com.sun.enterprise.admin.servermgmt.pe; \
+                        com.sun.enterprise.admin.servermgmt.util; version=${project.osgi.version}

@@ -1,0 +1,104 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!--
+        It cant depend on parent pom. Certain extensions/plugin in the parent pom (probably
+        maven-buildglassfish-extension) brings in whole lot of v3 dependencies and during boot process
+        hk2 and other subsystems choke. So for now this test is not inheriting from the parent-pom till someone
+        investigates this issue further.                                                                                maven-buildglassfish-extension
+    -->
+    <!--<parent>-->
+    <!--<groupId>org.glassfish</groupId>-->
+    <!--<artifactId>glassfish-parent</artifactId>-->
+    <!--<version>3.0-SNAPSHOT</version>-->
+    <!--</parent>-->
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.tests</groupId>
+    <artifactId>web-all-embedded-test</artifactId>
+    <version>3.0-SNAPSHOT</version>
+    <name>Test for glassfish-embedded-web</name>
+
+    <properties>
+        <project.version>3.0-SNAPSHOT</project.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>glassfish-embedded-web</artifactId>
+            <version>${project.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.build.directory}/glassfish-embedded-web.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.6</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>buildDir</name>
+                            <value>${project.build.outputDirectory}</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.glassfish.extras</groupId>
+                                    <artifactId>glassfish-embedded-web</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <licenses>
+        <license>
+            <distribution>repo</distribution>
+            <name>CDDL and GPLv2 w/ classpath execption dual license</name>
+            <url>https://glassfish.dev.java.net/public/CDDL+GPL.html</url>
+        </license>
+    </licenses>
+
+</project>

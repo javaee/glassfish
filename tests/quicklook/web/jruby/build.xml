@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="jruby-test" default="all" basedir=".">
+
+<property file="build.properties"/>
+<property file="${ws.root}/build.properties"/>
+<property name="JRUBY_HOME" value="${glassfish.home}/jruby"/>
+<property name="dist.dir" value="${ws.root}/dist/${testsuite.name}"/>
+ 
+<description>Builds, tests, and runs the JRuby Applications</description>
+    <import file="${ws.root}/gfproject/build-impl.xml"/>
+    <import file="${ws.root}/gfproject/v3-targets.xml"/>
+
+<target name="all" depends="clean-jruby,start-server,setup-jruby,create-app,build,deploy,runtest,undeploy,stop-server"/>
+
+<target name="clean-jruby">
+   <delete dir="${ws.root}/classes"/>
+   <delete dir="${appName}"/>
+</target>
+
+<target name="build-deploy" depends="setup-jruby,create-app,build,deploy" />
+
+<target name="setJRubyCon">
+   <available file="${JRUBY_HOME}" type="dir" property="local.jruby.present"/>
+</target>
+
+<target name="setup-jruby" depends="setJRubyCon" unless="local.jruby.present">
+   <unzip src="${jruby_path}/${jruby-all.version}/jruby-all-${jruby-all.version}-${jruby-all.classifier}.zip" dest="${glassfish.home}"/>
+   <chmod dir="${JRUBY_HOME}/bin" perm="ugo+rx" 
+       includes="**/*"/>
+</target>
+
+<target name="create-app">
+   <antcall target="create-app-common"/>
+</target>
+
+<target name="build" depends="compile-tests">
+   <antcall target="compile-tests"/>
+</target>
+
+<target name="deploy">
+   <record name="deploy.output" action="start"/>
+   <antcall target="deploy-jruby-app"/>
+   <record name="deploy.output" action="stop"/>
+</target>
+
+<target  name="runtest">
+   <sleep seconds="10"/>
+   <antcall target="runtest-impl">
+       <param name="testng.test.name" value="${testng.test.name}"/>
+       <param name="testng.testclient" value="JRubyTestNG"/>
+   </antcall>
+</target>
+
+<target name="undeploy">
+   <antcall target="undeploy-v3-impl"/>
+</target>
+
+<target name="create-app-common" depends="setOSConditions">
+    <echo message="JRUBY_HOME: ${JRUBY_HOME}"/>
+    <echo message="${JRUBY_HOME}/bin/jruby -S rails -d mysql ${appName}"/>
+    <antcall target="create-app-common-unix"/>
+    <antcall target="create-app-common-windows"/>
+    <antcall target="configFW"/>
+</target>
+
+<target name="create-app-common-unix" if="isUnix">
+    <exec executable="${JRUBY_HOME}/bin/jruby" failonerror="true">
+        <arg line="-S rails -d mysql ${appName}"/>
+    </exec>
+    <exec executable="${JRUBY_HOME}/bin/jruby" failonerror="true">
+         <arg line="${appName}/script/generate controller ${controller} ${view}"/>
+    </exec>
+</target>
+
+<target name="create-app-common-windows" if="isWindows">
+    <exec executable="${JRUBY_HOME}/bin/jruby.bat" failonerror="true">
+        <arg line="-S rails -d mysql ${appName}"/>
+    </exec>
+    <exec executable="${JRUBY_HOME}/bin/jruby.bat" failonerror="true">
+        <arg line="${appName}/script/generate controller ${controller} ${view}"/>
+    </exec>
+</target>
+
+<target name="configFW">
+    <replace file="${appName}/config/environment.rb" token="# config.frameworks" value="config.frameworks"/>
+    <replace file="${appName}/config/environment.rb" token="RAILS_GEM_VERSION" value="# RAILS_GEM_VERSION"/>
+</target>
+    
+</project>

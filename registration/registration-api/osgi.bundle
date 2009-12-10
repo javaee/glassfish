@@ -1,0 +1,2 @@
+-exportcontents: com.sun.enterprise.registration; version=${project.osgi.version}
+Bundle-SymbolicName: ${project.groupId}.${project.artifactId}

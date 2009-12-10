@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="${artifactId}">
+    <integration-point  id="${artifactId}_integration"
+                        type="org.glassfish.admingui:navNode" 
+                        priority="100"
+                        parentId="tree"
+                        content="treeNode.jsf" />
+</console-config> 

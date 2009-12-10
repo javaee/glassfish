@@ -1,0 +1,3 @@
+-exportcontents: \
+                        org.glassfish.appclient.client.acc.config; \
+                        org.glassfish.appclient.client.acc.config.util; version=${project.osgi.version}

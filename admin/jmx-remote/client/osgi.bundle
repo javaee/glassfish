@@ -1,0 +1,8 @@
+-exportcontents: \
+                        com.sun.enterprise.admin.jmx.remote; \
+                        com.sun.enterprise.admin.jmx.remote.comm; \
+                        com.sun.enterprise.admin.jmx.remote.http; \
+                        com.sun.enterprise.admin.jmx.remote.https; \
+                        com.sun.enterprise.admin.jmx.remote.internal; \
+                        com.sun.enterprise.admin.jmx.remote.protocol.s1ashttp; \
+                        com.sun.enterprise.admin.jmx.remote.protocol.s1ashttps; version=${project.osgi.version}

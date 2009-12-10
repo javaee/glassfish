@@ -1,0 +1,5 @@
+# We only export a selected set of classes
+-exportcontents: com.sun.enterprise.tools.verifier; \
+                 include="Verifier, VerifierFrameworkContext, ResultManager"; \
+                 version=${project.osgi.version}
+Import-Package: !javax.help, *

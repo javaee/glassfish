@@ -1,0 +1,195 @@
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+# 
+# Use is subject to License Terms
+#
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PRODUCT_NAME=GlassFish v3 \ubbf8\ub9ac \ubcf4\uae30
+
+app_title=GlassFish v3 \ubbf8\ub9ac \ubcf4\uae30
+
+# Text for Buttons
+btnCancel_text=\ucde8\uc18c
+btnExit_text=\uc885\ub8cc
+btnHelp_text=\ub3c4\uc6c0\ub9d0
+btnBack_text=\ub4a4\ub85c
+btnNext_text=\ub2e4\uc74c
+
+# stuff that's used by templates regardless of viewmode
+mainpanel_bgcolor=e8e9ed
+navigpanel_image=/templates/LeftPanel.jpg
+logopanel_image=/templates/LogoPanel.jpg
+top_left_image=/templates/glassfish_logo.png
+bottom_left_image=/templates/community-logo.png
+icon_image=/templates/glassfishserver.gif
+
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+leftpanel_font=SanSerif-BOLD-13
+
+# Dynamic panel
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+dynamic_content_font=SanSerif-PLAIN-13
+dynamic_component_background=WHITE
+dynamic_component_foreground=666666
+dynamic_component_border_color=BLACK
+
+# Font for titles
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title1_font=SanSerif-BOLD-18
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+title2_font=SanSerif-BOLD-20
+
+# Text color for titles
+title1_color=587993
+title2_color=BLACK
+
+# Text for titles
+title1_text=\ud658\uc601\ud569\ub2c8\ub2e4!
+title2_text=GlassFish v3
+# Colors for content panel
+contentpanel_bordercolor=587993
+contentpanel_bgcolor=e8e9ed
+
+btnpanel_bgcolor=e8e9ed
+
+# Font for Buttons
+# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+button_font=SanSerif-PLAIN-11
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;${PRODUCT_NAME} \uc124\uce58\ub97c \uc2dc\uc791\ud569\ub2c8\ub2e4.&lt;BR&gt;&lt;BR&gt;\uc804\uccb4 ${PRODUCT_NAME}\uc744(\ub97c) \uc124\uce58\ud558\ub824\uba74 \ub2e4\uc74c\uc744 \ub204\ub985\ub2c8\ub2e4. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\uc774 \uc81c\ud488\uc744 \uc124\uce58\ud558\uae30 \uc804\uc5d0 \uc774 \uc81c\ud488\uc758 \uc0ac\uc6a9 \ud5c8\uac00\uc5d0 \uc801\uc6a9\ub418\ub294 \uc0ac\uc6a9\uad8c\uc744 \uc77d\uace0 \uc774\uc5d0 \ub3d9\uc758\ud574\uc57c \ud569\ub2c8\ub2e4.&lt;/BODY&gt;&lt;/HTML&gt;
+
+License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\uc55e\uc5d0 \ub098\uc628 \uc18c\ud504\ud2b8\uc6e8\uc5b4 \uc0ac\uc6a9\uad8c \uacc4\uc57d\uc758 \ubaa8\ub4e0 \uc870\ud56d\uc744 \uc77d\uace0&lt;BR&gt;\uc774\uc5d0 \ub3d9\uc758\ud558\uc2ed\ub2c8\uae4c? &lt;B&gt;\ucde8\uc18c&lt;/B&gt;\ub97c \ub204\ub974\uba74 \uc124\uce58 \ud504\ub85c\uadf8\ub7a8\uc740&lt;BR&gt;\uc81c\ud488 \ud30c\uc77c\uc744 \uc124\uce58\ud558\uc9c0 \uc54a\uace0 \uc885\ub8cc\ub429\ub2c8\ub2e4.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+LICENSE_CHECKBOX_TOOLTIP=\uc0ac\uc6a9\uad8c\uc5d0 \ub3d9\uc758\ud558\uac70\ub098 \uac70\ubd80\ud558\ub824\uba74 \ub204\ub985\ub2c8\ub2e4.
+
+LICENSE_CHECKBOX_TEXT=\ub3d9\uc758\ud568
+
+LICENSE_ACCEPT_TOOLTIP=\uc0ac\uc6a9\uad8c\uc5d0 \ub3d9\uc758\ud560 \uacbd\uc6b0 \uc774 \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.
+
+LICENSE_ACCEPT_TEXT=\uc0ac\uc6a9\uad8c \uacc4\uc57d \uc870\ud56d\uc5d0 \ub3d9\uc758\ud569\ub2c8\ub2e4.
+
+LICENSE_DECLINE_TOOLTIP=\uc0ac\uc6a9\uad8c\uc5d0 \ub3d9\uc758\ud558\uc9c0 \uc54a\uc744 \uacbd\uc6b0 \uc774 \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.
+
+LICENSE_DECLINE_TEXT=\uc0ac\uc6a9\uad8c \uacc4\uc57d \uc870\ud56d\uc5d0 \ub3d9\uc758\ud558\uc9c0 \uc54a\uc2b5\ub2c8\ub2e4.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#DEFAULT_INSTALL_HOME=C:\Program Files\Sun
+INSTALL_HOME_LABEL=\uc124\uce58 \ub514\ub809\ud1a0\ub9ac
+INSTALL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\ub300\uc0c1 \uc2dc\uc2a4\ud15c\uc5d0\uc11c ${PRODUCT_NAME}\uc774(\uac00) \uc124\uce58\ub420 \ub514\ub809\ud1a0\ub9ac\ub97c \uc9c0\uc815\ud569\ub2c8\ub2e4.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+SPECIFY_HOME_MSG=\uc124\uce58 \ub514\ub809\ud1a0\ub9ac\ub97c \uc9c0\uc815\ud569\ub2c8\ub2e4.
+INSTALL_BOTTOM_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\uc9c0\uc815\ud55c \uc124\uce58 \ub514\ub809\ud1a0\ub9ac\uac00 \uc5c6\uc73c\uba74 \uc124\uce58 \ud504\ub85c\uadf8\ub7a8\uc740 \ub514\ub809\ud1a0\ub9ac\ub97c \uc790\ub3d9\uc73c\ub85c \ub9cc\ub4ed\ub2c8\ub2e4.&lt;/BODY&gt;&lt;/HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~C O N F I G   M O D E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  L10N SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+L10N_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\ub2e4\uc74c \ubaa9\ub85d\uc5d0\uc11c \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.&lt;/BODY&gt;&lt;/HTML&gt;
+L10N_CHOICE_TEXT=\uc120\ud0dd\ud55c \uc81c\ud488\uc5d0 \ub300\ud55c \uc5b8\uc5b4\ub97c \uc124\uce58\ud569\ub2c8\ub2e4.
+INSTALL_L10N_TOOLTIP=\uc120\ud0dd\ud55c \uc81c\ud488\uc5d0 \ub300\ud55c \uc5b8\uc5b4\ub97c \uc124\uce58\ud558\ub824\uba74 \uc774 \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;\ub2e4\uc74c \ubaa9\ub85d\uc5d0\uc11c \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.&lt;/BODY&gt;&lt;/HTML&gt;
+
+
+JDK_HOME=JDK \ud648
+SELECTED_JDK_TEXT=&lt;HTML&gt;&lt;BODY&gt;\uc120\ud0dd\ud55c JDK &lt;/BODY&gt;&lt;/HTML&gt;
+
+JDK_FROM_MEDIA_CHOICE_TEXT=\uae30\ubcf8 \ubc84\uc804\uc758 Java(TM) SDK\ub97c \uc124\uce58 \ubc0f \uc0ac\uc6a9\ud569\ub2c8\ub2e4.
+JDK_FROM_LIST_CHOICE_TEXT=\ubaa9\ub85d\uc5d0\uc11c Java(TM) SDK\ub97c \uc120\ud0dd\ud569\ub2c8\ub2e4.
+JDK_TYPED_IN_CHOICE_TEXT=Java(TM) SDK\uc758 \uc704\uce58\ub97c \uc785\ub825\ud569\ub2c8\ub2e4.
+
+JDK_LIST_TOOLTIP=\ub4dc\ub86d\ub2e4\uc6b4 \ubaa9\ub85d\uc5d0\uc11c Java(TM) SDK\ub97c \uc120\ud0dd\ud569\ub2c8\ub2e4.
+JDK_TYPE_IN_TOOLTIP=\uc774 \ud14d\uc2a4\ud2b8 \uc0c1\uc790\uc5d0 Java(TM) SDK\uc758 \uc704\uce58\ub97c \uc785\ub825\ud569\ub2c8\ub2e4.
+
+AVAILABLE_JDK=\uc0ac\uc6a9 \uac00\ub2a5\ud55c Java(TM) SDK
+ALTERNATE_JDK=\ub300\uccb4 Java(TM) SDK \uc704\uce58
+
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\uc5f0\uacb0\uc774 \uac00\ub2a5\ud55c \uacbd\uc6b0 \uc124\uce58 \ud504\ub85c\uadf8\ub7a8\uc740 \uc774 \uc124\uce58\uc640 \uad00\ub828\ub41c \uc5c5\ub370\uc774\ud2b8 \ub3c4\uad6c\ub97c \ub2e4\uc6b4\ub85c\ub4dc\ud55c \ud6c4 \uad6c\uc131\ud558\ub824\uace0 \ud569\ub2c8\ub2e4.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\uc5c5\ub370\uc774\ud2b8 \ub3c4\uad6c\ub294 \uc0ac\uc6a9 \uac00\ub2a5\ud55c \uc5c5\ub370\uc774\ud2b8\ub97c \uc8fc\uae30\uc801\uc73c\ub85c \ud655\uc778\ud558\uace0 \uc77c\ubd80 \uc2dc\uc2a4\ud15c \ub370\uc774\ud130\ub97c \uc218\uc9d1\ud569\ub2c8\ub2e4. \uc218\uc9d1\ub41c \ub370\uc774\ud130\uc5d0 \ub300\ud55c \uc790\uc138\ud55c \ub0b4\uc6a9\uc740 &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt; \ud398\uc774\uc9c0(http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3)\ub97c \ucc38\uc870\ud558\uc2ed\uc2dc\uc624.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY;font face='Sans-Serif'&gt;\uc11c\ubc84\uc758 \uad00\ub9ac \uc124\uc815\uc744 \uad6c\uc131\ud569\ub2c8\ub2e4. \uc11c\ubc84\uc758 \uc0ac\uc6a9\uc790 \uc774\ub984\uacfc \ube44\ubc00\ubc88\ud638\ub97c \uc785\ub825\ud558\uc2ed\uc2dc\uc624. \uc778\uc99d\ub418\uc9c0 \uc54a\uc740 \ub85c\uadf8\uc778\uc5d0 \ub300\ud574 \uc11c\ubc84\ub97c \uad6c\uc131\ud558\ub824\ub294 \uacbd\uc6b0\uc5d0\ub294 \ube44\ubc00\ubc88\ud638 \ud544\ub4dc\ub97c \ube44\uc6cc \ub458 \uc218 \uc788\uc2b5\ub2c8\ub2e4.&lt;/font&gt;&lt;/p&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+#ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
+Configure \uc11c\ubc84\uc758 \uad00\ub9ac \uc124\uc815\uc785\ub2c8\ub2e4. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+
+ANONYMOUS=\uc775\uba85 \uc0ac\uc6a9\uc790\ub85c \uad6c\uc131
+NON_ANONYMOUS=\uc0ac\uc6a9\uc790 \uc774\ub984 \ubc0f \ube44\ubc00\ubc88\ud638 \uc785\ub825 
+ADMIN_PORT_TOOL_TIP=\uad00\ub9ac \ud3ec\ud2b8 \uc785\ub825
+HTTP_PORT_TOOL_TIP=HTTP Listener \ud3ec\ud2b8 \uc785\ub825
+ADMIN_USER_TOOL_TIP=\uad00\ub9ac\uc790 \uc774\ub984 \uc785\ub825
+ADMIN_PASSWORD_TOOL_TIP=\uad00\ub9ac\uc790 \ube44\ubc00\ubc88\ud638 \uc785\ub825
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PRODUCT SELECTION PAGE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADD_BUTTON_LABEL=\ucd94\uac00 >
+ADD_ALL_BUTTON_LABEL=\ubaa8\ub450 \ucd94\uac00 >>
+REMOVE_BUTTON_LABEL=< \uc81c\uac70
+REMOVE_ALL_BUTTON_LABEL=<< \ubaa8\ub450 \uc81c\uac70
+PSP_INTRO_TEXT=\uc124\uce58\ud560 \uc81c\ud488\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~PAGE FLOW~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CONFIGURE_SELECT_MSG=\uc120\ud0dd\ud55c \uc18c\ud504\ud2b8\uc6e8\uc5b4 \uad6c\uc131 \uc694\uc18c\ub97c \uae30\ubcf8\uac12 \ub610\ub294 \uc0ac\uc6a9\uc790 \uc815\uc758 \uac12\uc73c\ub85c \uad6c\uc131\ud569\ub2c8\ub2e4.
+EXPRESS=\ube60\ub978 \uc124\uce58
+CUSTOM=\uc0ac\uc6a9\uc790 \uc815\uc758 \uc124\uce58
+SELECT_DESIRED_MODE_TEXT=&lt;HTML&gt;&lt;BODY&gt;
+            Select \uad6c\uc131 \ubaa8\ub4dc\uc785\ub2c8\ub2e4.
+            &lt;/BODY&gt;&lt;/HTML&gt;
+CUSTOM_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;\uc0ac\uc6a9\uc790 \uc815\uc758 \uc124\uce58&lt;/B&gt; \ubaa8\ub4dc\ub294
+ the  \uc18c\ud504\ud2b8\uc6e8\uc5b4\ub97c \uc124\uce58\ud55c \ud6c4 \uc774\uc5b4\uc9c0\ub294 \uad6c\uc131 \ud398\uc774\uc9c0\uc5d0\uc11c
+that \uc0ac\uc6a9\uc790\uac00 \uc9c0\uc815\ud55c \uac12\uc73c\ub85c \uad6c\uc131\ud569\ub2c8\ub2e4.&lt;BR&gt;
+          &lt;/BODY&gt;&lt;/HTML&gt;
+EXPRESS_CDATA_TXT=&lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;\ube60\ub978 \uc124\uce58&lt;/B&gt; \ubaa8\ub4dc\ub294 \uc18c\ud504\ud2b8\uc6e8\uc5b4\ub97c \uc124\uce58\ud55c \ud6c4 \uae30\ubcf8\uac12\uc73c\ub85c \uad6c\uc131\ud569\ub2c8\ub2e4.
+CONFIGURE_SELECTED_COMPONENTS_MSG=\uc120\ud0dd\ud55c \uc18c\ud504\ud2b8\uc6e8\uc5b4 \uad6c\uc131 \uc694\uc18c\ub97c \uae30\ubcf8\uac12 \ub610\ub294 \uc0ac\uc6a9\uc790 \uc815\uc758 \uac12\uc73c\ub85c \uad6c\uc131\ud569\ub2c8\ub2e4.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ADMIN_USER_TEXT=\uc0ac\uc6a9\uc790 \uc774\ub984
+ADMIN_PASSWORD_TEXT=\ube44\ubc00\ubc88\ud638
+ADMIN_PORT_TEXT=\uad00\ub9ac \ud3ec\ud2b8
+HTTP_PORT_TEXT=Http \ud3ec\ud2b8
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~U P D A T E T O O L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSTALL_UPDATE_TOOL_TEXT=\uc5c5\ub370\uc774\ud2b8 \ub3c4\uad6c \uc124\uce58
+ENABLE_UPDATE_TOOL_TEXT=\uc5c5\ub370\uc774\ud2b8 \ub3c4\uad6c \ud65c\uc131\ud654
+PROXY_HOST_TEXT=\ud504\ub85d\uc2dc \ud638\uc2a4\ud2b8
+PROXY_PORT_TEXT=\ud504\ub85d\uc2dc \ud3ec\ud2b8
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+EMAIL=\uc804\uc790 \uba54\uc77c \uc8fc\uc18c
+PASSWORD=\ube44\ubc00\ubc88\ud638
+REENTER_PASSWORD=\ube44\ubc00\ubc88\ud638 \uc7ac\uc785\ub825
+FIRSTNAME=\uc774\ub984
+LASTNAME=\uc131
+COUNTRY=\uad6d\uac00
+COMPANYNAME=\ud68c\uc0ac \uc774\ub984
+ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}Sun \uc628\ub77c\uc778 \uacc4\uc815\uc744 \ub9cc\ub4e4\ub824\uba74 \ub2e4\uc74c \uc815\ubcf4\ub97c \uc785\ub825\ud558\uc2ed\uc2dc\uc624. \ubaa8\ub4e0 \ud544\ub4dc\ub97c \ubc18\ub4dc\uc2dc \uc785\ub825\ud574\uc57c \ud569\ub2c8\ub2e4.${BODY_END}
+ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}&lt;a href=http://www.sun.com/privacy/&gt;Sun\uc758 \uac1c\uc778\uc815\ubcf4 \ubcf4\ud638\uc815\ucc45&lt;/a&gt;.${BODY_END}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+REGISTRATION_OPTIONS_HEADER=${BODY_START}\ub4f1\ub85d\ud558\uba74 \ub2e4\uc74c\uc5d0 \uac04\ud3b8\ud558\uac8c \uc561\uc138\uc2a4\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.&lt;UL&gt;&lt;LI&gt;\ud328\uce58 \uc815\ubcf4\uc640 \ubc84\uadf8 \uc5c5\ub370\uc774\ud2b8&lt;/LI&gt;&lt;LI&gt;\uc2a4\ud06c\ub9b0 \uc0f7 \ubc0f \uc790\uc2b5\uc11c&lt;/LI&gt;&lt;LI&gt;\uc624\ud37c\ub9c1 \uc9c0\uc6d0 \ubc0f \uad50\uc721&lt;/LI&gt;&lt;/UL&gt;${BODY_END}
+CREATE_NEWACCT=Sun \uc628\ub77c\uc778 \uacc4\uc815\uc774 \uc5c6\uc2b5\ub2c8\ub2e4. \ub4f1\ub85d\ud574 \uc8fc\uc2ed\uc2dc\uc624.
+USE_EXISTINGACCT=Sun \uc628\ub77c\uc778 \uacc4\uc815\uc774 \uc774\ubbf8 \uc788\uc2b5\ub2c8\ub2e4.
+USERNAME=\uc0ac\uc6a9\uc790 \uc774\ub984
+USERPASSWORD=\uc0ac\uc6a9\uc790 \ube44\ubc00\ubc88\ud638
+SKIP_REGISTRATION=\ub4f1\ub85d\uc744 \uac74\ub108\ub701\ub2c8\ub2e4.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~R E A D Y   T O   I N S T A L L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME}: \uc18c\ud504\ud2b8\uc6e8\uc5b4 \uc5c5\uadf8\ub808\uc774\ub4dc&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPGRADE_ALLOW_TEXT=\uc5c5\uadf8\ub808\uc774\ub4dc
+UPGRADE_DECLINE_TEXT=\uc5c5\uadf8\ub808\uc774\ub4dc\ud558\uc9c0 \uc54a\uc74c
+UPGRADE_ALLOW_TOOLTIP=\uc18c\ud504\ud2b8\uc6e8\uc5b4\ub97c \uc5c5\uadf8\ub808\uc774\ub4dc\ud558\ub824\uba74 \uc774 \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.
+UPGRADE_DECLINE_TOOLTIP=\uc18c\ud504\ud2b8\uc6e8\uc5b4\ub97c \uc5c5\uadf8\ub808\uc774\ub4dc\ud558\uc9c0 \uc54a\uc73c\ub824\uba74 \uc774 \uc635\uc158\uc744 \uc120\ud0dd\ud569\ub2c8\ub2e4.
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# L10n: only translate the "Please wait" string.  leave the rest unchanged.
+PROGRESS_WAIT=\uc7a0\uc2dc \uae30\ub2e4\ub824 \uc8fc\uc2ed\uc2dc\uc624...
+              
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+REGISTRATION_PROGRESS=\ub4f1\ub85d \uc9c4\ud589\ub960

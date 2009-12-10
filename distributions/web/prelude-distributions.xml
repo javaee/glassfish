@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="Web Distribution (ips) Creation" default="create-image" basedir=".">
+<property name="source.distribution.name" value="GlassFish v3 Web Profile"/>
+<target name="create-image" depends="create-installer-image, create-glassfish-image">
+    <mkdir dir="${installer.image.dir}"/>
+    <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
+    <mkdir dir="${glassfish.image.dir}"/>
+</target>
+
+<target name="create-installer-image" description="Creating IPS Image without Domains for Installer">
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${installer.image.dir}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="install-l10n-packages">
+        <param name="image.dir" value="${installer.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+</target>
+
+<target name="create-glassfish-image" description="Creating IPS Image with Domains">
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${glassfish.image.dir}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="create-common-image">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+    <antcall target="install-l10n-packages">
+        <param name="image.dir" value="${glassfish.image.dir.l10n}/${install.dir.name}"/>
+    </antcall>
+</target>
+
+<target name="create-common-image" description="Creating IPS Image">
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-gui"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="javadb-common"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="javadb-core"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="javadb-client"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-web-incorporation"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-web-profile"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+
+        <!-- stage servicetag registry file and set source value -->
+
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+   
+
+        <unzip src="${servicetag-registry.zip}"
+           dest="${image.dir}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
+		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+
+</target>
+
+<target name="install-l10n-packages" description="Installing l10n packages">
+
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-gui-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+     
+</target>
+</project>

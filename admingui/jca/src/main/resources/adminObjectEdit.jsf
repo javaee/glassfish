@@ -1,0 +1,112 @@
+
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ 
+ Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ 
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+ 
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+ 
+ Contributor(s):
+ 
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!-- jca/jcaResourceEdit.jsf -->
+<!initPage
+    setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
+    setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.adminObjectResource.editPageTitle}" >
+<!define name="content">
+<event>
+    <!beforeCreate
+    setSessionAttribute(key="resEditTabs" value="general");
+    getRequestValue(key="reload" value="#{reload}");
+    if(#{reload}){
+         createMap(result="#{pageSession.tmpMap}")
+         getRequestValue(key="name" value="#{pageSession.Name}");
+         getRequestValue(key="resAdapter" value="#{resAdapter}");
+         getRequestValue(key="resType" value="#{resType}");
+         getRequestValue(key="className" value="#{className}");
+         mapPut(map="#{pageSession.tmpMap}" key="Name" value="#{pageSession.Name}");
+         mapPut(map="#{pageSession.tmpMap}" key="ResAdapter" value="#{resAdapter}");
+         mapPut(map="#{pageSession.tmpMap}" key="ResType" value="#{resType}");
+         mapPut(map="#{pageSession.tmpMap}" key="ClassName" value="#{className}");
+    }
+    if(!#{reload}){
+        getRequestValue(key="name" value="#{pageSession.Name}");
+    }
+    urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
+    setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jca/adminObjectEdit.jsf?name=#{pageSession.encodedName}");
+    setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jca/adminObjectResources.jsf");
+    setPageSessionAttribute(key="objectNameStr", value="amx:pp=/domain/resources,type=admin-object-resource,name=#{pageSession.Name}");
+    setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain,type=resources");
+    setPageSessionAttribute(key="childType" value="admin-object-resource");
+    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
+    setPageSessionAttribute(key="convertToFalseList" value={"Enabled"});
+    setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
+    getChildrenTable(objectNameStr="#{pageSession.objectNameStr}" childType="property" result=>$attribute{tableList});
+    //set the following for including buttons.inc
+    setPageSessionAttribute(key="edit" value="#{true}" );
+    setPageSessionAttribute(key="showDefaultButton" value="#{true}" );
+    setPageSessionAttribute(key="showCancelButton" value="#{true}" );
+    setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
+    setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+    setPageSessionAttribute(key="reload" value="#{false}" );
+    setPageSessionAttribute(key="objectNameStr2", value="amx:pp=/domain/servers/server[server],type=resource-ref,name=#{pageSession.Name}");
+    getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
+    setPageSessionAttribute(key="convertToFalseList2" value={"Enabled"});
+    setPageSessionAttribute(key="has2Objects" value="#{true}" );
+
+    getAdminObjectResourceWizard(
+        reload="#{reload}"
+        attrMap="#{pageSession.tmpMap}"
+        currentMap="#{pageSession.valueMap}"
+        valueMap=>$pageSession{valueMap}
+        resourceTypes=>$attribute{resourceTypes}
+        classNames=>$attribute{classNames})
+    />
+</event>
+<sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+    
+    <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18njca.adminObjectResource.editPageTitle}" helpText="$resource{i18njca.adminObjectResource.editPageHelp}" >
+#include "/common/shared/editPageButtons.inc"
+    </sun:title>
+    "<br><br>
+    
+#include "/jca/adminObjectAttr.inc"
+#include "/common/shared/propertyDescTable.inc"
+    
+    <sun:hidden id="helpKey" value="$resource{help_jca.adminObjectEdit}" />
+</sun:form>
+            "<br/>
+#include "/common/shared/changeButtonsJS.inc" 
+</define>
+</composition>
+
+

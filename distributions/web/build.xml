@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="glassfish web distribution creation" default="create.distribution" basedir=".">
+    <import file="../distributions.xml"/>
+    <property name="source.distribution.name" value="GlassFish v3 Web Profile"/>
+    <target name="create.distribution">
+        <echo message="Creating distribution: web"/>
+        <unzip dest="target/stage">
+            <fileset dir="target/stage">
+                <include name="*.zip"/>
+            </fileset>
+        </unzip>
+       
+        <delete dir="target/stage" includes="*.zip"/>
+
+        <chmod file="target/stage/${install.dir.name}/bin/*" perm="ugo+rx"/>
+	<chmod file="target/stage/${install.dir.name}/glassfish/bin/*" perm="ugo+rx"/>
+
+	<!-- stage servicetag registry file and set source value -->
+
+	<resolveArtifact artifactId="servicetag-registry" groupId="org.glassfish.registration" property="servicetag-registry.zip"/>
+   
+
+        <unzip src="${servicetag-registry.zip}"
+           dest="target/stage/${install.dir.name}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
+		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+
+        <!-- create distribution zip-->
+       	<zip file="target/web.zip" duplicate="preserve">
+            <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/bin/*"
+		    excludes="${install.dir.name}/bin/*.bat" />
+	    <zipfileset dir="target/stage" filemode="755"
+		    includes="${install.dir.name}/glassfish/bin/*"
+		    excludes="${install.dir.name}/glassfish/bin/*.bat" />
+            <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/bin/*.bat" />
+	    </zipfileset>
+	    <zipfileset dir="target/stage">
+		    <include name="${install.dir.name}/glassfish/bin/*.bat" />
+            </zipfileset>
+	    <zipfileset  dir="target/stage"
+		    includes="${install.dir.name}/**">
+            </zipfileset>
+        </zip> 
+        <!-- deploy distribution artifact to maven repository" -->
+        <attachArtifact file="target/web.zip"/>
+   </target>
+</project>

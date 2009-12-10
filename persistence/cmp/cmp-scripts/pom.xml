@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.glassfish.persistence.cmp</groupId>
+        <artifactId>cmp</artifactId>
+        <version>3.0</version>
+    </parent>
+
+    <artifactId>cmp-scripts</artifactId>
+    <name>GlassFish cmp scripts</name>
+
+    <!--
+        The comments below were copied from the ejb-timer-databases module.  
+        They are very helpful so it seemed like a good idea to leave them here also.
+    -->
+    <!--
+      This packaging specifies that it's a package that contains files to be added to
+      the distribution.
+
+      In this packaging mode, the build will produce a jar, like it normally does for
+      the <packaging>jar</packaging>, but the contents of this jar is then extracted
+      when the final GlassFish distribution is assembled. (But when this happens,
+      META-INF/** in the jar will be ignored.)
+
+      For a fragment to be added to the distribution, the distribution POM needs
+      to directly or indirectly depend on the fragment module. This is normally
+      done by creating a feature-level grouping POM (which allows you to bundle multiple
+      modules and treat it as a single dependency - see the webtier-all module for example),
+      and have that declare a dependency on the fragment, instead of directly
+      modifying the distribution POM.
+
+      So the idea here is that individual technology area will create their own
+      fragments that contain pieces that they need, and when the said technology
+      is bundled in GF, the corresponding fragment will be also added, thanks to
+      the transitive dependency handling in Maven.
+    -->
+
+    <packaging>distribution-fragment</packaging>
+
+    <build>
+        <!--
+         In this module, all the files are statically stored as-is in the Subversion repository,
+         so the simple copying from src/main/resources to target/classes that Maven does by default
+         is suffice.
+   -->
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.glassfish.build</groupId>
+                <artifactId>maven-glassfishbuild-extension</artifactId>
+                <version>${project.version}</version>
+            </extension>
+        </extensions>
+    </build>
+
+</project>

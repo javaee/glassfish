@@ -1,0 +1,31 @@
+-exportcontents: \
+                        com.sun.enterprise.web.connector.grizzly; \
+                        org.apache.catalina; \
+                        org.apache.catalina.authenticator; \
+                        org.apache.catalina.connector; \
+                        org.apache.catalina.core; \
+                        org.apache.catalina.deploy; \
+                        org.apache.catalina.loader; \
+                        org.apache.catalina.logger; \
+                        org.apache.catalina.mbeans; \
+                        org.apache.catalina.net; \
+                        org.apache.catalina.realm; \
+                        org.apache.catalina.security; \
+                        org.apache.catalina.servlets; \
+                        org.apache.catalina.session; \
+                        org.apache.catalina.ssi; \
+                        org.apache.catalina.startup; \
+                        org.apache.catalina.util; \
+                        org.apache.catalina.valves; \
+                        org.apache.tomcat.util.modeler; \
+                        org.glassfish.web.valve; version=${project.osgi.version}
+
+# Normally Import-Package is not required, as the default value of *
+# is enough to find all static dependencies. But, when a module is
+# doing Class.forName, there is no foolproof way to find out the
+# desired package name, hence we need to add those packages explicitly.
+# In this case, org.apache.jk.server is one such package. It is used
+# when mod_jk configuration is used. Since, it is not always needed,
+# the import has been marked as optional. By Sahoo.
+Import-Package: org.apache.jk.core;org.apache.jk.server; resolution:=optional; password=GlassFish; version=${project.osgi.version}, *
+

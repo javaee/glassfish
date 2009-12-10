@@ -1,0 +1,26 @@
+-exportcontents: \
+                        com.sun.appserv.jdbc; \
+                        com.sun.appserv.server; \
+                        org.glassfish.api; \
+                        org.glassfish.api.admin; \
+                        org.glassfish.api.admin.cli; \
+                        org.glassfish.api.admin.config; \
+                        org.glassfish.api.admingui; \
+                        org.glassfish.api.amx; \
+                        org.glassfish.api.container; \
+                        org.glassfish.api.content; \
+                        org.glassfish.api.deployment; \
+                        org.glassfish.api.deployment.archive; \
+                        org.glassfish.api.event; \
+                        org.glassfish.api.invocation; \
+                        org.glassfish.api.jdbc; \
+                        org.glassfish.api.logging; \
+                        org.glassfish.api.interceptor; \
+                        org.glassfish.api.managedbean; \
+                        org.glassfish.api.monitoring; \
+                        org.glassfish.api.naming; \
+                        org.glassfish.api.embedded; \
+                        org.glassfish.api.embedded.admin; \
+                        org.glassfish.api.web; \
+                        org.glassfish.api.branding; version=${project.osgi.version}
+

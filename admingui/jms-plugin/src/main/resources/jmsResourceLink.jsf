@@ -1,0 +1,8 @@
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.jmsResources.tooltip}"
+        url="/jms/jmsResources.jsf" >
+        <sun:image url="/resource/images/jms.gif" />
+        <sun:staticText text="$resource{i18n.tree.jmsResources}" />
+    </sun:hyperlink>
+</sun:property>

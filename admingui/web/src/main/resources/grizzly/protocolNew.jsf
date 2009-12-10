@@ -1,0 +1,93 @@
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+<!-- grizzly/protocolNew.jsf -->
+
+<!initPage
+    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+/>
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.protocolNewPageTitle}" >
+<!define name="content">
+
+       <event>
+    <!beforeCreate
+        setPageSessionAttribute(key="edit" value="#{false}" );
+        getRequestValue(key="configName" value=>$page{configName} default="server-config");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/web/grizzly/protocols.jsf");
+
+
+        setPageSessionAttribute(key="parentObjectNameStr", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config,type=protocols");
+        setPageSessionAttribute(key="childType" value="protocol");
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"  valueMap="#{pageSession.valueMap}")
+
+        getChildrenByType(parentObjectNameStr="amx:pp=/domain/configs/config[#{pageSession.configName}],type=http-service" type="virtual-server" result="#{pageSession.vsList}");
+        setPageSessionAttribute(key="parentObjectNameStr2", value="amx:pp=/domain/configs/config[#{pageSession.configName}]/network-config/protocols,type=protocol,name=admin-listener");
+        setPageSessionAttribute(key="childType2" value="http");
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr2}" childType="#{pageSession.childType2}"  valueMap="#{pageSession.httpMap}")
+        mapPut(map="#{pageSession.httpMap}" key="DefaultVirtualServer"  value="server")
+        setPageSessionAttribute(key="httpSectionTitle" value="$resource{i18n_web.grizzly.protocolNew.httpSectionTitle}");
+
+        setPageSessionAttribute(key="fileCacheSectionTitle" value="$resource{i18n_web.grizzly.protocolNew.fileCacheSectionTitle}");
+        setPageSessionAttribute(key="parentObjectNameStr3", value="amx:pp=/domain/configs/config[server-config]/network-config/protocols/protocol[admin-listener],type=http");
+        setPageSessionAttribute(key="childType3" value="file-cache");
+        getDefaultProxyAttrs( parentObjectNameStr="#{pageSession.parentObjectNameStr3}" childType="#{pageSession.childType3}"  valueMap="#{pageSession.fileMap}")
+        />
+    </event>
+            <sun:form id="propertyForm">
+#include "/common/shared/alertMsg.inc"
+
+                <!-- Page Title -->
+    <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolNewPageTitle}" helpText="$resource{i18n_web.grizzly.protocolNewPageTitleHelp}">
+#include "protocolNewButtons.inc"
+    </sun:title>
+    <sun:propertySheet id="propertySheet">
+#include "/web/grizzly/protocolAttr.inc"
+#include "/web/grizzly/fileCacheAttrs.inc"
+#include "/web/grizzly/httpAttr.inc"
+    </sun:propertySheet>
+
+"<br><br>
+        <sun:title id="bottom" >
+#include "protocolNewButtons.inc"
+    </sun:title>
+    <sun:hidden id="helpKey" value="$resource{help_web.protocolNew}" />
+            </sun:form>
+
+</define>
+</composition>
+
+
+

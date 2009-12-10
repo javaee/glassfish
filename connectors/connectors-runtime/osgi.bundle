@@ -1,0 +1,28 @@
+-exportcontents: \
+                        com.sun.enterprise.connectors;\
+                        com.sun.enterprise.connectors.authentication;\
+                        com.sun.enterprise.connectors.module;\
+                        com.sun.enterprise.connectors.naming;\
+                        com.sun.enterprise.connectors.service;\
+                        com.sun.enterprise.connectors.util;\
+                        com.sun.enterprise.resource;\
+                        com.sun.enterprise.resource.allocator;\
+                        com.sun.enterprise.resource.beans;\
+                        com.sun.enterprise.resource.deployer;\
+                        com.sun.enterprise.resource.listener;\
+                        com.sun.enterprise.resource.naming;\
+                        com.sun.enterprise.resource.pool;\
+                        com.sun.enterprise.resource.pool.datastructure;\
+                        com.sun.enterprise.resource.pool.datastructure.strategy;\
+                        com.sun.enterprise.resource.pool.resizer;\
+                        com.sun.enterprise.resource.pool.waitqueue;\
+                        com.sun.enterprise.resource.recovery;\
+                        com.sun.enterprise.resource.rm;\
+                        com.sun.enterprise.server; version=${project.osgi.version}
+
+# This module uses classes from this pkg using reflection, so
+# we need to add it to the import list explicitly, as bnd can't
+# discover such dependencies.
+Import-Package: javax.resource.spi.endpoint, *
+# dependent flashlight package resolved at runtime
+DynamicImport-Package: org.glassfish.flashlight.provider

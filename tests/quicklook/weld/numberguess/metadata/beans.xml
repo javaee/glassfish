@@ -1,0 +1,5 @@
+<beans> 
+  <interceptors>
+    <class>numberguess.InterceptorA</class>
+  </interceptors>
+</beans>

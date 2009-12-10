@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+  <persistence-unit name="pu1">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <!--
+    <jta-data-source>jdbc/WarJpaJTA</jta-data-source>
+    <non-jta-data-source>jdbc/WarJpaJTA</non-jta-data-source>
+    -->
+    <jta-data-source>jdbc/__default</jta-data-source>
+    <non-jta-data-source>jdbc/__default</non-jta-data-source>
+    <properties>
+       <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+       <!-- property name="eclipselink.logging.level" value="FINE"/ -->
+    </properties>
+  </persistence-unit>
+</persistence>

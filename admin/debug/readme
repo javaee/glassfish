@@ -1,0 +1,23 @@
+This is a project (POM) created to help admin backend developers. If
+you are an admin developer, you have to deal with sources scattered
+over GFv3 workspace, at the same time, there are sources that you don't
+ever touch during your normal development. This rules out the possibility
+of top-level v3/pom.xml to be opened by your favorite IDE. What I have
+done here is "hand-picked" the parts of GFv3 workspace so that you can
+open all those parts "as a single maven/IDE project". The benefits of
+doing this are:
+0- You don't need the entire sources (although this assumes that all of
+   the workspace is actually checked out) and can only open single
+   project.
+1- You don't need to open multiple projects in IDE.
+
+I have tested this with Intellij 8.1.3 and it works great (for me).
+Typically, here is what I do:
+- checkout v3 source code and build it once.
+- open <v3>/admin/debug/pom.xml in your favorite IDE that supports POM
+  (e.g. NetBeans, Intellij).
+- in a shell, do: mvn dependency:sources -> this downloads all the
+  other sources (external dependencies) in your local repo, should you
+  need to debug them.
+
+-Kedar, 02 Oct 2009

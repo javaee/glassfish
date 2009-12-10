@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<console-config id="jms">
+    <integration-point  id="jms_resources_nodes"
+                        type="org.glassfish.admingui:navNode"
+                        priority="300"
+                        parentId="resources"
+                        content="resourcesNodes.jsf" />
+
+    <integration-point  id="jms_configuration_nodes"
+                        type="org.glassfish.admingui:navNode"
+                        priority="300"
+                        parentId="configuration"
+                        content="configurationNodes.jsf" />
+
+
+    <!-- Add a link under the Configuration Page -->
+    <integration-point id="jms_ConfigurationLink"
+                        type="org.glassfish.admingui:configuration"
+                        priority="300"
+                        parentId="propSheetSection"
+                        content="configLinks.jsf"
+    />
+
+    <integration-point
+                id="jmsResourceLink"
+                parentId="propSheetSection"
+                type="org.glassfish.admingui:resources"
+                priority="300"
+                content="jmsResourceLink.jsf"
+    />
+</console-config> 

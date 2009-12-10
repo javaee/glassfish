@@ -1,0 +1,33 @@
+<!composition template="/templates/baseLayout.xhtml">
+    // Extra Head Content
+    <!define name="guiTemplateExtraHead">
+        <!-- Temporarily define this here, move to a gui.css file -->
+        <f:verbatim>
+        <style type="text/css">
+            .guiPageContent {height: 100%; padding: 0px 3px 0px 3px;}
+            .guiNavTree {float: left; width: 100%;}
+            .TreeSelRow_sun4 {clear:both}
+        </style>
+        </f:verbatim>
+    </define>
+
+    <!define name="guiLeftNav">
+        "<div class="guiNavTree">
+            <!include src="/common/peTree.inc" />
+        <f:verbatim>
+        </div>
+        <script type="text/javascript">
+            YAHOO.util.Event.onContentReady("treeForm:tree:updateCenterPlugIN:updateCenterPlugIN_link", function(ev) {
+                admingui.nav.selectTreeNodeWithURL(window.location.href);
+            });
+        </script>
+        </f:verbatim>
+    </define>
+    <!define name="guiTemplateContent">
+        "<div class="guiPageContent">
+            <!insert name="content">
+                "Content Missing!
+            </insert>
+        "</div>
+    </define>
+</composition>

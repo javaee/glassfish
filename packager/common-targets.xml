@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+The contents of this file are subject to the terms
+of the Common Development and Distribution License
+(the "License").  You may not use this file except
+in compliance with the License.
+
+You can obtain a copy of the license at
+glassfish/bootstrap/legal/CDDLv1.0.txt or
+https://glassfish.dev.java.net/public/CDDLv1.0.html.
+See the License for the specific language governing
+permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL
+HEADER in each file and include the License file at
+glassfish/bootstrap/legal/CDDLv1.0.txt.  If applicable,
+add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your
+own identifying information: Portions Copyright [yyyy]
+[name of copyright owner]
+-->
+<project name="common-targets">
+    <property name="install.dir.name" value="glassfishv3"/>
+    <target name="init">
+        <available property="present" 
+                   file="target/stage/${install.dir.name}/glassfish/modules" type="dir" />
+    </target> 
+    <target name="pack.compression" depends="init" if="present">
+	<!-- pack200 compression -->
+        <apply executable="pack200" 
+               dest="target/stage/${install.dir.name}/glassfish/modules" parallel="false">
+            <targetfile/>
+            <srcfile/>
+            <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
+		    includes="**/*.jar"
+		    excludes="**/javahelp.jar" />
+            <mapper type="glob" from="*.jar" to="*.pack.gz"/>
+        </apply>
+        <apply executable="unpack200" 
+               dest="target/stage/${install.dir.name}/glassfish/modules" parallel="false">
+            <srcfile/>
+            <targetfile/>
+            <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
+                     includes="**/*.pack.gz" />
+            <mapper type="glob" from="*.pack.gz" to="*.jar"/>
+        </apply>
+	<!-- remove *.pack.gz files -->
+        <delete>
+            <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
+                     includes="**/*.pack.gz"/>
+        </delete>
+ </target>
+
+
+
+ <macrodef name="stage-distribution-fragments">
+        <attribute name="graphid" />
+        <sequential>
+		<resolveAll todir="target/fragments" tolerateBrokenPOMs="true" stripVersion="true">
+		<graphRef refid="@{graphid}"/>
+                <packaging value="distribution-fragment"/>
+             </resolveAll>
+
+	     <unzip dest="target/stage/${install.dir.name}">
+                <patternset>
+                    <exclude name="META-INF/**"/>
+                </patternset>
+                <fileset dir="target/fragments" includes="*.zip"/>
+ 	     </unzip> 
+
+        </sequential>
+   </macrodef> 
+
+    <macrodef name="stage-module-jars">
+	    <attribute name="graphid" />
+	    <sequential>
+                <resolveAll todir="target/stage/${install.dir.name}/glassfish/modules" stripVersion="true">
+		    <graphRef refid="@{graphid}"/>
+                </resolveAll>
+
+                <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.zip" />   
+	        <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.pom" />  
+	         <delete dir="target/stage/${install.dir.name}/glassfish/modules" includes="*.war" />  
+        </sequential>
+   </macrodef>
+
+   <macrodef name="stage-module-autostart-jars">
+	    <attribute name="graphid" />
+	    <sequential>
+		<resolveAll todir="target/stage/${install.dir.name}/glassfish/modules/autostart" stripVersion="true">
+		    <graphRef refid="@{graphid}"/>
+                </resolveAll>
+
+		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.zip" />   
+		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.pom" />  
+		<delete dir="target/stage/${install.dir.name}/glassfish/modules/autostart" includes="*.war" />  
+            </sequential>
+      </macrodef>
+
+      <target name="create-zip-artifact">
+	      <zip file="target/${package.name}.zip" basedir="target/stage"/>
+           
+	      <attachArtifact file="target/${package.name}.zip"/>
+     </target>
+</project>

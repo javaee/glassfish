@@ -1,0 +1,15 @@
+<gf:navNode id="${artifactId}TreeNode1"
+	    label="${artifactId} Test Node #1"
+	    url="#{request.contextPath}/${artifactId}/testPage.jsf"
+	    icon="#{request.contextPath}/resource/images/instance.gif">
+    <gf:navNode id="${artifactId}ExternalPage"
+                label="External Page"
+                processPage="false"
+                url="http://localhost:8080/">
+    </gf:navNode>
+</gf:navNode>
+<gf:navNode id="${artifactId}TreeNode2"
+	    label="${artifactId} Test Node #2"
+	    url="#{request.contextPath}/${artifactId}/testPage.jsf"
+	    icon="#{request.contextPath}/resource/images/instance.gif">
+</gf:navNode>
