@@ -107,6 +107,11 @@
       </repository>
   </distributionManagement>
 
+  <scm>
+      <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3-maven-plugin</connection>
+      <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3-maven-plugin</developerConnection>
+  </scm>
+
   <repositories>
     <repository>
       <id>glassfish-repository</id>
