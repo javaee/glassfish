@@ -86,7 +86,7 @@
      <dependency>
       <groupId>org.glassfish.extras</groupId>
       <artifactId>glassfish-embedded-all</artifactId>
-      <version>3.0-SNAPSHOT</version>
+      <version>3.0</version>
     </dependency>
   </dependencies>
 
