@@ -369,7 +369,14 @@ public class WebappClassLoader
      * and defined repositories.
      */
     public WebappClassLoader(URL[] urls, ClassLoader parent) {
-        super(urls, parent);
+        super(new URL[0], parent);
+
+        if (urls != null && urls.length > 0) {
+            for (URL url : urls) {
+                super.addURL(escapePlus(url));
+            }
+        }
+
         init();
     }
 
@@ -603,7 +610,7 @@ public class WebappClassLoader
     }
 
     public void addRepository(URL url) {
-        super.addURL(url);
+        super.addURL(escapePlus(url));
         hasExternalRepositories = true;
     }
 
@@ -2508,7 +2515,7 @@ public class WebappClassLoader
         } catch (IOException e) {
             // Ignore
         }
-        return realFile.toURI().toURL();
+        return escapePlus(realFile.toURI().toURL());
 
     }
 
@@ -2525,8 +2532,24 @@ public class WebappClassLoader
             // Ignore
         }
 
-        return file.toURI().toURL();
+        return escapePlus(file.toURI().toURL());
 
+    }
+
+    private URL escapePlus(URL url) {
+        URL result = url;
+        if ("file".equals(url.getProtocol())) {
+            String path = url.getPath();
+            if (path != null && path.contains("+")) {
+                try {
+                    result = new URL(url.getProtocol(), url.getHost(),
+                        url.getPort(), path.replace("+", "%2B"));
+                } catch(MalformedURLException ex) {
+                    throw new IllegalStateException(ex);
+                }
+            }
+        }
+        return result;
     }
 
 
