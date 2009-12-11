@@ -20,8 +20,8 @@
         <ant dir="httpServletChallenge" target="all"/>
         <ant dir="httpServletForm" target="all"/>
 
-        <!--<ant dir="soap" target="all"/>
+        <ant dir="soap" target="all"/>
         <ant dir="soapDefault" target="all"/>
-        <ant dir="soapEmbedded" target="all"/>-->
+        <ant dir="soapEmbedded" target="all"/>
     </target>
 </project>

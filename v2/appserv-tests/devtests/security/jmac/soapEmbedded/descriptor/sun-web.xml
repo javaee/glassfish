@@ -7,7 +7,6 @@
       <servlet-name>HelloServlet</servlet-name>
       <webservice-endpoint>
         <port-component-name>HelloServlet</port-component-name>
-        <endpoint-address-uri>/webservice/JmacSoapEmbeddedServletService/HelloServlet</endpoint-address-uri>
         <message-security-binding auth-layer="SOAP"
           provider-id="SOAPEmbeddedTestServerAuthModule">
           <message-security>
