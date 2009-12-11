@@ -4,12 +4,12 @@
          Approval: Bill
      -->
     <Match>
-        <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.Date"/>
-        <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
-        <Priority value="1"/>
-    </Match>
-    <Match>
-        <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.HashSet"/>
+        <Or>
+          <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.Date"/>
+          <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.HashSet"/>
+          <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.Vector"/>
+          <Class name="com.sun.jdo.spi.persistence.support.sqlstore.sco.ArrayList"/>
+        </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
         <Priority value="1"/>
     </Match>

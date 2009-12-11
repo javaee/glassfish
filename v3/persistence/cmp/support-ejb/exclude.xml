@@ -4,7 +4,10 @@
          Approval: Bill
      -->
     <Match>
-        <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbc.NameMapper"/>
+        <Or>
+          <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbc.NameMapper"/>
+          <Class name="com.sun.jdo.spi.persistence.support.ejb.ejbc.MappingGenerator"/>
+        </Or>
         <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS"/>
         <Priority value="1"/>
     </Match>
