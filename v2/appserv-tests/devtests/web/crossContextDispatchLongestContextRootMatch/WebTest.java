@@ -54,12 +54,10 @@ public class WebTest {
 
     private String host;
     private String port;
-    private String contextRoot;
 
     public WebTest(String[] args) {
         host = args[0];
         port = args[1];
-        contextRoot = args[2];
     }
     
     public static void main(String[] args) {
