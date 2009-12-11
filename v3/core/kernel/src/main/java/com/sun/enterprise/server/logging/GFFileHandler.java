@@ -177,12 +177,31 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         }
         changeFileName(serverLog);
 
+
+        // start the Queue consummer thread.
+
+        pump = new Thread() {
+            public void run() {
+                try {
+                    while (!done.isSignalled()) {
+                        log();
+                    }
+                } catch (RuntimeException e) {
+
+                }
+            }
+        };
+        pump.start();
+        LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: "+version.getFullVersion());
+        this.publish(lr);        
+
         Long rotationTimeLimitValue = 0L;
-        try {
+         try {
             rotationTimeLimitValue = Long.parseLong(manager.getProperty(cname + ".rotationTimelimitInMinutes"));
         } catch (NumberFormatException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE,
+            lr = new LogRecord(Level.SEVERE,
                     "Cannot read rotationTimelimitInMinutes property from logging config file");
+            this.publish(lr);
         }
 
         if (rotationTimeLimitValue != 0) {
@@ -211,7 +230,10 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 rotationLimitAttrValue = Integer.parseInt(manager.getProperty(cname + ".rotationLimitInBytes"));
             } catch (NumberFormatException e) {
                 Logger.getAnonymousLogger().log(Level.SEVERE,
-                    "Cannot read rotationLimitInBytes property from logging config file");
+                    "Cannot read rotationLimitInBytes property from logging config file. Using default.");
+                lr = new LogRecord(Level.WARNING,
+                    "Cannot read rotationLimitInBytes property from logging config file. Using default.");
+                this.publish(lr);
             } 
             // We set the LogRotation limit here. The rotation limit is the
             // Threshold for the number of bytes in the log file after which
@@ -222,7 +244,16 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         setLevel( Level.ALL );
         String ff = manager.getProperty(cname+".flushFrequency");
         if (ff != null)
-            flushFrequency = Integer.parseInt(manager.getProperty(cname+".flushFrequency"));
+        try {
+                flushFrequency = Integer.parseInt(manager.getProperty(cname+".flushFrequency"));
+            } catch (NumberFormatException e) {
+                lr = new LogRecord(Level.WARNING,
+                    "Cannot read flushFrequency property from logging config file. Using default.");
+                this.publish(lr);
+                Logger.getAnonymousLogger().log( Level.WARNING,
+                    "Cannot read flushFrequency property from logging config file. Using default.");
+
+            }
         if (flushFrequency <= 0)
             flushFrequency = 1;
 
@@ -240,29 +271,23 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 setFormatter((Formatter) this.getClass().getClassLoader().loadClass(formatterName).newInstance());
             } catch (InstantiationException e) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot instantiate formatter " + formatterName,e);
+                lr = new LogRecord(Level.SEVERE,
+                    "Cannot instantiate formatter class " + formatterName);
+                this.publish(lr);
             } catch (IllegalAccessException e) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot instantiate formatter " + formatterName,e);
+                lr = new LogRecord(Level.SEVERE,
+                    "Cannot instantiate formatter class " + formatterName);
+                this.publish(lr);
             } catch (ClassNotFoundException e) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot load formatter class " + formatterName,e);
+                lr = new LogRecord(Level.SEVERE,
+                    "Cannot load formatter class " + formatterName);
+                this.publish(lr);
             }
         }
 
-        // start the Queue consummer thread.
-        pump = new Thread() {
-            public void run() {
-                try {
-                    while (!done.isSignalled()) {
-                        log();
-                    }
-                } catch (RuntimeException e) {
-
-                }               
-            }
-        };
-        pump.start();
-        LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: "+version.getFullVersion());
-        this.publish(lr);
-
+        
     }
 
     public void preDestroy() {
@@ -524,8 +549,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
              if (v.get(j).getLevel().intValue()>=Level.WARNING.intValue()) {
                 recentErrors.offer(v.get(j));
             }
-        }
-
+        }                
 
         flush();       
          if ( ( rotationRequested.get() )
