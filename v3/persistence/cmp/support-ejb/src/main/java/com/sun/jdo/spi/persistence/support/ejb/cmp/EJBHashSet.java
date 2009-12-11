@@ -88,10 +88,6 @@ public class EJBHashSet extends HashSet {
         this.pm = pm;
         tx = pm.currentTransaction();
         this.helper = helper;
-        if (logger.isLoggable(Logger.FINEST)) {
-            logger.finest("---EJBHashSet.new--- " + // NOI18N
-                ((pcs == null)? -1: pcs.size()));
-        }
 
         // Convert Collection.
         setSCOHashSet(pcs);
