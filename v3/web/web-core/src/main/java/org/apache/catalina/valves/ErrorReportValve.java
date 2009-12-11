@@ -464,7 +464,9 @@ public class ErrorReportValve
         sb.append(report);
         sb.append("</p>");
 
-        if (throwable != null) {
+        // exception class name or stacktrace can reveal the underlying product
+        // name, so do not include it if product name property has been cleared.
+        if (throwable != null && serverInfo != null && !serverInfo.isEmpty()) {
             /* GlassFish 823
             String stackTrace = JdkCompat.getJdkCompat()
                 .getPartialServletStackTrace(throwable);
