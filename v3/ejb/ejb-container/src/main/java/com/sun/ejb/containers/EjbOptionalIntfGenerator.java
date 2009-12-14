@@ -120,7 +120,7 @@ public class EjbOptionalIntfGenerator
         throws Exception {
 
         if( protectionDomain == null ) {
-            ejbClass.getProtectionDomain();
+            protectionDomain = ejbClass.getProtectionDomain();
         }
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
@@ -174,7 +174,7 @@ public class EjbOptionalIntfGenerator
         throws Exception {
 
         if( protectionDomain == null ) {
-            superClass.getProtectionDomain();
+            protectionDomain = superClass.getProtectionDomain();
         }
 
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
