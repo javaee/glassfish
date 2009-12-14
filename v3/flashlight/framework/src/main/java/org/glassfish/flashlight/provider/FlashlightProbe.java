@@ -40,7 +40,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import java.util.*;
-import java.util.concurrent.*;
 import org.glassfish.flashlight.client.ProbeClientInvoker;
 import org.glassfish.flashlight.client.ProbeHandle;
 
@@ -52,8 +51,6 @@ import java.util.logging.Level;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.glassfish.api.monitoring.ProbeInfo;
-import org.glassfish.flashlight.FlashlightUtils;
-import org.glassfish.flashlight.impl.client.DTraceClientInvoker;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -97,7 +94,6 @@ public class FlashlightProbe
 
 
     private boolean isMethodStatic() {
-        boolean isMethodStatic = false;
         try {
             int modifier = getProviderClazz().getDeclaredMethod(getProviderJavaMethodName(),
                                                                     getParamTypes()).getModifiers();
@@ -280,8 +276,7 @@ public class FlashlightProbe
         invokerList = invList;
     }
 
-    public static String SELF = "@SELF";
-    private boolean ddebug = false;
+    public static final String SELF = "@SELF";
     private int id;
     private Class providerClazz;
     private String moduleProviderName;
