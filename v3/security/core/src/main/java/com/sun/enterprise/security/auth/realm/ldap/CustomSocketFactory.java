@@ -66,6 +66,7 @@ import org.glassfish.internal.api.SharedSecureRandom;
  */
 public class CustomSocketFactory extends SocketFactory implements Comparator<SocketFactory> {
     private SocketFactory socketFactory;
+    private static final  CustomSocketFactory customSocketFactory = new CustomSocketFactory();
 
     public static final String SSL = "SSL";
     protected static final Logger _logger =
@@ -121,6 +122,10 @@ public class CustomSocketFactory extends SocketFactory implements Comparator<Soc
 
     public int compare(SocketFactory s1, SocketFactory s2) {
         return s1.getClass().toString().compareTo(s2.getClass().toString());
+    }
+
+    public static SocketFactory getDefault() {
+        return customSocketFactory;
     }
     
     

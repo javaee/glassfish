@@ -235,7 +235,9 @@ abstract class BaseContainerCallbackHandler
         }
 
         if (isCertRealm) {
-            LoginContextDriver.jmacLogin(fs, (X500Principal)principal);
+            if(principal  instanceof X500Principal) {
+                 LoginContextDriver.jmacLogin(fs, (X500Principal)principal);
+            }
         }
 
         final Principal fprin = principal;
