@@ -46,12 +46,17 @@
     <realm-name>REALM_NAME_HERE</realm-name>
   </login-config>
 
-  <security-role>
+<!--  <security-role>
     <description>NONE</description>
     <role-name>Employee</role-name>
   </security-role>
   <security-role>
     <role-name>Manager</role-name>
+  </security-role> -->
+
+  <security-role>
+    <description>Staff</description>
+    <role-name>staff</role-name>
   </security-role>
 
 </web-app>

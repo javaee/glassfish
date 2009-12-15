@@ -122,6 +122,9 @@
     </target>
 
     <target name="create-db-usrgrps" depends="init-common">
+      <antcall target="compile-common">
+         <param name="src" value="util"/>
+      </antcall>
       <java classname="com.sun.devtests.security.jdbcrealm.PopulateDB" fork="true">
         <classpath>
   	       <pathelement path="${build.classes.dir}:${s1astest.classpath}"/>
@@ -155,12 +158,6 @@
     </target>
 
     <target name="modify-domain-xml" depends="init-common">
-       <antcall target="create-auth-jdbcrealm">
-           <param name="db.poolname" value="${derby.db.poolname}"/>
-           <param name="db.jndiname" value="${derby.db.jndiname}"/>
-           <param name="db.user" value="${derby.db.user}"/>
-           <param name="db.pass" value="${derby.db.pass}"/>
-       </antcall>
        <antcall target="create-jdbcrealm-connection-pool">
            <param name="db.datasource.classname" 
                   value="${derby.db.datasource.classname}"/>
@@ -175,17 +172,15 @@
          <param name="db.poolname" value="${derby.db.poolname}"/>
          <param name="db.jndiname" value="${derby.db.jndiname}"/>
        </antcall>
+       <antcall target="create-auth-jdbcrealm">
+           <param name="db.poolname" value="${derby.db.poolname}"/>
+           <param name="db.jndiname" value="${derby.db.jndiname}"/>
+           <param name="db.user" value="${derby.db.user}"/>
+           <param name="db.pass" value="${derby.db.pass}"/>
+       </antcall>
     </target>
 
     <target name="modify-domain-xml-oracle" depends="init-common">
-
-       <antcall target="create-auth-jdbcrealm">
-           <param name="db.poolname" value="${oracle.db.poolname}"/>
-           <param name="db.jndiname" value="${oracle.db.jndiname}"/>
-           <param name="db.user" value="${oracle.db.user}"/>
-<!--           <param name="db.pass" value="${oracle.db.pass}"/> -->
-           <param name="db.pass" value="${oracle.db.alias-pass}"/>
-       </antcall>
 
 <!--
        <antcall target="create-jdbcrealm-connection-pool">
@@ -211,6 +206,15 @@
          <param name="db.poolname" value="${oracle.db.poolname}"/>
          <param name="db.jndiname" value="${oracle.db.jndiname}"/>
        </antcall>
+
+       <antcall target="create-auth-jdbcrealm">
+           <param name="db.poolname" value="${oracle.db.poolname}"/>
+           <param name="db.jndiname" value="${oracle.db.jndiname}"/>
+           <param name="db.user" value="${oracle.db.user}"/>
+<!--           <param name="db.pass" value="${oracle.db.pass}"/> -->
+           <param name="db.pass" value="${oracle.db.alias-pass}"/>
+       </antcall>
+
     </target>
 
     <target name="un-modify-domain-xml" depends="init-common">
@@ -274,152 +278,98 @@
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_CLEAR"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=CLEAR:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE:digest-algorithm=NONE"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_CLEAR_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=CLEAR/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_BASE64:digest-algorithm=NONE:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_CLEAR_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=CLEAR/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_HEX:digest-algorithm=NONE:encoding=HEX"/>
       </antcall>
-
-	  <antcall target="create-custom-auth-realm">
-	    <param name="realmname" value="JDBCRealm_MD2"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=MD2:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_MD2 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
-      </antcall>
-
-	  <antcall target="create-custom-auth-realm">
-	    <param name="realmname" value="JDBCRealm_MD5"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=MD5:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_MD5 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
-      </antcall>
-
-	  <antcall target="create-custom-auth-realm">
-	    <param name="realmname" value="JDBCRealm_SHA"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
-      </antcall>
-
-	  <antcall target="create-custom-auth-realm">
-	    <param name="realmname" value="JDBCRealm_SHA256"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-256:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA256 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
-      </antcall>
-
-	  <antcall target="create-custom-auth-realm">
-	    <param name="realmname" value="JDBCRealm_SHA384"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-384:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA384 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
-      </antcall>
-
-	  <antcall target="create-custom-auth-realm">
-	    <param name="realmname" value="JDBCRealm_SHA512"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-512:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA512 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
-      </antcall>
-
-
-
-
-
-
-
-
 
 
 
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD2_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=MD2/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_MD2_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_MD2_BASE64:digest-algorithm=MD2:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD5_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=MD5/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_MD5_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_MD5_BASE64:digest-algorithm=MD5:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_SHA_BASE64:digest-algorithm=SHA:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA256_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-256/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA256_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_SHA256_BASE64:digest-algorithm=SHA-256:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA384_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-384/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA384_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=BASE64:user-table=USER_TABLE_SHA384_BASE64:digest-algorithm=SHA-384"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA512_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-512/BASE64:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA512_BASE64 where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=BASE64:user-table=USER_TABLE_SHA512_BASE64:digest-algorithm=SHA-512"/>
       </antcall>
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD2_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=MD2/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_MD2_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_MD2_HEX:digest-algorithm=MD2"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD5_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=MD5/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_MD5_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_MD5_HEX:digest-algorithm=MD5"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA_HEX:digest-algorithm=SHA"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA256_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-256/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA256_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA256_HEX:digest-algorithm=SHA-256"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA384_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-384/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA384_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA384_HEX:digest-algorithm=SHA-384"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA512_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.db.JDBCRealm"/>
-		<param name="realmproperties" value="datasource=${db.jndiname}__pm:jaas-context=jdbcRealm:encoding-scheme=SHA-512/HEX:user=${db.user}:password=${db.pass}:find-user-query=select * from USER_TABLE_SHA512_HEX where USERNAME\=? AND PASSWORD\=?:find-groups-query=select GROUPNAME from GROUP_TABLE where USERNAME \= ?"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA512_HEX:digest-algorithm=SHA-512"/>
       </antcall>
 
     </target>
@@ -438,32 +388,6 @@
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="JDBCRealm_CLEAR_HEX"/>
         </antcall>
-
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-auth-realm" />
-            <param name="operand.props" value="JDBCRealm_MD2"/>
-        </antcall>
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-auth-realm" />
-            <param name="operand.props" value="JDBCRealm_MD5"/>
-        </antcall>
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-auth-realm" />
-            <param name="operand.props" value="JDBCRealm_SHA"/>
-        </antcall>
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-auth-realm" />
-            <param name="operand.props" value="JDBCRealm_SHA256"/>
-        </antcall>
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-auth-realm" />
-            <param name="operand.props" value="JDBCRealm_SHA384"/>
-        </antcall>
-        <antcall target="asadmin-common">
-            <param name="admin.command" value="delete-auth-realm" />
-            <param name="operand.props" value="JDBCRealm_SHA512"/>
-        </antcall>
-
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-auth-realm" />
@@ -489,8 +413,6 @@
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="JDBCRealm_SHA512_BASE64"/>
         </antcall>
-
-
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-auth-realm" />
@@ -538,9 +460,6 @@
 
     <target name="compile" depends="clean">
         <antcall target="compile-common">
-            <param name="src" value="util"/>
-        </antcall>
-        <antcall target="compile-common">
             <param name="src" value="client"/>
         </antcall>
         <antcall target="compile-common">
@@ -564,38 +483,6 @@
             <param name="jdbc.realm.user" value="qwertHEX"/>
             <param name="appname"         value="jdbc-realm-clear-hex"/>
         </antcall>
-
-        <antcall target="custom-build">
-            <param name="jdbc.realm.name" value="JDBCRealm_MD2"/>
-            <param name="jdbc.realm.user" value="qwertMD2"/>
-            <param name="appname"         value="jdbc-realm-md2"/>
-        </antcall>
-        <antcall target="custom-build">
-            <param name="jdbc.realm.name" value="JDBCRealm_MD5"/>
-            <param name="jdbc.realm.user" value="qwertMD5"/>
-            <param name="appname"         value="jdbc-realm-md5"/>
-        </antcall>
-        <antcall target="custom-build">
-            <param name="jdbc.realm.name" value="JDBCRealm_SHA"/>
-            <param name="jdbc.realm.user" value="qwertSHA"/>
-            <param name="appname"         value="jdbc-realm-sha"/>
-        </antcall>
-        <antcall target="custom-build">
-            <param name="jdbc.realm.name" value="JDBCRealm_SHA256"/>
-            <param name="jdbc.realm.user" value="qwertSHA256"/>
-            <param name="appname"         value="jdbc-realm-sha256"/>
-        </antcall>
-        <antcall target="custom-build">
-            <param name="jdbc.realm.name" value="JDBCRealm_SHA384"/>
-            <param name="jdbc.realm.user" value="qwertSHA384"/>
-            <param name="appname"         value="jdbc-realm-sha384"/>
-        </antcall>
-        <antcall target="custom-build">
-            <param name="jdbc.realm.name" value="JDBCRealm_SHA512"/>
-            <param name="jdbc.realm.user" value="qwertSHA512"/>
-            <param name="appname"         value="jdbc-realm-sha512"/>
-        </antcall>
-
 
         <antcall target="custom-build">
             <param name="jdbc.realm.name" value="JDBCRealm_MD2_BASE64"/>
@@ -678,33 +565,6 @@
         </antcall>
 
         <antcall target="deploy-war-common">
-            <param name="contextroot" value="jdbc-realm-md2"/>
-            <param name="appname" value="jdbc-realm-md2"/>
-        </antcall>
-        <antcall target="deploy-war-common">
-            <param name="contextroot" value="jdbc-realm-md5"/>
-            <param name="appname" value="jdbc-realm-md5"/>
-        </antcall>
-        <antcall target="deploy-war-common">
-            <param name="contextroot" value="jdbc-realm-sha"/>
-            <param name="appname" value="jdbc-realm-sha"/>
-        </antcall>
-        <antcall target="deploy-war-common">
-            <param name="contextroot" value="jdbc-realm-sha256"/>
-            <param name="appname" value="jdbc-realm-sha256"/>
-        </antcall>
-        <antcall target="deploy-war-common">
-            <param name="contextroot" value="jdbc-realm-sha384"/>
-            <param name="appname" value="jdbc-realm-sha384"/>
-        </antcall>
-        <antcall target="deploy-war-common">
-            <param name="contextroot" value="jdbc-realm-sha512"/>
-            <param name="appname" value="jdbc-realm-sha512"/>
-        </antcall>
-
-
-
-        <antcall target="deploy-war-common">
             <param name="contextroot" value="jdbc-realm-md2-base64"/>
             <param name="appname" value="jdbc-realm-md2-base64"/>
         </antcall>
@@ -728,7 +588,6 @@
             <param name="contextroot" value="jdbc-realm-sha512-base64"/>
             <param name="appname" value="jdbc-realm-sha512-base64"/>
         </antcall>
-
 
         <antcall target="deploy-war-common">
             <param name="contextroot" value="jdbc-realm-md2-hex"/>
@@ -755,8 +614,6 @@
             <param name="appname" value="jdbc-realm-sha512-hex"/>
         </antcall>
 
-
-
     </target>
 
     <target name="run" depends="init-common">
@@ -780,37 +637,6 @@
             <param name="jdbc.realm.pass" value="qwertHEX"/>
             <param name="jdbc.realm.user" value="qwertHEX"/>
             <param name="appname"         value="jdbc-realm-clear-hex"/>
-        </antcall>
-
-        <antcall target="custom-run">
-            <param name="jdbc.realm.pass" value="qwertMD2"/>
-            <param name="jdbc.realm.user" value="qwertMD2"/>
-            <param name="appname"         value="jdbc-realm-md2"/>
-        </antcall>
-        <antcall target="custom-run">
-            <param name="jdbc.realm.pass" value="qwertMD5"/>
-            <param name="jdbc.realm.user" value="qwertMD5"/>
-            <param name="appname"         value="jdbc-realm-md5"/>
-        </antcall>
-        <antcall target="custom-run">
-            <param name="jdbc.realm.pass" value="qwertSHA"/>
-            <param name="jdbc.realm.user" value="qwertSHA"/>
-            <param name="appname"         value="jdbc-realm-sha"/>
-        </antcall>
-        <antcall target="custom-run">
-            <param name="jdbc.realm.pass" value="qwertSHA256"/>
-            <param name="jdbc.realm.user" value="qwertSHA256"/>
-            <param name="appname"         value="jdbc-realm-sha256"/>
-        </antcall>
-        <antcall target="custom-run">
-            <param name="jdbc.realm.pass" value="qwertSHA384"/>
-            <param name="jdbc.realm.user" value="qwertSHA384"/>
-            <param name="appname"         value="jdbc-realm-sha384"/>
-        </antcall>
-        <antcall target="custom-run">
-            <param name="jdbc.realm.pass" value="qwertSHA512"/>
-            <param name="jdbc.realm.user" value="qwertSHA512"/>
-            <param name="appname"         value="jdbc-realm-sha512"/>
         </antcall>
 
         <antcall target="custom-run">
@@ -843,8 +669,6 @@
             <param name="jdbc.realm.user" value="qwertSHA512BASE64"/>
             <param name="appname"         value="jdbc-realm-sha512-base64"/>
         </antcall>
-
-
 
         <antcall target="custom-run">
             <param name="jdbc.realm.pass" value="qwertMD2HEX"/>
@@ -898,37 +722,6 @@
         </antcall>
 
         <antcall target="custom-neg-run">
-            <param name="jdbc.realm.pass" value="qwertMD2"/>
-            <param name="jdbc.realm.user" value="qwertMD2a"/>
-            <param name="appname"         value="jdbc-realm-md2"/>
-        </antcall>
-        <antcall target="custom-neg-run">
-            <param name="jdbc.realm.pass" value="qwertMD5"/>
-            <param name="jdbc.realm.user" value="qwertMD5a"/>
-            <param name="appname"         value="jdbc-realm-md5"/>
-        </antcall>
-        <antcall target="custom-neg-run">
-            <param name="jdbc.realm.pass" value="qwertSHA"/>
-            <param name="jdbc.realm.user" value="qwertSHAa"/>
-            <param name="appname"         value="jdbc-realm-sha"/>
-        </antcall>
-        <antcall target="custom-neg-run">
-            <param name="jdbc.realm.pass" value="qwertSHA256"/>
-            <param name="jdbc.realm.user" value="qwertSHA256a"/>
-            <param name="appname"         value="jdbc-realm-sha256"/>
-        </antcall>
-        <antcall target="custom-neg-run">
-            <param name="jdbc.realm.pass" value="qwertSHA384"/>
-            <param name="jdbc.realm.user" value="qwertSHA384a"/>
-            <param name="appname"         value="jdbc-realm-sha384"/>
-        </antcall>
-        <antcall target="custom-neg-run">
-            <param name="jdbc.realm.pass" value="qwertSHA512"/>
-            <param name="jdbc.realm.user" value="qwertSHA512a"/>
-            <param name="appname"         value="jdbc-realm-sha512"/>
-        </antcall>
-
-        <antcall target="custom-neg-run">
             <param name="jdbc.realm.pass" value="qwertMD2BASE64"/>
             <param name="jdbc.realm.user" value="qwertMD2BASE64a"/>
             <param name="appname"         value="jdbc-realm-md2-base64"/>
@@ -958,8 +751,6 @@
             <param name="jdbc.realm.user" value="qwertSHA512BASE64a"/>
             <param name="appname"         value="jdbc-realm-sha512-base64"/>
         </antcall>
-
-
 
         <antcall target="custom-neg-run">
             <param name="jdbc.realm.pass" value="qwertMD2HEX"/>
@@ -1003,26 +794,6 @@
         </antcall>
         <antcall target="undeploy-war-common">
             <param name="appname" value="jdbc-realm-clear-hex"/>
-        </antcall>
-
-
-        <antcall target="undeploy-war-common">
-            <param name="appname" value="jdbc-realm-md2"/>
-        </antcall>
-        <antcall target="undeploy-war-common">
-            <param name="appname" value="jdbc-realm-md5"/>
-        </antcall>
-        <antcall target="undeploy-war-common">
-            <param name="appname" value="jdbc-realm-sha"/>
-        </antcall>
-        <antcall target="undeploy-war-common">
-            <param name="appname" value="jdbc-realm-sha256"/>
-        </antcall>
-        <antcall target="undeploy-war-common">
-            <param name="appname" value="jdbc-realm-sha384"/>
-        </antcall>
-        <antcall target="undeploy-war-common">
-            <param name="appname" value="jdbc-realm-sha512"/>
         </antcall>
 
         <antcall target="undeploy-war-common">
