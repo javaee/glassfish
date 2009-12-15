@@ -30,6 +30,8 @@
       <property name="jaxr.conf" value="${basedir}/conf"/>	  
       <property name="ant.home" value="${jaxr.lib}"/>	 
       <property name="jaxr.version" value="1.0_03"/>
+      <property name="javac.source" value="1.5"/>
+      <property name="javac.target" value="1.5"/>
       <!-- The things we depend on    -->
       
       <!-- The javadoc properties -->
@@ -60,7 +62,9 @@
         </copy>
         <!-- Compile all the sources -->
         <javac srcdir="src/java"
-               destdir="${jaxr.build}/lib/classes">
+               destdir="${jaxr.build}/lib/classes"
+               source="${javac.source}"
+               target="${javac.target}" >
             <classpath>
                 <pathelement path="${jaxr.build.classpath}"/>
             </classpath>

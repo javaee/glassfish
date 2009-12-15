@@ -31,6 +31,8 @@
       <property name="jaxr.build" value="${basedir}/build"/>
       <property name="jaxr.lib" value="${basedir}/lib"/>
       <property name="jaxr.version" value="1.0.7"/>
+      <property name="javac.source" value="1.5"/>
+      <property name="javac.target" value="1.5"/>
 
       <!-- Jar files for classpath -->
       <property name="jaxr.cp" value="${basedir}/lib/jaxr-api.jar"/>
@@ -106,7 +108,9 @@
       <!-- Compile all the sources -->
       <javac srcdir="src"
              destdir="${jaxr.build}/classes"
-         debug="no"
+             source="${javac.source}"
+             target="${javac.target}"
+             debug="no"
              deprecation="no">
          <classpath path="${jaxr.build.classpath}"/>
 
