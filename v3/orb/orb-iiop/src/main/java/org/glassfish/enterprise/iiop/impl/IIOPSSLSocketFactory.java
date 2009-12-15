@@ -80,7 +80,7 @@ import com.sun.enterprise.security.integration.AppClientSSL;
  * @author Vivek Nagar
  * @author Shing Wai Chan
  */
-public class IIOPSSLSocketFactory  implements ORBSocketFactory, Serializable 
+public class IIOPSSLSocketFactory  implements ORBSocketFactory
 { 
     private static Logger _logger = null;
     static{
