@@ -107,7 +107,7 @@ public class ConverterClient {
                 // Create Home object
                 obj = context.lookup(jndiName);
             }
-            String mys = (String)context.lookup("java:comp/env/certname");
+            String mys = "CN=SSLTest, OU=Sun Java System Application Server, O=Sun Microsystems, L=Santa Clara, ST=California, C=US";
             System.out.println("Certname in appclication-client ->"+mys);
             ConverterRemoteHome home =
                (ConverterRemoteHome) PortableRemoteObject.narrow(obj,

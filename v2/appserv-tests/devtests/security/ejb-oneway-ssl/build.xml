@@ -72,13 +72,12 @@
             value="com.sun.enterprise.naming.SerialInitContextFactory"/>
         <echo message="provider.url used is ${provider.url}"/>
       <java classname="${test.client}"
-        classpath="${s1astest.classpath}:${assemble.dir}/${appname}AppClient.jar"
+        classpath="${s1astest.classpath}:${env.S1AS_HOME}/lib/appserv-rt.jar:${assemble.dir}/${appname}AppClient.jar"
         failonerror="true" fork="true">
         <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${admin.host}"/>
         <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
         <jvmarg value="-Djavax.net.ssl.trustStore=${build.base.dir}/cacerts.jks"/>
         <jvmarg value="-Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
-	<jvmarg value="-Dcom.sun.CORBA.connection.ORBSocketFactoryClass=com.sun.enterprise.iiop.IIOPSSLSocketFactory"/>
         <arg value="${provider.url}"/>
         <arg value="${ctxfactory}"/>
         <arg value="${jndi.name}"/>

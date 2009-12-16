@@ -40,7 +40,7 @@
     
     <target name="run" depends="init-common">
          <antcall target="runclient-local"/> 
-<!--	<antcall target="run-standalone-client"/> -->
+	<antcall target="run-standalone-client"/>
     </target>
 
     <target name="runclient-local" depends="init-common">

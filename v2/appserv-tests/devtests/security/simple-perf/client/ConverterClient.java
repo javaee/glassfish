@@ -107,7 +107,7 @@ public class ConverterClient {
                 // Create Home object
                 obj = context.lookup(jndiName);
             }
-            String mytimes = (String)context.lookup("java:comp/env/times");
+            String mytimes = "5000";//(String)context.lookup("java:comp/env/times");
             System.out.println("No of times the test is run ->"+mytimes);
             ConverterRemoteHome home =
                (ConverterRemoteHome) PortableRemoteObject.narrow(obj,
