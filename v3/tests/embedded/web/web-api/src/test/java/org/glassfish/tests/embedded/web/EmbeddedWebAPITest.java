@@ -47,11 +47,7 @@ import java.net.URL;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.WebBuilder;
-import org.glassfish.web.embed.impl.Context;
-import org.glassfish.web.embed.impl.EmbeddedWebContainer;
-import org.glassfish.web.embed.impl.VirtualServer;
-import org.glassfish.web.embed.impl.WebListener;
+import org.glassfish.api.embedded.web.*;
 
 /**
  * @author Amy Roh
@@ -75,7 +71,8 @@ public class EmbeddedWebAPITest {
             System.out.println("Added Web with base directory "+f.getAbsolutePath());
             embedded = (EmbeddedWebContainer) b.create(server);
             embedded.setLogLevel(Level.INFO);
-            embedded.setPath(f);
+            embedded.setConfiguration((WebBuilder)b);
+            embedded.start();
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
@@ -96,13 +93,10 @@ public class EmbeddedWebAPITest {
          
         VirtualServer defaultVirtualServer = (VirtualServer) 
                 embedded.createVirtualServer(virtualServerId, f);
-        defaultVirtualServer.addAlias(hostName);
         embedded.addVirtualServer(defaultVirtualServer);
         
         Context context = (Context) embedded.createContext(f, null);
-        context.addWelcomeFile("index.html");
-        System.out.println("default web xml "+context.getDefaultWebXml());
-        defaultVirtualServer.addChild(context);
+        defaultVirtualServer.addContext(context, "");
         
         embedded.start();
         

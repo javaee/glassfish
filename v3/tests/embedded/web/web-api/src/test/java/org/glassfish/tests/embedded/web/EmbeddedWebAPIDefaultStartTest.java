@@ -50,11 +50,7 @@ import java.net.URLConnection;
 import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.web.WebBuilder;
-import org.glassfish.web.embed.impl.Context;
-import org.glassfish.web.embed.impl.EmbeddedWebContainer;
-import org.glassfish.web.embed.impl.VirtualServer;
-import org.glassfish.web.embed.impl.WebListener;
+import org.glassfish.api.embedded.web.*;
 
 
 /**
@@ -79,7 +75,7 @@ public class EmbeddedWebAPIDefaultStartTest {
             System.out.println("Added Web with base directory "+f.getAbsolutePath());
             embedded = (EmbeddedWebContainer) b.create(server);
             embedded.setLogLevel(Level.INFO);
-            embedded.setPath(f);
+            embedded.setConfiguration((WebBuilder)b);
         } catch(Exception e) {
             e.printStackTrace();
             throw e;
