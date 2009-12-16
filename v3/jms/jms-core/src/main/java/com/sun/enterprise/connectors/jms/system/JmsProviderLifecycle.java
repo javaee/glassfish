@@ -56,7 +56,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.logging.LogDomains;
 import com.sun.hk2.component.Holder;
-//import org.glassfish.internal.api.PostStartup;
+import org.glassfish.internal.api.PostStartup;
 import com.sun.enterprise.config.serverbeans.JmsHost;
 import com.sun.enterprise.config.serverbeans.JmsService;
 //import com.sun.enterprise.config.serverbeans.MonitoringService;
@@ -67,7 +67,7 @@ import com.sun.enterprise.config.serverbeans.JmsService;
 //import java.util.List;
 
 @Service
-public class JmsProviderLifecycle implements  PostConstruct{
+public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
     private static final String JMS_EAGER_STARTUP = "org.glassfish.jms.EagerStartup";
     //Lifecycle properties
     public static final String EMBEDDED="EMBEDDED";
