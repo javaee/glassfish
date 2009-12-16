@@ -95,9 +95,10 @@ public class DataStructureFactory {
         DataStructure ds;
         Object[] constructorParameters = new Object[]{parameters, maxPoolSize, handler, strategyClass};
 
-        Class class1 = Class.forName(className);
+        Class class1 = Thread.currentThread().getContextClassLoader().loadClass(className);
         Constructor constructor = class1.getConstructor(String.class, int.class, ResourceHandler.class, String.class);
         ds = (DataStructure) constructor.newInstance(constructorParameters);
+        _logger.log(Level.FINEST, "Using Pool Data Structure : ", className);
         return ds;
     }
 

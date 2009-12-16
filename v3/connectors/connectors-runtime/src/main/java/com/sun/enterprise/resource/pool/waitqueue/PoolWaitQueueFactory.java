@@ -88,8 +88,9 @@ public class PoolWaitQueueFactory {
 
     private static PoolWaitQueue initializeCustomWaitQueue(String className) throws Exception {
         PoolWaitQueue waitQueue;
-        Class class1 = Class.forName(className);
+        Class class1 = Thread.currentThread().getContextClassLoader().loadClass(className);
         waitQueue = (PoolWaitQueue) class1.newInstance();
+        _logger.log(Level.FINEST, "Using Pool Wait Queue class : ", className);
         return waitQueue;
     }
 
