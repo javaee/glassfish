@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.Principal;
 import java.util.Properties;
 
 
@@ -58,14 +59,14 @@ public class TestServlet extends HttpServlet {
         }
         //Test2
         public void test2(){
-                String username = request.getUserPrincipal().getName();
+                Principal ruser = request.getUserPrincipal();
                 out.println("<br><br>Test2. Positive check for the correct principal name");
-                if (user.equals(username)){
+                if (ruser != null){
                         out.println("<br>request.getUserPrincipal() test Passed.");
                 }else{
                         out.println("<br>request.getUserPrincipal() test Failed!");
                 }
-                out.println("<br>Info:request.getUserPrincipal() is= "+username);
+                out.println("<br>Info:request.getUserPrincipal() is= "+((ruser!=null)?ruser.getName():"null"));
 
         }
         //Test3 - positive test for checking the user authentication
