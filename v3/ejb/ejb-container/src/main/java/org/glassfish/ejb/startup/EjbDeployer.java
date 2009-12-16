@@ -72,9 +72,6 @@ public class EjbDeployer
 
     @Inject
     protected ServerEnvironmentImpl env;
-
-    @Inject
-    protected Habitat habitat;
     
     @Inject
     protected PolicyLoader policyLoader;

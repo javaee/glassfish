@@ -115,11 +115,13 @@ public class IIOPUtils implements PostConstruct {
             configs     = habitat.getComponent(Configs.class);
         }
 
-        _me = this;
+        IIOPUtils.initMe(this);
 
     }
 
-
+    private static void initMe(IIOPUtils utils) {
+        _me = utils;
+    }
 
     public static IIOPUtils getInstance() {
         return _me;

@@ -105,9 +105,12 @@ public class FlashlightProbeClientMediator
     Instrumentation inst = null;
 
     public void postConstruct() {
-        _me = this;
+        FlashlightProbeClientMediator.initMe(this);
     }
 
+    private static void initMe(FlashlightProbeClientMediator me) {
+        _me = me;
+    }
 
     public static FlashlightProbeClientMediator getInstance() {
         return _me;
