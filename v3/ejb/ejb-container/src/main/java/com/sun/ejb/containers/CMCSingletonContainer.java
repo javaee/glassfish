@@ -78,6 +78,36 @@ public class CMCSingletonContainer
 
     }
 
+    /*
+     * Note for findbug issue (about not releasing the lock in this method)
+     *
+     * Even though the method doesn't unlock the (possibly) acquired
+     * lock, the lock is guaranteed to be unlocked in releaseContext
+     * even in the presence of (both checked and runtime) exceptions.
+     *
+     * The general pattern used by various parts of the EJBContainer code is:
+     * try {
+     *      container.preInvoke(inv);
+     *      returnValue = container.intercept(inv);
+     * } catch (Exception1 e1) {
+     *      ...
+     * } catch (Exception2 e2) {
+     *      ...
+     * } finally {
+     *      container.postInvoke();
+     * }
+     *
+     * BaseContainerontainer.preInvoke() calls _getContext().
+     * Thus, it is clear that, BaseContainer.postInvoke() which in turn
+     * calls releaseContext() will be called if container.preInvoke()
+     * is called. This ensures that CMCSingletonContainer (this class)
+     * releases the lock acquired by _getContext().
+     *
+     * Also, note that the above works even for loop-back methods as
+     * container.preInvoke and container,postInvoke will be called
+     * before every bean method.
+     *
+     */
     protected ComponentContext _getContext(EjbInvocation inv) {
         checkInit();
         InvocationInfo invInfo = inv.invocationInfo;
@@ -96,7 +126,12 @@ public class CMCSingletonContainer
         }
 
 
-
+        /*
+         * Please see comment at the beginning of the method.
+         * Even though the method doesn't unlock the (possibly) acquired
+         * lock, the lock is guaranteed to be unlocked in releaseContext
+         * even in the presence of failure.
+         */
         if (!lockInfo.hasTimeout() ||
             ( (lockInfo.hasTimeout() && (lockInfo.getTimeout() == BLOCK_INDEFINITELY) )) ) {
             theLock.lock();
@@ -130,6 +165,13 @@ public class CMCSingletonContainer
         return singletonCtx;
     }
 
+    /**
+     * This method must unlock any lock that might have been acquired
+     * in _getContext().
+     *
+     * @see com.sun.ejb.containers.CMCSingletonContainer#_getContext(EjbInvocation inv)
+     * @param inv The current EjbInvocation that was passed to _getContext()
+     */
     public void releaseContext(EjbInvocation inv) {
         Lock theLock = inv.getCMCLock();
         if (theLock != null) {

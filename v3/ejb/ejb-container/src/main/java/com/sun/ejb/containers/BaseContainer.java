@@ -1759,6 +1759,21 @@ public abstract class BaseContainer
     /**
      * Called from EJBObject/EJBHome before invoking on EJB.
      * Set the EJB instance in the EjbInvocation.
+     * 
+     * It must be ensured that the following general pattern
+     *  is followed by various parts of the EJBContainer code:
+     *
+     * try {
+     *      container.preInvoke(inv);
+     *      returnValue = container.intercept(inv);
+     * } catch (Exception1 e1) {
+     *      ...
+     * } catch (Exception2 e2) {
+     *      ...
+     * } finally {
+     *      container.postInvoke();
+     * }
+     *
      */
     public void preInvoke(EjbInvocation inv) {
 
