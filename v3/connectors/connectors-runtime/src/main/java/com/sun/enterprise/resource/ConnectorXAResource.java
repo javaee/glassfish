@@ -220,6 +220,13 @@ public class ConnectorXAResource implements XAResource {
                 h = localHandle_;        //Just return the local handle.
             } else {
                 h = (ResourceHandle)j2eetran.getNonXAResource();
+            //make sure that if local-tx resource is set as 'unshareable', only one resource
+            //can be acquired. If the resource in question is not the one in transaction, fail
+            if(!localHandle_.isShareable()){
+                   if(h != localHandle_){
+                        throw new ResourceAllocationException("Cannot use more than one local-tx resource in unshareable scope");
+                    }
+                }
             }
             if (h.getResourceState().isUnenlisted()) {
                 ManagedConnection mc = (ManagedConnection) h.getResource();

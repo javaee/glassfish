@@ -300,11 +300,13 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                 alloc = new NoTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
                 break;
             case ConnectorConstants.LOCAL_TRANSACTION_INT:
+/*
                 if (!shareable) {
                     String i18nMsg = getLocalStrings().getString("con_mgr.resource_not_shareable");
                     throw new ResourceAllocationException(i18nMsg);
                 }
-                alloc = new LocalTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
+*/
+                alloc = new LocalTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc, shareable);
                 break;
             case ConnectorConstants.XA_TRANSACTION_INT:
                 if (rarName.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)) {

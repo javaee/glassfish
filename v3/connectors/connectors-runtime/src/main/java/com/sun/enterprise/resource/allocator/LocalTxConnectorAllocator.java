@@ -54,15 +54,16 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
  */
 public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
 
-
+    protected boolean shareable = true;
     public LocalTxConnectorAllocator(PoolManager poolMgr,
                                      ManagedConnectionFactory mcf,
                                      ResourceSpec spec,
                                      Subject subject,
                                      ConnectionRequestInfo reqInfo,
                                      ClientSecurityInfo info,
-                                     ConnectorDescriptor desc) {
+                                     ConnectorDescriptor desc, boolean shareable) {
         super(poolMgr, mcf, spec, subject, reqInfo, info, desc);
+        this.shareable = shareable;
     }
 
 
@@ -126,9 +127,7 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
 
 
     public boolean shareableWithinComponent() {
-        //For local transactions, a resource is always shareable within components 
-        //within the same transaction
-        return true;
+        return shareable;
     }
 
 }
