@@ -13,4 +13,6 @@ public interface SimpleBMP extends EJBObject {
     public boolean test3() throws RemoteException;
 
     public boolean test4() throws RemoteException;
+    
+    public boolean test5(int count, boolean expectSuccess) throws RemoteException;
 }

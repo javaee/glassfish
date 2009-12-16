@@ -15,6 +15,14 @@
                     <password>DBPASSWORD</password>
                 </default-resource-principal>
             </resource-ref>
+            <resource-ref>
+                <res-ref-name>UnshareableDataSource</res-ref-name>
+                <jndi-name>jdbc/markconnectionasbad-local-unshareable</jndi-name>
+                <default-resource-principal>
+                    <name>DBUSER</name>
+                    <password>DBPASSWORD</password>
+                </default-resource-principal>
+            </resource-ref>
         </ejb>
     </enterprise-beans>
 </sun-ejb-jar>

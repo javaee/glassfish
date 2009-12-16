@@ -78,7 +78,10 @@
             <param name="jdbc.conpool.name" value="jdbc-markconnectionasbad-local-pool"/>
             <param name="jdbc.resource.name" value="jdbc/markconnectionasbad-local"/>
         </antcall>
-
+        <antcall target="deploy-jdbc-common">
+            <param name="jdbc.conpool.name" value="jdbc-markconnectionasbad-local-unshareable-pool"/>
+            <param name="jdbc.resource.name" value="jdbc/markconnectionasbad-local-unshareable"/>
+        </antcall>
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
@@ -104,9 +107,14 @@
         <antcall target="delete-jdbc-resource-common">
             <param name="jdbc.resource.name" value="jdbc/markconnectionasbad-local"/>
         </antcall>
-
+         <antcall target="delete-jdbc-resource-common">
+            <param name="jdbc.resource.name" value="jdbc/markconnectionasbad-local-unshareable"/>
+        </antcall>
         <antcall target="delete-jdbc-connpool-common">
             <param name="jdbc.conpool.name" value="jdbc-markconnectionasbad-local-pool"/>
+        </antcall>
+        <antcall target="delete-jdbc-connpool-common">
+            <param name="jdbc.conpool.name" value="jdbc-markconnectionasbad-local-unshareable-pool"/>
         </antcall>
     </target>
 

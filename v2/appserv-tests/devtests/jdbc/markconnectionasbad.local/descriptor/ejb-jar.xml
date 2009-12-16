@@ -28,6 +28,12 @@
                 <res-auth>Container</res-auth>
                 <res-sharing-scope>Shareable</res-sharing-scope>
             </resource-ref>
+            <resource-ref>
+                <res-ref-name>UnshareableDataSource</res-ref-name>
+                <res-type>javax.sql.DataSource</res-type>
+                <res-auth>Container</res-auth>
+                <res-sharing-scope>Unshareable</res-sharing-scope>
+            </resource-ref>
         </entity>
     </enterprise-beans>
 
@@ -62,6 +68,15 @@
             </method>
             <trans-attribute>NotSupported</trans-attribute>
         </container-transaction>
+
+         <container-transaction>
+            <method>
+                <ejb-name>SimpleBMPEJB</ejb-name>
+                <method-name>test5</method-name>
+            </method>
+            <trans-attribute>Required</trans-attribute>
+        </container-transaction>
+
     </assembly-descriptor>
 
 </ejb-jar>

@@ -171,6 +171,49 @@ public class SimpleBMPBean
         return passed;
     }
 
+    /**
+     * Write Operation - Single (Local) DataSource  UnShareable
+     *
+     * @return boolean
+     */
+    public boolean test5(int numOfConnections, boolean expectSuccess) {
+        boolean passed = true;
+        Connection conns[] = new Connection[numOfConnections];
+           com.sun.appserv.jdbc.DataSource ds1 = null ;
+        try{
+           ds1 = (com.sun.appserv.jdbc.DataSource)(new InitialContext()).lookup("java:comp/env/UnshareableDataSource");
+        }catch(Exception e){
+          e.printStackTrace();
+        }
+        try {
+        for (int i = 0; i < numOfConnections; i++) {
+                conns[i] = ds1.getConnection();
+                Statement stmt = conns[i].createStatement();
+                stmt.executeUpdate("insert into o_customer values (" + i + ",'a')");
+        }
+	} catch (Exception e) {
+                if(expectSuccess){
+                    passed = false;
+                }
+                e.printStackTrace();
+            } finally {
+        for (int i = 0; i < conns.length; i++) {
+                if (conns[i] != null) {
+                    try {
+                        //System.out.println("Closing Connection : " + conn);
+                        conns[i].close();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+          }
+            }
+
+
+        return passed;
+    }
+
+
     public void ejbLoad() {
     }
 

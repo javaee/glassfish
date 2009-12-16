@@ -58,6 +58,25 @@ public class Client {
             stat.addStatus(" Mark-Connection-As-Bad [local - NoTx - Shareable Write] : ", stat.FAIL);
         }
 
+        if (simpleBMP.test5(1, true)) {
+            stat.addStatus(" Mark-Connection-As-Bad [local - Tx - UnShareable Write (1) ] : ", stat.PASS);
+        } else {
+            stat.addStatus(" Mark-Connection-As-Bad [local - Tx - UnShareable Write (1) ] : ", stat.FAIL);
+        }
+
+        if (simpleBMP.test5(2, false)) {
+            stat.addStatus(" Mark-Connection-As-Bad [local - Tx - UnShareable Write (2) ] : ", stat.PASS);
+        } else {
+            stat.addStatus(" Mark-Connection-As-Bad [local - Tx - UnShareable Write (2) ] : ", stat.FAIL);
+        }
+
+
+        if (simpleBMP.test5(5, false)) {
+            stat.addStatus(" Mark-Connection-As-Bad [local - Tx - UnShareable Write (3) ] : ", stat.PASS);
+        } else {
+            stat.addStatus(" Mark-Connection-As-Bad [local - Tx - UnShareable Write (3) ] : ", stat.FAIL);
+        }
+
         System.out.println("Mark-Connection-As-Bad Status: ");
         stat.printSummary();
     }
