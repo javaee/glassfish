@@ -461,6 +461,18 @@ public class ConnectorConnectionPoolDeployer extends GlobalResourceDeployer
                         _logger.fine(" ConnectorConnectionPoolDeployer::  Setting matchConnections");
                     }
                     ccp.setMatchConnections(toBoolean(ep.getValue(), true));
+                } else if ("LAZYCONNECTIONASSOCIATION".equals(ep.getName().toUpperCase())) {
+                    ConnectionPoolObjectsUtils.setLazyEnlistAndLazyAssocProperties(ep.getValue(),
+                            domainCcp.getProperty(), ccp);
+                    _logger.fine("LAZYCONNECTIONASSOCIATION");
+
+                } else if ("LAZYCONNECTIONENLISTMENT".equals(ep.getName().toUpperCase())) {
+                    ccp.setLazyConnectionEnlist(toBoolean(ep.getValue(), false));
+                    _logger.fine("LAZYCONNECTIONENLISTMENT");
+
+                } else if ("ASSOCIATEWITHTHREAD".equals(ep.getName().toUpperCase())) {
+                    ccp.setAssociateWithThread(toBoolean(ep.getValue(), false));
+                    _logger.fine("ASSOCIATEWITHTHREAD");
                 } else if ("POOLDATASTRUCTURE".equals(ep.getName().toUpperCase())) {
                     ccp.setPoolDataStructureType(ep.getValue());
                     _logger.fine("POOLDATASTRUCTURE");

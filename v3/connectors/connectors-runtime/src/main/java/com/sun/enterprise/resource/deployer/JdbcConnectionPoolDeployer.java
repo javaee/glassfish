@@ -315,18 +315,20 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                     conConnPool.setMatchConnections(toBoolean(rp.getValue(), false));
                     logFine("MATCHCONNECTIONS");
 
-                }else if ("ASSOCIATEWITHTHREAD".equals(name.toUpperCase())) {
+                } else if ("ASSOCIATEWITHTHREAD".equals(name.toUpperCase())) {
                     conConnPool.setAssociateWithThread(toBoolean(rp.getValue(), false));
                     logFine("ASSOCIATEWITHTHREAD");
 
-                } else if ("POOLING".equals(name.toUpperCase())) {
-                    conConnPool.setPooling(toBoolean(rp.getValue(), true));
-                    logFine("POOLING");
+                } else if ("LAZYCONNECTIONASSOCIATION".equals(name.toUpperCase())) {
+                    ConnectionPoolObjectsUtils.setLazyEnlistAndLazyAssocProperties(rp.getValue(),
+                            adminPool.getProperty(), conConnPool);
+                    logFine("LAZYCONNECTIONASSOCIATION");
 
-                } else if ("PING".equals(name.toUpperCase())) {
-                    conConnPool.setPingDuringPoolCreation(toBoolean(rp.getValue(), false));
-                    logFine("PING");
-                } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
+ 	            } else if ("LAZYCONNECTIONENLISTMENT".equals(name.toUpperCase())) {
+                    conConnPool.setLazyConnectionEnlist(toBoolean(rp.getValue(), false));
+                    logFine("LAZYCONNECTIONENLISTMENT");
+
+ 	            } else if ("POOLDATASTRUCTURE".equals(name.toUpperCase())) {
                     conConnPool.setPoolDataStructureType(rp.getValue());
                     logFine("POOLDATASTRUCTURE");
 
