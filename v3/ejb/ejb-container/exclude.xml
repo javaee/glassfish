@@ -1,0 +1,15 @@
+<FindBugsFilter>
+    <!--
+         Request: Mahesh
+         Approval: Bill
+     -->
+    <Match>
+        <Or>
+          <Class name="com.sun.ejb.containers.CMCSingletonContainer"/>
+          <Class name="com.sun.ejb.containers.BaseContainer"/>
+        </Or>
+        <Bug pattern="UL_UNRELEASED_LOCK"/>
+        <Priority value="1"/>
+    </Match>
+
+</FindBugsFilter>
