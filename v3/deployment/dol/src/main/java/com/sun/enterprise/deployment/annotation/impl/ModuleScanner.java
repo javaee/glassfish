@@ -42,6 +42,10 @@ import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.logging.LogDomains;
+import java.io.ByteArrayOutputStream;
+import java.util.Enumeration;
+import java.util.jar.JarFile;
+import java.util.zip.ZipException;
 import org.glassfish.apf.Scanner;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.JavaEEScanner;
@@ -54,21 +58,20 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.util.Enumeration;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.zip.ZipException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
-import java.net.URISyntaxException;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.jar.JarInputStream;
 
 
 /**
@@ -77,6 +80,8 @@ import java.net.URISyntaxException;
  * @author Shing Wai Chan
  */
 public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<T>, PostConstruct {
+
+    private static final int DEFAULT_ENTRY_BUFFER_SIZE = 8192;
 
     @Inject
     DefaultAnnotationScanner defaultScanner;
@@ -137,7 +142,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
      */
     protected void addScanJar(File jarFile) throws IOException {
         JarFile jf = null;
-        
+
 
         try {
             /*
@@ -159,7 +164,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
                         ReadableByteChannel channel = Channels.newChannel(jf.getInputStream(je));
                         if (channel!=null) {
                             if (classFile.containsAnnotation(channel, je.getSize())) {
-                                addEntry(je);                     
+                                addEntry(je);
                             }
 
                             channel.close();
@@ -169,7 +174,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
             }
         } catch (ZipException ze) {
             logger.log(Level.WARNING, ze.getMessage() +  ": file path: " + jarFile.getPath());
-        } 
+        }
         finally {
             if (jf != null) {
                 jf.close();
@@ -177,6 +182,60 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
         }
     }
     
+    /**
+     * This add all classes in given jarFile to be scanned.
+     * @param jarURI
+     */
+    protected void addScanURI(final URI jarURI) {
+        JarInputStream jis = null;
+        try {
+            final InputStream jarInputStream = jarURI.toURL().openStream();
+            if (jarInputStream == null) {
+                return;
+            }
+            jis = new JarInputStream(jarInputStream);
+            JarEntry je;
+            while ((je = jis.getNextJarEntry()) != null) {
+                if (je.getName().endsWith(".class")) {
+                    if (processAllClasses) {
+                        addEntry(je);
+                    } else {
+                        // check if it contains top level annotations...
+                        final ByteArrayOutputStream baos =
+                                new ByteArrayOutputStream();
+
+                        int bytesRead;
+                        /*
+                         * The JarEntry might not be able to report its expanded
+                         * size (such as during a Java Web Start launch).  So
+                         * read the entry using a loop.
+                         */
+                        final byte[] buffer = new byte[
+                                je.getSize() > -1 ?
+                                    (int) je.getSize() :
+                                    DEFAULT_ENTRY_BUFFER_SIZE];
+                        while ((bytesRead = jis.read(buffer)) != -1) {
+                            baos.write(buffer, 0, bytesRead);
+                        }
+                        if (classFile.containsAnnotation(baos.toByteArray())) {
+                            addEntry(je);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, ex.getMessage() +  ": file path: " + jarURI.toASCIIString(), ex);
+        } finally {
+            if (jis != null) {
+                try {
+                    jis.close();
+                } catch (Exception ex) {
+                    logger.log(Level.WARNING, jarURI.toASCIIString(), ex);
+                }
+            }
+        }
+    }
+
     private void addEntry(JarEntry je) {
         String className = je.getName().replace('/', '.');
         className = className.substring(0, className.length()-6);
@@ -276,7 +335,7 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
             try {
                 File libFile = new File(url.toURI());;
                 if (libFile.isFile()) {
-                    addScanJar(libFile);
+                    addScanURI(libFile.toURI());
                 } else if (libFile.isDirectory()) {
                     addScanDirectory(libFile);
                 }

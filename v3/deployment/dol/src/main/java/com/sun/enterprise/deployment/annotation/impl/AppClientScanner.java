@@ -124,15 +124,21 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
             if (archive instanceof FileArchive) {
                 addScanDirectory(new File(archive.getURI()));
             } else if (archive instanceof InputJarArchive) {
+                /*
+                 * This is during deployment, so use the faster code path using
+                 * the File object.
+                 */
                 URI uriToAdd = archive.getURI();
                 addScanJar(scanJar(uriToAdd));
             } else if (archive instanceof MultiReadableArchive) {
                 /*
                  * During app client launches, scan the developer's archive
                  * which is in slot #1, not the facade archive which is in
-                 * slot #0.
+                 * slot #0.  Also, use URIs instead of File objects because
+                 * during Java Web Start launches we don't have access to
+                 * File objects.
                  */
-                addScanJar(scanJar(((MultiReadableArchive) archive).getURI(1)));
+                addScanURI(scanURI(((MultiReadableArchive) archive).getURI(1)));
             }
         }
 
@@ -140,7 +146,12 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
         this.archiveFile = null; // = archive;
     }
 
-    private File scanJar(URI uriToAdd) throws IOException {
+
+    private File scanJar(URI uriToAdd) {
+        return new File(uriToAdd);
+    }
+
+    private URI scanURI(URI uriToAdd) throws IOException {
         if (uriToAdd.getScheme().equals("jar")) {
             try {
                 uriToAdd = new URI("file", uriToAdd.getSchemeSpecificPart(), null);
@@ -148,6 +159,6 @@ public class AppClientScanner extends ModuleScanner<ApplicationClientDescriptor>
                 throw new IOException(ex);
             }
         }
-        return new File(uriToAdd);
+        return uriToAdd;
     }
 }

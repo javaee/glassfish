@@ -46,7 +46,11 @@ import java.nio.channels.ReadableByteChannel;
  *
  * This is used by the annotation frameworks to quickly scan .class files 
  * for the presence of annotations. This avoid the annotation framework having
- * to load each .class file in the class loader. 
+ * to load each .class file in the class loader.
+ *
+ * The bytecode to be scanned could come from either a File (which lends itself
+ * easily to a channel) or from a JAR (which works better with a byte array).  So
+ * we provide two variants of the containsAnnotation method, one for each.
  *
  * @author Jerome Dochez
  */
@@ -61,12 +65,34 @@ public class ClassFile {
         constantPoolInfo = poolInfo;
     }
 
+    /**
+     * Read the input channel and initialize instance data
+     * structure.
+     */public boolean containsAnnotation(ReadableByteChannel in, long size) throws IOException {
+        header.clear();
+        if (size!=-1 && size>header.capacity()) {
+            // time to expand...
+            header = ByteBuffer.allocate((int) size);
+        }
+        long read = (long) in.read(header);
+        if (size!=-1 && read!=size) {
+            return false;
+        }
+        header.rewind();
+        return containsAnnotation(header);
+    }
 
     /**
      * Read the input channel and initialize instance data
      * structure.
      */
-    public boolean containsAnnotation(ReadableByteChannel in, long size) throws IOException {
+    public boolean containsAnnotation(final byte[] bytecode) throws IOException {
+        final ByteBuffer wrappedHeader = ByteBuffer.wrap(bytecode);
+        return containsAnnotation(wrappedHeader);
+    }
+
+    private boolean containsAnnotation(final ByteBuffer headerBuffer) throws IOException {
+
 
         /**
          * this is the .class file layout
@@ -90,26 +116,16 @@ public class ClassFile {
             attribute_info attributes[attributes_count];
         }        
          **/
-        header.clear();   
-        if (size!=-1 && size>header.capacity()) {
-            // time to expand...
-            header = ByteBuffer.allocate((int) size);
-        }
-        long read = (long) in.read(header);
-        if (size!=-1 && read!=size) {
-            return false;            
-        }        
-        header.rewind();
                 
-        if (header.getInt()!=magic) {
+        if (headerBuffer.getInt()!=magic) {
             return false;
         }
         
-        majorVersion = header.getShort();
-        minorVersion = header.getShort();
-        int constantPoolSize = header.getShort();
+        majorVersion = headerBuffer.getShort();
+        minorVersion = headerBuffer.getShort();
+        int constantPoolSize = headerBuffer.getShort();
 
-        return constantPoolInfo.containsAnnotation(constantPoolSize, header);
+        return constantPoolInfo.containsAnnotation(constantPoolSize, headerBuffer);
         
     }
     
