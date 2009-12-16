@@ -58,6 +58,7 @@ import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.Globals;
 
 import sun.security.util.PropertyExpander;
 import sun.security.util.PropertyExpander.ExpandException;
@@ -81,15 +82,15 @@ public class ConfigDomainParser implements ConfigParser {
     }
 
     public void initialize(Object service) throws IOException {
-	if (service == null) {
-	    service =Util.getDefaultHabitat().getComponent(SecurityService.class);
+	if (service == null && Globals.getDefaultHabitat() != null) {
+	    service = Globals.getDefaultHabitat().getComponent(SecurityService.class);
 	}
 
 	if (service instanceof SecurityService) {
 	    processServerConfig((SecurityService) service,configMap);
-	} else {
+	} /*else {
             throw new IOException("invalid configBean type passed to parser");
-	}
+	}*/
     }
 
     private void processServerConfig(SecurityService service, Map newConfig) 
