@@ -503,7 +503,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                          *    if marked comment-1
                          * 2. The resource enlisted inside the transaction is shareable
                          * 3. We are dealing with XA resources OR
-                         *    We are deling with a non-XA resource that's not in use
+                         *    We are dealing with a non-XA resource that's not in use
                          *    Note that sharing a non-xa resource that's in use involves
                          *    associating physical connections.
                          * 4. The credentials of the resources match
