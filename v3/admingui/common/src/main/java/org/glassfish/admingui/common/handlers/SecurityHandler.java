@@ -238,7 +238,7 @@ public class SecurityHandler {
           }else{
              Map<String, Object> cMap = new HashMap();
              cMap.put("Name", attrMap.get("Name"));
-             cMap.put("Classname", attrMap.get("classname"));
+             cMap.put("Classname", attrMap.get("classnameInput"));
 
              Map[] propMaps = new Map[propList.size()];
              int i=0;
