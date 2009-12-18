@@ -79,13 +79,15 @@ public class CMCSingletonContainer
     }
 
     /*
-     * Note for findbug issue (about not releasing the lock in this method)
+     * Findbugs complains that the lock acquired in this method is not
+     *  unlocked on all paths in this method.
      *
      * Even though the method doesn't unlock the (possibly) acquired
-     * lock, the lock is guaranteed to be unlocked in releaseContext
-     * even in the presence of (both checked and runtime) exceptions.
+     * lock, the lock is guaranteed to be unlocked in releaseContext()
+     * even in the presence of (both checked and unchecked) exceptions.
      *
-     * The general pattern used by various parts of the EJBContainer code is:
+     * The general pattern used by various parts of the EJB container code is:
+     *
      * try {
      *      container.preInvoke(inv);
      *      returnValue = container.intercept(inv);
@@ -97,14 +99,13 @@ public class CMCSingletonContainer
      *      container.postInvoke();
      * }
      *
-     * BaseContainerontainer.preInvoke() calls _getContext().
      * Thus, it is clear that, BaseContainer.postInvoke() which in turn
      * calls releaseContext() will be called if container.preInvoke()
      * is called. This ensures that CMCSingletonContainer (this class)
      * releases the lock acquired by _getContext().
      *
-     * Also, note that the above works even for loop-back methods as
-     * container.preInvoke and container,postInvoke will be called
+     * Also, note that the above works even for loopback methods as
+     * container.preInvoke() and container,postInvoke() will be called
      * before every bean method.
      *
      */
@@ -129,8 +130,8 @@ public class CMCSingletonContainer
         /*
          * Please see comment at the beginning of the method.
          * Even though the method doesn't unlock the (possibly) acquired
-         * lock, the lock is guaranteed to be unlocked in releaseContext
-         * even in the presence of failure.
+         * lock, the lock is guaranteed to be unlocked in releaseContext()
+         * even if exceptions were thrown in _getContext()
          */
         if (!lockInfo.hasTimeout() ||
             ( (lockInfo.hasTimeout() && (lockInfo.getTimeout() == BLOCK_INDEFINITELY) )) ) {
