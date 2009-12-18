@@ -53,7 +53,7 @@
 		<pathelement path="${env.APS_HOME}/lib/reporter.jar"/>
 	</classpath>
 	<arg value="xml-parse" /> 
-	<sysproperty key="java.security.debug" value="=configfile,configxmlparser"/>
+	<sysproperty key="java.security.debug" value="configfile,configxmlparser"/>
 	<sysproperty key="sun-acc.xml.url" value="${env.APS_HOME}/devtests/security/container-auth/testConfig/sun-acc.xml"/>
 	<!--<jvmarg value="-Xdebug" />
 	<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8008"/>--> 

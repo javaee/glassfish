@@ -85,6 +85,7 @@ public class AuthConfigTest extends Thread {
     private static int xmlParse(int testnum) throws Exception {
 
         try{
+            System.setProperty("config.parser", "com.sun.enterprise.security.appclient.ConfigXMLParser");
             AuthConfig config = AuthConfig.getAuthConfig();
             ClientAuthContext cac;
             ServerAuthContext sac;
