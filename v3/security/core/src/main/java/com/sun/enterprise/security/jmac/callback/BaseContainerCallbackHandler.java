@@ -93,6 +93,7 @@ import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.jmac.config.CallbackHandlerConfig;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
+import com.sun.enterprise.security.ssl.SecuritySupportImpl;
 import com.sun.enterprise.security.store.IdentityManager;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
@@ -124,10 +125,18 @@ abstract class BaseContainerCallbackHandler
     protected HandlerContext handlerContext = null;
 
     // TODO: inject them once this class becomes a component
-    protected final SSLUtils sslUtils = Globals.getDefaultHabitat().getComponent(SSLUtils.class);
-    protected final SecuritySupport secSup = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
+    protected final SSLUtils sslUtils;
+    protected final SecuritySupport secSup;
     
     protected BaseContainerCallbackHandler() {
+        if(Globals.getDefaultHabitat() == null){
+            sslUtils = new SSLUtils();
+            secSup = new SecuritySupportImpl();
+            sslUtils.postConstruct();
+        } else {
+            sslUtils = Globals.getDefaultHabitat().getComponent(SSLUtils.class);
+            secSup = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
+        }
     }
     
     public void setHandlerContext(HandlerContext handlerContext) {

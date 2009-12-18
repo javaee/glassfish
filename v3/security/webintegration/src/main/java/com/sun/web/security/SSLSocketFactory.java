@@ -191,7 +191,7 @@ public class SSLSocketFactory implements org.apache.catalina.net.ServerSocketFac
         KeyManager[] kMgrs = sslUtils.getKeyManagers();
         if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
             for (int i = 0; i < kMgrs.length; i++) {
-                kMgrs[i] = new J2EEKeyManager(habitat, (X509KeyManager)kMgrs[i], keyAlias);
+                kMgrs[i] = new J2EEKeyManager((X509KeyManager)kMgrs[i], keyAlias);
             }
         }
 	ctx.init(kMgrs, sslUtils.getTrustManagers(), null);

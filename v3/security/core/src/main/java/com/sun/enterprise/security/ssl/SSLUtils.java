@@ -93,11 +93,8 @@ public final class SSLUtils implements PostConstruct {
 
     private static final Logger _logger = LogDomains.getLogger(SSLUtils.class, LogDomains.SECURITY_LOGGER);
 
-    @Inject
+    @Inject(optional=true)
     SecuritySupport secSupp;
-
-    @Inject
-    Habitat habitat;
     
     private boolean hasKey = false;
     private KeyManager keyManager = null;
@@ -108,6 +105,10 @@ public final class SSLUtils implements PostConstruct {
     
     public void postConstruct() {
         try {
+            //TODO: To check the right implementation once we support EE.
+            if(secSupp == null){
+                secSupp = new SecuritySupportImpl();
+            }
             initDate = new Date();
             KeyStore[] keyStores = getKeyStores();
             initKeyManagers(keyStores, secSupp.getKeyStorePasswords());
@@ -147,7 +148,7 @@ public final class SSLUtils implements PostConstruct {
             KeyManager[] kMgrs = getKeyManagers();
             if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
                 for (int i = 0; i < kMgrs.length; i++) {
-                    kMgrs[i] = new J2EEKeyManager(habitat,(X509KeyManager)kMgrs[i], keyAlias);
+                    kMgrs[i] = new J2EEKeyManager((X509KeyManager)kMgrs[i], keyAlias);
                 }
             }
             ctx.init(kMgrs, getTrustManagers(), null);

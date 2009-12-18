@@ -102,7 +102,7 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
                         msg.append(" alias : " + alias);
                         _logger.log(Level.FINE, msg.toString());
                     }
-                    newMgrs[i] = new J2EEKeyManager(habitat, (X509KeyManager) mgrs[i], alias);
+                    newMgrs[i] = new J2EEKeyManager((X509KeyManager) mgrs[i], alias);
                 }
                 mgrs = newMgrs;
             }

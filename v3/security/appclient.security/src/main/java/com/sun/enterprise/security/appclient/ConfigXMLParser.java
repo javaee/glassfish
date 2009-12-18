@@ -50,10 +50,16 @@ import java.io.IOException;
 import com.sun.logging.LogDomains;
 
 import java.util.List;
+import javax.xml.bind.JAXBException;
 import org.glassfish.appclient.client.acc.config.*;
 import sun.security.util.PropertyExpander;
 import com.sun.enterprise.security.jmac.AuthMessagePolicy;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import javax.security.auth.message.MessagePolicy;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -69,6 +75,7 @@ public class ConfigXMLParser implements ConfigParser {
     private Map configMap = new HashMap();
     private Set<String> layersWithDefault = new HashSet<String>();
     private List<MessageSecurityConfig> msgSecConfigs = null;
+    private static final String SUN_ACC_XML = "sun-acc.xml.url";
 
     public ConfigXMLParser() throws IOException {
     }
@@ -228,9 +235,24 @@ public class ConfigXMLParser implements ConfigParser {
     }
 
     public void initialize(Object config) throws IOException {
-        Util util = Util.getInstance();
-        assert(util != null);
-        this.initialize((List<MessageSecurityConfig>)util.getAppClientMsgSecConfigs());
-       //this.initialize(config);
+        String sun_acc = System.getProperty(SUN_ACC_XML, "sun-acc.xml");
+        List<MessageSecurityConfig> msgconfigs = null;
+        if (Globals.getDefaultHabitat() == null && sun_acc != null) {
+            try {
+                InputStream is = new FileInputStream(sun_acc);
+                JAXBContext jc = JAXBContext.newInstance(ClientContainer.class);
+                Unmarshaller u = jc.createUnmarshaller();
+                ClientContainer cc = (ClientContainer) u.unmarshal(is);
+                msgconfigs = cc.getMessageSecurityConfig();
+            } catch (JAXBException ex) {
+                _logger.log(Level.SEVERE, null, ex);
+            }
+        } else {
+            Util util = Util.getInstance();
+            assert (util != null);
+            msgconfigs = (List<MessageSecurityConfig>) util.getAppClientMsgSecConfigs();
+        }
+        this.initialize(msgconfigs);
+        //this.initialize(config);
     }
 }

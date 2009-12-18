@@ -84,10 +84,7 @@ public final class J2EEKeyManager implements X509KeyManager {
     private Map tokenName2MgrMap = null;
     private boolean supportTokenAlias = false;
 
-    private final Habitat habitat;
-
-    public J2EEKeyManager(Habitat habitat, X509KeyManager mgr, String alias) {
-        this.habitat = habitat;
+    public J2EEKeyManager(X509KeyManager mgr, String alias) {
         this.mgr = mgr;
 	this.alias = alias;
 
