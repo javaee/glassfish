@@ -93,7 +93,6 @@ public class AuthConfigTest extends Thread {
             Subject subject = new Subject();
             HashMap options;
             TestCredential cred1;
-            TestCredential cred2;
             
             /**
              * Test NULL return
@@ -126,7 +125,6 @@ public class AuthConfigTest extends Thread {
                 options,
                 configRequest,
                 configResponse);
-                cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -147,7 +145,6 @@ public class AuthConfigTest extends Thread {
                         ddRequest,
                         ddResponse);
             
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -166,9 +163,7 @@ public class AuthConfigTest extends Thread {
             cred1 = new TestCredential("ClientModule1",
                             new HashMap(),
                             ddRequest,
-                            null);
-            cred2 = null;
-            
+                            null);            
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -188,7 +183,6 @@ public class AuthConfigTest extends Thread {
                                         new HashMap(),
                                         null,
                                         ddResponse);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -210,7 +204,6 @@ public class AuthConfigTest extends Thread {
                                         options,
                                         ddRequest,
                                         ddResponse);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -232,7 +225,6 @@ public class AuthConfigTest extends Thread {
                                         options,
                                         ddRequest,
                                         ddResponse);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -253,7 +245,6 @@ public class AuthConfigTest extends Thread {
                                         new HashMap(),
                                         ddRequest,
                                         null);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -273,7 +264,6 @@ public class AuthConfigTest extends Thread {
                                         new HashMap(),
                                         null,
                                         ddResponse);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -297,7 +287,6 @@ public class AuthConfigTest extends Thread {
                                         options,
                                         ddRequest,
                                         null);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -319,7 +308,6 @@ public class AuthConfigTest extends Thread {
                                         options,
                                         null,
                                         ddResponse);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -343,7 +331,6 @@ public class AuthConfigTest extends Thread {
                                         new HashMap(),
                                         ddRequest,
                                         null);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -362,7 +349,6 @@ public class AuthConfigTest extends Thread {
                                         new HashMap(),
                                         null,
                                         ddResponse);
-            cred2 = null;
             if (!subject.getPublicCredentials().contains(cred1)) {
                 stat.addStatus(testid+testnum, stat.FAIL);
             }else
@@ -387,16 +373,6 @@ public class AuthConfigTest extends Thread {
                 
             testnum++;
             System.out.println("Testing Container-auth testid = "+testnum);
-            
-            if (config.getServerAuthContext(SOAP,
-                                            "app6",
-                                            null,
-                                            null,
-                                            null) != null) {
-                stat.addStatus(testid+testnum, stat.FAIL);
-            }else
-                stat.addStatus(testid+testnum, stat.PASS);
-            testnum++;
         }finally{
             stat.printSummary();
         }
