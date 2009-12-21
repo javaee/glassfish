@@ -290,7 +290,6 @@ public class ASURLClassLoader
             URLEntry entry = new URLEntry(url);
 
             if ( !urlSet.contains(entry) ) {
-                entry.init();
                 // adds the url entry to the list
                 this.urlSet.add(entry);
 
@@ -955,8 +954,9 @@ public class ASURLClassLoader
             ensure thread visibility by making it 'volatile'  */
         volatile ProtectionDomain pd = null;
 
-        URLEntry(URL url) {
+        URLEntry(URL url) throws IOException {
             source = url;
+            init();
         }
 
         void init() throws IOException {
@@ -1139,10 +1139,10 @@ public class ASURLClassLoader
  	 	                tf = true;
  	 	            }
  	 	        } catch (URISyntaxException e1) {
-                    //fall back to comparing URLs
-                    if (source.equals(e.source)) {
-                        tf = true;
-                    }
+                    // We should never get here, because we call init() in the constructor and
+                    // init() would have thrown an exception if the URL could not be converted to a valid URI.
+                    assert(false);
+                    throw new RuntimeException(e1);
                 }
             }
 
@@ -1156,8 +1156,10 @@ public class ASURLClassLoader
             try {
  	 	        return source.toURI().hashCode();
  	 	    } catch (URISyntaxException e) {
- 	 	        //fall back to URL's hashCode
-                return source.hashCode();
+                // We should never get here, because we call init() in the constructor and
+                // init() would have thrown an exception if the URL could not be converted to a valid URI.
+                assert(false);
+                throw new RuntimeException(e);
             }
         }
 
