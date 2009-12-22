@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the License). You may not use this file except in
+ compliance with the License.
+ 
+ You can obtain a copy of the License at
+ https://javaserverfaces.dev.java.net/CDDL.html or
+ legal/CDDLv1.0.txt. 
+ See the License for the specific language governing
+ permission and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL
+ Header Notice in each file and include the License file
+ at legal/CDDLv1.0.txt.    
+ If applicable, add the following below the CDDL Header,
+ with the fields enclosed by brackets [] replaced by
+ your own identifying information:
+ "Portions Copyrighted [year] [name of copyright owner]"
+ 
+ [Name of File] [ver.__] [Date]
+ 
+ Copyright 2005 Sun Microsystems Inc. All Rights Reserved
+-->
+
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+
+<taglib>
+
+  <!-- ============== Tag Library Description Elements ============= -->
+  <tlib-version>0.03</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>Demo Taglib</short-name>
+  <uri>components_demo_taglibrary</uri>
+  <description>
+    This tag library contains any tags needed to showcase the demo components
+  </description>
+
+  <tag>
+    <name>escapeHtml</name>
+    <tag-class>demo.taglib.EscapeHtmlTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+        <name>reader</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <type>java.io.Reader</type>
+    </attribute>  
+    <attribute>
+        <name>writer</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <type>java.io.Writer</type>
+    </attribute>  
+  </tag>
+
+
+</taglib>

@@ -1,0 +1,22 @@
+
+div.popupStyle
+{
+    position:absolute;
+    left:0px;
+    top:0px;
+    z-index:2;
+    visibility:hidden;
+}
+div.popupArrowStyle
+{
+    position:absolute;
+    left:0px;
+    top:0px;
+    z-index:3;
+}
+div.popupContentStyle
+{
+    width:300px; 
+    background-image:url(images/bmiddle.png);
+}
+

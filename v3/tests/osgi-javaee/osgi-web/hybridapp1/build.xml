@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+<!ENTITY commonproperties SYSTEM "./../config/common.properties">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="hybridapp1" default="all" basedir=".">
+
+    &commonBuild;
+    &commonproperties;
+    &testproperties;
+
+    <target name="all" depends="clean">
+      <record name="${log.file}" action="start" />
+         <antcall target="build"/>
+      <record name="${log.file}" action="stop" />
+    </target>
+
+    <target name="build" depends="setup, runtest, undeploy"/>
+
+    <target name="clean">
+      <antcall target="clean-common"/>
+      <delete dir="${basedir}/target"/>
+      <delete file="${basedir}/${log.file}"/>
+    </target>
+
+    <target name="setup" depends="package-app, deploy-app"/>
+
+    <target name="package-app">
+      <antcall target="package"/>
+    </target>
+
+    <target name="deploy-app">
+      <antcall target="deploy-application">
+        <param name="app.path" value="${basedir}/target/${appname}.war"/>
+      </antcall>
+    </target>
+
+    <target name="undeploy">
+	<antcall target="undeploy-application">
+	  <param name="appname" value="${appname}"/>
+	</antcall>
+    </target>
+
+    <target name="runtest">
+	<antcall target="test">
+	  <param name="testURL" value="http://localhost:8080/hybridapp1" />
+        </antcall>
+    </target>
+
+</project>

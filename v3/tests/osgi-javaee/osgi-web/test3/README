@@ -1,0 +1,3 @@
+start derby
+deploy
+access the URL: http://localhost:8080/v3_jdbc_dev_tests/MyServlet

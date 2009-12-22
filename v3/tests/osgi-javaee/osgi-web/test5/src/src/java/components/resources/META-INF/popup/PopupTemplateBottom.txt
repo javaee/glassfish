@@ -1,0 +1,5 @@
+        </div>
+        <div id="popBottom">
+            <img name="bottomcapimg" id="bottomcapimgid" style="width:300px; height:25px; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/bbottom.png'); "  src="images/bbottom.png"/>
+        </div>
+    </div>

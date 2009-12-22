@@ -1,0 +1,123 @@
+<target name="clean-common">
+  <echo message="common.xml: Cleaning test build files: ${build.base.dir}"
+        level="verbose"/>
+  <delete dir="${build.base.dir}"/>
+</target>
+
+<target name="package">
+  <exec executable="mvn" failonerror="false" resultproperty="PackageFailure">
+     <arg value="package"/>
+  </exec>
+
+<!-- Check if the packaging has failed and set the Failure property accordingly -->
+  <condition property="FailStatus" value="${package.fail.status}">
+    <not>
+      <equals arg1="${PackageFailure}" arg2="0"/>
+    </not>
+  </condition>
+
+  <antcall target="report"/>
+</target>
+
+<target name="package-war">  
+  <echo message="Creating ${appname}.war file"/>
+  <jar destfile="${destfile}" basedir="${build.classes.dir}" manifest="${manifest.mf}">
+  </jar>
+</target>
+
+<target name="deploy-application">
+  <echo message="common.xml: Deploying Application : ${app.path}"
+	level="verbose"/>
+  <antcall target="autodeploy-app"/>
+<!--  <antcall target="asadmin-deploy-app"/ -->
+</target>
+
+<target name="autodeploy-app">
+  <copy file="${app.path}" todir="${deploy.dir}" failonerror="false"/>
+  <sleep seconds="10"/>
+</target>
+
+<target name="asadmin-deploy-app">
+   <echo message="Deploying ${app.path}" level="verbose"/>
+   <exec executable="${ASADMIN}" failonerror="false" resultproperty="DeploymentFailure">
+     <arg line="--user ${admin.user}"/>
+     <arg line="--host ${admin.host}"/>
+     <arg line="--port ${admin.port}"/>
+     <arg line="deploy"/>
+     <arg line="--type osgi"/>
+     <arg line="${app.path}"/>
+   </exec>
+
+<!-- Check if the deployment has failed and set the failure status accordingly -->
+  <condition property="FailStatus" value="${deployment.fail.status}">
+    <not>
+      <equals arg1="${DeploymentFailure}" arg2="0"/>
+    </not>
+  </condition>
+
+  <antcall target="report"/>
+</target>
+
+<target name="undeploy-application">
+  <echo message="common.xml: Undeploying Application : ${appname}"
+	level="verbose"/>
+  <antcall target="autoundeploy-app"/>
+<!--  <antcall target="asadmin-undeploy-app"/ -->
+</target>
+
+<target name="autoundeploy-app">
+  <delete file="${deploy.dir}/${appname}.war" failonerror="false"/>
+  <sleep seconds="7"/>
+</target> 
+
+<target name="asadmin-undeploy-app">
+   <echo message="Deploying ${appname}" level="verbose"/>
+   <exec executable="${ASADMIN}" failonerror="false" resultproperty="DeploymentFailure">
+     <arg line="--user ${admin.user}"/>
+     <arg line="--host ${admin.host}"/>
+     <arg line="--port ${admin.port}"/>
+     <arg line="undeploy"/>
+     <arg line="${appname}"/>
+   </exec>
+
+<!-- Check if the deployment has failed and set the failure status accordingly -->
+  <condition property="FailStatus" value="${deployment.fail.status}">
+    <not>
+      <equals arg1="${DeploymentFailure}" arg2="0"/>
+    </not>
+  </condition>
+
+  <antcall target="report"/>
+</target>
+
+<target name="report" if="FailStatus"> 
+   <java classname="Reporter">
+      <classpath>
+        <pathelement path="${TEST_HOME_WEB}/common"/>
+      </classpath>
+      <arg value="${testname}"/>
+      <arg value="${FailStatus}"/>
+      <arg value="${TestResultFile}"/>
+   </java>
+</target>
+
+<target name="test">
+   <java classname="TestClient">
+      <classpath>
+        <pathelement path="${TEST_HOME_WEB}/common"/>
+      </classpath>
+      <arg value="${testURL}"/>
+      <arg value="${testname}"/>
+      <arg value="${TestResultFile}"/>
+   </java>
+</target>
+
+<target name="generateSummary">
+   <java classname="Reporter">
+      <classpath>
+        <pathelement path="${TEST_HOME_WEB}/common"/>
+      </classpath>
+      <arg value="${TestResultFile}"/>
+      <arg value="${TestSummaryFile}"/>
+   </java>
+</target>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ The contents of this file are subject to the terms
+ of the Common Development and Distribution License
+ (the License). You may not use this file except in
+ compliance with the License.
+ 
+ You can obtain a copy of the License at
+ https://javaserverfaces.dev.java.net/CDDL.html or
+ legal/CDDLv1.0.txt. 
+ See the License for the specific language governing
+ permission and limitations under the License.
+ 
+ When distributing Covered Code, include this CDDL
+ Header Notice in each file and include the License file
+ at legal/CDDLv1.0.txt.    
+ If applicable, add the following below the CDDL Header,
+ with the fields enclosed by brackets [] replaced by
+ your own identifying information:
+ "Portions Copyrighted [year] [name of copyright owner]"
+ 
+ [Name of File] [ver.__] [Date]
+ 
+ Copyright 2005 Sun Microsystems Inc. All Rights Reserved
+-->
+<web-app version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" >
+    
+  <display-name>JavaServer Faces Custom Components</display-name>
+  <description>
+        JavaServer Faces Custom Components
+    </description>
+  <context-param>
+    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+    <param-value>client</param-value>
+  </context-param>
+  <context-param>
+    <param-name>tree.control.images</param-name>
+    <param-value>/images</param-value>
+  </context-param>
+  <context-param>
+      <description>
+            Set this flag to true if you want the JavaServer Faces
+            Reference Implementation to validate the XML in your
+            faces-config.xml resources against the DTD.  Default
+            value is false.
+        </description>
+    <param-name>com.sun.faces.validateXml</param-name>
+    <param-value>true</param-value>    
+  </context-param>
+  <!--
+         PENDING:  MapComponent and GraphComponent currently add
+         a default listener in their constructor, which can only
+         succeed if there is a FacesContext for the current request.
+    -->
+  <context-param>
+      <description>
+            Set this flag to true if you want the JavaServer Faces
+            Reference Implementation to verify that all of the application
+            objects you have configured (components, converters,
+            renderers, and validators) can be successfully created.
+            Default value is false.
+        </description>
+    <param-name>com.sun.faces.verifyObjects</param-name>
+    <param-value>false</param-value>
+    
+  </context-param>
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup> 1 </load-on-startup>
+  </servlet>
+  <!-- Chart Servlet -->
+  <servlet>
+    <servlet-name>ChartServlet</servlet-name>
+    <servlet-class>com.sun.javaee.blueprints.components.ui.renderkit.ChartServlet</servlet-class>
+  </servlet>
+  <!-- Faces Servlet Mapping -->
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.faces</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ChartServlet</servlet-name>
+    <url-pattern>/ChartServlet</url-pattern>
+  </servlet-mapping>
+  <!-- Welcome File List -->
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  <security-constraint>
+    <!-- This security constraint illustrates how JSP pages
+             with JavaServer Faces components can be protected from
+             being accessed without going through the Faces Servlet.
+             The security constraint ensures that the Faces Servlet will
+             be used or the pages will not be processed. -->
+    <display-name>Restrict access to JSP pages</display-name>
+    <web-resource-collection>
+      <web-resource-name>
+                Restrict access to JSP pages
+            </web-resource-name>
+      <url-pattern>/imagemap.jsp</url-pattern>
+      <url-pattern>/menu.jsp</url-pattern>
+      <url-pattern>/repeater.jsp</url-pattern>
+      <url-pattern>/result-set.jsp</url-pattern>
+      <url-pattern>/tabbedpanes.jsp</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <description>
+                    With no roles defined, no access granted
+                </description>
+    </auth-constraint>
+  </security-constraint>
+</web-app>

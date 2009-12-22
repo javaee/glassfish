@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+<!ENTITY commonproperties SYSTEM "./../config/common.properties">
+<!ENTITY bundleCommon SYSTEM "./../config/bundle_common.xml">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="test6" default="all" basedir=".">
+
+    &commonBuild;
+    &commonproperties;
+    &bundleCommon;
+    &testproperties;
+
+    <target name="all" depends="clean">
+      <record name="${log.file}" action="start" />
+         <antcall target="build"/>
+      <record name="${log.file}" action="stop" />
+    </target>
+
+    <target name="build" depends="deploy, runtest, undeploy"/>
+
+    <target name="clean">
+      <antcall target="clean-common"/>
+    </target>
+
+    <target name="deploy">
+      <antcall target="install-exploded">
+        <param name="installPath" value="${TEST_HOME_WEB}/test6"/>
+      </antcall>
+    </target>
+
+    <target name="undeploy">
+	<antcall target="uninstall-bundle" />
+    </target>
+
+    <target name="runtest">
+	<antcall target="test">
+	  <param name="testURL" value="http://localhost:8080/test6/login.html" />
+        </antcall>
+    </target>
+
+</project>

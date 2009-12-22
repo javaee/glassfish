@@ -1,0 +1,21 @@
+.popupItem {
+    background: #ffffee;
+    color: #000000;
+    text-decoration: none;
+    display: block;
+    padding: 1px;
+}
+
+.popupItem:hover {
+    background: #7a8aff;
+    color: #fffafa;
+}
+
+.popupFrame {
+    background: #ffffee;
+    border: solid 1px black;
+    padding: 3px;
+    overflow: hidden;
+    z-index: 50000;
+}
+

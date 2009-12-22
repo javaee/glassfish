@@ -1,0 +1,37 @@
+
+deploy:
+
+install-exploded:
+
+install-bundle:
+     [java] [BundleUtil]:: Bundle deployed with ID : 246 Started : PASS
+
+runtest:
+
+test:
+     [java] [TestClient]:: Invoking url = http://localhost:8080/test6/login.html
+     [java] [TestClient]:: <html>
+     [java] [TestClient]:: <head>
+     [java] [TestClient]::     <title>Login Page</title>
+     [java] [TestClient]:: </head>
+     [java] [TestClient]::                                                                                                                                                
+     [java] [TestClient]:: <body>
+     [java] [TestClient]:: <hr>
+     [java] [TestClient]:: <form method="post" action="login">
+     [java] [TestClient]:: <p>User Name: <input type="text" name="name" size="10"> </p>
+     [java] [TestClient]:: <p>Password: <input type="password" name="password" size="10"> </p>
+     [java] [TestClient]:: <br>
+     [java] [TestClient]:: <p>
+     [java] [TestClient]:: <input type="submit" value="login"/>
+     [java] [TestClient]:: <A href="registration.html"> New User? </A>
+     [java] [TestClient]:: </form>
+     [java] [TestClient]:: </body>
+     [java] [TestClient]:: </html>
+     [java] [TestClient]:: TestPassed
+
+undeploy:
+
+uninstall-bundle:
+     [java] [BundleUtil]:: Stopped Bundle : sahoo.rfc66.test6 Uninstalled Bundle : PASS
+
+build:

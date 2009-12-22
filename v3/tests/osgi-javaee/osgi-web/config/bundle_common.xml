@@ -1,0 +1,38 @@
+<target name="file-install-bundle">
+   <antcall target="install-bundle">
+      <param name="installCode" value="${file-install.code}" />
+   </antcall>
+</target>
+
+<target name="install-exploded">
+   <antcall target="install-bundle">
+      <param name="installCode" value="${explode-install.code}" />
+   </antcall>
+</target>
+
+<target name="install-webbundle">
+   <antcall target="install-bundle">
+      <param name="installCode" value="${webbundle-install.code}" />
+   </antcall>
+</target> 
+
+<target name="install-bundle">
+   <java classname="BundleUtil">
+      <classpath>
+        <pathelement path="${TEST_HOME_WEB}/common"/>
+      </classpath>
+      <arg value="${testname}"/>
+      <arg value="${TestResultFile}"/>
+      <arg value="${installCode}${installPath}"/>
+   </java>
+</target> 
+
+<target name="uninstall-bundle">
+   <java classname="BundleUtil">
+      <classpath>
+        <pathelement path="${TEST_HOME_WEB}/common"/>
+      </classpath>
+      <arg value="${testname}"/>
+      <arg value="${TestResultFile}"/>
+   </java>
+</target>

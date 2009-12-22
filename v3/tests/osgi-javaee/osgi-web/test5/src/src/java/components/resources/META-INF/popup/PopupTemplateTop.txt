@@ -1,0 +1,67 @@
+
+<script>
+
+    function mainFunction%%%ID%%%(jsfCompName, eventx, paramx) {
+        this.componentId="%%%ID%%%";
+
+        this.processRequestFunction=parseMessages%%%ID%%%;                
+        this.urlx="%%%REQUESTURL%%%";
+
+        // need the client x and y to determine where to print if the window is sized smaller that the body
+        this.clientTargetX = eventx.clientX;
+        this.clientTargetY = eventx.clientY;        
+        
+        this.targetParam=paramx;
+        
+        var xx=0;
+        var yy=0;
+        if (!eventx) var eventx=window.event;
+        if (eventx.pageX || eventx.pageY){
+            xx=eventx.pageX;
+            yy=eventx.pageY;
+        } else if (eventx.clientX || eventx.clientY) {
+            xx=eventx.clientX + document.body.scrollLeft;
+            yy=eventx.clientY + document.body.scrollTop;        
+        }
+
+        this.targetX=xx;
+        this.targetY=yy;
+
+        //document.getElementById("test2").firstChild.nodeValue=" px,py=" + eventx.pageX + "," + eventx.pageY +
+        //    " - cx,cy=" + eventx.clientX + "," + eventx.clientY +
+        //    " - dbl,dbt=" + document.body.scrollLeft + "," + document.body.scrollTop + 
+        //    " - dbml,dbmt=" + document.body.leftMargin + "," + document.body.topMargin + 
+        //    " - x,y=" + xx + "," + yy;
+
+    }
+    
+    function parseMessages%%%ID%%%() {
+        if (req.readyState == 4) {
+            if (req.status == 200) {
+
+                %%%PARSE_MESSAGE_CODE%%%
+
+            } else if (req.status == 204){
+                alert("204 return");
+            }
+        }
+    }
+    
+</script>
+
+    <div class="popupStyle" id="popup%%%ID%%%">
+
+        <div class="popupArrowStyle" id="popupArrow%%%ID%%%">
+            <img name="arrowleftdown" id="arrowleftdownid%%%ID%%%" style="display:none; width:81px; height:152px; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/blue_left_down.png'); "  src="images/blue_left_down.png">
+            <img name="arrowleftup" id="arrowleftupid%%%ID%%%" style="display:none; width:81px; height:152px; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/blue_left_up.png'); "  src="images/blue_left_up.png">
+            <img name="arrowrightdown" id="arrowrightdownid%%%ID%%%" style="display:none; width:81px; height:152px; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/blue_right_down.png'); "  src="images/blue_right_down.png">
+            <img name="arrowrightup" id="arrowrightupid%%%ID%%%" style="display:none; width:81px; height:152px; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/blue_right_up.png'); "  src="images/blue_right_up.png">
+        </div>
+        
+        
+        <div id="popTop">
+            <img name="topcapimg" id="topcapimgid" style="width:300px; height:25px; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/btop.png'); "  src="images/btop.png"></div>
+            
+        <div class="popupContentStyle" id="popContent" style="position:relative; background-image=none; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='images/bmiddle.png');">
+
+

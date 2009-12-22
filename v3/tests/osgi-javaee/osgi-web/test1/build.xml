@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+<!ENTITY commonproperties SYSTEM "./../config/common.properties">
+<!ENTITY testproperties SYSTEM "./build.properties">
+]>
+
+<project name="test1" default="all" basedir=".">
+
+    &commonBuild;
+    &commonproperties;
+    &testproperties;
+
+    <target name="all" depends="clean">
+      <record name="${log.file}" action="start" />
+         <antcall target="build"/>
+      <record name="${log.file}" action="stop" />
+    </target>
+
+    <target name="build" depends="setup, runtest, undeploy"/>
+
+    <target name="clean">
+      <antcall target="clean-common"/>
+      <delete dir="${basedir}/generated"/>
+      <delete file="${basedir}/${log.file}"/>
+    </target>
+
+    <target name="setup" depends="package-app, deploy-app"/>
+
+    <target name="package-app">
+      <mkdir dir="${basedir}/generated" />
+      <antcall target="package-war">
+        <param name="destfile" value="${basedir}/generated/${appname}.war"/>
+        <param name="build.classes.dir" value="${basedir}/src"/>
+        <param name="manifest.mf" value="${basedir}/manifest"/>
+      </antcall>
+    </target>
+
+    <target name="deploy-app">
+      <antcall target="deploy-application">
+        <param name="app.path" value="${basedir}/generated/${appname}.war"/>
+      </antcall>
+    </target>
+
+    <target name="undeploy">
+	<antcall target="undeploy-application">
+	  <param name="appname" value="${appname}"/>
+	</antcall>
+    </target>
+
+    <target name="runtest">
+	<antcall target="test">
+	  <param name="testURL" value="http://localhost:8080/test1" />
+        </antcall>
+    </target>
+
+</project>

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+DynamicImport-Package: *
+Bundle-ClassPath: WEB-INF/classes, WEB-INF/jndi-properties.jar
+BundleSymbolic-Name: sahoo.rfc66.test2
+Bundle-Version: 1.0
+Created-By: 1.5.0_13-rev (Sun Microsystems Inc.)
+

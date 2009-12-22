@@ -1,0 +1,4 @@
+TODO List
+
+1. test.log contains the log of last text run only. Need to capture each test output separately.
+2. Add instructions for running single test and running a subset of tests.

@@ -1,0 +1,388 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--  Copyright 2005 Sun Microsystems, Inc.  All rights reserved.  You may not modify, use, reproduce, or distribute this software except in compliance with the terms of the License at: 
+ http://developer.sun.com/berkeley_license.html
+ $Id: faces-config.xml,v 1.11 2005/12/01 03:53:16 inder Exp $ -->
+
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
+    version="1.2">
+
+  <!-- Custom Components -->
+  
+  <component>
+    <component-type>ProgressBar</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.ProgressBarComponent</component-class>
+    
+    <component-extension>
+      <component-family>ProgressBar</component-family>
+    </component-extension>
+  </component>
+  
+  <component>
+    <component-type>DemoArea</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.AreaComponent</component-class>
+    <property>
+      <description>
+        Alternate text if we synthesize an ImageArea bean.
+      </description>
+      <property-name>alt</property-name>
+      <property-class>java.lang.String</property-class>
+    </property>
+    <property>
+      <description>
+        Hotspot coordinates if we synthesize an ImageArea bean.
+      </description>
+      <property-name>coords</property-name>
+      <property-class>java.lang.String</property-class>
+    </property>
+    <property>
+      <description>
+        Shape (default, rect, circle, poly) if we synthesize an ImageArea bean.
+      </description>
+      <property-name>shape</property-name>
+      <property-class>java.lang.String</property-class>
+    </property>
+    
+    <component-extension>
+      <component-family>Area</component-family>
+      <renderer-type>DemoArea</renderer-type>
+    </component-extension>
+    
+  </component>
+
+  <component>
+    <component-type>Graph</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.GraphComponent</component-class>
+    <component-extension>
+      <component-family>Graph</component-family>
+      <renderer-type>MenuBar</renderer-type>
+    </component-extension>
+  </component>
+
+  <component>
+    <component-type>DemoMap</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.MapComponent</component-class>
+    <property>
+      <description>
+        Alternate text for the currently selected child AreaComponent.
+      </description>
+      <property-name>current</property-name>
+      <property-class>java.lang.String</property-class>
+    </property>
+    
+    <component-extension>
+      <component-family>Map</component-family>
+      <renderer-type>DemoMap</renderer-type>
+    </component-extension>
+    
+  </component>
+
+  <component>
+    <component-type>Pane</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.PaneComponent</component-class>
+    
+    <component-extension>
+      <component-family>Pane</component-family>
+      <renderer-type>Tab</renderer-type>
+    </component-extension>
+  </component>
+  
+  <component>
+    <component-type>Scroller</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.ScrollerComponent</component-class>
+    <facet>
+
+      <description>This facet will render as the header of the table.
+      It should be a panelGroup with the same number of columns as the
+      data</description>
+      <display-name>header</display-name>
+      <facet-name>header</facet-name>
+    </facet>
+    <facet>
+
+      <description>This facet will render as the content of the "next"
+      widget in the scroller.  header of the table.  It should be a
+      panelGroup with an outputText that says "Next" in text, and also a
+      right arrow icon.</description> 
+      <display-name>next</display-name>
+      <facet-name>next</facet-name>
+    </facet>
+    <facet>
+
+      <description>This facet will render as the content of the "next"
+      widget in the scroller.  It should be a panelGroup with an
+      outputText that says "Next" in text, and also a right arrow
+      icon.</description> 
+      <display-name>next</display-name>
+      <facet-name>next</facet-name>
+    </facet>
+    <facet>
+
+      <description>This facet will render as the content of the "previous"
+      widget in the scroller.  It should be a panelGroup with an
+      outputText that says "Previous" in text, and also a left arrow
+      icon.</description> 
+      <display-name>next</display-name>
+      <facet-name>next</facet-name>
+    </facet>
+    <facet>
+
+      <description>This facet will render as the content of the
+      "current" widget in the scroller.  It shoud be an icon that
+      renders near the "current" page in the result set.</description>
+
+      <display-name>next</display-name>
+      <facet-name>next</facet-name>
+    </facet>
+    
+    <component-extension>
+      <component-family>Scroller</component-family>
+    </component-extension>
+  </component>
+
+  <component>
+    <component-type>Chart</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.ChartComponent</component-class>
+    
+    <component-extension>
+      <component-family>Chart</component-family>
+    </component-extension>
+  </component>
+  
+  <component>
+    <component-type>ChartItem</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.ChartItemComponent</component-class>
+    
+    <component-extension>
+      <component-family>ChartItem</component-family>
+    </component-extension>
+  </component>
+  
+  <component>
+    <component-type>AjaxValidator</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.components.AjaxValidatorComponent</component-class>
+    <component-extension>
+      <component-family>AjaxValidator</component-family>
+    </component-extension>
+  </component>
+  
+  <render-kit>
+     <renderer>
+       <component-family>ProgressBar</component-family>
+       <renderer-type>ProgressBar</renderer-type>
+       <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.ProgressBarRenderer</renderer-class>
+      </renderer>
+
+      <renderer>
+      <description>
+        Renderer for a com.sun.javaee.blueprints.components.ui.components.AreaComponent component.
+      </description>
+      <component-family>Area</component-family>
+      <renderer-type>DemoArea</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.AreaRenderer</renderer-class>
+      
+      <attribute>
+        <description>
+          Context-relative path to an image to be displayed when the
+          mouse is not hovering over this hotspot.
+        </description>
+        <attribute-name>onmouseout</attribute-name>
+        <attribute-class>java.lang.String</attribute-class>
+      </attribute>
+      <attribute>
+        <description>
+          Context-relative path to an image to be displayed when the
+          mouse is hovering over this hotspot.
+        </description>
+        <attribute-name>onmouseover</attribute-name>
+        <attribute-class>java.lang.String</attribute-class>
+      </attribute>
+      <attribute>
+        <description>
+          CSS style class to use when rendering this component.
+        </description>
+        <attribute-name>styleClass</attribute-name>
+        <attribute-class>java.lang.String</attribute-class>
+      </attribute>
+    </renderer>
+
+    <renderer>
+      <description>
+        Renderer for a com.sun.javaee.blueprints.components.ui.components.MapComponent component.
+      </description>
+      <component-family>Map</component-family>
+      <renderer-type>DemoMap</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.MapRenderer</renderer-class>
+      
+      <attribute>
+        <description>
+          CSS style class to use when rendering this component.
+        </description>
+        <attribute-name>styleClass</attribute-name>
+        <attribute-class>java.lang.String</attribute-class>
+      </attribute>
+    </renderer>
+
+    <renderer>
+      <component-family>Graph</component-family>
+      <renderer-type>MenuBar</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.MenuBarRenderer</renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>Graph</component-family>
+      <renderer-type>MenuTree</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.MenuTreeRenderer</renderer-class>
+    </renderer>
+
+    <renderer>
+      <description>
+        Renderer for a UIData component that can serve as the basis for
+        different markup creation for the components that are children
+        of the child UIColumn components.
+      </description>
+      <component-family>javax.faces.Data</component-family>
+      <renderer-type>Repeater</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.RepeaterRenderer</renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>javax.faces.Output</component-family>
+      <renderer-type>Stylesheet</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.StylesheetRenderer</renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>Pane</component-family>
+      <renderer-type>TabLabel</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.TabLabelRenderer</renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>Pane</component-family>
+      <renderer-type>Tab</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.TabRenderer</renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>Pane</component-family>
+      <renderer-type>Tabbed</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.renderkit.TabbedRenderer</renderer-class>
+    </renderer>
+  </render-kit>
+
+ <lifecycle>
+   <phase-listener>com.sun.javaee.blueprints.components.ui.renderkit.AjaxPhaseListener</phase-listener>
+   <phase-listener>com.sun.javaee.blueprints.components.ui.components.AjaxValidatorPhaseListener</phase-listener>
+ </lifecycle>
+
+ 
+ <!-- Begin configuration for the Slider-Navigator component -->
+ <lifecycle>
+       <phase-listener>com.sun.javaee.blueprints.components.ui.slider_navigator.SlideshowPhaseListener</phase-listener>
+   </lifecycle>
+   
+  <component>
+    <description>
+      Generates an HTML element with slideshow layers
+    </description>
+    <display-name>SliderNavigator</display-name>
+    <component-type>bpcatalog.ajax.sliderNavigator</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.slider_navigator.Slideshow</component-class>
+  </component>
+  
+  <component>
+    <description>
+      for images in  slideshow layers
+    </description>
+    <display-name>SliderImages</display-name>
+    <component-type>bpcatalog.ajax.sliderImage</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.slider_navigator.Image</component-class>
+  </component>
+  
+  <!-- Custom Renderers -->
+
+  <render-kit>
+    <description>
+    	  Renderkit implementation for the slideshow components
+    </description>
+    <renderer>
+      <component-family>SliderNavigator</component-family>
+      <renderer-type>SliderNavigatorRenderer</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.slider_navigator.SlideshowRenderer</renderer-class>
+    </renderer>
+  </render-kit>
+  
+  <render-kit>
+    <description>
+    	  Renderkit implementation for the slideshow image components
+    </description>
+    <renderer>
+      <component-family>SliderImage</component-family>
+      <renderer-type>SliderImageRenderer</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.slider_navigator.ImageRenderer</renderer-class>
+    </renderer>
+  </render-kit>
+  <!-- End configuration for Slider-Navigator component -->
+  
+  
+  <!-- Begin: configuration for TextField component -->
+
+   <!-- Handle AJAX component requests - completion requests, script requests
+        and stylesheet requests -->
+   <lifecycle>
+       <phase-listener>com.sun.javaee.blueprints.components.ui.textfield.AjaxPhaseListener</phase-listener>
+   </lifecycle>
+   
+  <component>
+                                                                                
+    <description>
+      Represents an HTML input element of type text with built-in completion.
+    </description>
+    <display-name>Completion Text Field</display-name>
+    <component-type>bpcatalog.ajax.AjaxTextField</component-type>
+    <component-class>com.sun.javaee.blueprints.components.ui.textfield.AjaxTextField</component-class>
+                                                        
+    <component-extension>
+     <!-- TODO - can I specify HtmlInputText as the parent here? -->
+      <base-component-type>javax.faces.Input</base-component-type>
+      <renderer-type>AjaxTextField</renderer-type>
+    </component-extension>
+                                                                                
+  </component>
+  
+
+      <!-- Custom Renderers -->
+
+  <render-kit>
+    <description>
+    	  Renderkit implementation for the ajax jsf components
+    </description>
+    <renderer>
+      <component-family>javax.faces.Input</component-family>
+      <renderer-type>AjaxTextField</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.textfield.AjaxTextFieldRenderer</renderer-class>
+    </renderer>
+    
+  </render-kit>
+  <!-- End: configuration for TextField component -->
+  <!-- Begin: configuration for Popup component -->
+   <!-- Handle requests for script file resource. Will serve script.js. -->  
+   <lifecycle>
+       <phase-listener>com.sun.javaee.blueprints.components.ui.popup.PopupPhaseListener</phase-listener>
+   </lifecycle>
+  
+  <render-kit>
+    <renderer>
+      <description>
+        Renderer for ajax popup
+      </description>
+      <component-family>javax.faces.Output</component-family>
+      <renderer-type>Popup</renderer-type>
+      <renderer-class>com.sun.javaee.blueprints.components.ui.popup.PopupRenderer</renderer-class>
+    </renderer>
+ </render-kit>
+  <!-- End: configuration for Popup component -->
+</faces-config>

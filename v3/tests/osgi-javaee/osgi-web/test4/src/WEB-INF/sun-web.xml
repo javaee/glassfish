@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+ Use is subject to license terms.
+-->
+
+<!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Application Server 8.1 Servlet 2.4//EN" "http://www.sun.com/software/appserver/dtds/sun-web-app_2_4-1.dtd">
+<sun-web-app>
+  <context-root>test4</context-root> 
+</sun-web-app>
