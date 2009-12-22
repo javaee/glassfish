@@ -149,13 +149,23 @@ public class AuthMessagePolicy {
                     } 
                 })
             );
-            targetPolicies.add(new TargetPolicy(null,
-                new ProtectionPolicy() {
-                    public String getID() {
-                        return ProtectionPolicy.AUTHENTICATE_CONTENT;
-                    } 
-                })
-            );
+            if (sourceSender) {
+                targetPolicies.add(new TargetPolicy(null,
+                    new ProtectionPolicy() {
+                        public String getID() {
+                            return ProtectionPolicy.AUTHENTICATE_SENDER;
+                        }
+                    })
+                );
+            } else if (sourceContent) {
+                targetPolicies.add(new TargetPolicy(null,
+                    new ProtectionPolicy() {
+                        public String getID() {
+                            return ProtectionPolicy.AUTHENTICATE_CONTENT;
+                        }
+                    })
+                );
+            }
         } else {
             if (sourceSender) {
                 targetPolicies.add(new TargetPolicy(null,

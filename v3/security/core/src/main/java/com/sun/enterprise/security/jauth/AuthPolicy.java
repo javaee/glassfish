@@ -98,6 +98,7 @@ public class AuthPolicy {
                          this.authenticateRecipient = true;
                      } else if (ProtectionPolicy.AUTHENTICATE_SENDER.equals(
                              pp.getID())) {
+                         contentInd = i;
                          setAuthenticationType(SOURCE_AUTH_SENDER);
                      } else if (ProtectionPolicy.AUTHENTICATE_CONTENT.equals(
                              pp.getID())) {
