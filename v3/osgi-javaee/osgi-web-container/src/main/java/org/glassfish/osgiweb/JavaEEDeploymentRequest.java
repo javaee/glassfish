@@ -210,6 +210,8 @@ public class JavaEEDeploymentRequest
         {
             logger.logp(Level.FINE, "JavaEEDeploymentRequest", "expandIfNeeded",
                     "Archive is already expanded at = {0}", new Object[]{file});
+            archive = archiveFactory.openArchive(file);
+            dc.setSource(archive);
             return;
         }
 
