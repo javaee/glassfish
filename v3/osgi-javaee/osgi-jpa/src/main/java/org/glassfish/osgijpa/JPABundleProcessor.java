@@ -40,16 +40,13 @@ package org.glassfish.osgijpa;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
-import org.glassfish.osgijpa.dd.PersistenceXMLParser;
+import org.glassfish.osgijpa.dd.PersistenceXMLReaderWriter;
 import org.glassfish.osgijpa.dd.Persistence;
-import org.glassfish.osgijpa.dd.PersistenceUnit;
 
 import java.net.URL;
 import java.net.URI;
 import java.net.MalformedURLException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.io.InputStream;
@@ -74,17 +71,7 @@ class JPABundleProcessor
 
     private Bundle b;
 
-    private List<URL> pxmlURLs;
-
-    /**
-     * A PURoot specifies the relative path from the root of the bundle to
-     * to the root of this persistence unit. e.g.
-     * WEB-INF/classes -- if persistence.xml is in WEB-INF/classes/META-INF,
-     * WEB-INF/lib/foo.jar -- if persistence.xml is in WEB-INF/lib/foo.jar/META-INF,
-     * "" -- if persistence.xml is in META-INF directory of the bundle,
-     * util/bar.jar -- if persistence.xml is in bundle.jar/util/bar.jar
-     */
-    private List<String> puRoots = new ArrayList<String>();
+    private List<Persistence> persistenceXMLs;
 
     JPABundleProcessor(Bundle b)
     {
@@ -92,15 +79,15 @@ class JPABundleProcessor
     }
 
     boolean isJPABundle() {
-        if (pxmlURLs == null) {
+        if (persistenceXMLs == null) {
             discoverPxmls();
         }
-        return !pxmlURLs.isEmpty();
+        return !persistenceXMLs.isEmpty();
     }
 
     void discoverPxmls() {
-        assert(pxmlURLs == null);
-        pxmlURLs = new ArrayList<URL>();
+        assert(persistenceXMLs == null);
+        persistenceXMLs = new ArrayList<Persistence>();
         String bcp = String.class.cast(b.getHeaders().get(BUNDLE_CLASSPATH));
         if (bcp == null || bcp.isEmpty()) {
             bcp = "."; // this is the default
@@ -111,6 +98,8 @@ class JPABundleProcessor
         while (entries.hasMoreTokens()) {
             entry = entries.nextToken().trim();
             if (entry.startsWith("/")) entry = entry.substring(1);
+            String puRoot = entry;
+
             // We need to prefix "/" while calling bundle.getEntry() because Felix does not like something like
             // ./META-INF/persistence.xml.
             URL entryURL = b.getEntry(URI.create("/" + entry).normalize().toString());
@@ -121,33 +110,32 @@ class JPABundleProcessor
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                 }
+                InputStream is = null;
                 try {
-                    InputStream is = pxmlURL.openStream();
-                    is.close();
-                    logger.logp(Level.INFO, "JPABundleProcessor", "discoverPxmls",
-                            "pxmlURL = {0}", new Object[]{pxmlURL});
-                    pxmlURLs.add(pxmlURL);
-                    puRoots.add(entry);
-                } catch (IOException e) {
-                    // ignore
+                    is = pxmlURL.openStream();
+                    try {
+                        Persistence persistence = new PersistenceXMLReaderWriter().read(is);
+                        persistence.setUrl(pxmlURL);
+                        persistence.setPURoot(puRoot);
+                        persistenceXMLs.add(persistence);
+                    } catch (IOException ioe) {
+                        logger.logp(Level.WARNING, "JPABundleProcessor", "discoverPxmls", "Exception occurred while processing " + pxmlURL, ioe);
+                    }
+                } catch (IOException ioe) {
+                    // ignore as there is no such persistence.xml.
+                } finally {
+                    if (is != null) try {is.close();} catch (IOException ioe) {}
                 }
             }
-        }
-    }
-
-    void processPXmls() {
-        List<Persistence> persistenceList = new ArrayList<Persistence>();
-        for (URL url : pxmlURLs) {
-            Persistence persistence = PersistenceXMLParser.parse(url);
-            persistenceList.add(persistence);
         }
     }
 
     boolean validate(List<Persistence> persistenceList)
     {
         for (Persistence persistence : persistenceList) {
-            for (PersistenceUnit pu : persistence.getPUs()) {
-                if (pu.provider != null && !pu.provider.equals(ECLIPSELINK_JPA_PROVIDER)) {
+            for (Persistence.PersistenceUnit pu : persistence.getPersistenceUnit()) {
+                if (pu.getProvider() == null) continue;
+                if (ECLIPSELINK_JPA_PROVIDER.equals(pu.getProvider())) {
                     return false;
                 } else {
                     logger.logp(Level.INFO, "JPABundleProcessor", "validate",
@@ -163,7 +151,7 @@ class JPABundleProcessor
     void enhance() throws BundleException, IOException
     {
         JPAEnhancer enhancer = new EclipseLinkEnhancer();
-        InputStream enhancedStream = enhancer.enhance(b, puRoots);
+        InputStream enhancedStream = enhancer.enhance(b, persistenceXMLs);
         b.update(enhancedStream);
     }
 

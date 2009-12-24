@@ -46,12 +46,16 @@ import org.glassfish.osgiweb.BundleClassLoader;
 import org.glassfish.osgiweb.JarHelper;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.osgijpa.dd.Persistence;
 
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.HashMap;
 import java.net.URISyntaxException;
 import java.io.*;
 
@@ -70,7 +74,8 @@ class EclipseLinkEnhancer implements JPAEnhancer {
     ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
     private static final String elPackage = "org.eclipse.persistence.*";
 
-    public InputStream enhance(Bundle b, List<String> puRoots) throws IOException {
+    public InputStream enhance(Bundle b, List<Persistence> persistenceXMLs) throws IOException {
+
         // We need to explode the bundle if it is not a directory based deployment.
         // This is because, eclipselink enhancer can only scan file system artifacts.
         File explodedDir = makeFile(b);
@@ -86,11 +91,12 @@ class EclipseLinkEnhancer implements JPAEnhancer {
 
             ClassLoader cl = new BundleClassLoader(b);
 
-            for (String puRoot : puRoots) {
+            for (Persistence persistenceXML : persistenceXMLs) {
+                String puRoot = persistenceXML.getPURoot();
                 File source = new File(explodedDir, puRoot);
                 File target = new File(enhancedDir, puRoot);
                 try {
-                    enhance(source, target, cl);
+                    enhance(source, target, cl, persistenceXML);
                 } catch (URISyntaxException e) {
                     throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                 }
@@ -116,7 +122,7 @@ class EclipseLinkEnhancer implements JPAEnhancer {
         }
     }
 
-    private void enhance(File source, File target, ClassLoader cl) throws IOException, URISyntaxException {
+    private void enhance(File source, File target, ClassLoader cl, Persistence persistenceXML) throws IOException, URISyntaxException {
         logger.logp(Level.INFO, "EclipseLinkEnhancer", "enhance", "Source = {0}, Target = {1}",
                 new Object[]{source, target});
         StaticWeaveProcessor proc = new StaticWeaveProcessor(source, target);
