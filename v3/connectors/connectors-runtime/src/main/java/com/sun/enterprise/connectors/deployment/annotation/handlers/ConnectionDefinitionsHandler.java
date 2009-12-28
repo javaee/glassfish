@@ -33,92 +33,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package com.sun.enterprise.connectors.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.annotation.context.RarBundleContext;
-import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.OutboundResourceAdapter;
-import com.sun.enterprise.deployment.ConnectionDefDescriptor;
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
+import javax.resource.spi.ConnectionDefinitions;
 import javax.resource.spi.ConnectionDefinition;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.Connector;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.apf.*;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.jvnet.hk2.annotations.Service;
 
+/**
+ * @author Jagadish Ramu
+ */
 @Service
-public class ConnectionDefinitionHandler extends AbstractHandler  {
+public class ConnectionDefinitionsHandler extends AbstractHandler  {
 
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);
-
+    
     public Class<? extends Annotation> getAnnotationType() {
-        return ConnectionDefinition.class;
-    }
-
-    public void processAnnotation(AnnotationInfo element, ConnectionDefinition defn)
-            throws AnnotationProcessorException {
-        AnnotatedElementHandler aeHandler = element.getProcessingContext().getHandler();
-        handleAnnotation(aeHandler, defn, element);
+        return ConnectionDefinitions.class;
     }
 
     public HandlerProcessingResult processAnnotation(AnnotationInfo element) throws AnnotationProcessorException {
         AnnotatedElementHandler aeHandler = element.getProcessingContext().getHandler();
-        ConnectionDefinition connDefn = (ConnectionDefinition) element.getAnnotation();
+        ConnectionDefinitions connDefns = (ConnectionDefinitions) element.getAnnotation();
+        AnnotatedElement ae = element.getAnnotatedElement();
 
         if (aeHandler instanceof RarBundleContext) {
-            handleAnnotation(aeHandler, connDefn, element);
+
+            //TODO V3 what if there is @ConnectionDefiniton as well @ConnectionDefinitions specified on same class ?
+            //TODO V3 should we detect & avoid duplicates here ?
+            ConnectionDefinition[] definitions = connDefns.value();
+            if (definitions != null) {
+                for (ConnectionDefinition defn : definitions) {
+                    ConnectionDefinitionHandler cdh = new ConnectionDefinitionHandler();
+                    cdh.processAnnotation(element, defn);
+                }
+            }
         } else {
             getFailureResult(element, "not a rar bundle context", true);
         }
         return getDefaultProcessedResult();
-    }
-
-    private void handleAnnotation(AnnotatedElementHandler aeHandler, ConnectionDefinition connDefn, AnnotationInfo element) {
-        RarBundleContext rarContext = (RarBundleContext) aeHandler;
-        ConnectorDescriptor desc = rarContext.getDescriptor();
-
-        Class c = (Class) element.getAnnotatedElement();
-        String targetClassName = c.getName();
-        if (ManagedConnectionFactory.class.isAssignableFrom(c)) {
-
-            if (!desc.getOutBoundDefined()) {
-                OutboundResourceAdapter ora = new OutboundResourceAdapter();
-                desc.setOutboundResourceAdapter(ora);
-            }
-
-            OutboundResourceAdapter ora = desc.getOutboundResourceAdapter();
-
-            if (!ora.hasConnectionDefDescriptor(connDefn.connectionFactory().getName())) {
-                ConnectionDefDescriptor cdd = new ConnectionDefDescriptor();
-                cdd.setConnectionFactoryImpl(connDefn.connectionFactoryImpl().getName());
-                cdd.setConnectionFactoryIntf(connDefn.connectionFactory().getName());
-                cdd.setConnectionIntf(connDefn.connection().getName());
-                cdd.setConnectionImpl(connDefn.connectionImpl().getName());
-
-                cdd.setManagedConnectionFactoryImpl(targetClassName);
-
-                ora.addConnectionDefDescriptor(cdd);
-            }// else {
-                // ignore the duplicates
-                // duplicates can be via :
-                // (i) connection-definition defined in DD
-                // (ii) as part of this particular annotation processing,
-                // already this connection-definition is defined
-                //TODO V3 how to handle (ii)
-            //}
-        } else {
-            getFailureResult(element, "Cant handle ConnectionDefinition annotation as the annotated class does not" +
-                    "implement ManagedConnectionFactory", true);
-        }
     }
 
     /**
@@ -151,6 +116,4 @@ public class ConnectionDefinitionHandler extends AbstractHandler  {
         }
         return result;
     }
-    
 }
-             

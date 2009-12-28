@@ -33,9 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package com.sun.enterprise.connectors.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.annotation.context.RarBundleContext;
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -328,10 +329,11 @@ public class ConfigPropertyHandler extends AbstractHandler {
     private void processActivation(AnnotationInfo element, ConnectorDescriptor desc,
                                    ConnectorConfigProperty ep, Class declaringClass) {
 
+           InboundResourceAdapter ira = desc.getInboundResourceAdapter();
+        if (declaringClass.getAnnotation(Activation.class) != null) {
             // Inbound Resource Adapter should have been defined if @Activation annotation
             // was processed successfully, before.
-            InboundResourceAdapter ira = desc.getInboundResourceAdapter();
-            if (declaringClass.getAnnotation(Activation.class) != null) {
+            if (desc.getInBoundDefined()) {
                 Activation activation = (Activation) declaringClass.getAnnotation(Activation.class);
                 Class[] messageListeners = activation.messageListeners();
 
@@ -345,18 +347,19 @@ public class ConfigPropertyHandler extends AbstractHandler {
                         //that this activation-spec class may have been ignored if ra.xml is already defined with
                         //this particular message-listener-type. If so, we should not add config-property as they
                         // belong to a particular activation-spec class.
-                        if (ml.getActivationSpecClass().equals(declaringClass.getName())){
-                            if(!(isConfigDefined(ml.getConfigProperties(), ep))) {
+                        if (ml.getActivationSpecClass().equals(declaringClass.getName())) {
+                            if (!(isConfigDefined(ml.getConfigProperties(), ep))) {
                                 ml.addConfigProperty(ep);
                             }
-                            if(!desc.getConfigPropertyProcessedClasses().contains(declaringClass.getName())){
+                            if (!desc.getConfigPropertyProcessedClasses().contains(declaringClass.getName())) {
                                 processParent(declaringClass.getSuperclass(), ml.getConfigProperties());
                                 desc.addConfigPropertyProcessedClass(declaringClass.getName());
                             }
                         }
                     }
                 }
-            } else {
+            }
+        } else {
                 if(desc.getInBoundDefined()){
                     Set messageListeners = desc.getInboundResourceAdapter().getMessageListeners();
                     Iterator mlItr = messageListeners.iterator();

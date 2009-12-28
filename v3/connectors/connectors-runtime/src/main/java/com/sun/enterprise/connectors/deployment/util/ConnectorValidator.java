@@ -34,14 +34,18 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.util;
+package com.sun.enterprise.connectors.deployment.util;
 
 import com.sun.enterprise.deployment.*;
-import com.sun.enterprise.deployment.annotation.handlers.ConnectorAnnotationHandler;
-import com.sun.enterprise.deployment.annotation.handlers.ConfigPropertyHandler;
+import com.sun.enterprise.connectors.deployment.annotation.handlers.ConnectorAnnotationHandler;
+import com.sun.enterprise.connectors.deployment.annotation.handlers.ConfigPropertyHandler;
+import com.sun.enterprise.deployment.util.ConnectorVisitor;
 import com.sun.logging.LogDomains;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 import javax.resource.spi.Connector;
 import java.util.Set;
@@ -50,10 +54,11 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+@Service
+@Scoped(PerLookup.class)
 public class ConnectorValidator implements ConnectorVisitor {
 
-    private Logger _logger = LogDomains.getLogger(DOLUtils.class, LogDomains.DPL_LOGGER);
+    private Logger _logger = LogDomains.getLogger(ConnectorValidator.class, LogDomains.RSR_LOGGER);
 
     public void accept(ConnectorDescriptor descriptor) {
         //validate & process annotations if a valid connector annotation is not already processed

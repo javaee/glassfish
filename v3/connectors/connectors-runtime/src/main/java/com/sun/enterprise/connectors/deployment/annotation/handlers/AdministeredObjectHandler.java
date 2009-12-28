@@ -33,9 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package com.sun.enterprise.connectors.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.annotation.context.RarBundleContext;
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.AdminObject;
 import com.sun.enterprise.util.LocalStringManagerImpl;

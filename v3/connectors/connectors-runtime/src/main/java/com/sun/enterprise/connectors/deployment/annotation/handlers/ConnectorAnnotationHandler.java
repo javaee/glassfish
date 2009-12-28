@@ -33,9 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package com.sun.enterprise.connectors.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.annotation.context.RarBundleContext;
+import com.sun.enterprise.deployment.annotation.handlers.*;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.LicenseDescriptor;
 import com.sun.enterprise.deployment.AuthMechanism;
@@ -61,7 +62,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Jagadish Ramu
  */
 @Service
-public class ConnectorAnnotationHandler extends AbstractHandler  {
+public class ConnectorAnnotationHandler extends AbstractHandler {
 
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);

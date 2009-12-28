@@ -1,1 +1,3 @@
--exportcontents: com.sun.enterprise.connectors.inbound; version=${project.osgi.version}
+-exportcontents: \
+                        com.sun.enterprise.connectors.inbound;\
+                        com.sun.enterprise.connectors.inbound.deployment.annotation.handlers; version=${project.osgi.version}

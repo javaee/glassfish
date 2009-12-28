@@ -33,56 +33,83 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.deployment.annotation.handlers;
+package com.sun.enterprise.connectors.inbound.deployment.annotation.handlers;
 
 import com.sun.enterprise.deployment.annotation.context.RarBundleContext;
+import com.sun.enterprise.deployment.annotation.handlers.*;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.deployment.InboundResourceAdapter;
+import com.sun.enterprise.deployment.MessageListener;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
-import javax.resource.spi.ConnectionDefinitions;
-import javax.resource.spi.ConnectionDefinition;
+import javax.resource.spi.Activation;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.glassfish.apf.*;
-import org.glassfish.apf.impl.AnnotationUtils;
-import org.glassfish.apf.impl.HandlerProcessingResultImpl;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.apf.*;
+import org.glassfish.apf.impl.HandlerProcessingResultImpl;
+
 
 /**
  * @author Jagadish Ramu
  */
 @Service
-public class ConnectionDefinitionsHandler extends AbstractHandler  {
+public class ActivationHandler extends AbstractHandler {
 
     protected final static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbstractHandler.class);
     
     public Class<? extends Annotation> getAnnotationType() {
-        return ConnectionDefinitions.class;
+        return Activation.class;
     }
 
     public HandlerProcessingResult processAnnotation(AnnotationInfo element) throws AnnotationProcessorException {
         AnnotatedElementHandler aeHandler = element.getProcessingContext().getHandler();
-        ConnectionDefinitions connDefns = (ConnectionDefinitions) element.getAnnotation();
-        AnnotatedElement ae = element.getAnnotatedElement();
-
+        Activation activation = (Activation) element.getAnnotation();
         if (aeHandler instanceof RarBundleContext) {
+            RarBundleContext rarContext = (RarBundleContext) aeHandler;
+            ConnectorDescriptor desc = rarContext.getDescriptor();
 
-            //TODO V3 what if there is @ConnectionDefiniton as well @ConnectionDefinitions specified on same class ?
-            //TODO V3 should we detect & avoid duplicates here ?
-            ConnectionDefinition[] definitions = connDefns.value();
-            if (definitions != null) {
-                for (ConnectionDefinition defn : definitions) {
-                    ConnectionDefinitionHandler cdh = new ConnectionDefinitionHandler();
-                    cdh.processAnnotation(element, defn);
+            //process annotation only if message-listeners are provided
+            if (activation.messageListeners().length > 0) {
+                //initialize inbound if it was not done already
+                if (!desc.getInBoundDefined()) {
+                    desc.setInboundResourceAdapter(new InboundResourceAdapter());
+                }
+
+                InboundResourceAdapter ira = desc.getInboundResourceAdapter();
+                
+                //get the activation-spec implementation class-name
+                Class c = (Class) element.getAnnotatedElement();
+                String activationSpecClass = c.getName();
+
+                //process all message-listeners, ensure that no duplicate message-listener-types are found
+                for (Class mlClass : activation.messageListeners()) {
+                    MessageListener ml = new MessageListener();
+                    ml.setActivationSpecClass(activationSpecClass);
+                    ml.setMessageListenerType(mlClass.getName());
+
+                    if (!ira.hasMessageListenerType(mlClass.getName())) {
+                        ira.addMessageListener(ml);
+                    }// else {
+                        // ignore the duplicates
+                        // duplicates can be via :
+                        // (i) message listner defined in DD
+                        // (ii) as part of this particular annotation processing,
+                        // already this message-listener-type is defined
+                        //TODO V3 how to handle (ii)
+                    //}
                 }
             }
         } else {
-            getFailureResult(element, "not a rar bundle context", true);
+            getFailureResult(element, "Not a rar bundle context", true);
         }
         return getDefaultProcessedResult();
+    }
+
+    public Class<? extends Annotation>[] getTypeDependencies() {
+        return null;
     }
 
     /**
@@ -93,10 +120,6 @@ public class ConnectionDefinitionsHandler extends AbstractHandler  {
                 getAnnotationType(), ResultType.PROCESSED);
     }
 
-
-    public Class<? extends Annotation>[] getTypeDependencies() {
-        return null;
-    }
     private HandlerProcessingResultImpl getFailureResult(AnnotationInfo element, String message, boolean doLog) {
         HandlerProcessingResultImpl result = new HandlerProcessingResultImpl();
         result.addResult(getAnnotationType(), ResultType.FAILED);

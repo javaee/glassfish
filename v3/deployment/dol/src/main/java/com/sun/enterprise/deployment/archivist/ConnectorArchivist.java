@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.io.ConnectorDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ConnectorRuntimeDDFile;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -59,6 +60,9 @@ import java.io.IOException;
 @Service
 @Scoped(PerLookup.class)
 public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
+
+    @Inject
+    private ConnectorVisitor connectorValidator;
     
     /** 
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
@@ -150,9 +154,7 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
     protected void postOpen(ConnectorDescriptor descriptor, ReadableArchive archive)
         throws IOException {
         super.postOpen(descriptor, archive);
-        ConnectorDescriptor connectorDescriptor = (ConnectorDescriptor) descriptor;
-        ConnectorValidator mdv = new ConnectorValidator();
-        connectorDescriptor.visit(mdv);
+        descriptor.visit(connectorValidator);
     }
 
 
@@ -171,7 +173,7 @@ public class ConnectorArchivist extends Archivist<ConnectorDescriptor> {
             return;
         }
         descriptor.setClassLoader(cl);
-        descriptor.visit(new ConnectorValidator());        
+        descriptor.visit(connectorValidator);        
     }
 
 }

@@ -42,6 +42,7 @@
 package com.sun.enterprise.deployment.util;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This class defines a Visitor API for the DOL connector descriptor. 
@@ -49,6 +50,7 @@ import com.sun.enterprise.deployment.ConnectorDescriptor;
  * @author  Sheetal Vartak
  * @version 
  */
+@Contract
 public interface ConnectorVisitor {
 
     /**

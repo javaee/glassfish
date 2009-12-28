@@ -1,6 +1,8 @@
 -exportcontents: \
                         com.sun.enterprise.connectors;\
                         com.sun.enterprise.connectors.authentication;\
+                        com.sun.enterprise.connectors.deployment.annotation.handlers;\
+                        com.sun.enterprise.connectors.deployment.util;\
                         com.sun.enterprise.connectors.module;\
                         com.sun.enterprise.connectors.naming;\
                         com.sun.enterprise.connectors.service;\
