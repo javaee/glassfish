@@ -36,7 +36,7 @@ aci: (targetattr !="cn || sn || uid")(targetfilter ="(ou=Human Resources)")(ve
  Managers,ou=groups,dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com");)
 aci: (targetattr !="cn ||sn || uid")(targetfilter ="(ou=Product Testing)")(ver
  sion 3.0;acl "QA Group Permissions";allow (write)(groupdn = "ldap:///cn=QA M
- anagers,ou=groups,dc=UNIQUE_SUB_CONTEXT,sfbay,dc=sun,dc=com");)
+ anagers,ou=groups,dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com");)
 aci: (targetattr !="cn || sn || uid")(targetfilter ="(ou=Product Development)"
  )(version 3.0;acl "Engineering Group Permissions";allow (write)(groupdn = "l
  dap:///cn=PD Managers,ou=groups,dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com");)
@@ -54,7 +54,8 @@ objectClass: organizationalPerson
 objectClass: inetorgperson
 sn: munta
 cn: jagadesh munta
-userPassword: {SSHA}kMk4elbUJuqy5o4tfhYeRJq1H8egS5xUWxPsRw==
+#userPassword: {SSHA}kMk4elbUJuqy5o4tfhYeRJq1H8egS5xUWxPsRw==
+userPassword: munta
 
 # entry-id: 11
 dn: uid=harpreet,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
@@ -68,7 +69,8 @@ objectClass: organizationalPerson
 objectClass: inetorgperson
 sn: Singh
 cn: Harpreet Singh
-userPassword: {SSHA}uEL4dV/Ji3fJEDRkGogPwXODB9VCd2JHQAxVOw==
+#userPassword: {SSHA}uEL4dV/Ji3fJEDRkGogPwXODB9VCd2JHQAxVOw==
+userPassword: harpreet
 
 # entry-id: 14
 dn: uid=j2ee,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
@@ -82,20 +84,21 @@ objectClass: organizationalPerson
 objectClass: inetorgperson
 sn: test
 cn: j2ee test
-userPassword: {SSHA}veO8sbrEk6W7gAUw0TQUlvqBnvjPLL5mdk2pAw==
+#userPassword: {SSHA}veO8sbrEk6W7gAUw0TQUlvqBnvjPLL5mdk2pAw==
+userPassword: j2ee
 
 # entry-id: 16
-dn: cn=sqedynamicgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
-changetype: add
-description: SQE Security testing Dynamic group
-cn: sqedynamicgroup
-objectClass: top
-objectClass: groupofuniquenames
-objectClass: groupofurls
-memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*Jagadesh*))
-memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(uid=*munta*))
-memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*java*))
-memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*j2ee*))
+#dn: cn=sqedynamicgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#changetype: add
+#description: SQE Security testing Dynamic group
+#cn: sqedynamicgroup
+#objectClass: top
+#objectClass: groupofuniquenames
+#objectClass: groupofurls
+#memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*Jagadesh*))
+#memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(uid=*munta*))
+#memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*java*))
+#memberURL: ldap:///dc=sfbay,dc=sun,dc=com??sub?(&(|(objectclass=person)(objectclass=groupofuniquenames))(cn=*j2ee*))
 
 # entry-id: 17
 dn: uid=javajoe,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
@@ -108,14 +111,15 @@ objectClass: organizationalPerson
 objectClass: inetorgperson
 sn: joe
 cn: java joe
-userPassword: {SSHA}RQdz5VFDOCFplv2OW2Vtihg3W9PBW64mDGitVA==
+#userPassword: {SSHA}RQdz5VFDOCFplv2OW2Vtihg3W9PBW64mDGitVA==
+userPassword: javajoe 
 
 # entry-id: 18
-dn: cn=sqestaticgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
-changetype: add
-description: sqe security test static group
-objectClass: top
-objectClass: groupofuniquenames
-cn: sqestaticgroup
-uniqueMember: uid=munta,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#dn: cn=sqestaticgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#changetype: add
+#description: sqe security test static group
+#objectClass: top
+#objectClass: groupofuniquenames
+#cn: sqestaticgroup
+#uniqueMember: uid=munta,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
 

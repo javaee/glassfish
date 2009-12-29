@@ -21,13 +21,13 @@ dn: ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
 changetype: delete
 
 # entry-id: 16
-dn: cn=sqedynamicgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
-changetype: delete
+#dn: cn=sqedynamicgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#changetype: delete
 
 
 # entry-id: 18
-dn: cn=sqestaticgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
-changetype: delete
+#dn: cn=sqestaticgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#changetype: delete
 
 # entry-id: 3
 dn: ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
