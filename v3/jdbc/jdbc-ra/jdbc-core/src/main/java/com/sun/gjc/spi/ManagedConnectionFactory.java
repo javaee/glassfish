@@ -540,7 +540,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
                     try {
                         listenerClass = Thread.currentThread().getContextClassLoader().loadClass(sqlTraceListener);
                     } catch (ClassNotFoundException ex) {
-                        _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_cnfe", listenerClass.getName());
+                        _logger.log(Level.SEVERE, "jdbc.sql_trace_listener_cnfe", sqlTraceListener);
                     }
                     Class intf[] = listenerClass.getInterfaces();
                     for (int i = 0; i < intf.length; i++) {
