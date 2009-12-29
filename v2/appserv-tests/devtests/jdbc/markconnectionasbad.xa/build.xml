@@ -5,8 +5,6 @@
         <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
         <!ENTITY testproperties SYSTEM "./build.properties">
         <!ENTITY run SYSTEM "./../../../config/run.xml">
-        <!ENTITY eeSetup SYSTEM "./../config/ee-common.xml">
-        <!ENTITY eeProperties SYSTEM "./../config/ee-properties.xml">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -14,11 +12,8 @@
     &commonSetup;
     &commonBuild;
     &run;
-    <!--
-    &eeSetup;
-    &eeProperties;
-    -->
     &testproperties;
+
     <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">

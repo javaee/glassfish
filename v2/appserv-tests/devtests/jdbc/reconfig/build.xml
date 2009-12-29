@@ -2,18 +2,11 @@
 
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
 <!ENTITY eeSetup SYSTEM "file:./../config/ee-common.xml">
 <!ENTITY eeProperties SYSTEM "file:./../config/ee-properties.xml">
 ]>
 
 <project name="reconfig" default="usage" basedir=".">
-
-    <!--
-    &commonSetup;
-    &commonBuild;
-    -->
 
     &eeSetup;
     &eeProperties;
