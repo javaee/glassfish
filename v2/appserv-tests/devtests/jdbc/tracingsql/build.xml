@@ -40,13 +40,13 @@
           value="**/SimpleBMP.class, **/SimpleBMPHome.class,**/*Client*.class" />
       </antcall>
       <jar jarfile="${sql-trace-listener-jar}" update="true">
-          <fileset dir="${build.classes.dir}/com/sun/s1asdev/jdbc/tracingsql/logger" casesensitive="yes">
-              <include name="**/*class*"/>
+          <fileset dir="${build.classes.dir}" casesensitive="yes">
+              <include name="**/TraceLogger.class"/>
           </fileset>
       </jar>
       <copyfile src="${sql-trace-listener-jar}"
             dest="${env.S1AS_HOME}/lib/sql-trace-listener.jar"/>
-    <antcall target="restart-server"/>
+      <antcall target="restart-server"/>
     </target> 
     
     <target name="deploy" depends="init-common">
@@ -78,6 +78,15 @@
     </target>
     
     <target name="run" depends="init-common">
+      <antcall target="runclient-common"/>
+        
+      <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.ql-jdbc-pool.sql_trace_listeners=com.sun.s1asdev.jdbc.tracingsql.logger.TraceLogger,com.sun.gjc.util.SQLTraceLogger"/>
+      </antcall>
+
+      <!-- To check reconfiguration of SQL Trace listeners -->
       <antcall target="runclient-common"/>
     </target>
  
