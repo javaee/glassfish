@@ -248,27 +248,35 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
          */
         public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
             NotProcessed np = null;
-            switch (type) {
-                case ADD:
-                    logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
-                    np = handleAddEvent(changedInstance);
-                    break;
+            ClassLoader contextCL = Thread.currentThread().getContextClassLoader();
+            try {
+                //use connector-classloader so as to get access to classes from resource-adapters
+                ClassLoader ccl = getConnectorRuntime().getConnectorClassLoader();
+                Thread.currentThread().setContextClassLoader(ccl);
+                switch (type) {
+                    case ADD:
+                        logger.fine("A new " + changedType.getName() + " was added : " + changedInstance);
+                        np = handleAddEvent(changedInstance);
+                        break;
 
-                case CHANGE:
-                    logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
-                    np = handleChangeEvent(changedInstance);
-                    break;
+                    case CHANGE:
+                        logger.fine("A " + changedType.getName() + " was changed : " + changedInstance);
+                        np = handleChangeEvent(changedInstance);
+                        break;
 
-                case REMOVE:
-                    logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
-                    np = handleRemoveEvent(changedInstance);
-                    break;
+                    case REMOVE:
+                        logger.fine("A " + changedType.getName() + " was removed : " + changedInstance);
+                        np = handleRemoveEvent(changedInstance);
+                        break;
 
-                default:
-                    np = new NotProcessed("Unrecognized type of change: " + type);
-                    break;
+                    default:
+                        np = new NotProcessed("Unrecognized type of change: " + type);
+                        break;
+                }
+                return np;
+            } finally {
+                Thread.currentThread().setContextClassLoader(contextCL);
             }
-            return np;
         }
 
         private <T extends ConfigBeanProxy> NotProcessed handleChangeEvent(T instance) {
