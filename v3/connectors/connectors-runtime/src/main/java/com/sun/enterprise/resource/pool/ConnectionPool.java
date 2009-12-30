@@ -512,10 +512,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                             if (spec.isXA() || poolTxHelper.isNonXAResourceAndFree(j2eetran, h)) {
                                 if (matchConnections) {
                                     if (!alloc.matchConnection(h)) {
-                                        //TODO V3 : enable connectionNotMatched
-                                        /*if (poolLifeCycleListener != null) {
+                                        if (poolLifeCycleListener != null) {
                                             poolLifeCycleListener.connectionNotMatched();
-                                        }*/
+                                        }
                                         continue;
                                     }
                                     if (h.hasConnectionErrorOccurred()) {
@@ -529,10 +528,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                                         iter.remove();
                                         continue;
                                     }
-                                    //TODO V3 : enabled matched counter here
-                                    /*if (poolLifeCycleListener != null) {
+                                    if (poolLifeCycleListener != null) {
                                         poolLifeCycleListener.connectionMatched();
-                                    }*/
+                                    }
                                 }
                                 if (state.isFree())
                                     setResourceStateToBusy(h);
