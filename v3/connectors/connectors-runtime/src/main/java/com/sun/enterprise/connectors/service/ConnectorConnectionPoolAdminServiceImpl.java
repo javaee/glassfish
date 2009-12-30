@@ -123,7 +123,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             connectorDescriptor = _registry.getDescriptor(rarName);
         }
         */
-
+        
         if (connectorDescriptor == null) {
             String i18nMsg = localStrings.getString("ccp_adm.no_conn_pool_obj", rarName);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
@@ -1038,7 +1038,9 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
     private PoolType getPoolType(ConnectorConnectionPool connectorConnectionPool) {
         PoolType pt = PoolType.STANDARD_POOL;
-        if (connectorConnectionPool.isAssociateWithThread()) {
+        if (!connectorConnectionPool.isPoolingOn()) {
+            pt = PoolType.POOLING_DISABLED;
+        } else if (connectorConnectionPool.isAssociateWithThread()) {
             pt = PoolType.ASSOCIATE_WITH_THREAD_POOL;
         } else if (connectorConnectionPool.isPartitionedPool()) {
             pt = PoolType.PARTITIONED_POOL;
@@ -1418,6 +1420,12 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @throws com.sun.appserv.connectors.internal.api.ConnectorRuntimeException
      */
     public boolean flushConnectionPool(String poolName) throws ConnectorRuntimeException {
+        if (PoolType.POOLING_DISABLED.equals(getPoolType(poolName))) {
+            //throw RuntimeException
+            String i18nMsg = localStrings.getString("flush_when_pooling_disabled", poolName);
+            _logger.log(Level.SEVERE, "flush_when_pooling_disabled", poolName);
+            throw new ConnectorRuntimeException(i18nMsg);
+        }
         PoolManager poolMgr = _runtime.getPoolManager();
         try {
             return poolMgr.flushConnectionPool( poolName );
