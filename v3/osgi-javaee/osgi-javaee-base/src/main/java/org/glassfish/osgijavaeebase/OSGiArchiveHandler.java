@@ -35,62 +35,53 @@
  */
 
 
-package org.glassfish.osgijpa;
+package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.*;
-import org.glassfish.osgijavaeebase.Extender;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 
 /**
- * An extender that listens for Persistence bundle's life cycle events
- * and takes appropriate actions.
+ * An implementation of {@link org.glassfish.api.deployment.archive.ArchiveHandler}
+ * specialized for OSGi-ed WAR files. It is not exported as a Service.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JPAExtender implements Extender, SynchronousBundleListener
+public class OSGiArchiveHandler extends AbstractArchiveHandler
 {
-    private Logger logger = Logger.getLogger(JPAExtender.class.getPackage().getName());
-    private BundleContext context;
-
-    public JPAExtender(BundleContext context)
+    public String getArchiveType()
     {
-        this.context = context;
+        return "OSGiBundle";
     }
 
-    public void start()
+    public boolean handles(ReadableArchive archive)
     {
-        context.addBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "start", " JPAExtender started", new Object[]{});
+        // We don't want this handler to participate in any automatic
+        // discovery, so it returns false.
+        return false;
     }
 
-    public void stop()
+    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context)
     {
-        context.removeBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "stop", " JPAExtender stopped", new Object[]{});
+        throw new RuntimeException("Assertion Failure: This method should not be called");
     }
 
-    public void bundleChanged(BundleEvent event)
+    // Since we don't have a fixed file extension, we override
+    // getDefaultApplicationName methods
+    @Override
+    public String getDefaultApplicationName(ReadableArchive archive)
     {
-        Bundle bundle = event.getBundle();
-        switch (event.getType())
-        {
-            case BundleEvent.INSTALLED :
-            case BundleEvent.UPDATED :
-                JPABundleProcessor bi = new JPABundleProcessor(bundle);
-                if (!bi.isEnhanced(bundle) && bi.isJPABundle()) {
-                    logger.logp(Level.INFO, "JPAExtender", "bundleChanged", "Bundle having id {0} is a JPA bundle", new Object[]{bundle.getBundleId()});
-                    try {
-                        bi.enhance();
-                    } catch (Exception e) {
-                        logger.logp(Level.WARNING, "JPAExtender", "bundleChanged", "Failed to enhance bundle having id " + bundle.getBundleId(), e);
-                    }
-                }
-                break;
-            default:
-                break;
+        String appName = archive.getName();
+        int lastDot = appName.lastIndexOf('.');
+        if (lastDot != -1) {
+            appName = appName.substring(0, lastDot);
         }
+        return appName;
     }
 
+    @Override
+    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context)
+    {
+        return getDefaultApplicationName(archive);
+    }
 }

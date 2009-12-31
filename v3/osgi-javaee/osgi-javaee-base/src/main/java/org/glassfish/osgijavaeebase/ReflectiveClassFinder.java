@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 import org.glassfish.internal.api.DelegatingClassLoader;
 

@@ -35,12 +35,12 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import static org.glassfish.osgiweb.Constants.FILE_PROTOCOL;
-import static org.glassfish.osgiweb.Constants.REFERENCE_PROTOCOL;
+import static org.glassfish.osgijavaeebase.Constants.FILE_PROTOCOL;
+import static org.glassfish.osgijavaeebase.Constants.REFERENCE_PROTOCOL;
 import org.osgi.framework.Bundle;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 

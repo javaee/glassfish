@@ -47,6 +47,8 @@ import org.glassfish.deployment.common.DeploymentContextImpl;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.web.loader.WebappClassLoader;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 
@@ -86,7 +88,7 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
 
         // We always this handler instead of going through discovery process
         // which has issues.
-        setArchiveHandler(new OSGiWarHandler());
+        setArchiveHandler(new OSGiArchiveHandler());
     }
 
     private void setupClassLoader() throws Exception

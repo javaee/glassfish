@@ -44,6 +44,7 @@ import static org.osgi.framework.Constants.BUNDLE_VERSION;
 import static org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE;
 import static org.osgi.framework.Constants.IMPORT_PACKAGE;
 import static org.osgi.framework.Constants.EXPORT_PACKAGE;
+import org.glassfish.osgijavaeebase.JarHelper;
 
 import java.io.IOException;
 import java.net.URL;

@@ -46,6 +46,7 @@ import static org.osgi.framework.Constants.EXPORT_PACKAGE;
 import static org.glassfish.osgiweb.Constants.WEB_CONTEXT_PATH;
 import static org.glassfish.osgiweb.Constants.WEB_JSP_EXTRACT_LOCATION;
 import static org.glassfish.osgiweb.Constants.WEB_BUNDLE_SCHEME;
+import org.glassfish.osgijavaeebase.JarHelper;
 
 import java.io.IOException;
 import java.io.InputStream;

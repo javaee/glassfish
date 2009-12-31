@@ -40,19 +40,14 @@ package org.glassfish.osgiweb;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface Constants
+public class Constants
 {
-    public String WEB_BUNDLE_SCHEME = "webbundle";
-    public String WEB_CONTEXT_PATH = "Web-ContextPath";
-    public String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
-    public String BUNDLE_CONTEXT_ATTR = "osgi-bundlecontext";
-    public String OSGI_WEB_SYMBOLIC_NAME = "osgi.web.symbolicname";
-    public String OSGI_WEB_VERSION = "osgi.web.version";
-    public String OSGI_WEB_CONTEXTPATH= "osgi.web.contextpath";
+    public static final String WEB_BUNDLE_SCHEME = "webbundle";
+    public static final String WEB_CONTEXT_PATH = "Web-ContextPath";
+    public static final String WEB_JSP_EXTRACT_LOCATION = "Web-JSPExtractLocation";
+    public static final String BUNDLE_CONTEXT_ATTR = "osgi-bundlecontext";
+    public static final String OSGI_WEB_SYMBOLIC_NAME = "osgi.web.symbolicname";
+    public static final String OSGI_WEB_VERSION = "osgi.web.version";
+    public static final String OSGI_WEB_CONTEXTPATH= "osgi.web.contextpath";
 
-    // Protocol used both in Felix and Equinox to read content of a bundle
-    // directly from a jar or directory as opposed to first copying it to
-    // bundle cache and then reading from there.
-    public String REFERENCE_PROTOCOL = "reference:";
-    public String FILE_PROTOCOL = "file:";
 }

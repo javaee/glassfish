@@ -40,7 +40,7 @@ package org.glassfish.osgijpa;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.glassfish.osgiweb.Extender;
+import org.glassfish.osgijavaeebase.Extender;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM

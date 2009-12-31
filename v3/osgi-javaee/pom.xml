@@ -54,6 +54,7 @@
     <artifactId>osgi-javaee</artifactId>
     <name>Build aggregator for various OSGi/JavaEE modules</name>
     <modules>
+        <module>osgi-javaee-base</module>
         <module>osgi-http</module>
         <module>osgi-web-container</module>
         <module>osgi-jpa</module>

@@ -35,62 +35,24 @@
  */
 
 
-package org.glassfish.osgijpa;
+package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.*;
-import org.glassfish.osgijavaeebase.Extender;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
- * An extender that listens for Persistence bundle's life cycle events
- * and takes appropriate actions.
- *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JPAExtender implements Extender, SynchronousBundleListener
-{
-    private Logger logger = Logger.getLogger(JPAExtender.class.getPackage().getName());
-    private BundleContext context;
+public class OSGiJavaEEActivator implements BundleActivator {
 
-    public JPAExtender(BundleContext context)
-    {
-        this.context = context;
+    private ExtenderManager extenderManager;
+
+    public void start(BundleContext context) throws Exception {
+        extenderManager = new ExtenderManager(context);
+        extenderManager.start();
     }
 
-    public void start()
-    {
-        context.addBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "start", " JPAExtender started", new Object[]{});
+    public void stop(BundleContext context) throws Exception {
+        extenderManager.stop();
     }
-
-    public void stop()
-    {
-        context.removeBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "stop", " JPAExtender stopped", new Object[]{});
-    }
-
-    public void bundleChanged(BundleEvent event)
-    {
-        Bundle bundle = event.getBundle();
-        switch (event.getType())
-        {
-            case BundleEvent.INSTALLED :
-            case BundleEvent.UPDATED :
-                JPABundleProcessor bi = new JPABundleProcessor(bundle);
-                if (!bi.isEnhanced(bundle) && bi.isJPABundle()) {
-                    logger.logp(Level.INFO, "JPAExtender", "bundleChanged", "Bundle having id {0} is a JPA bundle", new Object[]{bundle.getBundleId()});
-                    try {
-                        bi.enhance();
-                    } catch (Exception e) {
-                        logger.logp(Level.WARNING, "JPAExtender", "bundleChanged", "Failed to enhance bundle having id " + bundle.getBundleId(), e);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
 }

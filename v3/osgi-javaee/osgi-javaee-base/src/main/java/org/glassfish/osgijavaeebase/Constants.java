@@ -35,14 +35,16 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 /**
- * @see ExtenderManager
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface Extender
-{
-    void start();
-    void stop();
+public class Constants {
+    // Protocol used both in Felix and Equinox to read content of a bundle
+    // directly from a jar or directory as opposed to first copying it to
+    // bundle cache and then reading from there.
+    public static final String REFERENCE_PROTOCOL = "reference:";
+    public static final String FILE_PROTOCOL = "file:";
+
 }

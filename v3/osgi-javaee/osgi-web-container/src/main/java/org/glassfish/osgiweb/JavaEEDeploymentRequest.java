@@ -54,6 +54,8 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
@@ -228,7 +230,7 @@ public class JavaEEDeploymentRequest
         if (tmpFile.mkdirs())
         {
             WritableArchive targetArchive = archiveFactory.createArchive(tmpFile);
-            new OSGiWarHandler().expand(archive, targetArchive, dc);
+            new OSGiArchiveHandler().expand(archive, targetArchive, dc);
             logger.logp(Level.INFO, "JavaEEDeploymentRequest", "expand",
                     "Expanded at {0}", new Object[]{targetArchive.getURI()});
             archive = archiveFactory.openArchive(tmpFile);

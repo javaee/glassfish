@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

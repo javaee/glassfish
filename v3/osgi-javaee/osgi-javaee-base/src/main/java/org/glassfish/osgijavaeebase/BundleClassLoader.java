@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 import org.osgi.framework.Bundle;
 
@@ -71,7 +71,7 @@ public class BundleClassLoader extends ClassLoader
     }
 
     @Override
-    protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException
+    public synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException
     {
         return bundle.loadClass(name);
     }

@@ -35,59 +35,14 @@
  */
 
 
-package org.glassfish.osgiweb;
-
-import org.glassfish.internal.deployment.GenericHandler;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.web.loader.WebappClassLoader;
-import org.osgi.framework.Bundle;
-
-import java.io.IOException;
-
-import com.sun.enterprise.glassfish.web.WarHandler;
+package org.glassfish.osgijavaeebase;
 
 /**
- * An implementation of {@link org.glassfish.api.deployment.archive.ArchiveHandler}
- * specialized for OSGi-ed WAR files. It is not exported as a Service.
- *
+ * @see ExtenderManager
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWarHandler extends WarHandler
+public interface Extender
 {
-    public String getArchiveType()
-    {
-        return "OSGiBundle";
-    }
-
-    public boolean handles(ReadableArchive archive)
-    {
-        // We don't want this handler to participate in any automatic
-        // discovery, so it returns false.
-        return false;
-    }
-
-    public WebappClassLoader getClassLoader(ClassLoader parent, DeploymentContext context)
-    {
-        throw new RuntimeException("Assertion Failure: This method should not be called");
-    }
-
-    // Since we don't have a fixed file extension, we override
-    // getDefaultApplicationName methods
-    @Override
-    public String getDefaultApplicationName(ReadableArchive archive)
-    {
-        String appName = archive.getName();
-        int lastDot = appName.lastIndexOf('.');
-        if (lastDot != -1) {
-            appName = appName.substring(0, lastDot);
-        }
-        return appName;
-    }
-
-    @Override
-    public String getDefaultApplicationName(ReadableArchive archive, DeploymentContext context)
-    {
-        return getDefaultApplicationName(archive);
-    }
+    void start();
+    void stop();
 }

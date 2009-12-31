@@ -40,10 +40,10 @@ package org.glassfish.osgijpa;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.eclipse.persistence.tools.weaving.jpa.StaticWeaveProcessor;
-import org.glassfish.osgiweb.OSGiBundleArchive;
-import org.glassfish.osgiweb.OSGiWarHandler;
-import org.glassfish.osgiweb.BundleClassLoader;
-import org.glassfish.osgiweb.JarHelper;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.osgijavaeebase.JarHelper;
+import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijpa.dd.Persistence;
@@ -53,9 +53,6 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.HashMap;
 import java.net.URISyntaxException;
 import java.io.*;
 
@@ -197,7 +194,7 @@ class EclipseLinkEnhancer implements JPAEnhancer {
     private File explode(Bundle b) throws IOException {
         File explodedDir = makeTmpDir("osgiapp");
         WritableArchive targetArchive = archiveFactory.createArchive(explodedDir);
-        new OSGiWarHandler().expand(new OSGiBundleArchive(b), targetArchive, null);
+        new OSGiArchiveHandler().expand(new OSGiBundleArchive(b), targetArchive, null);
         logger.logp(Level.INFO, "EclipseLinkEnhancer", "explode",
                 "Exploded bundle {0} at {1} ", new Object[]{b, explodedDir});
         return explodedDir;

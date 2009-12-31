@@ -39,26 +39,21 @@ package org.glassfish.osgiweb;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.glassfish.osgijavaeebase.Extender;
+import org.glassfish.osgijavaeebase.ExtenderManager;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiWebContainerActivator implements BundleActivator
 {
-    private ExtenderManager extenderManager;
-
     public void start(BundleContext context) throws Exception
     {
-        extenderManager = new ExtenderManager(context);
-        extenderManager.start();
-        // Move registration of extenders to a separate bundle when
-        // we move the extenders to a separate bundle
         WebExtender webExtender = new WebExtender(context);
         context.registerService(Extender.class.getName(), webExtender, null);
     }
 
     public void stop(BundleContext context) throws Exception
     {
-        extenderManager.stop();
     }
 }
