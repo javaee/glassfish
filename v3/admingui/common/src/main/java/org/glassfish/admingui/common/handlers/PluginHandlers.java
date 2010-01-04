@@ -583,10 +583,10 @@ public class PluginHandlers {
         ClassLoader cl = cps.getModuleClassLoader(pluginId);
 
         // Try the viewRoot locale first
-        String path = getPathForResource(helpKey, handlerCtx.getFacesContext().getViewRoot().getLocale(), cl);
+        String path = getHelpPathForResource(helpKey, handlerCtx.getFacesContext().getViewRoot().getLocale(), cl);
         if (path == null) {
             // Try the default locale
-            getPathForResource(helpKey, Locale.getDefault(), cl);
+            path = getHelpPathForResource(helpKey, Locale.getDefault(), cl);
 
             // Default to en
             if (path == null) {
@@ -597,25 +597,39 @@ public class PluginHandlers {
         handlerCtx.setOutputValue("url", path);
     }
 
-    private static String getPathForResource (String resource, Locale locale, ClassLoader cl) {
+    /**
+     *  <p> This function attempts to calculate a <em>help</em> path with the
+     *      given locale and classloader.  It only succeeds if it is able to
+     *      confirm a file exists at the generated path as determined by
+     *      <code>ClassLoader.getResource(path)</code>.  The paths checked are
+     *      the following in this order:</p>
+     *
+     *  <ul><li><code>/locale.toString()/help/&lt;resource&gt;</code></li>
+     *      <li><code>/locale.getLanguage()_locale.getCountry()/help/&lt;resource&gt;</code></li>
+     *      <li><code>/locale.getLanguage()/help/&lt;resource&gt;</code></li></ul>
+     *
+     *  <p> If all of those fail to yield a file in the classpath, then
+     *      <code>null</code> will be returned.</p>
+     */
+    public static String getHelpPathForResource(String resource, Locale locale, ClassLoader cl) {
         String path = "/" + locale.toString() + "/help/" + resource;
-        String language = locale.getLanguage();
-        String country = locale.getCountry();
         
         // Try with full locale
-        boolean found = cl.getResource(path) != null;
+        boolean found = (cl.getResource(path) != null);
 
         // Try with language_COUNTRY
         if (!found) {
+            String language = locale.getLanguage();
+            String country = locale.getCountry();
             path = "/" + language + "_" + country + "/help/" + resource;
-            found = cl.getResource(path) != null;
+            found = (cl.getResource(path) != null);
 
             // Try with just language
             if (!found) {
                 path = "/" + language + "/help/" + resource;
-                found = cl.getResource(path) != null;
-                // Still not found, so fall back to en
+                found = (cl.getResource(path) != null);
                 if (!found) {
+                    // Still not found, so return null
                     path = null;
                 }
             }

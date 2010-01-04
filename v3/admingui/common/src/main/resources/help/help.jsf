@@ -64,7 +64,7 @@
 		toc="$attribute{toc}">
 		    <ui:event type="beforeCreate">
                         setPageSessionAttribute(key="newVR" value="set");
-			getHelpTOC("en" toc="#{requestScope.toc}");
+			getHelpTOC("#{view.locale}" toc="#{requestScope.toc}");
 		    </ui:event>
 	    </dynamicTreeNode>
 
@@ -73,7 +73,7 @@
 		index="$attribute{index}">
 		    <ui:event type="beforeCreate">
                         setPageSessionAttribute(key="newVR" value="set");
-			getHelpIndex("en" index="#{requestScope.index}");
+			getHelpIndex("#{view.locale}" index="#{requestScope.index}");
 		    </ui:event>
 	    </dynamicTreeNode>
 
