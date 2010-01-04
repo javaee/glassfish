@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,64 +34,78 @@
  * holder.
  */
 
-package org.glassfish.internal.data;
+/*
+ * foo.java
+ *
+ * Created on November 11, 2001, 12:09 AM
+ */
 
-import org.glassfish.api.container.Sniffer;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Habitat;
-
+package com.sun.enterprise.util.io;
+import java.io.*;
 import java.util.*;
 
 /**
- * The container Registry holds references to the currently running containers.
  *
- * @author Jerome Dochez
+ * @author  bnevins
+ * @version 
  */
-@Service
-@Scoped(Singleton.class)
-public class ContainerRegistry {
+public abstract class FileLister
+{
+	FileLister(File root)
+	{
+		mainRoot = root;
+		fileList = new ArrayList();
+	}
 
-    @Inject
-    Habitat habitat;
+	abstract protected boolean relativePath();
+	
+	public String[] getFiles()
+	{
+		getFilesInternal(mainRoot);
+		String[] files = new String[fileList.size()];
+		
+		if(files.length <= 0)
+			return files;
+
+		int len = 0;
+		
+		if(relativePath())
+			len = mainRoot.getPath().length() + 1;
+		
+		for(int i = 0; i < files.length; i++)
+		{
+			files[i] = ((File)fileList.get(i)).getPath().substring(len).replace('\\', '/');
+		}
+		
+		Arrays.sort(files, String.CASE_INSENSITIVE_ORDER);
+		return files;
+	}
+	
+	
+	public void getFilesInternal(File root)
+	{
+		File[] files = root.listFiles();
+		
+		for(int i = 0; i < files.length; i++)
+		{
+			if(files[i].isDirectory())
+			{
+				getFilesInternal(files[i]);
+			}
+			else
+				fileList.add(files[i]);	// actual file
+		}
+	}
+		
+		
     
-    Map<String, EngineInfo> containers = new HashMap<String, EngineInfo>();
 
 
-    public synchronized void addContainer(String name, EngineInfo info) {
-        containers.put(name, info);
-        info.setRegistry(this);
-    }
 
-    public List<Sniffer> getStartedContainersSniffers() {
 
-        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
-
-        for (EngineInfo info : getContainers() ) {
-            sniffers.add(info.getSniffer());
-        }
-        return sniffers;
-    }
-
-    public synchronized EngineInfo getContainer(String containerType) {
-        return containers.get(containerType);
-    }
-
-    public synchronized EngineInfo removeContainer(EngineInfo container) {
-        for (Map.Entry<String, EngineInfo> entry : containers.entrySet()) {
-            if (entry.getValue().equals(container)) {
-                return containers.remove(entry.getKey());
-            }
-        }
-        return null;
-    }
-
-    public Iterable<EngineInfo> getContainers() {
-        ArrayList<EngineInfo> copy = new ArrayList<EngineInfo>(containers.size());
-        copy.addAll(containers.values());
-        return copy;
-    }
-        
+	private	ArrayList	fileList	= null;
+	private File		mainRoot	= null;
 }
+
+
+

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,64 +34,22 @@
  * holder.
  */
 
-package org.glassfish.internal.data;
+package com.sun.enterprise.loader;
 
-import org.glassfish.api.container.Sniffer;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Habitat;
-
-import java.util.*;
+import java.net.URL;
 
 /**
- * The container Registry holds references to the currently running containers.
+ * Represents an interface that must be implemented by classloaders
+ * that don't extend URLClassLoader and are installed as the parent
+ * classloader for web applications.
  *
- * @author Jerome Dochez
+ * This is used by the JSP engine to construct the classpath to pass to
+ * javac during JSP compilation.
  */
-@Service
-@Scoped(Singleton.class)
-public class ContainerRegistry {
+public interface JasperAdapter {
 
-    @Inject
-    Habitat habitat;
-    
-    Map<String, EngineInfo> containers = new HashMap<String, EngineInfo>();
-
-
-    public synchronized void addContainer(String name, EngineInfo info) {
-        containers.put(name, info);
-        info.setRegistry(this);
-    }
-
-    public List<Sniffer> getStartedContainersSniffers() {
-
-        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
-
-        for (EngineInfo info : getContainers() ) {
-            sniffers.add(info.getSniffer());
-        }
-        return sniffers;
-    }
-
-    public synchronized EngineInfo getContainer(String containerType) {
-        return containers.get(containerType);
-    }
-
-    public synchronized EngineInfo removeContainer(EngineInfo container) {
-        for (Map.Entry<String, EngineInfo> entry : containers.entrySet()) {
-            if (entry.getValue().equals(container)) {
-                return containers.remove(entry.getKey());
-            }
-        }
-        return null;
-    }
-
-    public Iterable<EngineInfo> getContainers() {
-        ArrayList<EngineInfo> copy = new ArrayList<EngineInfo>(containers.size());
-        copy.addAll(containers.values());
-        return copy;
-    }
-        
+    /**
+     * Returns the search path of URLs for loading classes and resources.
+     */
+    public URL[] getURLs();
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,64 +34,49 @@
  * holder.
  */
 
-package org.glassfish.internal.data;
+package com.sun.enterprise.util.shared;
 
-import org.glassfish.api.container.Sniffer;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Habitat;
-
-import java.util.*;
+import java.io.EOFException;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
- * The container Registry holds references to the currently running containers.
+ * This class contains utility methods that handles the archives.
  *
- * @author Jerome Dochez
+ * @author  Deployment Dev Team
+ * @version 
  */
-@Service
-@Scoped(Singleton.class)
-public class ContainerRegistry {
+public class ArchivistUtils {
 
-    @Inject
-    Habitat habitat;
-    
-    Map<String, EngineInfo> containers = new HashMap<String, EngineInfo>();
+    /** 
+     * Utility method that eads the input stream fully and writes the bytes to 
+     * the current entry in the output stream. 
+     */
+    public static void copy(InputStream is, OutputStream os) throws IOException {
+        copyWithoutClose(is, os);
+        is.close();
+        os.close();
+    }     
 
+    /** 
+     * Utility method that eads the input stream fully and writes the bytes to 
+     * the current entry in the output stream. 
+     */
+    public static void copyWithoutClose(InputStream is, OutputStream os) throws IOException {
+        byte[] buf = new byte[4096];
+        int len = 0;
+        while (len != -1) {
+            try {
+                len = is.read(buf, 0, buf.length);
+            } catch (EOFException eof){
+                break;
+            }
 
-    public synchronized void addContainer(String name, EngineInfo info) {
-        containers.put(name, info);
-        info.setRegistry(this);
-    }
-
-    public List<Sniffer> getStartedContainersSniffers() {
-
-        ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
-
-        for (EngineInfo info : getContainers() ) {
-            sniffers.add(info.getSniffer());
-        }
-        return sniffers;
-    }
-
-    public synchronized EngineInfo getContainer(String containerType) {
-        return containers.get(containerType);
-    }
-
-    public synchronized EngineInfo removeContainer(EngineInfo container) {
-        for (Map.Entry<String, EngineInfo> entry : containers.entrySet()) {
-            if (entry.getValue().equals(container)) {
-                return containers.remove(entry.getKey());
+            if(len != -1) {
+                os.write(buf, 0, len);
             }
         }
-        return null;
+        os.flush();
     }
-
-    public Iterable<EngineInfo> getContainers() {
-        ArrayList<EngineInfo> copy = new ArrayList<EngineInfo>(containers.size());
-        copy.addAll(containers.values());
-        return copy;
-    }
-        
 }
