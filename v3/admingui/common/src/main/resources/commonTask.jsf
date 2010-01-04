@@ -61,16 +61,12 @@
             <sun:commonTask rendered="#{sessionScope.showRegTreeNode}"
                             text="$resource{i18n.tree.registration}"
                             toolTip="registration"
-                            infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=registration.html"
-                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');"
-                            onKeyPress1="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');">
+                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');">
             </sun:commonTask>
             <sun:commonTask rendered="#{!sessionScope._noNetwork}"
                             text="$resource{i18n.tree.support}"
                             toolTip="$resource{i18n.tree.support}"
-                            infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=support.html"
-                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');"
-                            onKeyPress1="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');">
+                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');">
             </sun:commonTask>
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
@@ -83,13 +79,11 @@
             <sun:commonTask
                 text="$resource{i18n.commonTasks.task.listApp}"
                 toolTip="$resource{i18n.commonTasks.task.listApp.toolTip}"
-                infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=applications.html"
                 onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:applications:applications','#{request.contextPath}/common/applications/applications.jsf');">
             </sun:commonTask>
             <sun:commonTask
                 text="$resource{i18n.commonTasks.task.deployEAR}"
                 toolTip="$resource{i18n.commonTasks.task.deployEAR.toolTip}"
-                infoLinkUrl="/com_sun_webui_jsf/help/helpwindow.jsf?&windowTitle=Help+Window&helpFile=upload.html"
                 onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:applications:applications','#{request.contextPath}/common/applications/upload.jsf?appType=webApp&cancelPage=#{request.contextPath}/common/commonTask.jsf');">
             </sun:commonTask>
         </sun:commonTasksGroup>
