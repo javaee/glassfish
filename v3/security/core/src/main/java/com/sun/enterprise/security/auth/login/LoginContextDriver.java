@@ -60,6 +60,7 @@ import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.audit.AuditManager;
+import com.sun.enterprise.security.auth.login.AssertedCredentials;
 
 // FIXME: ACC methods need to be moved to ACC-specific class.
 import com.sun.enterprise.security.auth.login.DigestCredentials;
@@ -152,7 +153,47 @@ public class LoginContextDriver  {
         LoginContextDriver.login(fs, PasswordCredential.class);
     }
 
-    
+
+    public static void login(AssertedCredentials asrtCred) throws javax.security.auth.login.LoginException {
+        Subject subject = new Subject();
+        subject.getPrivateCredentials().add(asrtCred);
+        String jaasCtx = null;
+        try {
+            jaasCtx = Realm.getInstance(asrtCred.getRealmName()).getJAASContext();
+        } catch (Exception ex) {
+            if (ex instanceof LoginException) {
+                throw (LoginException) ex;
+            } else {
+                throw (LoginException) new LoginException(ex.toString()).initCause(ex);
+            }
+        }
+
+        try {
+            // A dummyCallback is used to satisfy JAAS but it is never used.
+            // name/pwd info is already contained in Subject's Credential
+            LoginContext lg = new LoginContext(jaasCtx, subject, dummyCallback);
+            lg.login();
+        } catch (Exception e) {
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO, "java_security.audit_auth_refused", asrtCred.getUserName());
+            }
+            if (_logger.isLoggable(Level.FINEST)) {
+                _logger.log(Level.FINEST, "doPasswordLogin fails", e);
+            }
+            if (AUDIT_MANAGER.isAuditOn()) {
+                AUDIT_MANAGER.authentication(asrtCred.getUserName(), asrtCred.getRealmName(), false);
+            }
+            if (e instanceof LoginException) {
+                throw (LoginException) e;
+            } else {
+                throw (LoginException) new LoginException("Login failed: " + e.toString()).initCause(e);
+            }
+        }
+
+        setSecurityContext(asrtCred.getUserName(), subject, asrtCred.getRealmName());
+    }
+
+
     /**
      * This method performs the login on the server side.
      *
