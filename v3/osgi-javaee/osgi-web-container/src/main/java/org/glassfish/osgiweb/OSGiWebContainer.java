@@ -220,16 +220,6 @@ public class OSGiWebContainer
                 "plain");
     }
 
-
-    private ServletContext setServletContextAttr(OSGiApplicationInfo osgiAppInfo)
-    {
-        ServletContext sc = getServletContext(osgiAppInfo.appInfo);
-        assert (sc != null);
-        sc.setAttribute(Constants.BUNDLE_CONTEXT_ATTR,
-                osgiAppInfo.bundle.getBundleContext());
-        return sc;
-    }
-
     private ServletContext getServletContext(ApplicationInfo appInfo)
     {
         if (appInfo.getModuleInfos().size() == 1)
