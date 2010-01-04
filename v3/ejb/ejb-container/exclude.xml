@@ -4,9 +4,7 @@
          Approval: Bill
      -->
     <Match>
-        <Or>
-          <Class name="com.sun.ejb.containers.CMCSingletonContainer"/>
-        </Or>
+        <Class name="com.sun.ejb.containers.CMCSingletonContainer"/>
         <Bug pattern="UL_UNRELEASED_LOCK"/>
         <Priority value="1"/>
     </Match>
