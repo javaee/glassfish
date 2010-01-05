@@ -63,6 +63,7 @@ import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.archivist.DescriptorArchivist;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.Properties;
 import java.util.Collection;
@@ -103,6 +104,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
     private static String WRITEOUT_XML = System.getProperty(
         "writeout.xml");
 
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DolProvider.class);
+
+
     public MetaData getMetaData() {
         return new MetaData(false, new Class[] { Application.class, WebBundleDescriptor.class }, null);
     }
@@ -117,6 +121,9 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
         Archivist archivist = archivistFactory.getArchivist(
                 sourceArchive, cl);
+        if (archivist == null) {
+            throw new RuntimeException(localStrings.getLocalString("invalid.javaee.archive", "Archive [{0}] was deployed as a Java EE archive while it does not contain any valid Java EE components. Please check the packaging of the archive.", name));
+        }
         archivist.setAnnotationProcessingRequested(true);
         String xmlValidationLevel = dasConfig.getDeployXmlValidation();
         archivist.setXMLValidationLevel(xmlValidationLevel);
