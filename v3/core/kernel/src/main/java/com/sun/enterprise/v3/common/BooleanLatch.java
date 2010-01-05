@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2006-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2006-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,52 +34,25 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.server;
+package com.sun.enterprise.v3.common;
 
-
-import com.sun.enterprise.module.common_impl.LogHelper;
-
-import java.io.File;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
 /**
- * DTD resolver used when parsing the domain.xml and resolve to local DTD copies
+ * Acts like a CountDownLatch except that it only requires a single signal to fire.
+ * Because a latch is non-exclusive, it uses the shared acquire and release methods.
  *
  * @author Jerome Dochez
- * @Deprecated
  */
+public class BooleanLatch extends AbstractQueuedSynchronizer {
+        public boolean isSignalled() { return getState() != 0; }
 
-@Deprecated
-public class   DomainResolver implements EntityResolver {
-    public InputSource resolveEntity(String publicId, String systemId) {
-        
-        if (systemId.startsWith("http://www.sun.com/software/appserver/")) {
-            // return a special input source
-            String fileName = systemId.substring("http://www.sun.com/software/appserver/".length());
-            File f = new File(System.getProperty("com.sun.aas.installRoot"));
-            f = new File(f, "lib");
-            f = new File(f, fileName.replace('/', File.separatorChar));
-            if (f.exists()) {
-                try {
-                    return new InputSource(new BufferedInputStream(new FileInputStream(f)));
-                } catch(IOException e) {
-                    LogHelper.getDefaultLogger().log(Level.SEVERE, "Exception while getting " + fileName + " : ", e);
-                    return null;
-                }
-            } else {
-                System.out.println("Cannot find " + f.getAbsolutePath());
-                return null;
-            }
-            //MyReader reader = new MyReader();
-            //return new InputSource(reader);
-        } else {
-            // use the default behaviour
-            return null;
+        public int tryAcquireShared(int ignore) {
+            return isSignalled()? 1 : -1;
+        }
+
+        public boolean tryReleaseShared(int ignore) {
+            setState(1);
+            return true;
         }
     }
-}
