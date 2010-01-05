@@ -1,4 +1,3 @@
-package com.sun.enterprise.tools.verifier.tests.ejb.runtime;
 
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -35,6 +34,7 @@ package com.sun.enterprise.tools.verifier.tests.ejb.runtime;
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.tools.verifier.tests.ejb.runtime;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import java.io.*;

@@ -1,4 +1,3 @@
-package com.sun.enterprise.tools.verifier.tests.ejb.runtime.resource;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
@@ -34,6 +33,7 @@ package com.sun.enterprise.tools.verifier.tests.ejb.runtime.resource;
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.tools.verifier.tests.ejb.runtime.resource;
 
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;

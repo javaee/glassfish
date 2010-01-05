@@ -1,4 +1,3 @@
-package com.sun.enterprise.tools.verifier.tests.ejb.runtime.beanpool;
 
 
 /*
@@ -36,6 +35,7 @@ package com.sun.enterprise.tools.verifier.tests.ejb.runtime.beanpool;
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.tools.verifier.tests.ejb.runtime.beanpool;
 
 import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
 import com.sun.enterprise.deployment.EjbDescriptor;
