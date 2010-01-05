@@ -1,5 +1,3 @@
-package org.glassfish.jms.admin.cli;
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -35,6 +33,7 @@ package org.glassfish.jms.admin.cli;
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.jms.admin.cli;
 
 
 /**
