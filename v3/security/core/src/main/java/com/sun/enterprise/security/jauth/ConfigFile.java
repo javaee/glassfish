@@ -265,16 +265,16 @@ class ConfigFile extends AuthConfig {
 	}
 
 	// check whether a policy is set
-	AuthPolicy reqP = (requestPolicy != null || responsePolicy != null) ?
-	    requestPolicy : 
-	    new AuthPolicy(idEntry.getRequestPolicy());  //default;
-
-	AuthPolicy respP = (requestPolicy != null || responsePolicy != null) ?
-	    responsePolicy : 
-	    new AuthPolicy(idEntry.getResponsePolicy());  //default;
-
-	// optimization: if policy was not set, return null
-	if (reqP == null && respP == null) {
+        AuthPolicy reqP, respP;
+        if(requestPolicy != null || responsePolicy != null) {
+            reqP = requestPolicy;
+            respP = responsePolicy;
+        } else if(idEntry.getRequestPolicy() != null || idEntry.getResponsePolicy() != null) {
+            //default
+            reqP = new AuthPolicy(idEntry.getRequestPolicy());
+            respP = new AuthPolicy(idEntry.getResponsePolicy());
+        } else {
+            // optimization: if policy was not set, return null
 	    if (logger != null && logger.isLoggable(Level.FINE)) {
  		logger.fine("no policy applies");
 	    }
