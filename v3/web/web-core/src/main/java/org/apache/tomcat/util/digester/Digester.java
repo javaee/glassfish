@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */ 
+
 // $Id: Digester.java 565464 2007-08-13 18:13:47Z remm $
 
 package org.apache.tomcat.util.digester;
