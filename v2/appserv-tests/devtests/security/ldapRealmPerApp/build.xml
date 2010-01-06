@@ -37,6 +37,7 @@
     </target>
 
     <target name="setup" depends="init-common">
+        <antcall target="create-ldap-usrgrps" />
         <property name="directory.server.url" value="ldap://${directory.server.host}:${directory.server.port}"/>
         <echo message="directory=${directory.server.url}" file="temp.txt"/>
         <replace file="temp.txt" token=":" value="\\:"/>
@@ -53,10 +54,11 @@
             <param name="admin.command" value="create-auth-realm" />
             <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.ldap.LDAPRealm --property directory=${directory}:base-dn=${base-dn}:jaas-context=ldapRealm:com.sun.jndi.ldap.connect.pool.debug=fine:com.sun.jndi.ldap.connect.pool.maxsize=2 ldap"/>
         </antcall>
-        <antcall target="reconfig-common"/>
+<!--        <antcall target="reconfig-common"/>-->
     </target>
 
     <target name="sslsetup" depends="init-common">
+        <antcall target="create-ldap-usrgrps" />
         <property name="directory.server.sslurl" value="ldaps://${directory.server.host}:${directory.server.sslport}"/>
         <echo message="ssldirectory=${directory.server.sslurl}" file="temp.txt"/>
         <replace file="temp.txt" token=":" value="\\:"/>
@@ -75,9 +77,9 @@
             <param name="operand.props" value="--classname com.sun.enterprise.security.auth.realm.ldap.LDAPRealm --property directory=${ssldirectory}:base-dn=${base-dn}:jaas-context=ldapRealm:com.sun.jndi.ldap.connect.pool.debug=fine:com.sun.jndi.ldap.connect.pool.maxsize=2 ldap"/>
         </antcall>
 
-        <antcall target="create-jvm-options"/>
+        <antcall target="set-jvm-options"/>
 
-        <antcall target="reconfig-common"/>
+<!--        <antcall target="reconfig-common"/>-->
         <antcall target="restart"/>
     </target>
 
@@ -113,20 +115,22 @@
     </target>
 
     <target name="unsetup" depends="init-common">
+        <antcall target="delete-ldap-usrgrps" />
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="ldap" />
         </antcall>
-        <antcall target="reconfig-common"/>
+<!--        <antcall target="reconfig-common"/>-->
     </target>
 
     <target name="sslunsetup" depends="init-common">
+        <antcall target="delete-ldap-usrgrps" />
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-auth-realm" />
             <param name="operand.props" value="ldap" />
         </antcall>
-        <antcall target="delete-jvm-options"/>
-        <antcall target="reconfig-common"/>
+        <antcall target="unset-jvm-options"/>
+<!--        <antcall target="reconfig-common"/>-->
         <antcall target="restart"/>
     </target>
 
@@ -139,18 +143,53 @@
         <delete file="temp.txt"/>
     </target>
 
-    <target name="create-jvm-options" depends="processStoreLocation">
+    <target name="set-jvm-options" depends="processStoreLocation">
         <antcall target="asadmin-common">
             <param name="admin.command" value="create-jvm-options" />
             <param name="operand.props" value="-Djavax.net.ssl.trustStore=${trustStore}" />
         </antcall>
     </target>
 
-    <target name="delete-jvm-options" depends="processStoreLocation">
+    <target name="unset-jvm-options" depends="processStoreLocation">
         <antcall target="asadmin-common">
             <param name="admin.command" value="delete-jvm-options" />
             <param name="operand.props" value="-Djavax.net.ssl.trustStore=${trustStore}" />
         </antcall>
+    </target>
+
+    <target name="create-ldap-usrgrps" depends="init-common">
+
+  	  <copy file="${create.ldif.file}" tofile="temp.ldif" overwrite="true" failonerror="false"/>
+  	  <echo message="Creating ldap test users and groups at ldap://${directory.server.host}:${directory.server.port}/?${directory.server.basedn}"/>
+	  <antcall target="execute-ldap-ldif">
+		<param name="ldif.file.path" value="temp.ldif"/>
+	  </antcall>
+	  <echo message="deleting temp file..."/>
+	  <delete file="temp.ldif"/>
+
+    </target>
+
+    <target name="delete-ldap-usrgrps" depends="init-common">
+  	  <copy file="${delete.ldif.file}" tofile="temp.ldif" overwrite="true" failonerror="false"/>
+  	  <echo message="Deleting ldap test users and groups at ldap://${directory.server.host}:${directory.server.port}/?${directory.server.basedn}"/>
+	  <antcall target="execute-ldap-ldif">
+		<param name="ldif.file.path" value="temp.ldif"/>
+	  </antcall>
+	  <echo message="deleting temp file..."/>
+	  <delete file="temp.ldif"/>
+    </target>
+
+    <target name="execute-ldap-ldif" depends="init-common">
+	<java classname="LDAPModify" fork="true" failonerror="false">
+		<arg line="-h ${directory.server.host}"/>
+		<arg line="-p ${directory.server.port}"/>
+		<arg line="-D &quot;${directory.manager.dn}&quot;"/>
+		<arg line="-w ${directory.manager.passwd}"/>
+		<arg line="-f ${ldif.file.path}"/>
+		<classpath>
+			<pathelement path="${env.APS_HOME}/lib/ldapjdk.jar"/>
+		</classpath>
+	</java>
     </target>
 
     <target name="usage">

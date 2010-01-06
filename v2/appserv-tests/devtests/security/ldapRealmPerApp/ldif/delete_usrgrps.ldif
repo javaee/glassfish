@@ -1,0 +1,16 @@
+version: 1
+
+dn: cn=Employee,ou=Groups,dc=red,dc=iplanet,dc=com
+changetype: delete
+
+dn: uid=j2ee/shingwai,ou=Users,dc=red,dc=iplanet,dc=com
+changetype: delete
+
+dn: ou=Groups,dc=red,dc=iplanet,dc=com
+changetype: delete
+
+dn: ou=Users,dc=red,dc=iplanet,dc=com
+changetype: delete
+
+dn: dc=red,dc=iplanet,dc=com
+changetype: delete
