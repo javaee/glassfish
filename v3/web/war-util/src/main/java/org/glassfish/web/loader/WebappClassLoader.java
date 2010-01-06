@@ -935,6 +935,10 @@ public class WebappClassLoader
                 throw new UnsupportedClassVersionError(msg);
             } catch(AccessControlException ace) {
                 throw new ClassNotFoundException(name, ace);
+            } catch(RuntimeException rex) {
+                throw rex;
+            } catch(Error err) {
+                throw err;
             } catch (Throwable t) {
                 String msg = rb.getString(
                     "webappClassLoader.unableToLoadClass");
