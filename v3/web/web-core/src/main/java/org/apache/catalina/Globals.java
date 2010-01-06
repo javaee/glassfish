@@ -283,4 +283,6 @@ public final class Globals {
     public static final String META_INF_RESOURCES = "META-INF/resources";
 
     public static final String ISO_8859_1_ENCODING = "ISO-8859-1";
+
+    public static final String FACES_INITIALIZER = "com.sun.faces.config.FacesInitializer";
 }
