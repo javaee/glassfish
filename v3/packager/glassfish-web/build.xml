@@ -64,6 +64,7 @@ own identifying information: Portions Copyright [yyyy]
        <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/autostart"/>
 
        <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-web-container.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
+       <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-javaee-base.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
 
 
        <if test="${compression}">
