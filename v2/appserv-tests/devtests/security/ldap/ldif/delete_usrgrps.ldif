@@ -36,3 +36,6 @@ changetype: delete
 # entry-id: 1
 dn: dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
 changetype: delete
+
+dn: dc=sfbay,dc=sun,dc=com
+changetype: delete

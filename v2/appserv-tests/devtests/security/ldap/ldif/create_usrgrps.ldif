@@ -1,5 +1,12 @@
 version: 1
 
+dn: dc=sfbay,dc=sun,dc=com
+changetype: add
+description: ldap test dn
+objectClass: domain
+objectClass: top
+dc: sfbay
+
 # entry-id: 1
 dn: dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
 changetype: add
