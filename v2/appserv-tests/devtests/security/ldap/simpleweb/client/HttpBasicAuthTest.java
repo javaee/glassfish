@@ -2,11 +2,14 @@ import java.io.*;
 import java.net.*;
 import sun.misc.*;
 
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
 public class HttpBasicAuthTest implements Runnable {
 
     private int suxesCount = 0;
     private int failureCount = 0;
     private int totalCount = 0;
+    private boolean result = true;
 
     private long minTime = Long.MAX_VALUE;
     private long maxTime = 0;
@@ -72,6 +75,14 @@ public class HttpBasicAuthTest implements Runnable {
                            minTime + "/" + 
                            maxTime + "/" + avgTime + "/" + stdDev);
 
+        String testId = "Sec::LDAP BasicAuth";
+        stat.addDescription("Security::LDAP BasicAuth");
+        if (result) {
+            stat.addStatus(testId, stat.PASS);
+        } else {
+            stat.addStatus(testId, stat.FAIL);
+        }
+        stat.printSummary(testId);
     }
 
     public void run() {
@@ -102,6 +113,7 @@ public class HttpBasicAuthTest implements Runnable {
                 synchronized(this) {
                     failureCount++;
                 }
+                result = false;
                 continue;
             }
 
@@ -129,6 +141,8 @@ public class HttpBasicAuthTest implements Runnable {
     }
 
 
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
 
 
     public static final String URL_OPTION = "-url";
