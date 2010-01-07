@@ -333,6 +333,9 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         // properties
         // for composite case, the composite deployer will return proper 
         // module level properties
+        if (props==null) {
+            props = new Properties();
+        }
         return props;
     }
 

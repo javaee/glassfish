@@ -35,16 +35,10 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
@@ -52,17 +46,13 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.osgijavaeebase.OSGiBundleArchive;
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.List;
 
 /**
  * This is a stateful service. This is responsible for deployment
@@ -70,10 +60,10 @@ import java.util.List;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JavaEEDeploymentRequest
+public abstract class OSGiDeploymentRequest
 {
     private static final Logger logger =
-            Logger.getLogger(JavaEEUndeploymentRequest.class.getPackage().getName());
+            Logger.getLogger(OSGiUndeploymentRequest.class.getPackage().getName());
 
     private ActionReport reporter;
     private Bundle b;
@@ -82,9 +72,9 @@ public class JavaEEDeploymentRequest
     private ArchiveFactory archiveFactory;
     private ServerEnvironmentImpl env;
     private ReadableArchive archive;
-    private OSGiDeploymentContextImpl dc;
+    private OSGiDeploymentContext dc;
 
-    public JavaEEDeploymentRequest(Deployment deployer,
+    public OSGiDeploymentRequest(Deployment deployer,
                                    ArchiveFactory archiveFactory,
                                    ServerEnvironmentImpl env,
                                    ActionReport reporter,
@@ -100,8 +90,9 @@ public class JavaEEDeploymentRequest
     /**
      * Deploys a web application bundle in GlassFish Web container.
      * It properly rolls back if something goes wrong.
+     * @return OSGIApplicationInfo
      */
-    public OSGiWebContainer.OSGiApplicationInfo execute()
+    public OSGiApplicationInfo execute()
     {
         // This is where the fun is...
         try
@@ -137,7 +128,7 @@ public class JavaEEDeploymentRequest
 
         // Set up a deployment context
         OpsParams opsParams = getDeployParams(archive);
-        dc = new OSGiDeploymentContextImpl(
+        dc = getDeploymentContextImpl(
                 reporter,
                 logger,
                 archive,
@@ -149,7 +140,9 @@ public class JavaEEDeploymentRequest
         expandIfNeeded();
     }
 
-    private OSGiWebContainer.OSGiApplicationInfo deploy()
+    protected abstract OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive archive, OpsParams opsParams, ServerEnvironmentImpl env, Bundle b) throws Exception;
+
+    private OSGiApplicationInfo deploy()
     {
         // Need to declare outside to do proper cleanup of target dir
         // when deployment fails. We can't rely on exceptions as
@@ -160,17 +153,12 @@ public class JavaEEDeploymentRequest
             appInfo = deployer.deploy(dc);
             if (appInfo != null)
             {
-                OSGiWebContainer.OSGiApplicationInfo osgiAppInfo = new OSGiWebContainer.OSGiApplicationInfo();
-                osgiAppInfo.appInfo = appInfo;
-                osgiAppInfo.isDirectoryDeployment = dirDeployment;
-                osgiAppInfo.bundle = b;
-                return osgiAppInfo;
+                return new OSGiApplicationInfo(appInfo, dirDeployment, b);
             }
             else
             {
-                logger.logp(Level.INFO, "JavaEEDeploymentRequest",
-                        "deploy", "failed to deploy {0}", new Object[]{b});
-                reporter.failure(logger, "failed to deploy " + b);
+                logger.logp(Level.INFO, "OSGiDeploymentRequest",
+                        "deploy", "failed to deploy {0} for following reason: {1} ", new Object[]{b, reporter.getMessage()});
                 return null;
             }
         }
@@ -183,15 +171,15 @@ public class JavaEEDeploymentRequest
                     File dir = dc.getSourceDir();
                     assert (dir.isDirectory());
                     if (FileUtils.whack(dir)) {
-                        logger.logp(Level.INFO, "JavaEEDeploymentRequest", "deploy",
+                        logger.logp(Level.INFO, "OSGiDeploymentRequest", "deploy",
                                 "Deleted {0}", new Object[]{dir});
                     } else {
-                        logger.logp(Level.WARNING, "JavaEEDeploymentRequest", "deploy", "Unable to delete {0} ", new Object[]{dir});
+                        logger.logp(Level.WARNING, "OSGiDeploymentRequest", "deploy", "Unable to delete {0} ", new Object[]{dir});
                     }
                 }
                 catch (Exception e2)
                 {
-                    logger.logp(Level.WARNING, "JavaEEDeploymentRequest", "deploy",
+                    logger.logp(Level.WARNING, "OSGiDeploymentRequest", "deploy",
                             "Exception while cleaning up target directory.", e2);
                     // don't throw this anymore
                 }
@@ -210,7 +198,7 @@ public class JavaEEDeploymentRequest
         dirDeployment = file != null && file.isDirectory();
         if (dirDeployment)
         {
-            logger.logp(Level.FINE, "JavaEEDeploymentRequest", "expandIfNeeded",
+            logger.logp(Level.FINE, "OSGiDeploymentRequest", "expandIfNeeded",
                     "Archive is already expanded at = {0}", new Object[]{file});
             archive = archiveFactory.openArchive(file);
             dc.setSource(archive);
@@ -224,14 +212,17 @@ public class JavaEEDeploymentRequest
         File tmpFile = File.createTempFile("osgiapp", "");
 
         // create a directory in place of the tmp file.
-        tmpFile.delete();
+        if (!tmpFile.delete()) {
+            throw new IOException("Not able to expand " + archive.getName() +
+                    " in " + tmpFile);
+        }
         tmpFile = new File(tmpFile.getAbsolutePath());
         tmpFile.deleteOnExit();
         if (tmpFile.mkdirs())
         {
             WritableArchive targetArchive = archiveFactory.createArchive(tmpFile);
             new OSGiArchiveHandler().expand(archive, targetArchive, dc);
-            logger.logp(Level.INFO, "JavaEEDeploymentRequest", "expand",
+            logger.logp(Level.INFO, "OSGiDeploymentRequest", "expand",
                     "Expanded at {0}", new Object[]{targetArchive.getURI()});
             archive = archiveFactory.openArchive(tmpFile);
             dc.setSource(archive); // set the new archive as source.
@@ -242,11 +233,9 @@ public class JavaEEDeploymentRequest
     }
 
     /**
-     * Return a File object that corresponds to this archive.
-     * return null if it can't determine the underlying file object.
-     *
      * @param a The archive
-     * @return
+     * @return a File object that corresponds to this archive.
+     * return null if it can't determine the underlying file object.
      */
     public static File makeFile(ReadableArchive a)
     {
@@ -261,77 +250,15 @@ public class JavaEEDeploymentRequest
         return null;
     }
 
-    private OpsParams getDeployParams(ReadableArchive archive) throws Exception
+    protected DeployCommandParameters getDeployParams(ReadableArchive archive) throws Exception
     {
         DeployCommandParameters parameters = new DeployCommandParameters();
         parameters.name = archive.getName();
 
-        // Set the contextroot explicitly, else it defaults to name.
-        try
-        {
-            // We expect WEB_CONTEXT_PATH to be always present.
-            // This is mandated in the spec.
-            parameters.contextroot = archive.getManifest().
-                    getMainAttributes().getValue(Constants.WEB_CONTEXT_PATH);
-        }
-        catch (IOException e)
-        {
-            // ignore and continue
-        }
-        if (parameters.contextroot == null || parameters.contextroot.length() == 0)
-        {
-            throw new Exception(Constants.WEB_CONTEXT_PATH +
-                    " manifest header is mandatory");
-        }
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
         parameters.force = false;
-        parameters.virtualservers = getDefaultVirtualServer();
         return parameters;
     }
 
-    /**
-     * @return comma-separated list of all defined virtual servers (exclusive
-     * of __asadmin)
-     */
-    private String getAllVirtualServers() {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        Domain domain = Globals.get(Domain.class);
-        String target = "server"; // Need to understand how to dynamically obtains this
-        Server server = domain.getServerNamed(target);
-        if (server != null) {
-            Config config = domain.getConfigs().getConfigByName(
-                server.getConfigRef());
-            if (config != null) {
-                HttpService httpService = config.getHttpService();
-                if (httpService != null) {
-                    List<VirtualServer> hosts = httpService.getVirtualServer();
-                    if (hosts != null) {
-                        for (VirtualServer host : hosts) {
-                            if (("__asadmin").equals(host.getId())) {
-                                continue;
-                            }
-                            if (first) {
-                                sb.append(host.getId());
-                                first = false;
-                            } else {
-                                sb.append(",");
-                                sb.append(host.getId());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * @return the dafault virtual server
-     */
-    private String getDefaultVirtualServer() {
-        NetworkListener nl = Globals.get(NetworkListener.class);
-        return nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
-    }
 }

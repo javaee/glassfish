@@ -35,7 +35,7 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgiejb;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -44,20 +44,11 @@ import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.ServiceRegistration;
 import static org.osgi.framework.Constants.ACTIVATION_LAZY;
 import static org.osgi.framework.Constants.BUNDLE_ACTIVATIONPOLICY;
-import org.osgi.service.url.URLConstants;
-import org.osgi.service.url.URLStreamHandlerService;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.osgijavaeebase.Extender;
-import org.glassfish.osgijavaeebase.ExtenderManager;
-import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.sun.enterprise.web.WebModuleDecorator;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
  * An extender that listens to web application bundle's lifecycle
@@ -65,25 +56,23 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebExtender implements Extender, SynchronousBundleListener
+public class EJBExtender implements Extender, SynchronousBundleListener
 {
-    private OSGiWebContainer wc;
+    private OSGiEJBContainer c;
     private static final Logger logger =
-            Logger.getLogger(ExtenderManager.class.getPackage().getName());
+            Logger.getLogger(EJBExtender.class.getPackage().getName());
     private BundleContext context;
     private AtomicBoolean started = new AtomicBoolean(false);
     private ServiceRegistration urlHandlerService;
-    private OSGiWebModuleDecorator wmd;
 
-    public WebExtender(BundleContext context)
+    public EJBExtender(BundleContext context)
     {
         this.context = context;
     }
 
     public void start() {
         started.set(true);
-        wc = new OSGiWebContainer(context);
-        registerWmd();
+        c = new OSGiEJBContainer(context);
         context.addBundleListener(this);
 
         // Web Container bundle can come into existence after
@@ -92,20 +81,17 @@ public class WebExtender implements Extender, SynchronousBundleListener
         for (Bundle b : context.getBundles())
         {
             if (((b.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) &&
-                    isWebBundle(b))
+                    isEJBBundle(b))
             {
                 deploy(b);
             }
         }
-        addURLHandler();
     }
 
     public void stop() {
         if (started.getAndSet(false)) {
-            removeURLHandler();
             context.removeBundleListener(this);
-            unregisterWmd();
-            if (wc!=null) wc.undeployAll();
+            if (c !=null) c.undeployAll();
         }
     }
 
@@ -115,13 +101,13 @@ public class WebExtender implements Extender, SynchronousBundleListener
         switch (event.getType())
         {
             case BundleEvent.STARTING:
-                if (!isLazy(bundle) && isWebBundle(bundle))
+                if (!isLazy(bundle) && isEJBBundle(bundle))
                 {
                     deploy(bundle);
                 }
                 break;
             case BundleEvent.LAZY_ACTIVATION:
-                if (isWebBundle(bundle))
+                if (isEJBBundle(bundle))
                 {
                     deploy(bundle);
                 }
@@ -134,7 +120,7 @@ public class WebExtender implements Extender, SynchronousBundleListener
                 // would have been called after deployment. SO, activator
                 // could not do meaningful cleanup using Java EE components in stop().
                 //  Hence, we undeploy in STOPPED event.
-                if (isWebBundle(bundle) && wc.isDeployed(bundle))
+                if (isEJBBundle(bundle) && c.isDeployed(bundle))
                 {
                     undeploy(bundle);
                 }
@@ -149,30 +135,29 @@ public class WebExtender implements Extender, SynchronousBundleListener
     }
 
     /**
-     * Determines if a bundle represents a web application or not.
-     * As per rfc #66, a web container extender recognizes a web application
-     * bundle by looking for the presence of Web-contextPath manifest header
+     * Determines if a bundle represents a EJB application or not.
+     * We determine this by looking at presence of Application-Type manifest header.
      *
      * @param b
      * @return
      */
-    private boolean isWebBundle(Bundle b)
+    private boolean isEJBBundle(Bundle b)
     {
-        return b.getHeaders().get(Constants.WEB_CONTEXT_PATH) != null;
+        return b.getHeaders().get(Constants.EJB_NAMESPACE) != null;
     }
 
     private void deploy(Bundle b)
     {
         try
         {
-            wc.deploy(b);
+            c.deploy(b);
         }
         catch (Exception e)
         {
-            logger.logp(Level.SEVERE, "WebExtender", "deploy",
+            logger.logp(Level.SEVERE, "EJBExtender", "deploy",
                     "Exception deploying bundle {0}",
                     new Object[]{b.getLocation()});
-            logger.logp(Level.SEVERE, "WebExtender", "deploy",
+            logger.logp(Level.SEVERE, "EJBExtender", "deploy",
                     "Exception Stack Trace", e);
         }
     }
@@ -181,49 +166,16 @@ public class WebExtender implements Extender, SynchronousBundleListener
     {
         try
         {
-            wc.undeploy(b);
+            c.undeploy(b);
         }
         catch (Exception e)
         {
-            logger.logp(Level.SEVERE, "WebExtender", "undeploy",
+            logger.logp(Level.SEVERE, "EJBExtender", "undeploy",
                     "Exception undeploying bundle {0}",
                     new Object[]{b.getLocation()});
-            logger.logp(Level.SEVERE, "WebExtender", "undeploy",
+            logger.logp(Level.SEVERE, "EJBExtender", "undeploy",
                     "Exception Stack Trace", e);
         }
-    }
-
-    private void addURLHandler()
-    {
-        Properties p = new Properties();
-        p.put(URLConstants.URL_HANDLER_PROTOCOL,
-                new String[]{Constants.WEB_BUNDLE_SCHEME});
-        urlHandlerService = context.registerService(
-                URLStreamHandlerService.class.getName(),
-                new WebBundleURLStreamHandlerService(),
-                p);
-    }
-
-    private void removeURLHandler() {
-        if (urlHandlerService !=null) {
-            urlHandlerService.unregister();
-        }
-    }
-
-    private void registerWmd()
-    {
-        assert(wc != null);
-        wmd = new OSGiWebModuleDecorator(wc);
-        Inhabitant i = new ExistingSingletonInhabitant(wmd);
-        String fqcn = WebModuleDecorator.class.getName();
-        Globals.getDefaultHabitat().addIndex(i, fqcn , wmd.getClass().getSimpleName());
-    }
-
-    private void unregisterWmd() {
-        // Since there is no public API to remove an inhabitant, we
-        // nullify the fields and that ensures that this decorator
-        // is as good as removed.
-        wmd.setWc(null);
     }
 
 }

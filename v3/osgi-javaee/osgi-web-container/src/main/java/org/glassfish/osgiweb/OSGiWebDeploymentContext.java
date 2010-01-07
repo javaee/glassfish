@@ -37,62 +37,48 @@
 
 package org.glassfish.osgiweb;
 
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+import org.glassfish.osgijavaeebase.OSGiDeploymentContext;
+import org.glassfish.osgijavaeebase.BundleClassLoader;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.deployment.OpsParams;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentContextImpl;
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.web.loader.WebappClassLoader;
-import org.glassfish.osgijavaeebase.BundleClassLoader;
-import org.glassfish.osgijavaeebase.OSGiArchiveHandler;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
+import org.glassfish.api.deployment.OpsParams;
+import org.osgi.framework.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.IOException;
+import java.io.File;
+
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiDeploymentContextImpl extends DeploymentContextImpl
-{
+class OSGiWebDeploymentContext extends OSGiDeploymentContext {
+
     private static final Logger logger =
-            Logger.getLogger(OSGiDeploymentContextImpl.class.getPackage().getName());
+            Logger.getLogger(OSGiWebDeploymentContext.class.getPackage().getName());
 
-    private WebappClassLoader shareableTempClassLoader;
-    private WebappClassLoader finalClassLoader;
-    private Bundle bundle;
-    public OSGiDeploymentContextImpl(ActionReport actionReport,
-                                     Logger logger,
-                                     ReadableArchive source,
-                                     OpsParams params,
-                                     ServerEnvironment env,
-                                     Bundle bundle) throws Exception
-    {
-        super(actionReport, logger, source, params, env);
-        this.bundle = bundle;
-        setupClassLoader();
-
-        // We always this handler instead of going through discovery process
-        // which has issues.
-        setArchiveHandler(new OSGiArchiveHandler());
+    public OSGiWebDeploymentContext(ActionReport actionReport,
+                                            Logger logger,
+                                            ReadableArchive source,
+                                            OpsParams params,
+                                            ServerEnvironment env,
+                                            Bundle bundle) throws Exception {
+        super(actionReport, logger, source, params, env, bundle);
     }
 
-    private void setupClassLoader() throws Exception
-    {
+    protected void setupClassLoader() throws Exception     {
         final BundleClassLoader delegate1 = new BundleClassLoader(bundle);
         final ClassLoader delegate2 =
                 Globals.get(ClassLoaderHierarchy.class).getAPIClassLoader();
@@ -143,7 +129,7 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
             public URL[] getURLs()
             {
                 return convert((String)bundle.getHeaders().
-                        get(Constants.BUNDLE_CLASSPATH));
+                        get(org.osgi.framework.Constants.BUNDLE_CLASSPATH));
             }
             private URL[] convert(String bcp) {
                 List<URL> urls = new ArrayList<URL>();
@@ -160,7 +146,7 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
                     }
                     catch (MalformedURLException e)
                     {
-                        logger.logp(Level.WARNING, "OSGiDeploymentContextImpl", "convert", "Failed to add {0} as classpath because of", new Object[]{entry, e.getMessage()});
+                        logger.logp(Level.WARNING, "OSGiDeploymentContext", "convert", "Failed to add {0} as classpath because of", new Object[]{entry, e.getMessage()});
                     }
                 }
                 return urls.toArray(new URL[0]);
@@ -172,47 +158,7 @@ public class OSGiDeploymentContextImpl extends DeploymentContextImpl
 // new TempBundleClassLoader(parent));
 //        shareableTempClassLoader.start();
         shareableTempClassLoader = finalClassLoader;
-        finalClassLoader.start();
-    }
-
-    @Override
-    public void createDeploymentClassLoader(ClassLoaderHierarchy clh,
-                                   ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException
-    {
-        // do nothing as we override getClassLoader methods.
-    }
-
-    @Override
-    public void createApplicationClassLoader(ClassLoaderHierarchy clh,
-                                   ArchiveHandler handler)
-            throws URISyntaxException, MalformedURLException
-    {
-        // do nothing as we override getClassLoader methods.
-    }
-
-
-    @Override
-    public ClassLoader getClassLoader()
-    {
-        if (getPhase() != Phase.PREPARE) {
-            // we return the final class loader
-            return finalClassLoader;
-        }
-        return shareableTempClassLoader;
-    }
-
-    @Override
-    public ClassLoader getFinalClassLoader()
-    {
-        return finalClassLoader;
-    }
-
-    @Override
-    public synchronized ClassLoader getClassLoader(boolean sharable)
-    {
-        throw new RuntimeException("Assertion Failure: " +
-                "This method should not be called");
+        WebappClassLoader.class.cast(finalClassLoader).start();
     }
 
 }

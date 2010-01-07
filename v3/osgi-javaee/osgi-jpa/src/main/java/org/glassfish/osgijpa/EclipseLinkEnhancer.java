@@ -94,6 +94,7 @@ class EclipseLinkEnhancer implements JPAEnhancer {
                 File target = new File(enhancedDir, puRoot);
                 try {
                     enhance(source, target, cl, persistenceXML);
+                    // TODO(Sahoo): Update persistence.xml with eclipselink.weaving=static
                 } catch (URISyntaxException e) {
                     throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                 }

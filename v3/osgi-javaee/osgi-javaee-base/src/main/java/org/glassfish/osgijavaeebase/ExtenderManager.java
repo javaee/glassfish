@@ -110,13 +110,15 @@ public class ExtenderManager
     {
         try
         {
-            for (ServiceReference ref :
-                    context.getServiceReferences(Extender.class.getName(), null)) {
-                Extender e = Extender.class.cast(context.getService(ref));
-                try {
-                    e.stop();
-                } finally {
-                    context.ungetService(ref);
+            final ServiceReference[] refs = context.getServiceReferences(Extender.class.getName(), null);
+            if (refs != null) {
+                for (ServiceReference ref : refs) {
+                    Extender e = Extender.class.cast(context.getService(ref));
+                    try {
+                        e.stop();
+                    } finally {
+                        context.ungetService(ref);
+                    }
                 }
             }
         }

@@ -41,21 +41,20 @@ import com.sun.enterprise.web.WebApplication;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
 import org.glassfish.api.ActionReport;
-import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.EngineRef;
 import org.glassfish.internal.data.ModuleInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.glassfish.osgijavaeebase.OSGiDeploymentRequest;
+import org.glassfish.osgijavaeebase.OSGiUndeploymentRequest;
+import org.glassfish.osgijavaeebase.OSGiApplicationInfo;
+import org.glassfish.osgijavaeebase.OSGiContainer;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import static org.osgi.framework.Constants.BUNDLE_VERSION;
 
 import javax.servlet.ServletContext;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -64,64 +63,39 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiWebContainer
+public class OSGiWebContainer extends OSGiContainer
 {
-    // TODO(Sahoo): Integration wh event admin service
-
-    static class OSGiApplicationInfo
-    {
-        ApplicationInfo appInfo;
-        boolean isDirectoryDeployment;
-        Bundle bundle;
-    }
-    private Map<Bundle, OSGiApplicationInfo> applications =
-            new HashMap<Bundle, OSGiApplicationInfo>();
+    // TODO(Sahoo): Integration with event admin service
 
     private static final Logger logger =
             Logger.getLogger(OSGiWebContainer.class.getPackage().getName());
 
-    private Deployment deployer = Globals.get(Deployment.class);
-    private ArchiveFactory archiveFactory = Globals.get(ArchiveFactory.class);
-    private ServerEnvironmentImpl env = Globals.get(ServerEnvironmentImpl.class);
-
     // Set the current bundle context in a thread local for use during web module decoration
     private ThreadLocal<BundleContext> currentBundleContext = new ThreadLocal<BundleContext>();
 
+    public OSGiWebContainer(BundleContext ctx) {
+        super(ctx);
+    }
 
-    /**
-     * Deploys a web application bundle in GlassFish Web container.
-     * This method is synchronized because we don't know if GlassFish
-     * deployment framework can handle concurrent requests or not.
-     *
-     * @param b Web Application Bundle to be deployed.
-     */
-    public synchronized void deploy(final Bundle b) throws Exception
-    {
+    protected void preDeploy(Bundle b) {
         currentBundleContext.set(b.getBundleContext());
-        OSGiApplicationInfo osgiAppInfo = applications.get(b);
-        if (osgiAppInfo != null) {
-            logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
-                    "Bundle {0} is already deployed at {1} ", new Object[]{b,
-                    osgiAppInfo.appInfo.getSource()});
-            return;
-        }
-        // deploy the java ee artifacts
-        ActionReport report = getReport();
-        osgiAppInfo = deployJavaEEArtifacts(b, report);
+    }
+
+    protected void postDeploy(OSGiApplicationInfo osgiAppInfo) {
         if (osgiAppInfo != null)
         {
             try {
-                ServletContext sc = getServletContext(osgiAppInfo.appInfo);
-                assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.bundle.getBundleContext());
-                registerService(b, sc);
-                applications.put(b, osgiAppInfo);
+                ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
+                assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
+                registerService(osgiAppInfo.getBundle(), sc);
+                applications.put(osgiAppInfo.getBundle(), osgiAppInfo);
                 logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
                         "deployed bundle {0} at {1}",
-                        new Object[]{b, osgiAppInfo.appInfo.getSource().getURI()});
+                        new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo().getSource().getURI()});
             } catch (Exception e) {
                 logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
                         "Rolling back deployment as exception occured", e);
-                undeployJavaEEArtifacts(osgiAppInfo, report);
+                undeployJavaEEArtifacts(osgiAppInfo, getReport());
             }
         }
         else
@@ -129,94 +103,16 @@ public class OSGiWebContainer
             logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
                     "could not deploy bundle {0}. See previous messages for " +
                             "further information",
-                    new Object[]{b});
+                    new Object[]{osgiAppInfo.getBundle()});
         }
     }
 
-    /**
-     * Does necessary deployment in Java EE container
-     * @param b
-     * @param report
-     * @return
-     */
-    private OSGiApplicationInfo deployJavaEEArtifacts(Bundle b, ActionReport report)
-    {
-        JavaEEDeploymentRequest request = new JavaEEDeploymentRequest(
-                deployer, archiveFactory, env, report, b);
-        return request.execute();
+    protected OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {
+        return new OSGiWebUndeploymentRequest(deployer, env, reporter, osgiAppInfo);
     }
 
-    /**
-     * Undeploys a web application bundle.
-     * This method is synchronized because we don't know if GlassFish
-     * deployment framework can handle concurrent requests or not.
-     *
-     * @param b Bundle to be undeployed
-     */
-    public synchronized void undeploy(Bundle b) throws Exception
-    {
-        OSGiApplicationInfo osgiAppInfo = applications.get(b);
-        if (osgiAppInfo == null)
-        {
-            throw new RuntimeException("No applications for bundle " + b);
-        }
-        ActionReport report = getReport();
-        undeployJavaEEArtifacts(osgiAppInfo, report);
-        URI location = osgiAppInfo.appInfo.getSource().getURI();
-        switch (report.getActionExitCode())
-        {
-            case FAILURE:
-                logger.logp(Level.WARNING, "OSGiWebContainer", "undeploy",
-                        "Failed to undeploy {0} from {1}. See previous messages for " +
-                                "further information.", new Object[]{b, location});
-                break;
-            default:
-                logger.logp(Level.INFO, "OSGiWebContainer", "undeploy",
-                        "Undeployed bundle {0} from {1}", new Object[]{b, location});
-                break;
-        }
-        applications.remove(b);
-    }
-
-    /**
-     * Does necessary undeployment in Java EE container
-     * @param osgiAppInfo
-     * @param report
-     * @return
-     */
-    private ActionReport undeployJavaEEArtifacts(OSGiApplicationInfo osgiAppInfo,
-                                                 ActionReport report)
-    {
-        JavaEEUndeploymentRequest request = new JavaEEUndeploymentRequest(
-                deployer, env, report, osgiAppInfo);
-        request.execute();
-        return report;
-    }
-
-    public void undeployAll()
-    {
-        // Take a copy of the entries as undeploy changes the underlying map.
-        for (Bundle b : new HashSet<Bundle>(applications.keySet()))
-        {
-            try
-            {
-                undeploy(b);
-            }
-            catch (Exception e)
-            {
-                logger.logp(Level.SEVERE, "OSGiWebContainer", "undeployAll",
-                        "Exception undeploying bundle {0}",
-                        new Object[]{b.getLocation()});
-                logger.logp(Level.SEVERE, "OSGiWebContainer", "undeployAll",
-                        "Exception Stack Trace", e);
-            }
-        }
-    }
-
-    private ActionReport getReport()
-    {
-        return Globals.getDefaultHabitat().getComponent(ActionReport.class,
-                "plain");
+    protected OSGiDeploymentRequest createOSGiDeploymentRequest(Deployment deployer, ArchiveFactory archiveFactory, ServerEnvironmentImpl env, ActionReport reporter, Bundle b) {
+        return new OSGiWebDeploymentRequest(deployer, archiveFactory, env, reporter, b);
     }
 
     private ServletContext getServletContext(ApplicationInfo appInfo)
@@ -266,11 +162,6 @@ public class OSGiWebContainer
 
     /* package */ BundleContext getCurrentBundleContext() {
         return currentBundleContext.get();
-    }
-
-    public boolean isDeployed(Bundle bundle)
-    {
-        return applications.containsKey(bundle);
     }
 
 }

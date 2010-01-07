@@ -35,14 +35,16 @@
  */
 
 
-package org.glassfish.osgiweb;
+package org.glassfish.osgijavaeebase;
 
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.osgi.framework.Bundle;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -54,10 +56,10 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JavaEEUndeploymentRequest
+public abstract class OSGiUndeploymentRequest
 {
     private static final Logger logger =
-            Logger.getLogger(JavaEEUndeploymentRequest.class.getPackage().getName());
+            Logger.getLogger(OSGiUndeploymentRequest.class.getPackage().getName());
 
     private Deployment deployer;
     private ServerEnvironmentImpl env;
@@ -65,13 +67,12 @@ public class JavaEEUndeploymentRequest
     /**
      * Application being undeployed
      */
-    private OSGiWebContainer.OSGiApplicationInfo osgiAppInfo;
-    private OSGiDeploymentContextImpl dc;
+    private OSGiApplicationInfo osgiAppInfo;
 
-    public JavaEEUndeploymentRequest(Deployment deployer,
+    public OSGiUndeploymentRequest(Deployment deployer,
                                      ServerEnvironmentImpl env,
                                      ActionReport reporter,
-                                     OSGiWebContainer.OSGiApplicationInfo osgiAppInfo)
+                                     OSGiApplicationInfo osgiAppInfo)
     {
         this.deployer = deployer;
         this.env = env;
@@ -83,47 +84,50 @@ public class JavaEEUndeploymentRequest
     {
         // TODO(Sahoo): There may be side effect of creating a deployment context
         // as that leads to creation of class loaders again.
+        OSGiDeploymentContext dc;
         try
         {
-            dc = new OSGiDeploymentContextImpl(
+            dc = getDeploymentContextImpl(
                     reporter,
                     logger,
-                    osgiAppInfo.appInfo.getSource(),
+                    osgiAppInfo.getAppInfo().getSource(),
                     getUndeployParams(osgiAppInfo),
                     env,
-                    osgiAppInfo.bundle);
+                    osgiAppInfo.getBundle());
         }
         catch (Exception e)
         {
             throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
         }
 
-        deployer.undeploy(osgiAppInfo.appInfo.getName(), dc);
-        if (!osgiAppInfo.isDirectoryDeployment)
+        deployer.undeploy(osgiAppInfo.getAppInfo().getName(), dc);
+        if (!osgiAppInfo.isDirectoryDeployment())
         {
             // We can always assume dc.getSourceDir will return a valid file
             // because we would have expanded the app during deployment.
             cleanup(dc.getSourceDir());
         }
-        logger.logp(Level.INFO, "JavaEEUndeploymentRequest", "undeploy",
-                "Undeployed bundle {0} from {1}", new Object[]{osgiAppInfo.bundle,
+        logger.logp(Level.INFO, "OSGiUndeploymentRequest", "undeploy",
+                "Undeployed bundle {0} from {1}", new Object[]{osgiAppInfo.getBundle(),
                 dc.getSource().getURI()});
     }
+
+    protected abstract OSGiDeploymentContext getDeploymentContextImpl(ActionReport reporter, Logger logger, ReadableArchive source, UndeployCommandParameters undeployParams, ServerEnvironmentImpl env, Bundle bundle) throws Exception;
 
     private void cleanup(File dir)
     {
         assert (dir.isDirectory() && dir.exists());
         FileUtils.whack(dir);
-        logger.logp(Level.INFO, "JavaEEUndeploymentRequest", "cleanup",
+        logger.logp(Level.INFO, "OSGiUndeploymentRequest", "cleanup",
                 "Deleted {0}", new Object[]{dir});
     }
 
-    private UndeployCommandParameters getUndeployParams(
-            OSGiWebContainer.OSGiApplicationInfo osgiAppInfo)
+    protected UndeployCommandParameters getUndeployParams(
+            OSGiApplicationInfo osgiAppInfo)
     {
         UndeployCommandParameters parameters =
                 new UndeployCommandParameters();
-        parameters.name = osgiAppInfo.appInfo.getName();
+        parameters.name = osgiAppInfo.getAppInfo().getName();
         parameters.origin = DeployCommandParameters.Origin.undeploy;
         return parameters;
     }
