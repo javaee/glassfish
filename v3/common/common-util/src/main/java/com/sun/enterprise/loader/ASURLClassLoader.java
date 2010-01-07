@@ -1326,7 +1326,15 @@ public class ASURLClassLoader
          * @see java.net.URLConnection#getInputStream()
          */
         public InputStream getInputStream() throws IOException {
+            // When there is no entry name specified (this can happen for url like jar:file:///tmp/foo.jar!/),
+            // we must throw an IOException as that's the behavior of JarURLConnection as well.
+            if ("".equals(mName)) {
+                throw new IOException("no entry name specified");
+            }
             ZipEntry entry = mRes.zip.getEntry(mName);
+            if (entry == null) {
+                throw new IOException("no entry called " + mName + " found in " + mRes.source);
+            }
             return new SentinelInputStream(mRes.zip.getInputStream(entry));
         }
     }
@@ -1359,15 +1367,26 @@ public class ASURLClassLoader
 
         /**
          * @see java.net.URLStreamHandler#openConnection(java.net.URL)
-         * Should this method allow opening more than one connection?
          */
         protected URLConnection openConnection(final URL u) throws IOException {
-            if (u != mURL) { // ref compare on purpose
-                // This should never happen
-                throw new IOException("Cannot open a foreign URL; this.url=" + mURL
-                    + "; foreign.url=" + u);
+            String path = u.getPath();
+            int separator = path.lastIndexOf('!');
+            assert(separator != -1); // we deal with jar urls only
+            try {
+                URI jarFileURI = new URI(path.substring(0, separator));
+                if (!jarFileURI.equals(mRes.file.toURI())) {
+                    throw new IOException("Cannot open a foreign URL; this.url=" + mURL
+                        + "; foreign.url=" + u);
+                }
+                String entryName = path.substring(separator+1);
+                if (entryName != null) {
+                    assert (entryName.startsWith("/"));
+                    entryName = entryName.substring(1);
+                }
+                return new InternalJarURLConnection(u, mRes, entryName);
+            } catch (URISyntaxException e) {
+                throw new IOException(e);
             }
-            return new InternalJarURLConnection(u, mRes, mName);
         }
 
         /**
