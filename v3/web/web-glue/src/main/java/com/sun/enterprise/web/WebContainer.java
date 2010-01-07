@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,10 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.imageio.ImageIO;
 import javax.servlet.*;
 import javax.servlet.jsp.JspFactory;
@@ -694,6 +698,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     <T extends Servlet> T createServletInstance(WebModule module,
                 Class<T> clazz) throws Exception {
+        validateJSR299Scope(clazz);
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
@@ -709,6 +714,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     <T extends Filter> T createFilterInstance(WebModule module,
                 Class<T> clazz) throws Exception {
+        validateJSR299Scope(clazz);
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
@@ -724,6 +730,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     <T extends java.util.EventListener> T createListenerInstance(
                 WebModule module, Class<T> clazz) throws Exception {
+        validateJSR299Scope(clazz);
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
@@ -3257,5 +3264,22 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     public Class loadCommonClass(String className) throws Exception {
         return clh.getCommonClassLoader().loadClass(className);
+    }
+
+    /**
+     * According to SRV 15.5.15, Servlets, Filters, Listeners can only be
+     * without any scope annotation or are annotated with 
+     * @Dependent scope. All other scopes are invalid and must be rejected.
+     */
+    private void validateJSR299Scope(Class clazz) {
+        if (clazz.isAnnotationPresent(RequestScoped.class) ||
+                clazz.isAnnotationPresent(ApplicationScoped.class) ||
+                clazz.isAnnotationPresent(SessionScoped.class) ||
+                clazz.isAnnotationPresent(ConversationScoped.class)) {
+
+            String msg = rb.getString("webcontainer.invalidAnnotationScope");
+            msg = MessageFormat.format(msg, clazz.getName());
+            throw new IllegalArgumentException(msg);
+        }
     }
 }
