@@ -49,9 +49,11 @@
 	<ant dir="standalone" target="all"/>
 	<ant dir="simpleMultiRoleMapping" target="all"/>
 	<ant dir="multiRoleMapping" target="all"/>
-        <!--
-        <ant dir="ldapRealmPerApp" target="all"/>
-        <ant dir="solarisRealm" target="all"/>
+	<ant dir="jdbcrealm" target="all"/>
+        
+        <ant dir="ldap/simpleweb" target="all" />
+	<ant dir="ldapRealmPerApp" target="all"/>
+       <!-- <ant dir="solarisRealm" target="all"/>
         -->
         <!-- put this at the end as there are 48734 tests -->
         <ant dir="jaccApi" target="all"/>
