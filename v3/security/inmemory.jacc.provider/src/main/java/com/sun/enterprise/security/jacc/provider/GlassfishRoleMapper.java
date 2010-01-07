@@ -39,11 +39,9 @@ package com.sun.enterprise.security.jacc.provider;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -61,14 +59,15 @@ import org.glassfish.internal.api.Globals;
  */
 public class GlassfishRoleMapper implements JACCRoleMapper {
 
-    private static Logger defaultLogger =
+    private static final Logger defaultLogger =
             Logger.getLogger(GlassfishRoleMapper.class.getName());
-    private Logger logger;
+    private final Logger logger;
 
     public GlassfishRoleMapper(Logger logger) {
-        this.logger = logger;
-        if (this.logger == null) {
+        if (logger == null) {
             this.logger = defaultLogger;
+        } else {
+            this.logger = logger;
         }
     }
 
@@ -209,7 +208,6 @@ public class GlassfishRoleMapper implements JACCRoleMapper {
     }
 
     private Principal[] toArray(Set principals) {
-        Iterator it = principals.iterator();
         Principal[] list = new Principal[principals.size()];
         int i=0;
         for (Object obj: principals) {
