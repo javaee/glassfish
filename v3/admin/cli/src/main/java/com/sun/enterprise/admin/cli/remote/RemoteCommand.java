@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -277,17 +277,26 @@ public class RemoteCommand extends CLICommand {
             GFBase64Encoder encoder = new GFBase64Encoder();
             if (doHelp)
                 addStringOption(uriString, "help", "true");
-            for (Map.Entry<String, String> param : options.entrySet()) {
-                String paramName = param.getKey();
-                String paramValue = param.getValue();
-
-                // if we know what the command options are, we process the
-                // parameters by type here
-                ValidOption opt = getValidOption(paramName);
-                if (opt == null) {      // XXX - should never happen
-                    String msg = strings.get("unknownOption",
-                            name, paramName);
-                    throw new CommandException(msg);
+            for (ValidOption opt : commandOpts) {
+                String paramName = opt.getName();
+                String paramValue = options.get(paramName);
+                if (paramValue == null) // perhaps it's set in the environment?
+                    paramValue = env.getStringOption(paramName);
+                if (paramValue == null) {
+                    /*
+                     * Option still not set.  Note that we ignore the default
+                     * value and don't send it explicitly on the assumption
+                     * that the server will supply the default value itself.
+                     *
+                     * If the missing option is required, that's an error,
+                     * which should never happen here because validate()
+                     * should check it first.
+                     */
+                    if (opt.isValueRequired() == ValidOption.REQUIRED)
+                        throw new CommandException(strings.get("missingOption",
+                                paramName));
+                    // optional param not set, skip it
+                    continue;
                 }
                 if (opt.getType().equals("FILE")) {
                     addFileOption(uriString, paramName, paramValue);
