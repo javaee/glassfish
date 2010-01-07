@@ -9,7 +9,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class TestURLPatternSpec {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec: JACC API testURLPatternSpec ";
+    private static String testSuite = "Sec::JACC API testURLPatternSpec ";
 
     private static boolean test_constructor(
             String p, boolean expectedToSucceed) {

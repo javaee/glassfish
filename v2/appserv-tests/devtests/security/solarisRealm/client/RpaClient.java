@@ -39,7 +39,7 @@ public class RpaClient {
         Context ic = null;
         LoginContext lc=null;
         RpaHome home=null;
-        String testId = "Sec:Solaris Realm";
+        String testId = "Sec::Solaris Realm";
     	try{
             stat.addDescription("Security::Solaris Realm");
 	    ic = new InitialContext();

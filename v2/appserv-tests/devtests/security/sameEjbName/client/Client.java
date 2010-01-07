@@ -11,7 +11,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class Client {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec:SameEjbName test ";
+    private static String testSuite = "Sec::SameEjbName test ";
     private static @EJB com.sun.s1asdev.security.sameEjbName.ejb.Hello hello1;
     private static @EJB com.sun.s1asdev.security.sameEjbName.ejb2.Hello hello2;
 

@@ -39,7 +39,7 @@ public class RpaClient {
         Context ic = null;
         LoginContext lc=null;
         RpaHome home=null;
-        String testId = "Sec:Realm per app";
+        String testId = "Sec::Realm per app";
     	try{
             stat.addDescription("Security::Realm per app");
 	    ic = new InitialContext();

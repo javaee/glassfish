@@ -16,7 +16,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class Client {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec:Anyone test ";
+    private static String testSuite = "Sec::Anyone test ";
     private static @EJB com.sun.s1asdev.security.anyone.ejb.Hello hello;
     private String host;
     private int port;

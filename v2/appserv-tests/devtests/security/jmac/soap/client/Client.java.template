@@ -19,7 +19,7 @@ import com.sun.s1asdev.security.jmac.soap.servletws.JmacSoapServletService;
 public class Client {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec:Jmac SOAP test ";
+    private static String testSuite = "Sec::Jmac SOAP test ";
 
     @HandlerChain(file="myhandler.xml")
     @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/JmacSoapEjbService/HelloEjb?WSDL")

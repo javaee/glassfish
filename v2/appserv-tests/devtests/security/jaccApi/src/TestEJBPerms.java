@@ -17,7 +17,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class TestEJBPerms {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec: JACC API testEJBPerms ";
+    private static String testSuite = "Sec::JACC API testEJBPerms ";
     private static boolean isDebug = Boolean.getBoolean("debug");
 
     private static void debug(String msg) {

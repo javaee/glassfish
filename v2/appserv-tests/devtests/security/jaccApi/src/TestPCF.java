@@ -10,7 +10,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class TestPCF {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec: JACC API testPCF ";
+    private static String testSuite = "Sec::JACC API testPCF ";
 
     public static void main ( String[] args ) {
         stat.addDescription(testSuite);

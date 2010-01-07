@@ -39,7 +39,7 @@ public class RpaClient {
         Context ic = null;
         LoginContext lc=null;
         RpaHome home=null;
-        String testId = "Sec:Username with @";
+        String testId = "Sec::Username with @";
     	try{
             stat.addDescription("Security::Username with @");
 	    ic = new InitialContext();

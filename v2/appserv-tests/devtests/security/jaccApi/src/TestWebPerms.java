@@ -23,7 +23,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class TestWebPerms {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec: JACC API testWebPerms ";
+    private static String testSuite = "Sec::JACC API testWebPerms ";
     private static boolean isDebug = Boolean.getBoolean("debug");
 
     private static void debug(String msg) {

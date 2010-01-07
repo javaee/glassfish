@@ -9,7 +9,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 public class Test {
     private static SimpleReporterAdapter stat =
             new SimpleReporterAdapter("appserv-tests");
-    private static String testSuite = "Sec: JACC API test ";
+    private static String testSuite = "Sec::JACC API test ";
 
     public static void main ( String[] args ) {
         stat.addDescription(testSuite);

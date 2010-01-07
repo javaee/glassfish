@@ -16,7 +16,7 @@ public class TaxCalClient {
 	private static SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests");
 	private static String stateTaxEndpoint = null;
 	private static String fedTaxEndpoint = null;
-	private static String testSuite = "Sec:Servlet Based WSS test - Encrypt then Sign";
+	private static String testSuite = "Sec::Servlet_Based_WSS_test Encrypt then Sign";
 	private static String testCase = null;
 	private static TaxCalServletService taxCalService = null;
 

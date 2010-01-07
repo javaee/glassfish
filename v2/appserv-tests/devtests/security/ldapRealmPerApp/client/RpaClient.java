@@ -39,7 +39,7 @@ public class RpaClient {
         Context ic = null;
         LoginContext lc=null;
         RpaHome home=null;
-        String testId = "Sec:LDAP realm";
+        String testId = "Sec::LDAP realm";
     	try{
             stat.addDescription("Security::LDAP realm");
 	    ic = new InitialContext();

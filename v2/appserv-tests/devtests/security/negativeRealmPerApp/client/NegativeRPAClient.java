@@ -40,7 +40,7 @@ public class NegativeRPAClient {
         Context ic = null;
         LoginContext lc=null;
         NegativeRPAHome home=null;
-        String testId = "Sec:NegativeTest - Realm per app";
+        String testId = "Sec::NegativeTest-Realm per app";
     	try{
             stat.addDescription("Security::NegativeTest - Realm per app");
 	    ic = new InitialContext();
