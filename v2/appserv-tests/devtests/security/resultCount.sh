@@ -2,7 +2,7 @@
 
 FILES="$APS_HOME/test_resultsValid.xml $APS_HOME/security-gtest-results.xml"
 
-TOTAL=745
+TOTAL=744
 PASSED=0
 FAILED=0
 for i in $FILES
