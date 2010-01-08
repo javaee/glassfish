@@ -55,22 +55,18 @@
 
 package org.apache.catalina.startup;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
+import org.apache.catalina.Host;
+import org.apache.catalina.util.StringManager;
+
+import java.io.*;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.*;
-
-import org.apache.catalina.Host;
-import org.apache.catalina.util.StringManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Expand out a WAR in a Host's appBase.

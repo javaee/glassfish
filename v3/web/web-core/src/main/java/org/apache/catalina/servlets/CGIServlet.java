@@ -54,29 +54,14 @@
 
 package org.apache.catalina.servlets;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import org.apache.catalina.Globals;
+import org.apache.catalina.util.IOTools;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-
-import org.apache.catalina.Globals;
-import org.apache.catalina.util.IOTools;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.*;
 
 
 /**

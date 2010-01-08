@@ -54,21 +54,19 @@
 
 package org.apache.catalina.core;
 
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.*;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import com.sun.grizzly.util.buf.MessageBytes;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.connector.RequestFacade;
-import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * Valve that implements the default basic behavior for the

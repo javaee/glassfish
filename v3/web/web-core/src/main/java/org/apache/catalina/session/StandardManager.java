@@ -54,26 +54,22 @@
 
 package org.apache.catalina.session;
 
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.LifecycleSupport;
+
+import javax.servlet.ServletContext;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
-import java.util.logging.*;
-import javax.servlet.ServletContext;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Session;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.catalina.util.LifecycleSupport;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Standard implementation of the <b>Manager</b> interface that provides

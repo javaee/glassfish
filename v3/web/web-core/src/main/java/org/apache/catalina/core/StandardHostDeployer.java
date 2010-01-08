@@ -55,31 +55,20 @@
 package org.apache.catalina.core;
 
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.logging.*;
-import javax.servlet.*;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Host;
-import org.apache.catalina.core.StandardServer;
+import org.apache.catalina.*;
 import org.apache.catalina.startup.ContextRuleSet;
 import org.apache.catalina.startup.ExpandWar;
 import org.apache.catalina.startup.NamingRuleSet;
 import org.apache.catalina.util.StringManager;
 import org.apache.tomcat.util.digester.Digester;
-import org.xml.sax.SAXParseException;
+
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

@@ -55,16 +55,15 @@
 package org.apache.catalina.core;
 
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.Container;
 import org.apache.catalina.Host;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**

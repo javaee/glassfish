@@ -36,7 +36,8 @@
 
 package org.apache.catalina.util;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
  * Adapter class which wraps an <tt>Iterable</tt> over an

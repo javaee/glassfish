@@ -54,27 +54,11 @@
 
 package org.apache.catalina.core;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.*;
-// START PWC 1.2
-import java.security.SecurityPermission;
-// START PWC 1.2
-
-import javax.naming.Binding;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.servlet.*;
-import javax.servlet.descriptor.*;
-
-import org.apache.catalina.Globals;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
-import org.apache.catalina.Logger;
-import org.apache.catalina.Wrapper;
+import com.sun.grizzly.util.buf.CharChunk;
+import com.sun.grizzly.util.buf.MessageBytes;
+import com.sun.grizzly.util.http.mapper.AlternateDocBase;
+import com.sun.grizzly.util.http.mapper.MappingData;
+import org.apache.catalina.*;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.RequestUtil;
@@ -82,10 +66,19 @@ import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.Resource;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
-import com.sun.grizzly.util.http.mapper.MappingData;
+
+import javax.naming.Binding;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.servlet.*;
+import javax.servlet.descriptor.JspConfigDescriptor;
+import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.SecurityPermission;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standard implementation of <code>ServletContext</code> that represents

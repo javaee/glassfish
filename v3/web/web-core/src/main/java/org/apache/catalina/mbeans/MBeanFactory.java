@@ -55,30 +55,10 @@
 package org.apache.catalina.mbeans;
 
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Vector;
-
-import javax.management.MBeanException;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.RuntimeOperationsException;
-
-import org.apache.catalina.Context;
-import org.apache.catalina.DefaultContext;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
-import org.apache.catalina.Server;
-import org.apache.catalina.ServerFactory;
-import org.apache.catalina.Service;
+import org.apache.catalina.*;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardDefaultContext;
-import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.core.StandardService;
+import org.apache.catalina.core.*;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.logger.SystemErrLogger;
@@ -88,15 +68,18 @@ import org.apache.catalina.realm.JNDIRealm;
 import org.apache.catalina.realm.MemoryRealm;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.valves.AccessLogValve;
-import org.apache.catalina.valves.RemoteAddrValve;
-import org.apache.catalina.valves.RemoteHostValve;
-import org.apache.catalina.valves.RequestDumperValve;
-import org.apache.catalina.valves.ValveBase;
+import org.apache.catalina.valves.*;
 import org.apache.tomcat.util.modeler.BaseModelMBean;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.RuntimeOperationsException;
+import java.lang.reflect.Method;
+import java.util.Vector;
 
 /**
  * <p>A <strong>ModelMBean</strong> implementation for the

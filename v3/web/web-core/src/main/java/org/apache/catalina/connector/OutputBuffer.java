@@ -55,24 +55,22 @@
 package org.apache.catalina.connector;
 
 
+import com.sun.grizzly.tcp.ActionCode;
+import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.C2BConverter;
+import org.apache.catalina.Globals;
+import org.apache.catalina.Session;
+import org.apache.catalina.core.StandardContext;
+
+import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
-import java.util.logging.*;
-
-import javax.servlet.http.Cookie;
-
-import com.sun.grizzly.tcp.ActionCode;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Session;
-import org.apache.catalina.connector.ClientAbortException;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.RequestUtil;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.C2BConverter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 

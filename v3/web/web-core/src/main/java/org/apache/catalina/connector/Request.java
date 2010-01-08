@@ -54,88 +54,58 @@
 
 package org.apache.catalina.connector;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.Socket;
-// START SJSAS 6347215
-import java.net.UnknownHostException;
-// END SJSAS 6347215
-// START GlassFish 898
-import java.net.URLDecoder;
-// END GlassFish 898
-import java.nio.charset.UnsupportedCharsetException;
-import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.*;
-import java.util.logging.*;
-
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
-
-import javax.security.auth.Subject;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
+import com.sun.appserv.ProxyHandler;
+import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.grizzly.tcp.ActionCode;
+import com.sun.grizzly.tcp.CompletionHandler;
 import com.sun.grizzly.util.buf.B2CConverter;
-// START CR 6309511
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.CharChunk;
-// END CR 6309511
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.Cookies;
 import com.sun.grizzly.util.http.FastHttpDateFormat;
 import com.sun.grizzly.util.http.Parameters;
 import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.http.mapper.MappingData;
-
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.CompletionHandler;
-
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Host;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Pipeline;
-// START SJSAS 6406580
-import org.apache.catalina.session.PersistentManagerBase;
-// END SJSAS 6406580
-import org.apache.catalina.Realm;
-import org.apache.catalina.Session;
-import org.apache.catalina.Wrapper;
-
+import org.apache.catalina.*;
+import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.ApplicationHttpRequest;
 import org.apache.catalina.core.ApplicationHttpResponse;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.fileupload.Multipart;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardSession;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.ParameterMap;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.catalina.fileupload.Multipart;
+import org.glassfish.web.valve.GlassFishValve;
 
-// START S1AS 6170450
-import com.sun.appserv.ProxyHandler;
-// END S1AS 6170450
-import com.sun.enterprise.security.integration.RealmInitializer;
+import javax.security.auth.Subject;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.security.PrivilegedAction;
-import org.apache.catalina.authenticator.AuthenticatorBase;
-import org.apache.catalina.deploy.LoginConfig;
-
-import org.glassfish.web.valve.GlassFishValve;
+import java.nio.charset.UnsupportedCharsetException;
+import java.security.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Wrapper object for the Coyote request.

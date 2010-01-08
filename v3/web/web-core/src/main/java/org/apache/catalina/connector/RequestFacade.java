@@ -54,22 +54,22 @@
 
 package org.apache.catalina.connector;
 
-import java.io.*;
-import java.security.AccessController;
-import java.security.AccessControlException;
-import java.security.Permission;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.SecurityPermission;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 import org.apache.catalina.Globals;
-import org.apache.catalina.session.StandardSessionFacade;
+import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.StringManager;
 
-import org.apache.catalina.security.SecurityUtil;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.security.AccessControlException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.SecurityPermission;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Map;
 
 
 /**

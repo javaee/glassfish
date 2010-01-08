@@ -55,21 +55,20 @@
 package org.apache.catalina.core;
 
 
-import java.io.IOException;
-import java.security.Principal;
-import java.security.PrivilegedActionException;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.apache.catalina.Globals;
-import org.apache.catalina.InstanceEvent;
-import org.apache.catalina.Request;
-import org.apache.catalina.Wrapper;
-import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.InstanceSupport;
 import org.apache.catalina.util.StringManager;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.security.Principal;
+import java.security.PrivilegedActionException;
+
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_FILTER_EVENT;
+import static org.apache.catalina.InstanceEvent.EventType.BEFORE_FILTER_EVENT;
 
 /**
  * Implementation of <code>javax.servlet.FilterChain</code> used to manage

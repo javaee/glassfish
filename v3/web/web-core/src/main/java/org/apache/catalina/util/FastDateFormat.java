@@ -56,12 +56,11 @@
 
 package org.apache.catalina.util;
 
-import java.util.Date;
-
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Fast date formatter that caches recently formatted date information

@@ -54,11 +54,16 @@
 
 package org.apache.catalina.session;
 
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import com.sun.enterprise.spi.io.BaseIndirectlySerializable;
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.Enumerator;
+import org.apache.catalina.util.StringManager;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.*;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.Principal;
@@ -66,27 +71,6 @@ import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.*;
-
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Session;
-import org.apache.catalina.SessionEvent;
-import org.apache.catalina.SessionListener;
-//HERCULES:add
-import org.apache.catalina.core.StandardContext;
-//end HERCULES:add
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.util.StringManager;
-//HERCULES:add
-//actually this is 8.0 improvement from Hercules
-//FIXME: must move this to a more common utility package
-import com.sun.enterprise.spi.io.BaseIndirectlySerializable;
 //end HERCULES:add
 
 

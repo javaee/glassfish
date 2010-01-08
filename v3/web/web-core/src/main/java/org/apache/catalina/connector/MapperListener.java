@@ -54,36 +54,23 @@
 
 package org.apache.catalina.connector;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.*;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerNotification;
-// START SJSAS 6290785
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-// END SJSAS 6290785
-import javax.management.Notification;
-import javax.management.NotificationListener;
-// START SJSAS 6313044
-import javax.management.NotificationFilter;
-// END SJSAS 6313044
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
-
+import com.sun.grizzly.util.buf.MessageBytes;
+import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.grizzly.util.http.mapper.MappingData;
 import org.apache.catalina.Host;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
-
 import org.apache.tomcat.util.modeler.Registry;
 
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.grizzly.util.http.mapper.MappingData;
+import javax.management.*;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mapper listener.

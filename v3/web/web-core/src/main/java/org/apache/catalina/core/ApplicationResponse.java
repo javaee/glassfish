@@ -58,14 +58,11 @@
 package org.apache.catalina.core;
 
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Locale;
-import javax.servlet.ServletOutputStream;
+import org.apache.catalina.util.StringManager;
+
 import javax.servlet.ServletResponse;
 import javax.servlet.ServletResponseWrapper;
-import org.apache.catalina.Response;
-import org.apache.catalina.util.StringManager;
+import java.util.Locale;
 
 
 /**

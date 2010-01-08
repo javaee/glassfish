@@ -36,10 +36,12 @@
 
 package org.apache.catalina.core;
 
-import java.util.*;
-import javax.servlet.*;
-import org.apache.catalina.core.StandardWrapper;
-import org.apache.catalina.util.StringManager;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.Servlet;
+import javax.servlet.ServletRegistration;
+import javax.servlet.ServletSecurityElement;
+import java.util.Collections;
+import java.util.Set;
 
 public class DynamicServletRegistrationImpl
     extends ServletRegistrationImpl

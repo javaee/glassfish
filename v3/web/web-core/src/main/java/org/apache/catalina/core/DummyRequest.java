@@ -55,33 +55,18 @@
 package org.apache.catalina.core;
 
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.Socket;
-import java.net.URL;
-import java.security.AccessController;
-import java.security.Principal;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import javax.naming.NamingException;
-import javax.naming.Binding;
-import javax.naming.directory.DirContext;
+import com.sun.grizzly.util.buf.MessageBytes;
+import org.apache.catalina.*;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
-
-import com.sun.grizzly.util.buf.MessageBytes;
-import org.apache.naming.resources.Resource;
-import org.apache.naming.resources.DirContextURLStreamHandler;
-import org.apache.naming.resources.DirContextURLConnection;
-import org.apache.catalina.*;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+import java.security.Principal;
+import java.util.*;
 
 /**
  * Dummy request object, used for request dispatcher mapping, as well as

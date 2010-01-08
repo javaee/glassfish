@@ -55,7 +55,6 @@
 package org.apache.catalina.startup;
 
 
-import java.lang.reflect.Method;
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.deploy.SecurityConstraint;
@@ -63,6 +62,8 @@ import org.apache.tomcat.util.digester.Digester;
 import org.apache.tomcat.util.digester.Rule;
 import org.apache.tomcat.util.digester.RuleSetBase;
 import org.xml.sax.Attributes;
+
+import java.lang.reflect.Method;
 
 
 /**

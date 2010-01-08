@@ -54,45 +54,21 @@
 
 package org.apache.catalina.core;
 
-import java.io.IOException;
-
-// START SJSAS 6324911
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.Reader;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.io.BufferedInputStream;
-import javax.servlet.*;
-// END SJSAS 6324911
-
-import java.util.logging.*;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-// START GlassFish Issue 1057
-import javax.servlet.http.HttpSession;
-// END GlassFish Issue 1057
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-// START GlassFish Issue 1057
-import org.apache.catalina.Session;
-// END GlassFish Issue 1057
-import org.apache.catalina.Wrapper;
+import org.apache.catalina.*;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-// START SJSAS 6374691
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 // END SJSAS 6374691
 
 /**

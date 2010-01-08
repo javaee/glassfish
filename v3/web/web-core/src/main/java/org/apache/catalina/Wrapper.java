@@ -57,7 +57,6 @@ package org.apache.catalina;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
 import javax.servlet.UnavailableException;
 
 

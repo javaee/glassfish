@@ -55,6 +55,14 @@
 package org.apache.catalina.ssi;
 
 
+import com.sun.grizzly.tcp.Constants;
+import org.apache.catalina.util.RequestUtil;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -63,14 +71,6 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.util.RequestUtil;
-import com.sun.grizzly.tcp.Constants;
 
 /**
  * An implementation of SSIExternalResolver that is used with servlets.

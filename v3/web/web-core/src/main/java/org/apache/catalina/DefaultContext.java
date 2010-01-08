@@ -54,10 +54,11 @@
 
 package org.apache.catalina;
 
-import java.util.*;
-import java.beans.PropertyChangeListener;
-import javax.naming.directory.DirContext;
 import org.apache.catalina.deploy.*;
+
+import javax.naming.directory.DirContext;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
 /**
  * Used to store the default configuration a Host will use

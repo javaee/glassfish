@@ -54,6 +54,23 @@
 
 package org.apache.catalina.connector;
 
+import com.sun.appserv.ProxyHandler;
+import com.sun.grizzly.util.buf.CharChunk;
+import com.sun.grizzly.util.buf.UEncoder;
+import com.sun.grizzly.util.http.FastHttpDateFormat;
+import com.sun.grizzly.util.http.ServerCookie;
+import com.sun.grizzly.util.net.URL;
+import org.apache.catalina.Connector;
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.CharsetMapper;
+import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.util.StringManager;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -64,24 +81,8 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.*;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.Connector;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Session;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.*;
-import org.apache.catalina.security.SecurityUtil;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.UEncoder;
-import com.sun.grizzly.util.http.FastHttpDateFormat;
-import com.sun.grizzly.util.http.ServerCookie;
-import com.sun.grizzly.util.net.URL;
-import com.sun.appserv.ProxyHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // START S1AS 6170450
 

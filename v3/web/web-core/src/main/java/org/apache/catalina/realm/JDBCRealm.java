@@ -58,26 +58,13 @@
 package org.apache.catalina.realm;
 
 
-import java.io.File;
-import java.security.MessageDigest;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.util.StringManager;
+
 import java.security.Principal;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
-import org.apache.catalina.Container;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Realm;
-import org.apache.catalina.util.HexUtils;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.StringManager;
-import org.apache.catalina.util.Base64;
 
 
 /**

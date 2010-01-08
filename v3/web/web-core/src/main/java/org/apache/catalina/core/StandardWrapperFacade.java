@@ -54,12 +54,9 @@
 
 package org.apache.catalina.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import java.util.Enumeration;
 
 /**
  * Facade for the <b>StandardWrapper</b> object.

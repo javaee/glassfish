@@ -55,11 +55,12 @@
 package org.apache.catalina.ssi;
 
 
+import org.apache.catalina.util.Strftime;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Locale;
-import org.apache.catalina.util.Strftime;
 /**
  * Implements the Server-side #flastmod command
  * 

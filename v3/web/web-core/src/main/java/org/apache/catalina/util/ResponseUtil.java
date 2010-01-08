@@ -54,8 +54,11 @@
 
 package org.apache.catalina.util;
 
-import java.io.*;
-import javax.servlet.*;
+import javax.servlet.ServletOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
 
 public final class ResponseUtil {
 

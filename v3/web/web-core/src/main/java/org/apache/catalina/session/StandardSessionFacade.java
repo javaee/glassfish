@@ -55,13 +55,10 @@
 package org.apache.catalina.session;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 
 /**

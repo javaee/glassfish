@@ -55,11 +55,14 @@
 
 package org.apache.catalina.fileupload;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.http.Part;
-import javax.servlet.ServletException;
 import org.apache.catalina.Globals;
+
+import javax.servlet.http.Part;
+import java.io.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements java.servlet.http.Part.

@@ -55,14 +55,20 @@
 package org.apache.catalina.core;
 
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
-import org.apache.catalina.Request;
 import org.apache.catalina.HttpResponse;
+import org.apache.catalina.Request;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Collection;
+import java.util.Locale;
 
 /**
  * Dummy response object, used for JSP precompilation.

@@ -54,10 +54,12 @@
 
 package org.apache.catalina.deploy;
 
-import java.io.Serializable;
-import java.util.*;
-import javax.servlet.DispatcherType;
 import org.apache.catalina.util.RequestUtil;
+
+import javax.servlet.DispatcherType;
+import java.io.Serializable;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Representation of a filter mapping for a web application, as represented

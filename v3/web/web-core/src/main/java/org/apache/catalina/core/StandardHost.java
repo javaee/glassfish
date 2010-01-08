@@ -55,34 +55,24 @@
 package org.apache.catalina.core;
 
 
+import org.apache.catalina.*;
+import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.deploy.ErrorPage;
+import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.valves.ValveBase;
+import org.apache.tomcat.util.modeler.Registry;
+import org.glassfish.web.valve.GlassFishValve;
+
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.DefaultContext;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.Host;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Pipeline;
-import org.apache.catalina.authenticator.SingleSignOn;
-// START SJSAS 6324911
-import org.apache.catalina.deploy.ErrorPage;
-// END SJSAS 6324911
-// START GlassFish 862
-import org.apache.catalina.util.RequestUtil;
-// END GlassFish 862
-import org.apache.catalina.valves.ValveBase;
-import org.apache.tomcat.util.modeler.Registry;
-
-import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Standard implementation of the <b>Host</b> interface.  Each

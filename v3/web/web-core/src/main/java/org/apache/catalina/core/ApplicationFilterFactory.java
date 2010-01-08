@@ -54,16 +54,16 @@
 
 package org.apache.catalina.core;
 
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Container;
 import org.apache.catalina.Globals;
+import org.apache.catalina.Request;
 import org.apache.catalina.Wrapper;
+import org.apache.catalina.deploy.FilterMap;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.Servlet;
+import javax.servlet.ServletRequest;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Factory for the creation and caching of Filters and creationg 

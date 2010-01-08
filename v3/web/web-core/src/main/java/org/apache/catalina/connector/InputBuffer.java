@@ -54,20 +54,21 @@
 
 package org.apache.catalina.connector;
 
+import com.sun.grizzly.tcp.Request;
+import com.sun.grizzly.util.buf.B2CConverter;
+import com.sun.grizzly.util.buf.ByteChunk;
+import com.sun.grizzly.util.buf.CharChunk;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.StringManager;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
-import java.util.logging.*;
-
-import org.apache.catalina.security.SecurityUtil;
-import org.apache.catalina.util.StringManager;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.util.buf.B2CConverter;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

@@ -53,15 +53,14 @@
  */
 
 package org.apache.catalina.valves;
-import java.io.IOException;
+
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.valves.ValveBase;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
+import java.io.IOException;
 
 /**
  * Valve that attempts to force MS WebDAV clients connecting on port 80 to use

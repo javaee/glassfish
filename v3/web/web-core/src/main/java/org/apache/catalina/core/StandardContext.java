@@ -54,31 +54,15 @@
 
 package org.apache.catalina.core;
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.jar.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.ObjectName;
-import javax.naming.directory.DirContext;
-import javax.servlet.*;
-import javax.servlet.descriptor.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.HandlesTypes;
-
+import com.sun.grizzly.util.http.mapper.AlternateDocBase;
+import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.mbeans.MBeanUtils;
-import org.apache.catalina.session.*;
+import org.apache.catalina.session.ManagerBase;
+import org.apache.catalina.session.PersistentManagerBase;
+import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
@@ -88,11 +72,22 @@ import org.apache.naming.resources.ProxyDirContext;
 import org.apache.naming.resources.WARDirContext;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
-import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
-import com.sun.grizzly.util.http.mapper.Mapper;
+
+import javax.management.*;
+import javax.naming.directory.DirContext;
+import javax.servlet.*;
+import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionListener;
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Standard implementation of the <b>Context</b> interface.  Each

@@ -55,34 +55,20 @@
 package org.apache.catalina.core;
 
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-import java.util.logging.*;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.naming.NamingException;
-
-import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
-
-import org.apache.naming.ContextBindings;
-import org.apache.naming.resources.DirContextURLStreamHandler;
-import org.apache.catalina.Container;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.*;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ValveBase;
-// START GlassFish 1343
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.EventListener;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 // END GlassFish 1343
 
 /**

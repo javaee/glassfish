@@ -54,6 +54,26 @@
 
 package org.apache.catalina.realm;
 
+import org.apache.catalina.*;
+import org.apache.catalina.authenticator.AuthenticatorBase;
+import org.apache.catalina.connector.Response;
+import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.deploy.SecurityCollection;
+import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.util.HexUtils;
+import org.apache.catalina.util.LifecycleSupport;
+import org.apache.catalina.util.MD5Encoder;
+import org.apache.catalina.util.StringManager;
+import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.Attribute;
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -62,44 +82,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import java.util.*;
-//START SJSAS 6202703
 import java.text.SimpleDateFormat;
-//END SJSAS 6202703
-import java.util.logging.*;
-
-import javax.management.Attribute;
-import javax.management.MBeanRegistration;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
-//START SJSAS 6202703
-import org.apache.catalina.Authenticator;
-import org.apache.catalina.authenticator.AuthenticatorBase;
-//END SJSAS 6202703
-
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Realm;
-import org.apache.catalina.connector.Response;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.deploy.SecurityCollection;
-import org.apache.catalina.util.HexUtils;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.MD5Encoder;
-import org.apache.catalina.util.StringManager;
-import org.apache.tomcat.util.modeler.Registry;
-// START SJSWS 6324431
-import org.apache.catalina.core.StandardContext;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 // END SJSWS 6324431
 
 /**

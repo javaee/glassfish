@@ -58,23 +58,19 @@
 package org.apache.catalina.realm;
 
 
+import org.apache.catalina.Container;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.util.StringManager;
+
+import javax.security.auth.Subject;
+import javax.security.auth.login.*;
 import java.security.Principal;
 import java.security.acl.Group;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.Enumeration;
-import java.util.logging.*;
-import javax.security.auth.Subject;
-import javax.security.auth.login.AccountExpiredException;
-import javax.security.auth.login.CredentialExpiredException;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Container;
-import org.apache.catalina.util.StringManager;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>Implmentation of <b>Realm</b> that authenticates users via the <em>Java

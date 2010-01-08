@@ -58,10 +58,11 @@
 package org.apache.catalina.realm;
 
 
+import org.apache.catalina.Realm;
+
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.catalina.Realm;
 
 
 /**

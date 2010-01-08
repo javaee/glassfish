@@ -54,15 +54,17 @@
 
 package org.apache.catalina.authenticator;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.logging.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.util.Base64;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of HTTP BASIC

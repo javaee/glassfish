@@ -54,14 +54,13 @@
 
 package org.apache.catalina.startup;
 
+import org.apache.catalina.loader.StandardClassLoader;
+
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.logging.*;
-import org.apache.catalina.loader.StandardClassLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

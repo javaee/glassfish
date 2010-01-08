@@ -55,13 +55,11 @@
 package org.apache.catalina.mbeans;
 
 
+import org.apache.tomcat.util.modeler.BaseModelMBean;
+
 import javax.management.MBeanException;
 import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.management.RuntimeOperationsException;
-import org.apache.catalina.Connector;
-import org.apache.catalina.Service;
-import org.apache.tomcat.util.modeler.BaseModelMBean;
 
 
 /**

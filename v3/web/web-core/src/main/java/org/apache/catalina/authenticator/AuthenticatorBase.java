@@ -54,65 +54,27 @@
 
 package org.apache.catalina.authenticator;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-//START SJSAS 6202703
-//import java.text.SimpleDateFormat;
-//END SJSAS 6202703
-import java.util.Date;
-//START SJSAS 6202703
-//import java.util.Locale;
-//END SJSAS 6202703
-import java.util.Random;
-import java.util.List;
-import java.util.Iterator;
-import java.util.logging.*;
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.util.StringManager;
+import org.apache.catalina.valves.ValveBase;
+import org.glassfish.web.valve.GlassFishValve;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.catalina.Authenticator;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-*/
-import org.apache.catalina.LifecycleException;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.LifecycleListener;
-*/
-import org.apache.catalina.Manager;
-import org.apache.catalina.Pipeline;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Session;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityConstraint;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.util.LifecycleSupport;
-*/
-import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.StringManager;
-//START SJSAS 6202703
-//import org.apache.catalina.util.DateTool;
-//END SJSAS 6202703
-import org.apache.catalina.valves.ValveBase;
-
-import org.apache.catalina.realm.RealmBase;
-import org.apache.catalina.Auditor; // IASRI 4823322
-
-import org.glassfish.web.valve.GlassFishValve;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Basic implementation of the <b>Valve</b> interface that enforces the

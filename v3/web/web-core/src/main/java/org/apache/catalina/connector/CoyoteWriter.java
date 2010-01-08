@@ -54,11 +54,10 @@
 
 package org.apache.catalina.connector;
 
+import org.apache.catalina.util.StringManager;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import javax.servlet.ServletOutputStream;
-import org.apache.catalina.util.StringManager;
 
 
 /**

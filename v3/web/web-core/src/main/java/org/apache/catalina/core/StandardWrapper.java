@@ -54,33 +54,31 @@
 
 package org.apache.catalina.core;
 
-import java.lang.reflect.Method;
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import java.security.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.ObjectName;
-
+import com.sun.grizzly.util.IntrospectionUtils;
 import org.apache.catalina.*;
-import static org.apache.catalina.InstanceEvent.EventType.BEFORE_INIT_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_INIT_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_SERVICE_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_DESTROY_EVENT;
-import static org.apache.catalina.InstanceEvent.EventType.BEFORE_DESTROY_EVENT;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
-import com.sun.grizzly.util.IntrospectionUtils;
 import org.apache.tomcat.util.modeler.Registry;
-
-// START GlassFish 1343
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.management.Notification;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.ObjectName;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.Principal;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.*;
+import java.util.logging.Level;
+
+import static org.apache.catalina.InstanceEvent.EventType.*;
 // END GlassFish 1343
 
 /**

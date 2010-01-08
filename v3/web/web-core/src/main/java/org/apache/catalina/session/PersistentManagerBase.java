@@ -54,25 +54,22 @@
 
 package org.apache.catalina.session;
 
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.security.SecurityUtil;
+import org.apache.catalina.util.LifecycleSupport;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.*;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Session;
-import org.apache.catalina.Store;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.security.SecurityUtil;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Extends the <b>ManagerBase</b> class to implement most of the

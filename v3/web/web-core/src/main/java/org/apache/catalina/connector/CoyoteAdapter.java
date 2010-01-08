@@ -54,22 +54,7 @@
 
 package org.apache.catalina.connector;
 
-import java.io.IOException;
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Host;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.util.StringManager;
-import org.glassfish.web.valve.GlassFishValve;
+import com.sun.appserv.ProxyHandler;
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.buf.ByteChunk;
@@ -77,7 +62,19 @@ import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.mapper.MappingData;
-import com.sun.appserv.ProxyHandler;
+import org.apache.catalina.*;
+import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.util.ServerInfo;
+import org.apache.catalina.util.StringManager;
+import org.glassfish.web.valve.GlassFishValve;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of a request processor which delegates the processing to a

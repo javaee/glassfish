@@ -54,41 +54,27 @@
 
 package org.apache.catalina.realm;
 
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.*;
-import java.util.logging.*;
+import org.apache.catalina.Context;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.Realm;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.deploy.SecurityConstraint;
+import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.util.StringManager;
+import org.apache.tomcat.util.digester.Digester;
 
-import java.security.Principal;
-import java.security.cert.X509Certificate;
 import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.auth.callback.*;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Realm;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.util.StringManager;
-import org.apache.catalina.util.RequestUtil;
-import org.apache.tomcat.util.digester.Digester;
-// START SJSWS 6324431
-import org.apache.catalina.core.StandardContext; 
+import java.io.File;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 // END SJSWS 6324431
 
 

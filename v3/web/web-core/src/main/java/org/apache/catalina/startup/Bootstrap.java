@@ -54,14 +54,16 @@
 
 package org.apache.catalina.startup;
 
+import org.apache.catalina.security.SecurityClassLoad;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.logging.*;
-import org.apache.catalina.security.SecurityClassLoad;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

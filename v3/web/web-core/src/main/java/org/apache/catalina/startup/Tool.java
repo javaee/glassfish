@@ -59,13 +59,10 @@ package org.apache.catalina.startup;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.*;
-import org.apache.catalina.loader.StandardClassLoader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

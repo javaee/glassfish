@@ -55,13 +55,11 @@
 package org.apache.catalina.util;
 
 
-import org.apache.tomcat.util.digester.Digester;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.SAXException;
-
 import com.sun.grizzly.util.IntrospectionUtils;
+import org.apache.tomcat.util.digester.Digester;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * This extended digester filters out ${...} tokens to replace them with

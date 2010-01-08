@@ -36,18 +36,21 @@
 
 package org.apache.catalina.connector;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-import java.util.logging.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.catalina.ContainerEvent;
 import org.apache.catalina.Globals;
-import org.apache.catalina.connector.*;
-import org.apache.catalina.core.*;
+import org.apache.catalina.core.ApplicationDispatcher;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.util.StringManager;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AsyncContextImpl implements AsyncContext {
 

@@ -54,28 +54,22 @@
 
 package org.apache.catalina.core;
 
+import org.apache.catalina.Globals;
+import org.apache.catalina.security.SecurityUtil;
+
+import javax.servlet.*;
+import javax.servlet.descriptor.JspConfigDescriptor;
 import java.io.InputStream;
-import java.io.File;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.NamingException;
-import javax.naming.Binding;
-import javax.naming.directory.DirContext;
-import javax.servlet.*;
-import javax.servlet.descriptor.*;
-import javax.servlet.http.*;
-
-import org.apache.catalina.Globals;
-import org.apache.catalina.security.SecurityUtil;
 
 /**
  * Facade object which masks the internal <code>ApplicationContext</code>

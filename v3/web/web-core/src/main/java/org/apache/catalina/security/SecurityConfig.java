@@ -55,9 +55,11 @@
 
 package org.apache.catalina.security;
 
-import java.security.Security;
-import java.util.logging.*;
 import org.apache.catalina.startup.CatalinaProperties;
+
+import java.security.Security;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Util class to protect Catalina against package access and insertion.

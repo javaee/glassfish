@@ -54,11 +54,14 @@
 
 package org.apache.catalina;
 
-import java.util.*;
-import javax.servlet.*;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.util.CharsetMapper;
+
+import javax.servlet.*;
+import java.util.EventListener;
+import java.util.List;
+import java.util.Map;
 
 
 /**

@@ -55,12 +55,11 @@
 package org.apache.catalina;
 
 
-import java.security.Principal;
-import java.util.Locale;
+import com.sun.grizzly.util.buf.MessageBytes;
 
 import javax.servlet.http.Cookie;
-
-import com.sun.grizzly.util.buf.MessageBytes;
+import java.security.Principal;
+import java.util.Locale;
 
 /**
  * An <b>HttpRequest</b> is the Catalina internal facade for an

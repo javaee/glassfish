@@ -54,20 +54,16 @@
 package org.apache.catalina.ssi;
 
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLConnection;
+import org.apache.catalina.Globals;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.Globals;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 /**
  * Servlet to process SSI requests within a webpage. Mapped to a path from
  * within web.xml.

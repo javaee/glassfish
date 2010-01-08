@@ -36,11 +36,9 @@
 
 package org.apache.catalina.core;
 
-import java.util.*;
-import javax.servlet.*;
 import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.util.StringManager;
+
+import javax.servlet.FilterRegistration;
 
 public class DynamicFilterRegistrationImpl
     extends FilterRegistrationImpl

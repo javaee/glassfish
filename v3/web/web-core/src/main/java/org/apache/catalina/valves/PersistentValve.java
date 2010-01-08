@@ -55,25 +55,16 @@
 package org.apache.catalina.valves;
 
 
-import java.io.IOException;
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.session.PersistentManager;
+import org.apache.catalina.util.StringManager;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Session;
-import org.apache.catalina.util.StringManager;
-import org.apache.catalina.valves.ValveBase;
-import org.apache.catalina.Logger;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.Store;
-import org.apache.catalina.session.PersistentManager;
-import org.apache.catalina.session.ManagerBase;
+import java.io.IOException;
 
 /**
  * Valve that implements the default basic behavior for the

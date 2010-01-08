@@ -55,15 +55,9 @@
 package org.apache.catalina.valves;
 
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.text.SimpleDateFormat;
-import java.text.DecimalFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import org.apache.catalina.*;
+import org.apache.catalina.util.StringManager;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -71,22 +65,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.catalina.HttpResponse;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-*/
-import org.apache.catalina.LifecycleException;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.LifecycleListener;
-*/
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Session;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.util.LifecycleSupport;
-*/
-import org.apache.catalina.util.StringManager;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server

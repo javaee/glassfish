@@ -58,14 +58,14 @@
 package org.apache.catalina.logger;
 
 
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.util.StringManager;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.StringManager;
 
 
 /**

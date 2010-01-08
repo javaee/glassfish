@@ -53,10 +53,11 @@
  */
 package org.apache.catalina.connector;
 
-import java.util.ArrayList;
 import org.apache.catalina.Session;
 import org.apache.catalina.SessionEvent;
 import org.apache.catalina.SessionListener;
+
+import java.util.ArrayList;
 
 /**
  * Class responsible for keeping track of the total number of active sessions

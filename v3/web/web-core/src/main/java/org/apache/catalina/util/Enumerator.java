@@ -55,13 +55,7 @@
 package org.apache.catalina.util;
 
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**

@@ -57,17 +57,12 @@
 package org.apache.catalina.mbeans;
 
 
-import javax.management.Attribute;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
-import javax.management.ReflectionException;
-import javax.management.RuntimeOperationsException;
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
-
 import com.sun.grizzly.tcp.ProtocolHandler;
-import org.apache.catalina.connector.Connector;
 import com.sun.grizzly.util.IntrospectionUtils;
+import org.apache.catalina.connector.Connector;
+
+import javax.management.*;
+import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
 
 /**

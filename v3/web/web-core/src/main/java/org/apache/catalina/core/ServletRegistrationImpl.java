@@ -36,10 +36,12 @@
 
 package org.apache.catalina.core;
 
-import java.util.*;
-import javax.servlet.*;
-import org.apache.catalina.core.StandardWrapper;
 import org.apache.catalina.util.StringManager;
+
+import javax.servlet.ServletRegistration;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 public class ServletRegistrationImpl implements ServletRegistration {
 

@@ -54,21 +54,20 @@
 
 package org.apache.catalina.mbeans;
 
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import javax.management.MalformedObjectNameException;
-import javax.management.MBeanException;
-import javax.management.ObjectName;
-import javax.management.RuntimeOperationsException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.ContextResourceLink;
 import org.apache.catalina.deploy.NamingResources;
-import org.apache.catalina.deploy.ResourceParams;
 import org.apache.tomcat.util.modeler.BaseModelMBean;
 import org.apache.tomcat.util.modeler.ManagedBean;
-import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.MBeanException;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.RuntimeOperationsException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 
 /**
  * <p>A <strong>ModelMBean</strong> implementation for the

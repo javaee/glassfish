@@ -55,9 +55,10 @@
 package org.apache.catalina;
 
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  * <p>Interface describing a collection of Valves that should be executed

@@ -54,32 +54,13 @@
 
 package org.apache.catalina.authenticator;
 
-import java.io.IOException;
+import org.apache.catalina.Session;
+import org.apache.catalina.session.StandardSession;
+
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Session;
-import org.apache.catalina.SessionEvent;
-import org.apache.catalina.SessionListener;
-import org.apache.catalina.authenticator.Constants;
-import org.apache.catalina.Realm;
-import org.apache.catalina.session.StandardSession;
+import java.util.logging.Logger;
 
 /**
  * A private class representing entries in the cache of authenticated users.

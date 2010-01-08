@@ -55,16 +55,12 @@
 package org.apache.catalina;
 
 
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
-
-//START OF RIMOD# 4820359
-import javax.servlet.http.HttpSession;
-//END OF RIMOD# 4820359
-//START OF 6364900
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
 //END OF 6364900
 
 /**

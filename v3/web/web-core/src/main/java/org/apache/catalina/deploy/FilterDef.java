@@ -54,10 +54,11 @@
 
 package org.apache.catalina.deploy;
 
-import java.util.*;
-import java.io.Serializable;
-import javax.servlet.Filter;
 import org.apache.catalina.util.Enumerator;
+
+import javax.servlet.Filter;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Representation of a filter definition for a web application, as represented

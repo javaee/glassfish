@@ -56,7 +56,6 @@ package org.apache.catalina.startup;
 
 
 import org.apache.tomcat.util.digester.Digester;
-import org.apache.tomcat.util.digester.Rule;
 import org.apache.tomcat.util.digester.RuleSetBase;
 
 

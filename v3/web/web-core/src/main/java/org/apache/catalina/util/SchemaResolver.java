@@ -55,15 +55,14 @@
 package org.apache.catalina.util;
 
 
-import java.util.HashMap;
-
 import org.apache.tomcat.util.digester.Digester;
-import org.xml.sax.InputSource;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-// START PWC 6457880
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 // END PWC 6457880
 
 /**

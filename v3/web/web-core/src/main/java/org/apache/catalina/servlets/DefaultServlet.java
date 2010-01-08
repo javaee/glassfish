@@ -55,24 +55,7 @@
 package org.apache.catalina.servlets;
 
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.*;
-
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
+import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import org.apache.catalina.Globals;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ServerInfo;
@@ -82,12 +65,26 @@ import org.apache.naming.resources.CacheEntry;
 import org.apache.naming.resources.ProxyDirContext;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
-// START SJSAS 6231069
-import org.apache.catalina.core.ApplicationHttpResponse;
-// END SJSAS 6231069
-import org.glassfish.web.loader.*;
+import org.glassfish.web.loader.ResourceEntry;
+import org.glassfish.web.loader.WebappClassLoader;
 
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.servlet.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The default resource-serving servlet for most web applications,

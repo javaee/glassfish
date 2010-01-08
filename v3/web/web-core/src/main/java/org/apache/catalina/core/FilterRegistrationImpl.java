@@ -36,11 +36,16 @@
 
 package org.apache.catalina.core;
 
-import java.util.*;
-import javax.servlet.*;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.deploy.FilterMap;
 import org.apache.catalina.util.StringManager;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 
 public class FilterRegistrationImpl implements FilterRegistration {
 

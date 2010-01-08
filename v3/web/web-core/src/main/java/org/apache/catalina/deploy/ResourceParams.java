@@ -57,8 +57,8 @@
 
 package org.apache.catalina.deploy;
 
-import java.util.Hashtable;
 import java.io.Serializable;
+import java.util.Hashtable;
 
 /**
  * Representation of additional parameters which will be used to initialize

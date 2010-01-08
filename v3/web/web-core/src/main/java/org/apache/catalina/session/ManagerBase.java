@@ -55,6 +55,21 @@
 package org.apache.catalina.session;
 
 
+import com.sun.enterprise.util.uuid.UuidGenerator;
+import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
+import org.apache.catalina.*;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.util.StringManager;
+import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataInputStream;
@@ -65,46 +80,13 @@ import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.*;
-
-import javax.management.MBeanRegistration;
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-
-//START OF RIMOD# 4820359
-import javax.servlet.http.HttpSession; 
-//END OF RIMOD# 4820359
-
-//START OF 6364900
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-//END OF 6364900
-import org.apache.catalina.Container;
-import org.apache.catalina.DefaultContext;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Session;
-//START OF 6364900
-import org.apache.catalina.SessionLocker;
-//END OF 6364900
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.util.StringManager;
-import org.apache.tomcat.util.modeler.Registry;
-
-//HERCULES:added
-import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
-import com.sun.enterprise.util.uuid.UuidGenerator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //end HERCULES:added
 
 

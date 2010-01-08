@@ -54,18 +54,12 @@
 
 package org.apache.catalina.util;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
-
-import javax.servlet.http.Cookie;
 import com.sun.grizzly.util.buf.ByteChunk;
 import org.apache.naming.Util;
+
+import javax.servlet.http.Cookie;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 /**
  * General purpose request parsing and encoding utility methods.

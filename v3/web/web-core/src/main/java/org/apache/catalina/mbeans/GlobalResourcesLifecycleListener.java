@@ -55,18 +55,14 @@
 package org.apache.catalina.mbeans;
 
 
-import java.util.Iterator;
-import java.util.logging.*;
-import javax.naming.Binding;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.OperationNotSupportedException;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.tomcat.util.modeler.Registry;
+
+import javax.naming.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementation of <code>LifecycleListener</code> that instantiates the

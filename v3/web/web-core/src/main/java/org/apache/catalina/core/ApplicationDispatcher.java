@@ -57,40 +57,25 @@
 
 package org.apache.catalina.core;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.*;
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.InstanceEvent;
-//START OF 6364900
-import org.apache.catalina.Manager;
-//END OF 6364900
-//START OF 6364900
-import org.apache.catalina.Session;
-//END OF 6364900
-import org.apache.catalina.Wrapper;
-import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
-import org.apache.catalina.core.StandardWrapper;
-//START OF 6364900
-import org.apache.catalina.session.StandardSession;
-//END OF 6364900
-import org.apache.catalina.util.InstanceSupport;
-import org.apache.catalina.util.StringManager;
+import org.apache.catalina.*;
 import org.apache.catalina.connector.ClientAbortException;
-import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.connector.ResponseFacade;
+import org.apache.catalina.util.InstanceSupport;
+import org.apache.catalina.util.StringManager;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
 
 /**
  * Standard implementation of <code>RequestDispatcher</code> that allows a

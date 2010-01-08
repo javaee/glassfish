@@ -55,9 +55,10 @@
 
 package org.apache.catalina.connector;
 
+import org.apache.catalina.util.StringManager;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import org.apache.catalina.util.StringManager;
 
 
 /**

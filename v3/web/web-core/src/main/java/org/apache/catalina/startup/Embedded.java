@@ -55,25 +55,8 @@
 package org.apache.catalina.startup;
 
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.*;
-import java.util.logging.*;
-
-import org.apache.catalina.Authenticator;
-import org.apache.catalina.Connector;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Loader;
-import org.apache.catalina.Realm;
+import com.sun.grizzly.util.IntrospectionUtils;
+import org.apache.catalina.*;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
@@ -83,13 +66,17 @@ import org.apache.catalina.logger.FileLogger;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.security.SecurityConfig;
 import org.apache.catalina.util.LifecycleSupport;
-import org.apache.catalina.util.StringManager;
-// START SJSAS 6340446
 import org.apache.catalina.util.ServerInfo;
-// END SJSAS 6340446
-import com.sun.grizzly.util.IntrospectionUtils;
-
+import org.apache.catalina.util.StringManager;
 import org.glassfish.web.valve.GlassFishValve;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Convenience class to embed a Catalina servlet container environment

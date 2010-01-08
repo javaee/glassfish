@@ -54,10 +54,9 @@
 
 package org.apache.catalina.startup;
 
+import com.sun.grizzly.util.IntrospectionUtils;
 import org.apache.tomcat.util.digester.Rule;
 import org.xml.sax.Attributes;
-
-import com.sun.grizzly.util.IntrospectionUtils;
 
 /**
  * Rule that uses the introspection utils to set properties.

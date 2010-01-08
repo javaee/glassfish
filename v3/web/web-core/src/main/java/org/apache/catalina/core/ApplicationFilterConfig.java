@@ -55,21 +55,18 @@
 package org.apache.catalina.core;
 
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.*;
-import java.io.Serializable;
+import org.apache.catalina.ContainerEvent;
+import org.apache.catalina.deploy.FilterDef;
+import org.apache.catalina.security.SecurityUtil;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.Context;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.util.Enumerator;
-import org.apache.catalina.security.SecurityUtil;
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

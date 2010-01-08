@@ -57,12 +57,10 @@
 
 package org.apache.catalina.connector;
 
-import java.io.IOException;
+import org.apache.catalina.util.StringManager;
 
 import javax.servlet.ServletOutputStream;
-
-import com.sun.grizzly.tcp.Response;
-import org.apache.catalina.util.StringManager;
+import java.io.IOException;
 
 /**
  * Coyote implementation of the servlet output stream.

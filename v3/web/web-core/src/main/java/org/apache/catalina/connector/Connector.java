@@ -54,44 +54,29 @@
 
 package org.apache.catalina.connector;
 
-import java.lang.reflect.Constructor;
-import java.net.URLEncoder;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-
-// START OF SJSAS 8.1 PE 6191830
-import java.security.cert.X509Certificate;
-// END OF SJSAS 8.1 PE 6191830
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.MBeanRegistration;
-import javax.management.MalformedObjectNameException;
-
-import org.apache.tomcat.util.modeler.Registry;
-
-import com.sun.grizzly.util.IntrospectionUtils;
-import com.sun.grizzly.util.http.mapper.Mapper;
-
+import com.sun.appserv.ProxyHandler;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Service;
-// START OF SJSAS 8.1 PE 6191830
-import org.apache.catalina.Globals;
-// END OF SJSAS 8.1 PE 6191830
+import com.sun.grizzly.util.IntrospectionUtils;
+import com.sun.grizzly.util.http.mapper.Mapper;
+import org.apache.catalina.*;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.apache.catalina.util.StringManager;
-import com.sun.appserv.ProxyHandler;
-// START S1AS 6188932
-// END S1AS 6188932
+import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Constructor;
+import java.net.URLEncoder;
+import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

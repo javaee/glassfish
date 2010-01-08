@@ -54,8 +54,8 @@
 
 package org.apache.catalina.deploy;
 
-import java.util.Set;
 import javax.servlet.DispatcherType;
+import java.util.Set;
 
 /**
  * Representation of a filter mapping for a web application, as represented

@@ -54,16 +54,11 @@
 
 package org.apache.catalina;
 
+import com.sun.appserv.ProxyHandler;
+import com.sun.grizzly.tcp.Adapter;
 import org.apache.catalina.net.ServerSocketFactory;
 
-// START OF SJSAS 8.1 PE 6191830
 import java.security.cert.X509Certificate;
-// END OF SJSAS 8.1 PE 6191830
-// START S1AS 6188932
-// END S1AS 6188932
-// START SJSAS 6363251
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.appserv.ProxyHandler;
 
 // END SJSAS 6363251
 

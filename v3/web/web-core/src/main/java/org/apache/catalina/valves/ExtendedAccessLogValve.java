@@ -54,42 +54,32 @@
 
 package org.apache.catalina.valves;
 
+import org.apache.catalina.HttpResponse;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.util.ServerInfo;
+import org.apache.catalina.util.StringManager;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TimeZone;
-import java.util.logging.*;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.apache.catalina.HttpResponse;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-*/
-import org.apache.catalina.LifecycleException;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.LifecycleListener;
-*/
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.util.LifecycleSupport;
-*/
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.util.StringManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

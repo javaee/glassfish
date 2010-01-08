@@ -54,27 +54,31 @@
 
 package org.apache.catalina.startup;
 
-import java.io.*;
-import java.net.URL;
-import java.util.*;
-import java.util.logging.*;
-
-import javax.servlet.ServletContext;
-
 import org.apache.catalina.*;
 import org.apache.catalina.authenticator.*;
-import org.apache.catalina.core.*;
-import org.apache.catalina.deploy.*;
+import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.core.StandardEngine;
+import org.apache.catalina.core.StandardHost;
+import org.apache.catalina.deploy.FilterDef;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.deploy.SecurityConstraint;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.util.StringManager;
-import org.apache.catalina.util.SchemaResolver;
 import org.apache.tomcat.util.digester.Digester;
 import org.apache.tomcat.util.digester.RuleSet;
+import org.glassfish.web.valve.GlassFishValve;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
-import org.glassfish.web.valve.GlassFishValve;
+import javax.servlet.ServletContext;
+import java.io.*;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
 
 /**
  * Startup event listener for a <b>Context</b> that configures the properties

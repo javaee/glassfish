@@ -55,22 +55,22 @@
 
 package org.apache.catalina.core;
 
-import java.io.*;
-import java.util.logging.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Wrapper;
-import org.apache.catalina.connector.ClientAbortException;
+import org.apache.catalina.connector.ResponseFacade;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ResponseUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.valves.ErrorReportValve;
-import org.apache.catalina.connector.ResponseFacade;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class responsible for processing the result of a RD.forward() invocation

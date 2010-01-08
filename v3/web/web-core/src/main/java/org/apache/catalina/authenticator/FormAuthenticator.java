@@ -54,31 +54,27 @@
 
 package org.apache.catalina.authenticator;
 
+import com.sun.grizzly.util.buf.CharChunk;
+import com.sun.grizzly.util.buf.MessageBytes;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.HttpResponse;
+import org.apache.catalina.Realm;
+import org.apache.catalina.Session;
+import org.apache.catalina.deploy.LoginConfig;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.*;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.grizzly.util.http.mapper.MappingData;
-
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Session;
-import org.apache.catalina.deploy.LoginConfig;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An <b>Authenticator</b> and <b>Valve</b> implementation of FORM BASED

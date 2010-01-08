@@ -54,15 +54,16 @@
 
 package org.apache.catalina;
 
-import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.security.Principal;
-import java.security.cert.X509Certificate;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.catalina.deploy.SecurityConstraint;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+
+import javax.servlet.http.HttpServletRequest;
+import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import java.security.Principal;
+import java.security.cert.X509Certificate;
 /**
  * A <b>Realm</b> is a read-only facade for an underlying security realm
  * used to authenticate individual users, and identify the security roles

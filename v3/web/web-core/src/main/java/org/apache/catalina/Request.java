@@ -55,11 +55,13 @@
 package org.apache.catalina;
 
 
-import java.io.InputStream;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.Iterator;
-import javax.servlet.*;
 
 /**
  * A <b>Request</b> is the Catalina-internal facade for a

@@ -54,7 +54,7 @@
 
 package org.apache.catalina;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Common interface for component life cycle methods.  Catalina components

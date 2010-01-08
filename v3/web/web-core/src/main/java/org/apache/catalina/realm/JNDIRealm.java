@@ -58,29 +58,16 @@
 package org.apache.catalina.realm;
 
 
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.util.Base64;
+
+import javax.naming.*;
+import javax.naming.directory.*;
 import java.security.Principal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import javax.naming.Context;
-import javax.naming.CommunicationException;
-import javax.naming.NameNotFoundException;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.NameParser;
-import javax.naming.Name;
-import javax.naming.AuthenticationException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Realm;
-import org.apache.catalina.util.StringManager;
-import org.apache.catalina.util.Base64;
 
 /**
  * <p>Implementation of <strong>Realm</strong> that works with a directory

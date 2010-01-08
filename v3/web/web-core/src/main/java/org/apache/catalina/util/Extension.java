@@ -58,13 +58,7 @@
 package org.apache.catalina.util;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 
 /**

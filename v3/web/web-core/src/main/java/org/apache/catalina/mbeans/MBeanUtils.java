@@ -55,32 +55,7 @@
 package org.apache.catalina.mbeans;
 
 
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Hashtable;
-import java.util.logging.*;
-
-import javax.management.Attribute;
-import javax.management.MBeanException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.modelmbean.ModelMBean;
-
-import org.apache.catalina.Connector;
-import org.apache.catalina.Contained;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.DefaultContext;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Host;
-import org.apache.catalina.Loader;
-import org.apache.catalina.Manager;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Server;
-import org.apache.catalina.Service;
+import org.apache.catalina.*;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.ContextResourceLink;
@@ -88,8 +63,17 @@ import org.apache.catalina.deploy.NamingResources;
 import org.apache.catalina.valves.ValveBase;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
-
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.management.*;
+import javax.management.modelmbean.ModelMBean;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Public utility methods in support of the server side MBeans implementation.

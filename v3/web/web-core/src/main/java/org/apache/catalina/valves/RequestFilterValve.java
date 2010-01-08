@@ -55,18 +55,17 @@
 package org.apache.catalina.valves;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.util.StringManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.util.StringManager;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 /**
