@@ -37,13 +37,14 @@
 
 package com.sun.enterprise.glassfish.web;
 
-import org.jvnet.hk2.annotations.Service;
+import com.sun.logging.LogDomains;
+import org.apache.naming.resources.FileDirContext;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.web.loader.WebappClassLoader;
-import org.apache.naming.resources.FileDirContext;
+import org.jvnet.hk2.annotations.Service;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -51,8 +52,6 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.logging.LogDomains;
 
 /**
  * @author Jerome Dochez

@@ -36,20 +36,23 @@
 
 package com.sun.enterprise.web.accesslog;
 
-import java.nio.CharBuffer;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import com.sun.enterprise.web.Constants;
+import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
-import com.sun.logging.LogDomains;
-import com.sun.enterprise.web.Constants;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.nio.CharBuffer;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Access log formatter using the SJSAS format.

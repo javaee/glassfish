@@ -36,21 +36,7 @@
 
 package com.sun.enterprise.web;
 
-import java.io.File;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.Application;
@@ -58,22 +44,15 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.logger.FileLoggerHandler;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
-import org.jvnet.hk2.config.types.Property;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
-import org.apache.catalina.Container;
-import org.apache.catalina.ContainerListener;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Pipeline;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Valve;
+import org.apache.catalina.*;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
-import com.sun.enterprise.web.logger.FileLoggerHandler;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -83,6 +62,15 @@ import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.types.Property;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Standard implementation of a virtual server (aka virtual host) in

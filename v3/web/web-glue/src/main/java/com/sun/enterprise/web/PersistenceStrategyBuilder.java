@@ -36,9 +36,8 @@
 
 package com.sun.enterprise.web;
 
-import java.util.logging.Logger;
-import org.apache.catalina.Context;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
+import org.apache.catalina.Context;
 
 public interface PersistenceStrategyBuilder {
     

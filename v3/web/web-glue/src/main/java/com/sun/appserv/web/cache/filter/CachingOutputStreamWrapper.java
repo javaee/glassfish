@@ -36,10 +36,9 @@
 
 package com.sun.appserv.web.cache.filter;
 
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-
 import javax.servlet.ServletOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * an output stream wrapper to cache response bytes

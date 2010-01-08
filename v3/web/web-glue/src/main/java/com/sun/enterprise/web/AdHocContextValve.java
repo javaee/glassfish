@@ -36,20 +36,21 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.logging.LogDomains;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Wrapper;
+import org.glassfish.web.valve.GlassFishValve;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Wrapper;
-import org.glassfish.web.valve.GlassFishValve;
-import com.sun.logging.LogDomains;
 
 /**
  * Implementation of StandardContextValve which is added as the base valve

@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.web.jsp;
 
-import javax.servlet.Servlet;
 import com.sun.enterprise.web.VirtualServer;
 import com.sun.enterprise.web.WebModule;
 import org.glassfish.jsp.api.JspProbeEmitter;

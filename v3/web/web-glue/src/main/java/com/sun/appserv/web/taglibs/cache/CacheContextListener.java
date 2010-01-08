@@ -36,12 +36,12 @@
 
 package com.sun.appserv.web.taglibs.cache;
 
+import com.sun.appserv.util.cache.Cache;
+import com.sun.appserv.web.cache.CacheManager;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import com.sun.appserv.util.cache.Cache;
-import com.sun.appserv.web.cache.CacheManager;
 
 /** 
  * CacheContextListener implements the ServletContextListener interface

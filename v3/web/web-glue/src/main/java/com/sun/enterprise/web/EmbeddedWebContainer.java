@@ -36,23 +36,15 @@
 
 package com.sun.enterprise.web;
 
-import java.io.File;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.text.MessageFormat;
-
-import org.apache.catalina.Connector;
-import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Realm;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.web.logger.FileLoggerHandler;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
+import com.sun.logging.LogDomains;
+import com.sun.web.server.WebContainerListener;
+import org.apache.catalina.*;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.startup.ContextConfig;
-
-//import org.openide.util.Lookup;
+import org.apache.catalina.startup.Embedded;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -62,12 +54,11 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.deployment.WebBundleDescriptor; 
-import com.sun.enterprise.web.logger.FileLoggerHandler;
-import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.logging.LogDomains;
-import com.sun.web.server.WebContainerListener;
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents an embedded Catalina web container within the Application Server.

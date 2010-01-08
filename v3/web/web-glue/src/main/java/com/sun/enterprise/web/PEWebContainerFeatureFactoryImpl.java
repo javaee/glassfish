@@ -37,15 +37,7 @@
 package com.sun.enterprise.web;
 
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-//import com.sun.enterprise.web.WebContainerAdminEventProcessor;
-//import com.sun.enterprise.web.PEWebContainerAdminEventProcessor;
-import com.sun.enterprise.web.WebContainerStartStopOperation;
-import com.sun.enterprise.web.PEWebContainerStartStopOperation;
-import com.sun.enterprise.web.SSOFactory;
-import com.sun.enterprise.web.PESSOFactory;
-
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Implementation of WebContainerFeatureFactory which returns web container

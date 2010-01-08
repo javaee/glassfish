@@ -36,12 +36,13 @@
 
 package com.sun.enterprise.web.pwc;
 
-import java.util.Enumeration;
+import com.sun.enterprise.web.session.SessionCookieConfig;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardWrapper;
-import com.sun.enterprise.web.session.SessionCookieConfig;
+
+import java.util.Enumeration;
 
 /**
  * Class representing a web module (servlet context).

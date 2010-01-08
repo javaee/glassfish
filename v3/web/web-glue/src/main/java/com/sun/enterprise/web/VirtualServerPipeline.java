@@ -36,6 +36,16 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.grizzly.util.buf.CharChunk;
+import com.sun.grizzly.util.buf.UEncoder;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.core.StandardPipeline;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,18 +55,6 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.core.StandardPipeline;
-import com.sun.grizzly.util.buf.UEncoder;
-import com.sun.grizzly.util.buf.CharChunk;
-
-import com.sun.logging.LogDomains;
 
 /**
  * Pipeline associated with a virtual server.

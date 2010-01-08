@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.web;
 
-import java.util.ResourceBundle;
-
 /**
  * Static constants for this package.
  */

@@ -36,18 +36,17 @@
 
 package com.sun.enterprise.web;
 
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.ResourceBundle;
-import org.apache.catalina.core.StandardContext;
-import com.sun.enterprise.web.session.PersistenceType;
-import com.sun.enterprise.deployment.runtime.web.SessionManager;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
+import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
+
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author  lwhite

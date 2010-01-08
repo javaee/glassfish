@@ -37,16 +37,16 @@
 
 package org.glassfish.web;
 
+import org.apache.naming.resources.DirContextURLStreamHandler;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.apache.naming.resources.DirContextURLStreamHandler;
 
-import java.net.URLConnection;
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
 
 /**

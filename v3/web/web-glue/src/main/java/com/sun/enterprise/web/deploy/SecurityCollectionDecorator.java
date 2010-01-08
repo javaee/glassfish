@@ -36,10 +36,8 @@
 
 package com.sun.enterprise.web.deploy;
 
-import org.apache.catalina.deploy.SecurityCollection;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
-
-import org.apache.catalina.util.RequestUtil;
+import org.apache.catalina.deploy.SecurityCollection;
 
 /**
  * Decorator of class <code>org.apache.catalina.deploy.SecurityCollection</code>

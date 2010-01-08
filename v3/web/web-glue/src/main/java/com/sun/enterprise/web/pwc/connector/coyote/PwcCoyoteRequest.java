@@ -36,30 +36,23 @@
 
 package com.sun.enterprise.web.pwc.connector.coyote;
 
+import com.sun.enterprise.web.pwc.PwcWebModule;
+import com.sun.enterprise.web.session.SessionCookieConfig;
+import com.sun.grizzly.util.http.ServerCookie;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
+
+import javax.servlet.http.Cookie;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import com.sun.grizzly.util.http.Parameters;
-// START GlassFish 898
-import com.sun.grizzly.util.http.ServerCookie;
-// END GlassFish 898
-import com.sun.enterprise.web.pwc.PwcWebModule;
-import com.sun.enterprise.web.session.SessionCookieConfig;
-import com.sun.logging.LogDomains;
-import org.apache.catalina.Context;
-import org.apache.catalina.Globals;
-import org.apache.catalina.connector.Request;
-import org.apache.catalina.connector.Response;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.connector.CoyoteInputStream;
-import org.apache.catalina.connector.CoyoteReader;
-import org.apache.catalina.connector.InputBuffer;
+import java.util.logging.Logger;
 
 /**
  * Customized version of the Tomcat 5 CoyoteRequest

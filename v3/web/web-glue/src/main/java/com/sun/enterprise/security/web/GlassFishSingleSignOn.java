@@ -36,40 +36,23 @@
 
 package com.sun.enterprise.security.web;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.*;
+import org.apache.catalina.authenticator.Constants;
+import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.authenticator.SingleSignOnEntry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.HttpRequest;
-import org.apache.catalina.HttpResponse;
-/** CR 6411114 (Lifecycle implementation moved to ValveBase)
-import org.apache.catalina.Lifecycle;
-*/
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.Session;
-import org.apache.catalina.SessionEvent;
-import org.apache.catalina.SessionListener;
-import org.apache.catalina.authenticator.Constants;
-import org.apache.catalina.authenticator.SingleSignOn;
-import org.apache.catalina.authenticator.SingleSignOnEntry;
-import org.apache.catalina.Realm;
-//6406580 START
-import org.apache.catalina.session.StandardSession;
-//6406580 END
-import com.sun.logging.LogDomains;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A <strong>Valve</strong> that supports a "single sign on" user experience,

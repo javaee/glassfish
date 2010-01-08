@@ -36,13 +36,9 @@
 
 package com.sun.enterprise.web.deploy;
 
-import org.apache.catalina.deploy.LoginConfig;
-
-
-import org.apache.catalina.util.RequestUtil;
-import java.io.Serializable;
-
 import com.sun.enterprise.deployment.web.LoginConfiguration;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.util.RequestUtil;
 
 /**
  * Decorator of class <code>org.apache.catalina.deploy.LoginConfig</code>

@@ -51,24 +51,28 @@
  */
 
 package org.glassfish.web.jsp;
-  
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
-import org.apache.jasper.JspC;
+
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.web.InitializationParameter;
+import com.sun.enterprise.deployment.runtime.web.JspConfig;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.runtime.web.JspConfig;
-import org.glassfish.loader.util.ASClassLoaderUtil;
+import com.sun.enterprise.deployment.web.InitializationParameter;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.logging.LogDomains;
+import org.apache.jasper.JspC;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.internal.api.ServerContext;
-import com.sun.logging.LogDomains;
+import org.glassfish.loader.util.ASClassLoaderUtil;
+
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 public final class JSPCompiler {
     private ServerContext serverContext;

@@ -36,11 +36,9 @@
 
 package com.sun.enterprise.web.pwc;
 
-import org.apache.catalina.startup.Embedded;
-import org.apache.catalina.Logger;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.Container;
+import org.apache.catalina.Logger;
+import org.apache.catalina.startup.Embedded;
 
 /*
  * Represents the production web container

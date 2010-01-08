@@ -38,7 +38,6 @@
 package com.sun.enterprise.web;
 
 import org.jvnet.hk2.annotations.Contract;
-import com.sun.enterprise.web.WebModule;
 
 /**
  * Used to decorate a web component before it is put to service.

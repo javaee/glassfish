@@ -36,13 +36,13 @@
  
 package com.sun.appserv.web.taglibs.cache;
 
+import com.sun.appserv.util.cache.Cache;
+import com.sun.appserv.web.cache.CacheManager;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-
-import com.sun.appserv.util.cache.Cache;
-import com.sun.appserv.web.cache.CacheManager;
 
 /** 
  * HttpSessionListener which creates a cache for JSP tag body invocations

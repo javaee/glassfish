@@ -36,12 +36,13 @@
 
 package com.sun.enterprise.web.accesslog;
 
-import java.nio.CharBuffer;
-import java.util.Date;
-import java.util.TimeZone;
-import java.text.SimpleDateFormat;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
+
+import java.nio.CharBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Abstract class defining an interface for appending access log entries to the

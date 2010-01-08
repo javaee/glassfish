@@ -36,24 +36,19 @@
 
 package com.sun.web.server;
 
-import java.util.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.text.MessageFormat;
-
-import org.apache.catalina.*;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.web.WebComponentInvocation;
+import com.sun.enterprise.web.WebModule;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.ContainerEvent;
+import org.apache.catalina.ContainerListener;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 
-import com.sun.enterprise.container.common.spi.util.InjectionException;
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.web.WebComponentInvocation;
-import com.sun.enterprise.web.WebModule;
-
-//START OF IASRI 4660742
-import java.util.logging.*;
-import com.sun.logging.*;
+import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 //END OF IASRI 4660742
 

@@ -36,12 +36,11 @@
 
 package com.sun.appserv.web.cache.mapping;
 
-import java.text.MessageFormat;
-
-import java.util.logging.Logger;
-import java.util.ResourceBundle;
-
 import com.sun.logging.LogDomains;
+
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 /** ValueConstraint class represents a field's value constraint; 
  *  supports common matching expressions. 

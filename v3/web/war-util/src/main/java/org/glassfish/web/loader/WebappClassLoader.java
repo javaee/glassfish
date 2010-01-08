@@ -54,12 +54,28 @@
 
 package org.glassfish.web.loader;
 
+import com.sun.appserv.BytecodePreprocessor;
+import com.sun.appserv.ClassLoaderUtil;
+import com.sun.appserv.server.util.PreprocessorUtil;
+import com.sun.logging.LogDomains;
+import org.apache.naming.JndiPermission;
+import org.apache.naming.resources.DirContextURLStreamHandler;
+import org.apache.naming.resources.Resource;
+import org.apache.naming.resources.ResourceAttributes;
+import org.glassfish.api.deployment.InstrumentableClassLoader;
+import org.jvnet.hk2.component.PreDestroy;
+
+import javax.naming.Binding;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
 import java.io.*;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -71,33 +87,13 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.jar.Attributes.Name;
-
-import javax.naming.Binding;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-
-import org.apache.naming.JndiPermission;
-import org.apache.naming.resources.DirContextURLStreamHandler;
-import org.apache.naming.resources.Resource;
-import org.apache.naming.resources.ResourceAttributes;
-import org.apache.naming.resources.FileDirContext;
-import org.glassfish.api.deployment.InstrumentableClassLoader;
-import org.jvnet.hk2.component.PreDestroy;
-
-import com.sun.appserv.server.util.PreprocessorUtil;
-
-import com.sun.appserv.BytecodePreprocessor;
-import com.sun.appserv.ClassLoaderUtil;
-import com.sun.logging.LogDomains;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Specialized web application class loader.

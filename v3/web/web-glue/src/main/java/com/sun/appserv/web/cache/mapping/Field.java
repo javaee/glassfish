@@ -36,18 +36,15 @@
 
 package com.sun.appserv.web.cache.mapping;
 
-import java.text.MessageFormat;
-
-import java.util.logging.Logger;
-import java.util.ResourceBundle;
+import com.sun.logging.LogDomains;
 
 import javax.servlet.ServletContext;
-
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.Cookie;
-
-import com.sun.logging.LogDomains;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class Field {
 

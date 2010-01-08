@@ -36,10 +36,9 @@
 
 package com.sun.appserv.web.cache;
 
-import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /** CacheHelper interface is an user-extensible interface to customize: 
  *  a) the key generation b) whether to cache the response.

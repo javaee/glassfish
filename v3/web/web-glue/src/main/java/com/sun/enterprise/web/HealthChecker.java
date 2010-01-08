@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.web;
 
-import org.apache.catalina.*;
+import org.apache.catalina.LifecycleException;
 
 /**
  *

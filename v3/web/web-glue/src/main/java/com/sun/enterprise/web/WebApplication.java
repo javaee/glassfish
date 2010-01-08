@@ -36,17 +36,10 @@
 
 package com.sun.enterprise.web;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ApplicationConfig;
-import com.sun.enterprise.config.serverbeans.Module;
-import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.ContextParameter;
+import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.util.Result;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -54,8 +47,12 @@ import org.glassfish.api.deployment.ApplicationContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 import org.glassfish.deployment.common.DeploymentProperties;
-import org.glassfish.web.plugin.common.EnvEntry;
 import org.glassfish.web.plugin.common.ContextParam;
+import org.glassfish.web.plugin.common.EnvEntry;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WebApplication implements ApplicationContainer<WebBundleDescriptor> {
 

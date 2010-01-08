@@ -37,11 +37,6 @@
 
 package com.sun.enterprise.web.reconfig;
 
-import java.beans.PropertyChangeEvent;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
@@ -49,16 +44,16 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.grizzly.config.dom.NetworkListener;
-import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.LifecycleException;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.config.Changed;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.NotProcessed;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.types.Property;
+
+import java.beans.PropertyChangeEvent;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.web.deploy;
 
+import com.sun.enterprise.deployment.ErrorPageDescriptor;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.util.RequestUtil;
-import com.sun.enterprise.deployment.ErrorPageDescriptor;
 
 /**
  * Decorator of class <code>org.apache.catalina.deploy.ErrorPage</code>

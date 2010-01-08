@@ -36,35 +36,22 @@
 
 package com.sun.enterprise.web;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-
-import javax.servlet.*;
-
-import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
+import com.sun.appserv.web.cache.CacheManager;
+import com.sun.appserv.web.cache.mapping.CacheMapping;
+import com.sun.appserv.web.cache.mapping.ConstraintField;
+import com.sun.appserv.web.cache.mapping.Field;
+import com.sun.appserv.web.cache.mapping.ValueConstraint;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.deployment.runtime.web.*;
+import com.sun.logging.LogDomains;
 import org.apache.catalina.deploy.FilterDef;
 import org.apache.catalina.deploy.FilterMap;
 
-import com.sun.logging.LogDomains;
-
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.runtime.web.Cache;
-import com.sun.enterprise.deployment.runtime.web.CacheHelper;
-import com.sun.enterprise.deployment.runtime.web.DefaultHelper;
-// import com.sun.enterprise.tools.common.dd.webapp.CacheMapping;
-// import com.sun.enterprise.tools.common.dd.webapp.ConstraintField;
-
-import com.sun.appserv.web.cache.mapping.CacheMapping;
-import com.sun.appserv.web.cache.mapping.ConstraintField;
-import com.sun.appserv.web.cache.CacheManager;
-import com.sun.appserv.web.cache.DefaultCacheHelper;
-import com.sun.appserv.web.cache.mapping.Field;
-import com.sun.appserv.web.cache.mapping.ValueConstraint;
+import javax.servlet.DispatcherType;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * configures the cache for the application

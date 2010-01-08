@@ -36,30 +36,16 @@
 
 package com.sun.appserv.web.cache;
 
-import java.text.MessageFormat;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.ResourceBundle;
-
-import javax.servlet.ServletContext;
-import org.apache.catalina.LifecycleException;
-
 import com.sun.appserv.util.cache.Cache;
 import com.sun.appserv.web.cache.mapping.CacheMapping;
-
 import com.sun.logging.LogDomains;
+import org.apache.catalina.LifecycleException;
+
+import javax.servlet.ServletContext;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CacheManager {
 

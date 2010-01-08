@@ -36,22 +36,16 @@
 
 package com.sun.web.server;
 
-import java.util.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.AccessControlException;
-import java.security.Policy;
-import java.security.ProtectionDomain;
-import java.security.Principal;
-import java.text.MessageFormat;
-import javax.transaction.Transaction;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.catalina.Context;
-import org.apache.catalina.InstanceEvent;
-import org.apache.catalina.InstanceListener;
-import org.apache.catalina.Realm;
-import org.apache.catalina.Wrapper;
+import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.security.integration.AppServSecurityContext;
+import com.sun.enterprise.security.integration.RealmInitializer;
+import com.sun.enterprise.security.integration.SecurityConstants;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.web.WebComponentInvocation;
+import com.sun.enterprise.web.WebModule;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.*;
 import org.apache.catalina.connector.RequestFacade;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.jasper.servlet.JspServlet;
@@ -59,21 +53,18 @@ import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.internal.api.ServerContext;
 
-import com.sun.enterprise.transaction.api.JavaEETransactionManager;
-import com.sun.enterprise.container.common.spi.util.InjectionException;
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.deployment.*;
-// IASRI 4688449
-import com.sun.enterprise.security.integration.AppServSecurityContext;
-import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.enterprise.security.integration.SecurityConstants;
-import com.sun.enterprise.web.WebComponentDecorator;
-import com.sun.enterprise.web.WebComponentInvocation;
-import com.sun.enterprise.web.WebModule;
-
-//START OF IASRI 4660742
-import java.util.logging.*;
-import com.sun.logging.*;
+import javax.servlet.Servlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transaction;
+import java.security.*;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //END OF IASRI 4660742
 
 /**

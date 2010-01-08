@@ -36,25 +36,17 @@
 
 package com.sun.enterprise.web;
 
-import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.sun.enterprise.config.serverbeans.AvailabilityService;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.ExtensionModule;
-import com.sun.enterprise.config.serverbeans.J2eeApplication;
-import com.sun.enterprise.config.serverbeans.ManagerProperties;
-import org.jvnet.hk2.config.types.Property;
-import com.sun.enterprise.config.serverbeans.SessionConfig;
-import com.sun.enterprise.config.serverbeans.SessionManager;
-import com.sun.enterprise.config.serverbeans.SessionProperties;
-import com.sun.enterprise.config.serverbeans.StoreProperties;
-import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.WebContainer;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.ClassLoaderHierarchy;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.types.Property;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerConfigLookup {
 

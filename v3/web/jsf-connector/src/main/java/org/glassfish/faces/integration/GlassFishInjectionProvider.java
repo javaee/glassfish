@@ -36,23 +36,23 @@
 
 package org.glassfish.faces.integration;
 
+import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.deployment.InjectionInfo;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.faces.spi.DiscoverableInjectionProvider;
 import com.sun.faces.spi.InjectionProviderException;
 import com.sun.faces.util.FacesLogger;
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
+import org.jvnet.hk2.component.Habitat;
 
+import javax.servlet.ServletContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.container.common.spi.util.InjectionException;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.deployment.InjectionInfo;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.ComponentInvocation;
 
 /**
  * <p>This <code>InjectionProvider</code> is specific to the

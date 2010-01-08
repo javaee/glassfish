@@ -35,13 +35,10 @@
  */
 package com.sun.enterprise.web.deploy;
 
-import org.apache.catalina.deploy.SecurityCollection;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.SecurityRole;
 import com.sun.enterprise.web.WebModule;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 /**
  * Decorator of class <code>org.apache.catalina.deploy.SecurityConstraint</code>

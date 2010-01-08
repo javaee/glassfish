@@ -36,14 +36,14 @@
 
 package com.sun.appserv.web.taglibs.cache;
 
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
-import java.text.MessageFormat;
-import javax.servlet.jsp.PageContext;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import com.sun.appserv.util.cache.Cache;
 import com.sun.logging.LogDomains;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.PageContext;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 /**
  * CacheUtil has utility methods used by the cache tag library.

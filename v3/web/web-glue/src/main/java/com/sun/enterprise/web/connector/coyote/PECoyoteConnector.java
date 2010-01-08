@@ -36,25 +36,17 @@
 
 package com.sun.enterprise.web.connector.coyote;
 
+import com.sun.appserv.ProxyHandler;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
-import com.sun.grizzly.config.dom.Http;
-import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Ssl;
-import com.sun.grizzly.config.dom.ThreadPool;
-import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.config.dom.FileCache;
+import com.sun.grizzly.config.dom.*;
 import com.sun.grizzly.util.IntrospectionUtils;
 import com.sun.logging.LogDomains;
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
+import org.apache.catalina.*;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.connector.MapperListener;
 import org.glassfish.security.common.CipherInfo;
@@ -68,7 +60,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.sun.appserv.ProxyHandler;
 
 public class PECoyoteConnector extends Connector {
 

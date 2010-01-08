@@ -36,49 +36,29 @@
 
 package com.sun.enterprise.web;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.logging.*;
-import javax.naming.*;
-import org.apache.catalina.Authenticator;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Pipeline;
-import org.apache.catalina.Realm;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.core.StandardEngine;
-
-import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import org.glassfish.web.valve.GlassFishValve;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXParseException;
-
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.ResourcePrincipal;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.runtime.common.DefaultResourcePrincipal;
 import com.sun.enterprise.deployment.runtime.common.ResourceRef;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.logging.LogDomains;
+import org.apache.catalina.*;
+import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.deploy.ApplicationParameter;
+import org.apache.catalina.deploy.ContextEnvironment;
+import org.apache.catalina.deploy.ContextResource;
+import org.apache.catalina.deploy.LoginConfig;
+import org.apache.catalina.startup.ContextConfig;
+import org.glassfish.web.valve.GlassFishValve;
+import org.jvnet.hk2.component.Habitat;
+
+import javax.naming.NamingException;
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Startup event listener for a <b>Context</b> that configures the properties

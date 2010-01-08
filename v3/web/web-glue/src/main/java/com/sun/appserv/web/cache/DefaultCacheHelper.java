@@ -36,17 +36,17 @@
 
 package com.sun.appserv.web.cache;
 
-import java.util.Map;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.ResourceBundle;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import com.sun.appserv.web.cache.mapping.Constants;
 import com.sun.appserv.web.cache.mapping.CacheMapping;
 import com.sun.appserv.web.cache.mapping.ConstraintField;
 import com.sun.appserv.web.cache.mapping.Field;
 import com.sun.logging.LogDomains;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** DefaultCacheHelper interface is the built-in implementation of the 
  *  <code>CacheHelper</code> interface to aide in:

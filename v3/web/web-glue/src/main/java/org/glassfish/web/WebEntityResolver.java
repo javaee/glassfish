@@ -37,22 +37,20 @@
 
 package org.glassfish.web;
 
+import com.sun.enterprise.util.MapBuilder;
+import org.apache.catalina.startup.Constants;
+import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.component.PostConstruct;
-import org.apache.catalina.startup.Constants;
-import org.glassfish.internal.api.ServerContext;
-
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
-
-import com.sun.enterprise.util.MapBuilder;
 
 /**
  * {@link EntityResolver} that recognizes known public IDs of JavaEE DTDs/schemas

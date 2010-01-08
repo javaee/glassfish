@@ -36,28 +36,25 @@
 
 package com.sun.enterprise.web.connector.extension;
 
-import org.glassfish.j2ee.statistics.Stats;
-
-import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
+import com.sun.enterprise.admin.monitor.registry.MonitoredObjectType;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevel;
 import com.sun.enterprise.admin.monitor.registry.MonitoringLevelListener;
-import com.sun.enterprise.admin.monitor.registry.MonitoredObjectType;
-import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
-
+import com.sun.enterprise.admin.monitor.registry.MonitoringRegistry;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.logging.LogDomains;
+import org.glassfish.j2ee.statistics.Stats;
+import org.jvnet.hk2.component.Habitat;
 
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.ObjectName;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import javax.management.ObjectName;
-import javax.management.MBeanServerFactory;
-import javax.management.MBeanServer;
-
-import org.jvnet.hk2.component.Habitat;
+import java.util.logging.Logger;
 
 /**
  * This class track monitoring or Grizzly, using JMX to invoke Grizzly main

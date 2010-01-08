@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.web;
 
-import org.glassfish.internal.grizzly.V3Mapper;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import org.apache.catalina.LifecycleException;
+import org.glassfish.internal.grizzly.V3Mapper;
 
 /**
  * A CoyoteConnector subclass which "wraps around" an existing Grizzly

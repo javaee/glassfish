@@ -36,8 +36,12 @@
 
 package com.sun.enterprise.web;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Class representing the parsed mime mapping file of a mime element.

@@ -36,21 +36,26 @@
 
 package org.glassfish.faces.integration;
 
-import java.net.*;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.logging.*;
-import java.util.regex.Pattern;
-import org.glassfish.api.web.TldProvider;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
-import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.web.TldProvider;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Implementation of TldProvider for JSF.

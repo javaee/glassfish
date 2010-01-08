@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.web;
 
-import org.apache.catalina.core.StandardWrapper;
-
 /**
  *
  * @author Jan Luehe

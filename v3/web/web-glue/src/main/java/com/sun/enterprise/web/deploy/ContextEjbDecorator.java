@@ -37,7 +37,6 @@ package com.sun.enterprise.web.deploy;
 
 import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import org.apache.catalina.deploy.ContextEjb;
-import java.io.Serializable;
 
 /**
  * Decorator of class <code>org.apache.catalina.deploy.ContextEjb</code>

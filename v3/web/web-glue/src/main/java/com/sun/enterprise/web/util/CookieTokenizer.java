@@ -41,11 +41,6 @@
 
 package com.sun.enterprise.web.util;
 
-import java.lang.System;
-import java.lang.String;
-import java.lang.IndexOutOfBoundsException;
-import java.lang.ArrayIndexOutOfBoundsException;
-
 /**
  * Parse a Cookie: header into individual tokens according to RFC 2109.
  */

@@ -36,9 +36,10 @@
 
 package com.sun.enterprise.web.session;
 
-import java.net.URLEncoder;
 import org.apache.catalina.Globals;
 import org.apache.catalina.util.ServerInfo;
+
+import java.net.URLEncoder;
 
 /**
  * Representation of the session cookie configuration element for a web 

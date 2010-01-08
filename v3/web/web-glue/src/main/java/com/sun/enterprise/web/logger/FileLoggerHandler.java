@@ -41,18 +41,18 @@ package com.sun.enterprise.web.logger;
  * log-file when enabled
  */
 
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.util.logging.*;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
-
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.component.PostConstruct;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 //specify that the contract is provided by handler.class in the JDK
 @Service

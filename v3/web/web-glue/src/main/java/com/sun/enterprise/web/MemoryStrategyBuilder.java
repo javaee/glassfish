@@ -36,16 +36,14 @@
 
 package com.sun.enterprise.web;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.ArrayList;
-import java.text.MessageFormat;
-import org.apache.catalina.Context;
-import org.apache.catalina.Container;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.session.StandardManager;
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
 import com.sun.enterprise.util.uuid.UuidGenerator;
+import org.apache.catalina.Context;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.session.StandardManager;
+
+import java.text.MessageFormat;
+import java.util.logging.Level;
 
 public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
     

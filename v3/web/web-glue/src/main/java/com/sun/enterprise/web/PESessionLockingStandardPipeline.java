@@ -36,12 +36,14 @@
 
 package com.sun.enterprise.web;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import javax.servlet.ServletException;
 import com.sun.logging.LogDomains;
-import org.apache.catalina.*;
-import org.apache.catalina.session.StandardSession;
+import org.apache.catalina.Container;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+import org.apache.catalina.Session;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  *

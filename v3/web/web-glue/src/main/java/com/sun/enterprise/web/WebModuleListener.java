@@ -36,38 +36,31 @@
 
 package com.sun.enterprise.web;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.net.URI;
-import java.io.File;
+import com.sun.appserv.web.cache.CacheManager;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
+import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.enterprise.deployment.util.WebValidatorWithCL;
+import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
+import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.*;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.web.TldProvider;
+import org.glassfish.loader.util.ASClassLoaderUtil;
+
 import javax.enterprise.inject.spi.BeanManager;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
-
-import org.apache.catalina.Globals;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleEvent;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Wrapper;
-import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.web.TldProvider;
-
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.util.WebValidatorWithCL;
-import com.sun.enterprise.web.Constants;
-import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
-import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
-import com.sun.logging.LogDomains;
-import com.sun.appserv.web.cache.CacheManager;
-import org.glassfish.loader.util.ASClassLoaderUtil;
+import java.io.File;
+import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
 //import com.sun.enterprise.config.ConfigException;

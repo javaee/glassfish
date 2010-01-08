@@ -43,7 +43,6 @@
 package com.sun.enterprise.web;
 
 import org.apache.catalina.LifecycleException;
-import com.sun.enterprise.web.HealthChecker;
 
 
 /**

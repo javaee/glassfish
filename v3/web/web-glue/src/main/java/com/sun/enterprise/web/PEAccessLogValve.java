@@ -36,6 +36,19 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.web.accesslog.AccessLogFormatter;
+import com.sun.enterprise.web.accesslog.CombinedAccessLogFormatterImpl;
+import com.sun.enterprise.web.accesslog.CommonAccessLogFormatterImpl;
+import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
+import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.*;
+import org.apache.catalina.valves.ValveBase;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.jvnet.hk2.component.Habitat;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,28 +59,8 @@ import java.nio.channels.FileChannel;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.*;
-
-import com.sun.enterprise.config.serverbeans.AccessLog;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.web.accesslog.AccessLogFormatter;
-import com.sun.enterprise.web.accesslog.CombinedAccessLogFormatterImpl;
-import com.sun.enterprise.web.accesslog.CommonAccessLogFormatterImpl;
-import com.sun.enterprise.web.accesslog.DefaultAccessLogFormatterImpl;
-import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
-import com.sun.logging.LogDomains;
-
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
-import org.apache.catalina.valves.ValveBase;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.component.Habitat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server

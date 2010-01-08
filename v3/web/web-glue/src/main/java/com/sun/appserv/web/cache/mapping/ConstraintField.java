@@ -36,11 +36,12 @@
 
 package com.sun.appserv.web.cache.mapping;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import com.sun.logging.LogDomains;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import com.sun.logging.LogDomains;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** ConstraintField class represents a single Field and constraints on its 
  *  values; Field name and its scope are inherited from the Field class. 

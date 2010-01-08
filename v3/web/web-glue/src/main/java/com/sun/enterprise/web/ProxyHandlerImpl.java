@@ -36,12 +36,13 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.appserv.ProxyHandler;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
-import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import javax.servlet.http.HttpServletRequest;
-import com.sun.appserv.ProxyHandler;
+import java.security.cert.X509Certificate;
 
 /**
  * Default ProxyHandler implementation.

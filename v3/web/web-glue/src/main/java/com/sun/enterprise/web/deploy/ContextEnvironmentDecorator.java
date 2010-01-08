@@ -35,11 +35,8 @@
  */
 package com.sun.enterprise.web.deploy;
 
-import org.apache.catalina.deploy.ContextEnvironment;
-
 import com.sun.enterprise.deployment.EnvironmentProperty;
-
-import java.io.Serializable;
+import org.apache.catalina.deploy.ContextEnvironment;
 
 
 /**

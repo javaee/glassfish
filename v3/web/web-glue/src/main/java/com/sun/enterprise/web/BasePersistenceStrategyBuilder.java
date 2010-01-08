@@ -36,22 +36,23 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.enterprise.config.serverbeans.SessionProperties;
+import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
+import com.sun.enterprise.deployment.runtime.web.SessionManager;
+import com.sun.enterprise.deployment.runtime.web.StoreProperties;
+import com.sun.enterprise.deployment.runtime.web.WebProperty;
+import com.sun.logging.LogDomains;
+import org.apache.catalina.Context;
+import org.apache.catalina.core.StandardContext;
+import org.jvnet.hk2.config.types.Property;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 import java.util.logging.Level;
-import org.apache.catalina.Context;
-import org.apache.catalina.core.StandardContext;
-import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
-import com.sun.enterprise.deployment.runtime.web.SessionManager;
-import com.sun.enterprise.deployment.runtime.web.StoreProperties;
-import com.sun.enterprise.deployment.runtime.web.WebProperty;
-import com.sun.enterprise.config.serverbeans.SessionProperties;
-import com.sun.logging.LogDomains;
-import org.jvnet.hk2.config.types.Property;
+import java.util.logging.Logger;
 
 public abstract class BasePersistenceStrategyBuilder
         implements PersistenceStrategyBuilder {

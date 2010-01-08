@@ -36,10 +36,8 @@
 package com.sun.enterprise.web.deploy;
 
 
-import org.apache.catalina.deploy.ContextResource;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-
-import java.io.Serializable;
+import org.apache.catalina.deploy.ContextResource;
 
 
 /**

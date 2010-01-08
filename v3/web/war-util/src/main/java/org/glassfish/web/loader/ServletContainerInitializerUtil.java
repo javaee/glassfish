@@ -36,22 +36,24 @@
 
 package org.glassfish.web.loader;
 
+import com.sun.logging.LogDomains;
+import org.apache.naming.Util;
+import org.glassfish.deployment.common.ClassDependencyBuilder;
+
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.annotation.HandlesTypes;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.*;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.annotation.HandlesTypes;
-import com.sun.logging.LogDomains;
-import org.apache.naming.Util;
-import org.glassfish.deployment.common.ClassDependencyBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class - contains util methods used for implementation of

@@ -36,19 +36,18 @@
 
 package org.glassfish.web.sniffer;
 
-import org.glassfish.internal.deployment.GenericSniffer;
 import com.sun.enterprise.module.ModulesRegistry;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.GenericSniffer;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Singleton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 

@@ -36,9 +36,10 @@
 
 package com.sun.enterprise.web.logger;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import com.sun.enterprise.util.logging.IASLevel;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of <b>Logger</b> that writes log messages

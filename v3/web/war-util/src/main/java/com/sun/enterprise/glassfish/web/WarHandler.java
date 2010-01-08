@@ -37,30 +37,29 @@
 
 package com.sun.enterprise.glassfish.web;
 
+import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
+import com.sun.logging.LogDomains;
+import org.apache.naming.resources.FileDirContext;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.jvnet.hk2.annotations.Service;
-import org.apache.naming.resources.FileDirContext;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import static javax.xml.stream.XMLStreamConstants.*;
-
-import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
-import com.sun.logging.LogDomains;
 
 /**
  * Implementation of the ArchiveHandler for war files.

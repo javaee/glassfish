@@ -36,22 +36,18 @@
 
 package com.sun.enterprise.web.jsp;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
+import com.sun.enterprise.web.WebModule;
+import com.sun.logging.LogDomains;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.jsp.api.ResourceInjector;
+
+import javax.servlet.jsp.tagext.JspTag;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.ServletContext;
-import javax.servlet.jsp.tagext.JspTag;
-import org.apache.catalina.core.ApplicationContextFacade;
-import org.apache.catalina.core.StandardContext;
-import org.glassfish.jsp.api.ResourceInjector;
-import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-import com.sun.enterprise.web.WebModule;
-import com.sun.logging.LogDomains; 
 
 /**
  * Implementation of org.glassfish.jsp.api.ResourceInjector

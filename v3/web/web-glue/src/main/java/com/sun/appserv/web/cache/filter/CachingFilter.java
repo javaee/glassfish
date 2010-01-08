@@ -36,39 +36,22 @@
 
 package com.sun.appserv.web.cache.filter;
 
-import java.io.IOException;
-
-import java.text.MessageFormat;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.ResourceBundle;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.FilterChain;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.Cookie;
-
-import com.sun.logging.LogDomains;
-
+import com.sun.appserv.util.cache.Cache;
 import com.sun.appserv.web.cache.CacheHelper;
-import com.sun.appserv.web.cache.DefaultCacheHelper;
 import com.sun.appserv.web.cache.CacheManager;
 import com.sun.appserv.web.cache.CacheManagerListener;
+import com.sun.appserv.web.cache.DefaultCacheHelper;
+import com.sun.logging.LogDomains;
 
-import com.sun.appserv.util.cache.Cache;
+import javax.servlet.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CachingFilter implements Filter, CacheManagerListener {
 

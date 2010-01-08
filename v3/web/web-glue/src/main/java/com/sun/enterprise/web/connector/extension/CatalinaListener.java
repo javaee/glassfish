@@ -36,16 +36,7 @@
 
 package com.sun.enterprise.web.connector.extension;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.apache.catalina.Container;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.catalina.Host;
+import org.apache.catalina.*;
 
 /**
  * Listener used to receive events from Catalina when a <code>Context</code>

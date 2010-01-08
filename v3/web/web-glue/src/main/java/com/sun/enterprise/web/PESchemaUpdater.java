@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.web;
 
-import java.sql.*;
+import java.sql.SQLException;
 
 /**
  *

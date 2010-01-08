@@ -36,12 +36,12 @@
 
 package com.sun.enterprise.web;
 
-import java.io.File;
-import java.util.HashMap;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.DeploymentContext;
+
+import java.io.File;
 
 /**
  * Represents the configuration parameters required in order to create

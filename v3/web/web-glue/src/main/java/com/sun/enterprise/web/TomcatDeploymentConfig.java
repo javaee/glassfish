@@ -36,70 +36,23 @@
 
 package com.sun.enterprise.web;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.descriptor.*;
-
-import com.sun.enterprise.deployment.EjbReferenceDescriptor;
-import com.sun.enterprise.deployment.EnvironmentProperty;
-import com.sun.enterprise.deployment.ErrorPageDescriptor;
-import com.sun.enterprise.deployment.JspConfigDescriptor;
-import com.sun.enterprise.deployment.JspGroupDescriptor;
-import com.sun.enterprise.deployment.LocaleEncodingMappingDescriptor;
-import com.sun.enterprise.deployment.LocaleEncodingMappingListDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationDescriptor;
-import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
-import com.sun.enterprise.deployment.SecurityRoleDescriptor;
-import com.sun.enterprise.deployment.TagLibConfigurationDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
-import com.sun.enterprise.deployment.web.AppListenerDescriptor;
-import com.sun.enterprise.deployment.web.ContextParameter;
-import com.sun.enterprise.deployment.web.CookieConfig;
-import com.sun.enterprise.deployment.web.EnvironmentEntry;
-import com.sun.enterprise.deployment.web.InitializationParameter;
-import com.sun.enterprise.deployment.web.LoginConfiguration;
-import com.sun.enterprise.deployment.web.MultipartConfig;
-import com.sun.enterprise.deployment.web.MimeMapping;
-import com.sun.enterprise.deployment.web.SessionConfig;
-import com.sun.enterprise.deployment.web.SecurityRoleReference;
-import com.sun.enterprise.deployment.web.ServletFilter;
-import com.sun.enterprise.deployment.web.ServletFilterMapping;
-import com.sun.enterprise.deployment.web.WebResourceCollection;
-import com.sun.enterprise.web.deploy.ContextEjbDecorator;
-import com.sun.enterprise.web.deploy.ContextEnvironmentDecorator;
-import com.sun.enterprise.web.deploy.ContextLocalEjbDecorator;
-import com.sun.enterprise.web.deploy.ContextResourceDecorator;
-import com.sun.enterprise.web.deploy.ErrorPageDecorator;
-import com.sun.enterprise.web.deploy.FilterDefDecorator;
-import com.sun.enterprise.web.deploy.LoginConfigDecorator;
-import com.sun.enterprise.web.deploy.MessageDestinationDecorator;
-import com.sun.enterprise.web.deploy.MessageDestinationRefDecorator;
-import com.sun.enterprise.web.deploy.SecurityCollectionDecorator;
-import com.sun.enterprise.web.deploy.SecurityConstraintDecorator;
+import com.sun.enterprise.deployment.web.*;
+import com.sun.enterprise.web.deploy.*;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
-import org.apache.catalina.Globals;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardWrapper;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.ContextEjb;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ContextLocalEjb;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.MessageDestination;
-import org.apache.catalina.deploy.MessageDestinationRef;
-import org.apache.catalina.util.CharsetMapper;
-import org.apache.jasper.compiler.JspConfig;
+
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.descriptor.JspPropertyGroupDescriptor;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class decorates all <code>com.sun.enterprise.deployment.*</code>

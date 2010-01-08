@@ -35,10 +35,8 @@
  */
 package com.sun.enterprise.web.deploy;
 
-import org.apache.catalina.deploy.MessageDestinationRef;
 import com.sun.enterprise.deployment.MessageDestinationReferenceDescriptor;
-
-import java.io.Serializable;
+import org.apache.catalina.deploy.MessageDestinationRef;
 
 
 /**

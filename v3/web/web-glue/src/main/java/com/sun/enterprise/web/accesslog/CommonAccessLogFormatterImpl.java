@@ -36,20 +36,16 @@
 
 package com.sun.enterprise.web.accesslog;
 
+import org.apache.catalina.HttpResponse;
+import org.apache.catalina.Request;
+import org.apache.catalina.Response;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.nio.CharBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import org.apache.catalina.HttpResponse;
-import org.apache.catalina.Request;
-import org.apache.catalina.Response;
 
 /**
  * Access log formatter using the <i>common</i> access log format from

@@ -43,7 +43,7 @@
 package com.sun.enterprise.web;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.SQLException;
 
 /**
  *

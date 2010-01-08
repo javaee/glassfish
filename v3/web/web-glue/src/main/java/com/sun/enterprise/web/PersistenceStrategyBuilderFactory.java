@@ -36,11 +36,12 @@
 
 package com.sun.enterprise.web;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import com.sun.appserv.ha.util.PersistenceTypeResolver;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PersistenceStrategyBuilderFactory {
     

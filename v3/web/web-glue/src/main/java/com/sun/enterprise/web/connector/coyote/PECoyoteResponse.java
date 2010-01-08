@@ -36,13 +36,12 @@
 
 package com.sun.enterprise.web.connector.coyote;
 
-import java.util.logging.Logger;
-import javax.servlet.http.Cookie;
-import org.apache.catalina.connector.CoyoteWriter;
-import org.apache.catalina.connector.Response;
-import org.apache.catalina.connector.OutputBuffer;
-import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.logging.LogDomains;
+import org.apache.catalina.connector.CoyoteWriter;
+import org.apache.catalina.connector.OutputBuffer;
+import org.apache.catalina.connector.Response;
+
+import java.util.logging.Logger;
 
 /**
  * Customized version of the Tomcat 5 CoyoteResponse

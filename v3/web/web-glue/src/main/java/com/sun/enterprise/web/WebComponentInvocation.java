@@ -36,12 +36,11 @@
 
 package com.sun.enterprise.web;
 
+import org.glassfish.api.invocation.ComponentInvocation;
+
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.SingleThreadModel;
-
-import org.glassfish.api.invocation.ComponentInvocation;
-
 import java.lang.reflect.Method;
 
 public class WebComponentInvocation extends ComponentInvocation {
