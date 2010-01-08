@@ -36,10 +36,11 @@
 
 package org.glassfish.web.valve;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import org.apache.catalina.CometEvent;
 import org.apache.catalina.Valve;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
 
 /**
  * Tomcat-style wrapper valve around GlassFish-style valve.

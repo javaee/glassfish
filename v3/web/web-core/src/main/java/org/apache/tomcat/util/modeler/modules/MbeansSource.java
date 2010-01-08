@@ -54,6 +54,19 @@
 
 package org.apache.tomcat.util.modeler.modules;
 
+import org.apache.tomcat.util.modeler.AttributeInfo;
+import org.apache.tomcat.util.modeler.BaseModelMBean;
+import org.apache.tomcat.util.modeler.ManagedBean;
+import org.apache.tomcat.util.modeler.Registry;
+import org.apache.tomcat.util.modeler.util.DomUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import javax.management.Attribute;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.loading.MLet;
+import javax.xml.transform.TransformerException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -61,21 +74,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.*;
-
-import javax.management.Attribute;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.loading.MLet;
-import javax.xml.transform.TransformerException;
-
-import org.apache.tomcat.util.modeler.BaseModelMBean;
-import org.apache.tomcat.util.modeler.ManagedBean;
-import org.apache.tomcat.util.modeler.Registry;
-import org.apache.tomcat.util.modeler.util.DomUtil;
-import org.apache.tomcat.util.modeler.AttributeInfo;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** This will create mbeans based on a config file.

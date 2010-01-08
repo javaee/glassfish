@@ -54,16 +54,15 @@
 
 package org.apache.tomcat.util.modeler.modules;
 
+import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.ObjectName;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-
-import javax.management.ObjectName;
-
-import org.apache.tomcat.util.modeler.Registry;
 
 /** Source for descriptor data. More sources can be added.
  *

@@ -55,10 +55,9 @@
 package org.apache.tomcat.util.modeler;
 
 
-import java.io.Serializable;
-
 import javax.management.Descriptor;
 import javax.management.modelmbean.ModelMBeanNotificationInfo;
+import java.io.Serializable;
 
 
 /**

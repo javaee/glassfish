@@ -54,16 +54,17 @@
 
 package org.apache.tomcat.util.modeler.modules;
 
+import org.apache.tomcat.util.modeler.ManagedBean;
+import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.ObjectName;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.*;
-import javax.management.ObjectName;
-
-import org.apache.tomcat.util.modeler.ManagedBean;
-import org.apache.tomcat.util.modeler.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MbeansDescriptorsSerSource extends ModelerSource

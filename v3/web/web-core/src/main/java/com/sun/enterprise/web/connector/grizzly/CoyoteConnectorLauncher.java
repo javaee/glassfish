@@ -59,13 +59,14 @@ import com.sun.grizzly.tcp.ProtocolHandler;
 import com.sun.grizzly.tcp.http11.Constants;
 import com.sun.grizzly.util.net.SSLImplementation;
 import com.sun.grizzly.util.net.ServerSocketFactory;
-
 import com.sun.grizzly.util.res.StringManager;
-import java.util.Hashtable;
-import java.util.logging.*;
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
+
 import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**

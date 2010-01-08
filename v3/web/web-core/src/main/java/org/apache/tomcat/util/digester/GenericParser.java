@@ -54,15 +54,15 @@
 
 package org.apache.tomcat.util.digester;
 
-import java.util.Properties;
-import java.util.logging.*;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Create a <code>SAXParser</code> configured to support XML Schema and DTD.

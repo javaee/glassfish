@@ -55,10 +55,9 @@
 package org.apache.tomcat.util.modeler;
 
 
-import java.util.HashSet;
-
 import javax.management.Notification;
 import javax.management.NotificationFilter;
+import java.util.HashSet;
 
 
 /**

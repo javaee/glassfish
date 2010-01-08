@@ -54,8 +54,9 @@
 
 package org.apache.tomcat.util.digester;
 
-import java.util.logging.*;
 import com.sun.grizzly.util.IntrospectionUtils;
+
+import java.util.logging.Level;
 
 
 /**

@@ -55,45 +55,17 @@
 package org.apache.tomcat.util.modeler;
 
 
+import org.apache.tomcat.util.modeler.modules.ModelerSource;
+
+import javax.management.*;
+import javax.management.modelmbean.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.logging.*;
-
-import javax.management.Attribute;
-import javax.management.AttributeChangeNotification;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.Descriptor;
-import javax.management.DynamicMBean;
-import javax.management.InstanceNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.ListenerNotFoundException;
-import javax.management.MBeanException;
-import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
-import javax.management.MBeanRegistration;
-import javax.management.MBeanServer;
-import javax.management.Notification;
-import javax.management.NotificationFilter;
-import javax.management.NotificationListener;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.RuntimeErrorException;
-import javax.management.RuntimeOperationsException;
-import javax.management.ServiceNotFoundException;
-import javax.management.modelmbean.DescriptorSupport;
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
-import javax.management.modelmbean.ModelMBean;
-import javax.management.modelmbean.ModelMBeanAttributeInfo;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.ModelMBeanInfoSupport;
-import javax.management.modelmbean.ModelMBeanNotificationInfo;
-import javax.management.modelmbean.ModelMBeanOperationInfo;
-
-import org.apache.tomcat.util.modeler.modules.ModelerSource;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // TODO: enable ant-like substitutions ? ( or at least discuss it )
 

@@ -51,14 +51,6 @@
  */
 package com.sun.enterprise.web.connector.grizzly;
 
-import java.net.InetAddress;
-import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.*;
-import javax.management.ObjectName;
 import com.sun.grizzly.http.Management;
 import com.sun.grizzly.http.SelectorThread;
 import com.sun.grizzly.ssl.SSLSelectorThread;
@@ -67,6 +59,18 @@ import com.sun.grizzly.util.net.SSLImplementation;
 import com.sun.grizzly.util.net.ServerSocketFactory;
 import com.sun.logging.LogDomains;
 import org.apache.tomcat.util.modeler.Registry;
+
+import javax.management.ObjectName;
+import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.text.MessageFormat;
+import java.util.Enumeration;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Abstract the protocol implementation, including threading, etc.

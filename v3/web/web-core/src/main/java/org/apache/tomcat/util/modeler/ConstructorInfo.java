@@ -55,11 +55,10 @@
 package org.apache.tomcat.util.modeler;
 
 
-import java.io.Serializable;
-
 import javax.management.Descriptor;
 import javax.management.MBeanParameterInfo;
 import javax.management.modelmbean.ModelMBeanConstructorInfo;
+import java.io.Serializable;
 
 
 /**

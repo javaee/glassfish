@@ -54,23 +54,17 @@
 
 package org.apache.tomcat.util.modeler.modules;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.*;
-import javax.management.ObjectName;
-
-import org.apache.tomcat.util.modeler.AttributeInfo;
-import org.apache.tomcat.util.modeler.ConstructorInfo;
-import org.apache.tomcat.util.modeler.FieldInfo;
-import org.apache.tomcat.util.modeler.ManagedBean;
-import org.apache.tomcat.util.modeler.NotificationInfo;
-import org.apache.tomcat.util.modeler.OperationInfo;
-import org.apache.tomcat.util.modeler.ParameterInfo;
-import org.apache.tomcat.util.modeler.Registry;
+import org.apache.tomcat.util.modeler.*;
 import org.apache.tomcat.util.modeler.util.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import javax.management.ObjectName;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class MbeansDescriptorsDOMSource extends ModelerSource

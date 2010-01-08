@@ -55,12 +55,11 @@
 package org.apache.tomcat.util.modeler;
 
 
+import javax.management.Descriptor;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.management.Descriptor;
 
 
 /**
