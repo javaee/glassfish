@@ -79,11 +79,12 @@ public final class AMXCoreTests extends AMXTestBase
         domainRoot.getAppserverDomainName();
     }
 
+    /** IF THIS TEST FAILS, DO NOT REMOVE, just comment it out if the need mandates, but only temporarily */
     @Test(dependsOnMethods = "bootAMX")
     public void iterateAllSanityCheck() throws Exception
     {
-        //try
-        //{
+        try
+        {
             final Set<AMXProxy> all = getAllAMX();
             assert all.size() > 20 : "Expected at least 20 AMX MBeans, got: " + all.size();
             for (final AMXProxy amx : all)
@@ -111,33 +112,37 @@ public final class AMXCoreTests extends AMXTestBase
                     throw e;
                 }
             }
-        //}
-        //catch( final Throwable t )
-        //{
-        //    System.out.println( "Test iterateAllSanityCheck() IGNORED, see issue #9355" );
-        //    t.printStackTrace();
-        //}
+        }
+        catch( final Throwable t )
+        {
+           System.out.println( "Test iterateAllSanityCheck() IGNORED, see issue #9355" );
+           t.printStackTrace();
+        }
     }
     
+    /** IF THIS TEST FAILS, DO NOT REMOVE, just comment it out if the need mandates, but only temporarily */
     @Test
     public void testAMXComplianceMonitorFailureCount()
     {
-        //try
-        //{
+        try
+        {
         final Map<ObjectName, List<String>> failures = getDomainRootProxy().getComplianceFailures();
         
         assert failures.size() == 0 :
             "Server indicates that there are non-compliant AMX MBean validator failures, failure count = " + failures.size() + "\n" + failures;
-        /*
         }
         catch( final Throwable t )
         {
             System.out.println( "\n******* Test testAMXComplianceMonitorFailureCount() IGNORED, see issue #10096 ******* \n" );
             t.printStackTrace();
         }
-        */
      }
-
+     
+    @Test
+    public void testDemo()
+    {
+        Demo.runDemo( false, new String[] { mHost, "" + mPort, mAdminUser, mAdminPassword });
+    }
 }
 
 
