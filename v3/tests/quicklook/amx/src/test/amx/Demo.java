@@ -175,12 +175,23 @@ public final class Demo {
         println( "AMX MBeans: " + amxMBeans.size() );
         println( "AMX config MBeans: " + getAllConfig().size() );
         
-        /** set an Attribute via getter/setter */
-        final String locale = mDomainConfig.getLocale();
+        // set an Attribute via getter/setter
+        String locale = mDomainConfig.getLocale();
         mDomainConfig.setLocale("GreekSpeak");
         println( "Changed locale from " + locale + " to " + mDomainConfig.getLocale() + ", then back.");
         mDomainConfig.setLocale(locale);
-
+        
+        // this is how to do the same attribute generically
+        try
+        {
+        locale = (String)mDomainConfig.extra().getAttribute("Locale");
+        mDomainConfig.extra().setAttribute( new Attribute("Locale", "GreekSpeak"));
+        mDomainConfig.extra().setAttribute( new Attribute("Locale", locale)); // restore it
+        }
+        catch( Exception e )
+        {
+            e.printStackTrace();
+        }
         
     }    
             
@@ -292,8 +303,6 @@ public final class Demo {
     {
         return getAllDescendents( mDomainRoot.getMonitoringRoot(), AMXProxy.class);
     }
-    
-    
 
 
     /**
