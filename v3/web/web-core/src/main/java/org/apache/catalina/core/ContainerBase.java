@@ -231,8 +231,8 @@ public abstract class ContainerBase
     protected Loader loader = null;
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
-    private Lock readLock = lock.readLock();
-    private Lock writeLock = lock.writeLock();
+    protected Lock readLock = lock.readLock();
+    protected Lock writeLock = lock.writeLock();
 
     /**
      * The Logger implementation with which this Container is associated.

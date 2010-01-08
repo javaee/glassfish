@@ -149,6 +149,13 @@ public class WebModuleContextConfig extends ContextConfig {
     public void setDescriptor(WebBundleDescriptor wbd){
         webBundleDescriptor = wbd;
     }
+
+    /**
+     * Return the WebBundleDescriptor
+     */
+    public WebBundleDescriptor getDescriptor() {
+        return webBundleDescriptor;
+    }
    
     /**
      * Set the DOL object associated with this class.

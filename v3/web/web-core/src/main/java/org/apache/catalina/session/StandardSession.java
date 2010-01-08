@@ -165,6 +165,26 @@ public class StandardSession
     protected static final Class<?> containerEventTypes[] =
         { String.class, Object.class };
 
+
+    /**
+     * The session identifier of the parent SipApplicationSession, if any
+     */
+    private String sipAppSessionId = null;
+
+
+    /**
+     * The BEKEY of this session, or <tt>null</tt>.
+     *
+     * <p>The BEKEY is used by the Converged Loadbalancer (CLB) in DCR mode
+     * for loadbalancing purposes, and supplied to the web container in the
+     * form of a request header.
+     *
+     * <p>See https://sailfin.dev.java.net/issues/show_bug.cgi?id=1647
+     * for additional details
+     */
+    private String beKey;
+
+
     /**
      * Descriptive information describing this Session implementation.
      */
@@ -387,6 +407,55 @@ public class StandardSession
             manager.add(this);
         tellNew();
     }
+
+
+/**
+     * Sets the BEKEY for this session
+     *
+     * <p>The BEKEY is used by the Converged Loadbalancer (CLB) in DCR mode
+     * for loadbalancing purposes, and supplied to the web container in the
+     * form of a request header.
+     *
+     * @param beKey the BEKEY for this session, or <tt>null</tt> if not
+     * present
+     */
+    public void setBeKey(String beKey) {
+        this.beKey = beKey;
+    }
+
+
+    /**
+     * Gets the BEKEY of this session
+     *
+     * @return the BEKEY of this session, or <tt>null</tt> if not present
+     */
+    public String getBeKey() {
+        return beKey;
+    }
+
+
+    /**
+     * Sets the id of the SipApplicationSession that is the parent of this
+     * StandardSession.
+     *
+     * @param The SipApplicationSession id
+     */
+    public void setSipApplicationSessionId(String id) {
+        sipAppSessionId = id;
+    }
+
+
+    /**
+     * Gets the id of the SipApplicationSession that is the parent of this
+     * StandardSession.
+     *
+     * @return The SipApplicationSession id, or null if this
+     * StandardSession does not have any SipApplicationSession parent
+     */
+    public String getSipApplicationSessionId() {
+        return sipAppSessionId;
+    }
+
 
 
     /**
@@ -1743,7 +1812,47 @@ public class StandardSession
 
         // Deserialize the scalar instance variables (except Manager)
         authType = null;        // Transient only
-        creationTime = ((Long) stream.readObject()).longValue();
+
+        /*
+         * The stream starts with a Long, which indicates the session's
+         * creation time. This Long may optionally be preceded by a Short,
+         * which indicates the session's serializedFormVersion.
+         */
+        Object obj = stream.readObject();
+        short readSerializedFormVersion = 0;
+        if (obj instanceof Short) {
+            readSerializedFormVersion = ((Short) obj).shortValue();
+            creationTime = ((Long) stream.readObject()).longValue();
+        } else {
+           creationTime = ((Long) obj).longValue();
+        }
+
+        readRemainingObject(stream);
+
+        /*
+         * Any additional fields that are to be included in the serialized
+         * representation of this class MUST be written to the end of the
+         * stream (in writeObject), and must be read back in HERE, i.e.,
+         * AFTER readRemainingObject (which is shared by the code that reads
+         * in sessions that were serialized using an earlier, proprietary
+         * format) has returned.
+         */
+        sipAppSessionId = (String) stream.readObject();
+
+        switch (readSerializedFormVersion) {
+        case 0:
+            // Do nothing
+            break;
+        case 1:
+            beKey = (String) stream.readObject();
+            break;
+        default:
+            throw new IOException("Unable to deserialize into "
+                    + getClass().getName()
+                    + " due to unknown serializedFormVersion of "
+                    + readSerializedFormVersion);
+        }
+
         readRemainingObject(stream);
     }
 
@@ -1953,6 +2062,9 @@ public class StandardSession
 	    }
             //end HERCULES:mod
         }
+
+        stream.writeObject(sipAppSessionId);
+        stream.writeObject(beKey);
 
     }
 
