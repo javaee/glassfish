@@ -1,0 +1,786 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>The 'mx' User Guide</title>
+<meta http-equiv="Content-Type"
+ content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css" />
+<link href="../../styles2.css" rel="stylesheet" type="text/css" />
+<link href="../../misc.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+<!--
+
+/* Primary block-level tag characteristics */
+
+body {
+	font-family: Trebuchet, Arial, sans-serif;
+	font-size: 90%;
+	line-height: 140%;
+}
+
+p {
+	margin-bottom: 0.5em;
+}
+
+h1 {
+	font-size: 153.9%;
+	margin: 2em 0 1em 0;
+	font-weight: bold;
+	line-height: 120%;
+}
+
+h2 {
+	font-size: 123.1%;
+	margin: 2em 0 1em 0;
+	font-weight: bold;
+	line-height: 120%;	
+}
+
+h3 {
+	font-weight: bold;
+	margin: 2em 0 0.5em 0;
+	line-height: 120%;	
+}
+
+h3 {
+	font-weight: bold;
+	margin: 2em 0 0.5em 0;
+	line-height: 120%;	
+}
+
+ol {
+	margin-left: 2em;
+}
+
+ol li {
+	margin-bottom: 0.5em;
+	list-style-type: decimal;
+}
+
+ul {
+	margin-left:  1.5em;
+}
+
+ul li {
+	margin-bottom: 0.5em;
+	list-style-type: square;
+}
+
+dt {
+	margin-left: 2em;
+	font-weight: bold;
+}
+
+dd {
+	margin-left: 2em;
+	margin-bottom: 1em;
+}
+
+
+/* Primary in-line tag characteristics */
+
+a {
+	text-decoration: none;
+	color: #264277;
+}
+
+a:hover {
+	color: red;
+	text-decoration: underline;
+}
+
+strong {
+	font-weight: bold;
+}
+
+em {
+	font-style: italic;
+}
+
+/* disable visual characteristics of hyperlinked headings */
+
+h1 a, h2 a, h3 a {
+	color: black;
+}
+
+h1 a:hover, h2 a:hover, h3 a:hover {
+	color: #264277;
+	text-decoration: none;
+}
+
+/* standardized page header/footer */
+
+div#hd div.title {
+	font-family: Georgia;
+	font-size: 153.9%;
+	text-align: center;
+	clear: both;
+	font-weight: bold;
+}
+
+div#hd div.subtitle {
+	font-family: Georgia;
+	font-size: 100%;
+	text-align: center;
+	line-height: 120%;
+	font-style: italic;
+	color: #78a2cc;
+}
+
+div#hd div.byline {
+	font-family: Georgia;
+	font-size: 88%;
+	text-align: center;
+	margin-top: 0.2em;
+	line-height: 120%;
+	font-style: italic;
+}
+
+div#ft {
+	font-family: Georgia;
+	text-align: center;
+}
+
+div#globalnav {
+	background-color: #78a2cc;
+	font-family: Helvetica, Arial, sans;
+}
+
+div#globalnav li {
+	font-size: 88%;
+	border-right: 2px dashed gray;
+}
+
+
+/* Standardized style */
+
+div.photo div.caption {
+	font-style: italic;
+}
+
+div.info {
+	background-color: #dbebfe;
+	border: 2px solid #7b8490;
+}
+
+div.warning {
+	background-color: #f6bbb2;
+	border: 2px solid red;
+}
+
+img.stroke1 {
+	border: 1px solid #000;
+}
+
+img.stroke2 {
+	border: 1px solid #000;
+}
+
+table caption {
+	text-align: center;
+	font-size: 123.1%;
+	font-weight: bold;
+}
+
+th {
+	font-weight: bold;
+}
+
+a.permalink {
+	color: lightgray;
+	border: 1px solid lightgray;
+	letter-spacing: .3em;
+	font: 9px "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+	display: inline-block;
+	padding: 1px 2px 1px 3px;
+	margin-left: 1em;
+	vertical-align: 3px;
+}
+
+a:hover.permalink {
+	color: red;
+	background-color: lightgray;
+	border: 1px solid gray;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Page heading layout for article pages */
+
+div#siteheader {
+	padding: 1em 0 1em 0;
+	border-bottom: 2px solid lightgray;
+	cursor: pointer;	
+}
+
+div#articlenav {
+	margin: 0;
+	line-height: 18px;
+}
+
+div#articleTitle {
+	margin-top: 1.3em;
+	float: left;
+	color: lightgray;
+	font-size: 88%;
+	font-weight: bold;
+	font-style: italic;
+}
+
+select#TOCSelect {
+	margin-top: 1em;
+	float: right;
+}
+
+/* Gross layout for article pages */
+
+div#bd {
+	margin: 1em 5em 1em 5em;
+}
+
+div.columnheadings {
+	margin-bottom: 1em;
+}
+
+
+div.bottomnav {
+	text-align: right;
+}
+
+div.nextpage {
+	font-weight: bold;
+}
+
+div.prevpage {
+	font-size: 88%;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* standard gross white space management */
+
+div#ft {
+	border-top: 1px solid lightgray;
+	padding: 1em 0 1em 0;
+}
+
+/* General layout */
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+div.photo {
+	text-align: center;
+	margin: 1em 3em 1em 3em;
+}
+
+
+div.callout {
+	margin: 1em 4em 1em 4em;
+	padding: 0.8em 1em 0.8em 1em;
+	-webkit-border-radius: 0.75em;	
+}
+
+
+table {
+	margin-top: 1em;
+	margin-left: auto;
+	margin-right: auto;	
+	margin-bottom: 1em;
+	font-size: 85%;
+}
+
+table caption {
+	margin-bottom: 0.5em;
+}
+
+thead {
+	border-bottom: 1px solid black;
+}
+
+th {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	background-color:  #F8F8F8;
+	border: 1px solid #AAA;
+}
+
+td {
+	border: 1px solid #CCC;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
+div#globalnav {
+	height: 1.9em;
+}
+
+div#globalnav ul {
+	margin-left: 0;
+	display: inline;
+}
+
+div#globalnav li {
+	float: left;
+	list-style-type: none;
+	display: inline;
+	height: 1.9em;
+	line-height: 2em;
+	padding: 0em 1em 0em 1em;
+}
+
+.pseudobutton {
+	cursor: pointer;
+}
+
+div#globalnav li img {
+	margin-top: 0.3em;
+	line-height: 30px;
+}
+
+
+
+
+
+
+
+
+
+div#table-of-contents {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	position: relative;
+	space-before: 0px;
+	padding: 2px;
+	
+	margin-top: 0px;
+	margin-left: 20px;
+	margin-right: 20px;
+	
+	border-top: 1px solid gray;
+	border-bottom: 1px solid gray;
+}
+
+div#table-of-contents p {
+	font-size: 75%;
+	margin-top: 4px;
+	margin-bottom: 4px;
+	line-height: 125%;
+}
+
+.center {
+	text-align:  center;
+}
+
+table.table-hover tr:hover {
+ background-color: #EEE;
+}
+
+.action {
+	font-size: 12px;
+	border: 1px solid black;
+	background-color:#FFFFC0;
+	padding-top: 6px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-bottom: 6px;
+}
+
+.warning {
+	font-size: 12px;
+	border: 1px solid black;
+	background-color:#FFF0F0;
+	padding-top: 6px;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-bottom: 6px;
+}
+
+.warning
+{
+	font-family: "Comic Sans MS", "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 140%;
+	padding: 6px;
+	background-color: #FF8080;
+	border: 1px solid black;
+}
+
+.warning:hover
+{
+	background-color: #FFD0D0;
+}
+
+
+.tbd {
+	font-family: "Monaco", "Courier", "Courier New", mono;
+	font-size: 9px;
+	border: 1px solid gray;
+	background-color: #FFFFAA;
+	padding: 1px;
+}
+
+
+
+.single-image {
+	text-align: center;
+	font-size: 12px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #444;
+	font-weight: bold;
+}
+
+
+
+.menu-item {
+	font-family: "Lucida Grande", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+
+
+.text-red {
+	color: #c00;
+}
+
+.text-dark-red {
+	color: #600;
+}
+
+
+.code-block {
+	font-family: "Courier", "Courier New", mono;
+	padding-left: 1.0em;
+	line-height: 110%;
+	
+	margin-top:  1.0em;
+	margin-bottom:  1.0em;
+	
+	color: #555;
+}
+
+.code {
+	font-family: "Courier", "Courier New", mono;
+	color: #040;
+}
+
+.sub-cmd {
+	font-weight: bold;
+	color:  black;
+}
+
+.operand {
+	color: black;
+}
+
+.option {
+	color: #060;
+}
+.meta-option {
+	color: #848;
+}
+
+.path {
+	color: #448;
+}
+.attribute {
+	color: #448;
+}
+
+
+a.permalink {
+	color: lightgray;
+	border: 1px solid lightgray;
+	letter-spacing: .3em;
+	font: 9px "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+	display: inline-block;
+	padding: 1px 2px 1px 3px;
+	margin-left: 1em;
+	vertical-align: 3px;
+}
+
+.issue {
+	border: 1px solid gray;
+	background-color: #FCC;
+	margin-left: 20px;
+	margin-right: 20px;
+	padding: 2px;
+}
+
+-->
+</style>
+</head>
+<body id="doc" >
+<div id="hd">
+  <div id="siteheader">
+    <div class="title">The 'mx' User Guide</div>
+    <div class="subtitle"><span class="text-red">DRAFT</span></div>
+    <div class="byline">by Lloyd Chambers</div>
+    <div class="byline">v 0.9 , January 7, 2010, <a href="#RevisionHistory">revision history</a></div>
+  </div>
+</div>
+<div id="bd">
+  <h1><a name="Introduction" id="Introduction"></a>1. Introduction</h1>
+  <p class="info">Send comments to: lloyd.chambers (at sun.com)  </p>
+<p>Anyone working with AMX MBeans is strongly advised to try the mx command line, available as part of the GlassFish V3 source base.   It can aid greatly in understanding and accessing the MBeans.  </p>
+<h3>Brief overview</h3>
+  <p>The 'mx' command line is a “shell” for accessing JMX servers. 
+    It makes easy what is  awkward in programs like JConsole.</p>
+  <p>Using 'mx', you can:</p>
+  <ul>
+    <li>get and set attribute, singly or in bulk, and on one or more MBeans in a single command;</li>
+    <li>invoke operations on one or more MBeans in a single command;</li>
+    <li>generate a Java interface for an MBean or MBeans;</li>
+    <li>find MBeans, including wildcarding;</li>
+    <li>a lot more. </li>
+  </ul>
+  <h3>Limitations</h3>
+  <p>The 'mx' command was formerly known as 'jmxcmd'. The code base is actually over six years old. While relatively aged, it has proven its worth over years of development, being used as a tool each and every day for appserver MBean development.</p>
+  <p>The primary limitation of mx is parsing: a scriptable and well-defined grammar and parser would make it even more useful.</p>
+  <p>Another limitation at present is that certain commands are implemented using support of the GlassFish V3 server (eg the 'cd', 'ls', etc commands). This support should be moved into the client at some point, so it can work against any implementation.</p>
+  <h3>Building</h3>
+  <p>To build mx, you’ll need to check out the GlassFish V3 source base and build it.  Then do the following</p>
+  <pre class="code">cd extras/mx
+./mk.sh</pre>
+  <h2>2. Getting started</h2>
+  <p>mx</p>
+  <h3>2.1 jmxcmd shell<a name="jmxcmdShell" id="jmxcmdShell"></a></h3>
+  <p>Jmxcmd may be invoked either conventionally via one's usual command shell, 
+    or in an interactive mode. Example:</p>
+  <p><i>Single invocation</i>:</p>
+  <p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jmxcmd get &quot;*&quot; 
+    &quot;*&quot;<br />
+    ...</font></p>
+  <p><i>Interactive mode</i>:</p>
+  <p><font size="-1" face="Courier New, Courier, mono">bash-2.05$ jmxcmd<br />
+    jmxcmd&gt; get * *<br />
+    ...</font></p>
+  <p>Note that in the above examples, it was necessary to quote the &quot;*&quot; 
+    within the shell to force it to be passed literally to jmxcmd. This was not 
+    necessary within jmxcmd.</p>
+  <p>State is saved by jmxcmd in the user's home directory. This makes it possible 
+    to issue commands that implicitly connect to the appropriate MBean server last 
+    specified as default.</p>
+  <p>Most commands have abbreviations available; refer to the help for each command. 
+    All commands have both long and short names for command options (if any).</p>
+  <p></p>
+  <p></p>
+  <h3>2.2 Using JMX ObjectNames<a name="UsingObjectNames" id="UsingObjectNames"></a></h3>
+  <p>JMX ObjectNames can be long and tedious. To address this, jmxcmd takes a 
+    two-pronged approach: (1) aliases (see <a href="#Aliases">Aliases</a>), and 
+    (2) shorthand notation. Shorthand notation is designed to be unambiguous, but 
+    still allow increased useability. The rules are as follows:</p>
+  <table width="94%" border="1">
+    <tr>
+      <td>#</td>
+      <td><b>Rule</b></td>
+      <td><b>Comments</b></td>
+      <td><b>Restrictions</b></td>
+    </tr>
+    <tr>
+      <td height="28">1</td>
+      <td height="28">JMX domain may be omitted</td>
+      <td height="28">Absence of a ':' in the pattern is interepreted 
+        as meaning the default domain.</td>
+      <td height="28"><p> The presence of a ':' disables this shortcut.</p></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><p>&quot;,*&quot; may be omitted at the end of a name</p></td>
+      <td>If the ObjectName does not match an MBean, an implicit &quot;,*&quot; 
+        is appended, and if exactly one MBean matches, then the match succeeds, 
+        otherwise it fails.</td>
+      <td>Adding the &quot;,* matches whatever would normally match 
+        as a pattern--0 or more MBeans.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>fully-specified name takes precedence</td>
+      <td>Specifying an ObjectName fully will always work correctly.</td>
+      <td>None.</td>
+    </tr>
+  </table>
+  <p>Examples:</p>
+  <table width="93%" border="1">
+    <tr>
+      <td><b>Abbreviated Name</b></td>
+      <td><b>Interpretation (in precedence order):</b></td>
+    </tr>
+    <tr>
+      <td><font size="-1" face="Courier New, Courier, mono">type=server</font></td>
+      <td><p><font size="-1" face="Courier New, Courier, mono">:type=server<br />
+        :type=server,*</font></p></td>
+    </tr>
+    <tr>
+      <td><font size="-1" face="Courier New, Courier, mono">type=server,*</font></td>
+      <td><font size="-1" face="Courier New, Courier, mono">:type=server,*</font></td>
+    </tr>
+    <tr>
+      <td><font size="-1" face="Courier New, Courier, mono">:type=server</font></td>
+      <td><font size="-1" face="Courier New, Courier, mono">:type=server<br />
+        :type=server,*</font></td>
+    </tr>
+    <tr>
+      <td><font size="-1" face="Courier New, Courier, mono">domain1:type=server,*</font></td>
+      <td><p><font size="-1">none--same as original since both domain and &quot;,*&quot; 
+        are specified</font></p></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <h3>2.3 Aliases<a name="Aliases" id="Aliases"></a></h3>
+  <p>MBean ObjectNames can be long and unwieldy. Additionally, it may be convenient 
+    to refer to more than one MBean either as a set of names or via a wildcard mechanism. 
+    For this and similar reasons, jmxcmd provides the notion of <i>objectname 
+      aliases</i>, hereafter referred to simply as <i>aliases</i>. An alias is simply 
+    a convenient variable which contains a value that resolves to zero or more MBean 
+    ObjectNames.</p>
+  <p>Four commands are available for managing aliases. They include:</p>
+  <ul>
+    <li><a href="./jmxcmd-commands.html#target-aliases">create-target-alias</a></li>
+    <li><a href="./jmxcmd-commands.html#target-aliases">delete-target-alias</a></li>
+    <li><a href="./jmxcmd-commands.html#target-aliases">resolve-target-alias</a></li>
+    <li><a href="./jmxcmd-commands.html#target-aliases">list-target-aliases</a></li>
+  </ul>
+  <p>For details on each command, click on its name. Once an alias has been established, 
+    it may be used in place of an ObjectName. Here is an example:</p>
+  <p><font size="-1" face="Courier New, Courier, mono">jmxcmd &gt; get --attributes 
+    * MyMBeans</font></p>
+  <p>The above invocation will show all attributes available on the MBeans referred 
+    to by the alias 'MyMBeans'. Aliases may be nested; they may contain other aliases 
+    and even a mix of aliases an ObjectName patterns. One minor restriction is in 
+    place--ObjectNames that contain a space character may not be aliased.</p>
+  <h3>2.4 Default target<a name="DefaultTarget" id="DefaultTarget"></a></h3>
+  <p>Most of the jmxcmd commands operation on MBeans, thus requiring and operand 
+    or operands specifying the MBeans. If an operand (target) is not given, then 
+    the default target is used. The default target is set using the <a href="./jmxcmd-commands.html#target">target</a> command.</p>
+  <p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target server:*<br />
+    ...<br />
+  </font><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; target MyMBeans</font></p>
+  <h3>2.6 Specifying target(s)<a name="SpecifyingTargets" id="SpecifyingTargets"></a></h3>
+  <p>Many commands take a list of targets upon which the operation acts, specified 
+    as operands to the command. A target may be a fully qualified ObjectName, an 
+    ObjectName pattern, or an alias, and there may be more than one of them. The 
+    set of these operands and ultimately what they resolve to defines the set of 
+    MBeans upon which the operation is performed. Certain special characters may 
+    be used with the targets:</p>
+  <ul>
+    <li>the '!' character may be used to reverse the set that the target selects.</li>
+    <li>with more than one operand, the '+', '-' and '&amp;' characters modify the 
+      set of targets so far, from left to right. The '-' operator substracts the 
+      target from the set so far, the '+' operator adds to it (same as no qualifier), 
+      and the '&amp;' character performs a logical and of the target and the set 
+      so far.</li>
+  </ul>
+  <h4>Examples:</h4>
+  <p>1. Displays all MBeans not denoted by the alias &quot;MyMBeans&quot;:</p>
+  <p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find !MyMBeans</font></p>
+  <p>2. Displays all MBeans which have the property-pair &quot;category=config&quot; 
+    and that are also in the domain &quot;Test&quot;. In this example, the target 
+    &quot;category=config&quot; is an ObjectName pattern that matches any MBean 
+    containing a Property &quot;category&quot; with value &quot;config&quot;. The 
+    target &quot;&amp;Test:*&quot; further selects only those MBeans that are in 
+    the domain &quot;Test&quot;; the &quot;&amp;&quot; specifies the intersection 
+    of the &quot;Test:*&quot; expression with the &quot;category=config&quot; MBeans.</p>
+  <p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find category=config 
+    &amp;Test:*</font></p>
+  <p>3. Displays all MBeans that have an operation containing the string &quot;Test&quot;, 
+    &quot;test&quot;, or &quot;TEST&quot; or an attribute containing &quot;Count&quot; 
+    or &quot;count&quot; in the default domain that don't have an ObjectName property 
+    &quot;category=config&quot;:</p>
+  <p><font face="Courier New, Courier, mono" size="-1">jmxcmd&gt; find --operations=*Test*,*test*,*TEST* 
+    --attributes=*count*,*Count* :* -category=config</font></p>
+  <p></p>
+  <h3>2.6 Providers<a name="Providers" id="Providers"></a></h3>
+  <p>Not all servers uses the standard JSR 160 (Remote JMX) Connectors, and even 
+    if they do, they can still require their own product-specific information, such 
+    as authentication information. To work around both of these issues, the <a href="./jmxcmd-commands.html#providers">providers</a> command allows the additional of pluggable modules that know how to &quot;speak&quot; 
+    to the vendors server. By default, jmxcmd supports the standard JMXMP Connector.</p>
+  <p>For information on writing a provider, <a href="./jmxcmd-optional.html#Providers">click 
+    here</a>.</p>
+  <h2>3. Other Issues</h2>
+  <p>The following sections discuss commonly asked questions or concerns.</p>
+  <h3>3.1 Startup performance</h3>
+  <p>See the discussion of <a href="./jcmd-index.html#StartupPerformance">startup 
+    performance for jcmd</a>. As jmxcmd is based on <a href="./jcmd-index.html">jcmd</a>, 
+    its startup performance is largely the same as jcmd. </p>
+  <p>However, unlike <a href="./jcmd-index.html">jcmd</a>, most jmxcmd commands 
+    need to establish a network connection to an MBeanServer. In most cases, this 
+    cost is minimal and can be ignored for practical purposes. However, if SSL/TLS 
+    is being employed, the cost (especially in pure Java) can be substantial--on 
+    the order of 3-4X the startup time which can amount to 3 or 4 seconds or more 
+    on slow machines. As with jcmd, using interactive mode or the <a href="./jcmd-commands.html#source">source</a> command eliminates this as an issue. But if jmxcmd is being started for each 
+    individual command, then the performance can become a real issue. Let us now 
+    discuss how to eliminate this performance bottleneck.</p>
+  <h4>3.1.1 Eliminating SSL/TLS connection speed as a performance bottleneck</h4>
+  <p>The technique suggested in this section is to use jmxcmd as a proxy server, 
+    which will run without quitting, thus keeping alive the expensive SSL/TLS-based 
+    connections.</p>
+  <p>Here is how to use jmxcmd as a proxy server::</p>
+  <p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; start-mbean-server 
+    my-server<br />
+    MBean server my-server started.<br />
+    jmxcmd&gt; connect my-server<br />
+    Connection my-server (mbeanserver=my-server,PROTOCOL=inprocess) is now the active 
+    connection<br />
+    jmxcmd&gt; load-jmxmp-connector --port 9998<br />
+    Loaded and started connector: connector:name=jmxmp-connector-server,type=connector,port=9998<br />
+  </font></p>
+  <p>At this point, jmxcmd is now running as a server with the standard jmxmp-based 
+    connector listening on port 9998. You may continue to use jmxcmd as usual while 
+    it is active as a server. The next step is to create proxies within the newly-created 
+    MBeanServer &quot;my-server&quot;. These proxies may refer to one or more MBeans 
+    in one or more MBean servers using one or more protocols. Refer to the <a href="./jmxcmd-commands.html#create-proxies">create-proxies</a> command for information on how to specify and create proxies. Because this instance 
+    of jmxcmd does not quit, the connections to these other servers stay alive, 
+    thus eliminating any overhead. Most likely if you want to use such a setup, 
+    you will want to place all the setup commands in a file which can be executed 
+    using the <a href="./jcmd-commands-index.html#source">source</a> command:</p>
+  <p><font size="-1" face="Courier New, Courier, mono">jmxcmd&gt; source my-server-setup.jmxcmd</font></p>
+  <p>Presumably you went to this trouble so that you could issue single commands 
+    from your command shell or script without the SSL connection overhead. You would 
+    now proceed as follows:</p>
+  <p><font size="-1" face="Courier New, Courier, mono">% jmxcmd connect --port 9998 
+    my-server<br />
+    Connection my-server (PROTOCOL=jmxmp,HOST=localhost,PORT=9998) is now the active 
+    connection<br />
+    % jmxcmd find *<br />
+    connector:name=jmxmp-connector-server,type=connector,port=9998<br />
+    JMImplementation:type=MBeanServerDelegate</font></p>
+  <p>&nbsp;</p>
+  <p></p>
+  <h2>&nbsp;</h2>
+  <h1><a name="ObjectName" id="ObjectName"></a>2. ObjectName requirements <a href="#ObjectName" class="permalink">Permalink</a></h1>
+  <p>ObjectName </p>
+<h2><a name="ObjectName_Properties" id="ObjectName_Properties"></a>2.0 ObjectName properties <a href="#ObjectName_Properties" class="permalink">Permalink</a></h2>
+  <p>AMX <span class="code">Obj</span></p>
+<h2><a name="RevisionHistory" id="RevisionHistory"></a>Revision history <a href="#RevisionHistory" class="permalink">Permalink</a></h2>
+  <dl>
+    <dt>2009-0707, v1.2.4</dt>
+    <dd>Added <a href="#MetaData_Descriptor">globalSingleton flag</a>. Clarified extra properties in ObjectName in <a href="#ObjectName_Additional">section 2.5</a>. Changed examples to use JMX domain &quot;amx&quot; instead of &quot;v3&quot;.</dd>
+    <dt>&nbsp;</dt>
+  </dl>
+</div>
+<div id="ft">The End</div>
+</body>
+</html>
