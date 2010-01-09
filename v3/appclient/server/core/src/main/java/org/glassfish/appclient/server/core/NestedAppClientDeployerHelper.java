@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -925,6 +926,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                 final JarFile dependentJar = new JarFile(physicalFile());
                 jarManifest = dependentJar.getManifest();
                 dependentJar.close();
+                if (jarManifest == null) {
+                    logger.log(Level.WARNING,
+                            "enterprise.deployment.appclient.jws.nomf",
+                            fileURI.toASCIIString());
+                }
             } catch (IOException ex) {
                 /*
                  * The JAR does not exist or it's not readable as a JAR.
