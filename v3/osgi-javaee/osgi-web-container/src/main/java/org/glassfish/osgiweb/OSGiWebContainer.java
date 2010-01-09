@@ -82,28 +82,19 @@ public class OSGiWebContainer extends OSGiContainer
     }
 
     protected void postDeploy(OSGiApplicationInfo osgiAppInfo) {
-        if (osgiAppInfo != null)
-        {
-            try {
-                ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
-                assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
-                registerService(osgiAppInfo.getBundle(), sc);
-                applications.put(osgiAppInfo.getBundle(), osgiAppInfo);
-                logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
-                        "deployed bundle {0} at {1}",
-                        new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo().getSource().getURI()});
-            } catch (Exception e) {
-                logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
-                        "Rolling back deployment as exception occured", e);
-                undeployJavaEEArtifacts(osgiAppInfo, getReport());
-            }
-        }
-        else
-        {
+        assert(osgiAppInfo != null);
+        try {
+            ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
+            assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
+            registerService(osgiAppInfo.getBundle(), sc);
+            applications.put(osgiAppInfo.getBundle(), osgiAppInfo);
+            logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
+                    "deployed bundle {0} at {1}",
+                    new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo().getSource().getURI()});
+        } catch (Exception e) {
             logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
-                    "could not deploy bundle {0}. See previous messages for " +
-                            "further information",
-                    new Object[]{osgiAppInfo.getBundle()});
+                    "Rolling back deployment as exception occured", e);
+            undeployJavaEEArtifacts(osgiAppInfo, getReport());
         }
     }
 
