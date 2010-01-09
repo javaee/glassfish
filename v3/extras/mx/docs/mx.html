@@ -561,11 +561,31 @@ a.permalink {
   <p>The primary limitation of mx is parsing: a scriptable and well-defined grammar and parser would make it even more useful.</p>
   <p>Another limitation at present is that certain commands are implemented using support of the GlassFish V3 server (eg the 'cd', 'ls', etc commands). This support should be moved into the client at some point, so it can work against any implementation.</p>
   <h3>Building</h3>
-  <p>To build mx, you’ll need to check out the GlassFish V3 source base and build it.  Then do the following</p>
-  <pre class="code">cd extras/mx
+  <p>To build mx, you’ll need to check out the GlassFish V3 source base and build it, or at least make sure the appropriate jar files are in place. See <span class="code">extras/mx/README_BUILD.txt</span>.</p>
+  <pre class="code">cd glassfish
+mvn install
+cd extras/mx
 ./mk.sh</pre>
   <h2>2. Getting started</h2>
-  <p>mx</p>
+  <p>For these examples, we will connect to a GlassFish V3 server, because it allows us to demonstrate specific functionality with known results.</p>
+  <p>Comments are preceded with a hash '#' mark below. Output is omitted or truncated for brevity in some case.</p>
+  <pre class="code-block"># connect to a local server at port 8686 via RMI, naming the connection 'local-rmi'
+mx&gt; <span class="sub-cmd">connect --port 8686 local-rmi</span>
+
+# view all JMX domains
+mx&gt; <span class="sub-cmd">domains</span><br />JMImplementation<br />com.sun.management<br />amx<br />amx-support<br />jmxremote<br />java.lang<br />java.util.logging
+
+# find all MBeans in JMX domain 'amx'
+mx&gt; <span class="sub-cmd">find amx:</span><br />amx:pp=,type=domain-root<br />amx:pp=/,type=J2EEDomain,j2eeType=J2EEDomain,name=amx<br />amx:pp=/,type=bulk-access
+...
+
+# find MBeans whose type is 'domain'
+mx&gt; <span class="sub-cmd">find type=domain</span>
+amx:pp=/,type=domain
+
+#find MBeans whose type contains 'server' in JMX domain 'amx'
+mx&gt; <span class="sub-cmd">find -w type=*server* amx:</span>
+...</pre>
   <h3>2.1 jmxcmd shell<a name="jmxcmdShell" id="jmxcmdShell"></a></h3>
   <p>Jmxcmd may be invoked either conventionally via one's usual command shell, 
     or in an interactive mode. Example:</p>
