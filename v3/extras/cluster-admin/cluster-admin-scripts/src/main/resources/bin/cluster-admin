@@ -1,0 +1,84 @@
+#!/bin/sh
+
+#
+# Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
+# Use is subject to license terms.
+#
+# Always use JDK 1.6 or higher
+
+BIN_DIR=`dirname "$0"`
+INSTALL_DIR=$BIN_DIR/../glassfish
+LIB_DIR="$INSTALL_DIR/lib"
+. "${INSTALL_DIR}/config/asenv.conf"
+JAVA=java
+#Depends upon Java from ../config/asenv.conf
+if [ ${AS_JAVA} ]; then
+    JAVA=${AS_JAVA}/bin/java
+fi
+
+
+#Get the list of hosts from input parameter, --target
+hostportlist=`"$JAVA" -cp $LIB_DIR/cluster-admin.jar com.sun.enterprise.deployment.util.ProcessHostsOption "$@"`
+
+#Get the host list from environment variable AS_TARGET
+if [ "$hostportlist" = "" ]; then
+    if [ "$AS_TARGET" != "" ]; then
+        hostportlist=`"$JAVA" -cp $LIB_DIR/cluster-admin.jar com.sun.enterprise.deployment.util.GetHostPort "$AS_TARGET"`
+    fi
+fi
+
+
+if [ "$hostportlist" = "" ]; then
+    #Not a cluster-admin command. Delegate to asadmin
+    $BIN_DIR/asadmin $@
+else
+    #Filter out --target, host and port arguments
+    arglist=`"$JAVA" -cp $LIB_DIR/cluster-admin.jar com.sun.enterprise.deployment.util.OptionsFilter "$@"`
+
+    #Run asadmin against each of the host
+    for hostport in $hostportlist
+    do
+        host=`"$JAVA" -cp $LIB_DIR/cluster-admin.jar com.sun.enterprise.deployment.util.GetHost "$hostport"`
+        port=`"$JAVA" -cp $LIB_DIR/cluster-admin.jar com.sun.enterprise.deployment.util.GetPort "$hostport"`
+        arguments="$port $arglist"
+        arguments="--port $arguments"
+        arguments="$host $arguments"
+        arguments="--host $arguments"
+
+        echo ""
+        echo ">> Executing command for instance ${host}"
+        $BIN_DIR/asadmin $arguments
+
+        if [ "$?" = "0" ]; then
+            if [ ${successlist} ]; then
+                successlist="$host, $successlist"
+            else
+                successlist=$host
+            fi
+        else
+            if [ ${failurelist} ]; then
+                failurelist="$host, $failurelist"
+            else
+                failurelist=$host
+            fi
+        fi
+    done
+
+
+    #Display summary message
+    echo ""
+    #Display success message, if any.
+    if [ "${successlist}" ]; then
+        echo ""
+        echo ">> Command executed successfully for the following instances:"
+        echo "${successlist}"
+    fi
+
+    #Display failure message, if any.
+    if [ "${failurelist}" ]; then
+        echo ""
+        echo ">> Command failed for the following instances:"
+        echo "${failurelist}"
+    fi
+fi
+
