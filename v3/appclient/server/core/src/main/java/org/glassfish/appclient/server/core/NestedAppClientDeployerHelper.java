@@ -930,6 +930,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
                     logger.log(Level.WARNING,
                             "enterprise.deployment.appclient.jws.nomf",
                             fileURI.toASCIIString());
+                    return;
                 }
             } catch (IOException ex) {
                 /*
