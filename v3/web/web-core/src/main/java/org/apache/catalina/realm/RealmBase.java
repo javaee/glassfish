@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -479,18 +479,34 @@ public abstract class RealmBase
      */
     public SecurityConstraint[] findSecurityConstraints(
             HttpRequest request, Context context) {
+        return findSecurityConstraints(
+            request.getRequestPathMB().toString(),
+            ((HttpServletRequest) request.getRequest()).getMethod(),
+            context);
+    }
+
+    /**
+     * Gets the security constraints configured by the given context
+     * for the given request URI and method.
+     *
+     * @param uri the request URI (minus the context Path)
+     * @param method the request method
+     * @param context the context
+     *
+     * @return the security constraints configured by the given context
+     * for the given request URI and method, or null
+     */
+    public SecurityConstraint[] findSecurityConstraints(
+            String uri, String method, Context context) {
 
         ArrayList results = null;
+
         // Are there any defined security constraints?
         if (!context.hasConstraints()) {
             if (log.isLoggable(Level.FINE))
                 log.fine("  No applicable constraints defined");
             return (null);
         }
-
-        HttpServletRequest hreq = (HttpServletRequest) request.getRequest();
-        // Check each defined security constraint
-        String uri = request.getRequestPathMB().toString();
         
         // START SJSWS 6324431
         String origUri = uri;
@@ -501,7 +517,6 @@ public abstract class RealmBase
         }
         // END SJSWS 6324431
 
-        String method = hreq.getMethod();
         boolean found = false;
 
         List<SecurityConstraint> constraints = context.getConstraints();
@@ -1120,27 +1135,56 @@ public abstract class RealmBase
     
     /**
      * Enforce any user data constraint required by the security constraint
-     * guarding this request URI.  Return <code>true</code> if this constraint
-     * was not violated and processing should continue, or <code>false</code>
-     * if we have created a response already.
+     * guarding this request URI.
      *
      * @param request Request we are processing
      * @param response Response we are creating
      * @param constraints Security constraint being checked
      *
      * @exception IOException if an input/output error occurs
+     * 
+     * @return <code>true</code> if this constraint was not violated and
+     * processing should continue, or <code>false</code> if we have created
+     * a response already
      */
     public boolean hasUserDataPermission(HttpRequest request,
-                                         HttpResponse response,
-                                         SecurityConstraint[] constraints)
-        throws IOException {
+                HttpResponse response, SecurityConstraint[] constraints)
+            throws IOException {
+         return hasUserDataPermission(request,response,constraints,null,null);
+    }
 
+    /**
+     * Checks if the given request URI and method are the target of any
+     * user-data-constraint with a transport-guarantee of CONFIDENTIAL,
+     * and whether any such constraint is already satisfied.
+     * 
+     * If <tt>uri</tt> and <tt>method</tt> are null, then the URI and method
+     * of the given <tt>request</tt> are checked.
+     *
+     * If a user-data-constraint exists that is not satisfied, then the 
+     * given <tt>request</tt> will be redirected to HTTPS.
+     *
+     * @param request the request that may be redirected
+     * @param response the response that may be redirected
+     * @param constraints the security constraints to check against
+     * @param uri the request URI (minus the context path) to check
+     * @param method the request method to check
+     *
+     * @return true if the request URI and method are not the target of any
+     * unsatisfied user-data-constraint with a transport-guarantee of
+     * CONFIDENTIAL, and false if they are (in which case the given request
+     * will have been redirected to HTTPS)
+     */
+    public boolean hasUserDataPermission(HttpRequest request,
+                HttpResponse response, SecurityConstraint[] constraints,
+                String uri, String method) throws IOException {
         // Is there a relevant user data constraint?
         if (constraints == null || constraints.length == 0) {
             if (log.isLoggable(Level.FINE))
                 log.fine("  No applicable security constraint defined");
             return (true);
         }
+
         for(int i=0; i < constraints.length; i++) {
             SecurityConstraint constraint = constraints[i];
             String userConstraint = constraint.getUserConstraint();
@@ -1156,16 +1200,19 @@ public abstract class RealmBase
             }
 
         }
+
         // Validate the request against the user data constraint
         if (request.getRequest().isSecure()) {
             if (log.isLoggable(Level.FINE))
                 log.fine("  User data constraint already satisfied");
             return (true);
         }
+
         // Initialize variables we need to determine the appropriate action
-        HttpServletRequest hrequest = (HttpServletRequest) request.getRequest();
-        HttpServletResponse hresponse = (HttpServletResponse) 
-                                                         response.getResponse();
+        HttpServletRequest hrequest = (HttpServletRequest)
+            request.getRequest();
+        HttpServletResponse hresponse = (HttpServletResponse)
+            response.getResponse();
         int redirectPort = request.getConnector().getRedirectPort();
 
         // Is redirecting disabled?
@@ -1211,8 +1258,8 @@ public abstract class RealmBase
         if (log.isLoggable(Level.FINE))
             log.fine("Redirecting to " + file.toString());
         hresponse.sendRedirect(file.toString());
-        return (false);
 
+        return (false);
     }
     
     

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -500,17 +500,40 @@ public class WebSecurityManager  {
     }
 
     
-    /*
-     * Enforce any user data constraint required by the security constraint
-     * guarding this request URI.  Return <code>true</code> if this constraint
-     * was not violated and processing should continue, or <code>false</code>
-     * if we have created a response already.
+    /**
+     * if uri == null, determine if the connection characteristics of the
+     * request satisfy the applicable policy. 
+     * If the uri is not null, determine if the uri and Http method 
+     * require a CONFIDENTIAL transport. The uri value does not include
+     * the context path, and any colons occurring in the uri must be escaped.
      *
-     * @return true is the user is granted, false if denied.
+     * @return 1 if access is permitted (as is or without SSL). -1 if the
+     * the access will be permitted after a redirect to SSL. return 0 if 
+     * access will be denied independent of whether a redirect to SSL is done.
+     *
+     * Note: this method is not intended to be called if the request is secure.
+     * it checks whether the resource can be accessed over the current 
+     * connection type (which is presumed to be insecure), and if an 
+     * insecure connection type is not permitted it checks if the resource can
+     * be accessed via a confidential transport. 
+     *
+     * If the request is secure, the second check is skipped, and the proper 
+     * result is returned (but that is not the intended use model).
      */    
-    public int hasUserDataPermission(HttpServletRequest httpsr){
+
+    public int hasUserDataPermission(HttpServletRequest httpsr,
+				     String uri, String httpMethod) {
         setSecurityInfo(httpsr);
-        WebUserDataPermission perm = new WebUserDataPermission(httpsr);       
+	WebUserDataPermission perm;
+	boolean requestIsSecure = httpsr.isSecure();
+	if (uri == null) { 
+	    perm = new WebUserDataPermission(httpsr);
+	} else {
+	    perm = new WebUserDataPermission(uri,
+		 httpMethod == null ? null : new String[] { httpMethod }, 
+		 requestIsSecure ? "CONFIDENTIAL": null);
+	}
+
         boolean  isGranted = checkPermission(perm, defaultPrincipalSet);
         int result = 0;
        
@@ -530,12 +553,16 @@ public class WebSecurityManager  {
             auditManager.webInvocation(user, httpsr, USERDATA, isGranted);
         }
 
-        if ( !isGranted ) {
+        if ( !isGranted && !requestIsSecure) {
 
-             perm = new WebUserDataPermission
-		 ( perm.getName(),
-		   new String[] { httpsr.getMethod() },
-		   "CONFIDENTIAL" );
+	    if (uri == null) {
+		httpMethod = httpsr.getMethod();
+	    }
+ 
+	    perm = new WebUserDataPermission
+		(perm.getName(), 
+		 httpMethod == null ? null : new String[] { httpMethod }, 
+		 "CONFIDENTIAL");
 
              isGranted = checkPermission(perm, defaultPrincipalSet);
 
@@ -719,5 +746,6 @@ public class WebSecurityManager  {
         }
         return result;
     }
+
 }
 

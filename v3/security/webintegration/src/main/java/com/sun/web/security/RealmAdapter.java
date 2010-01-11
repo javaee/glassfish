@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -811,21 +811,52 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         return secMgr.hasResourcePermission(hrequest);
     }
 
+ 
     /**
      * Enforce any user data constraint required by the security constraint
-     * guarding this request URI.  Return <code>true</code> if this constraint
-     * was not violated and processing should continue, or <code>false</code>
-     * if we have created a response already.
+     * guarding this request URI.
      *
      * @param request Request we are processing
      * @param response Response we are creating
-     * @param constraint Security constraint being checked
+     * @param constraints Security constraint being checked
      *
      * @exception IOException if an input/output error occurs
+     * 
+     * @return <code>true</code> if this constraint was not violated and
+     * processing should continue, or <code>false</code> if we have created
+     * a response already
      */
     public boolean hasUserDataPermission(HttpRequest request,
-            HttpResponse response,
-            SecurityConstraint[] constraints) throws IOException {
+                HttpResponse response, SecurityConstraint[] constraints)
+            throws IOException {
+        return hasUserDataPermission(request,response,constraints,null,null);
+    }
+
+    /**
+     * Checks if the given request URI and method are the target of any
+     * user-data-constraint with a transport-guarantee of CONFIDENTIAL,
+     * and whether any such constraint is already satisfied.
+     * 
+     * If <tt>uri</tt> and <tt>method</tt> are null, then the URI and method
+     * of the given <tt>request</tt> are checked.
+     *
+     * If a user-data-constraint exists that is not satisfied, then the 
+     * given <tt>request</tt> will be redirected to HTTPS.
+     *
+     * @param request the request that may be redirected
+     * @param response the response that may be redirected
+     * @param constraints the security constraints to check against
+     * @param uri the request URI (minus the context path) to check
+     * @param method the request method to check
+     *
+     * @return true if the request URI and method are not the target of any
+     * unsatisfied user-data-constraint with a transport-guarantee of
+     * CONFIDENTIAL, and false if they are (in which case the given request
+     * will have been redirected to HTTPS)
+     */
+    public boolean hasUserDataPermission(HttpRequest request,
+            HttpResponse response, SecurityConstraint[] constraints,
+            String uri, String method) throws IOException {
         HttpServletRequest hrequest = (HttpServletRequest) request;
         if (hrequest.getServletPath() == null) {
             request.setServletPath(
@@ -851,7 +882,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
         int isGranted = 0;
         try {
-            isGranted = secMgr.hasUserDataPermission(hrequest);
+	    isGranted = secMgr.hasUserDataPermission(hrequest,uri,method);
         } catch (IllegalArgumentException e) {
             //end the request after getting IllegalArgumentException while checking
             //user data permission
@@ -979,7 +1010,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     //START SJSAS 6232464 6202703
     /**
      * Returns null
-     * 1. if there are no security constrainst defined on any of the web
+     * 1. if there are no security constraints defined on any of the web
      * resources within the context, or
      * 2. if the target is a form login related page or target.
      *
@@ -987,12 +1018,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     public SecurityConstraint[] findSecurityConstraints(HttpRequest request,
             Context context) {
-        if (this.helper == null) {
+       if (this.helper == null) {
             initConfigHelper();
         }
         WebSecurityManager secMgr = getWebSecurityManager(false);
 
-        if (secMgr != null && secMgr.hasNoConstrainedResources()&&
+        if (secMgr != null && secMgr.hasNoConstrainedResources() &&
  	    !isSecurityExtensionEnabled()) {
             return null;
         }
@@ -1000,6 +1031,32 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         SecurityConstraint[] constraints = RealmAdapter.emptyConstraints;
         return constraints;
     }
+
+    //START SJSAS 6232464 6202703
+    /**
+     * Returns null
+     * 1. if there are no security constraints defined on any of the web
+     * resources within the context, or
+     * 2. if the target is a form login related page or target.
+     *
+     * otherwise return an empty array of SecurityConstraint.
+     */
+    public SecurityConstraint[] findSecurityConstraints(String requestPathMB,
+            String httpMethod, Context context) {
+        if (this.helper == null) {
+            initConfigHelper();
+        }
+        WebSecurityManager secMgr = getWebSecurityManager(false);
+
+        if (secMgr != null && secMgr.hasNoConstrainedResources() &&
+ 	    !isSecurityExtensionEnabled()) {
+            return null;
+        }
+
+        SecurityConstraint[] constraints = RealmAdapter.emptyConstraints;
+        return constraints;
+    }
+
     //END SJSAS 6232464 6202703
     //START SJSAS 6202703
     /**

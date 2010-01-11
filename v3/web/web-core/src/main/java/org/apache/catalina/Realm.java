@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -183,8 +183,23 @@ public interface Realm {
      *
      * @param request Request we are processing
      */
-    public SecurityConstraint [] findSecurityConstraints(HttpRequest request,
-                                                     Context context);
+    public SecurityConstraint[] findSecurityConstraints(
+        HttpRequest request, Context context);
+
+    /**
+     * Gets the security constraints configured by the given context
+     * for the given request URI and method.
+     *
+     * @param uri the request URI
+     * @param method the request method
+     * @param context the context
+     *
+     * @return the security constraints configured by the given context
+     * for the given request URI and method, or null
+     */
+    public SecurityConstraint[] findSecurityConstraints(String uri,
+        String method, Context context);
+
     /**
      * Perform access control based on the specified authorization constraint.
      * Return <code>true</code> if this constraint is satisfied and processing
@@ -305,10 +320,35 @@ public interface Realm {
      * @exception IOException if an input/output error occurs
      */
     public boolean hasUserDataPermission(HttpRequest request,
-                                         HttpResponse response,
-                                         SecurityConstraint[] constraint)
-        throws IOException;
+        HttpResponse response, SecurityConstraint[] constraint)
+            throws IOException;
     
+    /**
+     * Checks if the given request URI and method are the target of any
+     * user-data-constraint with a transport-guarantee of CONFIDENTIAL,
+     * and whether any such constraint is already satisfied.
+     * 
+     * If <tt>uri</tt> and <tt>method</tt> are null, then the URI and method
+     * of the given <tt>request</tt> are checked.
+     *
+     * If a user-data-constraint exists that is not satisfied, then the 
+     * given <tt>request</tt> will be redirected to HTTPS.
+     *
+     * @param request the request that may be redirected
+     * @param response the response that may be redirected
+     * @param constraints the security constraints to check against
+     * @param uri the request URI (minus the context path) to check
+     * @param method the request method to check
+     *
+     * @return true if the request URI and method are not the target of any
+     * unsatisfied user-data-constraint with a transport-guarantee of
+     * CONFIDENTIAL, and false if they are (in which case the given request
+     * will have been redirected to HTTPS)
+     */
+    public boolean hasUserDataPermission(HttpRequest request,
+        HttpResponse response, SecurityConstraint[] constraints,
+        String uri, String method) throws IOException;
+
     /**
      * Remove a property change listener from this component.
      *
