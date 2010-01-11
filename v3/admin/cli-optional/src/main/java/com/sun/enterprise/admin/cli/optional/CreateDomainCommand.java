@@ -893,13 +893,11 @@ public final class CreateDomainCommand extends CLICommand {
         Collection<DomainInitializer> inits =
                 habitat.getAllByContract(DomainInitializer.class);
         if (inits.isEmpty()) {
-            logger.printMessage(
-                "No domain initializers found, bypassing customization step");
+            logger.printMessage(strings.get("NoCustomization"));
         }
         for (DomainInitializer inhabitant : habitat.getAllByContract(
             DomainInitializer.class)) {
-            logger.printMessage(
-                "Invoke DomainInitializer " + inhabitant.getClass());
+            logger.printMessage(strings.get("InvokeInitializer", inhabitant.getClass()));
             Container newContainerConfig = inhabitant.getInitialConfig(ctx);
             config.getContainers().add(newContainerConfig);
         }
