@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,8 +42,6 @@ import java.io.IOException;
 import java.io.ObjectStreamField;
 
 import java.security.*;
-import javax.security.jacc.URLPatternSpec;
-import javax.security.jacc.HttpMethodSpec;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -389,9 +387,9 @@ implements java.io.Serializable
 
     public int hashCode() {
 	if (this.hashCodeValue == 0) {
-	    String hashInput = new String(this.urlPatternSpec.toString() + 
-					  " " + this.methodSpec.hashCode() + 
-                                          ":" + this.transportType);
+	    String hashInput = this.urlPatternSpec.toString() + 
+                            " " + this.methodSpec.hashCode() +
+                            ":" + this.transportType;
 
 	    this.hashCodeValue = hashInput.hashCode();
 	}
@@ -505,7 +503,7 @@ implements java.io.Serializable
 		    this.methodSpec = HttpMethodSpec.getSpec
                        (actions.substring(0,colon));
 		}
-		Integer bit = (Integer) 
+		Integer bit = (Integer)
 		    transportHash.get(actions.substring(colon+1));
 		if (bit == null)
 		    throw new IllegalArgumentException

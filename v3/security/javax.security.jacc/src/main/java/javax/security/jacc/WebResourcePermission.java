@@ -39,9 +39,6 @@ package javax.security.jacc;
 import java.io.IOException;
 import java.io.ObjectStreamField;
 
-import javax.security.jacc.URLPatternSpec;
-import javax.security.jacc.HttpMethodSpec;
-
 import java.security.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -297,8 +294,8 @@ implements java.io.Serializable
 
     public int hashCode() {
 	if (this.hashCodeValue == 0) {
-	    String hashInput = new String(this.urlPatternSpec.toString()+ " " +
-					  this.methodSpec.hashCode());
+	    String hashInput = this.urlPatternSpec.toString()+ " " +
+                    this.methodSpec.hashCode();
 
 	    this.hashCodeValue = hashInput.hashCode();
 	}

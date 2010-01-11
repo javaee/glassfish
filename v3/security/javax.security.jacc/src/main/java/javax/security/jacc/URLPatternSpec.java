@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,8 +37,6 @@
 package javax.security.jacc;
 
 import java.util.Arrays;
-
-import javax.security.jacc.URLPattern;
 
 /**
  * This class extends the URLPattern class and is used to represent 
@@ -272,7 +270,7 @@ class URLPatternSpec extends URLPattern
 	if (canonicalSpec == null) {
 
 	    if (urlPatternList == null) 
-		canonicalSpec = new String(super.toString());
+		canonicalSpec = super.toString();
 
 	    else {
 
@@ -286,9 +284,8 @@ class URLPatternSpec extends URLPattern
 		    }
 		}
 
-		if (s == null) canonicalSpec = new String(super.toString());
-		else canonicalSpec = 
-		    new String(super.toString() + ":" + s.toString());
+		if (s == null) canonicalSpec = super.toString();
+		else canonicalSpec = super.toString() + ":" + s.toString();
 	    }
 	}
 

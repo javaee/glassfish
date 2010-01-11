@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,6 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import java.security.SecurityPermission;
-
-import javax.security.jacc.PolicyContextHandler;
 
 /**
  * This utility class is used by containers to communicate policy context

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,14 +38,8 @@ package javax.security.jacc;
 
 
 import java.security.AccessController;
-import java.security.AccessControlException;
 import java.security.PrivilegedExceptionAction;
 import java.security.PrivilegedActionException;
-import java.security.SecurityPermission;
-
-import javax.security.jacc.PolicyConfiguration;
-
-import javax.security.jacc.PolicyContextException;
 
 /**
  * Abstract factory and finder class for obtaining
@@ -129,8 +123,7 @@ public abstract class PolicyConfigurationFactory
 			  classname[0] = System.getProperty(FACTORY_NAME);
 			  
 			  if(classname[0] == null){
-			      String msg = new String
-				  ("JACC:Error PolicyConfigurationFactory : property not set : "+ FACTORY_NAME);
+			      String msg = "JACC:Error PolicyConfigurationFactory : property not set : "+ FACTORY_NAME;
 			      throw new ClassNotFoundException(msg);
 			  }
 	
@@ -152,8 +145,7 @@ public abstract class PolicyConfigurationFactory
 	      classname[0] = System.getProperty(FACTORY_NAME);
 	      
 	      if (classname[0] == null){
-		  msg = new String
-		      ("JACC:Error PolicyConfigurationFactory : property not set : "+ FACTORY_NAME);
+		  msg = "JACC:Error PolicyConfigurationFactory : property not set : "+ FACTORY_NAME;
 		  throw new ClassNotFoundException(msg);
 	      }
 
@@ -166,23 +158,19 @@ public abstract class PolicyConfigurationFactory
           pcFactory  = (PolicyConfigurationFactory) factory;
 
       } catch(java.lang.ClassNotFoundException cnfe){
-	  msg = new String
-	      ("JACC:Error PolicyConfigurationFactory : cannot find class : "
-	       + classname[0]);
+	  msg = "JACC:Error PolicyConfigurationFactory : cannot find class : "
+	       + classname[0];
 	  throw new ClassNotFoundException(msg,cnfe);
       } catch(java.lang.IllegalAccessException iae){
-	  msg = new String
-	      ("JACC:Error PolicyConfigurationFactory : cannot access class : "
-	       + classname[0]);
+	  msg = "JACC:Error PolicyConfigurationFactory : cannot access class : "
+	       + classname[0];
 	  throw new PolicyContextException(msg,iae);
       } catch(java.lang.InstantiationException ie){
-	  msg = new String
-	      ("JACC:Error PolicyConfigurationFactory : cannot instantiate : "
-	       + classname[0]);
+	  msg = "JACC:Error PolicyConfigurationFactory : cannot instantiate : "
+	       + classname[0];
 	  throw new PolicyContextException(msg,ie);
       } catch(java.lang.ClassCastException cce){
-	  msg = new String
-	      ("JACC:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : "+ classname[0]);
+	  msg = "JACC:Error PolicyConfigurationFactory : class not PolicyConfigurationFactory : "+ classname[0];
 	  throw new ClassCastException(msg);
       }
 
