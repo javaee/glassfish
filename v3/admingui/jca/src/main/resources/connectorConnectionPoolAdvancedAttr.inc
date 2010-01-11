@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -39,7 +39,12 @@
    
 
 <!-- PropertySheet .... -->
+
 <sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18njca.jcaPool.connectionSettings}">
+
+    <sun:property id="name"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.poolName}">
+            <sun:staticText escape="true" id="name" text="#{pageSession.Name}"  />
+        </sun:property>
 
     <sun:property id="p1"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.jcaPool.validateAtmostOnceInSeconds}" helpText="$resource{i18njca.jcaPool.validateAtmostOnceInSecondsHelp}">
         <sun:textField id="va" styleClass="integer" columns="$int{30}" text="#{pageSession.valueMap['ValidateAtmostOncePeriodInSeconds']}" /> 
