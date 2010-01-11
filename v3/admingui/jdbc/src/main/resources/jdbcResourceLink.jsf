@@ -1,8 +1,11 @@
 <sun:property>
     <sun:hyperlink 
-        toolTip="$resource{i18n.tree.jdbc.tooltip}" 
+        toolTip="$resource{i18njdbc.tree.jdbc.tooltip}"
         url="/jdbc/jdbc.jsf" >
         <sun:image url="/resource/images/JDBC.gif" />
-        <sun:staticText text="$resource{i18n.tree.jdbc}" />
+        <sun:staticText text="$resource{i18njdbc.tree.jdbc}" />
     </sun:hyperlink>
+    <!beforeCreate
+        setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings");
+    />
 </sun:property>

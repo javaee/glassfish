@@ -36,7 +36,6 @@
 <!-- jdbc/jdbc.jsf -->
 
 <!initPage 
-        setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
         setResourceBundle(key="i18njdbc" bundle="org.glassfish.jdbc.admingui.Strings")
         setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
 />
@@ -54,20 +53,20 @@
                     <sun:propertySheetSection>
                         <sun:property>
                         <sun:hyperlink 
-                            toolTip="$resource{i18n.tree.jdbcResources.tooltip}"
+                            toolTip="$resource{i18njdbc.tree.jdbcResources.tooltip}"
                             url="/jdbc/jdbcResources.jsf" >
                             <sun:image url="/resource/jdbc/images/JDBC.gif" />
-                            <sun:staticText text="$resource{i18n.tree.jdbcResources}" />
+                            <sun:staticText text="$resource{i18njdbc.tree.jdbcResources}" />
                             </sun:hyperlink>
                         
                         
                         </sun:property>
                         <sun:property>
                         <sun:hyperlink 
-                            toolTip="$resource{i18n.tree.connectionPools.tooltip}"
+                            toolTip="$resource{i18njdbc.tree.connectionPools.tooltip}"
                             url="/jdbc/jdbcConnectionPools.jsf" >
                             <sun:image url="/resource/jdbc/images/JDBC.gif" />
-                            <sun:staticText text="$resource{i18n.tree.connectionPools}" />
+                            <sun:staticText text="$resource{i18njdbc.tree.connectionPools}" />
                             </sun:hyperlink>
                         
                             

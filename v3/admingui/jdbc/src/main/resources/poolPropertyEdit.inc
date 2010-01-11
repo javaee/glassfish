@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -39,7 +39,7 @@
 <!-- PropertySheet .... -->
 <sun:propertySheet id="sheet" requiredFields="true">
 <sun:propertySheetSection id="generalSheet" label="$resource{i18njdbc.jdbcPool.general}">
-    <sun:property id="name"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
+    <sun:property id="name"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.poolName}">
         <sun:staticText id="name" text="#{pageSession.Name}"/>
     </sun:property>
 
