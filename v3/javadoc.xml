@@ -23,16 +23,6 @@
 
   <path id="src.dir">
     <dirset dir="${basedir}">
-
-      <include name="javaee-api/**/src/main/java/**"/>
-      <include name="ejb/**/src/main/java/**"/>
-      <include name="deployment/**/src/main/java/**"/>
-      <include name="admin/**/src/main/java/**"/>
-      <include name="connectors/**/src/main/java/**"/>
-      <include name="security/**/src/main/java/**"/>
-      <include name="transaction/**/src/main/java/**"/>
-      <include name="web/**/src/main/java/**"/>
-
       <include name="external/jaxr-api/**"/>
       <include name="external/jaxr-ri/**"/>
       <include name="external/javamail/**"/>
@@ -49,8 +39,16 @@
       <include name="external/eclipse.persistence/**"/>
       <include name="external/saaj-api/**" />
       <include name="external/uel/**"/>
-      <include name="external/validation-api/src/main/java/**"/>
+      <include name="external/validation-api/**"/>
       <include name="external/weld-api/**"/>
+      <include name="javaee-api/**/src/main/java/**"/>
+      <include name="ejb/**/src/main/java/**"/>
+      <include name="deployment/**/src/main/java/**"/>
+      <include name="admin/**/src/main/java/**"/>
+      <include name="connectors/**/src/main/java/**"/>
+      <include name="security/**/src/main/java/**"/>
+      <include name="transaction/**/src/main/java/**"/>
+      <include name="web/javax.servlet/src/main/java/**"/>
     </dirset>
   </path>
 
@@ -114,7 +112,7 @@
       <antcall target="jaxrpc.checkout" />
       <antcall target="jaxb-api.download" />
       <antcall target="jaxr.checkout" />
-      <antcall target="jaxws-api.checkout" />
+      <antcall target="jaxws-api.download" />
       <antcall target="jsf.download" />
       <antcall target="jsp.download" />
       <antcall target="jsr181.download" />
@@ -124,7 +122,7 @@
       <antcall target="eclipse-persistence.download" />
       <antcall target="saaj-api.download" />
       <antcall target="uel.download" />
-      <antcall target="bean-validator.checkout" />
+      <antcall target="bean-validator.download" />
       <antcall target="weld-api.download" />
       <antcall target="hk2.download" />
       <antcall target="flashlight.download" />
@@ -204,7 +202,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxb-api.download" description="Download JAXB-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxb-api">
-          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2"/>
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -235,21 +233,25 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-  <target name="jaxws-api.checkout" description="Checkout JAXWS-API" >
+  <target name="jaxws-api.download" description="Download JAXWS-API" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.jaxws-api">
+          <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2-rc2">
+              <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+          </dependency>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+       </artifact:dependencies>
       <mkdir dir="${external.dir}/jaxws-api" />
-      <get
-           src="${jaxws-api.url}"
-           dest="${external.dir}/jaxws-api/jaxws-api-src.zip"
-           verbose="true"
-           usetimestamp="true"
-           ignoreerrors="true" />
-      <unzip dest="${external.dir}/jaxws-api"  >
+      <copy todir="${external.dir}/jaxws-api" verbose="true">
+          <fileset refid="sources.dependency.jaxws-api" />
+           <mapper type="flatten" />
+       </copy>
+      <unjar dest="${external.dir}/jaxws-api"  >
           <fileset dir="${external.dir}/jaxws-api">
-              <include name="**/*.zip"/>
+               <include name="**/*.jar"/>
           </fileset>
-      </unzip>
+       </unjar>
   </target>
-
 
   <target name="jsf.download" description="Download JSF" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
@@ -422,20 +424,29 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-  <target name="bean-validator.checkout" description="Checkout BeanValidator workspace"> 
-      <echo message="checkout Bean validation from ${bean-validator.svn.url}." />
-      <!-- checkout BeanValidator source -->
-      <exec executable="svn" dir="${basedir}" >
-	  <arg line="checkout" />
-          <arg line="${bean-validator.svn.url}/api/checkout-source/src" />
-          <arg line="external/validation-api/src" />
-	</exec>
+  <target name="bean-validator.download" description="Download BeanValidator" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.bean-validator" >
+          <dependency groupId="org.glassfish" artifactId="bean-validator" version="3.0-JBoss-4.0.2_02" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/validation-api" />
+      <copy todir="${external.dir}/validation-api" verbose="true">
+          <fileset refid="sources.dependency.bean-validator" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/validation-api"  >
+          <fileset dir="${external.dir}/validation-api">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
   </target>
-
 
   <target name="weld-api.download" description="Download Weld API" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.weld-api" >
-          <dependency groupId="org.jboss.weld" artifactId="weld-api" version="1.0" classifier="sources" />
+          <dependency groupId="org.jboss.weld" artifactId="weld-api" version="1.0" classifier="sources" >
+              <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+          </dependency>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -453,7 +464,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
-          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0" classifier="sources" />
+          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0.0" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
