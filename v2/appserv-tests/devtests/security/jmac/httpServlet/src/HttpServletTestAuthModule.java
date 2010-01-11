@@ -119,11 +119,12 @@ public class HttpServletTestAuthModule implements ServerAuthModule {
             HttpServletRequest request =
                 (HttpServletRequest)messageInfo.getRequestMessage();
             request.setAttribute("SR", "true");
-            HttpServletResponse response = 
-                (HttpServletResponse)messageInfo.getResponseMessage();
-            int count = ((MyHttpServletResponseWrapper)response).getAdjustedCount();
+            MyHttpServletResponseWrapper response =
+                (MyHttpServletResponseWrapper)messageInfo.getResponseMessage();
+            int count = response.getAdjustedCount();
             PrintWriter writer = response.getWriter();
             writer.println("\nAdjusted count: " + count);
+            messageInfo.setResponseMessage(response.getResponse());
             return AuthStatus.SUCCESS;
         } catch(Throwable t) {
             System.out.println("secureResponse fails: " + t);
