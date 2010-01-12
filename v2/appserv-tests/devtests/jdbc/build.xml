@@ -74,6 +74,7 @@
 	<ant dir="datasource40" target="all"/>
 	<ant dir="custom-validation" target="all"/>
 	<ant dir="custom-validation-1" target="all"/>
+	<ant dir="flushconnectionpool" target="all"/>
 	<antcall target="all-oracle"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
@@ -340,6 +341,12 @@
 	<record name="datasource40.output" action="start"/>
 	<ant dir="datasource40" target="all"/>
 	<record name="datasource40.output" action="stop"/>
+    </target>
+
+    <target name="flushconnectionpool">
+	<record name="flushconnectionpool.output" action="start"/>
+	<ant dir="flushconnectionpool" target="all"/>
+	<record name="flushconnectionpool.output" action="stop"/>
     </target>
 
     <target name="usage">
