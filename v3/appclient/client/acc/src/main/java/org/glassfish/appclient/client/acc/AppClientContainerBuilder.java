@@ -42,6 +42,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -81,7 +82,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
 
     private AuthRealm authRealm = null;
 
-    private ACCClassLoader classLoader = (ACCClassLoader) Thread.currentThread().getContextClassLoader();
+    private URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
 
     /**
      * The caller can pre-set the client credentials using the
