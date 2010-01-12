@@ -48,13 +48,20 @@ of POST actions.</b><p>The default value is 2097152 bytes.</p></li>
 to decode the request URIs received.</b><p>The value must be a valid IANA character set name. The default value
 is UTF-8.</p></li>
 <li><b>In the Version field, type the version of the HTTP protocol used.</b><p>The default value is HTTP/1.1.</p></li>
-<li><b>Select the Compression Enabled checkbox to enable HTTP/1.1 GZIP compression to save server
-bandwidth.</b><p>This option is disabled by default.</p></li>
+<li><b>From the Compression drop-down list, select the use of HTTP/1.1 GZIP compression to
+save server bandwidth.</b><p>Available choices are:</p><dl><dt><tt>on</tt></dt>
+<dd><p>Compresses data.</p></dd>
+<dt><tt>off</tt></dt>
+<dd><p>Disables compression.</p></dd>
+<dt><tt>force</tt></dt>
+<dd><p>Forces data compression in all cases.</p></dd>
+</dl>
+<p>The default value is <tt>off</tt>.</p></li>
 <li><b>In the Compressible Mime Type field, type a comma-separated list of MIME types
 for which HTTP compression is used.</b><p>The default value is <tt>text/html,text/xml,text/plain</tt>.</p></li>
 <li><b>In the Compression Minimum Size field, type the minimum size of a file
-when compression is applied.</b><p>This value must be set if the Compression Enabled checkbox is selected. The
-default value is 2048 bytes.</p></li>
+when compression is applied.</b><p>This value must be set if Compression is set to <tt>on</tt> or <tt>force</tt>.
+The default value is 2048 bytes.</p></li>
 <li><b>In the No-Compression User Agents field, type a comma-separated list of regular expressions
 matching user-agents of HTTP clients for which compression should not be used.</b><p>By default, this value is an empty string.</p></li>
 <li><b>In the Restricted User Agents field, type a list of restricted user agents
@@ -76,7 +83,7 @@ scripting attacks. This option is enabled by default.</p></li>
 uses this protocol receives traffic from an SSL-terminating proxy server.</b><p>This option is disabled by default.</p></li>
 <li><b>Select the Chunking Enabled checkbox to enable HTTP response chunking.</b><p>This option is enabled by default.</p></li>
 <li><b>Select the XPowered By Enabled checkbox to tell the Enterprise Server to use
-<tt>X-Powered-By</tt> headers according to the Java Servlet 2.4 and Java Server Pages 2.0
+<tt>X-Powered-By</tt> headers according to the Java Servlet 3.0 and Java Server Pages 2.0
 specifications.</b><p>This option is enabled by default.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click

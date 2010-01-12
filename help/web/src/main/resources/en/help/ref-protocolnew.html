@@ -49,11 +49,18 @@ for you at the same time.</p><p>The New Protocol page contains the following opt
 <dt>Version</dt>
 <dd><p>The version of the HTTP protocol used. The default value is HTTP/1.1.</p></dd>
 <dt>Compression</dt>
-<dd><p>If this option is selected, HTTP/1.1 GZIP compression is used to save server bandwidth. This option is disabled by default.</p></dd>
+<dd><p>Specifies the use of HTTP/1.1 GZIP compression to save server bandwidth. Available choices are:</p><dl><dt><tt>on</tt></dt>
+<dd><p>Compresses data.</p></dd>
+<dt><tt>off</tt></dt>
+<dd><p>Disables compression.</p></dd>
+<dt><tt>force</tt></dt>
+<dd><p>Forces data compression in all cases.</p></dd>
+</dl>
+<p>The default value is <tt>off</tt>.</p></dd>
 <dt>Compressible Mime Types</dt>
 <dd><p>A comma-separated list of MIME types for which HTTP compression is used. The default value is <tt>text/html,text/xml,text/plain</tt>.</p></dd>
 <dt>Compression Minimum Size</dt>
-<dd><p>The minimum size of a file when compression is applied. This value must be set if the Compression Enabled checkbox is selected. (set to on or force) The default value is 2048 bytes.</p></dd>
+<dd><p>The minimum size of a file when compression is applied. This value must be set if Compression is set to <tt>on</tt> or <tt>force</tt>. The default value is 2048 bytes.</p></dd>
 <dt>No-Compression User Agents</dt>
 <dd><p>A comma-separated list of regular expressions matching user-agents of HTTP clients for which compression should not be used. By default, this value is an empty string.</p></dd>
 <dt>Restricted User Agent</dt>
@@ -83,7 +90,7 @@ for you at the same time.</p><p>The New Protocol page contains the following opt
 <dt>Chunking</dt>
 <dd><p>If this option is selected, HTTP response chunking is enabled. This option is enabled by default.</p></dd>
 <dt>XPowered By</dt>
-<dd><p>If this option is selected, the Enterprise Server uses <tt>X-Powered-By</tt> headers according to the Java Servlet 2.4 and Java Server Pages 2.0 specifications. This option is enabled by default.</p></dd>
+<dd><p>If this option is selected, the Enterprise Server uses <tt>X-Powered-By</tt> headers according to the Java Servlet 3.0 and Java Server Pages 2.0 specifications. This option is enabled by default.</p></dd>
 </dl>
 <h5>Related Tasks</h5>
 
