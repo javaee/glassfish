@@ -50,7 +50,7 @@
     <name>GlassFish Cluster Admin Jar</name>
 
     <build>
-        <finalName>cluster-admin</finalName>
+        <finalName>cladmin</finalName>
         <resources>
         </resources>
     </build>

@@ -26,20 +26,20 @@ set JAVA=java
 
 REM Get the list of hosts from input parameter --target
 for /F "tokens=* delims= " %%G in (
-    '"%JAVA% -cp %LIB_DIR%\cluster-admin.jar com.sun.enterprise.deployment.util.ProcessHostsOption %*"'
+    '"%JAVA% -cp %LIB_DIR%\cladmin.jar com.sun.enterprise.deployment.util.ProcessHostsOption %*"'
 ) do set hostportlist=%%G
 
 REM Get the host list from environment variable AS_TARGET
 if "%hostportlist%x" == "x" (
     if "%AS_TARGET%x" neq "x" (
         for /F "tokens=* delims= " %%G in (
-            '"%JAVA% -cp %LIB_DIR%\cluster-admin.jar com.sun.enterprise.deployment.util.GetHostPort %AS_TARGET%"'
+            '"%JAVA% -cp %LIB_DIR%\cladmin.jar com.sun.enterprise.deployment.util.GetHostPort %AS_TARGET%"'
         ) do set hostportlist=%%G
     )
 )
 
 
-REM Not a cluster-admin command. Delegate to asadmin
+REM Not a cladmin command. Delegate to asadmin
 if "%hostportlist%x" == "x" (
     %BIN_DIR%\asadmin %*
     goto end    
@@ -48,17 +48,17 @@ if "%hostportlist%x" == "x" (
 
 REM Filter out --target, host and port arguments
 for /F "tokens=* delims= " %%K in (
-    '"%JAVA% -cp %LIB_DIR%\cluster-admin.jar com.sun.enterprise.deployment.util.OptionsFilter %*"'
+    '"%JAVA% -cp %LIB_DIR%\cladmin.jar com.sun.enterprise.deployment.util.OptionsFilter %*"'
 ) do set arglist=%%K
 
 REM Run asadmin against each of the host
 for %%O in (%hostportlist%) do (
     for /F "tokens=* delims= " %%I in (
-        '"%JAVA% -cp %LIB_DIR%\cluster-admin.jar com.sun.enterprise.deployment.util.GetHost %%O"'
+        '"%JAVA% -cp %LIB_DIR%\cladmin.jar com.sun.enterprise.deployment.util.GetHost %%O"'
     ) do set host=%%I
 
     for /F "tokens=* delims= " %%I in (
-        '"%JAVA% -cp %LIB_DIR%\cluster-admin.jar com.sun.enterprise.deployment.util.GetPort %%O"'
+        '"%JAVA% -cp %LIB_DIR%\cladmin.jar com.sun.enterprise.deployment.util.GetPort %%O"'
     ) do set port=%%I
 
     set arguments=!port! !arglist!

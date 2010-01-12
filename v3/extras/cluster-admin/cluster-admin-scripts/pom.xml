@@ -45,7 +45,7 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>cluster-admin-scripts</artifactId>
+    <artifactId>cladmin-scripts</artifactId>
     <name>GlassFish Cluster Admin Scripts</name>
 
     <packaging>distribution-fragment</packaging>
