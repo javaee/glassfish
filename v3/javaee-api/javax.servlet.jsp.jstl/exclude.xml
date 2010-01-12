@@ -1,0 +1,11 @@
+<FindBugsFilter>
+    <!--
+	This bug in the JSTL public API can't be fixed until
+        we update the JSTL API.
+    -->
+    <Match>
+	<Class name="javax.servlet.jsp.jstl.core.IteratedValueExpression"/>
+	<Bug pattern="SE_BAD_FIELD"/>
+	<Priority value="1"/>
+    </Match>
+</FindBugsFilter>
