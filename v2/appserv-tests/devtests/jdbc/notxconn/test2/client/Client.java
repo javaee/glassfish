@@ -1,34 +1,34 @@
-package com.sun.s1asdev.jdbc.notxconn.test2.client;
+package com.sun.s1asdev.jdbc.notxconn.client;
 
 import javax.naming.*;
 import java.rmi.*;
 import java.util.*;
 
-import com.sun.s1asdev.jdbc.notxconn.test2.ejb.*;
+import com.sun.s1asdev.jdbc.notxconn.ejb.SimpleSessionHome;
+import com.sun.s1asdev.jdbc.notxconn.ejb.SimpleSession;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class Client {
 
     public static void main(String[] args)
-        throws Exception {
+            throws Exception {
 
- 	SimpleReporterAdapter stat = new SimpleReporterAdapter();
-	String testSuite = "jdbc-notxconn ";
+        SimpleReporterAdapter stat = new SimpleReporterAdapter();
+        String testSuite = "notxconn";
 
         InitialContext ic = new InitialContext();
-        Object objRef = ic.lookup("java:comp/env/ejb/NoTxConnTestEJB");
-	NoTxConnTestHome home = (NoTxConnTestHome)
-            javax.rmi.PortableRemoteObject.narrow(objRef, NoTxConnTestHome.class);
+        Object objRef = ic.lookup("java:comp/env/ejb/SimpleSessionHome");
+        SimpleSessionHome simpleSessionHome = (SimpleSessionHome)
+                javax.rmi.PortableRemoteObject.narrow(objRef, SimpleSessionHome.class);
 
-        NoTxConnTest bean = home.create();
+        stat.addDescription("Running notxops testSuite2 ");
+        SimpleSession simpleSession = simpleSessionHome.create();
+        if (simpleSession.test1()) {
+            stat.addStatus(testSuite + " test1 : ", stat.PASS);
+        } else {
+            stat.addStatus(testSuite + " test1 : ", stat.FAIL);
+        }
 
-        if ( bean.test1() ) {
-	    stat.addStatus(testSuite+" test1 : ", stat.PASS);
-	} else {
-	    stat.addStatus(testSuite+" test1 : ", stat.FAIL);
-	}
-	stat.printSummary();
-    
-        
+        stat.printSummary();
     }
 }

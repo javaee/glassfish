@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: com.sun.s1asdev.jdbc.notxconn.test1.client.Client
+Main-Class: com.sun.s1asdev.jdbc.notxconn.client.Client

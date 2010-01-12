@@ -5,7 +5,7 @@
 
 <sun-application-client>
   <ejb-ref>
-      <ejb-ref-name>ejb/NoTxConnTestEJB</ejb-ref-name>
-      <jndi-name>ejb/NoTxConnTestEJB</jndi-name>
+      <ejb-ref-name>ejb/SimpleSessionHome</ejb-ref-name>
+      <jndi-name>com.sun.s1asdev.jdbc.notxconn.ejb.SimpleSessionHome</jndi-name>
     </ejb-ref>
 </sun-application-client>

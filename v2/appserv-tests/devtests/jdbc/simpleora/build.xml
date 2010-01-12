@@ -43,49 +43,8 @@
     </target> 
     
     <target name="deploy" depends="init-common">
-      <!--
-      <antcall target="execute-sql-oracle-common">
-        <param name="sql.file" value="sql/create_pointbase.sql"/>
-      </antcall>
-      -->
-      <!--
-      <antcall target="deploy-jdbc-common"/>
-      -->
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command"
-	  value="create-jdbc-connection-pool
-	    --datasourceclassname=${oracle.datasource.class}
-	    --restype=javax.sql.DataSource"/>
-	<param name="operand.props" value="${oracle.pool.name}"/>    
-      </antcall>
+     <antcall target="deploy-jdbc-oracle-common"/>
 
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="set"/>
-	<param name="operand.props"
-	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${oracle.pool.name}.property.User=${oracle.user}"/>
-      </antcall>
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="set"/>
-	<param name="operand.props"
-	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${oracle.pool.name}.property.Password=${oracle.password}"/>
-      </antcall>
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="set"/>
-	<param name="operand.props"
-	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${oracle.pool.name}.property.serverName=${oracle.serverName}"/>
-      </antcall>
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="set"/>
-	<param name="operand.props"
-	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${oracle.pool.name}.property.PortNumber=${oracle.port}"/>
-      </antcall>
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="set"/>
-	<param name="operand.props"
-	  value="${resources.dottedname.prefix}.jdbc-connection-pool.${oracle.pool.name}.property.SID=${oracle.SID}"/>
-      </antcall>
-      
-      <antcall target="create-jdbc-resource-oracle-common"/>
       <antcall target="deploy-common"/>
     </target>
 
@@ -100,9 +59,6 @@
       <antcall target="execute-sql-oracle-common">
         <param name="sql.file" value="sql/drop_pointbase.sql"/>
       </antcall>
-      <!--
-      <antcall target="undeploy-jdbc-common"/>
-      -->
       <antcall target="undeploy-jdbc-oracle-common"/>
       <antcall target="undeploy-common"/>
     </target>   

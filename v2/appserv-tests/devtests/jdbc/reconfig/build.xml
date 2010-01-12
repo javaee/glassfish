@@ -23,6 +23,12 @@
         <record name="maxpoolsize.output" action="stop" />
     </target>
 
+    <target name="userpass">
+        <record name="userpass.output" action="start" />
+            <ant dir="userpass" target="all"/>
+        <record name="userpass.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:

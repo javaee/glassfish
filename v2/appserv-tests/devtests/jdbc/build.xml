@@ -74,6 +74,7 @@
 	<ant dir="datasource40" target="all"/>
 	<ant dir="custom-validation" target="all"/>
 	<ant dir="custom-validation-1" target="all"/>
+	<antcall target="all-oracle"/>
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>
@@ -119,6 +120,17 @@
 	<ant dir="stmtCaching_hit_miss" target="all"/>
 	<ant dir="pooling" target="all"/>
         <record name="jdbc.output" action="stop"/>
+    </target>
+
+    <target name="all-oracle">
+	<record name="jdbc-oracle.output" action="start"/>
+	<ant dir="connsharing" target="xa"/>
+	<ant dir="simpleoradd" target="all"/>
+	<ant dir="dmmcf.notxconn" target="all"/>
+	<ant dir="notxconn" target="all"/>
+	<ant dir="reconfig" target="userpass"/>
+	<ant dir="simpleora" target="all"/>
+	<record name="jdbc-oracle.output" action="stop"/>
     </target>
 
     <target name="appauth">

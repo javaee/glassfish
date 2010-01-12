@@ -38,13 +38,7 @@ public class SimpleBMPBean
 	        conns[i] = ds.getConnection();
 	    } catch (Exception e) {
 	        passed = false;
-	    } /*finally {
-	        if ( conn != null ) {
-	            try {
-	                conn.close();
-	    	    } catch( Exception e1) {}    
-	        }
-	    } */
+	    } 
         }
         
 	for (int i = 0 ; i < numRuns;i++ ) {
@@ -106,7 +100,7 @@ public class SimpleBMPBean
 
         boolean passed = true;
 	try {
-	    conn = ds1.getConnection("aditya", "aditya");
+	    conn = ds1.getConnection("scott", "tiger");
 	    stmt = conn.createStatement();
 	    stmt.executeUpdate("INSERT INTO O_CUSTOMER values (100, 'new phone')");
             rs = stmt.executeQuery( "SELECT * FROM O_CUSTOMER");

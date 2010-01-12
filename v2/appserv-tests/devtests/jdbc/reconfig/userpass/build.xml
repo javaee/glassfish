@@ -5,6 +5,8 @@
 <!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 <!ENTITY run SYSTEM "file:./../../../../config/run.xml">
+<!ENTITY jdbcCommon SYSTEM "file:./../../JdbcCommon.xml">
+<!ENTITY jdbcCommonProps SYSTEM "file:./../../JdbcCommon.properties">
 ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -13,6 +15,8 @@
     &commonBuild;
     &testproperties;
     &run;
+    &jdbcCommon;
+    &jdbcCommonProps;
 
     <target name="all" depends="build,deploy,run,undeploy"/>
 
@@ -39,82 +43,38 @@
     </target> 
     
     <target name="deploy" depends="init-common">
-      <antcall target="execute-sql-1"/>
-      <antcall target="execute-sql-2"/>
-
-      <antcall target="create-jdbc-connpool-common">
-        <param name="jdbc.resource.type" value="javax.sql.DataSource"/>
-        <param name="jdbc.conpool.name" value="jdbc-oracle-pool"/>
-	<param name="db.class" value="oracle.jdbc.pool.OracleDataSource"/>
-	<param name="db.user" value="scott"/>
-	<param name="db.pwd" value="tiger"/>
-	<param name="db.url" value="ORA"/>
+      <antcall target="execute-sql-oracle-common">
+	      <param name="oracle.user" value="${oracle.user.1}"/>
+	      <param name="oracle.password" value="${oracle.password.1}"/>
+	      <param name="sql.file" value="sql/create_pointbase.sql"/>
       </antcall>
-      <antcall target="asadmin-common">
-        <param name="admin.command" value="set"/>
-        <param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-oracle-pool.property.Port=1521"/>
+      <antcall target="execute-sql-oracle-common">
+	      <param name="oracle.user" value="${oracle.user.2}"/>
+	      <param name="oracle.password" value="${oracle.password.2}"/>
+	      <param name="sql.file" value="sql/create_pointbase1.sql"/>
       </antcall>
-      <antcall target="asadmin-common">
-        <param name="admin.command" value="set"/>
-        <param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-oracle-pool.property.URL=jdbc:oracle:thin:@129.158.229.239:1521:ORA"/>
+      <antcall target="deploy-jdbc-oracle-common">
+        <param name="oracle.conpool.name" value="jdbc-oracle-pool"/>
+        <param name="oracle.resource.name" value="jdbc/s1qeDB-oracle"/>
       </antcall>
-      
-      <antcall target="asadmin-common">
-        <param name="admin.command" value="set"/>
-        <param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-oracle-pool.property.ServerName=129.158.229.239"/>
-      </antcall>
-
-      <antcall target="create-jdbc-resource-common">
-        <param name="jdbc.conpool.name" value="jdbc-oracle-pool"/>
-        <param name="jdbc.resource.name" value="jdbc/s1qeDB-oracle"/>
-      </antcall>
-      <antcall target="reconfig-common"/>
       <antcall target="deploy-common"/>
     </target>
     
-    <target name="execute-sql-1">
-      <sql    
-        src="sql/create_pointbase.sql"
-	driver="oracle.jdbc.driver.OracleDriver"
-	userid="scott"
-	password="tiger"
-	onerror="continue"
-	url="jdbc:oracle:thin:@129.158.229.239:1521:ORA"
-	classpath="${env.S1AS_HOME}/domains/domain1/lib/classes12.zip"
-	print="yes"
-      />
-    </target>
-
-    <target name="execute-sql-2">
-      <sql    
-        src="sql/create_pointbase1.sql"
-	driver="oracle.jdbc.driver.OracleDriver"
-	userid="system"
-	password="manager"
-	onerror="continue"
-	url="jdbc:oracle:thin:@129.158.229.239:1521:ORA"
-	classpath="${env.S1AS_HOME}/domains/domain1/lib/classes12.zip"
-	print="yes"
-      />
-    </target>
-   
     <target name="run" depends="init-common">
       <antcall target="runclient-common"/>
     </target>
  
     <target name="undeploy" depends="init-common">
-    <!--
-      <antcall target="execute-sql-common">
+      <antcall target="execute-sql-oracle-common">
         <param name="sql.file" value="sql/drop_pointbase.sql"/>
       </antcall>
-    -->
-      <antcall target="delete-jdbc-resource-common"> 
-        <param name="jdbc.resource.name" value="jdbc/s1qeDB-oracle"/>
+      <antcall target="execute-sql-oracle-common">
+        <param name="sql.file" value="sql/drop_pointbase1.sql"/>
       </antcall>
-      <antcall target="delete-jdbc-connpool-common"> 
-        <param name="jdbc.conpool.name" value="jdbc-oracle-pool"/>
+      <antcall target="undeploy-jdbc-oracle-common"> 
+        <param name="oracle.pool.name" value="jdbc-oracle-pool"/>
+	<param name="oracle.resource.name" value="jdbc/s1qeDB-oracle"/>
       </antcall>
-
       <antcall target="undeploy-common"/>
     </target>   
 

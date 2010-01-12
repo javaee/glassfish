@@ -9,25 +9,18 @@
       <jndi-name>com.sun.s1asdev.jdbc.simpleora.ejb.SimpleBMPHome</jndi-name>
       <resource-ref>
         <res-ref-name>DataSource</res-ref-name>
-	<!--
-        <jndi-name>jdbc/s1qeDB</jndi-name>
-	-->
 	<jndi-name>jdbc/oracleres</jndi-name>
         <default-resource-principal>
-	    <!--
-            <name>DBUSER</name>
-            <password>DBPASSWORD</password>
-	    -->
-            <name>aditya</name>
-            <password>aditya</password>
+            <name>scott</name>
+            <password>tiger</password>
         </default-resource-principal>
       </resource-ref>
       <resource-ref>
         <res-ref-name>DataSource1</res-ref-name>
 	<jndi-name>jdbc/oracleres</jndi-name>
         <default-resource-principal>
-            <name>aditya</name>
-            <password>aditya</password>
+            <name>scott</name>
+            <password>tiger</password>
         </default-resource-principal>
       </resource-ref>
     </ejb>

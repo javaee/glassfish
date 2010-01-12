@@ -22,6 +22,7 @@ public class SimpleBMPClient {
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
+	stat.addDescription("Simple Oracle test ");
 
 	
         if ( simpleBMP.test1(10) ) {

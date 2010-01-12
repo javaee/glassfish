@@ -7,23 +7,12 @@
 <!ENTITY run SYSTEM "file:./../../../../config/run.xml">
 <!ENTITY jdbcCommon SYSTEM "file:./../../JdbcCommon.xml">
 <!ENTITY jdbcCommonProps SYSTEM  "file:./../../JdbcCommon.properties">
-<!ENTITY eeSetup SYSTEM "file:./../../config/ee-common.xml">
-<!ENTITY eeProperties SYSTEM "file:./../../config/ee-properties.xml">
 ]>
 
 <project name="mix" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
-    <!--
-    &testproperties;
-    &run;
-    &jdbcCommon;
-    &jdbcCommonProps;
-
-    &eeSetup;
-    &eeProperties;
-	-->
     &testproperties;
     &jdbcCommon;
     &jdbcCommonProps;

@@ -22,14 +22,15 @@ public class SimpleBMPClient {
         javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
 
         SimpleBMP simpleBMP = simpleBMPHome.create();
+	stat.addDescription("Simple OracleDD test ");
 
-	/*
+	
         if ( simpleBMP.test1(10) ) {
 	    stat.addStatus(testSuite+"test1 : ", stat.PASS);
 	} else {
 	    stat.addStatus(testSuite+"test1 : ", stat.FAIL);
 	}
-        */
+       
 	if ( simpleBMP.test2() ) {
 	    stat.addStatus(testSuite+"test2 : ", stat.PASS);
 	} else {
