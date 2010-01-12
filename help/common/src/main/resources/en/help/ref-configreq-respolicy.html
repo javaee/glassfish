@@ -4,7 +4,7 @@ Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-configreq-respolicy"></a><h4>Request and Response Policy Configurations</h4>
-<a name="indexterm-226"></a><p>If Authenticate Source is <tt>sender</tt>, then the message contains a <tt>wsse:Security</tt> header with
+<a name="indexterm-230"></a><p>If Authenticate Source is <tt>sender</tt>, then the message contains a <tt>wsse:Security</tt> header with
 a <tt>wsse:UsernameToken</tt> (with password). If Authenticate Source is content, then the content of
 the SOAP message body is signed, and the message contains a <tt>wsse:Security</tt>
 header with the message body signature represented as a <tt>ds</tt>:<tt>Signature</tt>.</p><p>If Authenticate Recipient is either <tt>before-content</tt> or <tt>after-content</tt>, the content of the

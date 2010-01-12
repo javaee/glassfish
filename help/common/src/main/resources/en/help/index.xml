@@ -15,7 +15,8 @@
     <indexitem target="task-setadminpassword" text="changing (task)"></indexitem></indexitem>
  <indexitem text="application clients">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
-    <indexitem target="task-appdeployclient" text="deploying (task)"></indexitem></indexitem>
+    <indexitem target="task-appdeployclient" text="deploying (task)"></indexitem>
+    <indexitem target="task-appclientlaunch" text="launching"></indexitem></indexitem>
  <indexitem text="applications">
     <indexitem target="ref-serverinstappsconfig" text="autodeploy settings (reference)"></indexitem>
     <indexitem target="task-setadvanceappconfig" text="autodeploy settings (task)"></indexitem>
@@ -28,7 +29,8 @@
     <indexitem target="task-appdeployweb" text="deploying web"></indexitem>
     <indexitem target="ref-appedit" text="editing (reference)"></indexitem>
     <indexitem target="task-appedit" text="editing (task)"></indexitem>
-    <indexitem target="task-applaunch" text="launching"></indexitem>
+    <indexitem target="ref-appclientlaunch" text="launching (reference)"></indexitem>
+    <indexitem target="task-applaunch" text="launching (task)"></indexitem>
     <indexitem target="ref-redeploy" text="redeploying (reference)"></indexitem>
     <indexitem target="task-appredeploy" text="redeploying (task)"></indexitem>
     <indexitem target="ref-serverinstappsconfig" text="reload settings (reference)"></indexitem>
@@ -155,7 +157,9 @@
  <indexitem text="JVM profiler settings">
     <indexitem target="ref-serverinstjvmprofiler" text="configuring (reference)"></indexitem>
     <indexitem target="task-jvmprofilersettings" text="configuring (task)"></indexitem></indexitem>
- <indexitem target="task-applaunch" text="launching applications"></indexitem>
+ <indexitem target="task-appclientlaunch" text="launching application clients"></indexitem>
+ <indexitem target="ref-appclientlaunch" text="launching applications (reference)"></indexitem>
+ <indexitem target="task-applaunch" text="launching applications (task)"></indexitem>
  <indexitem target="ref-ldaprealmprop" text="LDAP realm, properties"></indexitem>
  <indexitem text="lifecycle modules">
     <indexitem target="ref-lifecyclemodulenew" text="creating (reference)"></indexitem>
