@@ -59,7 +59,7 @@ public class SimpleBMPBean
     }
 
     /* Read Operation - Driver  - shareable */
-    public boolean test1() {
+    public boolean test0() {
 
         boolean passed = true;
         for (int i = 0; i < 5; i++) {
@@ -83,6 +83,32 @@ public class SimpleBMPBean
         return passed;
     }
 
+    /* Read Operation - Driver  - NoTx -  Unshareable */
+    public boolean test1() {
+
+        boolean passed = true;
+        for (int i = 0; i < 5; i++) {
+            Connection conn = null;
+            try {
+                conn = ds.getConnection();
+                //System.out.println(ds.getConnection(conn));
+
+            } catch (Exception e) {
+                passed = false;
+            } finally {
+                if (conn != null) {
+                    try {
+                        System.out.println("Marking conn in Test-1: " + conn);
+                        ds.markConnectionAsBad(conn);
+                        conn.close();
+                    } catch (Exception e1) {
+                    }
+                }
+            }
+        }
+
+        return passed;
+    }
 
     /* Write Operation - XA  DataSource  - NoTx -  Unshareable */
     public boolean test2() {
@@ -286,9 +312,9 @@ public class SimpleBMPBean
         Connection conn = null;
         Connection conn1 = null;
         try {
-            /*conn = localds.getConnection();
+            conn = localds.getConnection();
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("insert into owner values (9,'localds')");*/
+            stmt.executeUpdate("insert into owner values (9,'localds')");
 
             conn1 = ds1.getConnection();
 	    System.out.println("Conn1 got " + conn1);
@@ -299,13 +325,13 @@ public class SimpleBMPBean
             passed = false;
             e.printStackTrace();
         } finally {
-            /*if (conn != null) {
+            if (conn != null) {
                 try {
                     localds.markConnectionAsBad(conn);
                     conn.close();
                 } catch (Exception e1) {
                 }
-            }*/
+            }
             if (conn1 != null) {
                 try {
                     ds1.markConnectionAsBad(conn1);

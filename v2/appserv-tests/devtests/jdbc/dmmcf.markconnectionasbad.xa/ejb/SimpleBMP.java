@@ -8,6 +8,8 @@ public interface SimpleBMP extends EJBObject {
 
     public Set<Integer> getFromLocalDS(int count) throws RemoteException;
 
+    public boolean test0() throws RemoteException;
+
     public boolean test1() throws RemoteException;
 
     public boolean test2() throws RemoteException;

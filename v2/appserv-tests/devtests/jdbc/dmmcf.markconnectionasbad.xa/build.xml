@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
-        <!ENTITY testproperties SYSTEM "file:./build.properties">
-        <!ENTITY run SYSTEM "file:./../../../config/run.xml">
+        <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
+        <!ENTITY run SYSTEM "./../../../config/run.xml">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -48,10 +48,26 @@
     </target>
 
     <target name="run" depends="init-common">
-	    <!--<antcall target="execute-sql-common">
+        <antcall target="execute-sql-common">
             <param name="sql.file" value="sql/create_pointbase.sql"/>
-    </antcall>-->
-        <antcall target="runclient-common"/>
+        </antcall>
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="1"/>
+        </antcall>
+        <!-- also tests the reconfig of monitoring level if the stats are being reset-->
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=OFF"/>
+        </antcall>
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=HIGH"/>
+        </antcall>
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="2"/>
+        </antcall>
     </target>
 
     <target name="undeploy" depends="init-common">
@@ -90,11 +106,11 @@
             <param name="jdbc.resource.name" value="jdbc/localdatasource"/>
         </antcall>
 
-	<!--<antcall target="asadmin-common">
+        <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
                    value="server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=HIGH"/>
-   </antcall>-->
+        </antcall>
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>

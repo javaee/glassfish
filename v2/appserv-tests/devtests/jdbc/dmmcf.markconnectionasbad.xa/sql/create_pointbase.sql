@@ -6,7 +6,7 @@ Drop table DESTROYED_INFO;
 
 CREATE TABLE DESTROYED_INFO (test_name varchar(20), pool_name varchar(30), num_des_count integer);
 
-insert into DESTROYED_INFO values ('test1', 'jdbc-unshareable-pool', 5);
+insert into DESTROYED_INFO values ('test0', 'jdbc-unshareable-pool', 5);
 insert into DESTROYED_INFO values ('test2', 'jdbc-unshareable-pool', 5);
 insert into DESTROYED_INFO values ('test3', 'jdbc-shareable-pool', 5);
 insert into DESTROYED_INFO values ('test4', 'jdbc-shareable-pool', 5);
