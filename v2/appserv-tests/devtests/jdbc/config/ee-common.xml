@@ -388,6 +388,49 @@
   <antcall target="set-${db.type}-connpool-props"/> 
 </target>
 
+<target name="set-derby-connpool-props">
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.User=${db.user}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.Password=${db.pwd}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.driverType=4"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.portNumber=${db.port}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.dataBaseName=${db.name}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.retrieveMessagesFromServerOnGetMessage=true"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.create=true"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="false">
+      <arg line="set"/>
+      <arg line="${as.props}"/>
+      <arg line="domain.resources.jdbc-connection-pool.${jdbc.conpool.name}.property.serverName=${db.host}"/>
+    </exec>
+</target>
+
 <target name="set-non-db2-type2-connpool-props">
   <exec executable="${ASADMIN}" failonerror="false">
     <arg line="set"/>

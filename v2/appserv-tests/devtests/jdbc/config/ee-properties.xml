@@ -19,12 +19,10 @@
    <property name="appuser" value="j2ee"/>
    <property name="apppwd" value="j2ee"/>   
    <property name="authrealmname" value="file"/>
-   <property name="serverinstance.name" value="test-server"/>   
+   <property name="serverinstance.name" value="test-server"/>  
+   <echo  file="${admin.password.file}"  append="false"/>
    <property name="as.props"
-       value="--user ${admin.user} 
-              --password ${admin.password} 
-              --host ${admin.host} 
-              --port ${admin.port}"/>
+     value="--user ${admin.user} --passwordfile ${admin.password.file} --host ${admin.host} --port ${admin.port} --echo=true --terse=true"/>
     <property name="createtables.value" value="false"/>
     <property name="dropandcreatetables.value" value="false"/>
     <property name="uniquetables.value" value="false"/>
@@ -64,10 +62,14 @@
     <property name="mqadmin.user" value="admin"/>
     <property name="mqadmin.password" value="admin"/>
 
-<!-- pointbase properties -->
+    <!-- pointbase properties -->
+    <!-- Changed to derby properties 
     <property file="${env.APS_HOME}/devtests/jdbc/config/pointbase.properties"/>
     <property name="db.root" value="${env.S1AS_HOME}/pointbase"/>
-    <property name="db.classpath" value="${db.root}/lib/pbtools.jar:${db.root}/lib/pbclient.jar:${db.root}/lib/pbembedded.jar"/>
+    <property name="db.classpath" value="${db.root}/lib/pbtools.jar:${db.root}/lib/pbclient.jar:${db.root}/lib/pbembedded.jar"/>-->
+    <property file="${env.APS_HOME}/config/derby.properties"/>
+    <property name="db.root" value="${env.S1AS_HOME}/../javadb"/>
+    <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar:${env.APS_HOME}/sqetests/connector/lib/cci-derby-proc.jar"/>
 
 <!-- Test Harness properties -->
     <property name="sun-acc.xml" value="${env.S1AS_HOME}/domains/domain1/config/sun-acc.xml"/>
@@ -129,7 +131,7 @@
   <path id="s1as_classpath_jars">
     <fileset dir="${env.S1AS_HOME}/lib" includes="*.jar,*.zip"/>
     <fileset dir="${env.APS_HOME}/lib" includes="**/*.jar,**/*.zip"/>
-    <fileset dir="${env.S1AS_HOME}/lib/ant/lib" includes="*.jar"/>
+    <fileset dir="${env.ANT_HOME}/lib" includes="*.jar"/>
   </path>
   <pathconvert pathsep=":" 
     property="s1as.classpath" 
