@@ -1,14 +1,9 @@
-package com.sun.s1asdev.jdbc.notxconn.test1.ejb;
-
-
+package com.sun.s1asdev.jdbc.notxconn.ejb;
 
 import javax.ejb.*;
 import java.rmi.RemoteException;
 
-import java.util.*;
-import java.io.*;
-
-public interface NoTxConnTest extends EJBObject {
+public interface SimpleSession extends EJBObject {
     public boolean test1() throws RemoteException;
     public boolean test2() throws RemoteException;
 }
