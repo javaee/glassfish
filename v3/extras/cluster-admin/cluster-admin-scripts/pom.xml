@@ -47,17 +47,10 @@
 
     <artifactId>cladmin-scripts</artifactId>
     <name>GlassFish Cluster Admin Scripts</name>
-
     <packaging>distribution-fragment</packaging>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>maven-glassfishbuild-plugin</artifactId>
-                <version>3.1-SNAPSHOT</version>
-            </plugin>
-        </plugins>
+        <finalName>cladmin-scripts</finalName>
         <extensions>
             <extension>
                 <groupId>org.glassfish.build</groupId>
