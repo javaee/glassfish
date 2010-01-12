@@ -153,8 +153,6 @@ class URLPattern extends Object implements Comparable
 	
 	URLPattern p = (URLPattern) o;
 	    
-	if (p == null) p = new URLPattern(null);
-
         int refPatternType = this.patternType();
 
 	/* The comparison yields increasing sort order
