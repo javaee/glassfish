@@ -297,8 +297,15 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
             
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
-                // register application information in domain.xml
-                deployment.registerAppInDomainXML(appInfo, deploymentContext);
+                try {
+                    // register application information in domain.xml
+                    deployment.registerAppInDomainXML(appInfo, deploymentContext);
+                } catch (Exception e) {
+                    // roll back the deployment and re-throw the exception
+                    deployment.undeploy(name, deploymentContext);
+                    deploymentContext.clean();
+                    throw e;
+                }
 
             }
             if(retrieve != null) {
