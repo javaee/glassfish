@@ -75,5 +75,7 @@ value="org.glassfish.extension.Valve"/></pre><p>You can set this property for a 
 <dt><tt>listener_<i>n</i></tt></dt>
 <dd><p>Specifies a fully qualified class name of a custom Catalina listener, where <i>n</i> is a positive integer that allows specification of more than one. The listener class must implement the <tt>org.apache.catalina.ContainerListener</tt> or <tt>org.apache.catalina.LifecycleListener</tt> interface. For example:</p><pre>&#60;property name="listener_1"
 value="org.glassfish.extension.MyLifecycleListener"/></pre><p>You can set this property for a specific web application. For details, see <a href="http://docs.sun.com/doc/820-7693/beayb?a=view">sun-web-app in <i>Sun GlassFish Enterprise Server v3 Application Deployment Guide</i></a>.</p></dd>
+<dt><tt>errorReportValve</tt></dt>
+<dd><p>Specifies a fully qualified class name of a custom valve that produces default error pages for applications on this virtual server. Specify an empty string to disable the default error page mechanism for this virtual server.</p></dd>
 </dl>
 
