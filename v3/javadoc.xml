@@ -9,7 +9,7 @@
   <property name="destfile.name" value="javadocee6.jar"/>
   <property name="Name" value="Java&lt;sup&gt;&lt;font size=-2&gt;TM&lt;/font&gt;&lt;/sup&gt; Platform, Enterprise Edition 6 " />
   <!-- set empty if non-DRAFT -->
-  <property name="DRAFT" value="DRAFT" />
+  <property name="DRAFT" value="" />
   <property name="Title" value="Java EE 6 ${DRAFT}" />
   <property name="remote.repository" value="http://maven.glassfish.org/content/groups/glassfish/" />
   <property name="maven.repo.local" value="${user.home}/.m2/repository" />
