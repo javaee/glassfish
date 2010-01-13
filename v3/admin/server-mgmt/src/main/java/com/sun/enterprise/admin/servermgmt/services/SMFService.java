@@ -268,6 +268,10 @@ public final class SMFService implements Service {
      * authentication artifacts. Parameter may not be null.
      */
     public void setPasswordFilePath(final String path) {
+        // bnevins, 1/13/2010 IT: 11119
+        // admin username and admin password are never required to start a domain
+        // starting in V3.0.  At most the (non-default) master password is needed.
+        
         if (path == null)
             throw new IllegalArgumentException(nullArgMsg);
         String msg = null;
@@ -277,21 +281,12 @@ public final class SMFService implements Service {
         }
         final String cp = FileUtils.safeGetCanonicalPath(new File(path));
         final Map<String, String> tv = new HashMap<String, String> ();
-        if (!fileContainsToken(cp, AS_ADMIN_USER_TN, tv)) {
-            msg = sm.getString("missingParamsInFile", cp, AS_ADMIN_USER_TN);
-            throw new IllegalArgumentException(msg);
-        }
-        if (!fileContainsToken(cp, AS_ADMIN_PASSWORD_TN, tv)) {
-            msg = sm.getString("missingParamsInFile", cp, AS_ADMIN_PASSWORD_TN);
-            throw new IllegalArgumentException(msg);
-        }
+
         if (!fileContainsToken(path, AS_ADMIN_MASTERPASSWORD_TN, tv)) {
             msg = sm.getString("missingParamsInFile", cp, AS_ADMIN_MASTERPASSWORD_TN);
             throw new IllegalArgumentException(msg);
         }
-        //pairs.put(AS_ADMIN_USER_TN, tv.get(AS_ADMIN_USER_TN));
-        //pairs.put(PASSWORD_FILE_PATH_TN, cp);
-        pairs.put(CREDENTIALS_TN, " --user " + tv.get(AS_ADMIN_USER_TN) + " --passwordfile " + cp + " ");
+        pairs.put(CREDENTIALS_TN, " --passwordfile " + cp + " ");
     }
     /** Returns timeout in seconds before the master boot restarter should
      * give up starting this service.
