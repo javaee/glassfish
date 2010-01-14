@@ -217,7 +217,7 @@ final class StandardHostValve
             }
 
             // START SJSAS 6374691
-            if (errorReportValve != null) {
+            if (errorReportValve != null && response.isError()) {
                 errorReportValve.postInvoke(request, response);
             }
             // END SJSAS 6374691
