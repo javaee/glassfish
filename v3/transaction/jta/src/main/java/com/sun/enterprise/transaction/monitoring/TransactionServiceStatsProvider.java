@@ -162,8 +162,8 @@ public class TransactionServiceStatsProvider {
                 List<String> resourceList = txnBean.getResourceNames();
                 if (resourceList != null) {
                     for (int k = 0; k < resourceList.size(); k++) {
+                        if (k != 0) strBuf.append(",");
                         strBuf.append(resourceList.get(k));
-                        strBuf.append(",");
                     }
                 }
                 strBuf.append(LINE_BREAK);

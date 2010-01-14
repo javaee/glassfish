@@ -269,7 +269,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
     synchronized void addResourceName(String resourceName) {
         if (resourceNames == null)
             resourceNames = new ArrayList<String>();
-        resourceNames.add(resourceName);
+        if( !resourceNames.contains(resourceName) ) {
+            resourceNames.add(resourceName);
+        }
     }
 
     synchronized ArrayList<String> getResourceNames() {
