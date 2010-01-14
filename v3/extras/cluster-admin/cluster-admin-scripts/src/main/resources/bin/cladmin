@@ -18,12 +18,12 @@ fi
 
 
 #Get the list of hosts from input parameter, --target
-hostportlist=`"$JAVA" -cp $LIB_DIR/cladmin.jar com.sun.enterprise.deployment.util.ProcessHostsOption "$@"`
+hostportlist=`"$JAVA" -cp $LIB_DIR/cladmin.jar org.glassfish.admin.cli.util.ProcessHostsOption "$@"`
 
 #Get the host list from environment variable AS_TARGET
 if [ "$hostportlist" = "" ]; then
     if [ "$AS_TARGET" != "" ]; then
-        hostportlist=`"$JAVA" -cp $LIB_DIR/cladmin.jar com.sun.enterprise.deployment.util.GetHostPort "$AS_TARGET"`
+        hostportlist=`"$JAVA" -cp $LIB_DIR/cladmin.jar org.glassfish.admin.cli.util.GetHostPort "$AS_TARGET"`
     fi
 fi
 
@@ -33,13 +33,13 @@ if [ "$hostportlist" = "" ]; then
     $BIN_DIR/asadmin $@
 else
     #Filter out --target, host and port arguments
-    arglist=`"$JAVA" -cp $LIB_DIR/cladmin.jar com.sun.enterprise.deployment.util.OptionsFilter "$@"`
+    arglist=`"$JAVA" -cp $LIB_DIR/cladmin.jar org.glassfish.admin.cli.util.OptionsFilter "$@"`
 
     #Run asadmin against each of the host
     for hostport in $hostportlist
     do
-        host=`"$JAVA" -cp $LIB_DIR/cladmin.jar com.sun.enterprise.deployment.util.GetHost "$hostport"`
-        port=`"$JAVA" -cp $LIB_DIR/cladmin.jar com.sun.enterprise.deployment.util.GetPort "$hostport"`
+        host=`"$JAVA" -cp $LIB_DIR/cladmin.jar org.glassfish.admin.cli.util.GetHost "$hostport"`
+        port=`"$JAVA" -cp $LIB_DIR/cladmin.jar org.glassfish.admin.cli.util.GetPort "$hostport"`
         arguments="$port $arglist"
         arguments="--port $arguments"
         arguments="$host $arguments"
