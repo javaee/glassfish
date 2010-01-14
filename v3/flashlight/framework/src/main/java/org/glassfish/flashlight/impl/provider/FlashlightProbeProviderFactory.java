@@ -1,7 +1,8 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -402,6 +403,9 @@ public class FlashlightProbeProviderFactory
         // We set the DTrace Method object inside the probe just this once to avoid
         // having to discover it anew over and over and over again at runtime...
 
+		if(allHidden(provider))
+			return;  // no need to waste time if they are all hidden
+
         DTraceContract dt = FlashlightUtils.getDtraceEngine();
 
         // is DTrace available and enabled?
@@ -441,6 +445,17 @@ public class FlashlightProbeProviderFactory
          if(!onlyHidden)
             FlashlightProbeClientMediator.getInstance().registerDTraceListener(provider);
     }
+
+
+
+    private boolean allHidden(FlashlightProbeProvider provider) {
+        for(FlashlightProbe probe : provider.getProbes())
+            if(!probe.isHidden())
+                return false;   // at least one is not hidden
+
+        return true;
+    }
+
 
     private void registerProvider(ClassLoader cl, org.glassfish.flashlight.xml.Provider provider) {
 
