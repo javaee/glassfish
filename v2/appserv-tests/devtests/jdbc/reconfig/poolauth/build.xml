@@ -2,22 +2,15 @@
 
 <!DOCTYPE project [
 <!ENTITY testproperties SYSTEM "file:./build.properties">
-<!ENTITY eeSetup SYSTEM "file:./../../config/ee-common.xml">
-<!ENTITY eeProperties SYSTEM "file:./../../config/ee-properties.xml">
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
 ]>
 
 <project name="mix" default="usage" basedir=".">
 
-    <!--
+    
     &commonSetup;
     &commonBuild;
-    &testproperties;
-    &run;
-    &jdbcCommon;
-    &jdbcCommonProps;
-    -->
-    &eeSetup;
-    &eeProperties;
     &testproperties;
 
     <target name="all" depends="build,deploy,run,undeploy"/>
@@ -65,13 +58,12 @@
       <antcall target="create-sql"/>
       <antcall target="asadmin-common">
         <param name="admin.command" value="set"/>
-	<param name="as.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.User=dbuser"/>
-	<param name="operand.props" value=""/>
+	<param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.User=dbuser"/>
       </antcall>
+
       <antcall target="asadmin-common">
         <param name="admin.command" value="set"/>
-	<param name="as.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.Password=dbpassword"/>
-	<param name="operand.props" value=""/>
+	<param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.Password=dbpassword"/>
       </antcall>
 
       <antcall target="runclient-common">
@@ -80,14 +72,14 @@
       
       <antcall target="asadmin-common">
         <param name="admin.command" value="set"/>
-	<param name="as.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.User=pbpublic"/>
-	<param name="operand.props" value=""/>
+	<param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.User=pbpublic"/>
       </antcall>
+
       <antcall target="asadmin-common">
         <param name="admin.command" value="set"/>
-	<param name="as.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.Password=pbpublic"/>
-	<param name="operand.props" value=""/>
+	<param name="operand.props" value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-poolauth-pool.property.Password=pbpublic"/>
       </antcall>
+      
       <antcall target="runclient-common">
         <param name="appclient.application.args" value="2"/>
       </antcall>

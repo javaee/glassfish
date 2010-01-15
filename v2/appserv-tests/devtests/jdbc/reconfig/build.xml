@@ -14,6 +14,7 @@
     <target name="all">
         <record name="reconfig.output" action="start" />
 	<ant dir="maxpoolsize" target="all"/>
+	<ant dir="poolauth" target="all"/>
         <record name="reconfig.output" action="stop" />
     </target>
 
@@ -27,6 +28,12 @@
         <record name="userpass.output" action="start" />
             <ant dir="userpass" target="all"/>
         <record name="userpass.output" action="stop" />
+    </target>
+
+    <target name="poolauth">
+        <record name="poolauth.output" action="start" />
+            <ant dir="poolauth" target="all"/>
+        <record name="poolauth.output" action="stop" />
     </target>
 
     <target name="usage">
