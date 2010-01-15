@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,10 +34,11 @@
  * holder.
  *
  */
-
 package com.sun.enterprise.universal.process;
 
-import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.universal.StringUtils;
+import com.sun.enterprise.universal.io.*;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 
 /**
@@ -49,7 +50,20 @@ import java.lang.management.ManagementFactory;
  * @author bnevins
  */
 public final class ProcessUtils {
+
     private ProcessUtils() {
+        // all static class -- no instances allowed!!
+    }
+
+    public static File getExe(String name) {
+        for (String path : paths) {
+            File f = new File(path + "/" + name);
+
+            if (f.canExecute()) {
+                return SmartFile.sanitize(f);
+            }
+        }
+        return null;
     }
 
     /**
@@ -60,7 +74,8 @@ public final class ProcessUtils {
         return pid;
     }
 
-    private static final int pid;
+    private static final int        pid;
+    private static final String[]   paths;
 
     static {
         int tempPid = -1;
@@ -69,13 +84,14 @@ public final class ProcessUtils {
             String pids = ManagementFactory.getRuntimeMXBean().getName();
             int index = -1;
 
-            if(StringUtils.ok(pids) && (index = pids.indexOf('@')) >= 0) {
+            if (StringUtils.ok(pids) && (index = pids.indexOf('@')) >= 0) {
                 tempPid = Integer.parseInt(pids.substring(0, index));
             }
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             tempPid = -1;
         }
+
+        paths = System.getenv("Path").split(File.pathSeparator);
 
         // final assignment
         pid = tempPid;

@@ -79,6 +79,18 @@ public class ProcessManager {
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    /** Should the output of the process be echoed to stdout?
+     *
+     * @param newEcho
+     */
+
+    public final void setEcho(boolean newEcho) {
+        echo = newEcho;
+    }
+
+
+
+    ////////////////////////////////////////////////////////////////////////////
     public final int execute() throws ProcessManagerException {
         try {
             sb_out = new StringBuffer();
@@ -127,6 +139,8 @@ public class ProcessManager {
         return exit;
     }
 
+
+
     ////////////////////////////////////////////////////////////////////////////
     public String toString() {
         return Arrays.toString(cmdline);
@@ -161,7 +175,7 @@ public class ProcessManager {
     ////////////////////////////////////////////////////////////////////////////
     private void readStream(String name, InputStream stream, StringBuffer sb) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        Thread thread = new Thread(new ReaderThread(reader, sb), name);
+        Thread thread = new Thread(new ReaderThread(reader, sb, echo), name);
         threads.add(thread);
         thread.start();
     }
@@ -233,23 +247,26 @@ public class ProcessManager {
     private int timeout;
     private Process process;
     private boolean wasError = true;
+    private boolean echo = true;    
     private static final boolean debugOn = false;
     private String[] stdinLines;
     private List<Thread> threads = new ArrayList<Thread>(2);
 
     ////////////////////////////////////////////////////////////////////////////
     static class ReaderThread implements Runnable {
-
-        ReaderThread(BufferedReader Reader, StringBuffer SB) {
+        ReaderThread(BufferedReader Reader, StringBuffer SB, boolean echo) {
             reader = Reader;
             sb = SB;
+            this.echo = echo;
         }
 
         public void run() {
             try {
                 for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                     sb.append(line).append('\n');
-                    System.out.println(line);
+                    
+                    if(echo)
+                        System.out.println(line);
                 }
             } catch (Exception e) {
             }
@@ -257,6 +274,7 @@ public class ProcessManager {
         }
         private BufferedReader reader;
         private StringBuffer sb;
+        private boolean echo;
     }
 
     static class TimeoutThread implements Runnable {
