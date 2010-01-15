@@ -1,6 +1,8 @@
 -exportcontents: \
                         com.iplanet.ias.security.auth.login; \
                         com.sun.enterprise.security; \
+                        com.sun.enterprise.security.auth; \
+                        com.sun.enterprise.security.auth.nonce; \
                         com.sun.enterprise.security.jauth; \
                         com.sun.enterprise.security.audit; \
                         com.sun.enterprise.security.auth.login; \
