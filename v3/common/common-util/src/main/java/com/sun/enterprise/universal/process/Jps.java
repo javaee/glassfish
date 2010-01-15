@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,9 +33,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.universal.process;
 
-import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.OS;
 import java.io.*;
@@ -49,18 +49,6 @@ import java.util.*;
  */
 public class Jps {
 
-    public static void main(String[] args) {
-        Set<Map.Entry<String, Integer>> set = getProcessTable().entrySet();
-        System.out.println("** Got " + set.size() + " process entries");
-        for (Map.Entry<String, Integer> e : set) {
-            System.out.printf("%d %s\n", e.getValue(), e.getKey());
-        }
-    }
-
-    final static public Map<String, Integer> getProcessTable() {
-        return new Jps().pidMap;
-    }
-
     /**
      * return the platform-specific process-id of a JVM
      * @param mainClassName The main class - this is how we identify the right JVM
@@ -70,13 +58,11 @@ public class Jps {
         Jps jps = new Jps();
         Integer integer = jps.pidMap.get(mainClassName);
 
-        if (integer == null) {
+        if(integer == null)
             return 0;
-        }
 
         return integer;
     }
-
     /**
      * Is this pid owned by a process?
      * @param apid the pid of interest
@@ -85,83 +71,64 @@ public class Jps {
     final static public boolean isPid(int apid) {
         return new Jps().pidMap.containsValue(apid);
     }
-
-    private Jps() {
+    
+    private Jps(){
         try {
-            if (jpsExe == null) {
+            if(jpsExe == null)
                 return;
-            }
-            ProcessManager pm = new ProcessManager(jpsExe.getPath(), "-l");
-            pm.execute();
-            String jpsOutput = pm.getStdout();
 
+            ProcessBuilder pb = new ProcessBuilder(jpsExe.getPath());
+            Process p = pb.start();
+            ProcessStreamDrainer saver = ProcessStreamDrainer.save("jps", p);
+            saver.waitFor();
+            String jpsOutput = saver.getOutString();
             // get each line
             String[] ss = jpsOutput.split("[\n\r]");
 
-            for (String line : ss) {
-                if (line == null || line.length() <= 0) {
+            for(String line : ss) {
+                if(line == null || line.length() <= 0)
                     continue;
-                }
 
                 String[] sublines = line.split(" ");
-                if (sublines == null || sublines.length != 2) {
+                if(sublines == null || sublines.length != 2)
                     continue;
-                }
 
                 int aPid = 0;
                 try {
                     aPid = Integer.parseInt(sublines[0]);
-                } catch (Exception e) {
+                }
+                catch(Exception e) {
                     continue;
                 }
                 // todo -- handle duplicate names??
-                // todo -- easy --> make the pid the key not the value!
-                if (!isJps(sublines[1])) {
-                    pidMap.put(sublines[1], aPid);
-                }
+                pidMap.put(sublines[1], aPid);
             }
-        } catch (Exception e) {
+        }
+        catch(Exception e) {
         }
     }
 
-    private boolean isJps(String id) {
-        if (!StringUtils.ok(id)) {
-            return false;
-        }
-
-        if (id.equals(getClass().getName())) {
-            return true;
-        }
-
-        if (id.equals("sun.tools.jps.Jps")) {
-            return true;
-        }
-
-        return false;
-    }
-    private Map<String, Integer> pidMap = new HashMap<String, Integer>();
+    private Map<String,Integer> pidMap = new  HashMap<String,Integer>();
     private static final File jpsExe;
     private static final String jpsName;
 
-    static {
-        if (OS.isWindows()) {
+    static{
+        if(OS.isWindows())
             jpsName = "jps.exe";
-        } else {
+        else
             jpsName = "jps";
-        }
 
-        final String javaroot = System.getProperty("java.home");
-        final String relpath = "/bin/" + jpsName;
-        final File fhere = new File(javaroot + relpath);
-        File fthere = new File(javaroot + "/.." + relpath);
+        final String    javaroot    = System.getProperty("java.home");
+        final String    relpath     = "/bin/" + jpsName;
+        final File      fhere       = new File(javaroot + relpath);
+        File            fthere      = new File(javaroot + "/.." + relpath);
 
-        if (fhere.isFile()) {
+        if(fhere.isFile())
             jpsExe = SmartFile.sanitize(fhere);
-        } else if (fthere.isFile()) {
+        else if(fthere.isFile())
             jpsExe = SmartFile.sanitize(fthere);
-        } else {
+        else
             jpsExe = null;
-        }
     }
 }
 
