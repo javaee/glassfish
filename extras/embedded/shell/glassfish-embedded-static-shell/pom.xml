@@ -41,15 +41,13 @@
     <parent>
         <groupId>org.glassfish.extras</groupId>
         <artifactId>extras</artifactId>
-        <version>3.0</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>glassfish-embedded-static-shell</artifactId>
-    <version>3.0</version>
     <name>Embedded GlassFish Static Shell</name>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
-
 
     <properties>
         <classpath.file>${project.build.directory}/tmp/classpath.txt</classpath.file>

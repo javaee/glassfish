@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>3.0</version>
+        <version>3.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -12,7 +12,6 @@
     <artifactId>jdbc</artifactId>
     <name>JDBC Module</name>
     <packaging>pom</packaging>
-    <version>3.0</version>
 
     <build>
         <plugins>

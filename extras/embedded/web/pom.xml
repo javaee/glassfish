@@ -40,11 +40,10 @@
   <parent>
     <groupId>org.glassfish.extras</groupId>
     <artifactId>extras</artifactId>
-    <version>3.0</version>
+    <version>3.0.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>glassfish-embedded-web</artifactId>
-  <version>3.0</version>
   <name>Embedded GlassFish Web</name>
       <packaging>jar</packaging>
 

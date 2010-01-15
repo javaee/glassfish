@@ -42,13 +42,11 @@
     <parent>
         <groupId>org.glassfish.extras</groupId>
         <artifactId>extras</artifactId>
-        <version>3.0</version>
+        <version>3.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>glassfish-embedded-shell-jar</artifactId>
-    <version>3.0</version>
     <modelVersion>4.0.0</modelVersion>
-
 
     <packaging>pom</packaging>
     <name>Embedded GlassFish Shell Jars </name>  

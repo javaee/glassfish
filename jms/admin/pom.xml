@@ -41,12 +41,11 @@
     <parent>
         <groupId>org.glassfish.jms</groupId>
         <artifactId>jms</artifactId>
-        <version>3.0</version>
+        <version>3.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>    
     <artifactId>jms-admin</artifactId>
     <packaging>hk2-jar</packaging>
-    <version>3.0</version>
     <name>JMS admin</name>
 
     <developers>
