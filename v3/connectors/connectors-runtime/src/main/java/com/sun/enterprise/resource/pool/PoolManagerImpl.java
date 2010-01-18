@@ -376,14 +376,6 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
     public void putbackBadResourceToPool(ResourceHandle h) {
 
-        // cleanup resource
-        try {
-            ResourceAllocator alloc = h.getResourceAllocator();
-            alloc.cleanup(h);
-        } catch (PoolingException ex) {
-            //ignore, this connection will be destroyed anyway
-        }
-
         // notify pool
         String poolName = h.getResourceSpec().getConnectionPoolName();
         if (poolName != null) {
@@ -400,14 +392,6 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
     public void putbackResourceToPool(ResourceHandle h,
                                       boolean errorOccurred) {
-
-        // cleanup resource
-        try {
-            ResourceAllocator alloc = h.getResourceAllocator();
-            alloc.cleanup(h);
-        } catch (PoolingException ex) {
-            errorOccurred = true;  // destroy resource
-        }
 
         // notify pool
         String poolName = h.getResourceSpec().getConnectionPoolName();

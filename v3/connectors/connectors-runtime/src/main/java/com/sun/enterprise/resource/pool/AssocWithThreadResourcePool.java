@@ -221,20 +221,22 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
      * @param h ResourceHandle
      */
     protected synchronized void freeUnenlistedResource(ResourceHandle h) {
-        if (!((AssocWithThreadResourceHandle) h).isAssociated()) {
-            ds.returnResource(h);
+        if(this.cleanupResource(h)) {
+            if (!((AssocWithThreadResourceHandle) h).isAssociated()) {
+                ds.returnResource(h);
             //free.add(h);
-        }
-        //update monitoring data
-        if(poolLifeCycleListener != null){
-            poolLifeCycleListener.decrementConnectionUsed();
-            poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
-        }
+            }
+            //update monitoring data
+            if(poolLifeCycleListener != null){
+                poolLifeCycleListener.decrementConnectionUsed();
+                poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
+            }
 
-        if (maxConnectionUsage_ > 0) {
-            performMaxConnectionUsageOperation(h);
+            if (maxConnectionUsage_ > 0) {
+                performMaxConnectionUsageOperation(h);
+            }
+            notifyWaitingThreads();
         }
-        notifyWaitingThreads();
     }
 
     /**

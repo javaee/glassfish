@@ -968,23 +968,39 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     }
 
     protected void freeResource(ResourceHandle resourceHandle) {
-        // Put it back to the free collection.
-        ds.returnResource(resourceHandle);
-        //update the monitoring data
-        if (poolLifeCycleListener != null) {
-            poolLifeCycleListener.decrementConnectionUsed();
-            poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
-        }
+        if(cleanupResource(resourceHandle)) {
+            // Put it back to the free collection.
+            ds.returnResource(resourceHandle);
+            //update the monitoring data
+            if (poolLifeCycleListener != null) {
+                poolLifeCycleListener.decrementConnectionUsed();
+                poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
+            }
         
-        if (maxConnectionUsage_ > 0) {
-            performMaxConnectionUsageOperation(resourceHandle);
+            if (maxConnectionUsage_ > 0) {
+                performMaxConnectionUsageOperation(resourceHandle);
+            }
+
+            //for both the cases of free.add and maxConUsageOperation, a free resource is added.
+            // Hence notify waiting threads
+            notifyWaitingThreads();
         }
-
-        //for both the cases of free.add and maxConUsageOperation, a free resource is added.
-        // Hence notify waiting threads
-        notifyWaitingThreads();
     }
-
+    
+    protected boolean cleanupResource(ResourceHandle handle) {
+        boolean cleanupSuccessful = true;
+        // cleanup resource
+        try {
+            ResourceAllocator alloc = handle.getResourceAllocator();
+            alloc.cleanup(handle);
+        } catch (PoolingException ex) {
+            Object[] params = new Object[]{name, ex};
+            _logger.log(Level.WARNING, "cleanup.resource.failed", params);
+            cleanupSuccessful = false;
+            resourceErrorOccurred(handle);
+        }
+        return cleanupSuccessful;
+    }
 
     public void resourceErrorOccurred(ResourceHandle h)
             throws IllegalStateException {
