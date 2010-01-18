@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -201,13 +201,14 @@ public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
         }
         if (manager == null || !register) {
             try {
+                probeProvider.securityManagerCreationStartedEvent(ejbName);
                 manager = new EJBSecurityManager(ejbDesc, this.invMgr, this);
+                probeProvider.securityManagerCreationEndedEvent(ejbName);
                 if (register) {
-                    //probeProvider.securityManagerCreationStartedEvent(ejbName);
-                    probeProvider.securityManagerCreationEvent(ejbName);
-                    //probeProvider.securityManagerCreationEndedEvent(ejbName);
+                          
                     String appName = ejbDesc.getApplication().getRegistrationName();
                     addManagerToApp(ctxId, ejbName, appName, manager);
+                    probeProvider.securityManagerCreationEvent(ejbName);
                 }
             } catch (Exception ex) {
                 _logger.log(Level.FINE, "[EJB-Security] FATAL Exception. Unable to create EJBSecurityManager: " + ex.getMessage());

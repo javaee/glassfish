@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,28 +51,28 @@ public class EjbSecurityProbeProvider {
     public void securityManagerCreationEvent(
             @ProbeParam("appName") String appName){}
 
-    //@Probe(name="securityManagerCreationStartedEvent")
-    //public void securityManagerCreationStartedEvent(
-    //        @ProbeParam("appName") String appName){}
+    @Probe(name="securityManagerCreationStartedEvent")
+    public void securityManagerCreationStartedEvent(
+            @ProbeParam("appName") String appName){}
 
-    //@Probe(name="securityManagerCreationEndedEvent")
-    //public void securityManagerCreationEndedEvent(
-    //        @ProbeParam("appName") String appName){}
+    @Probe(name="securityManagerCreationEndedEvent")
+    public void securityManagerCreationEndedEvent(
+            @ProbeParam("appName") String appName){}
     
     @Probe(name="securityManagerDestructionEvent")
     public void securityManagerDestructionEvent(
             @ProbeParam("appName") String appName
             ) {}
 
-    //@Probe(name="securityManagerDestructionStartedEvent")
-    //public void securityManagerDestructionStartedEvent(
-    //        @ProbeParam("appName") String appName
-    //        ) {}
+    @Probe(name="securityManagerDestructionStartedEvent")
+    public void securityManagerDestructionStartedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
 
-    //@Probe(name="securityManagerDestructionEndedEvent")
-    //public void securityManagerDestructionEndedEvent(
-    //        @ProbeParam("appName") String appName
-    //        ) {}
+    @Probe(name="securityManagerDestructionEndedEvent")
+    public void securityManagerDestructionEndedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
    
     
     @Probe(name="policyDestructionEvent")
@@ -80,14 +80,14 @@ public class EjbSecurityProbeProvider {
             @ProbeParam("contextId") String contextId
             ) {}
 
-    //@Probe(name="policyDestructionStartedEvent")
-    //public void policyDestructionStartedEvent(
-    //        @ProbeParam("appName") String appName
-    //        ) {}
+    @Probe(name="policyDestructionStartedEvent")
+    public void policyDestructionStartedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
 
-    //@Probe(name="policyDestructionEndedEvent")
-    //public void policyDestructionEndedEvent(
-    //        @ProbeParam("appName") String appName
-    //        ) {}
+    @Probe(name="policyDestructionEndedEvent")
+    public void policyDestructionEndedEvent(
+            @ProbeParam("appName") String appName
+            ) {}
     
 }

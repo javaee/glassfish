@@ -582,7 +582,6 @@ public class WebSecurityManager  {
         PermissionCacheFactory.removePermissionCache(uncheckedPermissionCache);
         uncheckedPermissionCache = null;
         SecurityRoleMapperFactoryGen.getSecurityRoleMapperFactory().removeAppNameForContext(CONTEXT_ID);
-        probeProvider.policyConfigurationDestructionEvent(CONTEXT_ID);
         wsmf.getManager(CONTEXT_ID,null,true);
     }
 

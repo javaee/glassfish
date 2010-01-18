@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -121,13 +121,13 @@ public class WebSecurityDeployerStatsProvider {
         secMgrCount.decrement();
     }
 
-    @ProbeListener("glassfish:security:web:policyConfigurationCreationEvent")
+    @ProbeListener("glassfish:security:web:policyCreationEvent")
     public void policyConfigurationCreationEvent(
             @ProbeParam("contextId") String contextId) {
         policyConfCount.increment();
     }
 
-    @ProbeListener("glassfish:security:web:policyConfigurationDestructionEvent")
+    @ProbeListener("glassfish:security:web:policyDestructionEvent")
     public void policyConfigurationDestructionEvent(
             @ProbeParam("contextId") String contextId) {
         policyConfCount.decrement();

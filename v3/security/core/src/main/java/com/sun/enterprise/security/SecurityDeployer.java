@@ -213,10 +213,11 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
                     loadPolicy(webBD, true);
                 }
                 String cid = SecurityUtil.getContextID(webBD);
+                websecurityProbeProvider.policyCreationStartedEvent(webBD.getModuleID());
                 SecurityUtil.generatePolicyFile(cid);
-                //websecurityProbeProvider.policyCreationStartedEvent(webBD.getModuleID());
-                websecurityProbeProvider.policyConfigurationCreationEvent(cid);
-                //websecurityProbeProvider.policyCreationEndedEvent(webBD.getModuleID());
+                websecurityProbeProvider.policyCreationEndedEvent(webBD.getModuleID());
+                websecurityProbeProvider.policyCreationEvent(cid);
+                
             }
         } catch (Exception se) {
             String msg = "Error in generating security policy for " +
@@ -236,10 +237,11 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         try {
             for (EjbBundleDescriptor ejbBD : ejbDescriptors) {
                 String pcid = SecurityUtil.getContextID(ejbBD);
+                ejbProbeProvider.policyCreationStartedEvent(ejbBD.getModuleID());
                 SecurityUtil.generatePolicyFile(pcid);
-                //ejbProbeProvider.policyCreationStartedEvent(ejbBD.getModuleID());
+                ejbProbeProvider.policyCreationEndedEvent(ejbBD.getModuleID());
                 ejbProbeProvider.policyCreationEvent(pcid);
-                //ejbProbeProvider.policyCreationEndedEvent(ejbBD.getModuleID());
+               
             }
         } catch (Exception se) {
             String msg = "Error in committing security policy for ejbs of " +
@@ -298,7 +300,10 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
             if (webcontexts != null) {
                 for (int i = 0; i < webcontexts.length; i++) {
                     if (webcontexts[i] != null) {
+                        websecurityProbeProvider.policyDestructionStartedEvent(webcontexts[i]);
                         SecurityUtil.removePolicy(webcontexts[i]);
+                        websecurityProbeProvider.policyDestructionEndedEvent(webcontexts[i]);
+                        websecurityProbeProvider.policyDestructionEvent(webcontexts[i]);
                     }
                 }
             }
@@ -360,10 +365,12 @@ public class SecurityDeployer extends SimpleDeployer<SecurityContainer, DummyApp
         for (int i = 0; managers !=
                 null && i < managers.size(); i++) {
             try {
-                //websecurityProbeProvider.securityManagerDestructionStartedEvent(appName);
-                websecurityProbeProvider.securityManagerDestructionEvent(appName);
-                //websecurityProbeProvider.securityManagerDestructionEndedEvent(appName);
+               
+                
+                websecurityProbeProvider.securityManagerDestructionStartedEvent(appName);
                 managers.get(i).destroy();
+                websecurityProbeProvider.securityManagerDestructionEndedEvent(appName);
+                websecurityProbeProvider.securityManagerDestructionEvent(appName);
                 cleanUpDone =
                         true;
             } catch (javax.security.jacc.PolicyContextException pce) {

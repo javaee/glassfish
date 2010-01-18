@@ -119,7 +119,7 @@ public class SecurityContainer implements Container, PostConstruct{
             // it to the security component.
             name = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(name);
-            websecurityProbeProvider.policyConfigurationCreationEvent(name);
+            websecurityProbeProvider.policyCreationEvent(name);
 
         } catch (IASSecurityException se) {
             String msg = "Error in generating security policy for " + name;
