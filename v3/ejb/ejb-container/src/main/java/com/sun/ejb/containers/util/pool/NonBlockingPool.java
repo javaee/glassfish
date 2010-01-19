@@ -437,7 +437,7 @@ public class NonBlockingPool
             startTime = System.currentTimeMillis();
 
             ArrayList removeList = new ArrayList();
-            int populateCount = 0;
+            long populateCount = 0;
             synchronized (list) {
                 if ((inResizing == true) || poolClosed) {
                     return;
@@ -518,7 +518,7 @@ public class NonBlockingPool
                             + list.size() + "/" + maxPoolSize);
                 }
 
-                preload(populateCount);
+                preload((int)populateCount);
 
                 if(_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, 
