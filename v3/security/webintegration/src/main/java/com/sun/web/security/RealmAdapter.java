@@ -1539,7 +1539,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             String context = WebSecurityManager.getContextID(wbd);
             SecurityUtil.generatePolicyFile(context);
             if (isSystem && context.equals("__admingui/__admingui")) {
-                websecurityProbeProvider.policyConfigurationCreationEvent(context);
+                websecurityProbeProvider.policyCreationEvent(context);
             }
         } catch (Exception ce) {
             _logger.log(Level.SEVERE, "policy.configure", ce);
