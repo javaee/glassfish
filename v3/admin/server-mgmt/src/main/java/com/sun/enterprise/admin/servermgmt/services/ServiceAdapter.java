@@ -72,10 +72,17 @@ public abstract class ServiceAdapter implements Service{
         this.date = date;
     }
 
+    /**
+     *
+     * @return the domain directory
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     * @param location the domain directoory
+     */
     public void setLocation(String location) {
         this.location = location;
     }
