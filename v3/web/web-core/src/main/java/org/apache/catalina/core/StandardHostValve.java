@@ -216,8 +216,18 @@ final class StandardHostValve
                 status(request, response);
             }
 
+            // See IT 11423
+            boolean isDefaultErrorPageEnabled = true;
+            Wrapper wrapper = request.getWrapper();
+            if (wrapper != null) {
+                String initParam = wrapper.findInitParameter(Constants.IS_DEFAULT_ERROR_PAGE_ENABLED_INIT_PARAM);
+                if (initParam != null) {
+                    isDefaultErrorPageEnabled = Boolean.parseBoolean(initParam);
+                }
+            }
+
             // START SJSAS 6374691
-            if (errorReportValve != null && response.isError()) {
+            if (errorReportValve != null && response.isError() && isDefaultErrorPageEnabled) {
                 errorReportValve.postInvoke(request, response);
             }
             // END SJSAS 6374691

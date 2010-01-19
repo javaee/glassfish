@@ -67,4 +67,6 @@ public class Constants {
     public static final String JSP_SERVLET_NAME = "jsp";
 
     public static final String DEFAULT_SERVLET_NAME = "default";
+
+    public static final String IS_DEFAULT_ERROR_PAGE_ENABLED_INIT_PARAM = "org.glassfish.web.isDefaultErrorPageEnabled";
 }
