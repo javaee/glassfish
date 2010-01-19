@@ -121,9 +121,9 @@ public final class MessageBeanContainer extends BaseContainer implements
 	private static final String DEFAULT_MESSAGE_BEAN_CLIENT_FACTORY =
             ConnectorConstants.CONNECTOR_MESSAGE_BEAN_CLIENT_FACTORY;
 
-	private static final int DEFAULT_RESIZE_QUANTITY = 1;
-	private static final int DEFAULT_STEADY_SIZE = 10;
-	private static final int DEFAULT_MAX_POOL_SIZE = 60;
+	private static final int DEFAULT_RESIZE_QUANTITY = 8;
+	private static final int DEFAULT_STEADY_SIZE = 0;
+	private static final int DEFAULT_MAX_POOL_SIZE = 32;
 	private static final int DEFAULT_IDLE_TIMEOUT = 600;
 	private static final int MIN_IDLE_TIMEOUT = 1;
 
@@ -329,7 +329,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 		if (value < lowLimit) {
 			_logger.log(Level.WARNING, "containers.mdb.invalid_value",
 					new Object[] { appName, new Integer(value), emsg,
-							new Integer(lowLimit) });
+							new Integer(deft) });
 			value = deft;
 		}
 
