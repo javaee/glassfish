@@ -70,7 +70,7 @@ import java.util.Properties;
  * @see SMFServiceHandler
  */
 public final class SMFService implements Service {
-    
+    //TODO try to move common stuff to ServiceAdapter
     public static final String DATE_CREATED_TN              = "DATE_CREATED";
     public static final String AS_ADMIN_PATH_TN             = "AS_ADMIN_PATH";
     public static final String CREDENTIALS_TN               = "CREDENTIALS";
@@ -689,5 +689,17 @@ public final class SMFService implements Service {
 
     public boolean isDryRun() {
         return dryRun;
+    }
+
+    // duplicated
+    public void writeReadmeFile(String msg) {
+        File f = new File(getDomainDirectory(), shortName);
+        ServicesUtils.appendTextToFile(f, msg);
+    }
+
+    @Override
+    public File getDomainDirectory() {
+        // location is the domain's parent dir
+        return new File(getLocation() + "/" + shortName);
     }
 }

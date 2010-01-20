@@ -157,7 +157,14 @@ public final class CreateServiceCommand extends CLICommand {
             service.isConfigValid();
             service.setTrace(CLILogger.isDebug());
             service.createService(service.tokensAndValues());
-            logger.printMessage(service.getSuccessMessage());
+
+            // Why the messiness?  We don't want to talk about the help
+            // file inside the help file thus the complications below...
+            String help = service.getSuccessMessage();
+            String tellUserAboutHelp = strings.get("create.service.runtimeHelp", help);
+            logger.printMessage(tellUserAboutHelp);
+            service.writeReadmeFile(help);
+
         } catch (Exception e) {
             // We only want to wrap the string -- not the Exception.
             // Otherwise the message that is printed out to the user will be like this:

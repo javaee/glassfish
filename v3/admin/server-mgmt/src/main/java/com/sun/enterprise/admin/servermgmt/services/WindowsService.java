@@ -82,7 +82,6 @@ public class WindowsService extends ServiceAdapter{
                 trace("No preexisting Service with that id and/or name was found");
 
             install();
-            System.out.println(getSuccessMessage());
         }
         catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -265,6 +264,16 @@ public class WindowsService extends ServiceAdapter{
             trace("Install STDERR: " + mgr.getStderr());
             trace("Install STDOUT: " + mgr.getStdout());
         }
+    }
+    public void writeReadmeFile(String msg) {
+        // TODO 1/19/2010 bnevins duplicated in SMFService
+        File f = new File(getDomainDirectory(), "PlatformServices.log");
+        ServicesUtils.appendTextToFile(f, msg);
+    }
+
+    @Override
+    public File getDomainDirectory() {
+        return new File(getLocation());
     }
 
     @Override

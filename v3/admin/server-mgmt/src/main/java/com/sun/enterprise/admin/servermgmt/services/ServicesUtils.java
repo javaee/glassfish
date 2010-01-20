@@ -39,6 +39,7 @@ package com.sun.enterprise.admin.servermgmt.services;
 import com.sun.enterprise.admin.util.LineTokenReplacer;
 import com.sun.enterprise.admin.util.TokenValue;
 import com.sun.enterprise.admin.util.TokenValueSet;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -68,4 +69,43 @@ public class ServicesUtils {
         final LineTokenReplacer tr = new LineTokenReplacer(map2Set(map));
         tr.replace(templatePath, targetPath);
     }
+
+    static void appendTextToFile(File to, String what) {
+
+        // todo - this should be a high-level utility
+        if(what == null || to == null)
+            return;
+
+        // It is very annoying in Windows when text files have "\n" instead of
+        // \n\r -- the following fixes that.
+
+        String[] lines = what.split("\n");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new FileOutputStream(to, true));
+            pw.println(SEP);
+            pw.println(new Date());
+
+            for(String s : lines)
+                pw.println(s);
+
+            pw.println(SEP);
+            pw.println();
+            pw.println();
+            pw.flush();
+        }
+        catch (IOException ioe) {
+        }
+        finally {
+            try {
+                pw.close();
+            }
+            catch (Exception e) {
+                // ignore
+            }
+        }
+    }
+
+    private static final String SEP = "==========================================";
 }

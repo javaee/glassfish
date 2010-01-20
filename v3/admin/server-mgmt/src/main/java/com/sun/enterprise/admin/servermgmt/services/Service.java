@@ -219,4 +219,6 @@ public interface Service {
 
     public String getSuccessMessage();
 
+    public void writeReadmeFile(String msg);
+    public File getDomainDirectory();
 }
