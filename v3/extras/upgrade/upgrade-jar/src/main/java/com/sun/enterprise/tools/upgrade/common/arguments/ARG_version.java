@@ -47,8 +47,10 @@ public class ARG_version extends ArgumentHandler {
     /** Creates a new instance of ARG_version */
 	public ARG_version() {
         super();
-        logger.info(sm.getString("enterprise.tools.upgrade.cli.arg_version.versionMessage",
-                        CommonInfoModel.getInstance().getTarget().getVersion()));
+        System.out.println(sm.getString(
+            "enterprise.tools.upgrade.cli.arg_version.versionMessage",
+            CommonInfoModel.getInstance().getTarget().getVersion()));
         System.exit(0);
     }
+
 }
