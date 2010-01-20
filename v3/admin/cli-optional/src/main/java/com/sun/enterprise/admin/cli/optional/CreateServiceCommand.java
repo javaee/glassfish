@@ -62,6 +62,7 @@ public final class CreateServiceCommand extends CLICommand {
     private static final String NAME = "name";
     private static final String SERVICE_PROPERTIES = "serviceproperties";
     private static final String DRY_RUN = "dry-run";
+    private static final String FORCE = "force";
     private static final String VALID_TYPES = "das|node-agent";
     private static final String DAS_TYPE = "das";
 
@@ -85,6 +86,7 @@ public final class CreateServiceCommand extends CLICommand {
         addOption(opts, NAME, '\0', "STRING", false, null);
         addOption(opts, SERVICE_PROPERTIES, '\0', "STRING", false, null);
         addOption(opts, DRY_RUN, '\0', "BOOLEAN", false, "false");
+        addOption(opts, FORCE, '\0', "BOOLEAN", false, "false");
         addOption(opts, DOMAIN_PARENT_DIR, '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
@@ -156,6 +158,8 @@ public final class CreateServiceCommand extends CLICommand {
             service.setServiceProperties(getOption(SERVICE_PROPERTIES));
             service.isConfigValid();
             service.setTrace(CLILogger.isDebug());
+            service.setForce(getBooleanOption("force"));
+
             service.createService(service.tokensAndValues());
 
             // Why the messiness?  We don't want to talk about the help
