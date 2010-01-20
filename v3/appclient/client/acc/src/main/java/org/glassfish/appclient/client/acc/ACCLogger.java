@@ -101,7 +101,9 @@ public class ACCLogger extends Logger {
                 final String msg = MessageFormat.format(
                         rb.getString("appclient.nullLogger"),
                         loggerName);
-                System.err.println(msg);
+                if (level.intValue() <= Level.CONFIG.intValue()) {
+                    System.err.println(msg);
+                }
             } else {
                 reviseLogger(
                         logger,
