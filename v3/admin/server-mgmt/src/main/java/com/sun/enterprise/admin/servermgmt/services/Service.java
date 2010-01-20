@@ -221,4 +221,6 @@ public interface Service {
 
     public void writeReadmeFile(String msg);
     public File getDomainDirectory();
+    public boolean isForce();
+    public void setForce(boolean b);
 }

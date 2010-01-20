@@ -113,6 +113,7 @@ public final class SMFService implements Service {
     private boolean trace = true;
     private boolean dryRun;
     private String  shortName;
+    private boolean force;
 
     /**
      * Creates SMFService instance. All the tokens are initialized to default values. 
@@ -634,10 +635,20 @@ public final class SMFService implements Service {
     private void validateManifest(final String manifestPath) throws Exception {
         final File manifest = new File(manifestPath);
         final File manifestParent = manifest.getParentFile();
+        final String msg = sm.getString("smfLeftoverFiles", manifest.getParentFile().getAbsolutePath());
         
         if (manifestParent != null && manifestParent.isDirectory()) {
-            final String msg = sm.getString("smfLeftoverFiles", manifest.getParentFile().getAbsolutePath());
-            throw new IllegalArgumentException(msg);
+            
+            if(isForce()) {
+                FileUtils.whack(manifestParent);
+
+                if (manifestParent != null && manifestParent.isDirectory()) {
+                    throw new IllegalArgumentException(msg);
+                }
+            }
+            else {
+                throw new IllegalArgumentException(msg);
+            }
         }
         manifest.getParentFile().mkdirs();
         if (trace)
@@ -701,5 +712,15 @@ public final class SMFService implements Service {
     public File getDomainDirectory() {
         // location is the domain's parent dir
         return new File(getLocation() + "/" + shortName);
+    }
+
+    @Override
+    public boolean isForce() {
+        return force;
+    }
+
+    @Override
+    public void setForce(boolean b) {
+        force = b;
     }
 }

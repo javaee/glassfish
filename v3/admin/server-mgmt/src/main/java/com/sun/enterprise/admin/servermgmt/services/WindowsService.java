@@ -98,6 +98,23 @@ public class WindowsService extends ServiceAdapter{
         return Strings.get("WindowsServiceCreated", getName(),
             serverName + " GlassFish Server", serverDir, targetXml, targetWin32Exe);
     }
+
+    public void writeReadmeFile(String msg) {
+        // TODO 1/19/2010 bnevins duplicated in SMFService
+        File f = new File(getDomainDirectory(), "PlatformServices.log");
+        ServicesUtils.appendTextToFile(f, msg);
+    }
+
+    @Override
+    public File getDomainDirectory() {
+        return new File(getLocation());
+    }
+
+    @Override
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
+
         ///////////////////////////////////////////////////////////////////////
         //////////////////////////   ALL PRIVATE BELOW    /////////////////////
         ///////////////////////////////////////////////////////////////////////
@@ -120,9 +137,7 @@ public class WindowsService extends ServiceAdapter{
         targetWin32Exe = new File(targetDir, serverName + "Service.exe");
         targetXml      = new File(targetDir, serverName + "Service.xml");
 
-        if(targetWin32Exe.exists() || targetXml.exists())
-            throw new RuntimeException(Strings.get("windows.services.alreadyCreated", new File(targetDir, serverName + "Service")));
-
+        handlePreExisting(targetWin32Exe, targetXml, isForce());
         FileUtils.copy(sourceWin32Exe, targetWin32Exe);
         trace("Copied from " + sourceWin32Exe + " to " + targetWin32Exe);
 
@@ -265,22 +280,21 @@ public class WindowsService extends ServiceAdapter{
             trace("Install STDOUT: " + mgr.getStdout());
         }
     }
-    public void writeReadmeFile(String msg) {
-        // TODO 1/19/2010 bnevins duplicated in SMFService
-        File f = new File(getDomainDirectory(), "PlatformServices.log");
-        ServicesUtils.appendTextToFile(f, msg);
+
+    private void handlePreExisting(File targetWin32Exe, File targetXml, boolean force) {
+        if (targetWin32Exe.exists() || targetXml.exists()) {
+            if (force) {
+                targetWin32Exe.delete();
+                targetXml.delete();
+                // we call this same method to make sur they were deleted
+                handlePreExisting(targetWin32Exe, targetXml, false);
+            }
+            else {
+                throw new RuntimeException(Strings.get("windows.services.alreadyCreated", new File(targetDir, serverName + "Service")));
+            }
+        }
     }
 
-    @Override
-    public File getDomainDirectory() {
-        return new File(getLocation());
-    }
-
-    @Override
-    public String toString() {
-        return ObjectAnalyzer.toString(this);
-    }
-    
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }

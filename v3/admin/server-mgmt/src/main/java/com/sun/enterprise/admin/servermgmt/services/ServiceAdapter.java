@@ -171,6 +171,15 @@ public abstract class ServiceAdapter implements Service{
         return dryRun;
     }
 
+    public boolean isForce() {
+        return force;
+    }
+    
+    public void setForce(boolean b) {
+        force = b;
+    }
+
+
     final String getAppserverUser() {
         return appserverUser;
     }
@@ -266,6 +275,6 @@ public abstract class ServiceAdapter implements Service{
     private String          appserverUser;
     private boolean         trace;
     private boolean         dryRun;
-
+    private boolean         force;
     private AppserverServiceType type = AppserverServiceType.Domain;
 }
