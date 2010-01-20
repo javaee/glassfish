@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -2407,8 +2407,7 @@ public final class StatefulSessionContainer
             }
             _logger.log(Level.SEVERE, "ejb.sfsb_activation_error",
                     new Object[]{sessionKey});
-            _logger.log(Level.SEVERE, "sfsb activation error. Key: "
-                    + sessionKey, ex);
+            _logger.log(Level.SEVERE, "", ex);
 
             throw new EJBException("Unable to activate EJB for key: "
                     + sessionKey, ex);
