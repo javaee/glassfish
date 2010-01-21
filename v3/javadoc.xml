@@ -59,6 +59,7 @@
       <include name="common/amx-core/src/main/java/**"/>
       <include name="common/amx-config/src/main/java/**"/>
       <include name="common/amx-j2ee/src/main/java/**"/>
+      <include name="web/web-embed/api/src/main/java/**"/>
       <include name="flashlight/framework/src/main/java/**"/>
       <include name="external/management-api-sources/**"/>
       <include name="external/appclient-tmp/**"/>
