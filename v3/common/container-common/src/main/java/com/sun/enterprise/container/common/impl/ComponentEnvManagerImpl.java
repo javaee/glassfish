@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -399,9 +399,7 @@ public class ComponentEnvManagerImpl
             String name = descriptorToLogicalJndiName(resourceRef);
             Object value = null;
             String physicalJndiName = resourceRef.getJndiName();
-            if (resourceRef.isMailResource()) {
-                value = namingUtils.createLazyNamingObjectFactory(name, physicalJndiName, false);
-            } else if (resourceRef.isURLResource()) {
+            if (resourceRef.isURLResource()) {
                 Object obj = null;
                 try {
                    obj  = new java.net.URL(physicalJndiName);
