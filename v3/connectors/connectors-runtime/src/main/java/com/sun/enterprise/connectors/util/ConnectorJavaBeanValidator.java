@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors.util;
 
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.validation.*;
@@ -97,9 +98,16 @@ public class ConnectorJavaBeanValidator {
         // this is needed in case of appclient/standalone client
         // and system-resource-adapters in server.
         if (beanValidator == null) {
-            validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
-            beanValidator = validatorFactory.getValidator();
-            ConnectorRegistry.getInstance().addBeanValidator(rarName, beanValidator);
+            ClassLoader contextCL = null;
+            try{
+                contextCL = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(ConnectorRuntime.getRuntime().getConnectorClassLoader());
+                validatorFactory = Validation.byDefaultProvider().configure().buildValidatorFactory();
+                beanValidator = validatorFactory.getValidator();
+                ConnectorRegistry.getInstance().addBeanValidator(rarName, beanValidator);
+            }finally{
+                Thread.currentThread().setContextClassLoader(contextCL);
+            }
         }
         return beanValidator;
     }
