@@ -37,35 +37,30 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import java.beans.PropertyChangeEvent;
-import java.util.*;
-import java.util.logging.*;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.server.ContainerStarter;
+import com.sun.grizzly.config.dom.*;
 import com.sun.logging.LogDomains;
-import com.sun.hk2.component.*;
 import org.glassfish.api.Startup;
-import org.glassfish.api.container.*;
+import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.glassfish.internal.data.EngineInfo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.config.Changed;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.NotProcessed;
-import org.jvnet.hk2.config.ObservableBean;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
+
+import java.beans.PropertyChangeEvent;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Startup service for the web container.
@@ -105,7 +100,10 @@ public class WebContainerStarter
     ModulesRegistry modulesRegistry;
 
     @Inject
-    public HttpService httpService;
+    HttpService httpService;
+
+    @Inject
+    NetworkConfig networkConfig;
 
     @Inject
     private Habitat habitat;
@@ -120,32 +118,23 @@ public class WebContainerStarter
         boolean isStartNeeded = false;
         List<Config> configs = domain.getConfigs().getConfig();
         for (Config config : configs) {
-            HttpService httpService = config.getHttpService();
-            if (isStartNeeded(httpService)) {
+            if (isStartNeeded(config.getHttpService())) {
                 isStartNeeded = true;
                 break;
             }
-            
-            List<VirtualServer> hosts = httpService.getVirtualServer();
-            if (hosts != null) {
-                for (VirtualServer host : hosts) {
-                    if (isStartNeeded(host)) {
-                        isStartNeeded = true;
-                        break;
-                    }
-                }
-                if (isStartNeeded) {
-                    break;
-                }
+            if (isStartNeeded(config.getNetworkConfig())) {
+                isStartNeeded = true;
+                break;
             }
         }
 
         if (isStartNeeded) {
             startWebContainer();
         } else {
-            ObservableBean httpServiceBean = (ObservableBean)
-                ConfigSupport.getImpl(httpService);
-            httpServiceBean.addListener(this);
+            ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(httpService);
+            bean.addListener(this);
+            bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
+            bean.addListener(this);
         }
     }
 
@@ -171,6 +160,12 @@ public class WebContainerStarter
                             startWebContainer();
                         }
                     }
+                } else if (t instanceof NetworkListener) {
+                    if (type == TYPE.ADD || type == TYPE.CHANGE) {
+                        if (isStartNeeded((NetworkListener) t)) {
+                            startWebContainer();
+                        }
+                    }
                 }
                 return null;
             }
@@ -187,6 +182,7 @@ public class WebContainerStarter
             logger.info("Web container not installed");
             return;
         }
+        
         if (containerRegistry.getContainer(
                     webSniffer.getContainersNames()[0]) != null) {
             containerRegistry.getContainer(
@@ -222,6 +218,10 @@ public class WebContainerStarter
      * the web container to be started, false otherwise
      */
     private boolean isStartNeeded(HttpService httpService) {
+        if (httpService == null) {
+            return false;
+        }
+
         if (ConfigBeansUtilities.toBoolean(
                     httpService.getAccessLoggingEnabled()) ||
                 ConfigBeansUtilities.toBoolean(
@@ -248,6 +248,15 @@ public class WebContainerStarter
             }
         }
 
+        List<VirtualServer> hosts = httpService.getVirtualServer();
+        if (hosts != null) {
+            for (VirtualServer host : hosts) {
+                if (isStartNeeded(host)) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -257,6 +266,10 @@ public class WebContainerStarter
      * the web container to be started, false otherwise
      */
     private boolean isStartNeeded(VirtualServer host) {
+        if (host == null) {
+            return false;
+        }
+
         if (ConfigBeansUtilities.toBoolean(host.getAccessLoggingEnabled()) ||
                 ConfigBeansUtilities.toBoolean(host.getSsoEnabled())) {
             return true;
@@ -275,5 +288,42 @@ public class WebContainerStarter
         }
 
         return false;
+    }
+
+    /*
+     * @return true if the given NetworkConfig contains any configuration
+     * that can be handled only by the web container and therefore requires
+     * the web container to be started, false otherwise
+     */
+    private boolean isStartNeeded(NetworkConfig networkConfig) {
+        if (networkConfig == null) {
+            return false;
+        }
+
+        NetworkListeners networkListeners = networkConfig.getNetworkListeners();
+        if (networkListeners == null) {
+            return false;
+        }
+
+        for (NetworkListener networkListener : networkListeners.getNetworkListener()) {
+            if (isStartNeeded(networkListener)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * @return true if the given NetworkListener contains any configuration
+     * that can be handled only by the web container and therefore requires
+     * the web container to be started, false otherwise
+     */
+    private boolean isStartNeeded(NetworkListener networkListener) {
+        if (networkListener == null) {
+            return false;
+        }
+
+        return ConfigBeansUtilities.toBoolean(networkListener.getJkEnabled());
     }
 }
