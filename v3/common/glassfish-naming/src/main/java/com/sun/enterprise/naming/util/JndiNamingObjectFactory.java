@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@
 package com.sun.enterprise.naming.util;
 
 import com.sun.enterprise.naming.spi.NamingObjectFactory;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.naming.Context;
@@ -70,18 +71,23 @@ public class JndiNamingObjectFactory
     public Object create(Context ic)
             throws NamingException {
         Object result = null;
-        if (cacheResult) {
-            result = value.get();
-            if (result == null) {
-                Object tempResult = ic.lookup(jndiName);
-                if( value.compareAndSet(null, tempResult) ) {
-                    result = tempResult;
-                } else {
-                    result = value.get();
+        try {
+            ic.addToEnvironment(GlassfishNamingManager.LOGICAL_NAME, name);
+            if (cacheResult) {
+                result = value.get();
+                if (result == null) {
+                    Object tempResult = ic.lookup(jndiName);
+                    if (value.compareAndSet(null, tempResult)) {
+                        result = tempResult;
+                    } else {
+                        result = value.get();
+                    }
                 }
+            } else {
+                result = ic.lookup(jndiName);
             }
-        } else {
-            result = ic.lookup(jndiName);
+        } finally {
+            ic.removeFromEnvironment(GlassfishNamingManager.LOGICAL_NAME);
         }
 
         return result;

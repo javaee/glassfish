@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,7 @@ import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
 import javax.resource.spi.ManagedConnection;
 import javax.resource.ResourceException;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -331,7 +332,6 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
 
 
     private ConnectorRuntime getConnectorRuntime() {
-        //TODO V3 not synchronized
         if(runtime == null){
             runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class, null);
         }
@@ -479,8 +479,9 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
            }
        }
     
-    public ResourceReferenceDescriptor getResourceReference(String jndiName) {
+    public ResourceReferenceDescriptor getResourceReference(String jndiName, String logicalName) {
         Set descriptors = getConnectorRuntime().getResourceReferenceDescriptor();
+        List matchingRefs = new ArrayList();
 
         if (descriptors != null) {
             for (Object descriptor : descriptors) {
@@ -488,11 +489,33 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
                         (ResourceReferenceDescriptor) descriptor;
                 String name = ref.getJndiName();
                 if (jndiName.equals(name)) {
-                    return ref;
+                     matchingRefs.add(ref);
+                }
+            }
+        }
+        if(matchingRefs.size()==1){
+            return (ResourceReferenceDescriptor)matchingRefs.get(0);
+        }else if(matchingRefs.size() > 1){
+            Iterator it = matchingRefs.iterator();
+            while(it.hasNext()){
+                ResourceReferenceDescriptor rrd = (ResourceReferenceDescriptor)it.next();
+                String refName = rrd.getName();
+                refName = getJavaName(refName);
+                if(refName.equals(getJavaName(logicalName))){
+                    return rrd;
                 }
             }
         }
         return null;
+    }
+
+    private static String getJavaName(String name){
+        if(name.startsWith("java:")){
+            return name;
+        }else {
+            //by default, scope is "comp"
+            return "java:comp/env/" + name;
+        }
     }
 
     public void beforePreInvoke(ComponentInvocation.ComponentInvocationType invType, ComponentInvocation prevInv,

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 import java.util.Hashtable;
 
 import org.glassfish.api.admin.*;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -140,6 +141,12 @@ public class ConnectorObjectFactory implements ObjectFactory {
                     getRuntime().obtainConnectionManager(poolName, forceNoLazyAssoc);
             mgr.setJndiName(derivedJndiName);
             mgr.setRarName(moduleName);
+
+            String logicalName = (String)env.get(GlassfishNamingManager.LOGICAL_NAME);
+            if(logicalName != null){
+                mgr.setLogicalName(logicalName);
+            }
+            
             mgr.initialize();
 
             cf = mcf.createConnectionFactory(mgr);
