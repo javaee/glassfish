@@ -662,6 +662,9 @@ public class WebappClassLoader
         if (logger.isLoggable(Level.FINER))
             logger.finer("addJar(" + jar + ")");
 
+        // See IT 11417
+        super.addURL(getURL(file));
+
         int i;
 
         if ((jarPath != null) && (jar.startsWith(jarPath))) {
