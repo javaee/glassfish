@@ -39,10 +39,10 @@
  *
  * Created on April 20, 2007, 11:59 AM
  * Updated for V3 on March 4, 2008
- * Moved out of universal January 25, 2010
  */
-package com.sun.enterprise.universal.glassfish;
+package com.sun.enterprise.util.glassfish;
 
+import com.sun.enterprise.universal.glassfish.*;
 import java.util.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
