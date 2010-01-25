@@ -35,8 +35,9 @@
  * holder.
  */
 
-package com.sun.enterprise.universal;
+package com.sun.enterprise.util;
 
+import com.sun.enterprise.universal.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
