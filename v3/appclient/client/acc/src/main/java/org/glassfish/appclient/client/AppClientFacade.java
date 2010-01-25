@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,10 +41,9 @@ package org.glassfish.appclient.client;
 
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.deployment.node.SaxParserHandlerBundled;
-import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.util.glassfish.TokenResolver;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -86,11 +85,9 @@ import org.glassfish.appclient.client.acc.Util;
 import org.glassfish.appclient.client.acc.config.AuthRealm;
 import org.glassfish.appclient.client.acc.config.ClientContainer;
 import org.glassfish.appclient.client.acc.config.ClientCredential;
-import org.glassfish.appclient.client.acc.config.LogService;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
-import org.glassfish.appclient.client.jws.boot.LaunchSecurityHelper;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
