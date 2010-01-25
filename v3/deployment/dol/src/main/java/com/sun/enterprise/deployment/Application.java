@@ -1820,7 +1820,10 @@ public class Application extends BundleDescriptor
      * @return the module ID for this module descriptor
      */
     public String getModuleID() {
-        return appName;
+        if (appName != null) {
+            return appName;
+        }
+        return moduleID;
     }
 
     /**
