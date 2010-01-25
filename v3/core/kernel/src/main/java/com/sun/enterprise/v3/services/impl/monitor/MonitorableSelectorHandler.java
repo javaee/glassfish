@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,11 +93,14 @@ public class MonitorableSelectorHandler extends SelectorThreadHandler {
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
         final SocketChannel channel = (SocketChannel) super.acceptWithoutRegistration(key);
-        final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
-        
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
-                monitoringId, channel.hashCode(), address);
+        if (channel != null) {
+            final String address = ((InetSocketAddress) channel.socket().
+                    getRemoteSocketAddress()).toString();
 
+            grizzlyMonitoring.getConnectionQueueProbeProvider().
+                    connectionAcceptedEvent(monitoringId, channel.hashCode(),
+                    address);
+        }
         
         return channel;
     }
