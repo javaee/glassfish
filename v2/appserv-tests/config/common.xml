@@ -163,6 +163,7 @@ Variables Used:
       <include name="**/*.do"/>
       <include name="**/*.txt"/>
       <include name="**/*.shtml"/>
+      <include name="**/*.jar"/>
       <exclude name="**/*.java,**/*.xml,**/*.properties"/>
     </fileset>
     <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
