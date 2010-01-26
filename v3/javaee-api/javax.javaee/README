@@ -1,0 +1,27 @@
+This module bundles the Java(TM) EE 6 Specification APIs into one javaee-api jar.  The pom.xml file is not used to pushed to the maven repository.  It's primarly purpose is to assemble the javaee-api jar files.  There are three profiles in the pom.xml file:  
+(1) api profile assembles javaee-api. This is the default profile.
+(2) web-api profile assembles javaee-web-api.  This profile assembles just the JavaEE 6 web profile classes.
+(3) endorsed-api profile assembles javaee-endorsed-api.  This profile assembles the endoresed JavaEE 6 classes.
+
+To execute the profile, use the maven syntax:  "mvn -P api", "mvn -P web-api" or "mvn -P endorsed-api".  If profile is not provided, it defaults to "api".
+
+Note that the jar assembled includes the impl classes.  You will need to execute maven from the directory, compact.  Please read compact/README.
+
+There are two pom files in this directory that is used to pushed the artifact to maven repository:
+(1) javaee-api.pom
+(2) javaee-web-api.pom
+
+The pom files contain the following information:
+* modelVersion
+* groupId
+* artifactId
+* version
+* packaging
+* name
+* description
+* url
+* licenses
+* scm
+* developers
+
+This information is pertinent for syncting the artifacts to the Maven Central repository.
