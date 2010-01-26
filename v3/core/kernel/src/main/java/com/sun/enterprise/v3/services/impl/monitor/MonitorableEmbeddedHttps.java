@@ -38,7 +38,6 @@ package com.sun.enterprise.v3.services.impl.monitor;
 
 import com.sun.grizzly.TCPSelectorHandler;
 import com.sun.grizzly.config.GrizzlyEmbeddedHttps;
-import com.sun.grizzly.config.GrizzlyServiceListener;
 import com.sun.grizzly.http.FileCacheFactory;
 import com.sun.grizzly.http.KeepAliveStats;
 import com.sun.grizzly.http.SelectorThreadKeyHandler;
@@ -57,8 +56,8 @@ public class MonitorableEmbeddedHttps extends GrizzlyEmbeddedHttps {
 
     public MonitorableEmbeddedHttps(
             GrizzlyMonitoring monitoring,
-            GrizzlyServiceListener grizzlyServiceListener, String monitoringId) {
-        super(grizzlyServiceListener);
+            String monitoringId) {
+
         this.monitoring = monitoring;
         this.monitoringId = monitoringId;
 

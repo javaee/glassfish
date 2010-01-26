@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -103,6 +103,20 @@
                 <exclusion>
                     <groupId>stax</groupId>
                     <artifactId>stax</artifactId>
+                </exclusion>
+                <!--
+                    'jersey' exclusions added to workaround an issue integrating
+                    Grizzly 19.19.  These are test dependencies defined in the
+                    Grizzy POMs, however, if they aren't excluded, a StackOverflowError
+                    occurs in the antrun-extended plugin.
+                -->
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-server</artifactId>
                 </exclusion>
             </exclusions>
   	</dependency>  

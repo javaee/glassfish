@@ -38,10 +38,12 @@
 
 package com.sun.enterprise.v3.services.impl.monitor;
 
-import com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider;
 import com.sun.enterprise.v3.services.impl.monitor.stats.StatsProvider;
 import com.sun.grizzly.http.StatsThreadPool;
-import com.sun.grizzly.util.AbstractThreadPool.Worker;
+import com.sun.grizzly.util.ThreadPoolConfig;
+import com.sun.grizzly.util.ThreadPoolMonitoringProbe;
+
+import java.util.Queue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -53,18 +55,28 @@ import java.util.concurrent.TimeUnit;
  */
 public class MonitorableThreadPool extends StatsThreadPool {
 
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-    private final GrizzlyMonitoring monitoring;
-    private final String monitoringId;
+
+    // ------------------------------------------------------------ Constructors
+
 
     public MonitorableThreadPool(
             GrizzlyMonitoring monitoring, String monitoringId,
             String threadPoolName, int corePoolSize, int maximumPoolSize,
             int maxTasksCount, long keepAliveTime, TimeUnit unit) {
-        super(threadPoolName, corePoolSize, maximumPoolSize, maxTasksCount,
-                keepAliveTime, unit);
-        this.monitoring = monitoring;
-        this.monitoringId = monitoringId;
+
+        super(new GrizzlyIntegrationThreadPoolConfig(
+              monitoringId,
+              monitoring,
+              threadPoolName,
+              corePoolSize,
+              maximumPoolSize,
+              null,
+              maxTasksCount,
+              keepAliveTime,
+              unit,
+              null,
+              Thread.NORM_PRIORITY));
+
 
         if (monitoring != null) {
             StatsProvider statsProvider =
@@ -79,129 +91,234 @@ public class MonitorableThreadPool extends StatsThreadPool {
                 statsProvider.setStatsObject(this);
             }
 
+            ThreadPoolConfig config = getConfiguration();
+
+            // force related events to be fired though the values aren't
+            // changing.
+            config.setCorePoolSize(config.getCorePoolSize());
+            config.setMaxPoolSize(config.getMaxPoolSize());
+            config.setQueueLimit(config.getQueueLimit());
+
         }
 
-        setThreadFactory(new ProbeWorkerThreadFactory());
-
-        final ThreadPoolProbeProvider threadPoolProbeProvider =
-                monitoring.getThreadPoolProbeProvider();
-        
-        threadPoolProbeProvider.setCoreThreadsEvent(
-                monitoringId, threadPoolName, super.corePoolSize);
-        threadPoolProbeProvider.setMaxThreadsEvent(
-                monitoringId, threadPoolName, super.maxPoolSize);
-
-        monitoring.getConnectionQueueProbeProvider().setMaxTaskQueueSizeEvent(
-                monitoringId, getMaxQueuedTasksCount());
     }
 
-    @Override
-    public void setCorePoolSize(int corePoolSize) {
-        synchronized (statelock) {
-            super.setCorePoolSize(corePoolSize);
 
-            if (monitoring == null) return;
+    // ---------------------------------------------------------- Nested Classes
 
-            monitoring.getThreadPoolProbeProvider().setCoreThreadsEvent(
-                    monitoringId, getName(), corePoolSize);
+
+    /**
+     * Custom {@link ThreadPoolConfig} to link V3 probe monitors into the
+     * Grizzly runtime.
+     */
+    private static class GrizzlyIntegrationThreadPoolConfig extends ThreadPoolConfig {
+
+        private final String monitoringId;
+        private final GrizzlyMonitoring monitoring;
+
+
+        // -------------------------------------------------------- Constructors
+
+
+        public GrizzlyIntegrationThreadPoolConfig(String monitoringId,
+                                                  GrizzlyMonitoring monitoring,
+                                                  String poolName,
+                                                  int corePoolSize,
+                                                  int maxPoolSize,
+                                                  Queue<Runnable> queue,
+                                                  int queueLimit,
+                                                  long keepAliveTime,
+                                                  TimeUnit timeUnit,
+                                                  ThreadFactory threadFactory,
+                                                  int priority) {
+
+            super(poolName,
+                  corePoolSize,
+                  maxPoolSize,
+                  queue,
+                  queueLimit,
+                  keepAliveTime,
+                  timeUnit,
+                  threadFactory,
+                  priority,
+                  null);
+            super.setMonitoringProbe(new GrizzlyIntegrationThreadPoolMonitoringProbe());
+            this.monitoringId = monitoringId;
+            this.monitoring = monitoring;
+
         }
-    }
 
-    @Override
-    public void setMaximumPoolSize(int maxPoolSize) {
-        synchronized (statelock) {
-            super.setMaximumPoolSize(maxPoolSize);
-            
-            if (monitoring == null) return;
 
-            monitoring.getThreadPoolProbeProvider().setMaxThreadsEvent(
-                    monitoringId, getName(), maxPoolSize);
+        // --------------------------------------- Methods from ThreadPoolConfig
+
+
+        /**
+         * @see ThreadPoolConfig#setCorePoolSize(int)
+         */
+        @Override public ThreadPoolConfig setCorePoolSize(int corePoolSize) {
+
+            if (monitoring != null) {
+                monitoring.getThreadPoolProbeProvider().setCoreThreadsEvent(
+                      monitoringId, getPoolName(), corePoolSize);
+            }
+            return super.setCorePoolSize(corePoolSize);
+
         }
-    }
 
-    @Override
-    protected void setPoolSizes(int corePoolSize, int maxPoolSize) {
-        synchronized (statelock) {
-            super.setPoolSizes(corePoolSize, maxPoolSize);
 
-            if (monitoring == null) return;
+        /**
+         * @see ThreadPoolConfig#setMaxPoolSize(int)
+         */
+        @Override public ThreadPoolConfig setMaxPoolSize(int maxPoolSize) {
 
-            final ThreadPoolProbeProvider threadPoolProbeProvider =
-                    monitoring.getThreadPoolProbeProvider();
+            if (monitoring != null) {
+                monitoring.getThreadPoolProbeProvider().setMaxThreadsEvent(
+                      monitoringId, getPoolName(), maxPoolSize);
+            }
+            return super.setMaxPoolSize(maxPoolSize);
 
-            threadPoolProbeProvider.setCoreThreadsEvent(
-                    monitoringId, getName(), corePoolSize);
-            threadPoolProbeProvider.setMaxThreadsEvent(
-                    monitoringId, getName(), maxPoolSize);
         }
-    }
 
 
-    @Override
-    protected void beforeExecute(Thread thread, Runnable runnable) {
-        super.beforeExecute(thread, runnable);
-        monitoring.getThreadPoolProbeProvider().threadDispatchedFromPoolEvent(
-                monitoringId, getName(), thread.getName());
-    }
+        /**
+         * @see ThreadPoolConfig#setQueueLimit(int)
+         */
+        @Override public ThreadPoolConfig setQueueLimit(int limit) {
 
-    @Override
-    protected void afterExecute(Runnable r, Throwable t) {
-        monitoring.getThreadPoolProbeProvider().threadReturnedToPoolEvent(
-                monitoringId, getName(), Thread.currentThread().getName());
-        super.afterExecute(r, t);
-    }
+            if (monitoring != null) {
+                monitoring.getConnectionQueueProbeProvider().setMaxTaskQueueSizeEvent(
+                      monitoringId, limit);
+            }
+            return super.setQueueLimit(limit);
 
-    @Override
-    protected void onWorkerStarted(Worker worker) {
-        super.onWorkerStarted(worker);
-        monitoring.getThreadPoolProbeProvider().threadAllocatedEvent(
-                monitoringId, getName(), Thread.currentThread().getName());
-    }
-
-    @Override
-    protected void onWorkerExit(Worker worker) {
-        monitoring.getThreadPoolProbeProvider().threadReleasedEvent(
-                monitoringId, getName(), Thread.currentThread().getName());
-        super.onWorkerExit(worker);
-    }
-
-    @Override
-    protected void onMaxNumberOfThreadsReached() {
-        monitoring.getThreadPoolProbeProvider().maxNumberOfThreadsReachedEvent(
-                monitoringId, getName(), getMaximumPoolSize());
-        super.onMaxNumberOfThreadsReached();
-    }
-
-    @Override
-    protected void onTaskQueued(Runnable task) {
-        monitoring.getConnectionQueueProbeProvider().onTaskQueuedEvent(
-                monitoringId, String.valueOf(task.hashCode()));
-        super.onTaskQueued(task);
-    }
-
-    @Override
-    protected void onTaskDequeued(Runnable task) {
-        monitoring.getConnectionQueueProbeProvider().onTaskDequeuedEvent(
-                monitoringId, String.valueOf(task.hashCode()));
-        super.onTaskDequeued(task);
-    }
-
-    @Override
-    protected void onTaskQueueOverflow() {
-        monitoring.getConnectionQueueProbeProvider().onTaskQueueOverflowEvent(
-                monitoringId);
-        super.onTaskQueueOverflow();
-    }
-
-    public class ProbeWorkerThreadFactory implements ThreadFactory {
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new MonitorableWorkerThread(
-                    MonitorableThreadPool.this, r, name +
-                    "-(" + nextThreadId() + ")",
-                    initialByteBufferSize, monitoring);
-            return thread;
         }
-    }
+
+
+        // ------------------------------------------------------- Inner Classes
+
+        /**
+         * An implementation of {@link ThreadPoolMonitoringProbe} which delegates
+         * probe calls from the {@link com.sun.grizzly.util.GrizzlyExecutorService}
+         * to the provided {@link GrizzlyMonitoring} instance.
+         */
+        private class GrizzlyIntegrationThreadPoolMonitoringProbe
+              implements ThreadPoolMonitoringProbe {
+
+
+            // ------------------------------ Methods from ThreadPoolMonitoringProbe
+
+
+            /**
+             * @see com.sun.grizzly.util.ThreadPoolMonitoringProbe#threadAllocatedEvent(String, Thread)
+             */
+            @Override public void threadAllocatedEvent(String threadPoolName,
+                                                       Thread thread) {
+
+                if (monitoring != null) {
+                    monitoring.getThreadPoolProbeProvider()
+                          .threadAllocatedEvent(monitoringId,
+                                                threadPoolName,
+                                                thread.getName());
+                }
+
+            }
+
+
+            /**
+             * @see com.sun.grizzly.util.ThreadPoolMonitoringProbe#threadAllocatedEvent(String, Thread)
+             */
+            @Override public void threadReleasedEvent(String threadPoolName,
+                                                      Thread thread) {
+
+                if (monitoring != null) {
+                    monitoring.getThreadPoolProbeProvider()
+                          .threadReleasedEvent(monitoringId,
+                                               threadPoolName,
+                                               thread.getName());
+                }
+
+            }
+
+
+            /**
+             * @see com.sun.grizzly.util.ThreadPoolMonitoringProbe#threadAllocatedEvent(String, Thread)
+             */
+            @Override
+            public void maxNumberOfThreadsReachedEvent(String threadPoolName,
+                                                       int maxNumberOfThreads) {
+
+                if (monitoring != null) {
+                    monitoring.getThreadPoolProbeProvider()
+                          .maxNumberOfThreadsReachedEvent(monitoringId,
+                                                          threadPoolName,
+                                                          maxNumberOfThreads);
+                }
+
+            }
+
+
+            /**
+             * @see com.sun.grizzly.util.ThreadPoolMonitoringProbe#threadAllocatedEvent(String, Thread)
+             */
+            @Override public void onTaskQueuedEvent(Runnable runnable) {
+
+                if (monitoring != null) {
+                    monitoring.getConnectionQueueProbeProvider()
+                          .onTaskQueuedEvent(monitoringId,
+                                             String.valueOf(runnable.hashCode()));
+                }
+
+            }
+
+
+            /**
+             * @see com.sun.grizzly.util.ThreadPoolMonitoringProbe#threadAllocatedEvent(String, Thread)
+             */
+            @Override public void onTaskDequeuedEvent(Runnable runnable) {
+
+                if (monitoring != null) {
+                    monitoring.getConnectionQueueProbeProvider()
+                          .onTaskDequeuedEvent(monitoringId,
+                                               String.valueOf(runnable.hashCode()));
+                    monitoring.getThreadPoolProbeProvider()
+                          .threadDispatchedFromPoolEvent(monitoringId,
+                                                         getPoolName(),
+                                                         Thread.currentThread().getName());
+                }
+
+            }
+
+
+            /**
+             * @see com.sun.grizzly.util.ThreadPoolMonitoringProbe#threadAllocatedEvent(String, Thread)
+             */
+            @Override
+            public void onTaskQueueOverflowEvent(String threadPoolName) {
+
+                if (monitoring != null) {
+                    monitoring.getConnectionQueueProbeProvider()
+                          .onTaskQueueOverflowEvent(monitoringId);
+                }
+
+            }
+
+
+            /**
+             * @see ThreadPoolMonitoringProbe#onTaskCompletedEvent(Runnable)
+             */
+            @Override public void onTaskCompletedEvent(Runnable runnable) {
+
+                if (monitoring != null) {
+                    monitoring.getThreadPoolProbeProvider()
+                          .threadReturnedToPoolEvent(monitoringId,
+                                                     getPoolName(),
+                                                     Thread.currentThread().getName());
+                }
+
+            }
+
+        } // END GrizzlyIntegrationThreadPoolMonitoringProbe
+
+    } // END GrizzlyIntegrationThreadPoolConfig
+
 }

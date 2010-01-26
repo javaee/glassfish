@@ -62,9 +62,9 @@ public class MonitorableServiceListener extends GrizzlyServiceListener {
     @Override
     protected GrizzlyEmbeddedHttp createEmbeddedHttp(boolean isSecured) {
         if (isSecured) {
-            return new MonitorableEmbeddedHttps(monitoring, this, monitoringId);
+            return new MonitorableEmbeddedHttps(monitoring, monitoringId);
         } else {
-            return new MonitorableEmbeddedHttp(monitoring, this, monitoringId);
+            return new MonitorableEmbeddedHttp(monitoring, monitoringId);
         }
     }
 }

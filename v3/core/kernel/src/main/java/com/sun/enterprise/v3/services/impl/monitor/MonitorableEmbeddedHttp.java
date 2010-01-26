@@ -57,9 +57,7 @@ public class MonitorableEmbeddedHttp extends GrizzlyEmbeddedHttp {
 
     public MonitorableEmbeddedHttp(
             GrizzlyMonitoring monitoring,
-            GrizzlyServiceListener grizzlyServiceListener,
             String monitoringId) {
-        super(grizzlyServiceListener);
         this.monitoring = monitoring;
         this.monitoringId = monitoringId;
         
