@@ -281,7 +281,9 @@ public class WebappClassLoader
     /**
      * Path where resources loaded from JARs will be extracted.
      */
-    private File loaderDir = null;
+    protected File loaderDir = null;
+
+    protected String canonicalLoaderDir = null;
 
     /**
      * The PermissionCollection for each CodeSource for a web
@@ -557,6 +559,14 @@ public class WebappClassLoader
      */
     public void setWorkDir(File workDir) {
         this.loaderDir = new File(workDir, "loader_" + this.hashCode());
+        try {
+            canonicalLoaderDir = this.loaderDir.getCanonicalPath();
+            if (!canonicalLoaderDir.endsWith(File.separator)) {
+                 canonicalLoaderDir += File.separator;
+            }
+        } catch (IOException ioe) {
+            canonicalLoaderDir = null;
+        }
     }
 
 
@@ -2262,6 +2272,18 @@ public class WebappClassLoader
                                 && (!jarEntry2.getName().endsWith(".class"))) {
                                 resourceFile = new File
                                     (loaderDir, jarEntry2.getName());
+                                try {
+                                    if (!resourceFile.getCanonicalPath().startsWith(
+                                            canonicalLoaderDir)) {
+                                        String msg = rb.getString("webappClassLoader.illegalJarPath");
+                                        msg = MessageFormat.format(msg, jarEntry2.getName());
+                                        throw new IllegalArgumentException(msg);
+                                    }
+                                } catch (IOException ioe) {
+                                    String msg = rb.getString("webappClassLoader.validationErrorJarPath");
+                                    msg = MessageFormat.format(msg, new Object[] {jarEntry2.getName(), ioe});
+                                    throw new IllegalArgumentException(msg);
+                                } 
                                 resourceFile.getParentFile().mkdirs();
                                 FileOutputStream os = null;
                                 InputStream is = null;

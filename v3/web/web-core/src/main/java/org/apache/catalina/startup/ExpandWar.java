@@ -130,7 +130,8 @@ public class ExpandWar {
      *  (must start with "jar:")
      * @param pathname Context path name for web application
      *
-     * @exception IllegalArgumentException if this is not a "jar:" URL
+     * @exception IllegalArgumentException if this is not a "jar:" URL or if the
+     *            WAR file is invalid
      * @exception IOException if an input/output error was encountered
      *  during expansion
      */
@@ -158,16 +159,29 @@ public class ExpandWar {
         docBase.mkdir();
 
         // Expand the WAR into the new document base directory
+        String canonicalDocBasePrefix = docBase.getCanonicalPath();
+        if (!canonicalDocBasePrefix.endsWith(File.separator)) {
+            canonicalDocBasePrefix += File.separator;
+        }
         JarURLConnection juc = (JarURLConnection) war.openConnection();
         juc.setUseCaches(false);
         JarFile jarFile = null;
         InputStream input = null;
+        boolean success = false;
         try {
             jarFile = juc.getJarFile();
             Enumeration jarEntries = jarFile.entries();
             while (jarEntries.hasMoreElements()) {
                 JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
                 String name = jarEntry.getName();
+                File expandedFile = new File(docBase, name);
+                if (!expandedFile.getCanonicalPath().startsWith(
+                        canonicalDocBasePrefix)) {
+                    // Trying to expand outside the docBase
+                    // Throw an exception to stop the deployment
+                    throw new IllegalArgumentException(
+                            sm.getString("expandWar.illegalPath",war, name));
+                }
                 int last = name.lastIndexOf('/');
                 if (last >= 0) {
                     File parent = new File(docBase,
@@ -178,16 +192,23 @@ public class ExpandWar {
                     continue;
                 }
                 input = jarFile.getInputStream(jarEntry);
-                expand(input, docBase, name);
+                expand(input, expandedFile);
+                long lastModified = jarEntry.getTime();
+                if ((lastModified != -1) && (lastModified != 0)) {
+                     expandedFile.setLastModified(lastModified);
+                }
                 input.close();
                 input = null;
             }
+            success = true;
         } catch (IOException e) {
-            // If something went wrong, delete expanded dir to keep things 
-            // clean
-            deleteDir(docBase);
             throw e;
         } finally {
+            if (!success) {
+                // If something went wrong, delete expanded dir to keep things 
+                // clean
+                deleteDir(docBase);
+            }
             if (input != null) {
                 try {
                     input.close();
@@ -209,6 +230,69 @@ public class ExpandWar {
         // Return the absolute path to our new document base directory
         return (docBase.getAbsolutePath());
 
+    }
+
+
+    /**
+     * Validate the WAR file found at the specified URL.
+     *
+     * @param host Host war is being installed for
+     * @param war URL of the web application archive to be validated
+     *  (must start with "jar:")
+     * @param pathname Context path name for web application
+     *
+     * @exception IllegalArgumentException if this is not a "jar:" URL or if the
+     *            WAR file is invalid
+     * @exception IOException if an input/output error was encountered
+     *            during validation
+     */
+    public static void validate(Host host, URL war, String pathname)
+        throws IOException {
+
+        // Make the appBase absolute
+        File appBase = new File(host.getAppBase());
+        if (!appBase.isAbsolute()) {
+            appBase = new File(System.getProperty("catalina.base"),
+                               host.getAppBase());
+        }
+        
+        File docBase = new File(appBase, pathname);
+
+        // Calculate the document base directory
+        String canonicalDocBasePrefix = docBase.getCanonicalPath();
+        if (!canonicalDocBasePrefix.endsWith(File.separator)) {
+            canonicalDocBasePrefix += File.separator;
+        }
+        JarURLConnection juc = (JarURLConnection) war.openConnection();
+        juc.setUseCaches(false);
+        JarFile jarFile = null;
+        try {
+            jarFile = juc.getJarFile();
+            Enumeration<JarEntry> jarEntries = jarFile.entries();
+            while (jarEntries.hasMoreElements()) {
+                JarEntry jarEntry = jarEntries.nextElement();
+                String name = jarEntry.getName();
+                File expandedFile = new File(docBase, name);
+                if (!expandedFile.getCanonicalPath().startsWith(
+                        canonicalDocBasePrefix)) {
+                    // Entry located outside the docBase
+                    // Throw an exception to stop the deployment
+                    throw new IllegalArgumentException(
+                            sm.getString("expandWar.illegalPath",war, name));
+                }
+            }
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (jarFile != null) {
+                try {
+                    jarFile.close();
+                } catch (Throwable t) {
+                    // Ignore
+                }
+                jarFile = null;
+            }
+        }
     }
 
 
@@ -273,26 +357,61 @@ public class ExpandWar {
     
     /**
      * Delete the specified directory, including all of its contents and
-     * subdirectories recursively.
+     * sub-directories recursively. Any failure will be logged.
      *
      * @param dir File object representing the directory to be deleted
      */
     public static boolean delete(File dir) {
-        if (dir.isDirectory()) {
-            return deleteDir(dir);
-        } else {
-            return dir.delete();
-        }
+        // Log failure by default
+        return delete(dir, true);
     }
-    
+
+    /**
+     * Delete the specified directory, including all of its contents and
+     * sub-directories recursively.
+     *
+     * @param dir File object representing the directory to be deleted
+     * @param logFailure <code>true</code> if failure to delete the resource
+     *                   should be logged
+     */
+    public static boolean delete(File dir, boolean logFailure) {
+        boolean result;
+        if (dir.isDirectory()) {
+            result = deleteDir(dir, logFailure);
+        } else {
+            if (dir.exists()) {
+                result = dir.delete();
+            } else {
+                result = true;
+            }
+        }
+        if (logFailure && !result) {
+            log.severe(sm.getString(
+                    "expandWar.deleteFailed", dir.getAbsolutePath()));
+        }
+        return result;
+     }
+
     
     /**
      * Delete the specified directory, including all of its contents and
-     * subdirectories recursively.
+     * sub-directories recursively. Any failure will be logged.
      *
      * @param dir File object representing the directory to be deleted
      */
     public static boolean deleteDir(File dir) {
+        return deleteDir(dir, true);
+    }
+
+    /**
+     * Delete the specified directory, including all of its contents and
+     * sub-directories recursively.
+     *
+     * @param dir File object representing the directory to be deleted
+     * @param logFailure <code>true</code> if failure to delete the resource
+     *                   should be logged
+     */
+    public static boolean deleteDir(File dir, boolean logFailure) {
 
         String files[] = dir.list();
         if (files == null) {
@@ -301,13 +420,25 @@ public class ExpandWar {
         for (int i = 0; i < files.length; i++) {
             File file = new File(dir, files[i]);
             if (file.isDirectory()) {
-                deleteDir(file);
+                deleteDir(file, logFailure);
             } else {
                 file.delete();
             }
         }
-        return dir.delete();
 
+        boolean result;
+        if (dir.exists()) {
+            result = dir.delete();
+        } else {
+            result = true;
+        }
+        
+        if (logFailure && !result) {
+            log.severe(sm.getString(
+                    "expandWar.deleteFailed", dir.getAbsolutePath()));
+        }
+        
+        return result;
     }
 
 
@@ -320,11 +451,26 @@ public class ExpandWar {
      * @param name Relative pathname of the file to be created
      *
      * @exception IOException if an input/output error occurs
+     *
+     * @deprecated
      */
     protected static void expand(InputStream input, File docBase, String name)
         throws IOException {
 
         File file = new File(docBase, name);
+        expand(input, file);
+    }
+
+    /**
+     * Expand the specified input stream into the specified file.
+     *
+     * @param input InputStream to be copied
+     * @param file The file to be created
+     *
+     * @exception IOException if an input/output error occurs
+     */
+    private static void expand(InputStream input, File file)
+        throws IOException {
         BufferedOutputStream output = null;
         try {
             output = 

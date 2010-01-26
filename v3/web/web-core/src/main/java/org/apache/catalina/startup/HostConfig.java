@@ -66,8 +66,10 @@ import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -184,6 +186,13 @@ public class HostConfig
      * Attribute value used to turn on/off XML namespace awarenes.
      */
     private boolean xmlNamespaceAware = false;
+
+
+    /**
+     * The list of Wars in the appBase to be ignored because they are invalid
+     * (e.g. contain /../ sequences).
+     */
+    protected Set<String> invalidWars = new HashSet<String>();
 
 
     // ------------------------------------------------------------- Properties
@@ -527,7 +536,8 @@ public class HostConfig
             if (deployed.contains(files[i]))
                 continue;
             File dir = new File(appBase, files[i]);
-            if (files[i].toLowerCase().endsWith(".war")) {
+            if (files[i].toLowerCase().endsWith(".war") && dir.isFile()
+                    && !invalidWars.contains(files[i])) {
 
                 deployed.add(files[i]);
 
@@ -536,6 +546,15 @@ public class HostConfig
                 int period = contextPath.lastIndexOf(".");
                 if (period >= 0)
                     contextPath = contextPath.substring(0, period);
+
+                // Check for WARs with /../ /./ or similar sequences in the name
+                if (!validateContextPath(appBase, contextPath)) {
+                    log.severe(sm.getString(
+                            "hostConfig.illegalWarName", files[i]));
+                    invalidWars.add(files[i]);
+                    continue;
+                }
+
                 if (contextPath.equals("/ROOT"))
                     contextPath = "";
                 if (host.findChild(contextPath) != null)
@@ -716,6 +735,43 @@ public class HostConfig
 
         }
 
+    }
+
+
+    private boolean validateContextPath(File appBase, String contextPath) {
+        // More complicated than the ideal as the canonical path may or may
+        // not end with File.separator for a directory
+        
+        StringBuilder docBase;
+        String canonicalDocBase = null;
+        
+        try {
+            String canonicalAppBase = appBase.getCanonicalPath();
+            docBase = new StringBuilder(canonicalAppBase);
+            if (canonicalAppBase.endsWith(File.separator)) {
+                docBase.append(contextPath.substring(1).replace(
+                        '/', File.separatorChar));
+            } else {
+                docBase.append(contextPath.replace('/', File.separatorChar));
+            }
+            // At this point docBase should be canonical but will not end
+            // with File.separator
+            
+            canonicalDocBase =
+                (new File(docBase.toString())).getCanonicalPath();
+    
+            // If the canonicalDocBase ends with File.separator, add one to
+            // docBase before they are compared
+            if (canonicalDocBase.endsWith(File.separator)) {
+                docBase.append(File.separator);
+            }
+        } catch (IOException ioe) {
+            return false;
+        }
+        
+        // Compare the two. If they are not the same, the contextPath must
+        // have /../ like sequences in it 
+        return canonicalDocBase.equals(docBase.toString());
     }
 
 
