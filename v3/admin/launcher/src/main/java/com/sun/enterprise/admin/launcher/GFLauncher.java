@@ -36,20 +36,23 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.util.collections.CollectionUtils;
-import com.sun.enterprise.util.glassfish.GFLauncherUtils;
-import com.sun.enterprise.util.glassfish.TokenResolver;
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.io.SmartFile;
-import com.sun.enterprise.util.process.ProcessStreamDrainer;
-import com.sun.enterprise.util.xml.MiniXmlParserException;
+import com.sun.enterprise.universal.collections.CollectionUtils;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.ProcessStreamDrainer;
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
-import com.sun.enterprise.util.glassfish.ASenvPropertyReader;
-import com.sun.enterprise.util.xml.MiniXmlParser;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
+import java.util.logging.Logger;
+//import com.sun.enterprise.security.store.PasswordAdapter;
+//import com.sun.enterprise.security.store.IdentityManager;
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -198,7 +201,7 @@ public abstract class GFLauncher {
      *
      * @return A valid ProcessStreamDrainer.  You are guaranteed to never get a null.
      * @throws GFLauncherException if the process has not launched yet
-     * @see com.sun.enterprise.util.process.ProcessStreamDrainer
+     * @see com.sun.enterprise.universal.process.ProcessStreamDrainer
      */
     public final ProcessStreamDrainer getProcessStreamDrainer() throws GFLauncherException {
         if(psd == null)

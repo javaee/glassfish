@@ -50,7 +50,7 @@ import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainException;
 import com.sun.enterprise.admin.servermgmt.RepositoryManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.io.FileUtils;

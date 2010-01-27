@@ -42,7 +42,7 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.util.xml.MiniXmlParserException;
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
 import org.junit.*;

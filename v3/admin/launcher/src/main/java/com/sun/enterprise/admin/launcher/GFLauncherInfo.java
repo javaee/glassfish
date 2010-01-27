@@ -37,8 +37,8 @@
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.admin.launcher.GFLauncherFactory.ServerType;
-import com.sun.enterprise.util.glassfish.GFLauncherUtils;
-import com.sun.enterprise.util.io.SmartFile;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.*;
 

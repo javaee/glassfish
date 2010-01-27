@@ -49,7 +49,7 @@ import java.util.Map;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 
 /**
  * This class represents a repository configuration. A repository can 

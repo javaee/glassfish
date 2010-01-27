@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * A class loader that loads classes from all jar files

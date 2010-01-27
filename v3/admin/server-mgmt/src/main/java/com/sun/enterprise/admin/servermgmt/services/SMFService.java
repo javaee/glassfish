@@ -35,13 +35,18 @@
  */
 
 package com.sun.enterprise.admin.servermgmt.services;
+import com.sun.enterprise.admin.util.LineTokenReplacer;
+import com.sun.enterprise.admin.util.TokenValue;
+import com.sun.enterprise.admin.util.TokenValueSet;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.util.io.SmartFile;
+import com.sun.enterprise.universal.io.SmartFile;
 
+import java.io.*;
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;

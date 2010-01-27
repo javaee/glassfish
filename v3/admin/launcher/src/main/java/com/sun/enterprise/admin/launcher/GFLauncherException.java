@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * The one and only type of Exception that will be thrown out of this package.

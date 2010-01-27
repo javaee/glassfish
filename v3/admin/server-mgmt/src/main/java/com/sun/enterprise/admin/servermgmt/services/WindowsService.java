@@ -36,9 +36,10 @@
 
 package com.sun.enterprise.admin.servermgmt.services;
 
-import com.sun.enterprise.util.io.SmartFile;
-import com.sun.enterprise.util.process.ProcessManager;
-import com.sun.enterprise.util.process.ProcessManagerException;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.ProcessManager;
+import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.SystemPropertyConstants;

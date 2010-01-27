@@ -42,7 +42,7 @@ import java.util.Iterator;
 
 import java.util.Map;
 
-import com.sun.enterprise.util.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**

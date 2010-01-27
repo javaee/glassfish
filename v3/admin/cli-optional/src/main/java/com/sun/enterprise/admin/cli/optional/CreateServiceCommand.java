@@ -44,9 +44,9 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
 import com.sun.enterprise.admin.servermgmt.services.AppserverServiceType;
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.io.SmartFile;
+import com.sun.enterprise.universal.StringUtils;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**

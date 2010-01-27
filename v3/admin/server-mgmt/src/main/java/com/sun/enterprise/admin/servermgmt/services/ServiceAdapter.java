@@ -36,8 +36,10 @@
 
 package com.sun.enterprise.admin.servermgmt.services;
 
-import com.sun.enterprise.util.PropertiesDecoder;
-import com.sun.enterprise.util.io.SmartFile;
+import com.sun.enterprise.universal.PropertiesDecoder;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.*;
 import java.util.*;
 import java.util.Map;

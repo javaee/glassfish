@@ -37,12 +37,14 @@
 package com.sun.enterprise.cli.framework;
 
 import java.util.Vector;
+import java.util.List;
 import java.util.Map;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import com.sun.enterprise.util.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import java.util.Collections;
 /**
  *  <code>Command<code> object is the super Base class for all the commands.

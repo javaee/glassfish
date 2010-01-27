@@ -41,7 +41,7 @@
  */
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.universal.StringUtils;
 import java.util.*;
 
 /**

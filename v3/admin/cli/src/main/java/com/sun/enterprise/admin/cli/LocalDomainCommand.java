@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,10 @@ import java.security.KeyStore;
 
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.io.SmartFile;
-import com.sun.enterprise.util.xml.MiniXmlParser;
-import com.sun.enterprise.util.xml.MiniXmlParserException;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.xml.MiniXmlParser;
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.security.store.PasswordAdapter;
 
 /**
