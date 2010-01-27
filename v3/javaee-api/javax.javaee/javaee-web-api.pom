@@ -49,6 +49,7 @@
     <scm>
         <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/javaee-api/javax.javaee</connection>
         <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/javaee-api/javax.javaee</developerConnection>
+        <url>https://svn.dev.java.net/svn/glassfish-svn/trunk/v3/javaee-api/javax.javaee</url>
     </scm>
     <licenses>
         <license>
