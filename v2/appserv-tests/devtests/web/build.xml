@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="484"/>
+    <property name="TOTAL_EXPECTED" value="485"/>
 
     &commonSetup;
     &commonBuild;
@@ -180,6 +180,7 @@
         <ant dir="getServerNameAndPort" target="all"/>
         <ant dir="sessionIdUrlRewrite" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingMode" target="all"/>
+        <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeDeclarative" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeCustomCookieName" target="all"/>
         <ant dir="sessionIdPresentInBothRewrittenUrlAndCookieByDefault" target="all"/>
         <ant dir="sessionIdPresentOnlyInCookieIfUrlRewritingDisabled" target="all"/>
