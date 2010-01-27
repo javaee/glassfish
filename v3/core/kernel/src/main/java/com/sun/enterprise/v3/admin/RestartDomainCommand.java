@@ -38,9 +38,8 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.process.JavaClassRunner;
-import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.process.JavaClassRunner;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;

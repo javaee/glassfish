@@ -69,7 +69,7 @@ import java.io.File;
 import org.glassfish.flashlight.impl.core.FlashlightProbeProvider;
 import org.glassfish.flashlight.FlashlightUtils;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
-import com.sun.enterprise.universal.process.ProcessUtils;
+import com.sun.enterprise.util.process.ProcessUtils;
 import com.sun.tools.attach.VirtualMachine;
 
 /**

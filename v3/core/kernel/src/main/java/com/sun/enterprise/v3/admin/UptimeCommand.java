@@ -44,7 +44,7 @@ import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.universal.Duration;
+import com.sun.enterprise.util.Duration;
 
 
 /**

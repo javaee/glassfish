@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.Iterator;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.universal.collections.ManifestUtils;
+import com.sun.enterprise.util.collections.ManifestUtils;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 
 import org.jvnet.hk2.annotations.Scoped;

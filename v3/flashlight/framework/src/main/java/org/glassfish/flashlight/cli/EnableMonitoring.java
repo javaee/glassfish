@@ -52,7 +52,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import java.io.File;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
-import com.sun.enterprise.universal.process.ProcessUtils;
+import com.sun.enterprise.util.process.ProcessUtils;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 /**
