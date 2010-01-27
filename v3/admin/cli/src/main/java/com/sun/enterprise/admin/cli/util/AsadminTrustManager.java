@@ -39,7 +39,7 @@ package com.sun.enterprise.admin.cli.util;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateException;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.i18n.LocalStringsImpl;
 import com.sun.enterprise.security.store.AsadminTruststore;
 
 import java.io.BufferedReader;

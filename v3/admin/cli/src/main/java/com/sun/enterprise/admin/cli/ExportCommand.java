@@ -40,7 +40,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.i18n.LocalStringsImpl;
 
 /**
  * A local export command.

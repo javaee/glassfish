@@ -42,7 +42,7 @@ import org.jvnet.hk2.component.*;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.i18n.LocalStringsImpl;
 
 /**
  * A local version command.

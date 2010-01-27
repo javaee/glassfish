@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,9 +47,9 @@ import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.util.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.io.SmartFile;
+import com.sun.enterprise.util.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.util.JDK;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
@@ -291,8 +291,6 @@ public class AsadminMain {
     private final static String[] requiredClassnames = {
         // one from launcher jar        
         "com.sun.enterprise.admin.launcher.GFLauncher",
-        // one from universal jar
-        "com.sun.enterprise.universal.xml.MiniXmlParser",
         // one from glassfish bootstrap jar
         "com.sun.enterprise.glassfish.bootstrap.ASMain",
         // one from stax-api

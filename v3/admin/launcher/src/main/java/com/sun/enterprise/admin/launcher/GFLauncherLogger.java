@@ -36,10 +36,8 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.i18n.LocalStringsImpl;
 import java.io.*;
-import java.util.*;
 import java.util.logging.*;
 
 /**

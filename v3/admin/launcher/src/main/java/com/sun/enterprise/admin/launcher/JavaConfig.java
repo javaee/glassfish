@@ -34,14 +34,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
+import com.sun.enterprise.util.glassfish.GFLauncherUtils;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
 import java.io.*;
 import java.util.*;

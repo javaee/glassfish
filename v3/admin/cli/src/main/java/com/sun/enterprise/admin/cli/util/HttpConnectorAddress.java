@@ -44,7 +44,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.KeyManagementException;
 
-import com.sun.enterprise.universal.GFBase64Encoder;
+import com.sun.enterprise.util.GFBase64Encoder;
 
 import javax.net.ssl.*;
 

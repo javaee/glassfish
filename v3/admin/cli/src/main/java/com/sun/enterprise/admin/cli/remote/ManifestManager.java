@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,9 +37,9 @@
 package com.sun.enterprise.admin.cli.remote;
 
 import com.sun.enterprise.admin.cli.CLILogger;
-import com.sun.enterprise.universal.NameValue;
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
+import com.sun.enterprise.util.NameValue;
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.glassfish.AdminCommandResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;
