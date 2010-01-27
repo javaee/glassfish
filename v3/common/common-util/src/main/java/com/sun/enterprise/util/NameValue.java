@@ -34,70 +34,73 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util;
 
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
-
 /**
- * Convert a msec duration into weeks, hours, minutes, seconds
+ * This class is needed so often in so many places.  It is centralized once and
+ * for all here.
+ * @param K key type
+ * @param V value type
  * @author bnevins
- * Thread Safe.  
- * Immutable
  */
-public final class Duration {
-    public Duration(long msec) {
-        long msecLeftover = msec;
+public class NameValue<K, V> {
+    /**
+     * 
+     * @param k key
+     * @param v value
+     */
+    public NameValue(K k, V v)
+    {
+        if(k == null)
+            throw new NullPointerException();
         
-        numWeeks = msecLeftover / MSEC_PER_WEEK;
-        msecLeftover -= numWeeks * MSEC_PER_WEEK;
-        
-        numDays = msecLeftover / MSEC_PER_DAY;
-        msecLeftover -= numDays * MSEC_PER_DAY;
-        
-        numHours = msecLeftover / MSEC_PER_HOUR;
-        msecLeftover -= numHours * MSEC_PER_HOUR;
-        
-        numMinutes = msecLeftover / MSEC_PER_MINUTE;
-        msecLeftover -= numMinutes * MSEC_PER_MINUTE;
-        
-        numSeconds = msecLeftover / MSEC_PER_SECOND;
-        msecLeftover -= numSeconds * MSEC_PER_SECOND;
+        value = v;
+        key = k;
+    }
 
-        numMilliSeconds = msecLeftover;
+    public K getName    () {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+
+    public V setValue(V newValue) {
+        V oldValue = value;
+        value = newValue;
+        return oldValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof NameValue))
+            return false;
+        
+        NameValue nv = (NameValue) o;
+        Object k1 = getName();
+        Object k2 = nv.getName();
+        if (k1 == k2 || k1.equals(k2)) {
+            Object v1 = getValue();
+            Object v2 = nv.getValue();
+            
+            if (v1 == v2 || (v1 != null && v1.equals(v2)))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode() ^ (value == null ? 0 : value.hashCode());
     }
 
     @Override
     public String toString() {
-        String s = "";
-        
-        if(numWeeks > 0)
-            s = strings.get("weeks", numWeeks, numDays, numHours, numMinutes, numSeconds);
-        else if(numDays > 0)
-            s = strings.get("days", numDays, numHours, numMinutes, numSeconds);
-        else if(numHours > 0)
-            s = strings.get("hours", numHours, numMinutes, numSeconds);
-        else if(numMinutes > 0)
-            s = strings.get("minutes", numMinutes, numSeconds);
-        else
-            s = strings.get("milliseconds", numMilliSeconds + numSeconds * MSEC_PER_SECOND);
-        
-        return s;
+        return getName() + "=" + getValue();
     }
 
-    public final long numWeeks;
-    public final long numDays;
-    public final long numHours;
-    public final long numMinutes;
-    public final long numSeconds;
-    public final long numMilliSeconds;
-
-    // possibly useful constants
-    public final static long MSEC_PER_SECOND = 1000; 
-    public final static long MSEC_PER_MINUTE = 60 * MSEC_PER_SECOND; 
-    public final static long MSEC_PER_HOUR = MSEC_PER_MINUTE * 60; 
-    public final static long MSEC_PER_DAY = MSEC_PER_HOUR * 24;
-    public final static long MSEC_PER_WEEK = MSEC_PER_DAY * 7;
-    
-    private final LocalStringsImpl strings = new LocalStringsImpl(Duration.class);
+    private final K key;
+    private V value;
 }
+

@@ -27,6 +27,9 @@
                         com.sun.enterprise.util.shared; \
                         com.sun.enterprise.util.uuid; \
                         com.sun.enterprise.util.zip; \
+                        com.sun.enterprise.util.collections; \
+                        com.sun.enterprise.util.xml; \
+                        com.sun.enterprise.util.process; \
                         com.sun.logging; \
                         org.glassfish.admin.payload; \
                         org.glassfish.quality; \

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,8 +37,8 @@
 package com.sun.appserv.management.client.prefs;
 
 
-import com.sun.enterprise.universal.GFBase64Decoder;
-import com.sun.enterprise.universal.GFBase64Encoder;
+import com.sun.enterprise.util.GFBase64Decoder;
+import com.sun.enterprise.util.GFBase64Encoder;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
