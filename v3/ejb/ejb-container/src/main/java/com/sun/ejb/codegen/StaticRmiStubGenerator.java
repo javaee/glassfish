@@ -56,7 +56,6 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.util.TypeUtil;
-import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.util.OS;
 
 /**
