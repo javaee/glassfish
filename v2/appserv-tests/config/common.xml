@@ -1662,3 +1662,16 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
         <echo message="REQUIRED TO RESTART SERVER......."/>
     </target>
 
+<!-- ================================================================ -->
+<!-- Target to Flush connection pool  -->
+<!-- ================================================================ -->
+<target name="flush-connpool-common" depends="init-common">
+<echo message="Flush connection pool ${jdbc.conpool.name}" 
+    level="verbose"/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="flush-connection-pool"/>
+        <arg line="${as.props}"/>
+        <arg line="${jdbc.conpool.name}"/>
+    </exec>
+</target>
+
