@@ -449,6 +449,7 @@ public class AMXConfigImpl extends AMXImplBase
         }
         
         public String              type()     { return mType; }
+        public String              name()     { return (String)mAttrs.get("name"); }
         public Map<String,Object>  attrs()    { return Collections.unmodifiableMap(mAttrs); }
         public List<CreateParams>  children() { return Collections.unmodifiableList(mChildren); }
        
@@ -504,15 +505,43 @@ public class AMXConfigImpl extends AMXImplBase
     }
     
     
+    /**
+        To make error messages more friendly and quick sanity check,
+        verify that no conflicting children already exist.
+     */
+        private void
+    checkForConflicts(final List<CreateParams>  children)
+    {
+        final Map<String, Map<String, AMXProxy>>  existingChildren = getSelf().childrenMaps();
+        for( final CreateParams params : children )
+        {
+            final String type = params.type();
+            final Map<String,AMXProxy> childrenOfType = existingChildren.get(type);
+            if ( childrenOfType != null )
+            {
+                // children of this type exist, check that there is no conflicting child already
+                final AMXProxy firstChild = childrenOfType.values().iterator().next();
+                if ( firstChild.extra().singleton() )
+                {
+                    throw new IllegalArgumentException(  "Singleton child of type " + type + " already exists." );
+                }
+                if ( childrenOfType.get( params.name() ) != null)
+                {
+                    throw new IllegalArgumentException( "Child of type " + type + " named " + params.name() + " already exists." );
+                }
+            }
+        }
+    }
+    
         ObjectName[]
     createChildren(
         final List<CreateParams>  children,
         final Map<String,Object>  attrs )
     {
         cdebug( children.toString() );
+        checkForConflicts(children);
 
         final ConfigBeanProxy parent = getConfigBeanProxy();
-
         final ChildrenCreator creator = new ChildrenCreator( children, attrs);
         try
         {
