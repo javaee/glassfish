@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,9 +63,9 @@ import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import com.sun.hk2.component.InjectionResolver;
 
-import com.sun.enterprise.util.GFBase64Decoder;
-import com.sun.enterprise.util.collections.ManifestUtils;
-import com.sun.enterprise.util.glassfish.AdminCommandResponse;
+import com.sun.enterprise.universal.GFBase64Decoder;
+import com.sun.enterprise.universal.collections.ManifestUtils;
+import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.XMLContentActionReporter;
 import com.sun.logging.LogDomains;

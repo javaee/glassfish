@@ -42,8 +42,8 @@ import java.security.*;
 import java.security.spec.*;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.util.GFBase64Decoder;
-import com.sun.enterprise.util.GFBase64Encoder;
+import com.sun.enterprise.universal.GFBase64Decoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 import org.glassfish.internal.api.SharedSecureRandom;
 
 /**

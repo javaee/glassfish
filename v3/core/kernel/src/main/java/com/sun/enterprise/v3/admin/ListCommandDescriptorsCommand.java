@@ -36,7 +36,9 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.util.collections.ManifestUtils;
+import com.sun.enterprise.module.common_impl.Tokenizer;
+import com.sun.enterprise.universal.collections.ManifestUtils;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.ArrayList;

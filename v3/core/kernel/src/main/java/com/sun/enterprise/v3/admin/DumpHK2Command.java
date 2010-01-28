@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,8 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.util.collections.ManifestUtils;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;

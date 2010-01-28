@@ -55,7 +55,7 @@ import javax.sql.DataSource;
 //import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
-import com.sun.enterprise.util.GFBase64Encoder;
+import com.sun.enterprise.universal.GFBase64Encoder;
 
 import javax.security.auth.login.LoginException;
 import com.sun.enterprise.security.auth.realm.IASRealm;
