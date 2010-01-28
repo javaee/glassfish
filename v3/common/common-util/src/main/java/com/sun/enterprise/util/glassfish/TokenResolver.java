@@ -42,6 +42,7 @@
  */
 package com.sun.enterprise.util.glassfish;
 
+import com.sun.enterprise.universal.glassfish.*;
 import java.util.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 

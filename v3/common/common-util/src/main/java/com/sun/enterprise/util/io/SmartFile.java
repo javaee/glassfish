@@ -42,8 +42,8 @@
 
 package com.sun.enterprise.util.io;
 
-import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.glassfish.GFLauncherUtils;
+import com.sun.enterprise.universal.StringUtils;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;

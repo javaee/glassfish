@@ -37,7 +37,8 @@
 
 package com.sun.enterprise.util;
 
-import com.sun.enterprise.util.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.*;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * Convert a msec duration into weeks, hours, minutes, seconds

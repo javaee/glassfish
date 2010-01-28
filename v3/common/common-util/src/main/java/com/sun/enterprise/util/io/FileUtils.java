@@ -115,15 +115,6 @@ public class FileUtils {
         return false;
     }
 
-    public static void copyStream(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[4096];
-        int len;
-        while ((len = in.read(buf)) >= 0) {
-            out.write(buf, 0, len);
-        }
-        out.close();
-    }
-
     ///////////////////////////////////////////////////////////////////////////
 
     public static boolean safeIsDirectory(String s) {
