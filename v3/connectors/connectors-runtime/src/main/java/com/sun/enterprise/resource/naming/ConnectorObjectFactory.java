@@ -123,7 +123,7 @@ public class ConnectorObjectFactory implements ObjectFactory {
 
         Object cf = null;
         try {
-            ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolName);
+            ManagedConnectionFactory mcf = getRuntime().obtainManagedConnectionFactory(poolName, env);
             if (mcf == null) {
                 _logger.log(Level.FINE, "Failed to create MCF ", poolName);
                 throw new ConnectorRuntimeException("Failed to create MCF");

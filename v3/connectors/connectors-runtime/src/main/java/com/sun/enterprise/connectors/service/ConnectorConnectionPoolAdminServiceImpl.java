@@ -36,10 +36,7 @@
 
 package com.sun.enterprise.connectors.service;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -690,6 +687,11 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
         return result;
     }
+
+    private ResourcePrincipal getDefaultResourcePrincipal( String poolName,
+        ManagedConnectionFactory mcf ) throws NamingException {
+        return getDefaultResourcePrincipal(poolName, mcf, null);
+    }
     
     /*
     * Returns a ResourcePrincipal object populated with a pool's
@@ -698,14 +700,21 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
     * @throws NamingException if poolname lookup fails
     */
     private ResourcePrincipal getDefaultResourcePrincipal(String poolName,
-                                                          ManagedConnectionFactory mcf) throws NamingException {
+                                                          ManagedConnectionFactory mcf, Hashtable env)
+            throws NamingException {
         String userName = null;
         String password = null;
         // All this to get the default user name and principal
         ConnectorConnectionPool connectorConnectionPool = null;
         try {
             String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
-            Context ic = _runtime.getNamingManager().getInitialContext();
+            //Context ic = _runtime.getNamingManager().getInitialContext();
+            Context ic ;
+            if(env != null){
+                ic = new InitialContext(env);
+            }else{
+                ic = new InitialContext();
+            }
             connectorConnectionPool = (ConnectorConnectionPool) ic.lookup(jndiNameForPool);
         } catch (NamingException ne) {
             throw ne;
@@ -788,6 +797,11 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         return ccpOrig;
     }
 
+    private ConnectorConnectionPool getConnectorConnectionPool(String poolName)
+        throws ConnectorRuntimeException, NamingException  {
+        return getConnectorConnectionPool(poolName, null);
+    }
+    
     /**
      * Returns the connector connection pool object corresponding
      * to the pool name
@@ -798,11 +812,19 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @throws ConnectorRuntimeException if creation/retrieval
      *                                   of MCF fails
      */
-    private ConnectorConnectionPool getConnectorConnectionPool(String poolName)
+    private ConnectorConnectionPool getConnectorConnectionPool(String poolName, Hashtable env)
             throws ConnectorRuntimeException, NamingException {
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
-        ConnectorConnectionPool connectorConnectionPool = (ConnectorConnectionPool)
-                _runtime.getNamingManager().getInitialContext().lookup(jndiNameForPool);
+
+        //Context ic = _runtime.getNamingManager().getInitialContext();
+        Context ic ;
+        if(env != null){
+            ic = new InitialContext(env);
+        }else{
+            ic = new InitialContext();
+        }
+
+        ConnectorConnectionPool connectorConnectionPool = (ConnectorConnectionPool)ic.lookup(jndiNameForPool);
         if (connectorConnectionPool == null) {
             String i18nMsg = localStrings.getString("ccp_adm.null_pool", poolName);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
@@ -912,6 +934,11 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         _runtime.getConnectorBeanValidator().validateJavaBean(mcf, raName);
     }
 
+
+    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName) throws ConnectorRuntimeException{
+        return obtainManagedConnectionFactory(poolName, null);
+    }
+    
     /**
      * Returns the MCF instance. If the MCF is already created and
      * present in connectorRegistry that instance is returned. Otherwise it
@@ -922,14 +949,14 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @return created/already present MCF instance
      * @throws ConnectorRuntimeException if creation/retrieval of MCF fails
      */
-    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName)
+    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName, Hashtable env)
             throws ConnectorRuntimeException {
         try {
             if (_registry.isMCFCreated(poolName)) {
                 return _registry.getManagedConnectionFactory(poolName);
             } else {
 
-                ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName);
+                ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName, env);
                 ActiveResourceAdapter activeResourceAdapter = getResourceAdapter(connectorConnectionPool);
                 ClassLoader loader = activeResourceAdapter.getClassLoader();
                 //ClassLoader loader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
@@ -940,7 +967,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                     validateMCF(mcf, activeResourceAdapter.getModuleName());
 
                     ResourcePrincipal prin =
-                            getDefaultResourcePrincipal(poolName, mcf);
+                            getDefaultResourcePrincipal(poolName, mcf, env);
                     Subject s = ConnectionPoolObjectsUtils.createSubject(mcf, prin);
                     int txSupport = connectorConnectionPool.getTransactionSupport();
 
@@ -1009,7 +1036,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
                 PoolType pt = getPoolType(connectorConnectionPool);
 
-                createAndAddPool(poolName, pt);
+                createAndAddPool(poolName, pt, env);
                 return mcf;
             }
         } catch (NamingException ne) {
@@ -1076,10 +1103,10 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
      * @param pt       type of pool
      * @throws ConnectorRuntimeException
      */
-    private void createAndAddPool(String poolName, PoolType pt) throws ConnectorRuntimeException {
+    private void createAndAddPool(String poolName, PoolType pt, Hashtable env) throws ConnectorRuntimeException {
         PoolManager poolMgr = _runtime.getPoolManager();
         try {
-            poolMgr.createEmptyConnectionPool(poolName, pt);
+            poolMgr.createEmptyConnectionPool(poolName, pt, env);
         } catch (PoolingException pe) {
             String i18nMsg = localStrings.getString("ccp_adm.failed_to_create_pool_object");
             ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);

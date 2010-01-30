@@ -44,6 +44,7 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import javax.transaction.Transaction;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * Associates a resource with the thread. When the same thread is used again,
@@ -56,9 +57,9 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
     private static ThreadLocal<AssocWithThreadResourceHandle> localResource =
             new ThreadLocal<AssocWithThreadResourceHandle>();
 
-    public AssocWithThreadResourcePool(String poolName)
+    public AssocWithThreadResourcePool(String poolName, Hashtable env)
             throws PoolingException {
-        super(poolName);
+        super(poolName, env);
     }
 
     /**

@@ -51,6 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnection;
 import javax.transaction.Transaction;
+import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -90,7 +91,7 @@ public interface PoolManager extends TransactedPoolManager {
                                        Transaction tran)
             throws PoolingException;
 
-    public void createEmptyConnectionPool(String name, PoolType pt) throws PoolingException;
+    public void createEmptyConnectionPool(String name, PoolType pt, Hashtable env) throws PoolingException;
 
 
     public void putbackResourceToPool(ResourceHandle h, boolean errorOccurred);

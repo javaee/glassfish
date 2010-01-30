@@ -360,6 +360,21 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         resourceAdapterAdmService.stopActiveResourceAdapter(moduleName);
     }
 
+
+    /** Returns the MCF instance. If the MCF is already created and
+     *  present in connectorRegistry that instance is returned. Otherwise it
+     *  is created explicitly and added to ConnectorRegistry.
+     *  @param poolName Name of the pool.MCF pertaining to this pool is
+     *         created/returned.
+     *  @return created/already present MCF instance
+     *  @throws ConnectorRuntimeException if creation/retrieval of MCF fails
+     */
+    public ManagedConnectionFactory obtainManagedConnectionFactory(
+           String poolName) throws ConnectorRuntimeException {
+        return ccPoolAdmService.obtainManagedConnectionFactory(poolName);
+     }
+
+
     /**
      * Returns the MCF instance. If the MCF is already created and
      * present in connectorRegistry that instance is returned. Otherwise it
@@ -371,8 +386,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws ConnectorRuntimeException if creation/retrieval of MCF fails
      */
     public ManagedConnectionFactory obtainManagedConnectionFactory(
-            String poolName) throws ConnectorRuntimeException {
-        return ccPoolAdmService.obtainManagedConnectionFactory(poolName);
+            String poolName, Hashtable env) throws ConnectorRuntimeException {
+        return ccPoolAdmService.obtainManagedConnectionFactory(poolName, env);
     }
 
     /** Returns the MCF instances in scenarions where a pool has to

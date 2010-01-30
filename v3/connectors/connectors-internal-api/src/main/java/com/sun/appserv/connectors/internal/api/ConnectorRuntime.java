@@ -223,13 +223,25 @@ public interface ConnectorRuntime extends ConnectorConstants{
      */
     public Set getResourceReferenceDescriptor();
 
+    /** Returns the MCF instance. If the MCF is already created and
+     *  present in connectorRegistry that instance is returned. Otherwise it
+     *  is created explicitly and added to ConnectorRegistry.
+     *  @param poolName Name of the pool.MCF pertaining to this pool is
+     *         created/returned.
+     *  @return created/already present MCF instance
+     *  @throws ConnectorRuntimeException if creation/retrieval of MCF fails
+     */
+    public ManagedConnectionFactory obtainManagedConnectionFactory(
+           String poolName) throws ConnectorRuntimeException ;
+
     /**
      * provide the MCF of the pool (either retrieve or create)
      * @param poolName connection pool name
+     * @param env Environment entries to use for lookup
      * @return ManagedConnectionFactory mcf of the pool
      * @throws ConnectorRuntimeException when unable to provide the MCF
      */
-    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName)
+    public ManagedConnectionFactory obtainManagedConnectionFactory(String poolName, Hashtable env)
             throws ConnectorRuntimeException;
 
     /**

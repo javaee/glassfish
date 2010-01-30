@@ -55,6 +55,7 @@ import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.transaction.Transaction;
@@ -137,9 +138,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
     private boolean selfManaged_;
     
     
-    public ConnectionPool(String poolName) throws PoolingException {
+    public ConnectionPool(String poolName, Hashtable env) throws PoolingException {
         this.name = poolName;
-        setPoolConfiguration();
+        setPoolConfiguration(env);
         initializePoolDataStructure();
         initializeResourceSelectionStragegy();
         initializePoolWaitQueue();
@@ -161,9 +162,9 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         //do nothing
     }
 
-    private void setPoolConfiguration() throws PoolingException {
+    private void setPoolConfiguration(Hashtable env) throws PoolingException {
 
-        ConnectorConnectionPool poolResource = getPoolConfigurationFromJndi();
+        ConnectorConnectionPool poolResource = getPoolConfigurationFromJndi(env);
         idletime = Integer.parseInt(poolResource.getIdleTimeoutInSeconds()) * 1000L;
         maxPoolSize = Integer.parseInt(poolResource.getMaxPoolSize());
         steadyPoolSize = Integer.parseInt(poolResource.getSteadyPoolSize());
@@ -193,10 +194,17 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         setAdvancedPoolConfiguration(poolResource);
     }
 
-    protected ConnectorConnectionPool getPoolConfigurationFromJndi() throws PoolingException {
+    protected ConnectorConnectionPool getPoolConfigurationFromJndi(Hashtable env) throws PoolingException {
         ConnectorConnectionPool poolResource;
         try {
-            Context ic = ConnectorRuntime.getRuntime().getNamingManager().getInitialContext();
+            //Context ic = _runtime.getNamingManager().getInitialContext();
+            Context ic ;
+            if(env != null){
+                ic = new InitialContext(env);
+            }else{
+                ic = new InitialContext();
+            }
+
             String jndiNameOfPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(name);
             poolResource = (ConnectorConnectionPool) ic.lookup(jndiNameOfPool);
         } catch (NamingException ex) {
