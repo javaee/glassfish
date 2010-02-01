@@ -253,7 +253,8 @@ public final class J2EEInstanceListener implements InstanceListener {
                 }
                 tm.enlistComponentResources();
             }
-        } catch (Exception ex) {            
+        } catch (Exception ex) {
+            im.postInvoke(inv); // See CR 6920895 
             String msg = _rb.getString(
                 "containerListener.exceptionDuringHandleEvent");
             msg = MessageFormat.format(msg, new Object[] { eventType, wm });
