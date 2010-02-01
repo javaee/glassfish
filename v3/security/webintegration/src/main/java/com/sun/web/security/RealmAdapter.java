@@ -1312,7 +1312,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } catch (AuthException ae) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE,
-                        "JAMC: http msg authentication fail", ae);
+                        "JMAC: http msg authentication fail", ae);
             }
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
