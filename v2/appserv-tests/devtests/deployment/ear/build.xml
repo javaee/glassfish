@@ -12,11 +12,9 @@
 		<ant dir="earwithwar" target="private-all">
 			<property name="build" value="${build}/earwithwar"/>
 		</ant>
-<!--
 		<ant dir="earwithejb" target="private-all">
 			<property name="build" value="${build}/earwithejb"/>
 		</ant>
--->
 		<!--ant dir="wstoejb" target="private-all">
 			<property name="build" value="${build}/wstoejb"/>
 		</ant>
