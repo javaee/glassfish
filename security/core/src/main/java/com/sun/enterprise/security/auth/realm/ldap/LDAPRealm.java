@@ -58,6 +58,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import java.util.regex.Matcher;
 import org.jvnet.hk2.annotations.Service;
 
 
@@ -641,7 +642,8 @@ public final class LDAPRealm extends IASRealm
             ctls.setReturningAttributes(targets);
             ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
             
-            NamingEnumeration e = ctx.search(baseDN, filter, ctls);
+            NamingEnumeration e = ctx.search(baseDN,
+                    filter.replaceAll(Matcher.quoteReplacement("\\"), Matcher.quoteReplacement("\\\\")), ctls);
             
             while(e.hasMore()) {
                 SearchResult res = (SearchResult)e.next();
