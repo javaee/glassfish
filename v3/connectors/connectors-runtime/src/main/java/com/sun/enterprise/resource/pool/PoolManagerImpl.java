@@ -633,7 +633,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
         ResourcePool pool = (ResourcePool) getPoolTable().get( poolName );
 
         if (pool != null ) {
-            pool.reconfigPoolProperties( ccp );
+            pool.reconfigurePool( ccp );
         }        
     }
 

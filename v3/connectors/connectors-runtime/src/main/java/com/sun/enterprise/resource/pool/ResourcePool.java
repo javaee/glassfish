@@ -77,7 +77,7 @@ public interface ResourcePool {
 
 
     //reconfig the pool's properties
-    public void reconfigPoolProperties(ConnectorConnectionPool ccp)
+    public void reconfigurePool(ConnectorConnectionPool ccp)
             throws PoolingException;
 
 

@@ -552,7 +552,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             }
         } catch (ClassCastException e) {
             _logger.log(Level.FINE, "Pool: getResource : " +
-                    "transaction is not J2EETransaction but a " + tran.getClass().getName(), e);
+                    "transaction is not JavaEETransaction but a " + tran.getClass().getName(), e);
         }
         return result;
     }
@@ -1228,13 +1228,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         }
         
         try {        
-            if (poolInitialized) {
-                killExtraResources(ds.getResourcesSize());
-            }
-
-            if (poolInitialized) {
-                increaseSteadyPoolSize(steadyPoolSize);
-            }
+            killExtraResources(ds.getResourcesSize());
+            increaseSteadyPoolSize(steadyPoolSize);
         } catch(PoolingException ex) {
             _logger.log(Level.WARNING, "pool.flush_pool_failure", 
                     new Object[] {getPoolName(), ex.getMessage()});
@@ -1250,11 +1245,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * method in the ConnectorRuntime will use this method (through PoolManager)
      * if it needs to just change pool properties and not recreate the pool
      *
-     * @param poolResource - the ConnectorConnectionPool javabean that holds
+     * @param poolResource - the ConnectorConnectionPool JavaBean that holds
      *                     the new pool properties
      * @throws PoolingException if the pool resizing fails
      */
-    public synchronized void reconfigPoolProperties(ConnectorConnectionPool poolResource)
+    public synchronized void reconfigurePool(ConnectorConnectionPool poolResource)
             throws PoolingException {
         int _idleTime = Integer.parseInt(poolResource.getIdleTimeoutInSeconds())
                 * 1000;
@@ -1294,8 +1289,8 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             } else {
                 maxPoolSize = _maxPoolSize;
             }
-            
-            if(oldMaxPoolSize != maxPoolSize) {
+
+            if (oldMaxPoolSize != maxPoolSize) {
                 ds.setMaxSize(maxPoolSize);
             }
             int _steadyPoolSize = Integer.parseInt(poolResource.getSteadyPoolSize());
@@ -1326,11 +1321,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 if (poolInitialized) {
                     if (oldSteadyPoolSize < steadyPoolSize) {
                         increaseSteadyPoolSize(_steadyPoolSize);
-                        if(poolLifeCycleListener != null) {
+                        if (poolLifeCycleListener != null) {
                             poolLifeCycleListener.connectionsFreed(steadyPoolSize);
                         }
                     }
-		}
+                }
             }
         }
     }
@@ -1368,11 +1363,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         }
     }
 
-    /*
-    * Kill the extra resources at the end of the Hashtable
-    * The maxPoolSize being reduced causes this method to
-    * be called
-    */
+    /**
+     * Kill the extra resources.<br>
+     * The maxPoolSize being reduced causes this method to
+     * be called
+     */
     private void killExtraResources(int numToKill) {
         cancelResizerTask();
 
