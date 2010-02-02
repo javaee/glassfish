@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 153 
+PASS: 155 
 FAIL: 0
 UNKNOWN: 0
 
@@ -86,6 +86,8 @@ UNKNOWN: 0
 [PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)  
 [PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)  
 [PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)  
+[PASSED] earwithejb : ear/earwithejb Test asadmin deploy (server)
+[PASSED] earwithejb : ear/earwithejb Test asadmin redeploy (server)
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)  
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)  
 [PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)  
