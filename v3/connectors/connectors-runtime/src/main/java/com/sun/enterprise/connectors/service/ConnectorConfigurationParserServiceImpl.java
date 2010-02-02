@@ -41,10 +41,13 @@ import com.sun.enterprise.deployment.SecurityPermission;
 import com.sun.enterprise.connectors.util.*;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.Properties;
-
+import java.util.logging.Level;
 
 
 /**
@@ -71,33 +74,75 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *  by the resource adapter implementation classes.
      *  These strings are obtained by parsing the ra.xml
      *  @param moduleName rar module Name
-     *  @ConnectorRuntimeException If rar.xml parsing fails.
+     *  @throws ConnectorRuntimeException If rar.xml parsing fails.
+     *  @return Required policy permissions in server.policy file
      */
-
     public String getSecurityPermissionSpec(String moduleName)
-                         throws ConnectorRuntimeException
-    {
+            throws ConnectorRuntimeException {
 
-        if(moduleName == null) {
+        if (moduleName == null) {
             return null;
         }
         ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(moduleName);
         Set securityPermissions = connectorDescriptor.getSecurityPermissions();
         Iterator it = securityPermissions.iterator();
         String policyString = null;
+        String policyContent = null;
         SecurityPermission secPerm = null;
-        String permissionString=null;
-        while(it.hasNext()){
+        String permissionString = null;
+
+        //check whether the policy file already has required permissions.
+        File policyFile = new File(System.getProperty("java.security.policy"));
+        policyContent = getFileContent(policyFile);
+
+        while (it.hasNext()) {
             secPerm = (SecurityPermission) it.next();
             permissionString = secPerm.getPermission();
-            if(permissionString != null) {
-                policyString = policyString+"\n \n"+permissionString;
+            int intIndex = policyContent.indexOf(permissionString);
+            if (intIndex == -1) {
+                if (permissionString != null) {
+                    if(policyString != null){
+                        policyString = policyString + "\n \n" + permissionString;
+                    }else{
+                        policyString = "\n\n" + permissionString;
+                    }
+                }
             }
         }
-        if(policyString != null) {
-            policyString= CAUTION_MESSAGE+policyString;
+
+        //print the missing permissions
+        if (policyString != null) {
+            policyString = CAUTION_MESSAGE + policyString;
         }
         return policyString;
+    }
+
+    /**
+     * Obtain the content of server.policy file
+     *
+     * @param file File server.policy file
+     * @return String content of server.policy file
+     */
+    public String getFileContent(File file) {
+        StringBuilder contents = new StringBuilder();
+        BufferedReader input = null;
+        try {
+            input = new BufferedReader(new FileReader(file));
+            try {
+                String line = null;
+                while ((line = input.readLine()) != null) {
+                    contents.append(line);
+                    contents.append(System.getProperty("line.separator"));
+                }
+            } finally {
+                input.close();
+            }
+        }
+        catch (Exception ex) {
+            _logger.log(Level.WARNING, "Exception while performing resource-adapter's " +
+                    "security permission check : ", ex);
+        }
+        return contents.toString();
     }
 
     /** Obtains all the Connection definition names of a rar
