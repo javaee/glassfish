@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -155,6 +155,18 @@ public class Request
      * Whether or not to enforce scope checking of this object.
      */
     private static boolean enforceScope = false;
+
+    /**
+     * The notes key for the password used to authenticate this user.
+     */
+    private static final String SESS_PASSWORD_NOTE =
+            "org.apache.catalina.session.PASSWORD";
+    /**
+     * The notes key for the username used to authenticate this user.
+     */
+    private static final String SESS_USERNAME_NOTE =
+            "org.apache.catalina.session.USERNAME";
+    
     /**
      * The string manager for this package.
      */
@@ -1916,6 +1928,26 @@ public class Request
             }
 
             setUserPrincipal(webPrincipal);
+            setAuthType("LOGIN");
+            AuthenticatorBase authenticator = (AuthenticatorBase) context.getAuthenticator();
+            if (authenticator != null && authenticator.getCache()) {
+
+                Session session = getSessionInternal(true);
+                if (session != null) {
+                    session.setAuthType(authType);
+                    session.setPrincipal(webPrincipal);
+                    if (username != null) {
+                        session.setNote(SESS_USERNAME_NOTE, username);
+                    } else {
+                        session.removeNote(SESS_USERNAME_NOTE);
+                    }
+                    if (password != null) {
+                        session.setNote(SESS_PASSWORD_NOTE, password);
+                    } else {
+                        session.removeNote(SESS_PASSWORD_NOTE);
+                    }
+                }
+            }
 
         } catch (Exception ex) {
             throw new ServletException(
@@ -1924,7 +1956,7 @@ public class Request
 
         }
 
-        setAuthType("LOGIN");
+
     }
 
     @Override
@@ -1943,6 +1975,12 @@ public class Request
         realm.logout();
         setUserPrincipal(null);
         setAuthType(null);
+
+        Session session = getSessionInternal(false);
+        if (session != null) {
+            session.setPrincipal(null);
+            session.setAuthType(null);
+        }
     }
 
     /**

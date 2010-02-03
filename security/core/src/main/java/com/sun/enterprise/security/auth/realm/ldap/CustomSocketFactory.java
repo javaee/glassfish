@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,6 +72,7 @@ public class CustomSocketFactory extends SocketFactory implements Comparator<Soc
         LogDomains.getLogger(CustomSocketFactory.class, LogDomains.SECURITY_LOGGER);
     protected static final StringManager sm =
         StringManager.getManager(CustomSocketFactory.class);
+    private static final  CustomSocketFactory customSocketFactory = new CustomSocketFactory();
 
     public  CustomSocketFactory() {
         Habitat habitat = Globals.getDefaultHabitat();
@@ -121,6 +122,10 @@ public class CustomSocketFactory extends SocketFactory implements Comparator<Soc
 
     public int compare(SocketFactory s1, SocketFactory s2) {
         return s1.getClass().toString().compareTo(s2.getClass().toString());
+    }
+
+    public static SocketFactory getDefault() {
+        return customSocketFactory;
     }
     
     

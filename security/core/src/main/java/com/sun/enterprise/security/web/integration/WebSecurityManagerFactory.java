@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.security.web.integration;
 
 import java.util.HashMap;
@@ -284,14 +285,16 @@ public class WebSecurityManagerFactory extends SecurityManagerFactory {
          } 
          if (manager == null || !register) {
              try {
-
+                 probeProvider.securityManagerCreationStartedEvent(wbd.getModuleID());
                  manager = new WebSecurityManager(wbd, context, this, register);
+                 probeProvider.securityManagerCreationEndedEvent(wbd.getModuleID());
                  if (register) {
-                    //probeProvider.securityManagerCreationStartedEvent(wbd.getModuleID());
-                    probeProvider.securityManagerCreationEvent(ctxId);
-                    //probeProvider.securityManagerCreationEndedEvent(wbd.getModuleID());
+                    
+                  
+                    
                     String appName = wbd.getApplication().getRegistrationName();
                     addManagerToApp(ctxId, null, appName, manager);
+                    probeProvider.securityManagerCreationEvent(ctxId);
                  }
              } catch (javax.security.jacc.PolicyContextException e) {
                  logger.log(Level.FINE, "[Web-Security] FATAL Exception. Unable to create WebSecurityManager: " + e.getMessage());

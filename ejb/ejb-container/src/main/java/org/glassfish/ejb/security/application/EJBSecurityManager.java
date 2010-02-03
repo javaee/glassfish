@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.ejb.security.application;
 
 import java.util.ArrayList;
@@ -927,12 +928,13 @@ public final class EJBSecurityManager
 
             boolean wasInService = getPolicyFactory().inService(this.contextId);
            
+            probeProvider.policyDestructionStartedEvent(ejbName);
             getPolicyFactory().getPolicyConfiguration(this.contextId, true);
-
+            probeProvider.policyDestructionEndedEvent(ejbName);
             if (wasInService) {
-                //probeProvider.policyDestructionStartedEvent(ejbName);
+                
                 probeProvider.policyDestructionEvent(contextId);
-                //probeProvider.policyDestructionEndedEvent(ejbName);
+               
                 policy.refresh();
             }
 	    /* 
@@ -949,10 +951,12 @@ public final class EJBSecurityManager
             // Just log it.
             _logger.log(Level.WARNING, msg, pce);
         }
+        probeProvider.securityManagerDestructionStartedEvent(ejbName);
         ejbSFM.getManager(contextId,ejbName,true);
-        //probeProvider.securityManagerDestructionStartedEvent(ejbName);
+        probeProvider.securityManagerDestructionEndedEvent(ejbName);
+       
         probeProvider.securityManagerDestructionEvent(ejbName);
-        //probeProvider.securityManagerDestructionEndedEvent(ejbName);
+       
     }
 
     /**
