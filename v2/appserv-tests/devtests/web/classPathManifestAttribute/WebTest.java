@@ -38,9 +38,15 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for
+ * Unit test for:
+ *
  *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=11417
  *  ("JspC is not able to locate Tag classes in referenced libraries")
+ *
+ * and
+ *
+ *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=11419
+ *  ("Should tag libraries be searched in referenced jars outside WEB-INF/lib")
  *
  * This unit test uses a slightly modified version of the test case
  * attached to the above issue: Its WEB-INF/lib/foo.jar references
@@ -66,11 +72,12 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test for GlassFish IT 11417");
+        stat.addDescription("Unit test for GlassFish IT 11417 and IT 11419");
         WebTest webTest = new WebTest(args);
 
         try {
-            webTest.doTest();
+            webTest.doTest("/foo.jsp");
+            webTest.doTest("/bar.jsp");
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -80,10 +87,9 @@ public class WebTest {
 	stat.printSummary();
     }
 
-    public void doTest() throws Exception {
+    public void doTest(String jsp) throws Exception {
      
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/foo.jsp");
+        URL url = new URL("http://" + host  + ":" + port + contextRoot + jsp);
         System.out.println("Connecting to: " + url.toString());
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
