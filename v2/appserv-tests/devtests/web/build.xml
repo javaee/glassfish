@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="485"/>
+    <property name="TOTAL_EXPECTED" value="486"/>
 
     &commonSetup;
     &commonBuild;
@@ -408,6 +408,7 @@
         <ant dir="monitorServletInstance" target="all"/>
         <ant dir="servletRequestLongUri" target="all"/>
         <ant dir="classPathManifestAttribute" target="all"/>
+        <ant dir="classPathManifestAttributePrecompile" target="all"/>
         <ant dir="disableDefaultErrorPage" target="all"/>
         <!-- ant dir="asadminDeletes" target="all"/ -->
     </target>
