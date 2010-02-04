@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.container.common.spi.util.InjectionException;
@@ -42,6 +43,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -81,7 +83,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
 
     private AuthRealm authRealm = null;
 
-    private ACCClassLoader classLoader = (ACCClassLoader) Thread.currentThread().getContextClassLoader();
+    private URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
 
     /**
      * The caller can pre-set the client credentials using the
