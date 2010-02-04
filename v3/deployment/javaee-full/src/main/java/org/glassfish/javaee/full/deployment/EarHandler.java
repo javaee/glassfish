@@ -38,6 +38,7 @@ package org.glassfish.javaee.full.deployment;
 
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -66,12 +67,15 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.config.serverbeans.DasConfig;
+import com.sun.enterprise.deploy.shared.FileArchive;
+import com.sun.enterprise.deployment.deploy.shared.JarArchive;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.io.*;
 import java.util.logging.Level;
 import java.net.URLClassLoader;
 import java.net.URL;
+import java.text.MessageFormat;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -159,7 +163,34 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     if (subHandler!=null) {
                         subTarget = target.createSubArchive(
                             FileUtils.makeFriendlyFilenameExtension(moduleUri));
-                        subHandler.expand(subArchive, subTarget, context);
+                        /*
+                         * A subarchive might be packaged as a subdirectory
+                         * (instead of a nested JAR) in an EAR.  If so and if it
+                         * has the same name as the directory into which we'll
+                         * expand the submodule, make sure it is also of the
+                         * correct archive type (i.e., directory and not JAR)
+                         * in which case we don't need to expand it because the developer
+                         * already did so before packaging.
+                         */
+                        if ( ! subTarget.getURI().equals(subArchive.getURI())) {
+                            subHandler.expand(subArchive, subTarget, context);
+                        } else {
+                            /*
+                             * The target for expansion is the same URI as the
+                             * subarchive.  Make sure they are the same type;
+                             * if so, we just skip the expansion.  Otherwise,
+                             * we would leave a JAR where the rest of
+                             * deployment expects a subdirectory so throw an
+                             * exception in that case.
+                             */
+                            if ( ! areSameStorageType(subTarget, subArchive)) {
+                                final String msg = MessageFormat.format(
+                                        _logger.getResourceBundle().getString("enterprise.deployment.backend.badSubModPackaging"),
+                                        subArchive.getURI().toASCIIString(),
+                                        subArchive.getClass().getName());
+                                throw new RuntimeException(msg);
+                            }
+                        }
 // Keep the original submodule file because the app client deployer needs it.
 /*
                         // delete the original module file
@@ -185,6 +216,11 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 source2.close();
             }
         }
+    }
+
+    private static boolean areSameStorageType(final Archive arch1, final Archive arch2) {
+        return (   (arch1 instanceof FileArchive && arch2 instanceof FileArchive)
+                || (arch1 instanceof JarArchive && arch2 instanceof JarArchive));
     }
 
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
