@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,10 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.text.MessageFormat;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -83,6 +86,8 @@ public class ACCLogger extends Logger {
     private void init(final LogService logService) throws IOException {
         final Level level = chooseLevel(logService);
         final Handler configuredFileHandler = createHandler(logService, level);
+        final ResourceBundle rb = ResourceBundle.getBundle(
+                ACCLogger.class.getPackage().getName() + ".LogStrings");
 
         /*
          * Set existing loggers to at least the configured level.
@@ -90,10 +95,21 @@ public class ACCLogger extends Logger {
         for (Enumeration<String> names =
                 LogManager.getLogManager().getLoggerNames();
                names.hasMoreElements(); ) {
-            reviseLogger(
-                    LogManager.getLogManager().getLogger(names.nextElement()),
-                    level,
-                    configuredFileHandler);
+            final String loggerName = names.nextElement();
+            final Logger logger = LogManager.getLogManager().getLogger(loggerName);
+            if (logger == null) {
+                final String msg = MessageFormat.format(
+                        rb.getString("appclient.nullLogger"),
+                        loggerName);
+                if (level.intValue() <= Level.CONFIG.intValue()) {
+                    System.err.println(msg);
+                }
+            } else {
+                reviseLogger(
+                        logger,
+                        level,
+                        configuredFileHandler);
+            }
         }
     }
 
@@ -143,17 +159,17 @@ public class ACCLogger extends Logger {
     private static void reviseLogger(final Logger logger,
             final Level level,
             final Handler handler) {
-        AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run() {
-                        if ( ! logger.isLoggable(level)) {
-                            logger.setLevel(level);
+            AccessController.doPrivileged(
+                    new PrivilegedAction() {
+                        public Object run() {
+                            if ( ! logger.isLoggable(level)) {
+                                logger.setLevel(level);
+                            }
+                            if (handler != null) {
+                                logger.addHandler(handler);
+                            }
+                            return null;
                         }
-                        if (handler != null) {
-                            logger.addHandler(handler);
-                        }
-                        return null;
-                    }
-                });
+                    });
+        }
     }
-}
