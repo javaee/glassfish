@@ -143,7 +143,10 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                 e.errorCode <= XAException.XA_RBEND) {
                 throw new HeuristicRollback(ex.getMessage());
 	    }
-            throw new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
+            INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
+            internal.initCause(ex);
+            _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_commit", ex);
+            throw internal;
         }
 
         destroy();
@@ -203,6 +206,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 			//IASRI END 4722883
             INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
             internal.initCause(ex);
+            _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_commit", ex);
             throw internal;
         }
 
@@ -337,6 +341,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 		throw new TRANSIENT();
             INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
             internal.initCause(ex);
+            _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
             throw internal;
         }
 

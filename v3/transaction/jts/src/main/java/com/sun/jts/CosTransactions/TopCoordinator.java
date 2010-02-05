@@ -2106,6 +2106,7 @@ public class TopCoordinator extends CoordinatorImpl {
         // this method, then the process must be ended with a fatal error.
 
         Throwable heuristicExc = null;
+        Throwable internalExc = null;
         if (participants != null) {
             try {
                 participants.distributeCommit();
@@ -2118,7 +2119,7 @@ public class TopCoordinator extends CoordinatorImpl {
                 // ADDED(Ram J) percolate any system exception
                 // back to the caller.
                 if (exc instanceof INTERNAL) {
-                    throw (INTERNAL) exc;
+                    internalExc = exc; // throw (INTERNAL) exc;
                 }
             }
         }
@@ -2152,7 +2153,7 @@ public class TopCoordinator extends CoordinatorImpl {
             // for the transaction.
 
             if (terminator != null) {
-                terminator.setCompleted(false, heuristicExc != null);
+                terminator.setCompleted(false, (heuristicExc != null || internalExc != null));
             }
 
             /*  commented out (Ram J) for memory leak fix.
@@ -2190,6 +2191,8 @@ public class TopCoordinator extends CoordinatorImpl {
                 } else {
                     throw (HeuristicHazard) heuristicExc;
                 }
+            } else if (internalExc != null) {
+                throw (INTERNAL) internalExc;
             }
         }
     }
