@@ -1571,14 +1571,16 @@ public class RecoveryManager {
                                             } catch( Throwable iex ) {}
                                         }
                                         else {
-					                        _logger.log(Level.WARNING,"jts.exception_during_resync",
-							                            new java.lang.Object[] {exc.toString(),"OTSResource rollback"});
+                                             _logger.log(Level.WARNING,"jts.exception_during_resync",
+			                            new java.lang.Object[] {exc.toString(),"OTSResource " + 
+                                                    ((commit.booleanValue())? "commit" : "rollback")});
                                             exceptionisThrown = false;
                                         }
                                     }
                                     else {
-				                        _logger.log(Level.WARNING,"jts.exception_during_resync",
-						                            new java.lang.Object[] {exc.toString(),"OTSResource rollback"});
+		                        _logger.log(Level.WARNING,"jts.exception_during_resync",
+		                                new java.lang.Object[] {exc.toString(),"OTSResource " + 
+                                                    ((commit.booleanValue())? "commit" : "rollback")});
                                         exceptionisThrown = false;
                                     }
                                 }
