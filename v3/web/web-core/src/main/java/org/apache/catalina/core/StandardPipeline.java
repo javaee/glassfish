@@ -588,7 +588,16 @@ public class StandardPipeline
      */
     public void invoke(Request request, Response response)
             throws IOException, ServletException {
+        doInvoke(request,response,false);
+    }
 
+    public void doChainInvoke(Request request, Response response)
+            throws IOException, ServletException {
+        doInvoke(request,response,true);
+    }
+
+    private void doInvoke(Request request, Response response, boolean chaining)
+            throws IOException, ServletException {
         if ((valves.length > 0) || (basic != null)) {
             // Set the status so that if there are no valves (other than the
             // basic one), the basic valve's request processing logic will
@@ -601,7 +610,13 @@ public class StandardPipeline
             // that the pipeline should proceed.
             int i;
             for (i = 0; i < valves.length; i++) {
-                status = valves[i].invoke(request, response);
+                Request req = request;
+                Response resp = response;
+                if (chaining) {
+                    req = getRequest(request);
+                    resp = getResponse(request, response);
+                }
+                status = valves[i].invoke(req, resp);
                 if (status != GlassFishValve.INVOKE_NEXT)
                     break;
             }
@@ -627,15 +642,28 @@ public class StandardPipeline
                         (org.apache.catalina.connector.Request) request,
                         (org.apache.catalina.connector.Response) response);
                 } else if (basic != null) {
-                    basic.invoke(request, response);
-                    basic.postInvoke(request, response);
+                    Request req = request;
+                    Response resp = response;
+                    if (chaining) {
+                        req = getRequest(request);
+                        resp = getResponse(request, response);
+                    }
+                    basic.invoke(req, resp);
+                    basic.postInvoke(req, resp);
                 }
             }
 
             // Invoke the post-request processing logic only on those valves
             // that returned a status of INVOKE_NEXT
             for (int j = i - 1; j >= 0; j--) {
-                savedValves[j].postInvoke(request, response);
+                Request req = request;
+                Response resp = response;
+                if (chaining) {
+                    req = getRequest(request);
+                    resp = getResponse(request, response);
+                }
+
+                savedValves[j].postInvoke(req, resp);
             }
 
             savedValves = null;
@@ -644,6 +672,26 @@ public class StandardPipeline
             throw new ServletException
                 (sm.getString("standardPipeline.noValve"));
         }
+    }
+
+
+    private Request getRequest(Request request) {
+	Request r = (Request)
+	    request.getNote(Globals.WRAPPED_REQUEST);
+	if (r == null) {
+	    r = request;
+	}
+	return r;
+    }
+
+
+    private Response getResponse(Request request, Response response) {
+	Response r = (Response)
+	    request.getNote(Globals.WRAPPED_RESPONSE);
+	if (r == null) {
+	    r = response;
+	}
+	return r;
     }
 
 

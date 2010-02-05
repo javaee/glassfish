@@ -1241,13 +1241,12 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     public boolean isSecurityExtensionEnabled() {
         if (helper == null) {
-            return false;
-        } else {
-            try {
-                return (helper.getServerAuthConfig() != null);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            initConfigHelper();
+        }
+        try {
+            return (helper.getServerAuthConfig() != null);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 

@@ -37,7 +37,6 @@
 package com.sun.enterprise.web;
 
 import org.apache.catalina.Container;
-import org.apache.catalina.Globals;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.core.StandardPipeline;
@@ -45,7 +44,7 @@ import org.apache.catalina.core.StandardPipeline;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-//import com.sun.web.security.RealmAdapter;
+import com.sun.web.security.RealmAdapter;
 
 /**
  * Pipeline whose invoke logic checks if a given request path represents
@@ -87,39 +86,14 @@ public class WebPipeline extends StandardPipeline {
                 webModule.getAdHocServletName(hreq.getServletPath()) != null) {
             webModule.getAdHocPipeline().invoke(request, response);
         } else {
-            /*
             RealmAdapter realmAdapter = (RealmAdapter)webModule.getRealm();
             if (realmAdapter != null &&
                     realmAdapter.isSecurityExtensionEnabled()){
-                super.invoke(getRequest(request),
-                             getResponse(request, response));
+                super.doChainInvoke(request, response);
             } else {
-            */
                 super.invoke(request, response);
-            /*
             }
-            */
         }
-    }
-
-
-    private Request getRequest(Request request) {
-	Request r = (Request) 
-	    request.getNote(Globals.WRAPPED_REQUEST); 
-	if (r == null) {
-	    r = request;
-	}
-	return r;
-    }
-
-
-    private Response getResponse(Request request, Response response) {
-	Response r = (Response) 
-	    request.getNote(Globals.WRAPPED_RESPONSE); 
-	if (r == null) {
-	    r = response;
-	}
-	return r;
     }
 
 }
