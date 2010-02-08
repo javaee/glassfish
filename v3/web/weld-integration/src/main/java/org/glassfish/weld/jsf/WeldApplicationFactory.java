@@ -41,29 +41,25 @@ import javax.faces.application.ApplicationFactory;
 
 public class WeldApplicationFactory extends ApplicationFactory {
     
-    private final ApplicationFactory applicationFactory;
+    private final ApplicationFactory delegate;
    
     private Application application;
    
-    public WeldApplicationFactory(ApplicationFactory applicationFactory) {
-        this.applicationFactory = applicationFactory;
+    public WeldApplicationFactory(ApplicationFactory delegate) {
+        this.delegate = delegate;
     }
    
     @Override
     public void setApplication(Application application) {
-        delegate().setApplication(application);
+        this.application = application;
+        delegate.setApplication(application);
     }
 
     @Override
     public Application getApplication() {
         if (application == null) {
-            application = new WeldApplication(delegate().getApplication());
+            application = new WeldApplication(delegate.getApplication());
         }
         return application;
     }
-
-    protected ApplicationFactory delegate() {
-        return applicationFactory;
-    }
-   
 }

@@ -47,6 +47,7 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
+import javax.faces.application.ApplicationWrapper;
 import javax.faces.application.NavigationHandler;
 import javax.faces.application.ResourceHandler;
 import javax.faces.application.StateManager;
@@ -69,7 +70,7 @@ import org.glassfish.weld.util.Util;
 import org.jboss.weld.el.WeldELContextListener;
 import org.jboss.weld.el.WeldExpressionFactory;
 
-public class WeldApplication extends Application {
+public class WeldApplication extends ApplicationWrapper {
    
     private static final ELContextListener[] EMPTY_LISTENERS = {};
    
@@ -86,196 +87,8 @@ public class WeldApplication extends Application {
         }
     }
 
-    @Override
-    public ActionListener getActionListener() {
-        return delegate().getActionListener();
-    }
-
-    @Override
-    public void setActionListener(ActionListener listener) {
-        delegate().setActionListener(listener);
-    }
- 
-    @Override
-    public void setDefaultLocale(Locale locale) {
-        delegate().setDefaultLocale(locale);
-    }
-
-    @Override
-    public Locale getDefaultLocale() {
-        return delegate().getDefaultLocale();
-    }
-
-    @Override
-    public void setDefaultRenderKitId(String renderKitId) {
-        delegate().setDefaultRenderKitId(renderKitId);
-    }
-
-    @Override
-    public String getDefaultRenderKitId() {
-        return delegate().getDefaultRenderKitId();
-    }
-
-    @Override
-    public void setMessageBundle(String bundle) {
-        delegate().setMessageBundle(bundle);
-    }
-
-    @Override
-    public String getMessageBundle() {
-        return delegate().getMessageBundle();
-    }
-
-    @Override
-    public void setNavigationHandler(NavigationHandler handler) {
-        delegate().setNavigationHandler(handler);
-    }
-
-    @Override
-    public NavigationHandler getNavigationHandler() {
-        return delegate().getNavigationHandler();
-    }
-
-    @Override
-    public void setResourceHandler(ResourceHandler handler) {
-        delegate().setResourceHandler(handler);
-    }
-
-    @Override
-    public ResourceHandler getResourceHandler() {
-        return delegate().getResourceHandler();
-    }
-
-    @Override
-    public void setPropertyResolver(PropertyResolver resolver) {
-        delegate().setPropertyResolver(resolver);
-    }
-
-    @Override
-    public PropertyResolver getPropertyResolver() {
-        return delegate().getPropertyResolver();
-    }
-
-    @Override
-    public ResourceBundle getResourceBundle(FacesContext ctx, String name) {
-        return delegate().getResourceBundle(ctx, name);
-    }
-
-    @Override
-    public ValueBinding createValueBinding(String ref) {
-        return delegate().createValueBinding(ref);
-    }
-
-    @Override
-    public Iterator<String> getValidatorIds() {
-        return delegate().getValidatorIds();
-    }
-
-    @Override
-    public Validator createValidator(String validatorId) throws FacesException {
-        return delegate().createValidator(validatorId);
-    }
-
-    @Override
-    public void addValidator(String validatorId, String validatorClass) {
-        delegate().addValidator(validatorId, validatorClass);
-    }
-
-    @Override
-    public void setSupportedLocales(Collection<Locale> locales) {
-        delegate().setSupportedLocales(locales);
-    }
-
-    @Override
-    public Iterator<Locale> getSupportedLocales() {
-        return delegate().getSupportedLocales();
-    }
-
-    @Override
-    public MethodBinding createMethodBinding(String ref, Class<?> params[])
-        throws ReferenceSyntaxException {
-        return delegate().createMethodBinding(ref, params);
-    } 
-
-    @Override
-    public Iterator<Class<?>> getConverterTypes() {
-        return delegate().getConverterTypes();
-    }
-
-    @Override
-    public Iterator<String> getConverterIds() {
-        return delegate().getConverterIds();
-    }
-
-    @Override
-    public Converter createConverter(Class<?> targetClass) {
-        return delegate().createConverter(targetClass);
-    }
-
-    @Override
-    public Converter createConverter(String converterId) {
-        return delegate().createConverter(converterId);
-    }
-
-    @Override
-    public void addConverter(Class<?> targetClass, String converterClass) {
-        delegate().addConverter(targetClass, converterClass);
-    }
-
-    @Override
-    public void addConverter(String converterId, String converterClass) {
-        delegate().addConverter(converterId, converterClass);
-    }
-
-    @Override
-    public Iterator<String> getComponentTypes() {
-        return delegate().getComponentTypes();
-    }
-
-    @Override
-    public UIComponent createComponent(ValueBinding binding,
-        FacesContext ctx, String componentType) throws FacesException {
-        return delegate().createComponent(binding, ctx, componentType);
-    }
-
-    @Override
-    public UIComponent createComponent(String componentType) throws FacesException {
-        return delegate().createComponent(componentType);
-    }
-
-    @Override
-    public void addComponent(String componentType, String componentClass) {
-        delegate().addComponent(componentType, componentClass);
-    }
-
-    @Override
-    public void setStateManager(StateManager manager) {
-        delegate().setStateManager(manager);
-    }
-
-    @Override
-    public StateManager getStateManager() {
-        return delegate().getStateManager();
-    }
-
-    @Override
-    public void setViewHandler(ViewHandler vHandler) {
-        delegate().setViewHandler(vHandler);
-    }
-
-    @Override
-    public ViewHandler getViewHandler() {
-        return delegate().getViewHandler();
-    }
-
-    @Override
-    public void setVariableResolver(VariableResolver resolver) {
-        delegate().setVariableResolver(resolver);
-    }
-
-    @Override
-    public VariableResolver getVariableResolver() {
-        return delegate().getVariableResolver();
+    public Application getWrapped() {
+        return this.application;
     }
 
     @Override
@@ -283,16 +96,12 @@ public class WeldApplication extends Application {
         if (this.expressionFactory == null) {
             BeanManager beanManager = getBeanManager();
             if (beanManager != null) {
-                this.expressionFactory = beanManager.wrapExpressionFactory(delegate().getExpressionFactory());
+                this.expressionFactory = beanManager.wrapExpressionFactory(getWrapped().getExpressionFactory());
           } else {
-              this.expressionFactory = delegate().getExpressionFactory(); 
+              this.expressionFactory = getWrapped().getExpressionFactory(); 
           }
         }
         return expressionFactory;
-    }
-
-    private Application delegate() {
-        return application;
     }
 
     private BeanManager getBeanManager() {
@@ -304,5 +113,4 @@ public class WeldApplication extends Application {
         }
 
     }
-
 }
