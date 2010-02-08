@@ -62,7 +62,7 @@ pkg = {
 			"pkg:/glassfish-javahelp@" + conf.javahelp_version : {"type" : "incorporate" },
 			"pkg:/glassfish-upgrade@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-registration@" + conf.glassfish_version : {"type" : "incorporate" },
-			"pkg:/jersey@1.1" : {"type" : "incorporate" },
+			"pkg:/jersey@1.1.5" : {"type" : "incorporate" },
 			"pkg:/glassfish-management@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jca@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-jpa@" + conf.glassfish_version : {"type" : "incorporate" },
