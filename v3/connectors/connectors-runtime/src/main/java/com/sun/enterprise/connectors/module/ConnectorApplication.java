@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.connectors.module;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
@@ -273,7 +274,11 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
             //this is an application undeploy event
             DeploymentContext dc = (DeploymentContext) event.hook();
             UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
-            if (dcp.name.equals(moduleName)) {
+            if (dcp.name.equals(moduleName) ||
+                    //Consider the application with embedded RAR being undeployed
+                    (dcp.name.equals(applicationName) &&
+                    moduleName.contains(ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER) &&
+                    moduleName.startsWith(dcp.name))) {
 
                 if (dcp.origin != OpsParams.Origin.deploy) {
                     if (dcp.origin == OpsParams.Origin.undeploy) {
@@ -281,7 +286,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                             if (getAllConnectorResources().size() > 0) {
                                 String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                                         "use '--cascade=true' to delete them during undeploy";
-                                _logger.log(Level.WARNING, "resources.of.rar.exist");
+                                _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
 
                                 ActionReport report = dc.getActionReport();
                                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
