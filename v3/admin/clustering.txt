@@ -1,0 +1,223 @@
+Thoughts about clustering from admin perspective
+- Kedar Mhaswade (km@dev.java.net)
+-------------------------------------------------------------------------------
+TOC:
+1. Introduction
+2. Detailed Discussion
+3. Admin Commands
+4. Open Issues
+
+1. Introduction
+
+This document discusses approaches to clustering GlassFish v3 from an admin
+standpoint. The topic is vast and there's lot of ground to cover. This document
+only covers the specific portions of installation of bits, synchronization of
+server configuration and application data, how to make node agent an optional
+component and restarting server instances and clusters. 
+
+Note that compatibility with GlassFish v2 is important.
+It is possible that first release of GlassFish 3.1 has no "node agent", but
+it should be treated as a component that might come in later if there is need.
+
+2. Detailed Discussion of Architecture Components
+
+2.1 High-level Components
+
+As far as the overall architecture is concerned, there are no changes proposed
+for this release, other than the possibility that node agent is made optional.
+Thus, there is a single admin-server for the entire cluster. The individual 
+instances that are part of same or different "clusters" run on same or different
+nodes. A domain corresponds to a running process called Domain Admin Server and
+different domains can share the same installation. A domain's file system is
+termed the "central repository" and it is the one that should be protected
+at all costs. Various nodes make copies of a subset of this structure. This is
+because not all application/configuration applies to every cluster/node. A node
+replicates only the portion that it needs. DAS is the single entry point into
+administration and it is a single point of failure.
+
+Following things are (still) not planned:
+- DAS failover. Several customers have asked for this, and it may be possible
+  to do this later if we did the infrastructure right. 
+- An efficient configuration backup/restore solution.
+
+Following changes can be considered:
+- Monitoring of server instances can be done without going through DAS. In
+  GlassFish v2, a high-overhead cascading solution was present to
+  cascade the MBeans from server instances onto DAS. We may rethink that
+  solution. At the same time, it may be desirable to let sysadmins monitor
+  a particular cluster instance individually.
+
+2.2 Installation of Bits
+
+In GlassFish v2, every machine (node) that participates in clustering needs to
+be managed separately as far as product installation is concerned. This is
+probably manageable for small number of nodes, but when the cluster size grows,
+it becomes unmanabeable. It is highly desirable that we build some form of
+provisioning into the core clustering solution. It is possible that we use
+secure communication assuming the existence of "sshd" on the target machines.
+This form of provisioning is limited to GlassFish only and is not aimed at
+system-wide provisioning. Thus, if sshd is available we can do certain things
+remotely without having a dedicated process like node agent.
+
+The advantages of doing this are:
+1. System administrators need to manage only single machine called the 
+   admin-server machine (or the DAS machine). Thus, the update-center
+   integration at the DAS machine can be leveraged to update and upgrade
+   the GlassFish components and DAS ensures that all the other nodes
+   are in sync with this machine. There is no need to run update-center
+   client on individual nodes.
+
+2. It enables "finding" nodes from a single location, i.e. DAS. Thus
+   after a node is made available in the network, the entire configuration
+   of the cluster can be managed from DAS machine using admin tools.
+
+There is a name-space issue here and it is documented as the Open Issue [1].
+
+2.3 Data Synchronization
+
+The application server data is of three types:
+a)- server software (modules and libraries)
+b)- server configuration (static files)
+c)- application data and configuration (static files)
+
+In order to support 2.1, we should be able to synchronize a). To support cluster
+management, we have to support synchronization of b) and c). This section talks
+about b) and c) but similar discussion applies to a) as well. To serve this purpose,
+DAS acts almost like an SCM server. It implements a fast checksumming algorithm
+(details to be filled in) that creates the checksum for various for paths of 
+interest. The path can be a path relative to domain's folder or installation folder.
+(See issue 4.1). Thus all the clients (server instances) and the DAS have to agree
+on the paths. The domain's folder looks like the following:
+
+(| implies a file, || implies a folder)
+
+||domain-name
+     || ---- config (config files common to all servers including the DAS)
+                 | ---- domain.xml
+                 | ---- logging.properties
+                 | ---- default-web.xml
+                 | ---- server.policy
+                 || ---- <server/cluster-name>-config (cluster/server-specific data)
+     || ---- applications
+                 || ---- <application-name>
+                             | ---- <application-specific-paths>
+     || ---- lib (libraries common to all servers including the DAS)
+     || ---- docroot (the default web-container docroot)
+
+The DAS is responsible for maintaining the checksums for all the paths in the
+server's configuration data and application data. It's also responsible for
+creating patches between two checksums it knows. Thus a typical session could be:
+
+Client: For Path: /domain/applications/petstore, give me the latest checksum.
+Server: Sends: 1424256243.
+Client: For Path: /domain/applications/petstore, give me the delta between 
+        checksums: 5234234423 and 1424256243.
+Server: Either:
+        1) Sends the difference as a zip file, or
+        2) Sends a redirect to another server that it knows has exact same delta.
+
+Client applies the delta it receives, as a patch to its file system. (Note that
+client here is just another GlassFish instance).
+
+If the DAS is the sole distributor of files and their deltas, this is probably
+easy to do. But I have been told that for scaling the cluster size, we should
+be able to distribute the checksum calculation/file transfer load across the
+cluster.
+
+To support the distributed data transfer like this, following things should
+happen:
+- All servers in cluster (i.e. the non-admin-server instances as well) should
+  be capable of serving the contents from their local repositories.
+- A communication channel needs to be available. 
+
+Both the above are open issues at this time.
+
+2.4 Communication (Transport) Layer
+2.5 Cold Start of a Server Instance Without Node Agent
+
+A node agent is a process that controls the life cycle of the server instances.
+On each node (machine) we have a node agent process per GlassFish  domain. For
+example, if a GlassFish  domain d1 contains a cluster c1 spanning machines m1,
+m2 and m3 with three server instances s1, s2, s3 on each of them, we need three
+node agents n1, n2 and n3. This is how it was in GlassFish v2.
+		   _____________________
+		  |    _____________   |
+		  |   |             |  |
+		  |   |  s1 <--> n1 |  |
+		  |   |             |  |
+		  |   |_____________|  |
+		  |        m1          |
+		  |    _____________   |
+		  |   |             |  | 
+		  |   |  s1 <--> n1 |  |
+		  |   |             |  |
+		  |   |_____________|  |  c1 = {s1, s2, s3}
+		  |        m2          |
+		  |    _____________   |
+		  |   |             |  |
+		  |   |  s1 <--> n1 |  |
+		  |   |             |  |
+		  |   |_____________|  |
+		  |        m3          |
+		  |____________________|
+
+Since n1, n2 and n3 are separate processes themselves, their life cycle needs to
+be managed by human administrators. Since we are making node agents optional for
+this release, we need an alternate mechanism for situations like:
+- start-cluster, which starts all the cluster instances
+- start-instance, which starts a clustered or non-clustered server instance
+
+to remotely start the server processes from a DAS process. Hereby, we propose a
+solution that depends on the ubiquitous sshd which is both standard and secure.
+Thus, when we want to start a process remotely from a DAS process, we contact
+the ssh daemon running on a given port (default: 22) on a given machine and ask
+it to start the GlassFish server process. If sshd is not running, administrator
+needs to manually start the server (by using a local asadmin command start-server).
+
+For this to happen, DAS needs to be an ssh client and pure Java libraries are
+available for the same in the public domain. In fact, Hudson project uses this
+technique to remotely configure the secondary Hudson machines. 
+
+
+2.6 Server Software Upgrade Implications
+
+It is possible that when a cluster size grows, not all nodes in the cluster are
+upgraded simultaneously because that means service downtime. In order to
+cut the downtime and ensure service availability, the system should be designed
+in such a way that for limited period, different nodes can be running slightly
+different versions of GlassFish. 
+
+2.7 GlassFish as an SSH server
+
+2.8 Advanced Topics
+- Should we have a ZFS-only configuration that dramatically improves the
+file system performance?
+- Cloud readiness? Subnet boundaries? 
+
+3. New Admin Commands
+
+We propose following new commands for management:
+- create-server -- Local asadmin command to create the bootstrap file
+                   system for a clustered/unclustered GlassFish server.
+- start-server  -- Local asadmin command to start a GlassFish server.
+- delete-server -- Local asadmin command to delete the GlassFish server
+                   file system.
+- stop-server   -- Local asadmin command to stop the GlassFish server.
+
+3.1 create-server
+
+create-server [--cluster cluster-name | --config config-name] [server-name]
+
+1- Uses the asadmin program options to communicate with DAS when it is running.
+2- Optional operand decides the name of the server. Defaults to the value
+   returned by InetAddress.getLocalHost().getHostByName().
+3- Saves the coordinates of DAS in a local file. Creates the file system off
+   which the server can bootstrap itself.
+
+4. Open Issues
+4.1-  An installation can be leveraged my multiple domain admin servers. In some
+      cases, the installation folder may not be owned (file system permissions)
+      by the user who owns the domain. In these cases, the DAS can't generate the
+      checksum for paths rooted at installation.
+
+Foot-notes:
