@@ -111,6 +111,8 @@ public class SecurityContextUtil implements PostConstruct {
         IOR ior =  ((com.sun.corba.ee.spi.orb.ORB)orbHelper.getORB()).getIOR(effective_target, false);
         if (StubAdapter.isStub(effective_target)) {
             if (StubAdapter.isLocal(effective_target)) {
+                // XXX: Workaround for non-null connection object ri for local invocation.
+                ConnectionExecutionContext.setClientThreadID(Thread.currentThread().getId());
                 return null;
             }
         }

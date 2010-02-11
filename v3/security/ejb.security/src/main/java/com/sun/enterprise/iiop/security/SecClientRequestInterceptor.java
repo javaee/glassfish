@@ -241,6 +241,8 @@ public class SecClientRequestInterceptor extends    org.omg.CORBA.LocalObject
          */
         long  cContextId = 0;         // CSIV2 requires type to be long
 
+        // XXX: Workaround for non-null connection object ri for local invocation.
+        ConnectionExecutionContext.readClientThreadID();
         /**
          * CSIV2 level 0 implementation does not require any authorization
          * tokens to be sent over the wire. So set cAuthzElem to empty.

@@ -56,6 +56,18 @@ import java.util.Hashtable;
  */
 public class ConnectionExecutionContext {
     private static final InheritableThreadLocal connCurrent= new InheritableThreadLocal();
+    // XXX: Workaround for non-null connection object ri for local invocation.
+    private static final InheritableThreadLocal<Long> ClientThreadID = new InheritableThreadLocal<Long>();
+
+    public static Long readClientThreadID() {
+        Long ID = ClientThreadID.get();
+        ClientThreadID.remove();
+        return ID;
+    }
+
+    public static void setClientThreadID(Long ClientThreadID) {
+        ConnectionExecutionContext.ClientThreadID.set(ClientThreadID);
+    }
 
     /** 
      * This method can be used to add a new hashtable for storing the 

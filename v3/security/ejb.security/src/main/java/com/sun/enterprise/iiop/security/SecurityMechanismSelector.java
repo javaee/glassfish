@@ -1498,7 +1498,11 @@ as_context_mech
         // For a local invocation - we don't need to check the security
         // policies. The following condition guarantees the call is local
         // and thus bypassing policy checks.
-        if (socket == null && ctx == null)
+        
+        // XXX: Workaround for non-null connection object ri for local invocation.
+        // if (socket == null && ctx == null)
+        Long ClientID = ConnectionExecutionContext.readClientThreadID();
+        if (ClientID != null && ClientID == Thread.currentThread().getId() && ctx == null)
             return null;
 
         if ( evaluate_client_conformance(ctx, object_id, ssl_used, certChain) 
