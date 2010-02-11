@@ -1,7 +1,7 @@
 Results of deployment dev tests with v3
 ===========================================================
 
-PASS: 155 
+PASS: 157 
 FAIL: 0
 UNKNOWN: 0
 
@@ -136,6 +136,8 @@ UNKNOWN: 0
 [PASSED] jsp : ejb30/war/jsp Test asadmin redeploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin deploy  
 [PASSED] servlet : ejb30/war/servlet Test asadmin redeploy  
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin deploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin redeploy
 [PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy  
 [PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy  
 [PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin deploydir  
