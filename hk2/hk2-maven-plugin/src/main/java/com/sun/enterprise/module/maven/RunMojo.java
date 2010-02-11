@@ -36,10 +36,7 @@
  */
 package com.sun.enterprise.module.maven;
 
-import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.*;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.ModulesRegistry;
 import org.apache.maven.plugin.AbstractMojo;
@@ -134,7 +131,7 @@ public class RunMojo extends AbstractMojo {
             rootDir = project.getBasedir();
     
         try {
-            StartupContext context = new StartupContext(rootDir, args);
+            StartupContext context = new StartupContext(ArgumentManager.argsToMap(args));
             if(mainModule==null)
                 new Main().launch(createModuleRegistry(), context);
             else
