@@ -15,7 +15,7 @@
 # The first parameter is settings.xml.  If not set, then it assume that settings.xml is in ~/.m2/
     SETTING_XML=""
 if [ $# -eq 0 ]; then
-    SETTING_XML="-s $1"
+    SETTING_XML="$1"
 fi
 export SETTING_XML
 
@@ -55,7 +55,7 @@ mvn -e -B -P release release:prepare
 mvn -e -P release-phase1 install
 
 # finally a release
-mvn $SETTING_XML -e -B release:perform
+mvn -s $SETTING_XML -e -B release:perform
 
 # Once the bits are pushed and made visible, you just need to change v3/pom.xml <hk2.version> property
 # and GFv3 will pick up the new version of HK2.
