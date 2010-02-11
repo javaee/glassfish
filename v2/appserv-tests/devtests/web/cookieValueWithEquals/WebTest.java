@@ -48,7 +48,7 @@ public class WebTest {
     private static final String TEST_NAME = "cookie-value-with-equals";
 
     private static final String EXPECTED_RESPONSE = "SUCCESS";
-    private static final String COOKIE = "mycookie=\"aaa=bbb=ccc\"";
+    private static final String COOKIE = "mycookie=aaa=bbb=ccc";
 
     private String host;
     private String port;
