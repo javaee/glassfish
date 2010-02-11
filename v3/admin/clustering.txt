@@ -82,50 +82,41 @@ c)- application data and configuration (static files)
 
 In order to support 2.1, we should be able to synchronize a). To support cluster
 management, we have to support synchronization of b) and c). This section talks
-about b) and c) but similar discussion applies to a) as well. To serve this purpose,
-DAS acts almost like an SCM server. It implements a fast checksumming algorithm
-(details to be filled in) that creates the checksum for various for paths of 
-interest. The path can be a path relative to domain's folder or installation folder.
-(See issue 4.1). Thus all the clients (server instances) and the DAS have to agree
-on the paths. The domain's folder looks like the following:
+about b) and c) but similar discussion applies to a) as well.
+
+All the clients (server instances) and the DAS have to agree on the paths. The 
+domain's folder looks like the following:
 
 (| implies a file, || implies a folder)
 
-||domain-name
-     || ---- config (config files common to all servers including the DAS)
-                 | ---- domain.xml
-                 | ---- logging.properties
-                 | ---- default-web.xml
-                 | ---- server.policy
-                 || ---- <server/cluster-name>-config (cluster/server-specific data)
-     || ---- applications
-                 || ---- <application-name>
+||---- domain-name
+     ||---- config (config files common to all servers including the DAS)
+                 |---- domain.xml
+                 |---- logging.properties
+                 |---- default-web.xml
+                 |---- server.policy
+                 |---- <ALL OTHER CONFIG FILES COMMON TO ALL INSTANCES)
+                 ||---- <server/cluster-name>-config (cluster/server-specific data
+                                         copied to instance's config folder)
+     ||---- applications 
+                 ||---- <application-name>
                              | ---- <application-specific-paths>
-     || ---- lib (libraries common to all servers including the DAS)
-     || ---- docroot (the default web-container docroot)
+     ||---- lib (libraries common to all servers including the DAS)
+     ||---- docroot (the default web-container docroot, files are copied to
+                     instance's docroot)
 
-The DAS is responsible for maintaining the checksums for all the paths in the
-server's configuration data and application data. It's also responsible for
-creating patches between two checksums it knows. Thus a typical session could be:
+Details of the synchronization algorithm:
 
-Client: For Path: /domain/applications/petstore, give me the latest checksum.
-Server: Sends: 1424256243.
-Client: For Path: /domain/applications/petstore, give me the delta between 
-        checksums: 5234234423 and 1424256243.
-Server: Either:
-        1) Sends the difference as a zip file, or
-        2) Sends a redirect to another server that it knows has exact same delta.
+This simplistic synchronization algorithm is based on file's modtime and the
+java.io.File.setLastModifiedTime(long time) API. For the first version, DAS
+does not keep any delta-information as far as modtimes are concerned. All it
+has is a specific modtime on all the files it manages.
 
-Client applies the delta it receives, as a patch to its file system. (Note that
-client here is just another GlassFish instance).
+<DETAILS OF ALGORITHM>
 
-If the DAS is the sole distributor of files and their deltas, this is probably
-easy to do. But I have been told that for scaling the cluster size, we should
-be able to distribute the checksum calculation/file transfer load across the
-cluster.
-
-To support the distributed data transfer like this, following things should
-happen:
+It is possible that DAS balances the load of file transfer to other
+instances in the same domain. To support the 
+distributed data transfer like this, following things should happen:
 - All servers in cluster (i.e. the non-admin-server instances as well) should
   be capable of serving the contents from their local repositories.
 - A communication channel needs to be available. 
@@ -140,26 +131,26 @@ On each node (machine) we have a node agent process per GlassFish  domain. For
 example, if a GlassFish  domain d1 contains a cluster c1 spanning machines m1,
 m2 and m3 with three server instances s1, s2, s3 on each of them, we need three
 node agents n1, n2 and n3. This is how it was in GlassFish v2.
-		   _____________________
-		  |    _____________   |
-		  |   |             |  |
-		  |   |  s1 <--> n1 |  |
-		  |   |             |  |
-		  |   |_____________|  |
-		  |        m1          |
-		  |    _____________   |
-		  |   |             |  | 
-		  |   |  s1 <--> n1 |  |
-		  |   |             |  |
-		  |   |_____________|  |  c1 = {s1, s2, s3}
-		  |        m2          |
-		  |    _____________   |
-		  |   |             |  |
-		  |   |  s1 <--> n1 |  |
-		  |   |             |  |
-		  |   |_____________|  |
-		  |        m3          |
-		  |____________________|
+                   ____________________
+                  |    _____________   |
+                  |   |             |  |
+                  |   |  s1 <--> n1 |  |
+                  |   |             |  |
+     _______      |   |_____________|  |
+    |       |     |        m1          |
+    |       |     |    _____________   |
+    |  DAS  |     |   |             |  | 
+    |   d1  |     |   |  s2 <--> n1 |  |
+    |_______|     |   |             |  |  
+                  |   |_____________|  |  c1 = {s1, s2, s3}
+    d1 contains c1|        m2          |
+    d1 contacts   |    _____________   |
+    n1, n2, n3    |   |             |  |
+                  |   |  s3 <--> n1 |  |
+                  |   |             |  |
+                  |   |_____________|  |
+                  |        m3          |
+                  |____________________|
 
 Since n1, n2 and n3 are separate processes themselves, their life cycle needs to
 be managed by human administrators. Since we are making node agents optional for
@@ -172,11 +163,35 @@ solution that depends on the ubiquitous sshd which is both standard and secure.
 Thus, when we want to start a process remotely from a DAS process, we contact
 the ssh daemon running on a given port (default: 22) on a given machine and ask
 it to start the GlassFish server process. If sshd is not running, administrator
-needs to manually start the server (by using a local asadmin command start-server).
+needs to manually start the server (by using a local asadmin command start-server)
+or manually restart the sshd.
 
 For this to happen, DAS needs to be an ssh client and pure Java libraries are
 available for the same in the public domain. In fact, Hudson project uses this
-technique to remotely configure the secondary Hudson machines. 
+technique to remotely configure the secondary Hudson machines. Thus, the above
+picture now looks like:
+
+                   ____________________
+                  |    _____________   |
+                  |   |             |  |
+                  |   |  s1 (sshd)  |  |
+                  |   |             |  |
+     _______      |   |_____________|  |
+    |       |     |        m1          |
+    |       |     |    _____________   |
+    |  DAS  |     |   |             |  | 
+    |   d1  |     |   |  s2 (sshd)  |  |
+    |_______|     |   |             |  |  
+                  |   |_____________|  |  c1 = {s1, s2, s3}
+    d1 contains c1|        m2          |
+    d1 contacts   |    _____________   |
+    sshd on each  |   |             |  |
+    of m1,m2,m3   |   |  s3 (sshd)  |  |
+                  |   |             |  |
+                  |   |_____________|  |
+                  |        m3          |
+                  |____________________|
+
 
 
 2.6 Server Software Upgrade Implications
