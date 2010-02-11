@@ -45,6 +45,7 @@ public class GetCookie extends HttpServlet {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (int i=0; i<cookies.length; i++) {
+                System.out.println("Debug " + cookies[i].getName() + " = " + cookies[i].getValue());
                 if ("aaa=bbb=ccc".equals(cookies[i].getValue())) {
                     response.getWriter().println("SUCCESS");
                     break;
