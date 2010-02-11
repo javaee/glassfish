@@ -14,7 +14,7 @@
 
 # The first parameter is settings.xml.  If not set, then it assume that settings.xml is in ~/.m2/
     SETTING_XML=""
-if [ $# -eq 0 ]; then
+if [ $# -eq 1 ]; then
     SETTING_XML="$1"
 fi
 export SETTING_XML
