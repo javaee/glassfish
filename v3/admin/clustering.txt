@@ -1,11 +1,13 @@
 Thoughts about clustering from admin perspective
 - Kedar Mhaswade (km@dev.java.net)
 -------------------------------------------------------------------------------
-TOC:
+Table of Contents:
 1. Introduction
 2. Detailed Discussion
 3. Admin Commands
 4. Open Issues
+
+Scope: GlassFish v3's first release with clustering support.
 
 1. Introduction
 
@@ -84,8 +86,9 @@ In order to support 2.1, we should be able to synchronize a). To support cluster
 management, we have to support synchronization of b) and c). This section talks
 about b) and c) but similar discussion applies to a) as well.
 
-All the clients (server instances) and the DAS have to agree on the paths. The 
-domain's folder looks like the following:
+All the clients (server instances) and the DAS have to agree on the paths. 
+
+The domain's folder looks like the following:
 
 (| implies a file, || implies a folder)
 
@@ -105,14 +108,81 @@ domain's folder looks like the following:
      ||---- docroot (the default web-container docroot, files are copied to
                      instance's docroot)
 
-Details of the synchronization algorithm:
+2.3.1 Details of the synchronization algorithm on server startup:
 
 This simplistic synchronization algorithm is based on file's modtime and the
 java.io.File.setLastModifiedTime(long time) API. For the first version, DAS
 does not keep any delta-information as far as modtimes are concerned. All it
-has is a specific modtime on all the files it manages.
+has is a specific modtime on all the files it manages. DAS does no calculations
+so that a "difference" between two modtimes is presented in terms of a patch
+(traditional Unix term) that can be applied at the client's file system.
+The API however, is kept independent of actual criterion applied. A file's
+(or folder's) modtime is the criterion we use for this release, but it is
+possible that a better, more suitable criterion is chosen for subsequent
+releases. It's intended that the criterion is configurable, though it is
+not a must for this release.
 
-<DETAILS OF ALGORITHM>
+More often than not, a folder (e.g. config folder, application folder etc.),
+rather than a file is sync'ed. However, the DAS does not "manage" a folder
+directly. It manages "files" in a folder. Changing the modtime of a file under
+DAS's control does not automatically change the modtime of the parent folder.
+Thus, configuration operations on the DAS should ensure that when a particular
+config file (e.g. domain.xml) is changed, the parent folder's modtime is also
+modified. In other words, modtime of any file in the domain at the central
+repository is its synchronization signature.
+
+Another important aspect of the algorithm is that by default, contents of the
+entire folder (recursive traversal) are sent when requested. Standard compression
+schemes are employed when sending the contents.
+
+Step 0: Initiation of the synchronization request
+
+0.0: A clustered/non-clustered GlassFish server is DAS's sync client.
+     Upon server startup, if the DAS is not available, the server starts with
+     whatever "view" of the central repository it has. If DAS is available,
+     the server requests the folders/files in the order specified in Step 1.
+     At each step, the actual data transfer occurs only when the modtimes
+     on requested files/folders differ.
+
+     It is possible that server sends a "get-modtime-request" for a list of
+     paths beforehand, as a way to optimize the number of requests. Thus, server
+     might send its request as:
+     Get-Modtimes(config, config/server1-config, applications/hello-world,
+     applications/blog, lib/mysql.jar, docroot/*.jpg)
+     (Note that glob-style wildcarding is allowed).
+
+     There is also a provision of "exclude-list" while requesting content. This,
+     is useful in cases where you require all the contents of a folder except
+     a few that client would list (because for example, those items have the
+     same modtimes). The request would look like:
+     Get(docroot, excl={images/logo.png, images/big*.png})
+     (Note that glob-style wildcarding is allowed).
+   
+     Actual API will cover all these methods.
+
+Step 1: Following is the order in which files/folders are requested.
+
+1.0: The config folder.
+1.1: The server specific config folder. This is in config/<server-name>-config
+     folder at the central repository. At the server's cache repository, the
+     contents of this are placed in "config" folder directly. For example,
+     domain-folder/config/server1-config/init.conf goes to 
+     instance-folder/config.
+1.2: The application folder for each application deployed to that server.
+     Server examines the domain.xml and requests the following for each
+     deployed application:
+     -- application data (i.e. applications/<app-name> folder)
+     -- data generated during deployment process (this is TBD, based on
+        what we do with generated folder).
+1.3: The libraries (lib) folder. This is where database drivers are placed.
+1.4: The web-container docroot. Since the docroot is expected to have lot of
+     static content, the server sends a request for modtimes of specific
+     files to DAS and then does an actual request for contents.
+
+Step 2: Setting the sync modtimes.
+
+After the contents are sync'ed, the modtimes of sync'ed items on DAS and
+server must be identical.
 
 It is possible that DAS balances the load of file transfer to other
 instances in the same domain. To support the 
@@ -121,7 +191,7 @@ distributed data transfer like this, following things should happen:
   be capable of serving the contents from their local repositories.
 - A communication channel needs to be available. 
 
-Both the above are open issues at this time.
+It's not expected for this release that we balance DAS's synchronization load.
 
 2.4 Communication (Transport) Layer
 2.5 Cold Start of a Server Instance Without Node Agent
@@ -192,7 +262,8 @@ picture now looks like:
                   |        m3          |
                   |____________________|
 
-
+Once a server is started on a machine, it follows the synchronization algorithm
+as described in 2.3.1.
 
 2.6 Server Software Upgrade Implications
 
