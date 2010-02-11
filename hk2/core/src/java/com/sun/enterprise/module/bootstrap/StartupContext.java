@@ -34,132 +34,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-/*
- * StartupContext.java
- *
- * Created on October 26, 2006, 11:10 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package com.sun.enterprise.module.bootstrap;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
- * This class contains important information about the startup process
- * @author Jerome Dochez
+ * This class contains important information about the startup process.
+ * This is one of the initial objects to be populated in the {@link org.jvnet.hk2.component.Habitat},
+ * so {@link Populator}s can depend on this object.
+ *
+ * Do not add domain specific knowledge here. Since this takes a properties object in the constructor,
+ * such knowledge can be maintained outside this object.
+ *
+ * @author Jerome Dochez, Sanjeeb Sahoo
  */
 
-@Service
-@Scoped(Singleton.class)
 public class StartupContext {
-/*
- * January 27, 2009 -- bnevins -- important note.
- * Surprisingly, root is a directory *underneath* the install root!
- * startup code in v3 proper that uses this object will assume that the install-root
- * is getRootDirectory().getParentFile() !!!!!
- * I.e. in the normal v3 case root will be: /glassfish/modules
- * This behavior is weird and caused issue #54 in Embedded
- */
-    final File root;
-    final File userDir;
     final Properties args;
     final long timeZero;
     public final static String TIME_ZERO_NAME = "__time_zero";  //NO I18N
-    public static final String ARGS_PROP       = "hk2.startup.context.args";
-    public static final String ORIGINAL_CP     = "-startup-classpath";
-    public static final String ORIGINAL_CN     = "-startup-classname";
-    public static final String ORIGINAL_ARGS   = "-startup-args";
-    public static final String ARG_SEP         = ",,,";
-    public static final String ROOT_PROP = "hk2.startup.context.root";
     public final static String STARTUP_MODULE_NAME = "hk2.startup.context.mainModule";
     public final static String STARTUP_MODULESTARTUP_NAME = "hk2.startup.context.moduleStartup";
 
     public StartupContext() {
-        this.root = new File(System.getProperty("user.dir"));
-        this.userDir = root;
-        this.timeZero = System.currentTimeMillis();
-        args = new Properties();
+        this(new Properties());
     }
 
-    public StartupContext(File root, String[] args) {
-        this(root, null, args);
-    }
-    
-    /** Creates a new instance of StartupContext */
-    public StartupContext(File root, File userDir, String[] args) {
-        this.root = absolutize(root);
-        if (userDir!=null) {
-            this.userDir = absolutize(userDir);
+    public StartupContext(Properties args) {
+        this.args = (Properties)args.clone();
+        if (this.args.containsKey(TIME_ZERO_NAME)) {
+            this.timeZero = Long.decode(this.args.getProperty(TIME_ZERO_NAME));
         } else {
-            this.userDir = null;
-        }
-        this.args = ArgumentManager.argsToMap(args);
-        this.timeZero = System.currentTimeMillis();
-    }
-
-    public StartupContext(File root,  Properties args) {
-        this(root, null, args);
-    }
-
-    public StartupContext(File root, File userDir, Properties args) {
-        this.root = root;
-        this.args = args;
-        this.userDir = userDir;
-        if (args.containsKey(TIME_ZERO_NAME)) {
-            this.timeZero = Long.decode(args.getProperty(TIME_ZERO_NAME)).longValue();
-        } else {
-            this.timeZero = System.currentTimeMillis();            
+            this.timeZero = System.currentTimeMillis();
         }
     }
 
     /**
-     * Gets the "root" directory where modules are installed
-     *
-     * <p>
-     * This path is always absolutized.
+     * Return the properties that constitues this context. Except the well known properties like
+     * {@link #TIME_ZERO_NAME}, {@link #STARTUP_MODULE_NAME}, {@link #STARTUP_MODULESTARTUP_NAME},
+     * this class does not know about any other properties. It is up to the user set them and get them.
      *
      */
-    public File getRootDirectory() {
-        return root;
-    }
-
-    /**
-     * Get the "user" directory, which is a private contract between the
-     * main initialzation of the hk2 framework and the ModuleStartup inplementation.
-     *
-     * @return the user directory
-     */
-    public File getUserDirectory() {
-        return userDir;
-    }
-        
     public Properties getArguments() {
         return args;
-    }
-
-    public String[] getOriginalArguments() {
-        // See how ASMain packages the arguments
-        String s = args.getProperty(ORIGINAL_ARGS);
-        if (s == null) return new String[0];
-        StringTokenizer args = new StringTokenizer(s, ARG_SEP, false);
-        List<String> result = new ArrayList<String>();
-        while (args.hasMoreTokens()) {
-            result.add(args.nextToken());
-        }
-        return result.toArray(new String[0]);
     }
 
     public String getStartupModuleName() {
@@ -168,10 +85,10 @@ public class StartupContext {
 
     public String getPlatformMainServiceName() {
         String v = String.class.cast(args.get(STARTUP_MODULESTARTUP_NAME));
-        // todo : dochez, horrible hack to work around ArgumentManager clumsyness
-        if (v==null) {
-            return String.class.cast(args.get("-"+STARTUP_MODULESTARTUP_NAME));
-        }
+//        // todo : dochez, horrible hack to work around ArgumentManager clumsyness
+//        if (v==null) {
+//            return String.class.cast(args.get("-"+ STARTUP_MODULESTARTUP_NAME));
+//        }
         return v;
     }
     
@@ -185,15 +102,4 @@ public class StartupContext {
         return timeZero;
     }
     
-    private File absolutize(File f)
-    {
-        try 
-        { 
-            return f.getCanonicalFile(); 
-        }
-        catch(Exception e)
-        {
-            return f.getAbsoluteFile();
-        }
-    }
 }

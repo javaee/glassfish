@@ -60,7 +60,6 @@ import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -168,7 +167,7 @@ public class Main {
 
         createRepository(root,bootstrap,mf,mr);
 
-        StartupContext context = new StartupContext(root, args);        
+        StartupContext context = new StartupContext(ArgumentManager.argsToMap(args));        
         launch(mr, targetModule, context);
     }
 

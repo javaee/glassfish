@@ -37,8 +37,11 @@
 package com.sun.enterprise.module.single;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.ArgumentManager;
+
 import java.io.File;
 import java.util.List;
+import java.util.Properties;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
@@ -83,8 +86,7 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
         Habitat habitat = super.newHabitat();
 
         if (startupContext==null) {
-            File dir = new File(System.getProperty("java.io.tmpdir"));
-            sc = new StartupContext(dir, new String[0]);
+            sc = new StartupContext(new Properties());
         }
         super.createHabitat("default", habitat);
         habitat.add(Inhabitants.create(sc));

@@ -41,33 +41,28 @@ package org.jvnet.hk2.osgiadapter;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.Filter;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.SynchronousBundleListener;
-import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.cm.ConfigurationException;
 
+import java.util.*;
+import java.util.logging.Level;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Dictionary;
-import java.util.Properties;
-import java.util.logging.Level;
 
 /**
- * {@link org.osgi.framework.BundleActivator} that launches a Habitat and
- * hands the execution to {@link com.sun.enterprise.module.bootstrap.ModuleStartup}.
+ * {@link org.osgi.framework.BundleActivator} that launches a Habitat.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -78,17 +73,55 @@ public class HK2Main extends Main implements
     private BundleContext ctx;
 
     private ModulesRegistry mr;
-    private Habitat habitat;
 
-    /**
-     * The startup module service.
-     * e.g., GlassFish Kernel's AppServerStartup instance
-     */
-    private ModuleStartup moduleStartup;
     private ServiceRegistration habitatRegistration;
     private ServiceRegistration moduleStartupRegistration;
+
     private ServiceTracker osgiServiceTracker;
 
+    private static final String pid = "org.jvnet.hk2.osgiadapter.StartupContextService";
+
+    private class StartupContextService implements ManagedService {
+
+        public void updated(Dictionary props) throws ConfigurationException {
+            if (props == null) {
+                if (moduleStartupRegistration != null) {
+                    final ServiceReference reference = moduleStartupRegistration.getReference();
+                    ModuleStartup ms = (ModuleStartup)ctx.getService(reference);
+                    ms.stop();
+                    ctx.ungetService(reference);
+                    moduleStartupRegistration.unregister();
+                    moduleStartupRegistration = null;
+                    habitatRegistration.unregister();
+                    habitatRegistration = null;
+                }
+            } else {
+                StartupContext startupContext = new StartupContext(dict2Props(props));
+                try {
+                    Habitat habitat = createHabitat(mr, startupContext);
+                    ModuleStartup ms = launch(mr, habitat, startupContext.getStartupModuleName(), startupContext);
+                    createServiceTracker(habitat);
+
+                    // register essential services in service registry
+                    habitatRegistration = ctx.registerService(Habitat.class.getName(), habitat, props);
+                    moduleStartupRegistration = ctx.registerService(ModuleStartup.class.getName(), ms, props);
+                } catch (BootException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        private Properties dict2Props(Dictionary dict) {
+            Properties props = new Properties();
+            Enumeration e = dict.keys();
+            while (e.hasMoreElements()) {
+                String k = e.nextElement().toString();
+                props.put(k, dict.get(k).toString());
+            }
+            return props;
+        }
+
+    }
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
         logger.logp(Level.FINE, "HK2Main", "run",
@@ -97,36 +130,13 @@ public class HK2Main extends Main implements
         logger.logp(Level.FINE, "HK2Main", "run", "this.getClass().getClassLoader() = {0}", this.getClass().getClassLoader());
         ctx.addBundleListener(this);
 
-        // get the startup context from the System properties
-        String lineformat = System.getProperty(StartupContext.ARGS_PROP);
-        String contextRoot = System.getProperty(StartupContext.ROOT_PROP, System.getProperty("user.dir"));
-        File contextRootDir = new File(contextRoot);
-        StartupContext startupContext;
-        if (lineformat != null) {
-            Properties arguments = new Properties();
-            /**
-             * for jdk6 switch to this
-             */
-            //StringReader reader = new StringReader(lineformat);
-            //arguments.load(reader);
-            ByteArrayInputStream is = new ByteArrayInputStream(lineformat.getBytes());
-            arguments.load(is);
-            startupContext = new StartupContext(contextRootDir, arguments);
-        } else {
-            startupContext = new StartupContext(contextRootDir, new String[0]);
-        }
-
         OSGiFactoryImpl.initialize(ctx);
 
         mr = createModulesRegistry();
-        habitat = createHabitat(mr, startupContext);
-        createServiceTracker(habitat);
-        String mainModuleName = startupContext.getStartupModuleName();
-        moduleStartup = launch(mr, habitat, mainModuleName, startupContext);
 
-        // register essential services in service registry
-        habitatRegistration = context.registerService(Habitat.class.getName(), habitat, null);
-        moduleStartupRegistration = context.registerService(ModuleStartup.class.getName(), moduleStartup, null);
+        Properties p = new Properties();
+        p.setProperty(Constants.SERVICE_PID, pid);
+        context.registerService(ManagedService.class.getName(), new StartupContextService(), p);
     }
 
     protected ModulesRegistry createModulesRegistry() {
@@ -150,17 +160,8 @@ public class HK2Main extends Main implements
             osgiServiceTracker = null;
         }
         // Execute code in reverse order w.r.t. start()
-        if (moduleStartup != null) {
-            moduleStartup.stop();
-        }
-        if (moduleStartupRegistration != null) {
-            moduleStartupRegistration.unregister();
-        }
         if (mr != null) {
             mr.shutdown();
-        }
-        if (habitatRegistration != null) {
-            habitatRegistration.unregister();
         }
     }
 

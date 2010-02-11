@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Properties;
 import java.io.File;
 
 /**
@@ -18,12 +19,12 @@ public abstract class PlatformMain {
     protected File    root;
     List<Object> contexts = new ArrayList<Object>();
 
-    public void setLogger(Logger logger) {
-        this.logger = logger;
+    public Logger getLogger() {
+        return logger;
     }
 
-    public void setInstallationRoot(File root) {
-        this.root = root;
+    public void setLogger(Logger logger) {
+        this.logger = logger;
     }
 
     public void setContext(Object context) {
@@ -56,10 +57,10 @@ public abstract class PlatformMain {
     /**
      * Starts the main entry point using this platform implementation.
      *
-     * @param ags arguments obtained from the command line for instance.
+     * @param ctx Context in which this object executes. It contains arguments passed to the program as well.
      * @throws Exception if anything goes wrong
      */
-    public abstract void start(String[] ags) throws Exception;
+    public abstract void start(Properties ctx) throws Exception;
 
     /**
      * Optional method.

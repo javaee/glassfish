@@ -79,6 +79,12 @@ import java.net.URI;
  */
 public class Main implements BundleActivator
 {
+    /*
+     * The reason for this bundle not to use config admin service is that config admin is not part of core framework.
+     * This being a provisioning service itself can't expect too many other services to be available. So, it relies on
+     * core framework services only.
+     */
+    
     public static final String BUNDLES_DIR =
             "org.jvnet.hk2.osgimain.bundlesDir";
 
@@ -110,13 +116,20 @@ public class Main implements BundleActivator
     {
         this.context = context;
         bundlesDir = new File(context.getProperty(BUNDLES_DIR));
-        StringTokenizer st = new StringTokenizer(context.getProperty(AUTO_START_BUNDLES_PROP), ",");
-        while (st.hasMoreTokens()) {
-            String bundleRelPath = st.nextToken().trim();
-            URI bundleURI = new File(bundlesDir, bundleRelPath).toURI().normalize();
-            autoStartBundleLocations.add(bundleURI);
+        if (bundlesDir == null) {
+            // nothing to do, let's return
+            return;
         }
-
+        String autostartBundlesProp = context.getProperty(AUTO_START_BUNDLES_PROP);
+        if (autostartBundlesProp != null) {
+            StringTokenizer st = new StringTokenizer(autostartBundlesProp, ",");
+            while (st.hasMoreTokens()) {
+                String bundleRelPath = st.nextToken().trim();
+                if (bundleRelPath.isEmpty()) break;
+                URI bundleURI = new File(bundlesDir, bundleRelPath).toURI().normalize();
+                autoStartBundleLocations.add(bundleURI);
+            }
+        }
         String excludedFilesProp = context.getProperty(EXCLUDED_SUBDIRS);
         if (excludedFilesProp != null) {
             for (String s : excludedFilesProp.split(",")) {
