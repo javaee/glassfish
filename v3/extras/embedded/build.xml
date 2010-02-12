@@ -35,6 +35,7 @@ own identifying information: Portions Copyright [yyyy]
         <antcall target="removeJarsNotNeeded"/>
         <antcall target="rejar"/>
         <antcall target="addRars"/>
+        <antcall target="addDtds"/>
 
         <attachArtifact file="${finaljar}"/>
      </target>
@@ -89,6 +90,13 @@ own identifying information: Portions Copyright [yyyy]
         <jar jarfile="${jardir}/__dm_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__dm_jdbc_ra/**/*"/>
         <jar jarfile="${jardir}/__xa_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__xa_jdbc_ra/**/*"/>
         <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>
+    </target>
+
+    <target name="addDtds" if="includeDtds">
+        <echo message="adding dtds"/>
+        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/dtds/**/*"/>
+        <jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/schemas/**/*"/>
+        <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="dtds.jar,schemas.jar"/>
     </target>
 
 </project>
