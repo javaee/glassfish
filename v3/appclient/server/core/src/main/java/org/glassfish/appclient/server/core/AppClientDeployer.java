@@ -262,7 +262,9 @@ public class AppClientDeployer
     public void clean(DeploymentContext dc) {
         super.clean(dc);
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
-        downloadInfo.clearArtifacts(params.name);
+        if (params != null) {
+            downloadInfo.clearArtifacts(params.name);
+        }
     }
 
     @Override
