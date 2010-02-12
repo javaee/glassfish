@@ -4497,6 +4497,79 @@ public class StandardContext
         wrapperListeners.clear();
     }
 
+    @Override
+    public void fireRequestInitializedEvent(ServletRequest request) {
+        List<EventListener> listeners = getApplicationEventListeners();
+        ServletRequestEvent event = null;
+        if (!listeners.isEmpty()) {
+            event = new ServletRequestEvent(getServletContext(), request);
+            // create pre-service event
+            Iterator<EventListener> iter = listeners.iterator();
+            while (iter.hasNext()) {
+                EventListener eventListener = iter.next();
+                if (!(eventListener instanceof ServletRequestListener)) {
+                    continue;
+                }
+                ServletRequestListener listener =
+                    (ServletRequestListener) eventListener;
+                // START SJSAS 6329662
+                fireContainerEvent(ContainerEvent.BEFORE_REQUEST_INITIALIZED,
+                    listener);
+                // END SJSAS 6329662
+                try {
+                    listener.requestInitialized(event);
+                } catch (Throwable t) {
+                    log(sm.getString(
+                        "standardContextValve.requestListener.requestInit",
+                        listener.getClass().getName()),
+                        t);
+                    request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
+                // START SJSAS 6329662
+                } finally {
+                    fireContainerEvent(ContainerEvent.AFTER_REQUEST_INITIALIZED,
+                        listener);
+                // END SJSAS 6329662
+                }
+            }
+        }
+    }
+
+    @Override
+    public void fireRequestDestroyedEvent(ServletRequest request) {
+        List<EventListener> listeners = getApplicationEventListeners();
+        if (!listeners.isEmpty()) {
+            // create post-service event
+            ServletRequestEvent event = new ServletRequestEvent(getServletContext(),
+                request);
+            int len = listeners.size();
+            for (int i = 0; i < len; i++) {
+                EventListener eventListener = listeners.get((len - 1) - i);
+                if (!(eventListener instanceof ServletRequestListener)) {
+                    continue;
+                }
+                ServletRequestListener listener =
+                    (ServletRequestListener) eventListener;
+                // START SJSAS 6329662
+                fireContainerEvent(ContainerEvent.BEFORE_REQUEST_DESTROYED,
+                    listener);
+                // END SJSAS 6329662
+                try {
+                    listener.requestDestroyed(event);
+                } catch (Throwable t) {
+                    log(sm.getString(
+                        "standardContextValve.requestListener.requestDestroyed",
+                        listener.getClass().getName()),
+                        t);
+                    request.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
+                // START SJSAS 6329662
+                } finally {
+                    fireContainerEvent(ContainerEvent.AFTER_REQUEST_DESTROYED,
+                        listener);
+                // END SJSAS 6329662
+                }
+            }
+        }
+    }
 
     // --------------------------------------------------------- Public Methods
 

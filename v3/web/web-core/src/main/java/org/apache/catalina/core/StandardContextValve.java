@@ -213,47 +213,8 @@ final class StandardContextValve
 
     @Override
     public void postInvoke(Request request, Response response)
-        throws IOException, ServletException {
-
-        List<EventListener> listeners = 
-            ((Context) container).getApplicationEventListeners();
-        if (!listeners.isEmpty()) {
-            // create post-service event
-            ServletRequestEvent event = new ServletRequestEvent
-                (((StandardContext) container).getServletContext(), 
-                request.getRequest());
-            int len = listeners.size();
-            for (int i = 0; i < len; i++) {
-                EventListener eventListener = listeners.get((len - 1) - i);
-                if (!(eventListener instanceof ServletRequestListener)) {
-                    continue;
-                }
-                ServletRequestListener listener =
-                    (ServletRequestListener) eventListener;
-                // START SJSAS 6329662
-                container.fireContainerEvent(
-                    ContainerEvent.BEFORE_REQUEST_DESTROYED,
-                    listener);
-                // END SJSAS 6329662
-                try {
-                    listener.requestDestroyed(event);
-                } catch (Throwable t) {
-                    log(sm.getString(
-                        "standardContextValve.requestListener.requestDestroyed",
-                        listener.getClass().getName()),
-                        t);
-                    ServletRequest sreq = request.getRequest();
-                    sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
-                // START SJSAS 6329662
-                } finally {
-                    container.fireContainerEvent(
-                        ContainerEvent.AFTER_REQUEST_DESTROYED,
-                        listener);
-                // END SJSAS 6329662
-                }
-            }
-        }
-
+            throws IOException, ServletException {
+        ((Context) container).fireRequestDestroyedEvent(request.getRequest());
     }
 
 
@@ -378,49 +339,8 @@ final class StandardContextValve
                 return null;
             }
         }
-        
-        List<EventListener> listeners = 
-            ((Context) container).getApplicationEventListeners();
 
-        ServletRequestEvent event = null;
-
-        if (!listeners.isEmpty()) {
-            event = new ServletRequestEvent
-                (((StandardContext) container).getServletContext(), 
-                 request.getRequest());
-            // create pre-service event
-            Iterator<EventListener> iter = listeners.iterator();
-            while (iter.hasNext()) {
-                EventListener eventListener = iter.next();
-                if (!(eventListener instanceof ServletRequestListener)) {
-                    continue;
-                }
-                ServletRequestListener listener =
-                    (ServletRequestListener) eventListener;
-                // START SJSAS 6329662
-                container.fireContainerEvent(
-                    ContainerEvent.BEFORE_REQUEST_INITIALIZED,
-                    listener);
-                // END SJSAS 6329662
-                try {
-                    listener.requestInitialized(event);
-                } catch (Throwable t) {
-                    log(sm.getString(
-                        "standardContextValve.requestListener.requestInit",
-                        listener.getClass().getName()),
-                        t);
-                    ServletRequest sreq = request.getRequest();
-                    sreq.setAttribute(RequestDispatcher.ERROR_EXCEPTION, t);
-                    return null;
-                // START SJSAS 6329662
-                } finally {
-                    container.fireContainerEvent(
-                        ContainerEvent.AFTER_REQUEST_INITIALIZED,
-                        listener);
-                // END SJSAS 6329662
-                }
-            }
-        }
+        ((Context) container).fireRequestInitializedEvent(request.getRequest());
 
         return wrapper;
     }

@@ -456,7 +456,7 @@ final class StandardHostValve
                 request.getContext().getServletContext();
             ApplicationDispatcher dispatcher = (ApplicationDispatcher)
                 servletContext.getRequestDispatcher(errorPage.getLocation());
-            dispatcher.dispatch(hreq, hres, DispatcherType.ERROR);
+            dispatcher.dispatch(hreq, hres, DispatcherType.ERROR, true);
 
             // If we forward, the response is suspended again
             response.setSuspended(false);

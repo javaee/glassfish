@@ -1359,4 +1359,20 @@ public interface Context extends Container {
      * false otherwise
      */
     public boolean isFragmentMissingFromAbsoluteOrdering(String jarName);
+
+    /**
+     * Notifies all ServletRequestListener instances configured for this Context
+     * of the requestInitialized event.
+     *
+     * @param request
+     */
+    public void fireRequestInitializedEvent(ServletRequest request);
+
+    /**
+     * Notifies all ServletRequestListener instances configured for this Context
+     * of the requestDestroyed event.
+     *
+     * @param request
+     */
+    public void fireRequestDestroyedEvent(ServletRequest request);
 }

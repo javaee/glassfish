@@ -60,9 +60,11 @@ import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
+import org.apache.catalina.core.ApplicationDispatcher;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.deploy.SecurityConstraint;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
@@ -454,8 +456,8 @@ public class FormAuthenticator
 		    }
 		}
 	    }
-	    RequestDispatcher disp = sc.getRequestDispatcher(loginPage);
-	    disp.forward(request.getRequest(), response.getResponse());
+	    ApplicationDispatcher disp = (ApplicationDispatcher) sc.getRequestDispatcher(loginPage);
+	    disp.dispatch(request.getRequest(), response.getResponse(), DispatcherType.FORWARD, true);
 	    //NOTE: is finishResponse necessary or is it unnecessary after forward
 	    response.finishResponse();
         } catch (Throwable t) {
@@ -498,8 +500,8 @@ public class FormAuthenticator
 		    }
 		}
 	    }
-	    RequestDispatcher disp = sc.getRequestDispatcher(errorPage);
-	    disp.forward(request.getRequest(), response.getResponse());
+	    ApplicationDispatcher disp = (ApplicationDispatcher) sc.getRequestDispatcher(errorPage);
+	    disp.dispatch(request.getRequest(), response.getResponse(), DispatcherType.FORWARD, true);
         } catch (Throwable t) {
             log.log(Level.WARNING,
                     "Unexpected error forwarding or redirecting to error page",
