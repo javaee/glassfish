@@ -210,7 +210,7 @@ public class FacadeLaunchable implements Launchable {
             throw new UserError(MessageFormat.format(
                     logger.getResourceBundle().getString("appclient.noMFInFacade"),
                     facadeRA instanceof FileArchive ? 1 : 0,
-                    new File(facadeRA.getURI()).getAbsolutePath()));
+                    new File(facadeRA.getURI().getPath()).getAbsolutePath()));
         }
         final Attributes mainAttrs = mf.getMainAttributes();
         FacadeLaunchable result = null;
@@ -345,20 +345,20 @@ public class FacadeLaunchable implements Launchable {
                 throw new UserError(MessageFormat.format(
                         logger.getResourceBundle().getString("appclient.noMFInFacade"),
                         clientFacadeRA instanceof FileArchive ? 1 : 0,
-                        new File(clientFacadeRA.getURI()).getAbsolutePath()));
+                        new File(clientFacadeRA.getURI().getPath()).getAbsolutePath()));
             }
             Attributes facadeMainAttrs = facadeMF.getMainAttributes();
             if (facadeMainAttrs == null) {
                 throw new UserError(MessageFormat.format(
                         logger.getResourceBundle().getString("appclient.MFMissingEntry"),
-                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        new File(clientFacadeRA.getURI().getPath()).getAbsolutePath(),
                         GLASSFISH_APPCLIENT));
             }
             final String gfAppClient = facadeMainAttrs.getValue(GLASSFISH_APPCLIENT);
             if (gfAppClient == null || gfAppClient.length() == 0) {
                 throw new UserError(MessageFormat.format(
                         logger.getResourceBundle().getString("appclient.MFMissingEntry"),
-                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        new File(clientFacadeRA.getURI().getPath()).getAbsolutePath(),
                         GLASSFISH_APPCLIENT));
             }
             URI clientURI = clientFacadeURI.resolve(gfAppClient);
@@ -385,14 +385,14 @@ public class FacadeLaunchable implements Launchable {
             if (mainAttrs == null) {
                 throw new UserError(MessageFormat.format(
                         logger.getResourceBundle().getString("appclient.MFMissingEntry"),
-                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        new File(clientFacadeRA.getURI().getPath()).getAbsolutePath(),
                         Attributes.Name.MAIN_CLASS.toString()));
             }
             final String clientMainClassName = mainAttrs.getValue(Attributes.Name.MAIN_CLASS);
             if (clientMainClassName == null || clientMainClassName.length()== 0) {
                 throw new UserError(MessageFormat.format(
                         logger.getResourceBundle().getString("appclient.MFMissingEntry"),
-                        new File(clientFacadeRA.getURI()).getAbsolutePath(),
+                        new File(clientFacadeRA.getURI().getPath()).getAbsolutePath(),
                         Attributes.Name.MAIN_CLASS.toString()));
             }
             knownMainClasses.add(clientMainClassName);
