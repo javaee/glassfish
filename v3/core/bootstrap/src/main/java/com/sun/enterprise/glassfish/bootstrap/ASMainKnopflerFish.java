@@ -55,7 +55,7 @@ public class ASMainKnopflerFish extends ASMainOSGi {
     }
 
     public String getName() {
-        return ASMain.Platform.Knopflerfish.toString();
+        return Constants.Platform.Knopflerfish.toString();
     }
 
     protected void setFwDir() {
@@ -74,10 +74,6 @@ public class ASMainKnopflerFish extends ASMainOSGi {
     }
 
     protected void launchOSGiFW() throws Exception {
-        // Refere to http://www.knopflerfish.org/running.html for more details about
-        // options and properties used here
-        File cacheProfileDir = new File(domainDir, "kf-cache/gf/");
-        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
         String jars = new File(fwDir, "jars/").toURI().toString();
         System.setProperty("org.knopflerfish.gosg.jars", jars);
         String pkgFilePath = new File(fwDir, "gfpackages.txt").getAbsolutePath();
@@ -103,10 +99,5 @@ public class ASMainKnopflerFish extends ASMainOSGi {
 
     private String getFWMainClassName() {
         return "org.knopflerfish.framework.Main";
-    }
-
-    protected void setUpCache(File sourceDir, File cacheDir) throws IOException
-    {
-        System.setProperty("org.osgi.framework.dir", cacheDir.getCanonicalPath());
     }
 }

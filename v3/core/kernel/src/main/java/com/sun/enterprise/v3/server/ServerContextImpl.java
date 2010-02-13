@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.server;
 
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.invocation.InvocationManager;
@@ -95,7 +96,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public File getInstallRoot() {
-        return startupContext.getRootDirectory().getParentFile();
+        return StartupContextUtil.getInstallRoot(startupContext);
     }
 
     public String getInstanceName() {

@@ -37,19 +37,29 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import com.sun.enterprise.module.bootstrap.PlatformMain;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Properties;
 import java.net.MalformedURLException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  * @author Jerome.Dochez@Sun.COM
  */
-public abstract class ASMainOSGi extends AbstractMain {
+public abstract class ASMainOSGi extends PlatformMain {
 
-    // TODO(Sahoo): Stop adding derby jars to classpath once
-    
+    // TODO(Sahoo): Stop adding derby jars to classpath
+
+    private Properties ctx;
+
+    protected File glassfishDir; // glassfish/
+
+    protected File domainDir; // default is glassfish/domains/domain1
+
     /**
      * The class loader used to intialize the OSGi platform.
      * This will also be the parent class loader of all the OSGi bundles.
@@ -66,12 +76,13 @@ public abstract class ASMainOSGi extends AbstractMain {
     private String[] additionalJars = {
     };
 
-    @Override
-    public void run(Logger logger, String... args) throws Exception {
+    public void start(Properties ctx) throws Exception {
+        this.ctx = ctx;
+        glassfishDir = StartupContextUtil.getInstallRoot(ctx);
+        domainDir = StartupContextUtil.getInstanceRoot(ctx);
         setFwDir();
-        super.run(logger, args);
-        setSystemProperties();
         setupLauncherClassLoader();
+        configureEnvironment();
         launchOSGiFW();
     }
 
@@ -84,10 +95,48 @@ public abstract class ASMainOSGi extends AbstractMain {
 
     protected abstract void launchOSGiFW() throws Exception;
 
-    protected void setSystemProperties() throws MalformedURLException, Exception
+    protected void configureEnvironment() throws Exception
     {
-        super.setSystemProperties();
-        
+        // Store the context as a system property so that GlassFish activator can
+        // can retrieve it to configure the runtime.
+        try {
+            Writer writer = new StringWriter();
+            ctx.store(writer, null);
+            System.setProperty(Constants.ARGS_PROP, writer.toString());
+        }
+        catch (IOException e) {
+            logger.info("Could not save startup parameters, will start with none");
+            System.setProperty(Constants.ARGS_PROP, "");
+        }
+
+        /* Set a system property called com.sun.aas.installRootURI.
+         * This property is used in felix/conf/config.properties and possibly
+         * in other OSGi framework's config file to auto-start some modules.
+         * We can't use com.sun.aas.installRoot,
+         * because that com.sun.aas.installRoot is a directory path, where as
+         * we need a URI.
+         */
+        System.setProperty("com.sun.aas.installRootURI", glassfishDir.toURI().toString());
+        System.setProperty("com.sun.aas.instanceRootURI", domainDir.toURI().toString());
+
+        // Set up cache directories. We have two kinds of caches: one for HK2 and another for OSGi
+        // Both are kept under same directory.
+
+        File cacheProfileDir = getCacheDir();
+        System.setProperty("org.osgi.framework.storage", cacheProfileDir.getAbsolutePath());
+        System.setProperty(Constants.HK2_CACHE_DIR, cacheProfileDir.getAbsolutePath()); // hk2 inhabitants cache
+
+        configureProvisioningBundle();
+    }
+
+    protected final File getCacheDir() {return new File(domainDir, getPreferedCacheDir());}
+
+    protected abstract String getPreferedCacheDir();
+
+    /**
+     * This is where we configure our provisioning bundle (i.e., osgi-main bundle).
+     */
+    protected void configureProvisioningBundle() {
         // Set the modules dir. This is used by our main bundle to locate all
         // bundles and install them
         System.setProperty("org.jvnet.hk2.osgimain.bundlesDir",
@@ -99,20 +148,8 @@ public abstract class ASMainOSGi extends AbstractMain {
 
         // Set the autostart bundle list. This is used by bootstrap bundle to
         // locate the bundles and start them. The path is relative to bundles dir
-        // Please note the following about the order of bundles:
-        // 1. We start osgi-adapter first to ensure that domain.xml has been
-        // parsed and all system properties like osgi.shell.telnet.port,
-        // felix.fileinstall.dir properly set.
-        // 2. We start fileinstall after osgi-adapter, as we don't
-        // want fileinstall to start bundles from autodeploy-bundles dir
-        // before kernel is started.
         if (System.getProperty("org.jvnet.hk2.osgimain.autostartBundles") == null) {
-            final String bundlePaths =
-                    "osgi-adapter.jar, " +
-                    "org.apache.felix.shell.jar, " +
-                    "org.apache.felix.shell.remote.jar, " +
-                    "org.apache.felix.configadmin.jar, " +
-                    "org.apache.felix.fileinstall.jar";
+            final String bundlePaths = "glassfish.jar";
             System.setProperty("org.jvnet.hk2.osgimain.autostartBundles", bundlePaths);
         }
     }
@@ -134,7 +171,7 @@ public abstract class ASMainOSGi extends AbstractMain {
             addFrameworkJars(cpb);
             addJDKToolsJar(cpb);
             findDerbyClient(cpb);
-            File moduleDir = bootstrapFile.getParentFile();
+            File moduleDir = new File(glassfishDir, "modules/");
             cpb.addGlob(moduleDir, additionalJars);
             this.launcherCL = cpb.create();
         } catch (IOException e) {
@@ -146,10 +183,10 @@ public abstract class ASMainOSGi extends AbstractMain {
     /**
      * Adds JDK tools.jar to classpath.
      */
-    protected void addJDKToolsJar(ClassPathBuilder cpb) {
+    private void addJDKToolsJar(ClassPathBuilder cpb) {
         try {
 
-            File jdkToolsJar = helper.getJDKToolsJar();
+            File jdkToolsJar = ASMainHelper.getJDKToolsJar();
             if (jdkToolsJar.exists()) {
                 cpb.addJar(jdkToolsJar);
             } else {
@@ -183,8 +220,4 @@ public abstract class ASMainOSGi extends AbstractMain {
         cpb.addGlob(derbyLib, "derby*.jar");
     }
 
-    @Override
-    Logger getLogger() {
-        return logger;
-    }
 }

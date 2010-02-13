@@ -39,7 +39,6 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractRepositoryImpl;
 import com.sun.enterprise.module.common_impl.ModuleId;
 
@@ -68,17 +67,15 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 
 /**
- * Utility class used by {@link ASMainOSGi}
+ * Utility class used by bootstrap module.
  * Most of the code is moved from {@link ASMain} to this class to keep ASMain
- * as small as possible.
+ * as small as possible and to improve reusability when GlassFish is launched in other modes (e.g., karaf).
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class ASMainHelper {
 
     private Logger logger;
-    private final static String DEFAULT_DOMAINS_DIR_PROPNAME = "AS_DEF_DOMAINS_PATH";
-    private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
 
 
     public ASMainHelper(Logger logger) {
@@ -106,11 +103,9 @@ public class ASMainHelper {
         return new ExtensibleClassLoader(urls, parent, sharedRepos);
     }
 
-    /*protected*/ void parseAsEnv(File installRoot) {
+    /*protected*/ Properties parseAsEnv(File installRoot) {
 
         Properties asenvProps = new Properties();
-        asenvProps.putAll(System.getProperties());
-        asenvProps.put("com.sun.aas.installRoot", installRoot.getPath());
 
         // let's read the asenv.conf
         File configDir = new File(installRoot, "config");
@@ -118,7 +113,7 @@ public class ASMainHelper {
 
         if (!asenv.exists()) {
             Logger.getAnonymousLogger().fine(asenv.getAbsolutePath() + " not found, ignoring");
-            return;
+            return asenvProps;
         }
         LineNumberReader lnReader = null;
         try {
@@ -154,9 +149,7 @@ public class ASMainHelper {
                 // ignore
             }
         }
-
-        // install the new system properties
-        System.setProperties(asenvProps);
+        return asenvProps;
     }
 
     void addPaths(File dir, String[] jarPrefixes, List<URL> urls) throws MalformedURLException {
@@ -187,10 +180,9 @@ public class ASMainHelper {
     /**
      * Determines the root directory of the domain that we'll start.
      */
-    /*package*/ File getDomainRoot(StartupContext context)
+    /*package*/ File getDomainRoot(Properties args, Properties asEnv)
     {
         // first see if it is specified directly
-        Properties args = context.getArguments();
 
         String domainDir = getParam(args, "domaindir");
 
@@ -200,7 +192,7 @@ public class ASMainHelper {
         // now see if they specified the domain name -- we will look in the
         // default domains-dir
 
-        File defDomainsRoot = getDefaultDomainsDir();
+        File defDomainsRoot = getDefaultDomainsDir(asEnv);
         String domainName = getParam(args, "domain");
 
         if(ok(domainName))
@@ -212,11 +204,22 @@ public class ASMainHelper {
     }
 
     /**
-     * Determines the root directory of the domain that we'll start and
-     * sets the system property called {@link #INSTANCE_ROOT_PROP_NAME}.
+     * Verifies correctness of the root directory of the domain that we'll start and
+     * sets the system property called {@link com.sun.enterprise.glassfish.bootstrap.Constants#INSTANCE_ROOT_PROP_NAME}.
      */
     /*package*/ void verifyAndSetDomainRoot(File domainRoot)
     {
+        verifyDomainRoot(domainRoot);
+
+        domainRoot = absolutize(domainRoot);
+        System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, domainRoot.getPath() );
+    }
+
+    /**
+     * Verifies correctness of the root directory of the domain that we'll start.
+     * @param domainRoot
+     */
+    /*package*/ void verifyDomainRoot(File domainRoot) {
         String msg = null;
 
         if(domainRoot == null)
@@ -232,24 +235,21 @@ public class ASMainHelper {
 
         if(msg != null)
             throw new RuntimeException(msg);
-
-        domainRoot = absolutize(domainRoot);
-        System.setProperty(INSTANCE_ROOT_PROP_NAME, domainRoot.getPath() );
     }
 
-    private File getDefaultDomainsDir()
+    private File getDefaultDomainsDir(Properties asEnv)
     {
         // note: 99% error detection!
 
-        String dirname = System.getProperty(DEFAULT_DOMAINS_DIR_PROPNAME);
+        String dirname = asEnv.getProperty(Constants.DEFAULT_DOMAINS_DIR_PROPNAME);
 
         if(!ok(dirname))
-            throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME + " is not set.");
+            throw new RuntimeException(Constants.DEFAULT_DOMAINS_DIR_PROPNAME + " is not set.");
 
         File domainsDir = absolutize(new File(dirname));
 
         if(!domainsDir.isDirectory())
-            throw new RuntimeException(DEFAULT_DOMAINS_DIR_PROPNAME +
+            throw new RuntimeException(Constants.DEFAULT_DOMAINS_DIR_PROPNAME +
                     "[" + dirname + "]" +
                     " is specifying a file that is NOT a directory.");
 
@@ -325,7 +325,7 @@ public class ASMainHelper {
         return null;
     }
 
-    File getJDKToolsJar() {
+    static File getJDKToolsJar() {
         File javaHome = new File(System.getProperty("java.home"));
         File jdktools = null;
         if (javaHome.getParent() != null) {
@@ -414,3 +414,4 @@ public class ASMainHelper {
         }
     }
 }
+

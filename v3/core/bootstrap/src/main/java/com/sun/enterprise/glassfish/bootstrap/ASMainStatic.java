@@ -40,7 +40,6 @@ import com.sun.enterprise.module.bootstrap.*;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import static com.sun.enterprise.glassfish.bootstrap.ASMainHelper.getLastModified;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.InhabitantsParserDecorator;
@@ -71,13 +70,15 @@ public class ASMainStatic extends ASMainNonOSGi {
 
     private File out;
     private Habitat habitat;
-    
+    private File glassfishDir;
+    private File domainDir;
+
     protected String getPreferedCacheDir() {
         return "static-cache/gf/";
     }
 
     public String getName() {
-        return ASMain.Platform.Static.toString();
+        return Constants.Platform.Static.toString();
     }
 
 
@@ -89,37 +90,25 @@ public class ASMainStatic extends ASMainNonOSGi {
             return null;
     }
 
-    @Override
-    protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
-        // I take care of this when running...
-    }
-
-    public void run(final Logger logger, String... args) throws Exception {
-
-        super.run(logger, args);
+    public void start(Properties args) throws Exception {
 
         StartupContext sc = getContext(StartupContext.class);
         if (sc==null) {
-            Properties p = ArgumentManager.argsToMap(args);
-            for (int i = 0; i < args.length; i++) {
-                String arg = args[i];
-                if (arg.equals("-upgrade") && i+1<args.length && !args[i+1].equals("false"))  {
-                    p.put(StartupContext.STARTUP_MODULESTARTUP_NAME, "upgrade" );
-                }
-            }
-            sc = new StartupContext(findBootstrapFile().getParentFile().getParentFile(), p);
+            sc = new StartupContext(args);
 
         }
         super.setContext(sc);
-        
-        final File modulesDir = new File(sc.getRootDirectory() , "modules");
+
+        glassfishDir = StartupContextUtil.getInstallRoot(sc);
+        domainDir = StartupContextUtil.getInstanceRoot(sc);
+        final File modulesDir = new File(glassfishDir, "modules");
         final StartupContext startupContext = sc;
 
-        setSystemProperties();
+        configureEnvironment();
 
         // create our masking class loader
         final ClassLoader parent = getClass().getClassLoader();
-        ClassLoader maskingClassLoade = getMaskingClassLoader(parent, sc.getRootDirectory(), logger);
+        ClassLoader maskingClassLoade = getMaskingClassLoader(parent, glassfishDir, logger);
 
         // our unique class loader.
         ClassLoader singleClassLoader = createTmpClassLoader(maskingClassLoade, modulesDir);
@@ -232,6 +221,16 @@ public class ASMainStatic extends ASMainNonOSGi {
 */        
     }
 
+    private void configureEnvironment() {
+        System.setProperty("com.sun.aas.installRootURI", glassfishDir.toURI().toString());
+        System.setProperty("com.sun.aas.instanceRootURI", domainDir.toURI().toString());
+
+        // Set up HK2 cache directory.
+
+        File cacheProfileDir = new File(domainDir, getPreferedCacheDir());
+        System.setProperty(Constants.HK2_CACHE_DIR, cacheProfileDir.getAbsolutePath());
+    }
+
     protected static ClassLoader getMaskingClassLoader(ClassLoader parent, File root,
             Logger logger) {
         return getMaskingClassLoader(parent, root, logger, true);
@@ -306,15 +305,10 @@ public class ASMainStatic extends ASMainNonOSGi {
     
 
     @Override
-    Logger getLogger() {
-        return logger;
-    }
-
-    @Override
     boolean createCache(File cacheDir) throws IOException {
         cacheDir.mkdirs();
         Rejar rejar = new Rejar();
-        rejar.rejar(out, bootstrapFile.getParentFile());
+        rejar.rejar(out, new File(glassfishDir, "modules/"));
         return true;
     }
 
@@ -336,6 +330,7 @@ public class ASMainStatic extends ASMainNonOSGi {
         return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 
     }
+
     private final class ModuleInfo {
         final String bundleName;
         final String bundleVersion;

@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.logging.*;
 import com.sun.enterprise.module.bootstrap.ArgumentManager;
 import com.sun.enterprise.module.bootstrap.PlatformMain;
+import com.sun.enterprise.module.bootstrap.Which;
 
 /**
  * Tag Main to get the manifest file 
@@ -54,45 +55,26 @@ public class ASMain {
      */
     final static Logger logger = Logger.getAnonymousLogger();
 
-    private final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
-
-    // bundle containing module startup
-    private final static String GF_KERNEL = "org.glassfish.core.kernel";
-    // Supported platform we know about, not limited to.
-    public enum Platform {Felix, Knopflerfish, Equinox, Static}
-
     public static void main(final String args[]) {
-        int minor = getMinorJdkVersion();
+        checkJdkVersion();
 
-        if(minor < 6) {
-            logger.severe("GlassFish requires JDK 6, you are using JDK version " + minor);
-            System.exit(1);
-        }
-        setStartupContextProperties(args);
-        String platform = Platform.Felix.toString(); // default is Felix
+        String platform = whichPlatform();
 
-        // first check the system props
-        String temp = System.getProperty(PLATFORM_PROPERTY_KEY);
-        if (temp == null || temp.trim().length() <= 0) {
-            // not in sys props -- check environment
-            temp = System.getenv(PLATFORM_PROPERTY_KEY);
-        }
+        File installRoot = findInstallRoot();
 
-        if (temp != null && temp.trim().length() != 0) {
-            platform = temp.trim();
-        }
+        File instanceRoot = findInstanceRoot(installRoot, args);
 
+        Properties ctx = buildStartupContext(platform, installRoot, instanceRoot, args);
+
+        setSystemProperties(ctx);
 
         PlatformMain delegate=getMain(platform);
         if (delegate!=null) {
-
-            logger.info("Launching GlassFish on " + platform + " platform");            
-            // Set the system property if downstream code wants to know about it
-            System.setProperty(PLATFORM_PROPERTY_KEY, platform);
-            
+            logger.info("Launching GlassFish on " + platform + " platform");
+            logger.fine("Startup Context: " + ctx);
             try {
                 delegate.setLogger(logger);
-                delegate.start(args);
+                delegate.start(ctx);
             } catch(Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
             }
@@ -100,6 +82,45 @@ public class ASMain {
         } else {
             logger.severe("Cannot launch GlassFish on the unkown " + platform + " platform");
         }
+    }
+
+    private static void checkJdkVersion() {
+        int minor = getMinorJdkVersion();
+
+        if(minor < 6) {
+            logger.severe("GlassFish requires JDK 6, you are using JDK version " + minor);
+            System.exit(1);
+        }
+    }
+
+    private static File findInstallRoot() {
+        File bootstrapFile = findBootstrapFile(); // glassfish/modules/glassfish.jar
+        return bootstrapFile.getParentFile().getParentFile(); // glassfish/
+    }
+
+    private static File findInstanceRoot(File installRoot, String[] args) {
+        ASMainHelper helper = new ASMainHelper(logger);
+        Properties asEnv = helper.parseAsEnv(installRoot);
+        File domainDir = helper.getDomainRoot(ArgumentManager.argsToMap(args), asEnv);
+        helper.verifyDomainRoot(domainDir);
+        return domainDir;
+    }
+
+    private static String whichPlatform() {
+        String platform = Constants.Platform.Felix.toString(); // default is Felix
+
+
+        // first check the system props
+        String temp = System.getProperty(Constants.PLATFORM_PROPERTY_KEY);
+        if (temp == null || temp.trim().length() <= 0) {
+            // not in sys props -- check environment
+            temp = System.getenv(Constants.PLATFORM_PROPERTY_KEY);
+        }
+
+        if (temp != null && temp.trim().length() != 0) {
+            platform = temp.trim();
+        }
+        return platform;
     }
 
     /**
@@ -117,15 +138,21 @@ public class ASMain {
         return null;
     }
 
-    /**
-     * Save the args in a system property
-     */
-
-    private static void setStartupContextProperties(String... args)
-    {
+    private static Properties buildStartupContext(String platform, File installRoot, File instanceRoot, String[] args) {
         Properties p = ArgumentManager.argsToMap(args);
+
         p.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
-        p.put(StartupContext.STARTUP_MODULE_NAME, GF_KERNEL);
+
+        p.setProperty(Constants.PLATFORM_PROPERTY_KEY, platform);
+
+        p.put(Constants.INSTALL_ROOT_PROP_NAME, installRoot.getAbsolutePath());
+
+        p.put(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
+
+        if (p.getProperty(StartupContext.STARTUP_MODULE_NAME) == null) {
+            p.put(StartupContext.STARTUP_MODULE_NAME, Constants.GF_KERNEL);
+        }
+
         // temporary hack until CLI does that for us.
         for (int i=0;i<args.length;i++) {
             if (args[i].equals("-upgrade")) {
@@ -134,17 +161,19 @@ public class ASMain {
                 }
             }
         }
+
         addRawStartupInfo(args, p);
 
-        try {
-            Writer writer = new StringWriter();
-            p.store(writer, null);
-            System.setProperty(StartupContext.ARGS_PROP, writer.toString());
-        }
-        catch (IOException e) {
-            logger.info("Could not save startup parameters, will start with none");
-            System.setProperty(StartupContext.ARGS_PROP, "");
-        }
+        return p;
+    }
+
+    /**
+     * Store relevant information in system properties.
+     * @param ctx
+     */
+    private static void setSystemProperties(Properties ctx) {
+        // Set the system property if downstream code wants to know about it
+        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, ctx.getProperty(Constants.PLATFORM_PROPERTY_KEY));
     }
 
     /**
@@ -160,16 +189,16 @@ public class ASMain {
 
         for(int i = 0; i < args.length; i++) {
             if(i > 0)
-                sb.append(StartupContext.ARG_SEP);
+                sb.append(Constants.ARG_SEP);
 
             sb.append(args[i]);
         }
 
         if(!wasStartedByCLI(p)) {
             // no sense doing this if we were started by CLI...
-            p.put(StartupContext.ORIGINAL_CP, System.getProperty("java.class.path"));
-            p.put(StartupContext.ORIGINAL_CN, ASMain.class.getName());
-            p.put(StartupContext.ORIGINAL_ARGS, sb.toString());
+            p.put(Constants.ORIGINAL_CP, System.getProperty("java.class.path"));
+            p.put(Constants.ORIGINAL_CN, ASMain.class.getName());
+            p.put(Constants.ORIGINAL_ARGS, sb.toString());
         }
     }
 
@@ -199,4 +228,15 @@ public class ASMain {
             return 1;
         }
     }
+
+    private static File findBootstrapFile() {
+        try {
+            return Which.jarFile(ASMain.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot get bootstrap path from "
+                    + ASMain.class + " class location, aborting");
+        }
+    }
+
+
 }

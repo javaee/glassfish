@@ -88,6 +88,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     private /*almost final*/ String instanceName;
 
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
+    private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
 
     /**
      * Compute all the values per default.
@@ -108,11 +109,14 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public void postConstruct() {
 
         // todo : dochez : this will need to be reworked...
-        if (server==null) {
-            asenv = new ASenvPropertyReader(startupContext.getRootDirectory().getParentFile());
-        } else {
-            asenv = new ASenvPropertyReader(startupContext.getRootDirectory());
+        String installRoot = startupContext.getArguments().getProperty(INSTALL_ROOT_PROP_NAME);
+        if (installRoot == null) {
+            // Sahoo: This is truely a bad piece of code. During unit testing, we find an empty StartupContext.
+            // To be consistent with earlier code (i.e., code that relied on StartupContext.getRootDirectory()),
+            // I am setting user.dir as installRoot.
+            installRoot = System.getProperty("user.dir");
         }
+        asenv = new ASenvPropertyReader(new File(installRoot));
 
         // default
         if(this.root==null) {
@@ -120,7 +124,14 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
             if (envVar!=null) {
                 root = new File(envVar);
             } else {
-                root = startupContext.getRootDirectory();
+                String instanceRoot = startupContext.getArguments().getProperty(INSTANCE_ROOT_PROP_NAME);
+                if (instanceRoot == null) {
+                    // In client container, instanceRoot is not set. It is a different question altogether as to why
+                    // an object called ServerEnvironmentImpl is at all active in client runtime. To be consistent
+                    // with earlier code, we use installRoot as instanceRoot.
+                    instanceRoot = installRoot;
+                }
+                root = new File(instanceRoot);
             }
         }
 

@@ -38,6 +38,7 @@
 package com.sun.enterprise.glassfish.bootstrap;
 
 import static com.sun.enterprise.glassfish.bootstrap.ASMainHelper.deleteRecursive;
+import com.sun.enterprise.module.bootstrap.PlatformMain;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -56,13 +57,8 @@ import java.util.logging.Level;
  * @author Sanjeeb.Sahoo@Sun.COM
  * @author Jerome.Dochez@Sun.COM
  */
-public abstract class ASMainNonOSGi extends AbstractMain
+public abstract class ASMainNonOSGi extends PlatformMain
 {
-    protected void setUpCache(File sourceDir, File cacheDir) throws IOException
-    {
-        // Nothing to do
-    }
-
     protected void flushAndCreate(File cacheDir, long lastModified) throws IOException
     {
         if (cacheDir.exists() && cacheDir.isDirectory())

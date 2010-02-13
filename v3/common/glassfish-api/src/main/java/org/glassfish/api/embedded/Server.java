@@ -262,27 +262,24 @@ public class Server {
             throw new RuntimeException("Embedded startup not found, classpath is probably incomplete");
         }
 
-        String[] args = new String[0];
+        Properties startupContextProps = new Properties();
         if (properties!=null) {
             if (properties.containsKey(StartupContext.STARTUP_MODULESTARTUP_NAME)) {
-                args = new String[2];
-                args[0] = "-" + StartupContext.STARTUP_MODULESTARTUP_NAME; 
-                args[1] = properties.getProperty(StartupContext.STARTUP_MODULESTARTUP_NAME);
+                startupContextProps.setProperty(StartupContext.STARTUP_MODULESTARTUP_NAME,
+                        properties.getProperty(StartupContext.STARTUP_MODULESTARTUP_NAME));
             }
         }
-        if (fs.installRoot==null) {
-            embedded.setContext(new StartupContext(fs.instanceRoot, fs.instanceRoot, args));
-            System.setProperty("com.sun.aas.installRoot", fs.instanceRoot.getAbsolutePath());
-        } else {
-            embedded.setContext(new StartupContext(fs.installRoot, fs.instanceRoot, args));
-            System.setProperty("com.sun.aas.installRoot", fs.installRoot.getAbsolutePath());            
-        }
+        String installRoot =
+                (fs.installRoot != null) ? fs.installRoot.getAbsolutePath() : fs.instanceRoot.getAbsolutePath();
+        System.setProperty("com.sun.aas.installRoot", installRoot);
+        startupContextProps.setProperty("com.sun.aas.installRoot", installRoot);
         System.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
-
+        startupContextProps.setProperty("com.sun.aas.instanceRoot", fs.instanceRoot.getAbsolutePath());
+        embedded.setContext(new StartupContext(startupContextProps));
         embedded.setContext(this);
         embedded.setLogger(Logger.getAnonymousLogger());
         try {
-            embedded.start(new String[0]);
+            embedded.start(startupContextProps);
         } catch(Exception e) {
             e.printStackTrace();
         }

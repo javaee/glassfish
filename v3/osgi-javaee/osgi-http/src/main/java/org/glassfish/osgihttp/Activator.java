@@ -40,6 +40,7 @@ package org.glassfish.osgihttp;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.WebModuleConfig;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.Realm;
@@ -53,7 +54,10 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.http.HttpService;
+import org.osgi.util.tracker.ServiceTracker;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * This is the entry point to our implementation of OSGi/HTTP service.
@@ -69,6 +73,8 @@ import org.osgi.service.http.HttpService;
  */
 public class Activator implements BundleActivator {
 
+    // TODO(Sahoo): Use config admin to configure context path, virtual server, etc.
+    
     private BundleContext bctx;
     private Host vs;
     private String contextPath;
@@ -83,21 +89,29 @@ public class Activator implements BundleActivator {
     // this service is deployed.
     private static final String CONTEXT_PATH_PROP =
             Activator.class.getPackage().getName() + ".ContextPath";
+    private ServiceTracker serverTracker;
 
     public void start(BundleContext context) throws Exception {
         bctx = context;
-        StandardContext standardContext = getStandardContext(context);
-        GlassFishHttpService httpService = new GlassFishHttpService(standardContext);
-        registration = context.registerService(HttpService.class.getName(),
-                new HttpServiceWrapper.HttpServiceFactory(httpService),
-                null);
+        serverTracker = new GlassFishServerTracker(bctx);
+        serverTracker.open();
     }
 
-    private StandardContext getStandardContext(BundleContext context) throws Exception {
-        WebContainer webContainer =
-                Globals.get(WebContainer.class);
+    private void doActualWork(WebContainer webContainer) {
+        try {
+            StandardContext standardContext = getStandardContext(webContainer);
+            GlassFishHttpService httpService = new GlassFishHttpService(standardContext);
+            registration = bctx.registerService(HttpService.class.getName(),
+                    new HttpServiceWrapper.HttpServiceFactory(httpService),
+                    null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private StandardContext getStandardContext(WebContainer webContainer) throws Exception {
         Engine engine = webContainer.getEngine();
-        String vsId = context.getProperty(VS_ID_PROP);
+        String vsId = bctx.getProperty(VS_ID_PROP);
         if (vsId == null) {
             vsId = "server";
 //            throw new Exception("You must specify which virtual server to use using property called " + VS_ID_PROP);
@@ -107,7 +121,7 @@ public class Activator implements BundleActivator {
             throw new Exception("No virtual host by name : " + vsId +
                     ". Please specify virtual server name using property called " + VS_ID_PROP);
         }
-        contextPath = context.getProperty(CONTEXT_PATH_PROP);
+        contextPath = bctx.getProperty(CONTEXT_PATH_PROP);
         if (contextPath == null) {
             contextPath = "/osgi"; // default value
         }
@@ -152,13 +166,16 @@ public class Activator implements BundleActivator {
     }
 
     public void stop(BundleContext context) throws Exception {
-        registration.unregister();
-        StandardContext standardContext =
-                StandardContext.class.cast(vs.findChild(contextPath));
-        for (Container child : standardContext.findChildren()) {
-            standardContext.removeChild(child);
+        if (serverTracker != null) serverTracker.close();
+        if (registration != null ) registration.unregister();
+        if (vs != null) {
+            StandardContext standardContext =
+                    StandardContext.class.cast(vs.findChild(contextPath));
+            for (Container child : standardContext.findChildren()) {
+                standardContext.removeChild(child);
+            }
+            vs.removeChild(standardContext);
         }
-        vs.removeChild(standardContext);
         // TODO(Sahoo): Need to call stop on all wrappers if they are not
         // automatically stopped when removed from context.
     }
@@ -181,4 +198,27 @@ public class Activator implements BundleActivator {
             }
         }
     }
+
+    /**
+     * HK2 OSGi bundle registers ModuleStartup in service
+     * registry after ModuleStartup has been called.
+     */
+    private class GlassFishServerTracker extends ServiceTracker {
+        public GlassFishServerTracker(BundleContext context)
+        {
+            super(context, ModuleStartup.class.getName(), null);
+        }
+
+        @Override
+        public Object addingService(ServiceReference reference)
+        {
+            ServiceReference habitatServiceRef = context.getServiceReference(Habitat.class.getName());
+            Habitat habitat = Habitat.class.cast(context.getService(habitatServiceRef));
+            WebContainer wc = habitat.getComponent(WebContainer.class);
+            doActualWork(wc);
+            context.ungetService(habitatServiceRef);
+            return super.addingService(reference);
+        }
+    }
+
 }

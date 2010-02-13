@@ -42,6 +42,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.tools.verifier.gui.MainFrame;
+import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -90,7 +91,7 @@ public class VerifierModuleStartup implements ModuleStartup
         setTCL();
         try {
             registerFrameworkListener();
-            String[] args = startupContext.getOriginalArguments();
+            String[] args = StartupContextUtil.getOriginalArguments(startupContext);
             VerifierFrameworkContext verifierFrameworkContext =
                     new Initializer(args).getVerificationContext();
 

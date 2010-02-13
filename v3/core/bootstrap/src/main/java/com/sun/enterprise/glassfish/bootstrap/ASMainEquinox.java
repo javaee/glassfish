@@ -64,7 +64,7 @@ public class ASMainEquinox extends ASMainOSGi {
     }
 
     public String getName() {
-        return ASMain.Platform.Equinox.toString();
+        return Constants.Platform.Equinox.toString();
     }
 
     protected void setFwDir() {
@@ -104,16 +104,19 @@ public class ASMainEquinox extends ASMainOSGi {
         return new File(settings, "config.ini");
     }
 
-    @Override
-    protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
-        /*
-        * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
-        * for details about the configuration options used here.
-        */
+    private void setUpCache() throws IOException {
+        File cacheDir = getCacheDir();
+
+        // Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
+        // for details about the configuration options used here.
+        // Starting with version 3.5.1, Equinox understands standard OSGi property
+        // org.osgi.framework.storage to configure cache dir, but it is not used by the
+        // launcher that we use. SO, we still use the old property.
         System.setProperty("osgi.configuration.area", cacheDir.getCanonicalPath());
 
         // I need to copy the configuration from our eclipse directory into
-        // the cache so eclipse use that as its caching directory.
+        // the cache so equinox use that as its caching directory. Otherwise, it uses
+        // configuration dir as the cache dir.
         File settings = getSettingsFile();
         if (!cacheDir.exists() && !cacheDir.mkdirs()) {
             throw new RuntimeException("Not able to create " + cacheDir.getAbsolutePath());
@@ -122,19 +125,7 @@ public class ASMainEquinox extends ASMainOSGi {
     }
 
     protected void launchOSGiFW() throws Exception {
-        /*
-         * Refer to http://help.eclipse.org/help32/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/index.html
-         * for details about the configuration options used here.
-         */
-        //System.setProperty("osgi.configuration.area",
-        //        new File(fwDir, "configuration").getCanonicalPath());
-        // Equinox does not allow us to provide a separate location for
-        // cache. The cache dir is always created in configuration area.
-        // So, for the moment, we don't try to reuse the cache during
-        // server restart.
-        //System.setProperty("osgi.clean", "false"); // clean framework cache at startup
-//        File cacheProfileDir = new File(domainDir, "equinox-cache/gf/");
-//        setUpCache(bootstrapFile.getParentFile(), cacheProfileDir);
+        setUpCache();
         Class mc = launcherCL.loadClass(getFWMainClassName());
         final String[] args = new String[0];
         final Method m = mc.getMethod("main", new Class[]{args.getClass()});

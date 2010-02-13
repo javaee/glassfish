@@ -49,6 +49,7 @@ import com.sun.hk2.component.InhabitantsParserDecorator;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.ServiceLoader;
+import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 
@@ -65,14 +66,6 @@ public class ASEmbedded extends ASMainNonOSGi {
 
     Habitat habitat = null;
     
-    Logger getLogger() {
-        return logger;
-    }
-
-    protected String getPreferedCacheDir() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     public String getName() {
         return "Embedded"; 
     }
@@ -89,8 +82,7 @@ public class ASEmbedded extends ASMainNonOSGi {
             return null;
     }
 
-    @Override
-    public void run(final Logger logger, String... args) throws Exception {
+    public void start(Properties args) throws Exception {
         
         final StartupContext startupContext = getContext(StartupContext.class);
 

@@ -41,6 +41,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.security.store.IdentityManagement;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 import org.glassfish.internal.api.Init;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -140,7 +141,7 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
     private boolean setFromAsMainArguments() {
         File pwf = null;
         try {
-            String[] args = sc.getOriginalArguments();
+            String[] args = StartupContextUtil.getOriginalArguments(sc);
             int index = 0;
             for (String arg : args) {
                 if (PASSWORDFILE_OPTION_TO_ASMAIN.equals(arg)) {

@@ -43,6 +43,7 @@ import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.server.ServerEnvironmentImpl;
+import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 
 /**
  * Locations command to indicate where this server is installed.
@@ -58,7 +59,7 @@ public class LocationsCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.getTopMessagePart().addProperty("Base-Root", env.getStartupContext().getRootDirectory().getParent());
+        report.getTopMessagePart().addProperty("Base-Root", StartupContextUtil.getInstallRoot(env.getStartupContext()).getAbsolutePath());
         report.getTopMessagePart().addProperty("Domain-Root", env.getDomainRoot().getAbsolutePath());
     }
 }

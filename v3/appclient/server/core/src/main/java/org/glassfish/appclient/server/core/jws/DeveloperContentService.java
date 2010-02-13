@@ -95,7 +95,7 @@ public class DeveloperContentService implements PostConstruct {
     }
 
     private File installConfigDir() {
-        return new File(startupContext.getRootDirectory().getParent(), "config");
+        return new File(startupContext.getArguments().getProperty("com.sun.aas.installRoot"), "config");
     }
 
     private File domainConfigDir() {

@@ -74,7 +74,7 @@ public class ASMainFelix extends ASMainOSGi {
     }
 
     public String getName() {
-        return ASMain.Platform.Felix.toString();
+        return Constants.Platform.Felix.toString();
     }
 
     protected void setFwDir() {
@@ -88,13 +88,6 @@ public class ASMainFelix extends ASMainOSGi {
         if (!fwDir.exists()) {
             throw new RuntimeException("Can't locate Felix at " + fwPath);
         }
-    }
-
-    @Override
-    protected void setUpCache(File sourceDir, File cacheDir) throws IOException {
-        // Starting with Felix 1.4.0, the cache dir is identified by
-        // property called org.osgi.framework.storage.
-        System.setProperty(CACHE_DIR, cacheDir.getCanonicalPath());
     }
 
     protected void addFrameworkJars(ClassPathBuilder cpb) throws IOException {

@@ -84,6 +84,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <optional>true</optional>
-      </dependency>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.core</groupId>
+            <artifactId>glassfish</artifactId>
+            <version>${project.version}</version>
+        </dependency>      
     </dependencies>    
 </project>

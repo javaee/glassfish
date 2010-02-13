@@ -78,7 +78,7 @@
         <dependency>
             <!-- Needed to have a bundle activator to set up a different serialization policy-->
             <groupId>org.osgi</groupId>
-            <artifactId>osgi_R4_core</artifactId>
+            <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
    </dependencies>

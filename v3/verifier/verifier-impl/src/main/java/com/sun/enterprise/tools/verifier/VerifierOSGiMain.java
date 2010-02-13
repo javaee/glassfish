@@ -38,14 +38,12 @@
 package com.sun.enterprise.tools.verifier;
 
 import com.sun.enterprise.glassfish.bootstrap.ASMainFelix;
+import com.sun.enterprise.glassfish.bootstrap.Constants;
 import com.sun.enterprise.module.bootstrap.ArgumentManager;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.util.Properties;
 
 /**
@@ -60,22 +58,17 @@ public class VerifierOSGiMain
 
     public static void main(String[] args) throws Exception
     {
-        setStartupContextProperties(args);
+        Properties ctx = buildStartupContextProperties(args);
         ASMainFelix main = new ASMainFelix() {
+
             @Override
-            protected void setUpCache(File sourceDir, File cacheDir) throws IOException
+            protected void configureEnvironment() throws IOException
             {
-                if (System.getProperty(CACHE_DIR) != null) {
-                    // if user has specified a cache dir, use it.
-                    // It is much better than us creating a cache dir and deleting it.
-                    System.out.println("Felix cache dir located at " + System.getProperty(CACHE_DIR));
-                    return;
-                }
                 // We can't share the same cache as glassfish, so we use our own.
                 // More over, since we allow multiple verifier to be active,
                 // we can't use a fixed cache dir.
 
-                cacheDir = File.createTempFile("verifier-felix-cache", "tmp");
+                File cacheDir = File.createTempFile("verifier-felix-cache", "tmp");
 
                 // delete the file and create a directory in its place.
                 if (cacheDir.delete() && cacheDir.mkdirs()) {
@@ -84,21 +77,20 @@ public class VerifierOSGiMain
                     throw new IOException("Not able to create felix cache dir " + cacheDir.getAbsolutePath());
                 }
                 cacheDir.deleteOnExit();
-                System.setProperty(CACHE_DIR, cacheDir.getAbsolutePath());
+                System.setProperty("org.osgi.framework.storage", cacheDir.getAbsolutePath());
+                System.setProperty(Constants.HK2_CACHE_DIR, cacheDir.getAbsolutePath()); // hk2 inhabitants cache
             }
         };
-        main.start(args);
+        main.start(ctx);
     }
 
-    private static void setStartupContextProperties(String... args) throws IOException
+    private static Properties buildStartupContextProperties(String... args) throws IOException
     {
         Properties p = ArgumentManager.argsToMap(args);
         p.put(StartupContext.TIME_ZERO_NAME, (new Long(System.currentTimeMillis())).toString());
         p.put(StartupContext.STARTUP_MODULE_NAME, VERIFIER_MODULE);
         addRawStartupInfo(args, p);
-        Writer writer = new StringWriter();
-        p.store(writer, null);
-        System.setProperty(StartupContext.ARGS_PROP, writer.toString());
+        return p;
     }
 
     /**
@@ -113,14 +105,14 @@ public class VerifierOSGiMain
 
         for(int i = 0; i < args.length; i++) {
             if(i > 0)
-                sb.append(StartupContext.ARG_SEP);
+                sb.append(Constants.ARG_SEP);
 
             sb.append(args[i]);
         }
 
-        p.put(StartupContext.ORIGINAL_CP, System.getProperty("java.class.path"));
-        p.put(StartupContext.ORIGINAL_CN, VerifierOSGiMain.class.getName());
-        p.put(StartupContext.ORIGINAL_ARGS, sb.toString());
+        p.put(Constants.ORIGINAL_CP, System.getProperty("java.class.path"));
+        p.put(Constants.ORIGINAL_CN, VerifierOSGiMain.class.getName());
+        p.put(Constants.ORIGINAL_ARGS, sb.toString());
     }
 
 }
