@@ -242,8 +242,9 @@ public class RunMojo extends DistributionAssemblyMojo {
         assert rootDir!=null;
 
         try {
-            // Glassfish wants $GF_HOME/modules as the bootstrap directory
-            StartupContext context = new StartupContext(new File(rootDir,"modules"),args);
+            Properties p = com.sun.enterprise.module.bootstrap.ArgumentManager.argsToMap(args);
+            p.setProperty("com.sun.aas.installRoot", rootDir.getAbsolutePath());
+            StartupContext context = new StartupContext(p);
 
             HK2Factory.initialize();
             ModulesRegistry mr = createModuleRegistry(distPoms);
