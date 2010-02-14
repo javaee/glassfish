@@ -333,6 +333,12 @@ public final class ApplicationDispatcher
     public void dispatch(ServletRequest request, ServletResponse response,
                   DispatcherType dispatcherType)
             throws ServletException, IOException {
+        dispatch(request, response, dispatcherType, false);
+    }
+
+    public void dispatch(ServletRequest request, ServletResponse response,
+                  DispatcherType dispatcherType, boolean fireRequestEvent)
+            throws ServletException, IOException {
 
         if (!DispatcherType.FORWARD.equals(dispatcherType) &&
                 !DispatcherType.ERROR.equals(dispatcherType) &&
@@ -342,6 +348,10 @@ public final class ApplicationDispatcher
 
         boolean isCommit = (DispatcherType.FORWARD.equals(dispatcherType) ||
             DispatcherType.ERROR.equals(dispatcherType));
+
+        if (fireRequestEvent) {
+            context.fireRequestInitializedEvent(request);
+        }
 
         if (Globals.IS_SECURITY_ENABLED) {
             try {
@@ -359,15 +369,25 @@ public final class ApplicationDispatcher
                 if (e instanceof ServletException)
                     throw (ServletException) e;
                 throw (IOException) e;
+            } finally {
+                if (fireRequestEvent) {
+                    context.fireRequestDestroyedEvent(request);
+                }
             }
         } else {
-            doDispatch(request, response, dispatcherType);
-            // START SJSAS 6374990
-            if (isCommit) {
-                ApplicationDispatcherForward.commit(request, response,
-                    context, wrapper);
+            try {
+                doDispatch(request, response, dispatcherType);
+                // START SJSAS 6374990
+                if (isCommit) {
+                    ApplicationDispatcherForward.commit(request, response,
+                        context, wrapper);
+                }
+                // END SJSAS 6374990                
+            } finally {
+                if (fireRequestEvent) {
+                    context.fireRequestDestroyedEvent(request);
+                }
             }
-            // END SJSAS 6374990
         }
     }
 
