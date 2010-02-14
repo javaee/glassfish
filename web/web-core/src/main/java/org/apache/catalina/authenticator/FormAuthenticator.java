@@ -437,27 +437,27 @@ public class FormAuthenticator
         try {
             String loginPage = config.getLoginPage();
             if (!request.getRequest().isSecure()) {
-		Realm realm = context.getRealm();
-		if (realm != null) {
-		    SecurityConstraint[] secConstraints = 
-			realm.findSecurityConstraints(loginPage, "GET", context);
-		    if (secConstraints != null && 
-			!realm.hasUserDataPermission
-			 (request, response,secConstraints, loginPage, "GET")) {
-			/*
-			 * Note that hasUserDataPermission will have already
-			 * issued a redirect to HTTPS unless redirects 
-			 * have been disabled, in which case it will have 
-			 * called sendError(FORBIDDEN) 
-			 */
-			return;
-		    }
-		}
-	    }
-	    RequestDispatcher disp = sc.getRequestDispatcher(loginPage);
-	    disp.forward(request.getRequest(), response.getResponse());
-	    //NOTE: is finishResponse necessary or is it unnecessary after forward
-	    response.finishResponse();
+                Realm realm = context.getRealm();
+                if (realm != null) {
+                    SecurityConstraint[] secConstraints =
+                            realm.findSecurityConstraints(loginPage, "GET", context);
+                    if (secConstraints != null &&
+                            !realm.hasUserDataPermission
+                                    (request, response,secConstraints, loginPage, "GET")) {
+                        /*
+                         * Note that hasUserDataPermission will have already
+                         * issued a redirect to HTTPS unless redirects
+                         * have been disabled, in which case it will have
+                         * called sendError(FORBIDDEN)
+                         */
+                        return;
+                    }
+                }
+            }
+            RequestDispatcher disp = sc.getRequestDispatcher(loginPage);
+            disp.forward(request.getRequest(), response.getResponse());
+            //NOTE: is finishResponse necessary or is it unnecessary after forward
+            response.finishResponse();
         } catch (Throwable t) {
             log.log(Level.WARNING,
                     "Unexpected error forwarding or redirecting to login page",
@@ -481,25 +481,25 @@ public class FormAuthenticator
         try {
             String errorPage = config.getErrorPage();
             if (!request.getRequest().isSecure()) {
-		Realm realm = context.getRealm();
-		if (realm != null) {
-		    SecurityConstraint[] secConstraints = 
-			realm.findSecurityConstraints(errorPage, "GET", context);
-		    if (secConstraints != null && 
-			!realm.hasUserDataPermission
-			 (request, response,secConstraints, errorPage, "GET")) {
-			/*
-			 * Note that hasUserDataPermission will have already
-			 * issued a redirect to HTTPS unless redirects 
-			 * have been disabled, in which case it will have 
-			 * called sendError(FORBIDDEN).
-			 */
-			return;
-		    }
-		}
-	    }
-	    RequestDispatcher disp = sc.getRequestDispatcher(errorPage);
-	    disp.forward(request.getRequest(), response.getResponse());
+                Realm realm = context.getRealm();
+                if (realm != null) {
+                    SecurityConstraint[] secConstraints =
+                            realm.findSecurityConstraints(errorPage, "GET", context);
+                    if (secConstraints != null &&
+                            !realm.hasUserDataPermission
+                                    (request, response,secConstraints, errorPage, "GET")) {
+                        /*
+                         * Note that hasUserDataPermission will have already
+                         * issued a redirect to HTTPS unless redirects 
+                         * have been disabled, in which case it will have
+                         * called sendError(FORBIDDEN).
+                         */
+                        return;
+                    }
+                }
+            }
+            RequestDispatcher disp = sc.getRequestDispatcher(errorPage);
+            disp.forward(request.getRequest(), response.getResponse());
         } catch (Throwable t) {
             log.log(Level.WARNING,
                     "Unexpected error forwarding or redirecting to error page",
