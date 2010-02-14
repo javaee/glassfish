@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Properties;
+import java.util.logging.Logger;
 import java.net.MalformedURLException;
 
 /**
@@ -199,7 +200,8 @@ public abstract class ASMainOSGi extends PlatformMain {
     }
 
     private void findDerbyClient(ClassPathBuilder cpb) throws IOException {
-        String derbyHome = System.getProperty("AS_DERBY_INSTALL");
+        // Sahoo: Why do we have to add derby to this class loader? Find out from Jerome.
+        String derbyHome = new ASMainHelper(Logger.getAnonymousLogger()).parseAsEnv(glassfishDir).getProperty("AS_DERBY_INSTALL");
         File derbyLib = null;
         if (derbyHome != null) {
             derbyLib = new File(derbyHome, "lib");
