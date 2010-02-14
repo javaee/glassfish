@@ -81,7 +81,7 @@ public class StopDomainCommand implements AdminCommand {
          
         context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
         Collection<Module> modules = registry.getModules(
-                "com.sun.enterprise.osgi-adapter");
+                "org.glassfish.core.glassfish");
         if (modules.size() == 1) {
             final Module mgmtAgentModule = modules.iterator().next();
             mgmtAgentModule.stop();
