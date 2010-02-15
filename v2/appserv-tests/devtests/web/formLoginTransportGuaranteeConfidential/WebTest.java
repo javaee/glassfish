@@ -57,7 +57,7 @@ public class WebTest {
         "form-login-transport-guarantee-confidential";
 
     private static final SimpleReporterAdapter stat =
-	new SimpleReporterAdapter("appserv-tests");
+        new SimpleReporterAdapter("appserv-tests");
 
     private String host;
     private String httpPort;
