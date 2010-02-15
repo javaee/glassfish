@@ -184,25 +184,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         // (standalone + embedded) 
         if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
             if (connectorRuntime.isServer()) {
-                loader = connectorRuntime.getConnectorClassLoader(moduleName); 
-/*
-                loader = connectorRuntime.createConnectorClassLoader(moduleDir, null,moduleName);
-                // create a classloader for system rar and add it to connector class loader
-                // this is different than v2 as we dont add system rars to class loader chain
-                connectorRuntime.addSystemRAToConnectorClassLoader((ConnectorClassFinder)loader);
-                if(_logger.isLoggable(Level.FINE)){
-                    _logger.log(Level.FINE, "System RAR [ "+moduleName+" ] added to " +
-                        "classloader chain " );
-                }
-
-                if (loader == null) {
-                    ConnectorRuntimeException cre =
-                            new ConnectorRuntimeException("Failed to obtain the class loader");
-                    _logger.log(Level.SEVERE,"rardeployment.failed_toget_classloader");
-                    _logger.log(Level.SEVERE, "", cre);
-                    throw cre;
-                }
-*/
+                loader = connectorRuntime.getSystemRARClassLoader(moduleName); 
             }
         } else {
             connectorDescriptor.setClassLoader(null);
@@ -267,7 +249,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         }
     }
 
-    /*
+    /**
      * Updates the connector descriptor of the connector module, with the 
      * contents of a resource adapter config if specified.
      * 
