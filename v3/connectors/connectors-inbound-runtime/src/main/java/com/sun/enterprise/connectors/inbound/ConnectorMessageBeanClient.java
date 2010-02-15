@@ -53,7 +53,6 @@ import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -270,9 +269,10 @@ public final class ConnectorMessageBeanClient
     private ActiveInboundResourceAdapter getActiveResourceAdapter(String resourceAdapterMid) throws Exception {
         Object activeRar = registry_.getActiveResourceAdapter(resourceAdapterMid);
 
-        //TODO V3 no need to check DEFAULT_JMS_ADAPTER ?
-        if (activeRar == null /*&&
-                      resourceAdapterMid.equals(ConnectorRuntime.DEFAULT_JMS_ADAPTER)*/) {
+        // Except system-rars, all other rars are loaded eagerly.
+        // Check whether the rar is a system-rar.
+        // (as of now, jms-ra is the only inbound system-rar)  
+        if (activeRar == null && ConnectorsUtil.belongsToSystemRA(resourceAdapterMid)) {
             ConnectorRuntime crt = ConnectorRuntime.getRuntime();
             crt.loadDeferredResourceAdapter(resourceAdapterMid);
             activeRar = registry_.getActiveResourceAdapter(resourceAdapterMid);
