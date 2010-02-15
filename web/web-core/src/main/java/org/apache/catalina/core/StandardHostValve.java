@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -244,7 +244,7 @@ final class StandardHostValve
             }
 
             // START SJSAS 6374691
-            if (errorReportValve != null) {
+            if (errorReportValve != null && response.isError()) {
                 errorReportValve.postInvoke(request, response);
             }
             // END SJSAS 6374691
