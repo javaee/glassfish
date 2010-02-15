@@ -90,7 +90,7 @@ public class OSGiResourceServlet extends HttpServlet {
 
     private String getResourcePath(HttpServletRequest req) {
         String servletPath = req.getServletPath();
-        assert(servletPath == alias);
+        assert(alias.equals(servletPath));
         String contextPath = req.getContextPath();
         final String requestURI;
         try {
