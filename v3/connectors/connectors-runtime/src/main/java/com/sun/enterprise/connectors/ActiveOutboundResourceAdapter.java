@@ -166,10 +166,26 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             adminObjectsDefined = true;
         }
 
-        return  (!cd.getInBoundDefined()) &&
-                ( (cd.getOutBoundDefined() && cd.getOutboundResourceAdapter().getConnectionDefs().size() > 1 ) ||
-                adminObjectsDefined || !("".equals(cd.getResourceAdapterClass())));
-
+        /*
+        this class can handle Connector 1.5 Spec. compliant RAR that has no inbound artifacts
+        criteria for 1.5 RAR :
+          * No inbound artifacts
+          * Any one of the following conditions hold true :
+          *     -> admin object is defined or
+          *     -> resource-adapter-class is defined or
+          *     -> more than one connection-definition is defined.
+        */
+        boolean canHandle = false;
+        if(!cd.getInBoundDefined()){
+            if(cd.getOutBoundDefined() && cd.getOutboundResourceAdapter().getConnectionDefs().size() > 1){
+                canHandle = true;
+            }else if (adminObjectsDefined){
+                canHandle = true;
+            }else if(!cd.getResourceAdapterClass().equals("")){
+                canHandle = true;
+            }
+        }
+        return canHandle;
     }
 
 
@@ -215,8 +231,10 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             try {
                 _logger.fine("Calling Resource Adapter stop" + this.getModuleName());
                 resourceadapter_.stop();
-                _logger.fine("Resource Adapter stop call of " + this.getModuleName() + "returned successfully");
-                _logger.log(Level.FINE, "rar_stop_call_successful");
+                if(_logger.isLoggable(Level.FINE)){
+                    _logger.fine("Resource Adapter stop call of " + this.getModuleName() + " returned successfully");
+                    _logger.fine("rar_stop_call_successful");
+                }
             } catch (Throwable t) {
                 _logger.log(Level.SEVERE, "rardeployment.stop_warning", t);
             } finally {
@@ -354,9 +372,8 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             List<AdminObject> adminObjects =
                     desc.getAdminObjectsByType(adminObjectType);
             if(adminObjects.size() > 1){
-                //TODO V3 logstrings
-                throw new ConnectorRuntimeException("Could not determine appropriate admin object as " +
-                        "there are multiple admin object classes for admin object of type [ " + adminObjectType + " ] ");
+                String msg = localStrings.getString("aor.could_not_determine_aor_type", adminObjectType);
+                throw new ConnectorRuntimeException(msg);
             }else{
                 aoDesc = adminObjects.get(0);
             }
