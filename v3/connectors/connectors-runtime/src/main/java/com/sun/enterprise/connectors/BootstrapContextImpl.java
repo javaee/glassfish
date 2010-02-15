@@ -72,6 +72,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * Constructs a <code>BootstrapContext</code> with default
      * thread pool for work manager.
      *
+     * @param moduleName resource-adapter name
      * @throws ConnectorRuntimeException If there is a failure in
      *         retrieving WorkManager.
      */
@@ -84,6 +85,8 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * Constructs a <code>BootstrapContext</code> with a specified
      * thread pool for work manager.
      *
+     * @param poolId thread-pool-id
+     * @param moduleName resource-adapter name
      * @throws ConnectorRuntimeException If there is a failure in
      *         retrieving WorkManager.
      */
@@ -102,8 +105,9 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * @return <code>java.util.Timer</code> object.
      */
     public Timer createTimer() {
-        return new Timer("connectors-runtime-context");
-		//TODO V3 daemon ?
+        // set the timer as 'daemon' such that RAs that do not cancel the timer during
+        // ra.stop() will not block (eg : server shutdown)
+        return new Timer("connectors-runtime-context", true);
     }
 
     /**
@@ -118,14 +122,15 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * {@inheritDoc}
      */
     public TransactionSynchronizationRegistry getTransactionSynchronizationRegistry() {
-        //TODO V3
         try{
             InitialContext ic = new InitialContext();
             return (TransactionSynchronizationRegistry)ic.lookup("java:comp/TransactionSynchronizationRegistry");
         }catch(Exception e){
-            logger.log(Level.WARNING, "tx.sync.registry.lookup.failed", e);            
+            logger.log(Level.WARNING, "tx.sync.registry.lookup.failed", e);
+            RuntimeException re = new RuntimeException("Transaction Synchronization Registry Unavailable");
+            re.initCause(e);
+            throw re;
         }
-        return null;
     }
 
     /**
