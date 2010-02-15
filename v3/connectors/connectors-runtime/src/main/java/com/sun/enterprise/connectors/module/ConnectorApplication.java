@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.module;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
@@ -74,15 +75,17 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
     private ClassLoader loader;
     private ConnectorRuntime runtime;
     private Events event;
+    private ConnectorDescriptor descriptor;
 
     public ConnectorApplication(String moduleName, String appName, ResourceManager resourceManager, ClassLoader loader,
-                                ConnectorRuntime runtime, Events event) {
+                                ConnectorRuntime runtime, Events event, ConnectorDescriptor descriptor) {
         this.setModuleName(moduleName);
         this.resourceManager = resourceManager;
         this.loader = loader;
         this.runtime = runtime;
         this.applicationName = appName;
         this.event = event;
+        this.descriptor = descriptor;
     }
 
     /**
@@ -91,8 +94,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
      * @return deployment descriptor if they exist or null if not
      */
     public Object getDescriptor() {
-        //TODO V3 implement ?
-        return null;
+        return descriptor;
     }
 
     /**

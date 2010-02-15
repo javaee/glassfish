@@ -46,6 +46,7 @@ import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
@@ -70,21 +71,12 @@ public class ConnectorObjectFactory implements ObjectFactory {
     private ConnectorRuntime runtime ;
 
     private static Logger _logger = LogDomains.getLogger(ConnectorObjectFactory.class, LogDomains.JNDI_LOGGER);
+    protected final static StringManager localStrings =
+            StringManager.getManager(ConnectorRuntime.class);
 
     public ConnectorObjectFactory() {
     }
     
-    /**
-     * Tells if the result of create() is cacheable. If so
-     * the naming manager will replace this object factory with
-     * the object itself.
-     *
-     * @return true if the result of create() can be cached
-     */
-    public boolean isCreateResultCacheable() {
-        return false;
-    }
-
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable env) throws Exception {
 
         Reference ref = (Reference) obj;
@@ -96,8 +88,7 @@ public class ConnectorObjectFactory implements ObjectFactory {
             String moduleName  = (String) ref.get(1).getContent();
 
 
-        if (getRuntime().getEnvironment() == ConnectorRuntime.CLIENT ||
-                getRuntime().getEnvironment() == ConnectorRuntime.NON_ACC_CLIENT) {
+        if (getRuntime().isACCRuntime() || getRuntime().isNonACCRuntime()) {
             ConnectorDescriptor connectorDescriptor = null;
 
             String descriptorJNDIName = ConnectorAdminServiceUtils.
@@ -115,10 +106,9 @@ public class ConnectorObjectFactory implements ObjectFactory {
         }
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (getRuntime().checkAccessibility(moduleName, loader) == false) {
-            throw new NamingException(
-                    "Only the application that has the embedded resource" +
-                            "adapter can access the resource adapter");
+        if (!getRuntime().checkAccessibility(moduleName, loader)) {
+            String msg = localStrings.getString("cof.no_access_to_embedded_rar", moduleName);
+            throw new NamingException(msg);
         }
 
         Object cf = null;
@@ -151,11 +141,7 @@ public class ConnectorObjectFactory implements ObjectFactory {
 
             cf = mcf.createConnectionFactory(mgr);
             if (cf == null) {
-                /* TODO V3 handle later
-                    String msg = localStrings.getLocalString
-                        ("no.resource.adapter", "");
-                */
-                String msg = "No resource adapter found";
+                String msg = localStrings.getString("cof.no.resource.adapter");
                 throw new RuntimeException(new ConfigurationException(msg));
             }
 

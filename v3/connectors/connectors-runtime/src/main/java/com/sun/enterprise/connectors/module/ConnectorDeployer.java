@@ -170,8 +170,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
                 registerBeanValidator(moduleName, context.getSource(), classLoader);
 
-                ConnectorDescriptor cd = context.getModuleMetaData(ConnectorDescriptor.class);
-                runtime.createActiveResourceAdapter(cd, moduleName, sourcePath, classLoader);
+                runtime.createActiveResourceAdapter(connDesc, moduleName, sourcePath, classLoader);
 
             } catch (Exception cre) {
                 Object params[] = new Object[]{moduleName, cre};
@@ -187,7 +186,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }
         }
         return new ConnectorApplication(moduleName, ConnectorsUtil.getApplicationName(context), resourceManager,
-                classLoader, runtime, events);
+                classLoader, runtime, events, connDesc);
     }
 
 
