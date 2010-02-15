@@ -183,8 +183,8 @@ public interface Realm {
      *
      * @param request Request we are processing
      */
-    public SecurityConstraint[] findSecurityConstraints(
-        HttpRequest request, Context context);
+    public SecurityConstraint[] findSecurityConstraints(HttpRequest request,
+                                                        Context context);
 
     /**
      * Gets the security constraints configured by the given context
@@ -197,8 +197,9 @@ public interface Realm {
      * @return the security constraints configured by the given context
      * for the given request URI and method, or null
      */
-    public SecurityConstraint[] findSecurityConstraints(String uri,
-        String method, Context context);
+    public SecurityConstraint[] findSecurityConstraints(String uri, 
+                                                        String method,
+                                                        Context context);
 
     /**
      * Perform access control based on the specified authorization constraint.
@@ -346,8 +347,10 @@ public interface Realm {
      * will have been redirected to HTTPS)
      */
     public boolean hasUserDataPermission(HttpRequest request,
-        HttpResponse response, SecurityConstraint[] constraints,
-        String uri, String method) throws IOException;
+                                         HttpResponse response,
+                                         SecurityConstraint[] constraints,
+                                         String uri, String method)
+        throws IOException;
 
     /**
      * Remove a property change listener from this component.
