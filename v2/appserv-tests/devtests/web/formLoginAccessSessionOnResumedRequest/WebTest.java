@@ -44,14 +44,20 @@ import com.sun.ejte.ccl.reporter.*;
  * (resumed) by protected resource (in this case, AccessSession servlet) even
  * if the original request that caused a (re)login contains a cookie with an
  * invalid JSESSIONID.
+ *
+ * This unit test has been reworked in light of the fix for CR 6633257:
+ * It no longer expects that the login page be accessed through a redirect,
+ * but accepts that it is accessed via a FORWARD dispatch.
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "form-login-access-session-on-resumed-request";
+    private static final String TEST_NAME =
+        "form-login-access-session-on-resumed-request";
+
     private static final String JSESSIONID = "JSESSIONID";
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static final SimpleReporterAdapter stat =
+        new SimpleReporterAdapter("appserv-tests");
 
     private String host;
     private String port;
@@ -132,11 +138,7 @@ public class WebTest {
             close(is);
             close(br);
         }
-
-        if (location == null) {
-            throw new Exception("Missing Location response header");
-        }
-
+ 
         if (cookie == null) {
             throw new Exception("Missing Set-Cookie response header");
         }
