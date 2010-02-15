@@ -53,7 +53,6 @@ public class JavaBeanFactory implements Serializable, ObjectFactory {
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) throws Exception {
         Reference reference = (Reference) obj;
 
-        //TODO V3 load the class in privileged mode ?
         try {
             Class beanClass;
             try {

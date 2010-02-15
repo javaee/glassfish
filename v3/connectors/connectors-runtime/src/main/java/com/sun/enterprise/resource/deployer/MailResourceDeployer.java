@@ -89,10 +89,9 @@ public class MailResourceDeployer extends GlobalResourceDeployer
     @Inject
     private GlassfishNamingManager namingMgr;
 
-        //TODO V3 log strings for the entire class
     // StringManager for this deployer
     private static final StringManager localStrings =
-            StringManager.getManager(com.sun.enterprise.resource.deployer.MailResourceDeployer.class);
+            StringManager.getManager(MailResourceDeployer.class);
 
     // logger for this deployer
     private static Logger _logger = LogDomains.getLogger(MailResourceDeployer.class, LogDomains.CORE_LOGGER);
@@ -110,7 +109,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         } else {
             if (ConnectorsUtil.parseBoolean(mailRes.getEnabled())) {
             //registers the jsr77 object for the mail resource deployed
-            //TODO V3 MOM is not available ?
+            /* TODO Not needed any more ?
             /*ManagementObjectManager mgr =
                 getAppServerSwitchObject().getManagementObjectManager();
             mgr.registerJavaMailResource(mailRes.getJndiName());*/
@@ -154,7 +153,7 @@ public class MailResourceDeployer extends GlobalResourceDeployer
         // removes the resource from jndi naming
         namingMgr.unpublishObject(javaEEResource.getName());
 
-        /* TODO V3 handle later
+        /* TODO Not needed any more ?
             ManagementObjectManager mgr =
                     getAppServerSwitchObject().getManagementObjectManager();
             mgr.unregisterJavaMailResource(mailRes.getJndiName());

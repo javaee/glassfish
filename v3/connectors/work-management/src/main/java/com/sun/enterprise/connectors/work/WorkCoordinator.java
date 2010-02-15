@@ -131,8 +131,8 @@ public final class WorkCoordinator {
     /**
      * Submits the work to the queue and generates a work accepted event.
      */
-    public void submitWork(int waitMode) {
-        this.waitMode = waitMode;
+    public void submitWork(int waitModeValue) {
+        this.waitMode = waitModeValue;
         this.startTime = System.currentTimeMillis();
         if (listener != null) {
             listener.workAccepted(
@@ -241,9 +241,7 @@ public final class WorkCoordinator {
 
                 //Also release the TX from the record of TX Optimizer
                 if (txImported) {
-                    JavaEETransactionManager tm = getTransactionManager();
-					//TODO V3 need to check whether tm is txMgrOpt ?
-                    tm.clearThreadTx();
+                    getTransactionManager().clearThreadTx();
                 }
             } catch(Exception e) {
 	            logger.log(Level.WARNING, e.getMessage());
@@ -442,7 +440,6 @@ public final class WorkCoordinator {
     }
 
     public static ExecutionContext getExecutionContext(ExecutionContext ec, Work work) {
-        //TODO V3 synchronized ?
         if (ec == null) {
             return WorkContextHandler.getExecutionContext(work);
         }

@@ -96,8 +96,6 @@ import javax.naming.StringRefAddr;
 @Scoped(Singleton.class)
 public class CustomResourceDeployer implements ResourceDeployer {
 
-        //TODO V3 log strings for the entire class
-    
     /** Stringmanager for this deployer */
     private static final StringManager localStrings =
         StringManager.getManager(CustomResourceDeployer.class);

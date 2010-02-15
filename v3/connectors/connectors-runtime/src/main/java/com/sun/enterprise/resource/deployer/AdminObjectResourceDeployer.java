@@ -72,10 +72,10 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
 
         final AdminObjectResource aor = (AdminObjectResource) resource;
 
-/* TODO V3 handle later MOM
+/* TODO Not needed any more ?
 
         if (aor.isEnabled()) {
-            //registers the jsr77 object for the mail resource deployed
+            //registers the jsr77 object for the admin object resource deployed
             final ManagementObjectManager mgr =
                 getAppServerSwitchObject().getManagementObjectManager();
             mgr.registerAdminObjectResource(aor.getJndiName(),
@@ -112,7 +112,7 @@ public class AdminObjectResourceDeployer extends GlobalResourceDeployer
                 "Deleted adminObject in backend", aor.getJndiName());
 
         //unregister the managed object
-/* TODO V3 handle once MOM is available ?
+/* TODO Not needed any more ?
         final ManagementObjectManager mgr =
                 getAppServerSwitchObject().getManagementObjectManager();
         mgr.unregisterAdminObjectResource(aor.getJndiName(), aor.getResType());

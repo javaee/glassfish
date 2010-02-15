@@ -66,7 +66,6 @@ import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
 
 public final class CommonWorkManager implements WorkManager {
 
-    //TODO V3 need to use ee.threadpool
     private static WorkManager wm = null;
 
     private ThreadPoolManager tpm;

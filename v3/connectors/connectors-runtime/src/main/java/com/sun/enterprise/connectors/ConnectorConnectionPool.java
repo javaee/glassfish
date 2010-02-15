@@ -116,7 +116,6 @@ public class ConnectorConnectionPool implements Serializable {
     public static final String DEFAULT_LEAK_TIMEOUT = "0";
 
     private static Logger _logger = LogDomains.getLogger(ConnectorConnectionPool.class, LogDomains.RSR_LOGGER);
-    //TODO V3 temporary replacement for JavaEEResourceBase super class
     private String name;
 
 
@@ -127,7 +126,6 @@ public class ConnectorConnectionPool implements Serializable {
      */
 
     public ConnectorConnectionPool(String name) {
-        //TODO V3 temporary super(name);
         this.name = name;
     }
 
@@ -200,7 +198,6 @@ public class ConnectorConnectionPool implements Serializable {
         clone.setPreferValidateOverRecreate(isPreferValidateOverRecreate());
         clone.setPooling(isPoolingOn());
         clone.setPingDuringPoolCreation(getPingDuringPoolCreation());
-        //TODO add all new attributes added.
         return clone;
     }
 
@@ -679,7 +676,6 @@ public class ConnectorConnectionPool implements Serializable {
      * @return String representation of pool
      */
     public String toString() {
-        //TODO V3 update with new attributes like resouce-gateway, datastructure etc.,
         String returnVal = null;
         StringBuffer sb = new StringBuffer("ConnectorConnectionPool :: ");
         try {
@@ -713,6 +709,12 @@ public class ConnectorConnectionPool implements Serializable {
             sb.append(lazyConnectionEnlist_);
             sb.append("\nmaxConnectionUsage_ ");
             sb.append(maxConnectionUsage);
+
+            sb.append("\npingPoolDuringCreation_ ");
+            sb.append(pingDuringPoolCreation);
+
+            sb.append("\npoolingOn_ ");
+            sb.append(poolingOn);
 
             sb.append("\nvalidateAtmostOncePeriod_ ");
             sb.append(validateAtmostOncePeriod_);

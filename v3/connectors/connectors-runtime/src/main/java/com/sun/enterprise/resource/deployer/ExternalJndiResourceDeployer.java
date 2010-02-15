@@ -98,8 +98,6 @@ public class ExternalJndiResourceDeployer implements ResourceDeployer {
     @Inject
     private GlassfishNamingManager namingMgr;
 
-        //TODO V3 log strings for the entire class
-    
     /** StringManager for this deployer */
     private static final StringManager localStrings =
         StringManager.getManager(ExternalJndiResourceDeployer.class);

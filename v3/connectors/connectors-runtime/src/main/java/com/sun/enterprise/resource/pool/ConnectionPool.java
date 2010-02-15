@@ -492,7 +492,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             //comment-1: sharing is possible only if caller is marked
             //shareable, so abort right here if that's not the case
             if (tran != null && alloc.shareableWithinComponent()) {
-                //TODO V3 should be handled by PoolTxHelper
+                //TODO should be handled by PoolTxHelper
                 JavaEETransaction j2eetran = (JavaEETransaction) tran;
                 // case 1. look for free and enlisted in same tx
                 Set set = j2eetran.getResources(name);
@@ -739,7 +739,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         return result;
     }
 
-    //TODO V3 can't this be replaced by getResourceFromPool ?
+    //TODO can't this be replaced by getResourceFromPool ?
     private ResourceHandle getMatchedResourceFromPool(ResourceAllocator alloc) {
         ResourceHandle handle;
         ResourceHandle result = null;

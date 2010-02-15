@@ -65,9 +65,6 @@ import java.util.logging.Logger;
  * @author Jagadish Ramu
  */
 public class Resizer extends TimerTask {
-    /*
-    TODO V3 can we have a flag to disable validation during resizer (since validation=true will any way validate resources)
-    */
     private String poolName;
     private DataStructure ds;
     private PoolProperties pool;
@@ -286,8 +283,6 @@ public class Resizer extends TimerTask {
                                     ds.removeResource(handle);
                                     handler.invalidConnectionDetected(handle);
                                     invalidConnectionsCount++;
-                                }else{
-                                    //TODO V3 log fine - cannot happen
                                 }
                             }
                         } else {

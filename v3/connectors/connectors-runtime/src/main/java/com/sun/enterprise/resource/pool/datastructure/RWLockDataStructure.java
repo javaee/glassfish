@@ -77,7 +77,7 @@ public class RWLockDataStructure implements DataStructure {
     }
 
     private void initializeStrategy(String strategyClass) {
-        //TODO V3 handle later
+        //TODO
     }
 
     /**
