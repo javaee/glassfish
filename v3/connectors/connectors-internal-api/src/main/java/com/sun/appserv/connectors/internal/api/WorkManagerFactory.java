@@ -42,8 +42,27 @@ import javax.resource.spi.work.WorkManager;
 
 @Contract
 public interface WorkManagerFactory {
-	//TODO V3 java-doc
-    WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException;
+    /**
+     * get the proxy work manager object for the rar
+     * @param threadPoolId thread pool id
+     * @param moduleName resource-adapter-name
+     * @return work-manager proxy
+     * @throws ConnectorRuntimeException when unable to provide a proxy work manager
+     */
+    WorkManager getWorkManagerProxy(String threadPoolId, String moduleName) throws ConnectorRuntimeException;
+
+    /**
+     * remove the work manager of the module (rar) from work-manager registry
+     * @param moduleName resource-adapter-name
+     * @return boolean indicating whether the work-manager is removed from registry or not
+     */
     boolean removeWorkManager(String moduleName);
-    WorkManager createWorkManager(String poolName, String raName);
+
+    /**
+     * create a new work manager for the resource-adapter
+     * @param threadPoolId thread-pool-id
+     * @param raName resource-adapter-name
+     * @return WorkManager
+     */
+    WorkManager createWorkManager(String threadPoolId, String raName);
 }
