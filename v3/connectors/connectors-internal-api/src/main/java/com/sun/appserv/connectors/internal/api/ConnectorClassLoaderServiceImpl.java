@@ -87,8 +87,8 @@ public class ConnectorClassLoaderServiceImpl implements ConnectorClassLoaderServ
 
        // We do not have dependency on common-class-loader explicitly
        // and also cannot initialize globalConnectorCL during postConstruct via ClassLoaderHierarchy
-       // which will result in circular depencency injection between kernel and connector module
-       // Hence initializting globalConnectorCL lazily
+       // which will result in circular dependency injection between kernel and connector module
+       // Hence initializing globalConnectorCL lazily
        if(globalConnectorCL == null){
            synchronized (ConnectorClassLoaderServiceImpl.class){
                if(globalConnectorCL == null){
