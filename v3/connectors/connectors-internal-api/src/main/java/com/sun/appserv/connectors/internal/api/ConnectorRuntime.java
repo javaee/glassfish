@@ -36,6 +36,7 @@
 
 package com.sun.appserv.connectors.internal.api;
 
+import org.glassfish.api.admin.ProcessEnvironment;
 import org.jvnet.hk2.annotations.Contract;
 import org.glassfish.api.invocation.InvocationManager;
 
@@ -248,7 +249,7 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * Indicates whether the execution environment is server or client
      * @return ConnectorConstants.SERVER or ConnectorConstants.CLIENT
      */
-    public int getEnvironment();
+    public ProcessEnvironment.ProcessType getEnvironment();
 
     /**
      * provides container's (application server's) callback handler

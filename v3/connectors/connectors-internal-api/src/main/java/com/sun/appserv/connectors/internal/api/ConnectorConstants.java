@@ -134,18 +134,6 @@ public interface ConnectorConstants {
     public static final String DD_PREFIX= RESERVE_PREFIX+"/descriptors/";
 
     /**
-     * Constant used to determine whether execution environment is appserver
-     * runtime. 
-     */
-    public static final int SERVER = 1;
-
-    /**
-     * Constant used to determine whether execution environment is application
-     * client container. 
-     */
-    public static final int CLIENT = 2;
-
-    /** 
      * Token used for generation of poolname pertaining to sun-ra.xml. 
      * Generated pool name will be 
      * rarName+POOLNAME_APPENDER+connectionDefName+SUN_RA_POOL.
@@ -316,11 +304,8 @@ public interface ConnectorConstants {
     
     public static enum PoolType {
 
-        ASSOCIATE_WITH_THREAD_POOL, STANDARD_POOL, PARTITIONED_POOL,
-        POOLING_DISABLED;
+        ASSOCIATE_WITH_THREAD_POOL, STANDARD_POOL, PARTITIONED_POOL, POOLING_DISABLED
     }
-
-    public static int NON_ACC_CLIENT = 0;
 
     public static String PM_JNDI_SUFFIX = "__pm";
 

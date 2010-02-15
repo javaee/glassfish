@@ -310,12 +310,6 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                 alloc = new NoTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc);
                 break;
             case ConnectorConstants.LOCAL_TRANSACTION_INT:
-/*
-                if (!shareable) {
-                    String i18nMsg = getLocalStrings().getString("con_mgr.resource_not_shareable");
-                    throw new ResourceAllocationException(i18nMsg);
-                }
-*/
                 alloc = new LocalTxConnectorAllocator(poolmgr, mcf, spec, subject, cxRequestInfo, info, desc, shareable);
                 break;
             case ConnectorConstants.XA_TRANSACTION_INT:
@@ -346,19 +340,14 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     * This method is called from the ConnectorObjectFactory lookup
     * With this we move all the housekeeping work in allocateConnection
     * up-front 
-    *
     */
     public void initialize() throws ConnectorRuntimeException {
 
         ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
 
-        if(runtime.getEnvironment() == ConnectorConstants.NON_ACC_CLIENT){
+        if(runtime.isNonACCRuntime()){
             jndiName = ConnectorsUtil.getPMJndiName(jndiName);
         }
-
-        //TODO V3 getting mcf not needed ?
-
-        ManagedConnectionFactory mcf = runtime.obtainManagedConnectionFactory(poolName);
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         PoolMetaData pmd = registry.getPoolMetaData(poolName);
         defaultPrin = pmd.getResourcePrincipal();

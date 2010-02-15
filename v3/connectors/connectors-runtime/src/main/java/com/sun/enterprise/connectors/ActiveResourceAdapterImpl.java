@@ -143,7 +143,6 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
      *                                   be created
      */
     public void setup() throws ConnectorRuntimeException {
-        //TODO V3 COMMENT AOBUT RAR 1.0
         if (connectionDefs_ == null || connectionDefs_.length != 1) {
             _logger.log(Level.SEVERE, "rardeployment.invalid_connector_desc", moduleName_);
             String i18nMsg = localStrings.getString("ccp_adm.invalid_connector_desc", moduleName_);
@@ -162,7 +161,7 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
      * @return boolean if the environment is appserver runtime
      */
     protected boolean isServer() {
-        if (connectorRuntime_.getEnvironment() == ConnectorConstants.SERVER) {
+        if (connectorRuntime_.isServer()) {
             return true;
         } else {
             return false;
@@ -299,18 +298,28 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
      */
     public boolean handles(ConnectorDescriptor cd, String moduleName) {
 
+        boolean canHandle = false;
         boolean adminObjectsDefined = false;
         Set adminObjects = cd.getAdminObjects();
         if (adminObjects != null && adminObjects.size() > 0) {
             adminObjectsDefined = true;
         }
 
-        return  (!cd.getInBoundDefined()) &&
-                (cd.getOutBoundDefined() && cd.getOutboundResourceAdapter().getConnectionDefs().size() < 2 ) &&
-                !adminObjectsDefined &&
-                ("".equals(cd.getResourceAdapterClass())
-                );
-
+        /*
+        this class can handle Connector 1.0 Spec. compliant RAR
+        criteria for 1.0 RAR :
+          * No inbound artifacts
+          * No admin-objects
+          * There should be only one connection-definition
+          * RA Class should not be present (equivalent to "")
+        */
+        if(!cd.getInBoundDefined() && !adminObjectsDefined &&
+                (cd.getOutBoundDefined() && cd.getOutboundResourceAdapter().getConnectionDefs().size() < 2
+                        && "".equals(cd.getResourceAdapterClass()))
+                ){
+            canHandle = true;
+        }
+        return canHandle;
     }
 
     /**

@@ -85,8 +85,7 @@ public class AdministeredObjectFactory implements ObjectFactory {
         //todo: Similar code in ConnectorObjectFactory - to refactor.
 
         ConnectorRuntime runtime = ConnectorNamingUtils.getRuntime();
-        if (runtime.getEnvironment() == ConnectorRuntime.CLIENT ||
-                runtime.getEnvironment() == ConnectorRuntime.NON_ACC_CLIENT) {
+        if (runtime.isACCRuntime() || runtime.isNonACCRuntime()) {
             ConnectorDescriptor connectorDescriptor = null;
             try {
                 Context ic = new InitialContext();
@@ -119,7 +118,7 @@ public class AdministeredObjectFactory implements ObjectFactory {
                 runtime.createActiveResourceAdapter(moduleLocation, moduleName, null);
             }
             loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
-        } else if(runtime.getEnvironment() == ConnectorRuntime.SERVER){
+        } else if(runtime.isServer()){
             if(ConnectorsUtil.isStandAloneRA(moduleName) ){
                 loader = ConnectorRegistry.getInstance().getActiveResourceAdapter(moduleName).getClassLoader();
             }

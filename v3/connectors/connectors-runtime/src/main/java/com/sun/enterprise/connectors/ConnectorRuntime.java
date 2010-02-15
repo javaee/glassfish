@@ -112,7 +112,6 @@ import com.sun.enterprise.connectors.util.ConnectorJavaBeanValidator;
 public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api.ConnectorRuntime,
         PostConstruct, PreDestroy {
 
-    private volatile int environment = SERVER;
     private static ConnectorRuntime _runtime;
     private Logger _logger = LogDomains.getLogger(ConnectorRuntime.class, LogDomains.RSR_LOGGER);
     private ConnectorConnectionPoolAdminServiceImpl ccPoolAdmService;
@@ -179,6 +178,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     // performance improvement, cache the lookup of transaction manager.
     private JavaEETransactionManager transactionManager;
+    private ProcessEnvironment.ProcessType processType;
 
 
     /**
@@ -214,8 +214,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      *         appserv runtime
      *         else it returns ConnectorConstants.CLIENT
      */
-    public int getEnvironment() {
-        return environment;
+    public ProcessEnvironment.ProcessType getEnvironment() {
+        return processType;
     }
 
     /**
@@ -425,7 +425,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public Object lookupPMResource(String jndiName, boolean force) throws NamingException {
-        //TODO V3 handle clustering later (  --createtables, nonDAS)
+        //TODO handle clustering later (  --createtables, nonDAS)
         if (force) {
             _logger.log(Level.INFO, "lookup PM Resource [ " + jndiName + " ] with force=true is not supported");
         }
@@ -436,7 +436,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * {@inheritDoc}
      */
     public Object lookupNonTxResource(String jndiName, boolean force) throws NamingException {
-        //TODO V3 handle clustering later (  --createtables, nonDAS)
+        //TODO handle clustering later (  --createtables, nonDAS)
         if (force) {
             _logger.log(Level.INFO, "lookup NonTx Resource [ " + jndiName + " ] with force=true is not supported");
         }
@@ -621,7 +621,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return A Map that is of <String RAJavaBeanPropertyName, String defaultPropertyValue>
      * An empty map is returned in the case of a 1.0 RAR
      */
-/* TODO V3
+/* TODO
     public Map getResourceAdapterBeanProperties(String pathToDeployableUnit) throws ConnectorRuntimeException{
         return configParserAdmService.getRABeanProperties(pathToDeployableUnit);
     }
@@ -686,15 +686,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @param processEnvironment ProcessEnvironment
      */
     private void initializeEnvironment(ProcessEnvironment processEnvironment) {
-        //TODO V3, remove ConnectorConstants.CLIENT/SERVER usage in connector-runtime, and use only
-        //process environment
-        if (processEnvironment.getProcessType().isServer()){
-            environment = SERVER;
-        }else if (processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC)) {
-            environment = CLIENT;
-        }else if(processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.Other)){
-            environment = NON_ACC_CLIENT;
-        }
+        processType = processEnvironment.getProcessType();
     }
 
     /**
@@ -841,12 +833,28 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     /**
+     * Checks whether the executing environment is embedded
+     * @return true if execution environment is embedded
+     */
+    public boolean isEmbedded() {
+        return ProcessEnvironment.ProcessType.Embedded.equals(processType);
+    }
+
+    /**
+     * Checks whether the executing environment is non-acc (standalone)
+     * @return true if execution environment is non-acc (standalone)
+     */
+    public boolean isNonACCRuntime() {
+        return ProcessEnvironment.ProcessType.Other.equals(processType);
+    }
+
+    /**
      * Checks whether the executing environment is application server
      * @return true if execution environment is server
      *         false if it is client
      */
     public boolean isServer() {
-        return getEnvironment() == SERVER;
+        return ProcessEnvironment.ProcessType.Server.equals(processType);
     }
 
     /**
@@ -854,8 +862,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @return true if execution environment is appclient container
      *         false if it is not ACC
      */
-    public boolean isAppClientRuntime() {
-        return processEnvironment.getProcessType().equals(ProcessEnvironment.ProcessType.ACC);
+    public boolean isACCRuntime() {
+        return ProcessEnvironment.ProcessType.ACC.equals(processType);
     }
 
     /**
@@ -926,7 +934,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws ConnectorRuntimeException when unable to get work manager
      */
     public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException {
-        //TODO V3 can't we make work-manager to return proxy by default ?
         return habitat.getComponent(WorkManagerFactory.class).getWorkManagerProxy(poolId, moduleName);
     }
 
@@ -955,7 +962,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         adminObjectAdminService.deleteAdminObject(jndiName);
     }
 
-    public ClassLoader getConnectorClassLoader(String rarName) throws ConnectorRuntimeException{
+    public ClassLoader getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException{
         return cclUtil.getSystemRARClassLoader(rarName);
     }
 
@@ -1092,7 +1099,6 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return habitat.getComponent(ContainerCallbackHandler.class);
     }
 
-    //TODO V3 can this impl be moved somewhere ?
     public ConnectorArchivist getConnectorArchvist() throws ConnectorRuntimeException {
         try{
             ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
@@ -1206,5 +1212,5 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public Set<String> getDatabaseVendorNames() {
         return driverLoader.getDatabaseVendorNames();
-    }    
+    }
 }

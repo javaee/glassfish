@@ -318,8 +318,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
      * @throws ConnectorRuntimeException in case of an exception.
      */
     protected void loadRAConfiguration() throws ConnectorRuntimeException{
-        if (connectorRuntime.getEnvironment()
-                                       == ConnectorRuntime.SERVER) {
+        if (connectorRuntime.isServer()) {
             // Check whether MQ has started up or not.
             try {
                // if (!JmsProviderLifecycle.shouldUseMQRAForLifecycleControl()) {
@@ -378,8 +377,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
      */
      protected Set mergeRAConfiguration(ResourceAdapterConfig raConfig, List<Property> raConfigProps) {
    //private void hackMergedProps(Set mergedProps) {
-        if (!(connectorRuntime.getEnvironment()
-                                == ConnectorRuntime.SERVER)) {
+        if (!(connectorRuntime.isServer())) {
             return super.mergeRAConfiguration(raConfig, raConfigProps);
         }
         Set mergedProps = super.mergeRAConfiguration(raConfig, raConfigProps);

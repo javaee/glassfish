@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collection;
 
+import org.glassfish.api.admin.ProcessEnvironment;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -79,7 +80,7 @@ public class ActiveRAFactory {
 
         ActiveResourceAdapter activeResourceAdapter = null;
 
-        int environment = ConnectorRuntime.getRuntime().getEnvironment();
+        ProcessEnvironment.ProcessType processType = ConnectorRuntime.getRuntime().getEnvironment();
         ResourceAdapter ra = null;
         String raClass = cd.getResourceAdapterClass();
 
@@ -88,7 +89,7 @@ public class ActiveRAFactory {
             // If raClass is available, load it...
 
             if (raClass != null && !raClass.equals("")) {
-                if (environment == ConnectorRuntime.SERVER) {
+                if (processType == ProcessEnvironment.ProcessType.Server) {
                     ra = (ResourceAdapter)
                             loader.loadClass(raClass).newInstance();
                 } else {
