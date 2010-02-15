@@ -96,7 +96,6 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
     }
 
     public WorkManagerFactory() {
-        //TODO V3 
     }
 
     private static Logger _logger = LogDomains.getLogger(WorkManagerFactory.class, LogDomains.RSR_LOGGER);
@@ -122,7 +121,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
                 return new CommonWorkManager(poolName, getConnectorRuntime(), raName);
             }
 
-            cls = Class.forName(className);
+            cls = Thread.currentThread().getContextClassLoader().loadClass(className);
             if (cls != null) {
                 Method method = cls.getMethod(methodName, new Class[]{});
                 wm = (WorkManager) method.invoke(cls, new Object[]{});
@@ -196,7 +195,6 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
     }
 
     private ConnectorRuntime getConnectorRuntime() {
-        //TODO V3 not synchronized
         if(runtime == null){
             runtime = connectorRuntimeHabitat.getComponent(ConnectorRuntime.class);
         }
