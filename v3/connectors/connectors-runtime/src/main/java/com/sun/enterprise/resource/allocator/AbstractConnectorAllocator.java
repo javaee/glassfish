@@ -202,7 +202,7 @@ public abstract class AbstractConnectorAllocator
         try {
             pt = ConnectorRuntime.getRuntime().getPoolType(spec.getConnectionPoolName());
         } catch (ConnectorRuntimeException cre) {
-            //TODO V3 log cre +  setting default pool type
+            _logger.log(Level.WARNING,"unable_to_determine_pool_type", spec.getConnectionPoolName());
         }
         if (pt == ConnectorConstants.PoolType.ASSOCIATE_WITH_THREAD_POOL) {
             return new AssocWithThreadResourceHandle(resource, spec, alloc, info);
