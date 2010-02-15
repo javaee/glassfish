@@ -85,9 +85,13 @@ public class PrimitivesAndStringFactory implements Serializable, ObjectFactory {
                 return Boolean.valueOf(value);
             } else if(type.endsWith("STRING")){
                 return value;
+            }else{
+                throw new IllegalArgumentException("unknown type ["+type+"] ");
             }
+        }else if (type == null){
+            throw new IllegalArgumentException("type cannot be null");
+        }else{
+            throw new IllegalAccessException("value cannot be null");
         }
-        //TODO V3 log
-        return null;
     }
 }
