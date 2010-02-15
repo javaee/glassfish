@@ -39,6 +39,10 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  * Unit test for web fragment with login-config
+ *
+ * This unit test has been reworked in light of the fix for CR 6633257:
+ * It no longer expects that the login page be accessed through a redirect,
+ * but accepts that it is accessed via a FORWARD dispatch.
  */
 public class WebTest {
 
@@ -97,7 +101,6 @@ public class WebTest {
         OutputStream os = null;
         InputStream is = null;
         BufferedReader br = null;
-        String location = null;
         String cookie = null;
 
         try {
@@ -112,11 +115,10 @@ public class WebTest {
             br = new BufferedReader(new InputStreamReader(is));
 
             String line = null;
+            // there is no Location header here anymore
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
-                if (line.startsWith("Location:")) {
-                    location = line;
-                } else if (line.startsWith("Set-Cookie")) {
+                if (line.startsWith("Set-Cookie")) {
                     cookie = line;
                 }
             }
@@ -125,13 +127,6 @@ public class WebTest {
             close(os);
             close(is);
             close(br);
-        }
-
-        if (location == null) {
-            throw new Exception("Missing Location response header");
-        }
-        if (!location.endsWith("login.jsp")) {
-            throw new Exception("Incorrect Location response header: " + location);
         }
 
         if (cookie == null) {
