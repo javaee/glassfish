@@ -40,15 +40,24 @@ import com.sun.ejte.ccl.reporter.*;
 /*
  * Unit test for https://glassfish.dev.java.net/issues/show_bug.cgi?id=3374
  * (FORM authenticator should issue a redirect (instead of a request
- * dispatch "forward") to the login page)
+ * dispatch "forward") to the login page).
+ *
+ * This unit test has been reworked in light of the fix for CR 6633257:
+ * Rather than issuing a redirect over https to the login.jsp login page
+ * (which is protected by a transport-guarantee of CONFIDENTIAL), the 
+ * redirect over https will be applied to the original request (that is,
+ * to protected.jsp), followed by a FORWARD dispatch to login.jsp.
+ *
+ * This unit test verifies only that the target of the https redirect is as
+ * expected, and does not perform the actual FORM-based login.
  */
 public class WebTest {
 
-    private static final String TEST_NAME
-        = "form-login-transport-guarantee-confidential";
+    private static final String TEST_NAME =
+        "form-login-transport-guarantee-confidential";
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    private static final SimpleReporterAdapter stat =
+	new SimpleReporterAdapter("appserv-tests");
 
     private String host;
     private String httpPort;
@@ -88,7 +97,7 @@ public class WebTest {
         System.out.println("Location: " + redirectLocation);
         
         String expectedRedirectLocation = "https://" + host + ":" + httpsPort
-            + contextRoot + "/login.jsp";
+            + contextRoot + "/protected.jsp";
         if (!expectedRedirectLocation.equals(redirectLocation)) {
             throw new Exception("Unexpected redirect location");
         }   
