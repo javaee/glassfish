@@ -114,13 +114,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         ConnectorDescriptorInfo cdi = new ConnectorDescriptorInfo();
 
         ConnectorDescriptor connectorDescriptor = _registry.getDescriptor(rarName);
-        /* TODO V3 handle System RAR later
-        if(connectorDescriptor == null) {
-            ifSystemRarLoad(rarName);
-            connectorDescriptor = _registry.getDescriptor(rarName);
-        }
-        */
-        
+
         if (connectorDescriptor == null) {
             String i18nMsg = localStrings.getString("ccp_adm.no_conn_pool_obj", rarName);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
@@ -182,7 +176,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
         String jndiNameForPool = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForPool(poolName);
         try {
-            //TODO V3 why is rebind=true as pool should have been undeployed for reconfiguration ?
+            // TODO why rebind is 'true' as pool should have been undeployed for reconfiguration ?
             _runtime.getNamingManager().publishObject(jndiNameForPool, connectorPoolObj, true);
             ManagedConnectionFactory mcf = obtainManagedConnectionFactory(poolName);
             if (mcf == null) {
@@ -247,12 +241,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
 
         ConnectorDescriptor connectorDescriptor =
                 _registry.getDescriptor(moduleName);
-        /* TODO V3 handle system RAR later
-        if(connectorDescriptor == null) {
-            ifSystemRarLoad(moduleName);
-            connectorDescriptor = _registry.getDescriptor(moduleName);
-        }
-        */
 
         if (connectorDescriptor == null) {
             String i18nMsg = localStrings.getString("ccp_adm.null_connector_desc", moduleName);
@@ -349,9 +337,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         killPool(poolName);
         boolean result = _registry.removeManagedConnectionFactory(poolName);
 
-        if (result == false
-            /* TODO V3 handle system RAR later
-        && !resUtil.poolBelongsToSystemRar(poolName)*/) {
+        if (!result) {
             _logger.log(Level.FINE, "rardeployment.mcf_removal_failure", poolName);
             return;
         }
@@ -362,11 +348,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             Context ic = _runtime.getNamingManager().getInitialContext();
             ic.unbind(jndiNameForPool);
         } catch (NamingException ne) {
-            /* TODO V3 handle system RAR later
-            if (resUtil.poolBelongsToSystemRar(poolName)) {
-                return;
-            }
-            */
             _logger.log(Level.SEVERE, "rardeployment.connectionpool_removal_from_jndi_error", poolName);
             String i18nMsg = localStrings.getString("ccp_adm.failed_to_remove_from_jndi", poolName);
             ConnectorRuntimeException cre = new ConnectorRuntimeException(i18nMsg);
@@ -374,10 +355,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
         }
-        if (errorOccured == true
-            /* TODO V3 handle system RAR later
-           && !resUtil.poolBelongsToSystemRar(poolName)*/
-                ) {
+        if (errorOccured){
             String i18nMsg = localStrings.getString("ccp_adm.failed_to_delete_conn_res", poolName);
             ConnectorRuntimeException cre = new
                     ConnectorRuntimeException(i18nMsg);
@@ -773,7 +751,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
     }
 
-    /*
+   /**
     * Create a ConnectorConnectionPool from information in memory
     */
     private ConnectorConnectionPool getOriginalConnectorConnectionPool(
@@ -786,13 +764,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
             ccpOrig = (ConnectorConnectionPool)
                     _runtime.getNamingManager().getInitialContext().lookup(jndiNameForPool);
         } catch (NamingException ne) {
-            /* TODO V3 handle lazy resourc loading later
-           if(checkAndLoadPoolResource(poolName)) {
-               ccpOrig = (ConnectorConnectionPool)ic.lookup( jndiNameForPool );
-           } else*/
-            {
                 throw ne;
-            }
         }
         return ccpOrig;
     }
@@ -959,7 +931,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                 ConnectorConnectionPool connectorConnectionPool = getConnectorConnectionPool(poolName, env);
                 ActiveResourceAdapter activeResourceAdapter = getResourceAdapter(connectorConnectionPool);
                 ClassLoader loader = activeResourceAdapter.getClassLoader();
-                //ClassLoader loader = ConnectorRuntime.getRuntime().getConnectorClassLoader();
                 ManagedConnectionFactory mcf = activeResourceAdapter.
                         createManagedConnectionFactory(connectorConnectionPool, loader);
                 if (mcf != null) {
@@ -1395,11 +1366,6 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
         }
         ConnectorDescriptor connectorDescriptor =
                 _registry.getDescriptor(rarName);
-        /* TODO V3 handle system RAR later
-        if(connectorDescriptor == null) {
-            ifSystemRarLoad(rarName);
-            connectorDescriptor = _registry.getDescriptor(rarName);
-        }*/
         if (connectorDescriptor == null) {
             String i18nMsg = localStrings.getString(
                     "ccp_adm.no_conn_pool_obj", rarName);
