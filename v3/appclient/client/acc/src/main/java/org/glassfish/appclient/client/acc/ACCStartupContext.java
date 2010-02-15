@@ -88,7 +88,7 @@ public class ACCStartupContext extends StartupContext {
             return new File(System.getProperty("user.home"));
         }
         File jarFile = new File(jarURI);
-        File dirFile = jarFile.getParentFile();
+        File dirFile = jarFile.getParentFile().getParentFile();
         return dirFile;
     }
 
