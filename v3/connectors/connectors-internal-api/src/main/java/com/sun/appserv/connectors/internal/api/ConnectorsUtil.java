@@ -200,52 +200,18 @@ public class ConnectorsUtil {
                 instance instanceof ResourceAdapterConfig ) ;
     }
 
-    /**
-     * given a jdbc-resource, get associated jdbc-connection-pool
-     * @param resource jdbc-resource
-     * @return jdbc-connection-pool
-     */
-    public static JdbcConnectionPool getAssociatedJdbcConnectionPool(JdbcResource resource, Resources allResources) {
-        //TODO V3 need to find a generic way (instead of separate methods for jdbc/connector)
-        for(Resource configuredResource : allResources.getResources()){
-            if(configuredResource instanceof JdbcConnectionPool){
-                JdbcConnectionPool pool = (JdbcConnectionPool)configuredResource;
-                if(resource.getPoolName().equalsIgnoreCase(pool.getName())){
-                    return pool;
-                }
-            }
-        }
-        return null;  //TODO V3 cannot happen ?
-    }
-
-    /**
-     * given a connector-resource, get associated connector-connection-pool
-     * @param resource connector-resource
-     * @return connector-connection-pool
-     */
-    public static ConnectorConnectionPool getAssociatedConnectorConnectionPool(ConnectorResource resource,
-                                                                               Resources allResources) {
-        for(Resource configuredResource : allResources.getResources()){
-            if(configuredResource instanceof ConnectorConnectionPool){
-                ConnectorConnectionPool pool = (ConnectorConnectionPool)configuredResource;
-                if(resource.getPoolName().equalsIgnoreCase(pool.getName())){
-                    return pool;
-                }
-            }
-        }
-        return null;  //TODO V3 cannot happen ?
-    }
-
     public static ResourcePool getConnectionPoolConfig(String poolName, Resources allResources){
+        ResourcePool pool = null;
         for(Resource configuredResource : allResources.getResources()){
             if(configuredResource instanceof ResourcePool){
-                ResourcePool pool = (ResourcePool)configuredResource;
-                if(pool.getName().equalsIgnoreCase(poolName)){
-                    return pool;
+                ResourcePool resourcePool= (ResourcePool)configuredResource;
+                if(resourcePool.getName().equalsIgnoreCase(poolName)){
+                    pool = resourcePool;
+                    break;
                 }
             }
         }
-        return null; //TODO V3 cannot happen ?
+        return pool;
     }
 
     public static Collection<Resource> getAllResources(Collection<String> poolNames, Resources allResources) {
@@ -345,13 +311,14 @@ public class ConnectorsUtil {
      * @return resource-adapter name
      */
     public static String getResourceAdapterNameOfPool(String poolName, Resources allResources) {
-        String raName = ""; //TODO V3 this need not be initialized to ""
+        String raName = null;
         for(Resource resource : allResources.getResources()){
             if(resource instanceof ConnectorConnectionPool){
                 ConnectorConnectionPool ccp = (ConnectorConnectionPool)resource;
                 String name = ccp.getName();
                 if(name.equalsIgnoreCase(poolName)){
                     raName = ccp.getResourceAdapterName();
+                    break;
                 }
             }
         }
@@ -471,7 +438,7 @@ public class ConnectorsUtil {
         }  */
     }
 
-    public static String getResourceType(Resource resource){
+    public static String getResourceType(Resource resource) throws ConnectorRuntimeException{
         if(resource instanceof JdbcResource){
             return ConnectorConstants.RES_TYPE_JDBC;
         } else if(resource instanceof JdbcConnectionPool){
@@ -493,33 +460,25 @@ public class ConnectorsUtil {
         } else if (resource instanceof WorkSecurityMap){
             return ConnectorConstants.RES_TYPE_CWSM;
         } else {
-            return null;
-            //TODO V3 log and throw exception
+            throw new ConnectorRuntimeException("Unknown resource type [ "+resource+" ]");
         }
     }
 
     /**
      * load and create an object instance
+     * @param className class to load
+     * @return instance of the class 
      */
     public static Object loadObject(String className) {
         Object obj = null;
         Class c;
 
         try {
-            //TODO V3 correct approach ?
-            obj = Class.forName(className).newInstance();
-        } catch (Exception cnf) {
-            try {
-                //TODO V3 not needed ?
-                // c = ClassLoader.getSystemClassLoader().loadClass(className);
-                //TODO V3 correct approach ?
-                c = Thread.currentThread().getContextClassLoader().loadClass(className);
-                obj = c.newInstance();
-            } catch (Exception ex) {
-                _logger.log(Level.SEVERE, "classloader.load_class_fail", className);
-                _logger.log(Level.SEVERE, "classloader.load_class_fail_excp", ex.getMessage());
-
-            }
+            c = Thread.currentThread().getContextClassLoader().loadClass(className);
+            obj = c.newInstance();
+        } catch (Exception ex) {
+            _logger.log(Level.SEVERE, "classloader.load_class_fail", className);
+            _logger.log(Level.SEVERE, "classloader.load_class_fail_excp", ex.getMessage());
         }
         return obj;
     }
@@ -588,7 +547,7 @@ public class ConnectorsUtil {
         }else if (resource instanceof ResourceAdapterConfig){
             return ((ResourceAdapterConfig)resource).getName();
         }else if (resource instanceof WorkSecurityMap){
-            //TODO V3 toString duckType for WorkSecurityMap config bean ?
+            //TODO toString duckType for WorkSecurityMap config bean ?
             WorkSecurityMap wsm = (WorkSecurityMap)resource;
             return ("resource-adapter name : " + wsm.getResourceAdapterName()
                     + " : security map name : " +  wsm.getName());
