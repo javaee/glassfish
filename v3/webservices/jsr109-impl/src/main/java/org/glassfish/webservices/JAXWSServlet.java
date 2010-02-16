@@ -40,6 +40,7 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.BindingID;
 import com.sun.xml.ws.api.WSBinding;
@@ -71,6 +72,9 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.glassfish.external.probe.provider.annotations.Probe;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.probe.provider.annotations.ProbeProvider;
@@ -297,18 +301,26 @@ public class JAXWSServlet extends HttpServlet {
             }*/
 
             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
-                    endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
+            //ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+//            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
+//                    endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
             
+            Applications apps = wscImpl.getHabitat().getByType(com.sun.enterprise.config.serverbeans.Applications.class);
+            assert apps != null;
+            com.sun.enterprise.config.serverbeans.Application application = apps.getModule(com.sun.enterprise.config.serverbeans.Application.class,endpoint.getBundleDescriptor().getApplication().getRegistrationName());
+            File deployedDir = null;
+            try {
+                deployedDir = new File(new URI(application.getLocation()));
+            } catch (URISyntaxException e) {
+                logger.severe("Cannot determine original location for application : " + e.getMessage());
+            }            
+
             File pkgedWsdl = null;
             if(deployedDir != null) {
                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                    pkgedWsdl = new File(deployedDir+File.separator+
-                            endpoint.getWebService().getWsdlFileUri());
+                    pkgedWsdl = new File(deployedDir,endpoint.getWebService().getWsdlFileUri());
                 } else {
-                    pkgedWsdl = new File(deployedDir+File.separator+
-                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
+                    pkgedWsdl = new File(deployedDir,endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
                             File.separator + endpoint.getWebService().getWsdlFileUri());
                 }
             } else {
