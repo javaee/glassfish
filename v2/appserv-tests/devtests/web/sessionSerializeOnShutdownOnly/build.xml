@@ -102,13 +102,13 @@
         </java>
     </target>
 
-    <target name="checkForNoSession" depends="init-common">
+    <target name="checkForSession" depends="init-common">
         <java classname="WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
             <arg value="second"/>
-            <arg value="false"/>
+            <arg value="true"/>
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="build"/>
@@ -116,13 +116,13 @@
         </java>
     </target>
 
-    <target name="checkForSession" depends="init-common">
+    <target name="checkForNoSession" depends="init-common">
         <java classname="WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
             <arg value="third"/>
-            <arg value="true"/>
+            <arg value="false"/>
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="build"/>
