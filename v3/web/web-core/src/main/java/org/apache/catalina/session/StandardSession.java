@@ -149,26 +149,6 @@ public class StandardSession
     protected static final Class<?> containerEventTypes[] =
         { String.class, Object.class };
 
-
-    /**
-     * The session identifier of the parent SipApplicationSession, if any
-     */
-    private String sipAppSessionId = null;
-
-
-    /**
-     * The BEKEY of this session, or <tt>null</tt>.
-     *
-     * <p>The BEKEY is used by the Converged Loadbalancer (CLB) in DCR mode
-     * for loadbalancing purposes, and supplied to the web container in the
-     * form of a request header.
-     *
-     * <p>See https://sailfin.dev.java.net/issues/show_bug.cgi?id=1647
-     * for additional details
-     */
-    private String beKey;
-
-
     /**
      * Descriptive information describing this Session implementation.
      */
@@ -192,8 +172,34 @@ public class StandardSession
      */
     protected static HttpSessionContext sessionContext = null;
 
+    /**
+     * Used for serialized format versioning.
+     * 1 = first version where this is being tracked.
+     *
+     * NOTE: You must increment this version whenever any changes are made
+     * to the serialized representation of this class between releases
+     */
+    private static final Short SERIALIZED_FORM_VERSION = Short.valueOf("1");
+
 
     // ----------------------------------------------------- Instance Variables
+
+    /**
+     * The session identifier of the parent SipApplicationSession, if any
+     */
+    private String sipAppSessionId = null;
+
+    /**
+     * The BEKEY of this session, or <tt>null</tt>.
+     *
+     * <p>The BEKEY is used by the Converged Loadbalancer (CLB) in DCR mode
+     * for loadbalancing purposes, and supplied to the web container in the
+     * form of a request header.
+     *
+     * <p>See https://sailfin.dev.java.net/issues/show_bug.cgi?id=1647
+     * for additional details
+     */
+    private String beKey;
 
     /**
      * The collection of user data attributes associated with this Session.
@@ -1836,8 +1842,6 @@ public class StandardSession
                     + " due to unknown serializedFormVersion of "
                     + readSerializedFormVersion);
         }
-
-        readRemainingObject(stream);
     }
 
 
@@ -1938,7 +1942,7 @@ public class StandardSession
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
 
-        // Write the scalar instance variables (except Manager)
+        stream.writeObject(SERIALIZED_FORM_VERSION);
         stream.writeObject(Long.valueOf(creationTime));
         stream.writeObject(Long.valueOf(lastAccessedTime));
         stream.writeObject(Integer.valueOf(maxInactiveInterval));
