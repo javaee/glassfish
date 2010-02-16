@@ -226,9 +226,10 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
                     XAResource[] xar = resourceAdapter.getXAResources(activationSpecArray);
 
                     // Add the resources to the xaresList which is used by the RecoveryManager
-                    for (int p = 0; p < xar.length; p++) {
-                        xaresList.add(xar[p]);
-
+                    if(xar != null){
+                        for (int p = 0; p < xar.length; p++) {
+                            xaresList.add(xar[p]);
+                        }
                     }
                     // Catch UnsupportedOperationException if a RA does not support XA
                     // which is fine.
