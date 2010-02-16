@@ -69,7 +69,7 @@
         </antcall>
 
         <mkdir dir="build"/>
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar" includes="src/**/*.java"
+        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar" includes="WebTest.java"
                destdir="build" debug="true"/>
 
     </target>
@@ -90,7 +90,7 @@
     </target>
 
     <target name="runfirst" depends="init-common, deploy">
-        <java classname="test.WebTest">
+        <java classname="WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
@@ -103,7 +103,7 @@
     </target>
 
     <target name="checkForNoSession" depends="init-common">
-        <java classname="test.WebTest">
+        <java classname="WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
@@ -117,7 +117,7 @@
     </target>
 
     <target name="checkForSession" depends="init-common">
-        <java classname="test.WebTest">
+        <java classname="WebTest">
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>

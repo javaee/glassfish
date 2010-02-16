@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,25 +33,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
-
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 /*
 * Unit test for
 *
 *  https://glassfish.dev.java.net/issues/show_bug.cgi?id=6447
-*  ("Avoid serializing and saving sessions to file during un- or redeployment (unless requested by user)")
+*  ("Avoid serializing and saving sessions to file during un- or
+*  redeployment (unless requested by user)")
 */
 public class WebTest {
     private static final String TEST_ROOT_NAME = "session-serialize-on-shutdown-only";
