@@ -916,7 +916,7 @@ public final class PersistenceDescriptor extends Descriptor {
                 "CMP bean [{0}], primary key class [{1}] has " + 
                 "public non-persistent field(s) [{2}].",
                 new Object[] {getParentDescriptor().getName(),
-                getPrimaryKeyClass().getName(),
+                primaryKeyClassName,
                 nonPersFieldsInPK.toString()}));
             }
 
