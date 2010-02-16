@@ -148,7 +148,6 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         // If yes, put the mapping in the xaresourcewrappers properties.
         Properties xaresourcewrappers = new Properties();
 
-        //TODO V3 wrapper classes available from ?
         xaresourcewrappers.put(
                 "oracle.jdbc.xa.client.OracleXADataSource",
                 "com.sun.enterprise.transaction.jts.OracleXAResource");
@@ -211,13 +210,11 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                         String wrapperclass = (String) xaresourcewrappers.get(
                                 clName);
                         if (wrapperclass != null) {
+                            //need to load jdbc driver related class or its wrapper provided by "transactions" module.
+                            //Using connector classloader so as to get access to "lib" and "transactions" module.
                             XAResourceWrapper xaresWrapper = null;
-                            try {
-                                //TODO V3 Class.forName ?
-                                xaresWrapper = (XAResourceWrapper) Class.forName(wrapperclass).newInstance();
-                            } catch (Exception ex) {
-                                throw ex;
-                            }
+                            xaresWrapper = (XAResourceWrapper) crt.getConnectorClassLoader().loadClass(wrapperclass).
+                                    newInstance();
                             xaresWrapper.init(mc, subject);
                             xaresList.add(xaresWrapper);
                         } else {
