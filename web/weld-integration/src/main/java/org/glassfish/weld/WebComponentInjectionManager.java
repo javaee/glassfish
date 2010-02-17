@@ -43,10 +43,10 @@ import com.sun.enterprise.web.WebModule;
 import java.util.Collection;
 
 import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.glassfish.api.deployment.DeploymentContext;
-import org.jboss.weld.BeanManagerImpl;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jvnet.hk2.annotations.Service;
@@ -72,7 +72,7 @@ public class WebComponentInjectionManager implements WebComponentDecorator {
                 WeldDeployer.WELD_DEPLOYMENT, DeploymentImpl.class); 
             Collection deployments = deploymentImpl.getBeanDeploymentArchives();
             BeanDeploymentArchive beanDeploymentArchive = (BeanDeploymentArchive)deployments.iterator().next(); 
-            BeanManagerImpl beanManager = weldBootstrap.getManager(beanDeploymentArchive);
+            BeanManager beanManager = weldBootstrap.getManager(beanDeploymentArchive);
             // PENDING : Not available in this Web Beans Release
             CreationalContext ccontext = beanManager.createCreationalContext(null);
             InjectionTarget injectionTarget = beanManager.createInjectionTarget(beanManager.createAnnotatedType(webComponent.getClass()));
