@@ -210,8 +210,8 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                         String wrapperclass = (String) xaresourcewrappers.get(
                                 clName);
                         if (wrapperclass != null) {
-                            //need to load jdbc driver related class or its wrapper provided by "transactions" module.
-                            //Using connector classloader so as to get access to "lib" and "transactions" module.
+                            //need to load wrapper class provided by "transactions" module.
+                            //Using connector-class-loader so as to get access to "transaction" module.
                             XAResourceWrapper xaresWrapper = null;
                             xaresWrapper = (XAResourceWrapper) crt.getConnectorClassLoader().loadClass(wrapperclass).
                                     newInstance();
