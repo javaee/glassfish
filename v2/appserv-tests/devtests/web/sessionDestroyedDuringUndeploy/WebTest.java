@@ -139,14 +139,13 @@ public class WebTest {
                           + "/index.jsp");
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setInstanceFollowRedirects(false);
         conn.connect();
 
         int responseCode = conn.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_MOVED_TEMP) {
+        if (responseCode != HttpURLConnection.HTTP_OK) {
             throw new Exception("Unexpected response code: Got " +
                                 responseCode + ", expected: " +
-                                HttpURLConnection.HTTP_MOVED_TEMP);
+                                HttpURLConnection.HTTP_OK);
         }
                      
         String cookie = conn.getHeaderField("set-cookie");
