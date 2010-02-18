@@ -102,9 +102,16 @@ public abstract class OSGiContainer {
         if (osgiAppInfo == null) {
             throw new Exception("Deployment of " + b + " failed because of following reason: " + report.getMessage());
         }
-        ServiceRegistration reg = context.registerService(OSGiApplicationInfo.class.getName(), osgiAppInfo, new Properties());
-        regs.put(osgiAppInfo, reg);
-        postDeploy(osgiAppInfo);
+        applications.put(b, osgiAppInfo);
+        try {
+            ServiceRegistration reg = context.registerService(OSGiApplicationInfo.class.getName(), osgiAppInfo, new Properties());
+            regs.put(osgiAppInfo, reg);
+            postDeploy(osgiAppInfo);
+        } catch (Exception e) {
+            logger.logp(Level.WARNING, "OSGiContainer", "deploy", "Undeploying the bundle because of e = {0}", new Object[]{e});
+//            e.printStackTrace();
+            undeploy(b);
+        }
     }
 
     /**

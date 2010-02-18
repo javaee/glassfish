@@ -49,13 +49,18 @@ import org.glassfish.api.ActionReport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -64,8 +69,15 @@ public class OSGiEJBContainer extends OSGiContainer {
 
     private EJBTracker ejbTracker;
 
+    private final InitialContext ic;
+
     public OSGiEJBContainer(BundleContext ctx) {
         super(ctx);
+        try {
+            ic = new InitialContext();
+        } catch (NamingException e) {
+            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+        }
         ejbTracker = new EJBTracker();
         ejbTracker.open(true);
     }
@@ -91,9 +103,36 @@ public class OSGiEJBContainer extends OSGiContainer {
             Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
             System.out.println("addingService: Found " + ejbs.size() + " no. of EJBs");
             for (EjbDescriptor ejb : ejbs) {
-
+                registerEjbAsService(ejb, osgiApplicationInfo.getBundle());
             }
             return osgiApplicationInfo;
+        }
+
+        private void registerEjbAsService(EjbDescriptor ejb, Bundle bundle) {
+            System.out.println(ejb);
+            if (EjbSessionDescriptor.TYPE.equals(ejb.getType())) {
+                EjbSessionDescriptor sessionBean = EjbSessionDescriptor.class.cast(ejb);
+                if (EjbSessionDescriptor.STATEFUL.equals(sessionBean.getSessionType())) {
+                    System.out.println("Stateful session bean can't be registered as OSGi service");
+                } else {
+                    final BundleContext ejbBundleContext = bundle.getBundleContext();
+                    for (String lbi : sessionBean.getLocalBusinessClassNames()) {
+                        String jndiName = sessionBean.getPortableJndiName(lbi);
+                        Object service = null;
+                        try {
+                            service = ic.lookup(jndiName);
+                        } catch (NamingException e) {
+                            e.printStackTrace();
+                        }
+                        Properties props = new Properties();
+                        props.put("jndi-name", jndiName);
+                        // Note: we register using the bundle context of the bundle containing the EJB.
+                        ejbBundleContext.registerService(lbi, service, props);
+                    }
+                }
+            } else {
+                System.out.println("Only stateless bean or singleton beans can be registered as OSGi service");
+            }
         }
 
         @Override
@@ -104,7 +143,6 @@ public class OSGiEJBContainer extends OSGiContainer {
             Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
             System.out.println("removedService: Found " + ejbs.size() + " no. of EJBs");
             for (EjbDescriptor ejb : ejbs) {
-
             }
         }
     }
