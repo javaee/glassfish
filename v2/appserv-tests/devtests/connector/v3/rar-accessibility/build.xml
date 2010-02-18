@@ -4,7 +4,6 @@
         <!ENTITY testproperties SYSTEM "./build.properties">
         <!ENTITY common SYSTEM "../../../../config/common.xml">
         <!ENTITY testcommon SYSTEM "../../../../config/properties.xml">
-        <!ENTITY connectorcommon SYSTEM "../../config/connector-common.xml">
         ]>
 
 <project name="mix" default="usage" basedir=".">
@@ -16,7 +15,6 @@
     -->
     &common;
     &testcommon;
-    &connectorcommon;
 
     <property name="cclp" value="class-loading-policy"/>
     <property name="connector-service" value="server.connector-service"/>
