@@ -1075,33 +1075,10 @@ public class WebappClassLoader
             }
         }
 
-        // Looking at the JAR files
-        synchronized (jarFiles) {
-            if (openJARs()) {
-                for (i = 0; i < jarFilesLength; i++) {
-                    JarEntry jarEntry = jarFiles[i].getJarEntry(name);
-                    if (jarEntry != null) {
-                        try {
-                            String jarFakeUrl = getURI(jarRealFiles[i]).toString();
-                            jarFakeUrl = "jar:" + jarFakeUrl + "!/" + name;
-                            result.addElement(new URL(jarFakeUrl));
-                        } catch (MalformedURLException e) {
-                            // Ignore
-                        }
-                    }
-                }
-            }
-        }
+        Enumeration<URL> otherResourcePaths = super.findResources(name);
 
-        // Adding the results of a call to the superclass
-        if (hasExternalRepositories) {
-
-            Enumeration<URL> otherResourcePaths = super.findResources(name);
-
-            while (otherResourcePaths.hasMoreElements()) {
-                result.addElement(otherResourcePaths.nextElement());
-            }
-
+        while (otherResourcePaths.hasMoreElements()) {
+            result.addElement(otherResourcePaths.nextElement());
         }
 
         return result.elements();
