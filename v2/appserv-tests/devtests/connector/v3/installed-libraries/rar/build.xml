@@ -3,7 +3,6 @@
         <!ENTITY testproperties SYSTEM "./build.properties">
         <!ENTITY common SYSTEM "../../../../../config/common.xml">
         <!ENTITY testcommon SYSTEM "../../../../../config/properties.xml">
-        <!ENTITY connectorcommon SYSTEM "../../../config/connector-common.xml">
         ]>
 
 
@@ -17,7 +16,6 @@
     -->
     &common;
     &testcommon;
-    &connectorcommon;
 
     <target name="prepare" depends="init-common"
             description="Prepare build directory">
