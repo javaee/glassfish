@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,10 +42,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
@@ -140,10 +139,10 @@ public class OrderingDescriptor extends Descriptor {
         }
 
         List<Node> remaining = new ArrayList<Node>(graph);
-        boolean hasOthers = false;
 
         // build the edges
         // othersNode is not in the loop
+        Map<Node, Map<Node, Edge>> map = new HashMap<Node, Map<Node, Edge>>();
         for (int i = 0; i < graph.size(); i++) {
             Node wfNode = graph.get(i);
             WebFragmentDescriptor wf = wfNode.getWebFragmentDescriptor();
@@ -153,15 +152,16 @@ public class OrderingDescriptor extends Descriptor {
                 OrderingOrderingDescriptor after = od.getAfter();
                 if (after != null) {
                     if (after.containsOthers()) {
-                        wfNode.getInNodes().add(othersNode);
-                        othersNode.getOutNodes().add(wfNode);
+                        // othersNode --> wfNode
+                        wfNode.getInEdges().add(getEdge(othersNode, wfNode, map));
+                        othersNode.getOutEdges().add(getEdge(othersNode, wfNode, map));
                         remaining.remove(othersNode);
-                        hasOthers = true;
                     }
                     for (String name : after.getNames()) {
                         Node nameNode = name2NodeMap.get(name);
-                        wfNode.getInNodes().add(nameNode);
-                        nameNode.getOutNodes().add(wfNode);
+                        // nameNode --> wfNode
+                        wfNode.getInEdges().add(getEdge(nameNode, wfNode, map));
+                        nameNode.getOutEdges().add(getEdge(nameNode, wfNode, map));
                         remaining.remove(nameNode);
                     }
                 }
@@ -169,15 +169,16 @@ public class OrderingDescriptor extends Descriptor {
                 OrderingOrderingDescriptor before = od.getBefore();
                 if (before != null) {
                     if (before.containsOthers()) {
-                        wfNode.getOutNodes().add(othersNode);
-                        othersNode.getInNodes().add(wfNode);
+                        // wfNode --> othersNode
+                        wfNode.getOutEdges().add(getEdge(wfNode, othersNode, map));
+                        othersNode.getInEdges().add(getEdge(wfNode, othersNode, map));
                         remaining.remove(othersNode);
-                        hasOthers = true;
                     }
                     for (String name : before.getNames()) {
                         Node nameNode = name2NodeMap.get(name);
-                        wfNode.getOutNodes().add(nameNode);
-                        nameNode.getInNodes().add(wfNode);
+                        // wfNode --> nameNode
+                        wfNode.getOutEdges().add(getEdge(wfNode, nameNode, map));
+                        nameNode.getInEdges().add(getEdge(wfNode, nameNode, map));
                         remaining.remove(nameNode);
                     }
                 }
@@ -192,9 +193,43 @@ public class OrderingDescriptor extends Descriptor {
             }
         }
 
-        // add others to the end if necessary
-        if (hasOthers) {
+        // if others should be in the graph
+        if (othersNode.getOutEdges().size() > 0 || othersNode.getInEdges().size() > 0) {
+            // add others to the end
             graph.add(othersNode);
+
+            // populate others info into nodes
+            Stack<Node> afterOthersStack = new Stack<Node>();
+            for (Edge edge : othersNode.getOutEdges()) {
+                edge.setVisited(true);
+                afterOthersStack.push(edge.getToNode());
+            }
+            while (!afterOthersStack.isEmpty()) {
+                Node aNode = afterOthersStack.pop();
+                aNode.setAfterOthers(true);
+                for (Edge edge : aNode.getOutEdges()) {
+                    if (!edge.isVisited()) {
+                        afterOthersStack.push(edge.getToNode());
+                        edge.setVisited(true);
+                    }
+                }
+            }
+
+            Stack<Node> beforeOthersStack = new Stack<Node>();
+            for (Edge edge : othersNode.getInEdges()) {
+                edge.setVisited(true);
+                beforeOthersStack.push(edge.getFromNode());
+            }
+            while (!beforeOthersStack.isEmpty()) {
+                Node aNode = beforeOthersStack.pop();
+                aNode.setBeforeOthers(true);
+                for (Edge edge : aNode.getInEdges()) {
+                    if (!edge.isVisited()) {
+                        beforeOthersStack.push(edge.getFromNode());
+                        edge.setVisited(true);
+                    }
+                }
+            }
         }
 
         List<Node> subgraph = new ArrayList<Node>(graph);
@@ -205,15 +240,14 @@ public class OrderingDescriptor extends Descriptor {
         wfs.clear();
         boolean othersProcessed = false;
         for (Node node: sortedNodes) {
-            WebFragmentDescriptor wf = node.getWebFragmentDescriptor();
-            if (wf == null) {
+            if (node.isOthers()) {
                 // others
                 othersProcessed = true;
                 for (Node rnode: remaining) {
                     wfs.add(rnode.getWebFragmentDescriptor());
                 }
             } else {
-                wfs.add(wf);
+                wfs.add(node.getWebFragmentDescriptor());
             }
         }
 
@@ -222,6 +256,22 @@ public class OrderingDescriptor extends Descriptor {
                 wfs.add(rnode.getWebFragmentDescriptor());
             }
         }
+    }
+
+    private static Edge getEdge(Node from, Node to, Map<Node, Map<Node, Edge>> map) {
+        Edge edge = null;
+        Map<Node, Edge> node2Edge = map.get(from);
+        if (node2Edge == null) {
+            node2Edge = new HashMap<Node, Edge>();
+            map.put(from, node2Edge);
+        } else {
+            edge = node2Edge.get(to);
+        }
+        if (edge == null) {
+            edge = new Edge(from, to);
+            node2Edge.put(to, edge);
+        }
+        return edge;
     }
 
     /**
@@ -239,14 +289,22 @@ public class OrderingDescriptor extends Descriptor {
         }
 
         Stack<Node> roots = new Stack<Node>();
+        Stack<Node> rootsBefore = new Stack<Node>();
+        Stack<Node> rootsAfter = new Stack<Node>(); // including others if any
         // find nodes without incoming edges
         for (Node node: graph) {
-            if (node.getInNodes().size() == 0) {
-                roots.push(node);
+            if (node.getInEdges().size() == 0) {
+                if (node.isBeforeOthers()) {
+                    rootsBefore.add(node);
+                } else if (node.isAfterOthers() || node.isOthers()) {
+                    rootsAfter.add(node);
+                } else {
+                    roots.add(node);
+                }
             }
         }
         
-        if (roots.empty()) {
+        if (roots.empty() && rootsBefore.empty() && rootsAfter.empty()) {
             // check if it is a circle with others and empty remaining
             if (isCircleWithOthersAndNoRemaining(graph, hasRemaining, sortedNodes)) {
                 return sortedNodes;
@@ -257,28 +315,44 @@ public class OrderingDescriptor extends Descriptor {
             }
         }
 
-        while (!roots.empty()) {
-            Node node = roots.pop();
+        while (!roots.empty() || !rootsBefore.empty() || !rootsAfter.empty()) {
+            Node node = null;
+            if (!rootsBefore.empty()) {
+                node = rootsBefore.pop();
+            } else if (!roots.empty()) {
+                node = roots.pop();
+            } else { // !rootsAfter.empty()
+                node = rootsAfter.pop();
+            } 
+
             sortedNodes.add(node);
             // for each outcoming edges
-            Iterator<Node> outNodesIter = node.getOutNodes().iterator();
-            while (outNodesIter.hasNext()) {
-                Node outNode = outNodesIter.next();
+            Iterator<Edge> outEdgesIter = node.getOutEdges().iterator();
+            while (outEdgesIter.hasNext()) {
+                Edge outEdge = outEdgesIter.next();
+                Node outNode = outEdge.getToNode();
                 // remove the outcoming edge
-                outNodesIter.remove();
+                outEdgesIter.remove();
                 // remove corresponding incoming edge from the outNode
-                outNode.getInNodes().remove(node);
+                outNode.getInEdges().remove(outEdge);
 
                 // if no incoming edge
-                if (outNode.getInNodes().size() == 0) {
-                    roots.push(outNode);
+                if (outNode.getInEdges().size() == 0) {
+                    // the others node
+                    if (node.isBeforeOthers()) {
+                        rootsBefore.add(outNode);
+                    } else if (node.isAfterOthers() || node.isOthers()) {
+                        rootsAfter.add(outNode);
+                    } else {
+                        roots.add(outNode);
+                    }
                 }
             }
         }
 
         boolean hasEdges = false;
         for (Node node: graph) {
-            if (node.getInNodes().size() > 0 || node.getOutNodes().size() > 0) {
+            if (node.getInEdges().size() > 0 || node.getOutEdges().size() > 0) {
                 hasEdges = true;
                 break;
             }
@@ -309,17 +383,17 @@ public class OrderingDescriptor extends Descriptor {
         }
 
         Node nextNode = graph.get(size - 1);
-        if (nextNode.getWebFragmentDescriptor() == null) { // others
+        if (nextNode.isOthers()) {
             Set<Node> set = new LinkedHashSet<Node>();
             int count = 0;
             while ((count < size) &&
-                    nextNode.getOutNodes().size() == 1 &&
-                    nextNode.getInNodes().size() == 1) {
+                    nextNode.getOutEdges().size() == 1 &&
+                    nextNode.getInEdges().size() == 1) {
 
                 if (!set.add(nextNode)) {
                     break;
                 }
-                nextNode = nextNode.getOutNodes().iterator().next();
+                nextNode = nextNode.getOutEdges().iterator().next().getToNode();
                 count++;
             }
 
@@ -354,8 +428,11 @@ public class OrderingDescriptor extends Descriptor {
 
     private static class Node {
         private WebFragmentDescriptor webFragmentDescriptor = null;
-        private Set<Node> inNodes = new LinkedHashSet<Node>();
-        private Set<Node> outNodes = new LinkedHashSet<Node>();
+        private Set<Edge> inEdges = new LinkedHashSet<Edge>();
+        private Set<Edge> outEdges = new LinkedHashSet<Edge>();
+        // for sorting
+        private boolean afterOthers = false;
+        private boolean beforeOthers = false;
 
         private Node(WebFragmentDescriptor wf) {
             webFragmentDescriptor = wf;
@@ -365,12 +442,32 @@ public class OrderingDescriptor extends Descriptor {
             return webFragmentDescriptor;
         }
 
-        private Set<Node> getInNodes() {
-            return inNodes;
+        private Set<Edge> getInEdges() {
+            return inEdges;
         }
 
-        private Set<Node> getOutNodes() {
-            return outNodes;
+        private Set<Edge> getOutEdges() {
+            return outEdges;
+        }
+
+        private boolean isOthers() {
+            return (webFragmentDescriptor == null);
+        }
+
+        private boolean isAfterOthers() {
+            return afterOthers;
+        }
+
+        private void setAfterOthers(boolean afterOthers) {
+            this.afterOthers = afterOthers;
+        }
+
+        private boolean isBeforeOthers() {
+            return beforeOthers;
+        }
+
+        private void setBeforeOthers(boolean beforeOthers) {
+            this.beforeOthers = beforeOthers;
         }
 
         // for debug
@@ -380,26 +477,54 @@ public class OrderingDescriptor extends Descriptor {
 
             sb.append(", inNodes=[");
             boolean first = true;
-            for (Node n: inNodes) {
+            for (Edge e: inEdges) {
                 if (!first) {
                     sb.append(", ");
                 }
                 first = false;
-                print(n.getWebFragmentDescriptor(), "@others", sb);
+                print(e.getFromNode().getWebFragmentDescriptor(), "@others", sb);
             }
             sb.append("]");
 
             sb.append(", outNodes=[");
             first = true;
-            for (Node n: outNodes) {
+            for (Edge e: outEdges) {
                 if (!first) {
                     sb.append(", ");
                 }
                 first = false;
-                print(n.getWebFragmentDescriptor(), "@others", sb);
+                print(e.getToNode().getWebFragmentDescriptor(), "@others", sb);
             }
             sb.append("]}");
             return sb.toString();
+        }
+    }
+
+    // an edge with data
+    private static final class Edge {
+        private Node fromNode = null;
+        private Node toNode = null;
+        private boolean visited = false;
+
+        private Edge(Node from, Node to) {
+            fromNode = from;
+            toNode = to;
+        }
+
+        private Node getFromNode() {
+            return fromNode;
+        }
+
+        private Node getToNode() {
+            return toNode;
+        }
+
+        private boolean isVisited() {
+            return visited;
+        }
+
+        private void setVisited(boolean vt) {
+            visited = vt;
         }
     }
 }
