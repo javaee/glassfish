@@ -68,6 +68,9 @@ import com.sun.enterprise.transaction.spi.JavaEETransactionManagerDelegate;
 import com.sun.enterprise.transaction.spi.TransactionalResource;
 import com.sun.enterprise.transaction.spi.TransactionInternal;
 
+import com.sun.enterprise.transaction.jts.recovery.OracleXAResource;
+import com.sun.enterprise.transaction.jts.recovery.SybaseXAResource;
+
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.enterprise.transaction.JavaEETransactionImpl;
 

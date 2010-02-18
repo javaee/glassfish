@@ -150,7 +150,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
 
         xaresourcewrappers.put(
                 "oracle.jdbc.xa.client.OracleXADataSource",
-                "com.sun.enterprise.transaction.jts.OracleXAResource");
+                "com.sun.enterprise.transaction.jts.recovery.OracleXAResource");
 
         List<Property> properties = txService.getProperty();
 
@@ -167,7 +167,7 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                     if (value.equals("true")) {
                         xaresourcewrappers.put(
                                 "com.sybase.jdbc2.jdbc.SybXADataSource",
-                                "com.sun.enterprise.transaction.jts.SybaseXAResource");
+                                "com.sun.enterprise.transaction.jts.recovery.SybaseXAResource");
                     }
                 }
             }
