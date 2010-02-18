@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,11 +95,8 @@ public class ActiveInboundResourceAdapterImpl extends ActiveOutboundResourceAdap
      * java bean.
      */
     public void destroy() {
-        //it is possible that a 1.5 ra may not have connection-definition at all
-        if ((connectionDefs_ != null) && (connectionDefs_.length != 0)) {
-            deactivateEndPoints();
-            super.destroy();
-        }
+        deactivateEndPoints();
+        super.destroy();
     }
 
     private void deactivateEndPoints() {
@@ -163,7 +160,6 @@ public class ActiveInboundResourceAdapterImpl extends ActiveOutboundResourceAdap
      * {@inheritDoc}
      */
     public boolean handles(ConnectorDescriptor cd, String moduleName) {
-        //TODO V3 later multiple JMS Ras will be present (need to ignore all)
         return (cd.getInBoundDefined() && !ConnectorsUtil.isJMSRA(moduleName));
      }
 
