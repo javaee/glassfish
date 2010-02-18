@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.spi.ConnectionManager;
@@ -75,7 +76,7 @@ import java.security.Principal;
 public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected String jndiName;
-
+    protected String logicalName;
     protected String poolName;
 
     private static Logger logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
@@ -99,6 +100,15 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     public String getJndiName() {
         return jndiName;
     }
+
+    public void setLogicalName(String logicalName) {
+        this.logicalName = logicalName;
+    }
+
+    public String getLogicalName() {
+        return logicalName;
+    }
+
 
     public void setPoolName(String poolName) {
         this.poolName = poolName;
@@ -156,7 +166,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         PoolManager poolmgr = ConnectorRuntime.getRuntime().getPoolManager();
         boolean resourceShareable = true;
 
-        ResourceReferenceDescriptor ref = poolmgr.getResourceReference(jndiNameToUse);
+        ResourceReferenceDescriptor ref =  poolmgr.getResourceReference(jndiNameToUse, logicalName);
 
         if (ref != null) {
             String shareableStr = ref.getSharingScope();
