@@ -135,6 +135,14 @@ Another important aspect of the algorithm is that by default, contents of the
 entire folder (recursive traversal) are sent when requested. Standard compression
 schemes are employed when sending the contents.
 
+As you probably know, we "upload" the archive (.jar/.war/.ear) when we do the
+archive deployment to the DAS. Till now, this archive was "uploaded" to a
+temporary location, which means it was thrown away. Going ahead we will be
+retaining this archive because the exploded view of an application is a
+"true extraction" of its archive. When the archive is not available, one will
+be created (e.g. when asadmin deploy --upload=false myapp.war). This is a 
+simple optimization that we must do.
+
 Step 0: Initiation of the synchronization request
 
 0.0: A clustered/non-clustered GlassFish server is DAS's sync client.
@@ -283,16 +291,20 @@ file system performance?
 3. New Admin Commands
 
 We propose following new commands for management:
-- create-server -- Local asadmin command to create the bootstrap file
-                   system for a clustered/unclustered GlassFish server.
-- start-server  -- Local asadmin command to start a GlassFish server.
-- delete-server -- Local asadmin command to delete the GlassFish server
-                   file system.
-- stop-server   -- Local asadmin command to stop the GlassFish server.
+- join-domain -- A local command creates the local file system for the server
+                 and registers itself with the DAS (as clustered/non-clustered
+                 server).
+- leave-domain -- A local command that does opposite of join-domain.
+    
+- delete-server-config -- A local command that deletes the entry for a server
+                          that was deleted when domain was not running.
+                          (Equivalent of delete-node-agent-config)
+3.1 join-domain
 
-3.1 create-server
+3.2 leave-domain
 
-create-server [--cluster cluster-name | --config config-name] [server-name]
+3.3 delete-server-config
+
 
 1- Uses the asadmin program options to communicate with DAS when it is running.
 2- Optional operand decides the name of the server. Defaults to the value
