@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -297,6 +297,28 @@ public class OrderingDescriptorTest {
         wfs.add(createWebFragmentDescriptor("C", new String[] { OTHERS }, null));
         OrderingDescriptor.sort(wfs);
         String[] ids = { "C", "A", "B" };
+        validate(ids, wfs);
+    }
+
+    @Test
+    public void testDisconnectedGraphWithBeforeOthers() {
+        List<WebFragmentDescriptor> wfs = new ArrayList<WebFragmentDescriptor>();
+        wfs.add(createWebFragmentDescriptor("C", null, new String[] { OTHERS }));
+        wfs.add(createWebFragmentDescriptor("A", new String[] { "B" }, null));
+        wfs.add(createWebFragmentDescriptor("B", null, null));
+        OrderingDescriptor.sort(wfs);
+        String[] ids = { "C", "B", "A" };
+        validate(ids, wfs);
+    }
+
+    @Test
+    public void testDisconnectedGraphWithAfterOthers() {
+        List<WebFragmentDescriptor> wfs = new ArrayList<WebFragmentDescriptor>();
+        wfs.add(createWebFragmentDescriptor("A", new String[] { "B" }, null));
+        wfs.add(createWebFragmentDescriptor("B", null, null));
+        wfs.add(createWebFragmentDescriptor("C", new String[] { OTHERS }, null));
+        OrderingDescriptor.sort(wfs);
+        String[] ids = { "B", "A" , "C" };
         validate(ids, wfs);
     }
 
