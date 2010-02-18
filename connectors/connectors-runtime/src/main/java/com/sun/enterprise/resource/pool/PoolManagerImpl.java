@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.resource.pool;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
@@ -61,12 +62,10 @@ import javax.transaction.Synchronization;
 import javax.transaction.xa.XAResource;
 import javax.resource.spi.ManagedConnection;
 import javax.resource.ResourceException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Tony Ng, Aditya Gore
@@ -102,9 +101,9 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
     }
 
     public void createEmptyConnectionPool(String poolName,
-                                          PoolType pt) throws PoolingException {
+                                          PoolType pt, Hashtable env) throws PoolingException {
         //Create and initialise the connection pool
-        createAndInitPool(poolName, pt);
+        createAndInitPool(poolName, pt, env);
         if (listener != null) {
             try {
                listener.poolCreated(poolName);
@@ -122,11 +121,11 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
      * @return ResourcePool - newly created pool
      * @throws PoolingException when unable to create/initialize pool
      */
-    private ResourcePool createAndInitPool(final String poolName, PoolType pt)
+    private ResourcePool createAndInitPool(final String poolName, PoolType pt, Hashtable env)
             throws PoolingException {
         ResourcePool pool = getPool(poolName);
         if (pool == null) {
-            pool = ResourcePoolFactoryImpl.newInstance(poolName, pt);
+            pool = ResourcePoolFactoryImpl.newInstance(poolName, pt, env);
             addPool(pool);
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Created connection  pool  and added it to PoolManager :" + pool);
@@ -494,8 +493,9 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
            }
        }
     
-    public ResourceReferenceDescriptor getResourceReference(String jndiName) {
+    public ResourceReferenceDescriptor getResourceReference(String jndiName, String logicalName) {
         Set descriptors = getConnectorRuntime().getResourceReferenceDescriptor();
+        List matchingRefs = new ArrayList();
 
         if (descriptors != null) {
             for (Object descriptor : descriptors) {
@@ -503,11 +503,33 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
                         (ResourceReferenceDescriptor) descriptor;
                 String name = ref.getJndiName();
                 if (jndiName.equals(name)) {
-                    return ref;
+                     matchingRefs.add(ref);
+                }
+            }
+        }
+        if(matchingRefs.size()==1){
+            return (ResourceReferenceDescriptor)matchingRefs.get(0);
+        }else if(matchingRefs.size() > 1){
+            Iterator it = matchingRefs.iterator();
+            while(it.hasNext()){
+                ResourceReferenceDescriptor rrd = (ResourceReferenceDescriptor)it.next();
+                String refName = rrd.getName();
+                refName = getJavaName(refName);
+                if(refName.equals(getJavaName(logicalName))){
+                    return rrd;
                 }
             }
         }
         return null;
+    }
+
+    private static String getJavaName(String name){
+        if(name.startsWith("java:")){
+            return name;
+        }else {
+            //by default, scope is "comp"
+            return "java:comp/env/" + name;
+        }
     }
 
     public void beforePreInvoke(ComponentInvocation.ComponentInvocationType invType, ComponentInvocation prevInv,

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ import com.sun.enterprise.resource.ResourceState;
 import com.sun.enterprise.resource.ResourceHandle;
 
 import javax.transaction.*;
+import java.util.Hashtable;
 
 /**
  * This resource pool is created when connection pooling is switched off
@@ -56,8 +57,8 @@ public class UnpooledResource extends ConnectionPool{
     private int poolSize;
 
     /** Creates a new instance of UnpooledResourcePool */
-    public UnpooledResource(String poolName) throws PoolingException {
-        super(poolName);
+    public UnpooledResource(String poolName, Hashtable env) throws PoolingException {
+        super(poolName, env);
 
         //No pool is being maintained, hence no pool cleanup is needed
         //in case of failure

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.resource.pool;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants.PoolType;
@@ -50,6 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnection;
 import javax.transaction.Transaction;
+import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -89,7 +91,7 @@ public interface PoolManager extends TransactedPoolManager {
                                        Transaction tran)
             throws PoolingException;
 
-    public void createEmptyConnectionPool(String name, PoolType pt) throws PoolingException;
+    public void createEmptyConnectionPool(String name, PoolType pt, Hashtable env) throws PoolingException;
 
 
     public void putbackResourceToPool(ResourceHandle h, boolean errorOccurred);
@@ -147,8 +149,7 @@ public interface PoolManager extends TransactedPoolManager {
     Object getResource(ResourceSpec spec, ResourceAllocator alloc, ClientSecurityInfo info)
             throws PoolingException;
 
-    ResourceReferenceDescriptor getResourceReference(String jndiName);
-
+    public ResourceReferenceDescriptor getResourceReference(String jndiName, String logicalName);
 
     public void killAllPools();
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.resource.pool;
 
 
@@ -42,6 +43,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 
 
+import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,22 +63,22 @@ public class ResourcePoolFactoryImpl {
 
     private static Logger _logger = LogDomains.getLogger(ResourcePoolFactoryImpl.class,LogDomains.RSR_LOGGER);
 
-    public static ResourcePool newInstance(String poolName, PoolType pt)
+    public static ResourcePool newInstance(String poolName, PoolType pt, Hashtable env)
             throws PoolingException {
 
         if(ConnectorRuntime.getRuntime().isAppClientRuntime()){
             if("TRUE".equalsIgnoreCase(switchOffACCConnectionPoolingProperty))
-                return new UnpooledResource( poolName );
+                return new UnpooledResource( poolName, env );
         }
 
         ResourcePool pool = null;
         if( pt == PoolType.POOLING_DISABLED ) {
-            return new UnpooledResource( poolName );            
+            return new UnpooledResource( poolName, env );
         }
         if ( pt == PoolType.ASSOCIATE_WITH_THREAD_POOL ) {
-            pool = new AssocWithThreadResourcePool( poolName );
+            pool = new AssocWithThreadResourcePool( poolName, env );
         } else {
-            pool = new ConnectionPool( poolName );
+            pool = new ConnectionPool( poolName, env );
         }
 
         if (_logger.isLoggable(Level.FINE)) {

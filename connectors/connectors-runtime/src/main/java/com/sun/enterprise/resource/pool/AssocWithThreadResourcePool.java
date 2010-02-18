@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.resource.pool;
 
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
@@ -43,6 +44,7 @@ import com.sun.appserv.connectors.internal.api.PoolingException;
 
 import javax.transaction.Transaction;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 /**
  * Associates a resource with the thread. When the same thread is used again,
@@ -55,9 +57,9 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
     private static ThreadLocal<AssocWithThreadResourceHandle> localResource =
             new ThreadLocal<AssocWithThreadResourceHandle>();
 
-    public AssocWithThreadResourcePool(String poolName)
+    public AssocWithThreadResourcePool(String poolName, Hashtable env)
             throws PoolingException {
-        super(poolName);
+        super(poolName, env);
     }
 
     /**
