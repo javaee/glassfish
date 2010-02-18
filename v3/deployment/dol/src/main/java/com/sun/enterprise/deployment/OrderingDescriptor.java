@@ -315,7 +315,7 @@ public class OrderingDescriptor extends Descriptor {
             }
         }
 
-        while (!roots.empty() || !rootsBefore.empty() || !rootsAfter.empty()) {
+        while (!(roots.empty() && rootsBefore.empty() && rootsAfter.empty())) {
             Node node = null;
             if (!rootsBefore.empty()) {
                 node = rootsBefore.pop();
