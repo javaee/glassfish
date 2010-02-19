@@ -9,7 +9,7 @@
         <Priority value="1"/>
     </Match>
     <Match>
-        <Class name="com.sun.enterprise.transaction.jts.OracleXAResource"/>
+        <Class name="com.sun.enterprise.transaction.jts.recovery.OracleXAResource"/>
         <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
         <Priority value="1"/>
     </Match>
