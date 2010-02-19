@@ -109,9 +109,9 @@
         <param name="sql.file" value="sql/dropBankTables.sql"/>
       </antcall>
 
-    <antcall target="delete-resource"/>
+<!--    <antcall target="delete-resource"/>
     <antcall target="delete-pool"/>
-    <antcall target="delete-admin-object"/>
+    <antcall target="delete-admin-object"/>-->
     </target>
  
     <target name="delete-pool">
@@ -202,7 +202,9 @@
  
     <target name="undeploy-ear" depends="init-common">
         <antcall target="delete-ra-config"/>
-        <antcall target="undeploy-common"/>
+        <antcall target="undeploy-common">
+            <param name="extra-params" value="--cascade=true"/>
+        </antcall>
     </target>  
 
     <target name="undeploy-war" depends="init-common">

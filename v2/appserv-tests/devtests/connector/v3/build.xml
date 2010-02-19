@@ -204,6 +204,10 @@
 
         <echo message="@@## embeddedweb ##@@"/>
         <ant dir="embeddedweb" target="${connector-target}"/>
+        
+        <!-- executing again to make sure that "cascade=true" for embedded rars work fine --> 
+        <echo message="@@## embeddedweb ##@@"/>
+        <ant dir="embeddedweb" target="${connector-target}"/>
 
         <echo message="@@## mq ##@@"/>
         <ant dir="../mq" target="${connector-target}"/>
