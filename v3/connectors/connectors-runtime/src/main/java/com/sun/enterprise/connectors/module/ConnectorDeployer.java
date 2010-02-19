@@ -238,10 +238,18 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param dc deployment context
      */
     public void clean(DeploymentContext dc) {
+        super.clean(dc);
+        //delete resource configuration
         UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
         if (dcp != null && dcp.origin == OpsParams.Origin.undeploy) {
             if (dcp.cascade != null && dcp.cascade) {
-                deleteAllResources(dcp.name(), dcp.target);
+                File sourceDir = dc.getSourceDir();
+                String moduleName = sourceDir.getName();
+                if (ConnectorsUtil.isEmbedded(dc)) {
+                    String applicationName = ConnectorsUtil.getApplicationName(dc);
+                    moduleName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
+                }
+                deleteAllResources(moduleName, dcp.target);
             }
         }
     }
