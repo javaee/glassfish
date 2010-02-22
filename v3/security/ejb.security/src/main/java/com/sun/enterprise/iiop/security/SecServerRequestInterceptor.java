@@ -397,7 +397,7 @@ public class SecServerRequestInterceptor
     
     private void handle_null_service_context(ServerRequestInfo ri, ServiceContext sc, ORB orb) {
         if(_logger.isLoggable(Level.FINE)){
-            _logger.log(Level.FINE,"No SAS context element found in service context list");
+            _logger.log(Level.FINE,"No SAS context element found in service context list for operation: " + ri.operation());
         }
         int secStatus = secContextUtil.setSecurityContext(null, ri.object_id(),
                 ri.operation());
@@ -656,15 +656,19 @@ public class SecServerRequestInterceptor
     {
     }
 
-    private void unsetSecurityContext(){
-        Counter cntr = (Counter)counterForCalls.get();
-        if (cntr == null){      // sanity check
-            cntr = new Counter(1);
+    private void unsetSecurityContext() {
+        try {
+            Counter cntr = (Counter) counterForCalls.get();
+            if (cntr == null) {      // sanity check
+                cntr = new Counter(1);
+            }
+            cntr.decrement();
+            if (cntr.count == 0) {
+                SecurityContextUtil.unsetSecurityContext();
+            }
+        } finally {
+            ConnectionExecutionContext.removeClientThreadID();
         }
-        cntr.decrement();
-        if (cntr.count == 0){
-            SecurityContextUtil.unsetSecurityContext();
-        } 
     }
 }
 

@@ -61,12 +61,16 @@ public class ConnectionExecutionContext {
 
     public static Long readClientThreadID() {
         Long ID = ClientThreadID.get();
-        ClientThreadID.remove();
+        //ClientThreadID.remove();
         return ID;
     }
 
     public static void setClientThreadID(Long ClientThreadID) {
         ConnectionExecutionContext.ClientThreadID.set(ClientThreadID);
+    }
+
+    public static void removeClientThreadID() {
+        ClientThreadID.remove();
     }
 
     /** 

@@ -287,6 +287,10 @@ public class SecurityContextUtil implements PostConstruct {
         if (scc != null && scc.getSocket() != null) {
             isLocal = false;
         }
+        Long clientID = ConnectionExecutionContext.readClientThreadID();
+        if (clientID != null && clientID == Thread.currentThread().getId()) {
+            isLocal = true;
+        }
         if (!isLocal) {
             com.sun.enterprise.security.SecurityContext.setCurrent(null);
         }
