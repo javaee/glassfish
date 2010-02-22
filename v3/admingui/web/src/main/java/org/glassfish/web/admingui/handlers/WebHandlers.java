@@ -97,16 +97,21 @@ public class WebHandlers {
         // Take care protocol first.
         Map aMap = new HashMap();
         if ("create".equals(protocolChoice)){
-            //Setup to create HTTP also
-            Map httpAttrs = new HashMap();
-            httpAttrs.put("DefaultVirtualServer", attrMap.get("DefaultVirtualServer"));
-            aMap.put(Util.deduceType(Http.class), httpAttrs);
+            try{
+                //Setup to create HTTP also
+                Map httpAttrs = new HashMap();
+                httpAttrs.put("DefaultVirtualServer", attrMap.get("DefaultVirtualServer"));
+                aMap.put(Util.deduceType(Http.class), httpAttrs);
 
-            aMap.put("Name",  attrMap.get("newProtocolName"));
-            aMap.put("SecurityEnabled",  securityEnabled);
-            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("protocols");
-            AMXProxy pp = amx.createChild("protocol",  aMap);
-            protocolName = pp.getName();
+                aMap.put("Name",  attrMap.get("newProtocolName"));
+                aMap.put("SecurityEnabled",  securityEnabled);
+                AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("protocols");
+                AMXProxy pp = amx.createChild("protocol",  aMap);
+                protocolName = pp.getName();
+            }catch(Exception ex){
+                GuiUtil.handleException(handlerCtx, ex);
+                return;
+            }
 
         }else{
             protocolName = (String) attrMap.get("existingProtocolName");
@@ -114,25 +119,29 @@ public class WebHandlers {
             V3AMX.setAttribute(amx.objectName(), new Attribute("SecurityEnabled", securityEnabled ));
         }
 
-        Map nMap = new HashMap();
-        putA(nMap,  attrMap, "Name" );
-        putA(nMap,  attrMap, "Address");
-        putA(nMap,  attrMap, "Port" );
-        putA(nMap,  attrMap, "Transport");
-        putA(nMap,  attrMap, "ThreadPool");
-        putA(nMap,  attrMap, "Enabled" , "false");
-        putA(nMap,  attrMap, "JkEnabled", "false");
-        nMap.put("Protocol", protocolName);
+        try{
+            Map nMap = new HashMap();
+            putA(nMap,  attrMap, "Name" );
+            putA(nMap,  attrMap, "Address");
+            putA(nMap,  attrMap, "Port" );
+            putA(nMap,  attrMap, "Transport");
+            putA(nMap,  attrMap, "ThreadPool");
+            putA(nMap,  attrMap, "Enabled" , "false");
+            putA(nMap,  attrMap, "JkEnabled", "false");
+            nMap.put("Protocol", protocolName);
 
-        AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("network-listeners");
-        amx.createChild("network-listener", nMap);
+            AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getConfig("server-config").getNetworkConfig().child("network-listeners");
+            amx.createChild("network-listener", nMap);
 
-        //get the virtual server and add this network listener to it.
-         Protocol protocol = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().getProtocols().getProtocol().get(protocolName);
-         if (protocol.getHttp() != null){
-             String vsName = (String) protocol.getHttp().getDefaultVirtualServer();
-             changeNetworkListenersInVS(vsName, (String) nMap.get("Name"),  true);
-         }
+            //get the virtual server and add this network listener to it.
+             Protocol protocol = V3AMX.getInstance().getConfig("server-config").getNetworkConfig().getProtocols().getProtocol().get(protocolName);
+             if (protocol.getHttp() != null){
+                 String vsName = (String) protocol.getHttp().getDefaultVirtualServer();
+                 changeNetworkListenersInVS(vsName, (String) nMap.get("Name"),  true);
+             }
+        }catch(Exception ex){
+                GuiUtil.handleException(handlerCtx, ex);
+            }
     }
 
 
