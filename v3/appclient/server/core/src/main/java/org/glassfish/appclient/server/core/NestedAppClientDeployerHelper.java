@@ -62,7 +62,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.jws.JWSAdapterManager;
 import org.glassfish.appclient.server.core.jws.JavaWebStartInfo;
@@ -215,6 +214,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             }
         }
         return earLevelDownloads;
+    }
+
+    @Override
+    public File rootForSignedFilesInApp() {
+        return new File(dc().getScratchDir("xml").getParentFile(), "signed/");
     }
 
     private String libJARRelPath(final URI absURI) {
@@ -504,11 +508,6 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         earLevelDownloads.add(earFacadeDownload);
     }
 
-    private String appName(final DeploymentContext dc) {
-        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
-        return params.name();
-    }
-
     @Override
     public URI facadeUserURI(DeploymentContext dc) {
         return URI.create(appName(dc) + "Client/" + relativeFacadeURI(dc));
@@ -521,7 +520,7 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
 
     @Override
     public URI groupFacadeServerURI(DeploymentContext dc) {
-        File genXMLDir = dc.getScratchDir("xml");
+        File genXMLDir = dc.getScratchDir("xml").getParentFile();
         return genXMLDir.toURI().resolve(relativeGroupFacadeURI(dc));
     }
 
@@ -916,10 +915,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
              * granting it the necessary permissions.
              */
             final URI fileURI = physicalFile().toURI();
+            final URI uriWithinAnchor = earDirUserURI(dc()).resolve(canonicalURIWithinEAR());
             DownloadableArtifacts.FullAndPartURIs fileDependency =
-                    new FullAndPartURIs(fileURI, earDirUserURI(dc()).resolve(canonicalURIWithinEAR()));
+                    new FullAndPartURIs(fileURI, uriWithinAnchor);
             downloadsForReferencedArtifacts.add(fileDependency);
-            signedJARManager.addJAR(fileURI);
+            signedJARManager.addJAR(uriWithinAnchor, fileURI);
             recordArtifactAsProcessed(artifactURIsProcessed, downloadsForThisArtifact);
 
             Manifest jarManifest;

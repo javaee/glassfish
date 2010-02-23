@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 package org.glassfish.appclient.server.core.jws.servedcontent;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -59,7 +60,10 @@ public class AutoSignedContent extends Content.Adapter implements StaticContent 
     public AutoSignedContent(final File unsignedFile,
             final File signedFile, 
             final String userProvidedAlias,
-            final ASJarSigner jarSigner) {
+            final ASJarSigner jarSigner) throws FileNotFoundException {
+        if ( ! unsignedFile.exists() || ! unsignedFile.canRead()) {
+            throw new FileNotFoundException(unsignedFile.getAbsolutePath());
+        }
         this.unsignedFile = unsignedFile;
         this.signedFile = signedFile;
         this.userProvidedAlias = userProvidedAlias;

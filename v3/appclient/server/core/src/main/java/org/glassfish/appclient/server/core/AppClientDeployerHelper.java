@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -268,6 +269,11 @@ public abstract class AppClientDeployerHelper {
         return appName;
     }
 
+    public String appName(final DeploymentContext dc) {
+        DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
+        return params.name();
+    }
+
     public String clientName() {
         return clientName;
     }
@@ -280,6 +286,12 @@ public abstract class AppClientDeployerHelper {
      * @return FixedContent object for the file
      */
     public abstract FixedContent fixedContentWithinEAR(String uriString);
+
+    /**
+     * Returns the root directory for signed files in the applications.
+     * @return File object for the signed JAR root directory
+     */
+    public abstract File rootForSignedFilesInApp();
     
     /**
      * If the specified URI is for an expanded submodule, makes a copy of

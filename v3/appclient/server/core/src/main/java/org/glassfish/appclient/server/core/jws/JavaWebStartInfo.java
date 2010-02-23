@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -489,7 +489,7 @@ public class JavaWebStartInfo implements ConfigListener {
     }
 
     private void addSignedSystemContent(
-            final Map<String,StaticContent> content) {
+            final Map<String,StaticContent> content) throws FileNotFoundException {
         for (SignedSystemContentFromApp signedContentFromApp : SIGNED_SYSTEM_CONTENT_SERVED_AT_APP_LEVEL) {
             final AutoSignedContent signedContent =
                     jwsAdapterManager.appLevelSignedSystemContent(
@@ -504,7 +504,7 @@ public class JavaWebStartInfo implements ConfigListener {
     private void createAndAddSignedContentFromAppFile(final Map<String,StaticContent> content,
             final URI uriToFile,
             final URI uriForLookup,
-            final String tokenName) {
+            final String tokenName) throws FileNotFoundException {
 
         final File unsignedFile = new File(uriToFile);
         final File signedFile = signedFileForProvidedAppFile(unsignedFile);
@@ -515,7 +515,7 @@ public class JavaWebStartInfo implements ConfigListener {
     private void createAndAddSignedStaticContentFromGeneratedFile(final Map<String,StaticContent> content,
             final URI uriToFile,
             final URI uriForLookup,
-            final String tokenName) {
+            final String tokenName) throws FileNotFoundException {
 
         final File unsignedFile = new File(uriToFile);
         final File signedFile = signedFileForGeneratedAppFile(unsignedFile);
@@ -529,7 +529,7 @@ public class JavaWebStartInfo implements ConfigListener {
             final File signedFile,
             final URI uriForLookup,
             final String tokenName
-            ) {
+            ) throws FileNotFoundException {
         signedFile.getParentFile().mkdirs();
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
@@ -559,16 +559,40 @@ public class JavaWebStartInfo implements ConfigListener {
 
     public static URI relativeURIForProvidedOrGeneratedAppFile(
             final DeploymentContext dc, final URI absURI, AppClientDeployerHelper helper) {
-        URI possiblyRelativeURI = rootForSignedFilesInApp(dc).relativize(absURI);
+        URI possiblyRelativeURI = rootForSignedFilesInApp(helper).relativize(absURI);
         if ( ! possiblyRelativeURI.isAbsolute()) {
             return possiblyRelativeURI;
         }
 
+        /*
+         * The file could be a generated JAR file for a submodule in a
+         * directory-deployed app, in which case the URI is within the EAR's
+         * generated subdirectory.
+         */
+        possiblyRelativeURI = rootForGeneratedSubmoduleJAR(dc, helper).relativize(absURI);
+        if ( ! possiblyRelativeURI.isAbsolute()) {
+            return possiblyRelativeURI;
+        }
+        
         return helper.URIWithinAppDir(dc, absURI);
     }
     
-    private static URI rootForSignedFilesInApp(final DeploymentContext dc) {
-        return new File(dc.getScratchDir("xml"), "signed/").toURI();
+    private static URI rootForSignedFilesInApp(final AppClientDeployerHelper helper) {
+        return helper.rootForSignedFilesInApp().toURI();
+    }
+
+    /**
+     * Returns an absolute URI for the root directory that contains JARs
+     * for submodules that are generated from a directory deployment submodule
+     * directory.
+     * @param dc the deployment context for the app client deployment underway
+     * @return absolute URI to the generated submodule JAR root directory
+     */
+    private static URI rootForGeneratedSubmoduleJAR(final DeploymentContext dc,
+            final AppClientDeployerHelper helper) {
+        final File f = new File(dc.getScratchDir("xml").getParentFile(), 
+                NamingConventions.anchorSubpathForNestedClient(helper.appName(dc)));
+        return f.toURI();
     }
     
     private File signedFileForGeneratedAppFile(final File unsignedFile) {
@@ -581,9 +605,9 @@ public class JavaWebStartInfo implements ConfigListener {
          * relative to the app's scratch directory to compute the URI relative
          * to generated/xml/(appName)/signed where the signed file should reside.
          */
-        final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
+        final File rootForSignedFilesInApp = helper.rootForSignedFilesInApp();
         rootForSignedFilesInApp.mkdirs();
-        final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").toURI().
+        final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").getParentFile().toURI().
                 relativize(unsignedFile.toURI());
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(unsignedFileURIRelativeToXMLDir);
         return new File(signedFileURI);
@@ -604,7 +628,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * 
          * 
          */
-        final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
+        final File rootForSignedFilesInApp = helper.rootForSignedFilesInApp();
         rootForSignedFilesInApp.mkdirs();
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(relURI);
         

@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ package org.glassfish.appclient.server.core;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.AbstractMap;
@@ -132,14 +133,28 @@ public class ApplicationSignedJARManager {
     }
 
     /**
+     * Adds a JAR to the manager, returning the URI for the file to be served.
+     * The URI within the anchor is derived from the absolute URI relative
+     * to the EAR's anchor on the server.
+     * @param absJARURI absolute URI of the unsigned file.
+     * @return URI to the file to be served
+     * @throws IOException
+     */
+    public URI addJAR(final URI absJARURI) throws IOException {
+        final URI jarURIRelativeToApp = EARDirectoryServerURI.relativize(absJARURI);
+        return addJAR(jarURIRelativeToApp, absJARURI);
+    }
+
+    /**
      * Adds a JAR to the manager, returning the URI to the file to be
      * served.  This might be an auto-signed file if the original JAR is
      * unsigned.
+     * @param uriWithinAnchor relative URI to the JAR within the anchor directory for the app
      * @param jarURI URI to the JAR file in the app to be served
      * @return URI to the JAR file to serve (either the original file or an auto-signed copy of the original)
      * @throws IOException
      */
-    public URI addJAR(final URI absJARURI) throws IOException {
+    public URI addJAR(final URI uriWithinAnchor, final URI absJARURI) throws IOException {
         /*
          * This method accomplishes three things:
          *
@@ -176,7 +191,8 @@ public class ApplicationSignedJARManager {
              * The developer did not sign this JARs, so arrange for it to be
              * auto-signed.
              */
-            result = autoSignedAppContentEntry(absJARURI);
+
+            result = autoSignedAppContentEntry(uriWithinAnchor, absJARURI);
             updateAliasToURIs(result.getKey(), autoSigningAlias);
             updateURIToAliases(result.getKey(), autoSigningAlias);
         } else {
@@ -252,9 +268,8 @@ public class ApplicationSignedJARManager {
      * data structures if it is not already present.
      */
     private synchronized Map.Entry<URI,StaticContent> autoSignedAppContentEntry(
-            final URI absURIToFile) {
-
-        final URI jarURIRelativeToApp = EARDirectoryServerURI.relativize(absURIToFile);
+            final URI jarURIRelativeToApp,
+            final URI absURIToFile) throws FileNotFoundException {
 
         StaticContent content = relURIToContent.get(jarURIRelativeToApp);
         if (content == null) {
