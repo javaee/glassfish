@@ -305,6 +305,8 @@ public abstract class ModuleScanner<T> extends JavaEEScanner implements Scanner<
             }
             try {                
                 elements.add(classLoader.loadClass(className));
+            } catch (NoClassDefFoundError err) {
+                AnnotationUtils.getLogger().log(Level.WARNING, "Error in annotation processing: " + err);
             } catch(ClassNotFoundException cnfe) {
                 AnnotationUtils.getLogger().log(Level.WARNING, "Cannot load " + className + " reason : " + cnfe.getMessage(), cnfe);
             }
