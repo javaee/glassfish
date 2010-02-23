@@ -174,8 +174,7 @@ public class WebServiceHandler extends AbstractHandler {
                 // this is an ejb !
                 EjbContext ctx = (EjbContext) annCtx;
                 bundleDesc = ctx.getDescriptor().getEjbBundleDescriptor();
-                // there is no need to explicitly set the version to 3.0, this will otw override platform default or the user specified.
-                //bundleDesc.setSpecVersion("3.0");
+                bundleDesc.setSpecVersion("3.0");
             } else {
                 // this has to be a servlet since there is no @Servlet annotation yet
                 if(annCtx instanceof WebComponentContext) {
@@ -186,8 +185,8 @@ public class WebServiceHandler extends AbstractHandler {
                 }
 
                 bundleDesc = ((WebBundleContext)annCtx).getDescriptor();
-                // there is no need to explicitly set the version to 2.5, , this will otw override platform default or the user specified.
-                //bundleDesc.setSpecVersion("2.5");
+
+                bundleDesc.setSpecVersion("2.5");
             }
         }catch (Exception e) {
             throw new AnnotationProcessorException(rb.getString("webservice.annotation.exception")+ e.getMessage());
