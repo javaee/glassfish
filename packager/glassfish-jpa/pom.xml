@@ -57,7 +57,7 @@
                 <configuration>
                     <tasks>
                         <if test="${do.compression}">
-			    <property name="compression" value="true" />
+			    <property name="compression" value="false" />
 			</if>
                         <ant dir="." antfile="build.xml" target="create.package" />
                     </tasks>
