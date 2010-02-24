@@ -37,6 +37,7 @@
 package com.sun.enterprise.security.auth.login.common;
 
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 /**
  * This class holds the user certificate for the certificate realm and the
@@ -115,7 +116,7 @@ public class X509CertificateCredential {
      * @return the hash code.
      */
     public int hashCode() {
-	return certChain.hashCode() + realm.hashCode() + alias.hashCode();
+	return Arrays.hashCode(certChain) + realm.hashCode() + ((alias != null)?alias.hashCode():0);
     }
 
     /**

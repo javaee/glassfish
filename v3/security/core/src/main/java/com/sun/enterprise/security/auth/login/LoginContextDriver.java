@@ -51,7 +51,6 @@ import com.sun.enterprise.common.iiop.security.GSSUPName;
 import com.sun.enterprise.common.iiop.security.AnonCredential;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityServicesUtil;
-import com.sun.enterprise.security.SecurityUtil;
 import com.sun.enterprise.security.common.AppservAccessController;
 //import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
@@ -61,18 +60,14 @@ import com.sun.enterprise.security.auth.login.common.LoginException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
 import com.sun.enterprise.security.audit.AuditManager;
-import com.sun.enterprise.security.auth.login.AssertedCredentials;
 
 // FIXME: ACC methods need to be moved to ACC-specific class.
-import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchUserException;
-import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 //import com.sun.enterprise.appclient.AppContainer;
 import com.sun.enterprise.security.common.SecurityConstants;
-import com.sun.enterprise.security.common.Util;
 import org.glassfish.internal.api.Globals;
 
 
@@ -514,6 +509,12 @@ public class LoginContextDriver  {
 
             Realm realm = Realm.getInstance(CertificateRealm.AUTH_TYPE);
             CertificateRealm certRealm = (CertificateRealm)realm;
+            String jaasCtx = certRealm.getJAASContext();
+            if (jaasCtx != null) {
+                // The subject has the Cretificate Credential.
+                LoginContext lg = new LoginContext(jaasCtx, fs, dummyCallback);
+                lg.login();
+            }
             certRealm.authenticate(fs, x500Name);
         } catch(Exception ex) {
             if (_logger.isLoggable(Level.INFO)) {
@@ -660,6 +661,12 @@ public class LoginContextDriver  {
             if (realm instanceof CertificateRealm) { // should always be true
     
                 CertificateRealm certRealm = (CertificateRealm)realm;
+                String jaasCtx = certRealm.getJAASContext();
+                if (jaasCtx != null) {
+                    // The subject has the Cretificate Credential.
+                    LoginContext lg = new LoginContext(jaasCtx, s, dummyCallback);
+                    lg.login();
+                }
                 certRealm.authenticate(s, x500name);
                 realm_name = CertificateRealm.AUTH_TYPE;
                 if(getAuditManager().isAuditOn()){

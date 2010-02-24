@@ -36,12 +36,10 @@
 
 package com.sun.enterprise.security.auth.realm.certificate;
 
+import com.sun.enterprise.security.SecurityContext;
 import java.util.*;
 import java.util.logging.Level;
-import java.io.*;
-import java.security.*;
 
-import javax.security.auth.login.*;
 import javax.security.auth.Subject;
 
 import org.glassfish.security.common.Group;
@@ -51,12 +49,9 @@ import com.sun.enterprise.security.auth.realm.NoSuchUserException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
-import com.sun.enterprise.security.util.*;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 
 
-import com.sun.enterprise.security.common.Util;
-import com.sun.enterprise.security.integration.AppServSecurityContext;
 import org.jvnet.hk2.annotations.Service;
 import sun.security.x509.X500Name;
 
@@ -129,6 +124,12 @@ public final class CertificateRealm extends IASRealm
                 defaultGroups.add(gp);
             }
         }
+
+        String jaasCtx = props.getProperty(IASRealm.JAAS_CONTEXT_PARAM);
+        if (jaasCtx != null) {
+            this.setProperty(IASRealm.JAAS_CONTEXT_PARAM, jaasCtx);
+        }
+
 
         /* future enhacement; allow using subset of DN as name field;
            requires RI fixes to handle subject & principal names
@@ -208,12 +209,11 @@ public final class CertificateRealm extends IASRealm
      * @return null
      *
      */
-    public String getJAASContext()
+    /*public String getJAASContext()
     {
-        _logger.warning("certrealm.nojaas");
-        return null;
-    }
-
+    _logger.warning("certrealm.nojaas");
+    return null;
+    }*/
 
     /**
      * Complete authentication of certificate user.
@@ -298,13 +298,13 @@ public final class CertificateRealm extends IASRealm
 	}
         
         
-        /*SecurityContext securityContext =
+        SecurityContext securityContext =
 	    new SecurityContext(name, subject);
         
-	SecurityContext.setCurrent(securityContext);*/
-        AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
+	SecurityContext.setCurrent(securityContext);
+        /*AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         AppServSecurityContext securityContext = secContext.newInstance(name, subject);
-        securityContext.setCurrentSecurityContext(securityContext);
+        securityContext.setCurrentSecurityContext(securityContext);*/
         
     }
 

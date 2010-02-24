@@ -109,6 +109,7 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
+import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
@@ -470,6 +471,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 Switch.getSwitch().getCallFlowAgent().addRequestInfo(
                 RequestInfo.REMOTE_USER, x500Name.getName());*/
                 subject.getPublicCredentials().add(x500Name);
+                X509CertificateCredential certificateCred = new X509CertificateCredential(certs, null, CertificateRealm.AUTH_TYPE);
+                subject.getPublicCredentials().add(certificateCred);
                 LoginContextDriver.login(subject, X500Name.class);
                 realm_name = CertificateRealm.AUTH_TYPE;
             } else {
