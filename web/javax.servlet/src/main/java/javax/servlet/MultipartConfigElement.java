@@ -57,6 +57,8 @@ public class MultipartConfigElement {
     public MultipartConfigElement(String location) {
         if (location == null) {
             this.location = "";
+        } else {
+            this.location = location;
         }
         this.maxFileSize = -1L;
         this.maxRequestSize = -1L;
@@ -77,6 +79,8 @@ public class MultipartConfigElement {
             long maxRequestSize, int fileSizeThreshold) {
         if (location == null) {
             this.location = "";
+        } else {
+            this.location = location;
         }
         this.maxFileSize = maxFileSize;
         this.maxRequestSize = maxRequestSize;
