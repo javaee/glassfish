@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -238,7 +238,7 @@ public class SecurityHandler {
           }else{
              Map<String, Object> cMap = new HashMap();
              cMap.put("Name", attrMap.get("Name"));
-             cMap.put("Classname", attrMap.get("classnameInput"));
+             cMap.put("Classname", classname);
 
              Map[] propMaps = new Map[propList.size()];
              int i=0;
