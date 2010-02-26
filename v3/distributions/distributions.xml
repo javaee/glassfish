@@ -285,12 +285,12 @@ own identifying information: Portions Copyright [yyyy]
     <apply executable="pack200" dest="${image.directory}/${install.dir.name}/glassfish/modules" parallel="false">
         <targetfile/>
         <srcfile/>
-	<fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/javahelp.jar" />
+	<fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/javahelp.jar,**/org.eclipse.persistence.*.jar" />
         <mapper type="glob" from="*.jar" to="*.pack.gz"/>
     </apply>
     <!-- remove *.pack.gz files -->
     <delete>
-	    <fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/javahelp.jar" />
+	    <fileset dir="${image.directory}/${install.dir.name}/glassfish/modules" includes="**/*.jar" excludes="**/javahelp.jar,**/org.eclipse.persistence.*.jar" />
     </delete>
 </target>
 </project>
