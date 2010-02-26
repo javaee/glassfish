@@ -12,18 +12,17 @@
         ]>
 
 <project name="jdbc" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
     <!--
-        &commonSetup;
-        &commonBuild;
-        &reporting;
         &jdbcCommon;
         &jdbcCommonProperties;
-    -->
     &eeCommon;
     &eeCommonProperties;
+    -->
     &reporting;
 
-    <target name="all">
+    <target name="jdbc-all">
         <delete>
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
         </delete>
@@ -33,10 +32,37 @@
         <delete>
             <fileset dir="." includes="*.output"/>
         </delete>
-        <record name="jdbc.output" action="start"/>
+	<record name="jdbc.output" action="start"/>
+	<antcall target="run-tests"/>
+	<antcall target="report">
+	    <param name="htmlfile" value="${env.APS_HOME}/JDBCtest_results.html"/>
+	</antcall>
+	<record name="jdbc.output" action="stop"/>
+	
+    </target>
+	
+    <target name="jdbc-all-security">
+        <delete>
+            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        </delete>
+        <delete>
+	    <fileset dir="${env.APS_HOME}" includes="JDBCSecuritytest_results.html"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="*.output"/>
+        </delete>
+	<record name="jdbc.secman.output" action="start"/>
+	<antcall target="run-tests"/>
+	<antcall target="report">
+	    <param name="htmlfile" value="${env.APS_HOME}/JDBCSecuritytest_results.html"/>
+	</antcall>
+	<record name="jdbc.secman.output" action="stop"/>
+    </target>
+	
+    <target name="run-tests">
 	<ant dir="appauth" target="all"/>
 	<ant dir="appauthtx" target="all"/>
-        <ant dir="contauth" target="all"/>
+	<ant dir="contauth" target="all"/>
 	<ant dir="contauthtx" target="all"/>
 	<ant dir="contauth1" target="all"/>
 	<ant dir="contauth1tx" target="all"/>
@@ -76,8 +102,6 @@
 	<ant dir="custom-validation-1" target="all"/>
 	<ant dir="flushconnectionpool" target="all"/>
 	<!--<antcall target="all-oracle"/>-->
-	<antcall target="report"/>
-	<record name="jdbc.output" action="stop"/>
     </target>
 
     <target name="ee-all">
@@ -123,6 +147,10 @@
         <record name="jdbc.output" action="stop"/>
     </target>
 
+    <target name="all">
+	<antcall target="jdbc-all"/>
+    </target>
+
     <target name="all-oracle">
 	<record name="jdbc-oracle.output" action="start"/>
 	<ant dir="connsharing" target="xa"/>
@@ -133,6 +161,18 @@
 	<ant dir="simpleora" target="all"/>
 	<ant dir="init-sql" target="all"/>
 	<record name="jdbc-oracle.output" action="stop"/>
+    </target>
+
+    <target name="all-with-security-manager">
+	<antcall target="create-jvm-options">
+            <param name="option" value="-Djava.security.manager"/>
+        </antcall>
+	<antcall target="restart-server"/>
+	<antcall target="jdbc-all-security"/>
+	<antcall target="delete-jvm-options">
+            <param name="option" value="-Djava.security.manager"/>
+        </antcall>
+	<antcall target="restart-server"/>
     </target>
 
     <target name="appauth">

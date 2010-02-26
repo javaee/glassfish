@@ -1,6 +1,6 @@
 <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
 <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
-<property name="htmlfile" value="${env.APS_HOME}/JDBCtest_results.html" />
+<!--<property name="htmlfile" value="${env.APS_HOME}/JDBCtest_results.html" />-->
 
 <target name="report">
 <echo message="Comparing results with expected results"/>

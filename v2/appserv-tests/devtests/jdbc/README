@@ -2,3 +2,4 @@ unit tests on jdbc
 
 Run all tests : ant all
 Run all oracle tests : ant all-oracle
+Run with security manager turned on : ant all-with-security-manager
