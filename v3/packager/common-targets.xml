@@ -33,7 +33,7 @@ own identifying information: Portions Copyright [yyyy]
             <srcfile/>
             <fileset dir="target/stage/${install.dir.name}/glassfish/modules" 
 		    includes="**/*.jar"
-		    excludes="**/javahelp.jar" />
+		    excludes="**/javahelp.jar,**/org.eclipse.persistence.*.jar" />
             <mapper type="glob" from="*.jar" to="*.pack.gz"/>
         </apply>
         <apply executable="unpack200" 
