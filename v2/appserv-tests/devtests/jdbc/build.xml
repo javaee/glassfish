@@ -75,7 +75,7 @@
 	<ant dir="custom-validation" target="all"/>
 	<ant dir="custom-validation-1" target="all"/>
 	<ant dir="flushconnectionpool" target="all"/>
-	<antcall target="all-oracle"/>
+	<!--<antcall target="all-oracle"/>-->
 	<antcall target="report"/>
 	<record name="jdbc.output" action="stop"/>
     </target>
