@@ -455,8 +455,14 @@ public class SecurityHandler {
      )
      public static void hasManageUserButton(HandlerContext handlerCtx){
 
-        String realmName = (String) handlerCtx.getInputValue("realmName");
-        handlerCtx.setOutputValue("result", V3AMX.getInstance().getRealmsMgr().supportsUserManagement(realmName));
+        try{
+            String realmName = (String) handlerCtx.getInputValue("realmName");
+            handlerCtx.setOutputValue("result", V3AMX.getInstance().getRealmsMgr().supportsUserManagement(realmName));
+        }catch(Exception ex){
+            //refer to issue# 11623. Backend may throw exception if there is any issue with instantiating this realm.
+            //we need to catch that and just set to false for manage user for this realm.
+            handlerCtx.setOutputValue("result", false);
+        }
     }
 
     private static String getGroupNames(String realmName, String userName){
