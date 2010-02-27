@@ -42,6 +42,7 @@ import javax.transaction.xa.Xid;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.ContractProvided;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.invocation.ComponentInvocation;
 
@@ -55,6 +56,7 @@ import com.sun.enterprise.transaction.api.TransactionImport;
 **/
 
 @Service
+@ContractProvided(TransactionManager.class) // Needed because we can't change spec provided class
 public class TransactionManagerHelper implements TransactionManager, TransactionImport {
 
     @Inject

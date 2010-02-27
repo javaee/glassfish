@@ -57,6 +57,7 @@ import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
 
@@ -74,6 +75,7 @@ import org.jvnet.hk2.component.Habitat;
  * @author Marina Vatkina
  */
 @Service
+@ContractProvided(UserTransaction.class) // Needed because we can't change spec provided class
 @Scoped(PerLookup.class)
 public class UserTransactionImpl implements UserTransaction, Serializable
 {

@@ -86,7 +86,10 @@ public class TransactionNamingProxy
     private static final String TRANSACTION_SYNC_REGISTRY 
             = "java:comp/TransactionSynchronizationRegistry";
 
-    private static final String TRANSACTION_MGR 
+    private static final String APPSERVER_TRANSACTION_SYNC_REGISTRY
+            = "java:appserver/TransactionSynchronizationRegistry";
+
+    private static final String TRANSACTION_MGR
             = "java:pm/TransactionManager";
 
     private static final String APPSERVER_TRANSACTION_MGR 
@@ -109,7 +112,7 @@ public class TransactionNamingProxy
         if (USER_TX.equals(name)) {
             checkUserTransactionLookupAllowed();
             return habitat.getComponent(UserTransactionImpl.class);
-        } else if (TRANSACTION_SYNC_REGISTRY.equals(name)) {
+        } else if (TRANSACTION_SYNC_REGISTRY.equals(name) || APPSERVER_TRANSACTION_SYNC_REGISTRY.equals(name)) {
             return habitat.getComponent(TransactionSynchronizationRegistryImpl.class);
         } else if (APPSERVER_TRANSACTION_MGR.equals(name)) {
             return habitat.getComponent(TransactionManagerHelper.class);

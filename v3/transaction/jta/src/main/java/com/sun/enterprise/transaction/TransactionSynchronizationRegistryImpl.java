@@ -47,8 +47,10 @@ import com.sun.enterprise.util.i18n.StringManager;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.ContractProvided;
 
 @Service
+@ContractProvided(TransactionSynchronizationRegistry.class) // Needed because we can't change spec provided class
 public class TransactionSynchronizationRegistryImpl 
              implements TransactionSynchronizationRegistry {
 
