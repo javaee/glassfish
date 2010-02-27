@@ -840,7 +840,7 @@ public class JavaEETransactionManagerSimplified
             }
             else  {
                 try{
-                    // it might be a JTS imported global tx or an error
+                    // an XA transaction
                     getDelegate().commitDistributedTransaction(); 
                 }finally{
                     if ( tx != null ) {
@@ -878,7 +878,7 @@ public class JavaEETransactionManagerSimplified
             }
             else  {
                 try {
-                    // a JTS imported global tx or an error
+                    // an XA transaction
                     getDelegate().rollbackDistributedTransaction(); 
                 }finally{
                     if ( tx != null ) {
