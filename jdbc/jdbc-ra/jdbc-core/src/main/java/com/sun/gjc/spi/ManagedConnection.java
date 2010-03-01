@@ -286,7 +286,6 @@ public class ManagedConnection implements javax.resource.spi.ManagedConnection,
      */
     public void cleanup() throws ResourceException {
         logFine("In cleanup");
-        checkIfValid();
 
         /**
          * may need to set the autocommit to true for the non-pooled case.
