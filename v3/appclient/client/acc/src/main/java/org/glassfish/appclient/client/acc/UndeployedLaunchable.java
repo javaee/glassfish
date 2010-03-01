@@ -94,7 +94,11 @@ public class UndeployedLaunchable implements Launchable {
          * automatically.
          */
         Archivist archivist = af.getArchivist(ra, classLoader);
-
+        if (archivist == null) {
+            throw new UserError(localStrings.get("appclient.invalidArchive",
+                    ra.getURI().toASCIIString()));
+        }
+        
         if (archivist.getModuleType().equals(XModuleType.CAR)) {
             return new UndeployedLaunchable(habitat, ra,
                     (AppClientArchivist) archivist, callerSuppliedMainClassName);
