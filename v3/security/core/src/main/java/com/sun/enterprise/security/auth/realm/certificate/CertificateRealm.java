@@ -50,6 +50,8 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 
 import com.sun.enterprise.security.auth.realm.IASRealm;
+import java.security.Principal;
+import javax.security.auth.callback.Callback;
 
 
 import org.jvnet.hk2.annotations.Service;
@@ -91,7 +93,7 @@ public final class CertificateRealm extends IASRealm
 {
     // Descriptive string of the authentication type of this realm.
     public static final String AUTH_TYPE = "certificate";
-    private Vector defaultGroups = new Vector();
+    private Vector<String> defaultGroups = new Vector<String>();
 
     // Optional link to a realm to verify group (possibly user, later)
     // public static final String PARAM_USEREALM = "use-realm";
@@ -290,10 +292,10 @@ public final class CertificateRealm extends IASRealm
         }
 
         if (defaultGroups != null) {
-	    Set principalSet = subject.getPrincipals();
-	    Enumeration e = defaultGroups.elements();
+	    Set<Principal> principalSet = subject.getPrincipals();
+	    Enumeration<String> e = defaultGroups.elements();
 	    while (e.hasMoreElements()) {
-		principalSet.add(new Group((String) e.nextElement()));
+		principalSet.add(new Group(e.nextElement()));
 	    }
 	}
         
@@ -308,5 +310,16 @@ public final class CertificateRealm extends IASRealm
         
     }
 
+    public final static class AppContextCallback implements Callback {
+        private String contextRoot;
+
+        public String getContextRoot() {
+            return contextRoot;
+        }
+
+        public void setContextRoot(String contextRoot) {
+            this.contextRoot = contextRoot;
+        }
+    }
 
 }

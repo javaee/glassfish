@@ -36,13 +36,16 @@
 
 package com.sun.enterprise.security.auth.login.common;
 
-import java.util.*;
+import com.sun.enterprise.security.auth.realm.certificate.CertificateRealm;
+import com.sun.enterprise.security.common.AppservAccessController;
 import java.io.*;
-import javax.security.auth.*;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.util.Set;
+import javax.security.auth.Subject;
 import javax.security.auth.callback.*;
-import javax.security.auth.login.*;
-import java.util.logging.*;
-import com.sun.logging.*;
+import javax.security.auth.message.callback.GroupPrincipalCallback;
+import org.glassfish.security.common.Group;
 
 
 /**
@@ -53,17 +56,22 @@ import com.sun.logging.*;
  */
 public class ServerLoginCallbackHandler implements CallbackHandler 
 {
-    String username = null;
-    String password = null; 
+    private String username = null;
+    private String password = null;
+    private String contextRoot = null;
 
     public ServerLoginCallbackHandler(String username, String password) {
 	this.username = username;
 	this.password = password;
     }
+
+    public ServerLoginCallbackHandler(String username, String password, String contextRoot) {
+	this.username = username;
+	this.password = password;
+        this.contextRoot = contextRoot;
+    }
     
     public ServerLoginCallbackHandler(){
-	username = null;
-	password = null;
     }
     
     public void setUsername(String user){
@@ -72,6 +80,10 @@ public class ServerLoginCallbackHandler implements CallbackHandler
     
     public void setPassword(String pass){
 	password = pass;
+    }
+
+    public void setContextRoot(String contextRoot) {
+        this.contextRoot = contextRoot;
     }
 
     
@@ -91,8 +103,35 @@ public class ServerLoginCallbackHandler implements CallbackHandler
 	    } else if (callbacks[i] instanceof PasswordCallback){
 		PasswordCallback pswd = (PasswordCallback)callbacks[i];
 		pswd.setPassword(password.toCharArray());
-	    }
+	    } else if (callbacks[i] instanceof CertificateRealm.AppContextCallback){
+                ((CertificateRealm.AppContextCallback) callbacks[i]).setContextRoot(contextRoot);
+            } else if (callbacks[i] instanceof GroupPrincipalCallback){
+                processGroupPricipal((GroupPrincipalCallback) callbacks[i]);
+            }
 	}
+    }
+
+    private void processGroupPricipal(GroupPrincipalCallback gpCallback) {
+        final Subject fs = gpCallback.getSubject();
+        final String[] groups = gpCallback.getGroups();
+        if (groups != null && groups.length > 0) {
+            AppservAccessController.doPrivileged(new PrivilegedAction(){
+                public java.lang.Object run() {
+                    for (String group : groups) {
+                        fs.getPrincipals().add(new Group(group));
+                    }
+                    return fs;
+                }
+            });
+        } else if (groups == null) {
+            AppservAccessController.doPrivileged(new PrivilegedAction(){
+                public java.lang.Object run() {
+                    Set<Principal> principalSet = fs.getPrincipals();
+                    principalSet.removeAll(fs.getPrincipals(Group.class));
+                    return fs;
+                }
+            });
+        }
     }
 }
 

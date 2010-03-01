@@ -245,7 +245,7 @@ public class LoginContextDriver  {
             doGSSUPLogin(subject);
             
         } else if (cls.equals(X500Name.class)) {
-            doX500Login(subject);
+            doX500Login(subject, null);
             
         } else {
             _logger.log(Level.INFO, "java_security.unknown_credential",
@@ -635,7 +635,7 @@ public class LoginContextDriver  {
      * into this class.
      *
      */
-    private static void doX500Login(Subject s)
+    public static void doX500Login(Subject s, String appContextRoot)
         throws LoginException
     {
        if(_logger.isLoggable(Level.FINE)){        
@@ -664,7 +664,7 @@ public class LoginContextDriver  {
                 String jaasCtx = certRealm.getJAASContext();
                 if (jaasCtx != null) {
                     // The subject has the Cretificate Credential.
-                    LoginContext lg = new LoginContext(jaasCtx, s, dummyCallback);
+                    LoginContext lg = new LoginContext(jaasCtx, s, new ServerLoginCallbackHandler(user, null, appContextRoot));
                     lg.login();
                 }
                 certRealm.authenticate(s, x500name);
@@ -700,7 +700,7 @@ public class LoginContextDriver  {
      * credential of the given type is used.
      *
      */
-    private static Object getPublicCredentials(Subject s, Class cls)
+    private static Object getPublicCredentials(Subject s, Class<?> cls)
         throws LoginException
     {
         Set credset = s.getPublicCredentials(cls);
@@ -747,11 +747,11 @@ public class LoginContextDriver  {
      *
      */
     private static Object getPrivateCredentials(Subject subject,
-                                                Class cls)
+                                                Class<?> cls)
         throws LoginException
     {
         final Subject s = subject;
-        final Class cl = cls;
+        final Class<?> cl = cls;
         
         final Set credset = (Set)
             AppservAccessController.doPrivileged(new PrivilegedAction() {
@@ -982,8 +982,8 @@ private static void setSecurityContext(String userName,
      * @param Class the class of the credential object stored in the subject
      *
      */
-    private  static void postClientAuth(Subject subject, Class clazz){
-        final Class clas = clazz;
+    private  static void postClientAuth(Subject subject, Class<?> clazz){
+        final Class<?> clas = clazz;
         final Subject fs = subject;
         Set credset = 
             (Set) AppservAccessController.doPrivileged(new PrivilegedAction() {

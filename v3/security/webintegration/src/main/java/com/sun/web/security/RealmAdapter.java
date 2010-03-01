@@ -85,7 +85,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+//import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
@@ -109,7 +109,6 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.login.DigestCredentials;
 import com.sun.enterprise.security.auth.digest.api.Key;
 import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
-import com.sun.enterprise.security.auth.login.common.X509CertificateCredential;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
@@ -128,7 +127,7 @@ import org.jvnet.hk2.component.PostConstruct;
 @Scoped(PerLookup.class)
 public class RealmAdapter extends RealmBase implements RealmInitializer, PostConstruct {
 
-    private static final String UNCONSTRAINED = "unconstrained";
+    //private static final String UNCONSTRAINED = "unconstrained";
     private static final Logger _logger = LogDomains.getLogger(RealmAdapter.class, LogDomains.WEB_LOGGER);
     private static final ResourceBundle rb = _logger.getResourceBundle();
     public static final String SECURITY_CONTEXT = "SecurityContext";
@@ -136,7 +135,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     public static final String FORM = "FORM";
     private static final String SERVER_AUTH_CONTEXT = "__javax.security.auth.message.ServerAuthContext";
     private static final String MESSAGE_INFO = "__javax.security.auth.message.MessageInfo";
-    private static WebSecurityDeployerProbeProvider websecurityProbeProvider = new WebSecurityDeployerProbeProvider();
+    private static final WebSecurityDeployerProbeProvider websecurityProbeProvider = new WebSecurityDeployerProbeProvider();
 
     // name of system property that can be used to define 
     // corresponding default provider for system apps.
@@ -144,11 +143,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             "system_httpservlet_security_provider";
 
     //private String realm = "default";
-    private SecurityRoleMapper mapper = null;
+    //private SecurityRoleMapper mapper = null;
     private WebBundleDescriptor webDesc = null;
 
     // BEGIN IASRI 4747594
-    private HashMap runAsPrincipals = null;
+    private HashMap<String,String> runAsPrincipals = null;
     // END IASRI 4747594
     // required for realm-per-app login
     private String _realmName = null;
@@ -172,7 +171,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     protected WebSecurityManagerFactory webSecurityManagerFactory = null;
             
     protected boolean isCurrentURIincluded = false;
-    private ArrayList roles = null;
+    //private ArrayList roles = null;
     /* the following fields are used to implement a bypass of
      * FBL related targets
      */
@@ -180,7 +179,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     private boolean contextEvaluated = false;
     private String loginPage = null;
     private String errorPage = null;
-    private static SecurityConstraint[] emptyConstraints =
+    private final static SecurityConstraint[] emptyConstraints =
             new SecurityConstraint[]{};
     /**
      * the default provider id for system apps if one has been established.
@@ -191,7 +190,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             getDefaultSystemProviderID();
     private String appID;
     private boolean isSystemApp;
-    private String jmacProviderRegisID = null;
+    //private String jmacProviderRegisID = null;
     private HttpServletHelper helper = null;
 
     @Inject
@@ -471,9 +470,10 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 Switch.getSwitch().getCallFlowAgent().addRequestInfo(
                 RequestInfo.REMOTE_USER, x500Name.getName());*/
                 subject.getPublicCredentials().add(x500Name);
-                X509CertificateCredential certificateCred = new X509CertificateCredential(certs, null, CertificateRealm.AUTH_TYPE);
+                // Put the certificate chain as an List in the subject, to be accessed by user's LoginModule.
+                final List<X509Certificate> certificateCred = Arrays.asList(certs);
                 subject.getPublicCredentials().add(certificateCred);
-                LoginContextDriver.login(subject, X500Name.class);
+                LoginContextDriver.doX500Login(subject, appID);
                 realm_name = CertificateRealm.AUTH_TYPE;
             } else {
                 /*V3:Comment Switch.getSwitch().getCallFlowAgent().addRequestInfo(
@@ -529,7 +529,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             return;
         }
 
-        String runAs = (String) runAsPrincipals.get(servletName);
+        String runAs = runAsPrincipals.get(servletName);
 
         if (runAs != null) {
             // The existing SecurityContext is saved - however, this seems
@@ -613,7 +613,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             return;
         }
 
-        String runAs = (String) runAsPrincipals.get(servletName);
+        String runAs = runAsPrincipals.get(servletName);
         if (runAs != null) {
             setSecurityContext((SecurityContext) inv.getOldSecurityContext()); // always null
 
@@ -639,7 +639,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * @param principalSet
      * @return true whe a null principal is to be set.
      */
-    private boolean principalSetContainsOnlyAnonymousPrincipal(Set principalSet) {
+    private boolean principalSetContainsOnlyAnonymousPrincipal(Set<Principal> principalSet) {
         boolean rvalue = false;
         Principal defaultPrincipal = SecurityContext.getDefaultCallerPrincipal();
         if (defaultPrincipal != null && principalSet != null) {
@@ -1320,7 +1320,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
 
         if (rvalue) {
-            Set principalSet = subject.getPrincipals();
+            Set<Principal> principalSet = subject.getPrincipals();
             // must be at least one new principal to establish 
             // non-default security context
             if (principalSet != null && !principalSet.isEmpty() &&
@@ -1486,7 +1486,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         Application app = webDesc.getApplication();
 
        
-        mapper = app.getRoleMapper();
+//        mapper = app.getRoleMapper();
         LoginConfiguration loginConfig = webDesc.getLoginConfiguration();
         _realmName = app.getRealm();
         if (_realmName == null && loginConfig != null) {
@@ -1498,7 +1498,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
         // BEGIN IASRI 4747594
         CONTEXT_ID = WebSecurityManager.getContextID(webDesc);
-        runAsPrincipals = new HashMap();
+        runAsPrincipals = new HashMap<String, String>();
         Iterator bundle = webDesc.getWebComponentDescriptors().iterator();
 
         while (bundle.hasNext()) {
@@ -1556,9 +1556,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         } else if (p instanceof WebPrincipal) {
             return ((WebPrincipal) p).getSecurityContext();
         } else {
-            return (SecurityContext) AccessController.doPrivileged(new PrivilegedAction() {
+            return AccessController.doPrivileged(new PrivilegedAction<SecurityContext>() {
 
-                public Object run() {
+                public SecurityContext run() {
                     Subject s = new Subject();
                     s.getPrincipals().add(p);
                     return new SecurityContext(p.getName(), s);
