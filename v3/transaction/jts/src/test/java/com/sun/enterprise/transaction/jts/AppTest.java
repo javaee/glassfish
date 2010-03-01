@@ -43,6 +43,7 @@ import junit.framework.TestSuite;
 
 import java.util.logging.*;
 import javax.transaction.*;
+import javax.transaction.xa.*;
 import java.beans.PropertyChangeEvent;
 
 import com.sun.enterprise.config.serverbeans.ServerTags;
@@ -54,6 +55,14 @@ import com.sun.enterprise.transaction.UserTransactionImpl;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
 import com.sun.enterprise.transaction.JavaEETransactionManagerSimplifiedDelegate;
 import com.sun.enterprise.transaction.TransactionServiceConfigListener;
+
+import com.sun.jts.jtsxa.OTSResourceImpl;
+
+import com.sun.enterprise.resource.*;
+import com.sun.enterprise.resource.allocator.ResourceAllocator;
+import com.sun.enterprise.resource.pool.PoolManagerImpl;
+
+import com.sun.logging.LogDomains;
 
 /**
  * Unit test for simple App.
@@ -465,6 +474,127 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testCommitOnePhaseWithHeuristicExc() {
+        System.out.println("**Testing TM with HeuristicExc during 1PC commit ===>");
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()), 
+                "Active");
+
+            // Create and set invMgr
+            createUtx();
+            Transaction tx = t.getTransaction();
+            TestResource theResource = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            theResource.setCommitErrorCode(XAException.XA_HEURRB);
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            
+            System.out.println("**Calling TM commit ===>");
+            t.commit();
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
+            assert (false);
+        } catch (HeuristicRollbackException ex) {
+            System.out.println("**Caught expected HeuristicRollbackException ...");
+            try {
+                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+                System.out.println("**Status after commit: " + status + " <===");
+            } catch (Exception ex1) {
+                ex1.printStackTrace();
+            }
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testCommitOnePhaseWithXAExc() {
+        System.out.println("**Testing TM with failed 1PC commit ===>");
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()), 
+                "Active");
+
+            // Create and set invMgr
+            createUtx();
+            Transaction tx = t.getTransaction();
+            TestResource theResource = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            theResource.setCommitErrorCode(XAException.XAER_RMFAIL);
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            
+            System.out.println("**Calling TM commit ===>");
+
+            // Suppress stack traces
+            LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+
+            t.commit();
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
+            assert (false);
+        } catch (SystemException ex) {
+            System.out.println("**Caught expected SystemException during 1PC...");
+            try {
+                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+                System.out.println("**Status after commit: " + status + " <===");
+            } catch (Exception ex1) {
+                System.out.println("**Caught exception checking for status ...");
+                ex1.printStackTrace();
+            }
+            assert (true);
+        } catch (Exception ex) {
+            System.out.println("**Caught NOT a SystemException during 1PC...");
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
+    public void testCommit2PCWithXAExc() {
+        System.out.println("**Testing TM with failed 2PC commit ===>");
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()), 
+                "Active");
+
+            // Create and set invMgr
+            createUtx();
+            Transaction tx = t.getTransaction();
+            TestResource theResource = new TestResource();
+            TestResource theResource1 = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            t.enlistResource(tx, new TestResourceHandle(theResource1));
+
+            theResource1.setCommitErrorCode(XAException.XAER_RMFAIL);
+
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            t.delistResource(tx, new TestResourceHandle(theResource1), XAResource.TMSUCCESS);
+            
+            System.out.println("**Calling TM commit ===>");
+            t.commit();
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
+            assert (false);
+        } catch (SystemException ex) {
+            System.out.println("**Caught expected SystemException during 2PC...");
+            try {
+                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+                System.out.println("**Status after commit: " + status + " <===");
+            } catch (Exception ex1) {
+                System.out.println("**Caught exception checking for status ...");
+                ex1.printStackTrace();
+            }
+            assert (true);
+        } catch (Exception ex) {
+            System.out.println("**Caught NOT a SystemException during 2PC...");
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     private UserTransaction createUtx() throws javax.naming.NamingException {
         UserTransaction utx = new UserTransactionImpl();
         InvocationManager im = new org.glassfish.api.invocation.InvocationManagerImpl();
@@ -513,4 +643,125 @@ public class AppTest extends TestCase {
             called_afterCompletion = true;
         }
     }
+
+    static class TestResource implements XAResource {
+    
+      // allow only one resource in use at a time
+      private boolean inUse;
+    
+      private int commitErrorCode = 9999;
+    
+      // to test different xaexception error codes
+      public void setCommitErrorCode(int errorCode) {
+        this.commitErrorCode = errorCode;
+      }
+    
+    
+      public void commit(Xid xid, boolean onePhase) throws XAException{
+        // test goes here
+        if (commitErrorCode != 9999) {
+          System.out.println("throwing XAException." + commitErrorCode + " during " + (onePhase? "1" : "2") + "pc");
+          throw new XAException(commitErrorCode);
+        }
+      }
+    
+      public boolean isSameRM(XAResource xaresource)
+        throws XAException {
+          return xaresource == this;
+      }
+    
+    
+      public void rollback(Xid xid)
+            throws XAException {
+      }
+    
+      public int prepare(Xid xid)
+            throws XAException {
+              return XAResource.XA_OK;
+      }
+    
+      public boolean setTransactionTimeout(int i)
+            throws XAException {
+              return true;
+       }
+    
+       public int getTransactionTimeout()
+            throws XAException {
+            return 0;
+        }
+       public void forget(Xid xid)
+            throws XAException {
+            inUse = false;
+        }
+    
+       public void start(Xid xid, int flags)
+            throws XAException {
+              if (inUse)
+                throw new XAException(XAException.XAER_NOTA);
+              inUse = true;
+       }
+    
+    
+         public void end(Xid xid, int flags)
+            throws XAException {
+              inUse = false;
+        }
+    
+    
+       public Xid[] recover(int flags)
+            throws XAException {
+            return null;
+        }
+    
+    }
+  
+    static class TestResourceHandle extends ResourceHandle {
+        private XAResource resource;
+        private static PoolManagerImpl poolMgr = new PoolManagerImpl(); 
+
+        public TestResourceHandle(XAResource resource) {
+          super(null,new ResourceSpec("testResource",0) ,null,null);
+          this.resource = resource;
+        }
+  
+        public boolean isTransactional() {
+          return true;
+        }
+  
+        public boolean isShareable() {
+          return false;
+        }
+  
+        public boolean supportsXA() {
+          return true;
+        }
+         
+        public ResourceAllocator getResourceAllocator() {
+          return null;
+        }
+  
+        public Object getResource() {
+          return resource;
+        }
+  
+        public XAResource getXAResource() {
+          return resource;
+        }
+  
+        public Object getUserConnection() {
+          return null;
+        }
+  
+        public ClientSecurityInfo getClientSecurityInfo() {
+          return null;
+        }
+  
+        public void fillInResourceObjects(Object userConnection, XAResource xares) {
+        }
+  
+        public void enlistedInTransaction(Transaction tran) throws IllegalStateException {
+            poolMgr.resourceEnlisted(tran, this);
+        }
+    }
+
 }

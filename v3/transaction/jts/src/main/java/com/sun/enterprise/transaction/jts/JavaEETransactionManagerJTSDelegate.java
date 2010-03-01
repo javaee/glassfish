@@ -139,8 +139,7 @@ public class JavaEETransactionManagerJTSDelegate
         lao = b;
     }
 
-    /** XXX Throw an exception if called ??? XXX
-     *  it might be a JTS imported global tx or an error
+    /** An XA transaction commit
      */
     public void commitDistributedTransaction() throws 
             RollbackException, HeuristicMixedException, 
@@ -186,9 +185,8 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
-    /** XXX Throw an exception if called ??? XXX
-     *  it might be a JTS imported global tx or an error
-     */
+    /** An XA transaction rollback
+    */
     public void rollbackDistributedTransaction() throws IllegalStateException, 
             SecurityException, SystemException {
 
