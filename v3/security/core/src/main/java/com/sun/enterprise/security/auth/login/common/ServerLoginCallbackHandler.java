@@ -104,7 +104,7 @@ public class ServerLoginCallbackHandler implements CallbackHandler
 		PasswordCallback pswd = (PasswordCallback)callbacks[i];
 		pswd.setPassword(password.toCharArray());
 	    } else if (callbacks[i] instanceof CertificateRealm.AppContextCallback){
-                ((CertificateRealm.AppContextCallback) callbacks[i]).setContextRoot(contextRoot);
+                ((CertificateRealm.AppContextCallback) callbacks[i]).setAppName(contextRoot);
             } else if (callbacks[i] instanceof GroupPrincipalCallback){
                 processGroupPricipal((GroupPrincipalCallback) callbacks[i]);
             }

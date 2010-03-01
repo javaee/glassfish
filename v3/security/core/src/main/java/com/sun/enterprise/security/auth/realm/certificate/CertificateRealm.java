@@ -310,15 +310,33 @@ public final class CertificateRealm extends IASRealm
         
     }
 
+    /**
+     * <p> A <code>LoginModule</code> for <code>CertificateRealm</code>
+     * can instantiate and pass a <code>AppContextCallback</code>
+     * to <code>handle</code> method of the passed
+     * <code>CallbackHandler</code> to retrieve the application
+     * name information.
+     */
     public final static class AppContextCallback implements Callback {
-        private String contextRoot;
+        private String appName;
 
-        public String getContextRoot() {
-            return contextRoot;
+        /**
+         * Get the application name.
+         *
+         * <p>
+         *
+         * @return the application name. Non-null only for web container.
+         */
+        public String getAppName() {
+            return appName;
         }
 
-        public void setContextRoot(String contextRoot) {
-            this.contextRoot = contextRoot;
+        /**
+         * Set the application name.
+         * 
+         */
+        public void setAppName(String appName) {
+            this.appName = appName;
         }
     }
 
