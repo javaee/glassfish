@@ -2,6 +2,7 @@ package com.sun.blogs.foo.samples.ProbeApp;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.annotation.Resource;
@@ -23,15 +24,15 @@ public class ProbeServlet extends HttpServlet {
     @Resource
     private ProbeClientMediator listenerRegistrar;
 
-    private void fireProbe() {
-        myProbeMethod1("fired-probe");
+   @Probe(name="myProbe")
+    public void myProbe(String s) {
+        System.out.println("inside myProbeMethod called with this arg: " + s);
     }
-
-    // all boilerplate below...
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        fireProbe();
+        
+        myProbe("Hello #" + counter.incrementAndGet());
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
@@ -40,7 +41,7 @@ public class ProbeServlet extends HttpServlet {
             out.println("<title>Servlet ProbeServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Probe Name is fooblog:samples:ProbeServlet:myProbe1</h1>");
+            out.println("<h1>Probe Name is fooblog:samples:ProbeServlet:myProbe</h1>");
             
             out.println("</body>");
             out.println("</html>");
@@ -48,12 +49,7 @@ public class ProbeServlet extends HttpServlet {
             out.close();
         }
     } 
-
-    @Probe(name="myProbe1")
-    public void myProbeMethod1(String s) {
-        System.out.println("myProbeMethod called with " + s);
-    }
-
+ 
     @Override
     public void init() throws ServletException {
         if(probeProviderFactory == null)
@@ -108,5 +104,5 @@ public class ProbeServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-
+    private final static AtomicInteger counter = new AtomicInteger();
 }

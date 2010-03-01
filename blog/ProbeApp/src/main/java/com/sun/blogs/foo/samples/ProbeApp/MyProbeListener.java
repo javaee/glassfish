@@ -7,8 +7,8 @@ import org.glassfish.external.probe.provider.annotations.ProbeListener;
  */
 
 public class MyProbeListener {
-    @ProbeListener("fooblog:samples:ProbeServlet:myProbe1")
+    @ProbeListener("fooblog:samples:ProbeServlet:myProbe")
     public void probe1(String s) {
-        System.out.println("@@@@@@@@@@@@@@@@@@@  PROBE LISTENER HERE!!!!   @@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("PROBE LISTENER HERE.  Called with this arg: " + s);
     }
 }
