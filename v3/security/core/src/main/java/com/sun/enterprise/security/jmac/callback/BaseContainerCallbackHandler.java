@@ -98,6 +98,7 @@ import com.sun.enterprise.security.store.IdentityManager;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
+import java.util.Set;
 
 import sun.security.util.DerValue;
 import org.glassfish.internal.api.Globals;
@@ -120,7 +121,7 @@ abstract class BaseContainerCallbackHandler
     private static final String DEFAULT_CLIENT_SECRET_KEYSTORE_PASSWORD =
         "changeit";
 
-    protected static Logger _logger = LogDomains.getLogger(BaseContainerCallbackHandler.class, LogDomains.SECURITY_LOGGER);
+    protected final static Logger _logger = LogDomains.getLogger(BaseContainerCallbackHandler.class, LogDomains.SECURITY_LOGGER);
 
     protected HandlerContext handlerContext = null;
 
@@ -283,7 +284,8 @@ abstract class BaseContainerCallbackHandler
         } else if (groups == null) {
             AppservAccessController.doPrivileged(new PrivilegedAction(){
                 public java.lang.Object run() {
-                    fs.getPrincipals(Group.class).clear();
+                    Set<Principal> principalSet = fs.getPrincipals();
+                    principalSet.removeAll(fs.getPrincipals(Group.class));
                     return fs;
                 }
             });
@@ -576,7 +578,7 @@ abstract class BaseContainerCallbackHandler
         if (certStore == null) {// should never happen
             certStoreCallback.setCertStore(null);
         }
-        List list = new ArrayList();
+        List<Certificate> list = new ArrayList<Certificate>();
         CollectionCertStoreParameters ccsp;
         try{
             if (certStore != null) {
@@ -590,7 +592,7 @@ abstract class BaseContainerCallbackHandler
                         } catch (KeyStoreException kse) {
                             // ignore and move to next
                             if (_logger.isLoggable(Level.FINE)) {
-                                _logger.log(Level.FINE, "JAMAC: Cannot retrieve" +
+                                _logger.log(Level.FINE, "JMAC: Cannot retrieve" +
                                         "certificate for alias " + alias);
                             }
                         }
