@@ -89,10 +89,13 @@ public class ConnectionHolder40 extends ConnectionHolder {
         try {
             defaultClientInfo = getClientInfo();
         } catch (SQLException e) {
-            _logger.log(Level.WARNING, "jdbc.unable_to_get_client_info", e);
+            _logger.log(Level.INFO, "jdbc.unable_to_get_client_info", e.getMessage());
+            if(_logger.isLoggable(Level.FINEST)) {
+                _logger.log(Level.FINEST, "jdbc.unable_to_get_client_info", e);
+            }
         }
     }
-
+ 
     /**
      * Constructs an object that implements the <code>Clob</code> interface. The object
      * returned initially contains no data.  The <code>setAsciiStream</code>,
@@ -521,7 +524,10 @@ public class ConnectionHolder40 extends ConnectionHolder {
                     setClientInfo(defaultClientInfo);
                 }
             } catch (SQLClientInfoException e) {
-                _logger.log(Level.WARNING, "jdbc.unable_to_set_client_info", e);
+                _logger.log(Level.INFO, "jdbc.unable_to_set_client_info", e.getMessage());
+                if(_logger.isLoggable(Level.FINEST)) {
+                    _logger.log(Level.FINEST, "jdbc.unable_to_set_client_info", e);
+                }
             }
         }
         super.close();
