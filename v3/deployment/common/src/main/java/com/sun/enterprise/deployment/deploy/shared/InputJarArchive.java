@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.deploy.shared;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.io.FileUtils;
+import java.net.MalformedURLException;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Service;
@@ -160,33 +161,62 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     /**
      * Returns an enumeration of the entry names in the archive.
      *
-     * @param directoriesOnly whether to report directories only or non-directories only
+     * @param topLevelDirectoriesOnly whether to report directories only or non-directories only
      * @return enumeration of the matching entry names, excluding the manifest
      */
-    private Enumeration<String> entries(final boolean directoriesOnly) {
-        if (parentArchive != null) {
-            try {
-                return new SubarchiveEntryEnumeration(directoriesOnly);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        } else {
-            try {
-                if (jarFile == null) {
-                    getJarFile(uri);
+    private Enumeration<String> entries(final boolean topLevelDirectoriesOnly) {
+        /*
+         * We have two decisions to make: 
+         * 
+         * 1. whether the caller wants top-level directory entries or all 
+         * non-directory entries enumerated, and 
+         * 
+         * 2. what URI to use to open a stream to this archive (determined by
+         * whether the archive is a subarchive of another archive or is a 
+         * stand-alone archive).
+         *
+         * The URI is a top-level URI (file:path-to-file.jar) if
+         * this archive has no parent archive, and it's an entry URI
+         * (jar:path-to-file.jar!path-to-inner-archive.jar) format
+         * URI if this archive does in fact have a parent archive - which means 
+         * that this is a subarchive.
+         *
+         * Whichever enumerator we choose to create will open and, eventually,
+         * close the URI once all the entries have been reported.  That's why
+         * we create the URI rather than opening the stream now.
+         */
+        URI uriToReadForEntries = null;
+        try {
+            if (parentArchive != null) {
+                uriToReadForEntries = new URI(
+                    "jar",
+                    "file:" + parentArchive.getURI().getSchemeSpecificPart() +
+                        "!/" +
+                        getURI().getSchemeSpecificPart(),
+                    null);
+            } else {
+                try {
+                    if (jarFile == null) {
+                        getJarFile(uri);
+                    }
+                } catch (IOException ioe) {
+                    return Collections.enumeration(Collections.EMPTY_LIST);
                 }
-            } catch (IOException ioe) {
-                return Collections.enumeration(Collections.EMPTY_LIST);
-            }
-            if (jarFile == null) {
-                return Collections.enumeration(Collections.EMPTY_LIST);
+                if (jarFile == null) {
+                    return Collections.enumeration(Collections.EMPTY_LIST);
+                }
+
+                uriToReadForEntries = new URI("file", getURI().getSchemeSpecificPart(), null);
             }
 
-            return new TopLevelEntryEnumeration(directoriesOnly);
+            return createEntryEnumeration(uriToReadForEntries, topLevelDirectoriesOnly);
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        } catch (URISyntaxException use) {
+            throw new RuntimeException(use);
         }
     }
-    
-    
+
     /**
      *  @return an @see java.util.Enumeration of entries in this abstract
      * archive, providing the list of embedded archive to not count their 
@@ -416,14 +446,36 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         }
         return null;
     }
-    
+
+    /**
+     * Creates the correct type of entry enumeration, depending on whether the
+     * current archive is nested or not and depending on whether the caller
+     * requested top-level directory entries or all non-directory entries be returned
+     * in the enumeration.
+     *
+     * @param uriToReadForEntries
+     * @param topLevelDirectoriesOnly
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private EntryEnumeration createEntryEnumeration(
+            final URI uriToReadForEntries,
+            final boolean topLevelDirectoriesOnly) throws FileNotFoundException, IOException {
+        if (topLevelDirectoriesOnly) {
+            return new TopLevelDirectoryEntryEnumeration(uriToReadForEntries);
+        } else {
+            return new NonDirectoryEntryEnumeration(uriToReadForEntries);
+        }
+    }
+
     /**
      * Logic for enumerations of the entry names that is common between the
-     * top-level archive implementation and the subarchive implementation.
+     * top-level directory entry enumeration and the full non-directory
+     * enumeration.
      * <p>
      * The goal is to wrap an Enumeration around the underlying entries 
-     * available in the archive, whether the archive is a top-level archive or a
-     * subarchive within a parent archive.  This avoids collecting all
+     * available in the archive.  This avoids collecting all
      * the entry names first and then returning an enumeration of the collection;
      * that can be very costly for large JARs.
      */
@@ -431,10 +483,13 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
 
         /** look-ahead of one entry */
         private JarEntry nextMatchingEntry;
-        private final boolean directoriesOnly;
 
-        private EntryEnumeration(final boolean directoriesOnly) {
-            this.directoriesOnly = directoriesOnly;
+        private final JarInputStream jis;
+        private boolean reachedEndOfStream = false;
+
+    private EntryEnumeration(final URI archiveURI) throws MalformedURLException, IOException {
+            final InputStream is = archiveURI.toURL().openStream();
+            this.jis = new JarInputStream(is);
         }
 
         /**
@@ -462,66 +517,14 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
 
         /**
          * Returns the next JarEntry available from the archive.
+         * <p>
+         * Different concrete subclasses implement this differently so as to
+         * enumerate the correct sequence of entry names.
+         *
          * @return the next available JarEntry; null if no more are available
          */
-        protected abstract JarEntry getNextJarEntry();
+        protected abstract JarEntry skipToNextMatchingEntry();
 
-        protected JarEntry skipToNextMatchingEntry() {
-            JarEntry candidateNextEntry;
-            while ((candidateNextEntry = getNextJarEntry()) != null) {
-                if (directoriesOnly == candidateNextEntry.isDirectory() &&
-                       ! candidateNextEntry.getName().equals(JarFile.MANIFEST_NAME)) {
-                    break;
-                }
-            }
-            return candidateNextEntry;
-        }
-    }
-
-    /**
-     * Enumerates the entries from a top-level archive (as opposed to a
-     * subarchive within a parent archive).
-     * <p>
-     * This implementation uses the enumeration of JarEntry objects from the
-     * JarFile itself.
-     */
-    private class TopLevelEntryEnumeration extends EntryEnumeration {
-        private final Enumeration<JarEntry> jarEnum = jarFile.entries();
-
-        private TopLevelEntryEnumeration(final boolean directoriesOnly) {
-            super(directoriesOnly);
-            completeInit();
-        }
-
-        @Override
-        protected JarEntry getNextJarEntry() {
-            if (jarEnum.hasMoreElements()) {
-                return jarEnum.nextElement();
-            } else {
-                return null;
-            }
-        }
-    }
-
-    /**
-     * Enumerates the entries from a sub-archive.
-     * <p>
-     * This implementation uses a JarInputStream to obtain successive
-     * JarEntry objects from the subarchive, via the parent archive.
-     */
-    private class SubarchiveEntryEnumeration extends EntryEnumeration {
-
-        private final JarInputStream jis;
-        private boolean reachedEndOfStream = false;
-
-        private SubarchiveEntryEnumeration(final boolean directoriesOnly) throws IOException {
-            super(directoriesOnly);
-            jis = new JarInputStream(parentArchive.jarFile.getInputStream(
-                    parentArchive.jarFile.getJarEntry(uri.getSchemeSpecificPart())));
-            completeInit();
-        }
-
-        @Override
         protected JarEntry getNextJarEntry() {
             if (reachedEndOfStream) {
                 return null;
@@ -548,6 +551,74 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     }
 
     /**
+     * Enumerates the top-level directory entries.
+     * <p>
+     * This implementation uses the enumeration of JarEntry objects from the
+     * JarFile itself.
+     */
+    private class TopLevelDirectoryEntryEnumeration extends EntryEnumeration {
+
+        private TopLevelDirectoryEntryEnumeration(final URI archiveURI) throws FileNotFoundException, IOException {
+            super(archiveURI);
+            completeInit();
+        }
+
+        @Override
+        protected JarEntry skipToNextMatchingEntry() {
+            JarEntry candidateNextEntry;
+
+            /*
+             * The next entry should be returned (and not skipped) if the entry is a
+             * directory entry and it contains only a single slash at the
+             * end of the entry name.
+             */
+            while ((candidateNextEntry = getNextJarEntry()) != null) {
+                final String candidateNextEntryName = candidateNextEntry.getName();
+                if ( candidateNextEntry.isDirectory() &&
+                       (candidateNextEntryName.indexOf('/') ==
+                            candidateNextEntryName.lastIndexOf('/')) &&
+                       (candidateNextEntryName.indexOf('/') ==
+                            candidateNextEntryName.length() - 1)
+                   ) {
+                    break;
+                }
+            }
+            return candidateNextEntry;
+        }
+    }
+
+    /**
+     * Enumerates entries in the archive that are not directories.
+     */
+    private class NonDirectoryEntryEnumeration extends EntryEnumeration {
+
+        private NonDirectoryEntryEnumeration(final URI archiveURI) throws IOException {
+            super(archiveURI);
+            completeInit();
+        }
+
+        @Override
+        protected JarEntry skipToNextMatchingEntry() {
+            JarEntry candidateNextEntry;
+
+            /*
+             * The next entry should be returned (and not skipped) if the entry is
+             * not a directory entry and if it also not the manifest.
+             */
+            while ((candidateNextEntry = getNextJarEntry()) != null) {
+                final String candidateNextEntryName = candidateNextEntry.getName();
+                if ( ! candidateNextEntry.isDirectory() &&
+                          ! candidateNextEntryName.equals(JarFile.MANIFEST_NAME)
+                   ) {
+                    break;
+                }
+            }
+            return candidateNextEntry;
+        }
+    }
+    
+    /**
+     * A Collection which wraps an Enumeration.
      * <p>
      * Note that the nextSlot field is always updated, even if we are using
      * the original enumeration to return the next value from the iterator.  This
