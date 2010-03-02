@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,26 +35,24 @@
  */
 
 
-package org.glassfish.osgiejb;
+package org.glassfish.osgiweb;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.glassfish.osgijavaeebase.Extender;
+import javax.servlet.ServletContext;
+import java.net.URL;
+import java.net.URI;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiEJBContainerActivator implements BundleActivator
-{
-    private EJBExtender ejbExtender;
-
-    public void start(BundleContext context) throws Exception
-    {
-        ejbExtender = new EJBExtender(context);
-        context.registerService(Extender.class.getName(), ejbExtender, null);
-    }
-
-    public void stop(BundleContext context) throws Exception
-    {
+public class OSGiFacesConfigResourceProvider implements com.sun.faces.spi.FacesConfigResourceProvider, com.sun.faces.spi.ConfigurationResourceProvider {
+    public Collection<URL> getResources(ServletContext context) {
+        Collection<URL> urls = (Collection<URL>) context.getAttribute(Constants.FACES_CONFIG_ATTR);
+        if (urls == null) urls = Collections.EMPTY_LIST;
+        System.out.println("Faces Config urls = " + urls);
+        return urls;
     }
 }

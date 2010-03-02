@@ -75,9 +75,9 @@ public class EJBExtender implements Extender, SynchronousBundleListener
         c = new OSGiEJBContainer(context);
         context.addBundleListener(this);
 
-        // Web Container bundle can come into existence after
-        // web application bundles, so we must go through existing bundles
-        // to see if there are any web application bundles already started.
+        // EJB Container bundle can come into existence after
+        // ejb application bundles, so we must go through existing bundles
+        // to see if there are any ejb application bundles already started.
         for (Bundle b : context.getBundles())
         {
             if (((b.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) &&
@@ -143,7 +143,7 @@ public class EJBExtender implements Extender, SynchronousBundleListener
      */
     private boolean isEJBBundle(Bundle b)
     {
-        return b.getHeaders().get(Constants.EJB_NAMESPACE) != null;
+        return b.getHeaders().get(Constants.EXPORT_EJB) != null;
     }
 
     private void deploy(Bundle b)

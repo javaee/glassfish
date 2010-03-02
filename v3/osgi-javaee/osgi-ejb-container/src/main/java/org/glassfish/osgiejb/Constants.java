@@ -41,5 +41,7 @@ package org.glassfish.osgiejb;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class Constants {
-    public static final String EJB_NAMESPACE = "EJB-NameSpace";
+    public static final String EXPORT_EJB = "Export-EJB";
+    public static final String EXPORT_EJB_ALL = "ALL";
+    public static final String EXPORT_EJB_NONE = "NONE";
 }

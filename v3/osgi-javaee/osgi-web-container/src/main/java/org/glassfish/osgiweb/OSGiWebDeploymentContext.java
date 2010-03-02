@@ -132,6 +132,7 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
                         get(org.osgi.framework.Constants.BUNDLE_CLASSPATH));
             }
             private URL[] convert(String bcp) {
+                if (bcp == null || bcp.isEmpty()) bcp=".";
                 List<URL> urls = new ArrayList<URL>();
                 //Bundle-ClassPath entries are separated by ; or ,
                 StringTokenizer entries = new StringTokenizer(bcp, ",;");

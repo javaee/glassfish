@@ -85,7 +85,8 @@ import java.util.Arrays;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class WebBundleURLStreamHandlerService
+public class
+        WebBundleURLStreamHandlerService
         extends AbstractURLStreamHandlerService
 {
     private static final Logger logger = Logger.getLogger(

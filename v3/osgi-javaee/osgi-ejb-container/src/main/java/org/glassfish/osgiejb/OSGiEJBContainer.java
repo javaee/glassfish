@@ -59,8 +59,7 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.Collection;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -98,12 +97,30 @@ public class OSGiEJBContainer extends OSGiContainer {
         @Override
         public Object addingService(ServiceReference reference) {
             OSGiApplicationInfo osgiApplicationInfo = OSGiApplicationInfo.class.cast(context.getService(reference));
-            ApplicationInfo ai = osgiApplicationInfo.getAppInfo();
-            Application app = ai.getMetaData(Application.class);
-            Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
-            System.out.println("addingService: Found " + ejbs.size() + " no. of EJBs");
-            for (EjbDescriptor ejb : ejbs) {
-                registerEjbAsService(ejb, osgiApplicationInfo.getBundle());
+            String exportEJB = (String)osgiApplicationInfo.getBundle().getHeaders().get(Constants.EXPORT_EJB);
+            if (exportEJB != null) {
+                ApplicationInfo ai = osgiApplicationInfo.getAppInfo();
+                Application app = ai.getMetaData(Application.class);
+                Collection<EjbDescriptor> ejbs = app.getEjbDescriptors();
+                System.out.println("addingService: Found " + ejbs.size() + " no. of EJBs");
+                Collection<EjbDescriptor> ejbsToBeExported = new ArrayList<EjbDescriptor>();
+                if (Constants.EXPORT_EJB_ALL.equals(exportEJB)) {
+                    ejbsToBeExported = ejbs;
+                } else {
+                    StringTokenizer st = new StringTokenizer(exportEJB, ",");
+                    while(st.hasMoreTokens()) {
+                        String next = st.nextToken();
+                        for (EjbDescriptor ejb : ejbs) {
+                            if (next.equals(ejb.getName())) {
+                                ejbsToBeExported.add(ejb);
+                            }
+                        }
+                    }
+                }
+
+                for (EjbDescriptor ejb : ejbsToBeExported) {
+                    registerEjbAsService(ejb, osgiApplicationInfo.getBundle());
+                }
             }
             return osgiApplicationInfo;
         }

@@ -47,9 +47,11 @@ import org.glassfish.osgijavaeebase.ExtenderManager;
  */
 public class OSGiWebContainerActivator implements BundleActivator
 {
+    private WebExtender webExtender;
+
     public void start(BundleContext context) throws Exception
     {
-        WebExtender webExtender = new WebExtender(context);
+        webExtender = new WebExtender(context);
         context.registerService(Extender.class.getName(), webExtender, null);
     }
 

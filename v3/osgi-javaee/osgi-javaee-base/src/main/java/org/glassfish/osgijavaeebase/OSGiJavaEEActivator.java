@@ -39,6 +39,14 @@ package org.glassfish.osgijavaeebase;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.url.URLStreamHandlerService;
+import org.osgi.service.url.URLConstants;
+import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService;
+import static org.glassfish.osgijavaeebase.OSGiBundleArchive.EmbeddedJarURLStreamHandlerService.*;
+
+import java.util.Properties;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -46,13 +54,26 @@ import org.osgi.framework.BundleContext;
 public class OSGiJavaEEActivator implements BundleActivator {
 
     private ExtenderManager extenderManager;
+    private ServiceRegistration urlHandlerServiceRegistration;
 
     public void start(BundleContext context) throws Exception {
+        addURLHandler(context);
         extenderManager = new ExtenderManager(context);
         extenderManager.start();
     }
 
     public void stop(BundleContext context) throws Exception {
         extenderManager.stop();
+        removeURLHandler(context);
+    }
+
+    private void addURLHandler(BundleContext context) {
+        Properties p = new Properties();
+        p.setProperty(URLConstants.URL_HANDLER_PROTOCOL, EMBEDDED_JAR_SCHEME);
+        urlHandlerServiceRegistration = context.registerService(URLStreamHandlerService.class.getName(), new EmbeddedJarURLStreamHandlerService(), p);
+    }
+
+    private void removeURLHandler(BundleContext context) {
+        if (urlHandlerServiceRegistration != null) urlHandlerServiceRegistration.unregister();
     }
 }

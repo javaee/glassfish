@@ -40,11 +40,24 @@ package org.glassfish.osgiweb;
 import com.sun.enterprise.web.WebModuleDecorator;
 import com.sun.enterprise.web.WebModule;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Bundle;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.glassfish.osgijavaeebase.BundleResource;
+
+import javax.servlet.ServletContext;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.ArrayList;
 
 /**
- * This class is responsible for setting an attribute called
- * @link Constants.BUNDLE_CONTEXT_ATTR} in ServletContext of the web app
+ * This class is responsible for setting
+ * a) an attribute called {@link Constants.BUNDLE_CONTEXT_ATTR} in ServletContext of the web app
  * associated with the current OSGi bundle.
+ * b) discovering JSF faces config resources and setting them in an attribute called
+ * {@link Constants.FACES_CONFIG_ATTR}.
+ * b) discovering JSF facelet config resources and setting them in an attribute called
+ * {@link Constants.FACELET_CONFIG_ATTR}.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
@@ -62,7 +75,13 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
         if (wc != null) {
             BundleContext bctx = wc.getCurrentBundleContext();
             if (bctx != null) {
-                module.getServletContext().setAttribute(Constants.BUNDLE_CONTEXT_ATTR, bctx);
+                final ServletContext sc = module.getServletContext();
+                sc.setAttribute(Constants.BUNDLE_CONTEXT_ATTR, bctx);
+                Collection<URL> facesConfigs = new ArrayList<URL>();
+                Collection<URL> faceletConfigs = new ArrayList<URL>();
+                discoverJSFConfigs(bctx.getBundle(), facesConfigs, faceletConfigs);
+                sc.setAttribute(Constants.FACES_CONFIG_ATTR, facesConfigs);
+                sc.setAttribute(Constants.FACELET_CONFIG_ATTR, faceletConfigs);
             }
         }
     }
@@ -71,4 +90,32 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
     {
         this.wc = wc;
     }
+
+    /**
+     * This method discovers JSF resources packaged in a bundle.
+     * It iterates over resources in the bundle classpath of the bundle. It is searching for two kinds of
+     * resources: viz: faces configs and facelet configs.
+     * Faces configs are identified by a file name faces-config.xml or a file ending with .faces-config.xml in META-INF/.
+     * Facelet configs are identified by files in META-INF/ having suffix .taglib.xml. It returns the results in
+     * the two collections passed to this method.
+     */
+    private void discoverJSFConfigs(Bundle b, Collection<URL> facesConfigs, Collection<URL> faceletConfigs) {
+        OSGiBundleArchive archive = new OSGiBundleArchive(b);
+        for (BundleResource r : archive) {
+            final String path = r.getPath();
+            if (path.startsWith("META-INF/")) {
+                try {
+                    final URL url = r.getUri().toURL();
+                    if (path.endsWith(".taglib.xml")) {
+                        faceletConfigs.add(url);
+                    } else if ("META-INF/faces-config.xml".equals(path) || path.endsWith(".faces-config.xml")) {
+                        facesConfigs.add(url);
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace(); // ignore and continue
+                }
+            }
+        }
+    }
+
 }

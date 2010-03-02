@@ -83,19 +83,9 @@ public class OSGiWebContainer extends OSGiContainer
 
     protected void postDeploy(OSGiApplicationInfo osgiAppInfo) {
         assert(osgiAppInfo != null);
-        try {
-            ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
-            assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
-            registerService(osgiAppInfo.getBundle(), sc);
-            applications.put(osgiAppInfo.getBundle(), osgiAppInfo);
-            logger.logp(Level.INFO, "OSGiWebContainer", "deploy",
-                    "deployed bundle {0} at {1}",
-                    new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo().getSource().getURI()});
-        } catch (Exception e) {
-            logger.logp(Level.WARNING, "OSGiWebContainer", "deploy",
-                    "Rolling back deployment as exception occured", e);
-            undeployJavaEEArtifacts(osgiAppInfo, getReport());
-        }
+        ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
+        assert(sc.getAttribute(Constants.BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
+        registerService(osgiAppInfo.getBundle(), sc);
     }
 
     protected OSGiUndeploymentRequest createOSGiUndeploymentRequest(Deployment deployer, ServerEnvironmentImpl env, ActionReport reporter, OSGiApplicationInfo osgiAppInfo) {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,26 +35,33 @@
  */
 
 
-package org.glassfish.osgiejb;
+package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.glassfish.osgijavaeebase.Extender;
+import java.net.URI;
 
 /**
- * @author Sanjeeb.Sahoo@Sun.COM
+ * Represents a resource in the bundle's classpath
  */
-public class OSGiEJBContainerActivator implements BundleActivator
-{
-    private EJBExtender ejbExtender;
+public class BundleResource {
+    private URI uri; // uri of the resource
+    private String path; // path of the resource. this is with respect to bundle class path namespace
+    private String archivePath; // path of the sub archive from the top of the bundle containing this resource. "" if it is in the bundle directly.
 
-    public void start(BundleContext context) throws Exception
-    {
-        ejbExtender = new EJBExtender(context);
-        context.registerService(Extender.class.getName(), ejbExtender, null);
+    BundleResource(URI uri, String path, String archivePath) {
+        this.uri = uri;
+        this.path = path;
+        this.archivePath = archivePath;
     }
 
-    public void stop(BundleContext context) throws Exception
-    {
+    public URI getUri() {
+        return uri;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getArchivePath() {
+        return archivePath;
     }
 }

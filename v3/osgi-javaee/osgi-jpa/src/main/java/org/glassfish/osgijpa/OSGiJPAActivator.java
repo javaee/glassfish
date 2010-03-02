@@ -46,12 +46,13 @@ import org.glassfish.osgijavaeebase.Extender;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiJPAActivator implements BundleActivator {
-    ServiceRegistration reg;
+    private JPAExtender extender;
+
     public void start(BundleContext context) throws Exception {
-        reg = context.registerService(Extender.class.getName(), new JPAExtender(context), null);
+        extender = new JPAExtender(context);
+        context.registerService(Extender.class.getName(), extender, null);
     }
 
     public void stop(BundleContext context) throws Exception {
-        reg.unregister();
     }
 }

@@ -53,6 +53,5 @@ public class OSGiJTAActivator implements BundleActivator {
     }
 
     public void stop(BundleContext context) throws Exception {
-        if (extender != null) extender.stop();
     }
 }

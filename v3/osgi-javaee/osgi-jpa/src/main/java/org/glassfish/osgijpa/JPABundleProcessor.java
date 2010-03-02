@@ -42,6 +42,8 @@ import org.osgi.framework.BundleException;
 import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
 import org.glassfish.osgijpa.dd.PersistenceXMLReaderWriter;
 import org.glassfish.osgijpa.dd.Persistence;
+import org.glassfish.osgijavaeebase.BundleResource;
+import org.glassfish.osgijavaeebase.OSGiBundleArchive;
 
 import java.net.URL;
 import java.net.URI;
@@ -88,41 +90,23 @@ class JPABundleProcessor
     void discoverPxmls() {
         assert(persistenceXMLs == null);
         persistenceXMLs = new ArrayList<Persistence>();
-        String bcp = String.class.cast(b.getHeaders().get(BUNDLE_CLASSPATH));
-        if (bcp == null || bcp.isEmpty()) {
-            bcp = "."; // this is the default
-        }
-        //Bundle-ClassPath entries are separated by ; or ,
-        StringTokenizer entries = new StringTokenizer(bcp, ",;");
-        String entry;
-        while (entries.hasMoreTokens()) {
-            entry = entries.nextToken().trim();
-            if (entry.startsWith("/")) entry = entry.substring(1);
-            String puRoot = entry;
-
-            // We need to prefix "/" while calling bundle.getEntry() because Felix does not like something like
-            // ./META-INF/persistence.xml.
-            URL entryURL = b.getEntry(URI.create("/" + entry).normalize().toString());
-            if (entryURL != null) {
-                URL pxmlURL = null;
+        for (BundleResource r : new OSGiBundleArchive(b)) {
+            if (PXML_PATH.equals(r.getPath())) {
+                URL pxmlURL;
                 try {
-                    pxmlURL = new URL(entryURL, PXML_PATH);
+                    pxmlURL = r.getUri().toURL();
                 } catch (MalformedURLException e) {
                     throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                 }
                 InputStream is = null;
                 try {
                     is = pxmlURL.openStream();
-                    try {
-                        Persistence persistence = new PersistenceXMLReaderWriter().read(is);
-                        persistence.setUrl(pxmlURL);
-                        persistence.setPURoot(puRoot);
-                        persistenceXMLs.add(persistence);
-                    } catch (IOException ioe) {
-                        logger.logp(Level.WARNING, "JPABundleProcessor", "discoverPxmls", "Exception occurred while processing " + pxmlURL, ioe);
-                    }
+                    Persistence persistence = new PersistenceXMLReaderWriter().read(is);
+                    persistence.setUrl(pxmlURL);
+                    persistence.setPURoot(r.getArchivePath());
+                    persistenceXMLs.add(persistence);
                 } catch (IOException ioe) {
-                    // ignore as there is no such persistence.xml.
+                    logger.logp(Level.WARNING, "JPABundleProcessor", "discoverPxmls", "Exception occurred while processing " + pxmlURL, ioe);
                 } finally {
                     if (is != null) try {is.close();} catch (IOException ioe) {}
                 }

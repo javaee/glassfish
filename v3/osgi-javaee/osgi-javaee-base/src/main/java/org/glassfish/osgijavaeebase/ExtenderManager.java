@@ -161,6 +161,11 @@ public class ExtenderManager
             return e;
         }
 
+        @Override
+        public void removedService(ServiceReference reference, Object service) {
+            Extender e = Extender.class.cast(context.getService(reference));
+            e.stop();
+        }
     }
 
     /**

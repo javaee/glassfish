@@ -50,4 +50,7 @@ public class Constants
     public static final String OSGI_WEB_VERSION = "osgi.web.version";
     public static final String OSGI_WEB_CONTEXTPATH= "osgi.web.contextpath";
 
+    // Below are GlassFish specific constants
+    public static final String FACES_CONFIG_ATTR = "glassfish.osgi.web.facesconfigs";
+    public static final String FACELET_CONFIG_ATTR = "glassfish.osgi.web.faceletconfigs";
 }
