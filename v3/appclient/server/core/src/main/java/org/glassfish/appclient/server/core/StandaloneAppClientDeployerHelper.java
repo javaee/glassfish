@@ -201,6 +201,12 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
         return genXMLDir.toURI().resolve(appClientURIWithinApp(dc));
     }
 
+    @Override
+    public URI appClientServerOriginalAnchor(DeploymentContext dc) {
+        return ((ExtendedDeploymentContext) dc).getOriginalSource().getURI();
+    }
+
+
 
     /**
      * Returns the URI for the app client within the artificial containing

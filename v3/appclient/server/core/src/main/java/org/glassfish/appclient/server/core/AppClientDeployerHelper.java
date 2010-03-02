@@ -208,6 +208,20 @@ public abstract class AppClientDeployerHelper {
     public abstract URI appClientServerURI(DeploymentContext dc);
 
     /**
+     * Returns the URI on the server to the original location of the app client.
+     * <p>
+     * This is distinct from the appClientServerURI which could be in the
+     * generated directory (in the case of a directory deployment, for example).
+     * In some cases we need the original location of the app client on the
+     * server (for example, to resolve relative references from the app client
+     * JAR's manifest Class-Path).
+     *
+     * @param dc
+     * @return
+     */
+    public abstract URI appClientServerOriginalAnchor(DeploymentContext dc);
+
+    /**
      * Returns the URI within the enclosing app of the app client JAR.
      * Stand-alone app clients are considered to lie within an "implied"
      * containing app; the URI for such app clients is just the file name

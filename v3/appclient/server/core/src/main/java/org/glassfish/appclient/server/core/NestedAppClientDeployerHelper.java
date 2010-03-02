@@ -576,6 +576,14 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
+    public URI appClientServerOriginalAnchor(DeploymentContext dc) {
+        final String appClientURIWithinEAR = appClientDesc().getModuleDescriptor().getArchiveUri();
+        final File userProvidedClientLocation = new File(new File(earURI), appClientURIWithinEAR);
+        return userProvidedClientLocation.toURI();
+    }
+
+
+    @Override
     public URI appClientURIWithinApp(DeploymentContext dc) {
         return URI.create(appClientDesc().getModuleDescriptor().getArchiveUri());
     }

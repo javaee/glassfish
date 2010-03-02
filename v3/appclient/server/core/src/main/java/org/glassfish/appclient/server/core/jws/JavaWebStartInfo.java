@@ -327,10 +327,11 @@ public class JavaWebStartInfo implements ConfigListener {
     private void processExtensionReferences() throws IOException {
         
         // TODO: needs to be expanded to handle signed library JARS, perhap signed by different certs
-
+        final URI fileURI = URI.create("file:" + helper.appClientServerOriginalAnchor(dc).getRawSchemeSpecificPart());
         tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, 
                 jarElementsForExtensions(extensionFileManager.findExtensionTransitiveClosure(
-                new File(helper.appClientServerURI(dc)).getParentFile(),
+                new File(fileURI),
+                //new File(helper.appClientServerURI(dc)).getParentFile(),
                 dc.getSource().getManifest().getMainAttributes())));
 
     }

@@ -233,13 +233,18 @@ public class ExtensionFileManager implements PostConstruct {
      * @return List<Extension> containing an Extension object for each required jar
      * @throws IOException in case of errors building the extension jar file data structure
      */
-    public Set<Extension> findExtensionTransitiveClosure(File anchorDir, Attributes mainAttrs) throws IOException {
-        
+    public Set<Extension> findExtensionTransitiveClosure(final File origAnchorDir, Attributes mainAttrs) throws IOException {
+        File anchorDir = origAnchorDir;
+        if ( ! origAnchorDir.isDirectory()) {
+            anchorDir = origAnchorDir.getParentFile();
+        }
+        final StringBuilder invalidLibPaths = new StringBuilder();
+
         Set<Extension> result = new HashSet<Extension>();
 
         Vector<File> filesToProcess = new Vector<File>();
         
-        filesToProcess.addAll(getClassPathJars(anchorDir, mainAttrs));
+        filesToProcess.addAll(getClassPathJars(mainAttrs));
         
         Set<Extension> extensionsUsedByApp = getReferencedExtensions(mainAttrs);
         result.addAll(extensionsUsedByApp);
@@ -252,16 +257,17 @@ public class ExtensionFileManager implements PostConstruct {
          */
         for (int i = 0; i < filesToProcess.size(); i++) {
             File nextFile = filesToProcess.get(i);
+            final File absNextFile = nextFile.isAbsolute() ? nextFile : new File(anchorDir, nextFile.getPath());
             /*
              *The Class-Path entry might point to a directory.  If so, skip it
              *because directories do not support extensions.
              */
-            if (nextFile.exists() && nextFile.isDirectory()) {
+            if (absNextFile.exists() && absNextFile.isDirectory()) {
                 continue;
             }
             
             try {
-                JarFile nextJarFile = new JarFile(nextFile);
+                JarFile nextJarFile = new JarFile(absNextFile);
                 try {
                     Attributes attrs = getMainAttrs(nextJarFile);
                     Set<Extension> newExtensions = getReferencedExtensions(attrs);
@@ -273,11 +279,13 @@ public class ExtensionFileManager implements PostConstruct {
                     }
                 }
             } catch (Exception e) {
-                final String fmt = _logger.getResourceBundle().
-                        getString("enterprise.deployment.appclient.jws.extension.error");
-                final String msg = MessageFormat.format(fmt, nextFile.getAbsolutePath());
-                _logger.log(Level.WARNING, msg, e);
+                invalidLibPaths.append(nextFile.getPath()).append(" ");
             }
+        }
+        if (invalidLibPaths.length() > 0) {
+            _logger.log(Level.WARNING, "enterprise.deployment.appclient.jws.extension.error",
+                    new Object[] {origAnchorDir, invalidLibPaths.toString()});
+
         }
         return result;
     }
@@ -347,7 +355,7 @@ public class ExtensionFileManager implements PostConstruct {
      *@param anchorDir the directory to which relative Class-Path entries are resolved
      *@param mainAttrs the jar file's main attributes (which would contain Class-Path entries if there are any)
      */
-    private List<File> getClassPathJars(File anchorDir, Attributes mainAttrs) {
+    private List<File> getClassPathJars(Attributes mainAttrs) {
         List<File> result = new LinkedList<File>();
         String classPathList = mainAttrs.getValue(Attributes.Name.CLASS_PATH);
         if (classPathList != null) {
@@ -355,9 +363,6 @@ public class ExtensionFileManager implements PostConstruct {
             while (stkn.hasMoreTokens()) {
                 String classPathJarPath = stkn.nextToken();
                 File classPathJarFile = new File(classPathJarPath);
-                if ( ! classPathJarFile.isAbsolute()) {
-                    classPathJarFile = new File(anchorDir, classPathJarPath);
-                }
                 result.add(classPathJarFile);
             }
         }
