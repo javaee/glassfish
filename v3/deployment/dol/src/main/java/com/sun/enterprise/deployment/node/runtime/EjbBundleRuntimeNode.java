@@ -82,14 +82,14 @@ public class EjbBundleRuntimeNode extends
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-	return DTDRegistry.SUN_EJBJAR_310_DTD_PUBLIC_ID;
+	return DTDRegistry.SUN_EJBJAR_311_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-	return DTDRegistry.SUN_EJBJAR_310_DTD_SYSTEM_ID;
+	return DTDRegistry.SUN_EJBJAR_311_DTD_SYSTEM_ID;
     }
 
     /**
@@ -119,6 +119,7 @@ public class EjbBundleRuntimeNode extends
        publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_211_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_211_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_300_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_300_DTD_SYSTEM_ID);
        publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_310_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_310_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_311_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_311_DTD_SYSTEM_ID);
 
        if (!restrictDTDDeclarations()) {
            publicIDToDTD.put(DTDRegistry.SUN_EJBJAR_210beta_DTD_PUBLIC_ID, DTDRegistry.SUN_EJBJAR_210beta_DTD_SYSTEM_ID);
@@ -132,6 +133,19 @@ public class EjbBundleRuntimeNode extends
     public EjbBundleDescriptor getDescriptor() {
         return descriptor;
     }                
+
+   /**
+     * receives notification of the value for a particular tag
+     *
+     * @param element the xml element
+     * @param value it's associated value
+     */
+    public void setElementValue(XMLElement element, String value) {
+        if (element.getQName().equals(RuntimeTagNames.COMPATIBILITY)) {
+            descriptor.setCompatibility(value);
+        } else super.setElementValue(element, value);
+    }
+
 
     /**
      * Adds  a new DOL descriptor instance to the descriptor instance associated with 
@@ -183,6 +197,10 @@ public class EjbBundleRuntimeNode extends
 	    // entreprise-beans
         EntrepriseBeansRuntimeNode ejbsNode = new EntrepriseBeansRuntimeNode();
         ejbsNode.writeDescriptor(ejbs, RuntimeTagNames.EJBS, bundleDescriptor);
+
+        // compatibility
+        appendTextChild(ejbs, RuntimeTagNames.COMPATIBILITY, bundleDescriptor.getCompatibility());
+
         return ejbs;
     }
 }

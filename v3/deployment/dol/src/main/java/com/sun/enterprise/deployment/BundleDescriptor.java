@@ -84,6 +84,8 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
     private boolean policyModified = false;
 
+    private String compatValue;
+
     /**
      * Construct a new BundleDescriptor
      */
@@ -902,5 +904,13 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
 
     public void setPolicyModified(boolean policyModified) {
         this.policyModified = policyModified;
+    }
+
+    public String getCompatibility() {
+        return compatValue;
+    }
+
+    public void setCompatibility(String compatValue) {
+        this.compatValue = compatValue;
     }
 }

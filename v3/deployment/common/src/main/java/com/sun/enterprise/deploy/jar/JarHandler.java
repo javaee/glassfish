@@ -43,6 +43,8 @@ import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.loader.util.ASClassLoaderUtil;
 import java.net.MalformedURLException;
 
 import com.sun.enterprise.loader.ASURLClassLoader;
@@ -50,6 +52,13 @@ import com.sun.enterprise.deploy.shared.AbstractArchiveHandler;
 
 import java.net.URL;
 import java.lang.RuntimeException;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.List;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import static javax.xml.stream.XMLStreamConstants.*;
 
 /**
  * ArchiveHandler implementation for jar files
@@ -58,6 +67,13 @@ import java.lang.RuntimeException;
  */
 @Service(name="DEFAULT")
 public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+    private static XMLInputFactory xmlIf = null;
+
+    static {
+        xmlIf = XMLInputFactory.newInstance();
+        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    }
+
     public String getArchiveType() {
         return "jar";
     }
@@ -76,6 +92,32 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
     public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
         ASURLClassLoader cloader = new ASURLClassLoader(parent);
         try {              
+            String compatProp = context.getAppProps().getProperty(
+                DeploymentProperties.COMPATIBILITY);
+            // if user does not specify the compatibility property
+            // let's see if it's defined in sun-ejb-jar.xml
+            if (compatProp == null) {
+                SunEjbJarXMLParser sunEjbJarXMLParser =
+                    new SunEjbJarXMLParser(context.getSourceDir());
+                compatProp = sunEjbJarXMLParser.getCompatibilityValue();
+                if (compatProp != null) {
+                    context.getAppProps().put(
+                        DeploymentProperties.COMPATIBILITY, compatProp);
+                }
+            }
+
+            // if the compatibility property is set to "v2", we should add
+            // all the jars under the ejb module root to maintain backward
+            // compatibility of v2 jar visibility
+            if (compatProp != null && compatProp.equals("v2")) {
+                List<URL> moduleRootLibraries = 
+                    ASClassLoaderUtil.getURLsAsList(null, 
+                    new File[] {context.getSourceDir()}, true);
+                for (URL url : moduleRootLibraries) {
+                    cloader.addURL(url);
+                }
+            }
+
             cloader.addURL(context.getSource().getURI().toURL());
             cloader.addURL(context.getScratchDir("ejb").toURI().toURL());
             if (context.getArchiveHandler().getClass(
@@ -85,9 +127,89 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
                     cloader.addURL(url);
                 }
             }
-        } catch(MalformedURLException e) {
+        } catch(Exception e) {
+            _logger.log(Level.SEVERE, e.getMessage());
             return null;
         }
         return cloader;
+    }
+
+    private class SunEjbJarXMLParser {
+        private XMLStreamReader parser = null;
+        private String compatValue = null;
+
+        SunEjbJarXMLParser(File baseDir) throws XMLStreamException, FileNotFoundException {
+            InputStream input = null;
+            File f = new File(baseDir, "META-INF/sun-ejb-jar.xml");
+            if (f.exists()) {
+                input = new FileInputStream(f);
+                try {
+                    read(input);
+                } finally {
+                    if (parser != null) {
+                        try {
+                            parser.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                    if (input != null) {
+                        try {
+                            input.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        }
+
+        private void read(InputStream input) throws XMLStreamException {
+            parser = xmlIf.createXMLStreamReader(input);
+
+            int event = 0;
+            boolean done = false;
+            skipRoot("sun-ejb-jar");
+
+            while (!done && (event = parser.next()) != END_DOCUMENT) {
+
+                if (event == START_ELEMENT) {
+                    String name = parser.getLocalName();
+                    if (DeploymentProperties.COMPATIBILITY.equals(name)) {
+                        compatValue = parser.getElementText();
+                       done = true;
+                    } else {
+                        skipSubTree(name);
+                    }
+                }
+            }
+        }
+
+        private void skipRoot(String name) throws XMLStreamException { 
+            while (true) {
+                int event = parser.next();
+                if (event == START_ELEMENT) {
+                    if (!name.equals(parser.getLocalName())) {
+                       throw new XMLStreamException();
+                    }
+                    return; 
+                }
+            }
+        }
+
+        private void skipSubTree(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == END_DOCUMENT) {
+                    throw new XMLStreamException();
+                } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
+                    return;
+                }
+            }
+        }
+
+        String getCompatibilityValue() {
+            return compatValue;
+        }
     }
 }
