@@ -813,7 +813,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-
         /*
          * Create Connector. Connector is SSL-enabled if
          * 'security-enabled' attribute in <http-listener>
@@ -860,7 +859,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // If we already know the redirect port, then set it now
         // This situation will occurs when dynamic reconfiguration occurs
-        if ( defaultRedirectPort != -1 ){
+        String redirectPort = listener.findHttpProtocol().getHttp().getRedirectPort();
+        if (redirectPort != null) {
+            connector.setRedirectPort(Integer.parseInt(redirectPort));
+        } else if (defaultRedirectPort != -1) {
             connector.setRedirectPort(defaultRedirectPort);
         }
 
