@@ -159,7 +159,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
                     WELD_DEPLOYMENT, DeploymentImpl.class);
                 deploymentImpl = buildDeploymentGraph(deploymentImpl);
-                System.out.println(deploymentImpl.toString());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine(deploymentImpl.toString());
+                }
                 try {
                     bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
                     bootstrap.startInitialization();

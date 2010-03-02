@@ -44,6 +44,9 @@ import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 
 /**
@@ -65,6 +68,8 @@ import java.security.PrivilegedAction;
  */
 public class WeldActivator implements BundleActivator
 {
+    private Logger logger = Logger.getLogger(WeldActivator.class.getName());
+
     private javassist.util.proxy.ProxyFactory.ClassLoaderProvider oldCLP;
 
     public void start(BundleContext context) throws Exception
@@ -79,7 +84,10 @@ public class WeldActivator implements BundleActivator
                 new ACLSingletonProvider() : new TCCLSingletonProvider());
         oldCLP = javassist.util.proxy.ProxyFactory.classLoaderProvider;
         javassist.util.proxy.ProxyFactory.classLoaderProvider = new GlassFishClassLoaderProvider();
-        System.out.println("javassist.util.proxy.ProxyFactory.classLoaderProvider = " + javassist.util.proxy.ProxyFactory.classLoaderProvider);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("javassist.util.proxy.ProxyFactory.classLoaderProvider = " +
+                javassist.util.proxy.ProxyFactory.classLoaderProvider);
+        }
     }
 
     public void stop(BundleContext context) throws Exception
