@@ -26,18 +26,18 @@ own identifying information: Portions Copyright [yyyy]
     <property name="jardir" value="${rootdir}/packager_jars"/>
     <property name="modulesdir" value="${jardir}/glassfishv3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
-<!--    <property name="finaljar" value="${rootdir}/glassfish-embedded-all.jar"/> -->
  
 
     <target name="create.distribution">
 
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
+         <antcall target="addDtds"/>
         <antcall target="rejar"/>
-        <antcall target="addRars"/>
-        <antcall target="addDtds"/>
 
-        <attachArtifact file="${finaljar}"/>
+        <antcall target="addRars"/>
+        
+	<attachArtifact file="${finaljar}"/>
      </target>
 
      <target name="makeJarDir">
@@ -70,19 +70,33 @@ own identifying information: Portions Copyright [yyyy]
 	<delete file="${modulesdir}/console-jts-plugin.jar"/>
 	<delete file="${modulesdir}/console-web-plugin.jar"/>
 	<delete file="${modulesdir}/web-gui-plugin-common.jar"/>
+	<delete file="${modulesdir}/org.eclipse.persistence.antlr.jar"/>
+	<delete file="${modulesdir}/org.eclipse.persistence.asm.jar"/>
+	<delete file="${modulesdir}/org.eclipse.persistence.core.jar"/>
+	<delete file="${modulesdir}/org.eclipse.persistence.jpa.jar"/>
+	<delete file="${modulesdir}/org.eclipse.persistence.jpa.modelen.jar"/>
+	<delete file="${modulesdir}/org.eclipse.persistence.oracle.jar"/>
      </target>
 
+
+    <target name="addDtds" if="includeDtds">
+        <echo message="adding dtds"/>
+        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/dtds/**/*"/>
+        <jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/schemas/**/*"/>
+    </target>
+    
     <target name="rejar">
        <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
 
-        <rejar destfile="${finaljar}" duplicate="preserve">
+        <rejar destfile="${finaljar}" duplicate="preserve" >
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
             <manifest>
                 <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
             </manifest>
         </rejar>
     </target>
+
     <target name="addRars" if="includeRars">
         <echo message="adding rars"/>
         <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
@@ -92,11 +106,5 @@ own identifying information: Portions Copyright [yyyy]
         <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>
     </target>
 
-    <target name="addDtds" if="includeDtds">
-        <echo message="adding dtds"/>
-        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/dtds/**/*"/>
-        <jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/schemas/**/*"/>
-        <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="dtds.jar,schemas.jar"/>
-    </target>
 
 </project>
