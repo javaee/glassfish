@@ -214,8 +214,12 @@ public class Server {
         if (builder.fileSystem==null || builder.fileSystem.instanceRoot==null) {
             File f;
             try {
-                f = File.createTempFile("gfembed", "tmp", new File(System.getProperty("java.io.tmpdir")));
-            } catch (IOException e) {
+                String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
+                if (tmpDir==null) {
+                    tmpDir = System.getProperty("user.dir");
+                }
+                f = File.createTempFile("gfembed", "tmp", new File(tmpDir));            }
+            catch (IOException e) {
                 throw new RuntimeException(e);
             }
             f.delete();

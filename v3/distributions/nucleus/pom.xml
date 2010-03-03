@@ -175,6 +175,12 @@
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-corba-base</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>        
 
         <!-- additional dependencies required to create default domain -->
         <dependency>
@@ -200,12 +206,12 @@
             <version>${project.version}</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
-        </dependency>
+        </dependency-->
         <!-- additional servicetag registry dependency -->
         <dependency>
             <groupId>org.glassfish.registration</groupId>

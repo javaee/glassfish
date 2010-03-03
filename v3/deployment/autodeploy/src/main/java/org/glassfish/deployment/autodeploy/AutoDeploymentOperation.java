@@ -36,9 +36,10 @@
 
 package org.glassfish.deployment.autodeploy;
 
-import org.glassfish.deployment.admin.DeployCommand;
 import java.io.File;
 import java.util.Properties;
+
+import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.deployment.autodeploy.AutoDeployer.AutodeploymentStatus;
 import org.glassfish.deployment.common.DeploymentProperties;
 import org.jvnet.hk2.annotations.Inject;
@@ -96,7 +97,7 @@ public class AutoDeploymentOperation extends AutoOperation {
     private static final String COMMAND_NAME = "deploy";
     
     @Inject(name=COMMAND_NAME)
-    private DeployCommand deployCommand;
+    private AdminCommand deployCommand;
     
     @Inject
     private AutodeployRetryManager retryManager;

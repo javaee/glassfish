@@ -308,7 +308,12 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
                 if (localResources!=null && localResources.toURI().toURL().sameFile(url)) {
                     localResources=null;
                 }
-                File f = new File(url.toURI());
+                File f;
+                try {
+                    f = new File(url.toURI());
+                } catch(URISyntaxException e) {
+                    f = new File(url.getPath());
+                }
                 if (f.isFile()) {
                     JarFile jar = new JarFile(f);
                     Enumeration<JarEntry> jarEntries = jar.entries();
@@ -441,7 +446,7 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
         if (resources != null) {
             File f = new File(resources, name);
             if (f.exists()) {
-                return new File(resources, name);
+                return f;
             }
         }
         if (prefix!=null) {
@@ -453,11 +458,12 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
             File f = null;
             try {
                 f = new File(url.toURI());
-                f = new File(f, name);
-                if (f.exists()) {
-                    return f;
-                }
-            } catch (URISyntaxException e) {
+            } catch(URISyntaxException e) {
+                f = new File(url.getPath());
+            }
+            f = new File(f, name);
+            if (f.exists()) {
+                return f;
             }
         }
         return null;

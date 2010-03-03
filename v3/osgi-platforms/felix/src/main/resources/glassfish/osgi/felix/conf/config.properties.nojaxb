@@ -105,6 +105,17 @@ felix.startlevel.bundle=1
 # Don't add/remove any new package unless you find bugs.
 # Since we don't know the actual package versions,
 # we export most of them with default version.
+# We don't export JAXB and JAX-WS packages because higher version of
+# those packages are exported by respective modules in glassfish. 
+# That should not be a problem, but Felix seems to spend infinite
+# time in calculating uses constraints when there are multiple providers
+# for some package.
+# The same issue exists for javax.annotation package, which will be present
+# with 1.1 version in EE6. See issue #7658
+# So, for the time being, we have stopped exporting such packages from JDK.
+# Please also note that, javax.transaction and org.omg.CORBA are exported with a mandatory
+# attribute, because JRE contains a partial list of classes from that package.
+#
 jre-1.6=, \
  javax.accessibility, \
  javax.activation; version="1.1", \
@@ -229,7 +240,11 @@ jre-1.6=, \
  org.w3c.dom.ls, \
  org.xml.sax, \
  org.xml.sax.ext, \
- org.xml.sax.helpers, \
+ org.xml.sax.helpers
+# We currently don't export JAXB and JAX-WS packages for reasons mentioned earlier.
+# ${jaxb-and-jaxws-packages}
+
+jaxb-and-jaxws-packages=, \
  javax.jws, \
  javax.jws.soap, \
  javax.xml.bind, \

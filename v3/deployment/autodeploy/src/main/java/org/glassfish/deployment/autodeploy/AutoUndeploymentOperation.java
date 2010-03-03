@@ -39,7 +39,6 @@ package org.glassfish.deployment.autodeploy;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
-import org.glassfish.deployment.admin.UndeployCommand;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
