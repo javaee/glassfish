@@ -51,7 +51,7 @@ import java.util.ArrayList;
 public class OSGiFaceletConfigResourceProvider implements com.sun.faces.spi.FaceletConfigResourceProvider, com.sun.faces.spi.ConfigurationResourceProvider {
     public Collection<URL> getResources(ServletContext context) {
         Collection<URL> urls = (Collection<URL>) context.getAttribute(Constants.FACELET_CONFIG_ATTR);
-        if (urls == null) urls = Collections.EMPTY_LIST;
+        if (urls == null) return Collections.EMPTY_LIST;
         System.out.println("Facelet Config urls = " + urls);
         return urls;
     }
