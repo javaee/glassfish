@@ -48,6 +48,9 @@ public class PersistenceStrategyBuilderFactory {
     private static final Logger _logger = LogDomains.getLogger(
             PersistenceStrategyBuilderFactory.class, LogDomains.WEB_LOGGER);
 
+    private static final String MEMORY_PERSISTENCE = "memory";
+    private static final String FILE_PERSISTENCE = "file";
+
     // The path where ee builders reside
     private String _eeBuilderPath = null;
 
@@ -97,8 +100,8 @@ public class PersistenceStrategyBuilderFactory {
             resolvedPersistenceType = persistenceType;
         }
 
-        if (resolvedPersistenceType.equalsIgnoreCase("memory") 
-                || resolvedPersistenceType.equalsIgnoreCase("file")) {
+        if (resolvedPersistenceType.equalsIgnoreCase(MEMORY_PERSISTENCE)
+                || resolvedPersistenceType.equalsIgnoreCase(FILE_PERSISTENCE)) {
             // Deliberately leaving frequency & scope null
         } else {
             resolvedPersistenceFrequency = frequency;
@@ -217,8 +220,8 @@ public class PersistenceStrategyBuilderFactory {
         // Using package name will mean this will work
         // even if class is moved to another package
         String pkg = getClass().getPackage().getName();
-        if(!(persistenceType.equalsIgnoreCase("memory") 
-                || persistenceType.equalsIgnoreCase("file"))) {
+        if(!(persistenceType.equalsIgnoreCase(MEMORY_PERSISTENCE)
+                || persistenceType.equalsIgnoreCase(FILE_PERSISTENCE))) {
             pkg = getEEBuilderPath();
         }
         sb.append(pkg + ".");

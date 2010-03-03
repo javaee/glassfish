@@ -64,23 +64,19 @@ public class FileStrategyBuilder extends BasePersistenceStrategyBuilder {
         store.setDirectory(directory);
         mgr.setStore(store);
         
-        // For intra-vm session locking
-        StandardContext sctx = (StandardContext) ctx;
-        sctx.restrictedSetPipeline(new PESessionLockingStandardPipeline(sctx));
-
-        // Special code for Java Server Faces
-        if (ctx.findParameter(JSF_HA_ENABLED) == null) {
-            ctx.addParameter(JSF_HA_ENABLED, "true");
-        }   
-     
         //START OF 6364900
         mgr.setSessionLocker(new PESessionLocker(ctx));
         //END OF 6364900        
 
-        ctx.setManager(mgr); 
-        
-        if(!sctx.isSessionTimeoutOveridden()) {
-            mgr.setMaxInactiveInterval(sessionMaxInactiveInterval); 
-        }        
+        ctx.setManager(mgr);
+
+        if(!((StandardContext)ctx).isSessionTimeoutOveridden()) {
+            mgr.setMaxInactiveInterval(sessionMaxInactiveInterval);
+        }
+
+        // Special code for Java Server Faces
+        if (ctx.findParameter(JSF_HA_ENABLED) == null) {
+            ctx.addParameter(JSF_HA_ENABLED, "true");
+        }
     }
 }

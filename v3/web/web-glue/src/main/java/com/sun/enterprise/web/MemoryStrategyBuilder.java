@@ -66,8 +66,6 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
         } else {
             mgr.setPathname(prependContextPathTo(sessionFilename, ctx));
         }
-        StandardContext sctx = (StandardContext) ctx;
-        sctx.restrictedSetPipeline(new PESessionLockingStandardPipeline(sctx));
 
         mgr.setMaxActiveSessions(maxSessions);
 
@@ -93,7 +91,7 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
         }
         // END CR 6275709
         
-        if (!sctx.isSessionTimeoutOveridden()) {
+        if (!((StandardContext)ctx).isSessionTimeoutOveridden()) {
             mgr.setMaxInactiveInterval(sessionMaxInactiveInterval); 
         }        
     }    
