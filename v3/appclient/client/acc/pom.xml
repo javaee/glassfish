@@ -416,12 +416,6 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.ejb</groupId>
-            <artifactId>ejb-container</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
 <!--
 <dependency>
             <groupId>org.glassfish.deployment</groupId>

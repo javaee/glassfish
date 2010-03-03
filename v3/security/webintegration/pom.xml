@@ -140,11 +140,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.servlet</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
             <artifactId>javax.security.auth.message</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -43,6 +43,7 @@
         <groupId>org.glassfish.common</groupId>
         <artifactId>common</artifactId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../../common/pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.flashlight</groupId>
     <artifactId>flashlight-agent</artifactId>

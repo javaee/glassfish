@@ -64,11 +64,11 @@
                                 <artifactItem>
                                     <groupId>org.glassfish</groupId>
                                     <artifactId>javax.annotation</artifactId>
-                                    <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
                                     <version>${project.version}</version>
-
+                                    <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
+                            <stripVersion>true</stripVersion>
                         </configuration>
                    </execution>
                 </executions>
@@ -80,7 +80,7 @@
                 <configuration>
                     <compilerArguments>
                         <!-- also adding the classes.jar in the bootclasspath as rt.jar is not available on Mac -->
-                        <bootclasspath>${project.build.directory}/endorsed/javax.annotation-${project.version}.jar${path.separator}${java.home}/../Classes/classes.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
+                        <bootclasspath>${project.build.directory}/endorsed/javax.annotation.jar${path.separator}${java.home}/../Classes/classes.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
                     </compilerArguments>
                     <fork>true</fork>
                 </configuration>

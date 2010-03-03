@@ -44,6 +44,7 @@
         <groupId>org.glassfish.extras</groupId>
         <artifactId>extras</artifactId>
         <version>3.1-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <artifactId>glassfish-embedded-static-shell</artifactId>
