@@ -1826,6 +1826,83 @@ public class WsUtil {
         return cumulative;
     }
 
+    /**
+     * This implementation is similar to #getWsdlsAndSchemas(File pkgedWsdl, except that this works on URL which makes
+     * it easy when the wsdl is loaded from the archive. 
+     * @param pkgedWsdl URL
+     * @return
+     * @throws Exception
+     */
+    public Collection getWsdlsAndSchemas(URL pkgedWsdl) throws Exception {
+
+        ArrayList<SDDocumentSource> cumulative =  new ArrayList<SDDocumentSource>();
+        getWsdlsAndSchemas(pkgedWsdl, cumulative);
+
+        //if there are circular imports of wsdls, the original wsdl might
+        //be in this Collection of imported metadata documents.  If so, remove it.
+        SDDocumentSource toRemove = null;
+
+        for (SDDocumentSource source: cumulative) {
+            if ((pkgedWsdl.toString()).equals(source.getSystemId().toString())) {
+                toRemove = source;
+            }
+        }
+        if (toRemove != null) {
+            cumulative.remove(toRemove);
+        }
+
+        return cumulative;
+    }
+
+    private void getWsdlsAndSchemas(URL wsdlRoot, ArrayList<SDDocumentSource> cumulative) throws Exception {
+
+        // Get a list of wsdl and schema relative imports in this wsdl
+        Collection<Import> wsdlRelativeImports = new HashSet();
+        Collection<Import> schemaRelativeImports = new HashSet();
+        Collection<Import> wsdlIncludes = new HashSet();
+        Collection<Import> schemaIncludes = new HashSet();
+
+        parseRelativeImports(wsdlRoot, wsdlRelativeImports, wsdlIncludes,
+                schemaRelativeImports, schemaIncludes);
+
+        wsdlRelativeImports.addAll(wsdlIncludes);
+        schemaRelativeImports.addAll(schemaIncludes);
+
+
+        // List of all schema relative imports
+        for(Import next : schemaRelativeImports) {
+            addFileAndDecendents(wsdlRoot.toURI().resolve(next.getLocation()).toURL(), cumulative);
+        }
+        // List of all wsdl relative imports
+        for(Import next : wsdlRelativeImports) {
+            addFileAndDecendents(wsdlRoot.toURI().resolve(next.getLocation()).toURL(), cumulative);
+        }
+    }
+
+    /*
+     * Add the File and wsdls and schemas imported by it to a list of metadata
+     * documents used to initialize an endpoint.  Canonicalize the paths and check
+     * whether the documents have already been added to the list.
+     */
+    private void addFileAndDecendents(URL fileUrl,
+            ArrayList<SDDocumentSource> cumulative) throws Exception {
+
+        //make sure we have not processed this file before
+        boolean alreadyProcessed = false;
+
+        for (SDDocumentSource source: cumulative) {
+            if ((fileUrl.toString()).equals(source.getSystemId().toString())) {
+                alreadyProcessed = true;
+                break;
+            }
+        }
+        if (!alreadyProcessed) {
+            cumulative.add(0, SDDocumentSource.create(fileUrl));
+            getWsdlsAndSchemas(fileUrl, cumulative);
+        }
+
+    }
+
     public void getWsdlsAndSchemas(File wsdl, 
                                    ArrayList<SDDocumentSource> cumulative) throws Exception {
         

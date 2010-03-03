@@ -67,6 +67,8 @@ import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.AddressingFeature;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -288,48 +290,62 @@ public class JAXWSServlet extends HttpServlet {
         Collection docs = null;
         if(endpoint.getWebService().hasWsdlFile()) {
 
-            //TODO BM figure way for WEB or APP
-            /* BaseManager mgr;
+            /*
+             //figure way for WEB or APP
+            BaseManager mgr;
             if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
                 mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.WEB);
             } else {
                 mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
             }*/
 
-            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
-                    endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
-            
-            File pkgedWsdl = null;
-            if(deployedDir != null) {
-                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                    pkgedWsdl = new File(deployedDir+File.separator+
-                            endpoint.getWebService().getWsdlFileUri());
-                } else {
-                    pkgedWsdl = new File(deployedDir+File.separator+
-                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
-                            File.separator + endpoint.getWebService().getWsdlFileUri());
-                }
-            } else {
-                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
-            }
-            if(pkgedWsdl.exists()) {
-                //Canonicalize the filename.  Since getWsdlsAndSchemas canonicalizes
-                //the filenames of the metatdata documents, JAXWS might get into have
-                //trouble detecting common root paths.
-                //ie C://foo.wsdl and c://schema.wsdl
-                pkgedWsdl = pkgedWsdl.getCanonicalFile();
+//            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+//            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+//            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
+//                    endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
+//
+//            File pkgedWsdl = null;
+//            if(deployedDir != null) {
+//                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
+//                    pkgedWsdl = new File(deployedDir+File.separator+
+//                            endpoint.getWebService().getWsdlFileUri());
+//                } else {
+//                    pkgedWsdl = new File(deployedDir+File.separator+
+//                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
+//                            File.separator + endpoint.getWebService().getWsdlFileUri());
+//                }
+//            } else {
+//                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
+//            }
+//            if(pkgedWsdl.exists()) {
+//                //Canonicalize the filename.  Since getWsdlsAndSchemas canonicalizes
+//                //the filenames of the metatdata documents, JAXWS might get into have
+//                //trouble detecting common root paths.
+//                //ie C://foo.wsdl and c://schema.wsdl
+//                pkgedWsdl = pkgedWsdl.getCanonicalFile();
+//
+//                primaryWsdl = SDDocumentSource.create(pkgedWsdl.toURL());
 
-                primaryWsdl = SDDocumentSource.create(pkgedWsdl.toURL());
+            URL pkgedWsdl = null;
+            try {
+                pkgedWsdl = getServletContext().getResource('/' + endpoint.getWebService().getWsdlFileUri());
+            } catch (MalformedURLException e) {
+                logger.severe("Cannot load the wsdl from the aplication : " + e.getMessage());
+            }
+            if (pkgedWsdl == null) {
+                pkgedWsdl = endpoint.getWebService().getWsdlFileUrl();
+            }
+
+            if (pkgedWsdl != null) {
+                primaryWsdl = SDDocumentSource.create(pkgedWsdl);
                 docs = wsu.getWsdlsAndSchemas(pkgedWsdl);
 
                 if (logger.isLoggable(Level.FINE)) {
                     logger.log(Level.INFO, "Creating endpoint with packaged WSDL " +
                             primaryWsdl.getSystemId().toString());
                     logger.log(Level.FINE, "Metadata documents:");
-                    for (Object source: docs) {
-                        logger.log(Level.FINE, ((SDDocumentSource)source).getSystemId().toString());
+                    for (Object source : docs) {
+                        logger.log(Level.FINE, ((SDDocumentSource) source).getSystemId().toString());
                     }
                 }
             }
@@ -340,12 +356,7 @@ public class JAXWSServlet extends HttpServlet {
                 endpoint);
 
         // Get catalog info
-        java.net.URL catalogURL = null;
-        File catalogFile = new File(endpoint.getBundleDescriptor().getDeploymentDescriptorDir() +
-                File.separator + "jax-ws-catalog.xml");
-        if(catalogFile.exists()) {
-            catalogURL = catalogFile.toURL();
-        }
+        java.net.URL catalogURL = getServletContext().getResource('/' + endpoint.getBundleDescriptor().getDeploymentDescriptorDir() + File.separator + "jax-ws-catalog.xml");
 
         // Create Binding and set service side handlers on this binding
         boolean mtomEnabled = wsu.getMtom(endpoint);
