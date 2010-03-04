@@ -110,7 +110,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
     }
 
     public final boolean commit() throws LoginException {
-        if (!success || groups == null) {
+        if (!success) {
             return false;
         }
         Set<Principal> principalSet = subject.getPrincipals();
@@ -200,7 +200,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
             throw new LoginException("No Certificate(s) found.");
         }
         try {
-            certs = (X509Certificate[]) certCred.toArray();
+            certs = (X509Certificate[]) certCred.toArray(new X509Certificate[certCred.size()]);
         } catch (Exception ex) {
             throw (LoginException) new LoginException("No Certificate(s) found.").initCause(ex);
         }
@@ -222,14 +222,15 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
      * <P>Note that this method is called after the authentication
      * has succeeded. If authentication failed do not call this method.
      *
-     * Global instance field succeeded is set to true by this method.
+     * This method sets the authentication status to success if the
+     * groups parameter is non-null.
      *
      * @param groups String array of group memberships for user (could be
      *     empty).
      */
     protected final void commitUserAuthentication(final String[] groups) {
         this.groups = groups;
-        this.success = true;
+        this.success = (groups != null);
     }
 
     /**

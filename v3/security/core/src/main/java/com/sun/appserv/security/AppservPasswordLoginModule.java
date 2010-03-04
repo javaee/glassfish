@@ -52,6 +52,7 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import com.sun.enterprise.security.web.integration.PrincipalGroupFactory;
 import com.sun.enterprise.security.common.AppservPasswordLoginModuleInterface;
+import java.security.Principal;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
@@ -167,7 +168,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         String realm_name = _currentRealm.getName();
         _userPrincipal = 
             PrincipalGroupFactory.getPrincipalInstance(getUsername(),realm_name);
-        Set principalSet = _subject.getPrincipals();
+        Set<Principal> principalSet = _subject.getPrincipals();
         if (!principalSet.contains(_userPrincipal)){
             principalSet.add(_userPrincipal);
         }
