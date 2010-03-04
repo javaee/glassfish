@@ -42,49 +42,6 @@
 
 package org.glassfish.admingui.common.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.faces.context.FacesContext;
-import javax.management.Attribute;
-import javax.management.AttributeList;
-
-import javax.servlet.ServletContext;
-
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-
-import org.glassfish.admin.amx.base.DomainRoot;
-import org.glassfish.admin.amx.base.Realms;
-import org.glassfish.admin.amx.base.RuntimeRoot;
-import org.glassfish.admin.amx.base.ConnectorRuntimeAPIProvider;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.core.AMXProxy;
-import org.glassfish.admin.amx.base.Query;
-import org.glassfish.external.amx.AMXGlassfish;
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-import org.glassfish.admin.amx.intf.config.AMXConfigHelper;
-import org.glassfish.admin.amx.intf.config.Application;
-import org.glassfish.admin.amx.intf.config.ApplicationRef;
-import org.glassfish.admin.amx.intf.config.Applications;
-import org.glassfish.admin.amx.intf.config.Config;
-import org.glassfish.admin.amx.intf.config.ConfigTools;
-import org.glassfish.admin.amx.intf.config.Configs;
-import org.glassfish.admin.amx.intf.config.Domain;
-import org.glassfish.admin.amx.intf.config.PropertiesAccess;
-import org.glassfish.admin.amx.intf.config.Property;
-
-import org.glassfish.admin.amx.intf.config.Resources;
-import org.glassfish.admin.amx.intf.config.Server;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
-import org.jvnet.hk2.component.Habitat;
-
 /**
  *
  * @author anilam
