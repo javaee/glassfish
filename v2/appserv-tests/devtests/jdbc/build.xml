@@ -101,6 +101,7 @@
 	<ant dir="custom-validation" target="all"/>
 	<ant dir="custom-validation-1" target="all"/>
 	<ant dir="flushconnectionpool" target="all"/>
+	<ant dir="connleakreclaimnotify" target="all"/>
 	<!--<antcall target="all-oracle"/>-->
     </target>
 
@@ -396,6 +397,12 @@
 	<record name="init-sql.output" action="stop"/>
     </target>
 
+    <target name="connleakreclaimnotify">
+	<record name="connleakreclaimnotify.output" action="start"/>
+	<ant dir="connleakreclaimnotify" target="all"/>
+	<record name="connleakreclaimnotify.output" action="stop"/>
+    </target>
+  
     <target name="usage">
         <echo>
             Usage:
