@@ -24,6 +24,46 @@ public class BaseSeleniumTestClass {
             String browserString = getBrowserString();
             selenium = new DefaultSelenium("localhost", getDefaultPort(), browserString, "http://localhost:4848");
             selenium.start();
+            (new BaseSeleniumTestClass()).openAndWait("/common/sysnet/registration.jsf", "Product Registration"); // Make sure the server has started and the user logged in
+        }
+    }
+
+    protected void openAndWait(String url, String triggerText) {
+        selenium.open(url);
+        // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
+        waitForPageLoad(triggerText, 120);
+    }
+
+    /**
+     * Cause the test to wait for the page to load, timing out after 1 minute.
+     * @See #waitForPageLoad(String triggerText, int timeout)
+     * @param triggerText
+     */
+    protected void waitForPageLoad(String triggerText) {
+        waitForPageLoad(triggerText, 60);
+    }
+
+    /**
+     * Cause the test to wait for the page to load.  This will be used, for example, after an initial page load
+     * (selenium.open) or after an Ajaxy navigation request has been made.
+     * @param triggerText The text that should appear on the page when it has finished loading
+     * @param timeout How long to wait (in seconds)
+     */
+    protected void waitForPageLoad(String triggerText, int timeout) {
+        for (int second = 0; ; second++) {
+            if (second >= timeout) {
+                Assert.fail("timeout");
+            }
+            try {
+                if (selenium.isTextPresent(triggerText)) {
+                    break;
+                }
+            } catch (Exception e) {
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
         }
     }
 
@@ -39,11 +79,6 @@ public class BaseSeleniumTestClass {
         return "*"+browserString;
     }
 
-//    @AfterClass
-//    public static void afterClass() {
-//        selenium.stop();
-//    }
-
     private static int getDefaultPort() {
         try {
             Class c = Class.forName("org.openqa.selenium.server.SeleniumServer");
@@ -52,24 +87,6 @@ public class BaseSeleniumTestClass {
             return portNumber.intValue();
         } catch (Exception e) {
             return 4444;
-        }
-    }
-
-    protected void waitForAjaxLoad (String triggerText) {
-        for (int second = 0; ; second++) {
-            if (second >= 60) {
-                Assert.fail("timeout");
-            }
-            try {
-                if (selenium.isTextPresent(triggerText)) {
-                    break;
-                }
-            } catch (Exception e) {
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
         }
     }
 }
