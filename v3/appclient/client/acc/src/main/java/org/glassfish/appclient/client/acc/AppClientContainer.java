@@ -278,6 +278,7 @@ public class AppClientContainer {
      */
 
     public void startClient(String[] args) throws Exception, UserError {
+        prepare(null);
         launch(args);
     }
 
