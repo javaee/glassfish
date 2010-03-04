@@ -122,6 +122,10 @@ public class SecurityServiceImpl implements SecurityService {
         //this method.
         boolean authenticated = false;
         try {
+            if (hreq.getUserPrincipal() == null) {
+                //request is not in a session so start clean
+                resetSecurityContext();
+            }
             if (context != null) {
                 context.setUserPrincipal(null);
             }
@@ -240,7 +244,7 @@ public class SecurityServiceImpl implements SecurityService {
     }    
         
     public void resetSecurityContext() {
-        SecurityContext.setCurrent(null);
+        SecurityContext.setUnauthenticatedContext();
     }
 
     public SystemHandlerDelegate getSecurityHandler(WebServiceEndpoint endpoint) {

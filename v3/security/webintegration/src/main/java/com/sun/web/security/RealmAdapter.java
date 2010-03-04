@@ -1089,16 +1089,19 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         boolean isGranted = false;
 
         try {
+            HttpServletRequest hsr = (HttpServletRequest) request.getRequest();
+            if (hsr.getUserPrincipal() == null) {
+                SecurityContext.setUnauthenticatedContext();
+            }
             if (helper != null && helper.getServerAuthConfig() != null) {
                 return Realm.AUTHENTICATE_NEEDED;
             }
-
             isGranted = invokeWebSecurityManager(
                     request, response, constraints);
         } catch (IOException iex) {
             throw iex;
         } catch (Throwable ex) {
-            _logger.log(Level.SEVERE,"web_server.excep_authenticate_realmadapter", ex);
+            _logger.log(Level.SEVERE, "web_server.excep_authenticate_realmadapter", ex);
             ((HttpServletResponse) response.getResponse()).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             response.setDetailMessage(rb.getString("realmBase.forbidden"));
             return Realm.AUTHENTICATED_NOT_AUTHORIZED;
