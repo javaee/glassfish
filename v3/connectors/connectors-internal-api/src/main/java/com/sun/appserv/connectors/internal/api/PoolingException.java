@@ -44,15 +44,10 @@
  */
 package com.sun.appserv.connectors.internal.api;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 /**
  * Generic exception class to indicate exceptions pertaining to pooling infrastructure
  */
 public class PoolingException extends Exception {
-
-    private Exception ex;
 
     public PoolingException() {
     }
@@ -62,38 +57,11 @@ public class PoolingException extends Exception {
     }
 
     public PoolingException(Exception ex) {
-        super(ex.getMessage());
-        this.ex = ex;
+        super(ex.getMessage(), ex);
     }
 
     public PoolingException(String s, Exception ex) {
-        super(s);
-        this.ex = ex;
-    }
-
-    public Exception getNestedException() {
-        return ex;
-    }
-
-    public void printStackTrace() {
-        super.printStackTrace();
-        if (ex != null) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void printStackTrace(PrintStream ps) {
-        super.printStackTrace(ps);
-        if (ex != null) {
-            ex.printStackTrace(ps);
-        }
-    }
-
-    public void printStackTrace(PrintWriter pw) {
-        super.printStackTrace(pw);
-        if (ex != null) {
-            ex.printStackTrace(pw);
-        }
+        super(s, ex);
     }
 
 }
