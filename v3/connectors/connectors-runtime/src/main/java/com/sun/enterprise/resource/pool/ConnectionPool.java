@@ -1526,6 +1526,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         //since connections are destroyed during reclaim. Stateful session beans 
         // will work fine.
         ds.removeResource(handle);
+        notifyWaitingThreads();
     }
 
     /**
