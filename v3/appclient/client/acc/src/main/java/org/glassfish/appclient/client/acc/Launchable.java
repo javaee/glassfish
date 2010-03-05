@@ -115,7 +115,16 @@ interface Launchable {
             if (result != null) {
                 if ( ! (result instanceof JWSFacadeLaunchable)) {
                     URL clientOrFacadeURL = new URL("file:" + result.getURI().getSchemeSpecificPart());
-                    ACCClassLoader.instance().appendURL(clientOrFacadeURL);
+                    /*
+                     * For the embedded case especially there might not be an
+                     * ACCClassLoader instance yet.  Create one if needed
+                     * before proceeding.
+                     */
+                    ACCClassLoader cl = ACCClassLoader.instance();
+                    if (cl == null) {
+                        cl = ACCClassLoader.newInstance(Thread.currentThread().getContextClassLoader(), false);
+                    }
+                    cl.appendURL(clientOrFacadeURL);
                 }
                 return result;
             }
