@@ -447,7 +447,6 @@ public class StandardSession
     }
 
 
-
     /**
      * Inform the listeners about the new session.
      *

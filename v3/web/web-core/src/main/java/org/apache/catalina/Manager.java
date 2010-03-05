@@ -58,7 +58,7 @@ package org.apache.catalina;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 //END OF 6364900
@@ -411,6 +411,15 @@ public interface Manager {
      */
     public Session findSession(String id) throws IOException;
 
+    /**
+     * Gets the session with the given id from the given request.
+     *
+     * @param id the session id
+     * @param request the request containing the requested session information
+     * @return the requested session, or null if not found
+     * @throws IOException
+     */
+    public Session findSession(String id, HttpServletRequest request) throws IOException;
 
     /**
      * Return the set of active Sessions associated with this Manager.
@@ -471,4 +480,13 @@ public interface Manager {
     public void preRequestDispatcherProcess(ServletRequest request, ServletResponse response);
     public void postRequestDispatcherProcess(ServletRequest request, ServletResponse response);
     //END OF 6364900
+
+    /**
+     * Converts the given session into a cookie as a way of persisting it.
+     *
+     * @param session the session to convert
+     * @return the cookie representation of the given session
+     * @throws IOException
+     */
+    public Cookie toCookie(Session session) throws IOException;
 }

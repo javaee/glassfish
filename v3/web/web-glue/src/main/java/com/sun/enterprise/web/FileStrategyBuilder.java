@@ -50,14 +50,12 @@ public class FileStrategyBuilder extends BasePersistenceStrategyBuilder {
             Context ctx,
             SessionManager smBean,
             ServerConfigLookup serverConfigLookup) {
+        _logger.log(Level.INFO, "webcontainer.filePersistence", ctx.getPath());
 
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
-        
-        Object[] params = { ctx.getPath() };
-        _logger.log(Level.INFO, "webcontainer.filePersistence", params);
+
         PersistentManager mgr = new PersistentManager();
         mgr.setMaxActiveSessions(maxSessions);
-
         mgr.setMaxIdleBackup(0);     // FIXME: Make configurable
 
         FileStore store = new FileStore();

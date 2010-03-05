@@ -62,6 +62,12 @@ public final class PersistenceType {
         new PersistenceType("file");
 
     /**
+     * Cookie-based persistence
+     */
+    public static final PersistenceType COOKIE =
+        new PersistenceType("cookie");
+
+    /**
      * Custom/user implemented session manager.
      */
     public static final PersistenceType CUSTOM =
@@ -133,24 +139,7 @@ public final class PersistenceType {
      */
     public static PersistenceType parseType(String type) {
         // Default persistence type is MEMORY
-        PersistenceType pType = MEMORY;
-        if (type != null) {
-            if (type.equalsIgnoreCase(FILE.getType()))
-                pType = FILE;
-            else if (type.equalsIgnoreCase(CUSTOM.getType()))
-                pType = CUSTOM;
-            else if (type.equalsIgnoreCase(S1WS60.getType()))
-                pType = S1WS60;
-            else if (type.equalsIgnoreCase(MMAP.getType()))
-                pType = MMAP;
-            else if (type.equalsIgnoreCase(JDBC.getType()))
-                pType = JDBC;            
-            else if (type.equalsIgnoreCase(HA.getType()))
-                pType = HA;
-            else if (type.equalsIgnoreCase(REPLICATED.getType()))
-                pType = REPLICATED; 
-        }
-        return pType;
+        return parseType(type, MEMORY);
     }
     
     /**
@@ -166,6 +155,8 @@ public final class PersistenceType {
                 pType = MEMORY;            
             else if (type.equalsIgnoreCase(FILE.getType()))
                 pType = FILE;
+            else if (type.equalsIgnoreCase(COOKIE.getType()))
+                pType = COOKIE;
             else if (type.equalsIgnoreCase(CUSTOM.getType()))
                 pType = CUSTOM;
             else if (type.equalsIgnoreCase(S1WS60.getType()))

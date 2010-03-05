@@ -37,16 +37,11 @@
 package com.sun.enterprise.web;
 
 import com.sun.enterprise.deployment.runtime.web.SessionManager;
-import com.sun.enterprise.util.uuid.UuidGenerator;
-import com.sun.enterprise.web.session.PersistenceType;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.session.StandardManager;
+import org.apache.catalina.session.CookiePersistentManager;
 
-import java.text.MessageFormat;
-import java.util.logging.Level;
-
-public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
+public class CookieStrategyBuilder extends BasePersistenceStrategyBuilder {
     
     public void initializePersistenceStrategy(
             Context ctx,
@@ -55,22 +50,14 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
 
         super.initializePersistenceStrategy(ctx, smBean, serverConfigLookup);
 
-        String persistenceType = PersistenceType.MEMORY.getType();        
-
-        String ctxPath = ctx.getPath();
-        if(ctxPath != null && !ctxPath.equals("")) {    
-            Object[] params = { ctx.getPath(), persistenceType };
-            _logger.log(Level.FINE, "webcontainer.noPersistence", params); 
-        }
-
-        StandardManager mgr = new StandardManager();
+        CookiePersistentManager mgr = new CookiePersistentManager();
         if (sessionFilename == null) {
             mgr.setPathname(sessionFilename);
         } else {
             mgr.setPathname(prependContextPathTo(sessionFilename, ctx));
         }
-
         mgr.setMaxActiveSessions(maxSessions);
+        mgr.setCookieName(persistentCookieName);
 
         // START OF 6364900
         mgr.setSessionLocker(new PESessionLocker(ctx));
@@ -78,22 +65,6 @@ public class MemoryStrategyBuilder extends BasePersistenceStrategyBuilder {
 
         ctx.setManager(mgr);
 
-        // START CR 6275709
-        if (sessionIdGeneratorClassname != null &&
-                sessionIdGeneratorClassname.length() > 0) {
-            try {
-                UuidGenerator generator = (UuidGenerator)
-                    serverConfigLookup.loadClass(
-                        sessionIdGeneratorClassname).newInstance();
-                mgr.setUuidGenerator(generator);
-            } catch (Exception ex) {
-                String msg = _rb.getString("webcontainer.unableLoadSessionUUIdGenerator");
-                msg = MessageFormat.format(msg, sessionIdGeneratorClassname);
-                _logger.log(Level.SEVERE, msg, ex);
-            }
-        }
-        // END CR 6275709
-        
         if (!((StandardContext)ctx).isSessionTimeoutOveridden()) {
             mgr.setMaxInactiveInterval(sessionMaxInactiveInterval); 
         }        

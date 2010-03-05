@@ -361,7 +361,7 @@ public class OutputBuffer extends Writer
 
         doFlush = true;
         if (initial){
-            addSessionCookieWithJvmRoute();
+            addSessionCookies();
             response.sendHeaders();
             initial = false;
         }
@@ -409,7 +409,7 @@ public class OutputBuffer extends Writer
 
         // If we really have something to write
         if (cnt > 0) {
-            addSessionCookieWithJvmRoute();
+            addSessionCookies();
             // real write to the adapter
             outputChunk.setBytes(buf, off, cnt);
             try {
@@ -654,33 +654,53 @@ public class OutputBuffer extends Writer
         return bb.getLimit();
     }
 
-    
-    /**
-     * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
-     */
-    private void addSessionCookieWithJvmRoute() {
+
+    private void addSessionCookies() throws IOException {
         Request req = (Request) coyoteResponse.getRequest();
         if (req.isRequestedSessionIdFromURL()) {
             return;
         }
- 
+
         StandardContext ctx = (StandardContext) coyoteResponse.getContext();
-        if (ctx == null || ctx.getJvmRoute() == null || !ctx.getCookies()) {
+        if (ctx == null || !ctx.getCookies()) {
             return;
         }
-    
-        Session sess = req.getSessionInternal(false);
+
+        addSessionCookieWithJvmRoute(req, ctx);
+        addPersistedSessionCookie(req, ctx);
+    }
+
+    /**
+     * Adds JSESSIONID cookie whose value includes jvmRoute if necessary.
+     */
+    private void addSessionCookieWithJvmRoute(Request request, StandardContext ctx) {
+        if (ctx.getJvmRoute() == null) {
+            return;
+        }
+        Session sess = request.getSessionInternal(false);
         if (sess == null) {
             return;
         }
 
         // Create JSESSIONID cookie that includes jvmRoute
         Cookie cookie = new Cookie(ctx.getSessionCookieName(),
-                                   sess.getIdInternal() + "." +
-                                   ctx.getJvmRoute());
-        req.configureSessionCookie(cookie);
+                sess.getIdInternal() + "." + ctx.getJvmRoute());
+        request.configureSessionCookie(cookie);
         response.addHeader(SET_COOKIE_HEADER,
-                           coyoteResponse.getCookieString(cookie));
+                coyoteResponse.getCookieString(cookie));
+    }
+
+    private void addPersistedSessionCookie(Request request, StandardContext ctx) throws IOException {
+        Session sess = request.getSessionInternal(false);
+        if (sess == null) {
+            return;
+        }
+        Cookie cookie = ctx.getManager().toCookie(sess);
+        if (cookie != null) {
+            request.configureSessionCookie(cookie);
+            response.addHeader(SET_COOKIE_HEADER,
+                    coyoteResponse.getCookieString(cookie));
+        }
     }
 
     // START PWC 6512276

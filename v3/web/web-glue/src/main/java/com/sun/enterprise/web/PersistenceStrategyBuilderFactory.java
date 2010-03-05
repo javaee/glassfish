@@ -37,6 +37,7 @@
 package com.sun.enterprise.web;
 
 import com.sun.appserv.ha.util.PersistenceTypeResolver;
+import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 
@@ -47,9 +48,6 @@ public class PersistenceStrategyBuilderFactory {
     
     private static final Logger _logger = LogDomains.getLogger(
             PersistenceStrategyBuilderFactory.class, LogDomains.WEB_LOGGER);
-
-    private static final String MEMORY_PERSISTENCE = "memory";
-    private static final String FILE_PERSISTENCE = "file";
 
     // The path where ee builders reside
     private String _eeBuilderPath = null;
@@ -100,8 +98,9 @@ public class PersistenceStrategyBuilderFactory {
             resolvedPersistenceType = persistenceType;
         }
 
-        if (resolvedPersistenceType.equalsIgnoreCase(MEMORY_PERSISTENCE)
-                || resolvedPersistenceType.equalsIgnoreCase(FILE_PERSISTENCE)) {
+        if (resolvedPersistenceType.equalsIgnoreCase(PersistenceType.MEMORY.getType()) ||
+                resolvedPersistenceType.equalsIgnoreCase(PersistenceType.FILE.getType()) ||
+                resolvedPersistenceType.equalsIgnoreCase(PersistenceType.COOKIE.getType())) {
             // Deliberately leaving frequency & scope null
         } else {
             resolvedPersistenceFrequency = frequency;
@@ -220,8 +219,9 @@ public class PersistenceStrategyBuilderFactory {
         // Using package name will mean this will work
         // even if class is moved to another package
         String pkg = getClass().getPackage().getName();
-        if(!(persistenceType.equalsIgnoreCase(MEMORY_PERSISTENCE)
-                || persistenceType.equalsIgnoreCase(FILE_PERSISTENCE))) {
+        if(!(persistenceType.equalsIgnoreCase(PersistenceType.MEMORY.getType()) ||
+                persistenceType.equalsIgnoreCase(PersistenceType.FILE.getType()) ||
+                persistenceType.equalsIgnoreCase(PersistenceType.COOKIE.getType()))) {
             pkg = getEEBuilderPath();
         }
         sb.append(pkg + ".");

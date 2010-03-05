@@ -78,6 +78,7 @@ public abstract class BasePersistenceStrategyBuilder
     protected int maxIdleBackup = DEFAULT_MAX_IDLE_BACKUP;
     protected final int DEFAULT_SESSION_TIMEOUT = 1800;   // 30 minute
     protected int sessionMaxInactiveInterval = DEFAULT_SESSION_TIMEOUT;
+    protected String persistentCookieName = "GLASSFISHCOOKIE";
 
     // Special constant for Java Server Faces
     protected static final String JSF_HA_ENABLED = "com.sun.appserver.enableHighAvailability";    
@@ -272,10 +273,9 @@ public abstract class BasePersistenceStrategyBuilder
             // session manager can be configured            
             ManagerProperties mgrBean = smBean.getManagerProperties();
             if ((mgrBean != null) && (mgrBean.sizeWebProperty() > 0)) {
-                WebProperty[] props = mgrBean.getWebProperty();
-                for (int i = 0; i < props.length; i++) {                    
-                    String name = props[i].getAttributeValue(WebProperty.NAME);
-                    String value = props[i].getAttributeValue(WebProperty.VALUE);                    
+                for (WebProperty prop : mgrBean.getWebProperty()) {
+                    String name = prop.getAttributeValue(WebProperty.NAME);
+                    String value = prop.getAttributeValue(WebProperty.VALUE);
                     if (name.equalsIgnoreCase("reapIntervalSeconds")) {
                         try {
                            reapInterval = Integer.parseInt(value);
@@ -307,10 +307,9 @@ public abstract class BasePersistenceStrategyBuilder
 
             StoreProperties storeBean = smBean.getStoreProperties();
             if ((storeBean != null) && (storeBean.sizeWebProperty() > 0)) {
-                WebProperty[] props = storeBean.getWebProperty();
-                for (int i = 0; i < props.length; i++) {
-                    String name = props[i].getAttributeValue(WebProperty.NAME);
-                    String value = props[i].getAttributeValue(WebProperty.VALUE);                    
+                for (WebProperty prop : storeBean.getWebProperty()) {
+                    String name = prop.getAttributeValue(WebProperty.NAME);
+                    String value = prop.getAttributeValue(WebProperty.VALUE);  
                     if (name.equalsIgnoreCase("reapIntervalSeconds")) {
                         try {
                             storeReapInterval = Integer.parseInt(value);
@@ -320,7 +319,9 @@ public abstract class BasePersistenceStrategyBuilder
                     } else if (name.equalsIgnoreCase("directory")) {
                         directory = value;
                     } else if (name.equalsIgnoreCase("persistenceScope")) {
-                        _persistenceScope = value;                        
+                        _persistenceScope = value;
+                    } else if (name.equalsIgnoreCase("cookieName")) {
+                        persistentCookieName = value;                     
                     } else {
                         Object[] params = { name };
                         _logger.log(Level.INFO, "webcontainer.notYet", params);

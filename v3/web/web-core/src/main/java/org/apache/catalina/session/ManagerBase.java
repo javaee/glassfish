@@ -54,7 +54,6 @@
 
 package org.apache.catalina.session;
 
-
 import com.sun.enterprise.util.uuid.UuidGenerator;
 import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
 import org.apache.catalina.*;
@@ -69,7 +68,7 @@ import javax.management.ObjectName;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.DataInputStream;
@@ -937,14 +936,19 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @exception IOException if an input/output error occurs while
      *  processing this request
      */
+    @Override
     public Session findSession(String id) throws IOException {
         if (id == null) {
             return (null);
         }
         return sessions.get(id);
     }
-    
-    
+
+    @Override
+    public Session findSession(String id, HttpServletRequest request) throws IOException {
+        return findSession(id);
+    }
+
     /**
      * clear out the sessions cache
      * HERCULES:added
@@ -972,6 +976,11 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         sessions.remove(session.getIdInternal());
     }
 
+    @Override
+    public Cookie toCookie(Session session) throws IOException {
+        return null;
+    }
+                                 
 
     /**
      * Remove a property change listener from this component.
@@ -979,9 +988,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param listener The listener to remove
      */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-
         support.removePropertyChangeListener(listener);
-
     }
 
 
