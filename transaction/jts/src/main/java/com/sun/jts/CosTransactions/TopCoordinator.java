@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -2106,6 +2106,7 @@ public class TopCoordinator extends CoordinatorImpl {
         // this method, then the process must be ended with a fatal error.
 
         Throwable heuristicExc = null;
+        Throwable internalExc = null;
         if (participants != null) {
             try {
                 participants.distributeCommit();
@@ -2118,7 +2119,7 @@ public class TopCoordinator extends CoordinatorImpl {
                 // ADDED(Ram J) percolate any system exception
                 // back to the caller.
                 if (exc instanceof INTERNAL) {
-                    throw (INTERNAL) exc;
+                    internalExc = exc; // throw (INTERNAL) exc;
                 }
             }
         }
@@ -2152,7 +2153,7 @@ public class TopCoordinator extends CoordinatorImpl {
             // for the transaction.
 
             if (terminator != null) {
-                terminator.setCompleted(false, heuristicExc != null);
+                terminator.setCompleted(false, (heuristicExc != null || internalExc != null));
             }
 
             /*  commented out (Ram J) for memory leak fix.
@@ -2190,6 +2191,8 @@ public class TopCoordinator extends CoordinatorImpl {
                 } else {
                     throw (HeuristicHazard) heuristicExc;
                 }
+            } else if (internalExc != null) {
+                throw (INTERNAL) internalExc;
             }
         }
     }
@@ -2944,47 +2947,46 @@ public class TopCoordinator extends CoordinatorImpl {
 
         if ((participants != null)  && (participants.numRegistered() == 1)) {
             Throwable heuristicExc = null;
+            Throwable internalExc = null;
             boolean rolled_back = false;
             try {
                 participants.commitOnePhase();
             } catch (Throwable exc) {
 
                 if (exc instanceof HeuristicMixed) {
-					// IASRI START 4722886
-                    // heuristicExc = exc;
-					// IASRI END 4722886
-                    if (!tranState.setState(
-                            TransactionState.
+		    // revert IASRI START 4722886
+                    heuristicExc = exc;
+		    // revert IASRI END 4722886
+                    if (!tranState.setState(TransactionState.
                                 STATE_COMMIT_ONE_PHASE_HEURISTIC_MIXED)) {
-								_logger.log(Level.SEVERE,"jts.transaction_wrong_state",
-                                       "COMMIT_ONE_PHASE (1)");
-								 String msg = LogFormatter.getLocalizedMessage(_logger,
-								 						"jts.transaction_wrong_state",
-														new java.lang.Object[]
-														{ "COMMIT_ONE_PHASE (1)"});
-								  throw  new org.omg.CORBA.INTERNAL(msg);
+			_logger.log(Level.SEVERE,"jts.transaction_wrong_state",
+                               "COMMIT_ONE_PHASE (1)");
+			 String msg = LogFormatter.getLocalizedMessage(_logger,
+				"jts.transaction_wrong_state",
+				new java.lang.Object[]
+				{ "COMMIT_ONE_PHASE (1)"});
+			 throw  new org.omg.CORBA.INTERNAL(msg);
                     }
-					// IASRI START 4722886
-					throw (HeuristicMixed)exc;
-					// IASRI END 4722886
+		    // revert IASRI START 4722886
+		    // throw (HeuristicMixed)exc;
+		    // revert IASRI END 4722886
                 } else if (exc instanceof HeuristicHazard) {
-					// IASRI START 4722886
-                    // heuristicExc = exc;
-					// IASRI END 4722886
-                    if (!tranState.setState(
-                            TransactionState.
-                                STATE_COMMIT_ONE_PHASE_HEURISTIC_HAZARD)) {
-								_logger.log(Level.SEVERE,"jts.transaction_wrong_state",
-                                        "COMMIT_ONE_PHASE (2)");
-								 String msg = LogFormatter.getLocalizedMessage(_logger,
-								 						"jts.transaction_wrong_state",
-														new java.lang.Object[]
-														{ "COMMIT_ONE_PHASE (2)"});
-								  throw  new org.omg.CORBA.INTERNAL(msg);
+		    // revert IASRI START 4722886
+                    heuristicExc = exc;
+		    // revert IASRI END 4722886
+                    if (!tranState.setState(TransactionState.
+                             STATE_COMMIT_ONE_PHASE_HEURISTIC_HAZARD)) {
+			_logger.log(Level.SEVERE,"jts.transaction_wrong_state",
+                                 "COMMIT_ONE_PHASE (2)");
+			 String msg = LogFormatter.getLocalizedMessage(_logger,
+			        "jts.transaction_wrong_state",
+			        new java.lang.Object[]
+			        { "COMMIT_ONE_PHASE (2)"});
+		         throw  new org.omg.CORBA.INTERNAL(msg);
                     }
-					// IASRI START 4722886
-					throw (HeuristicHazard)exc;
-					// IASRI END 4722886
+		    // revert IASRI START 4722886
+		    // throw (HeuristicHazard)exc;
+		    // revert IASRI END 4722886
                 } else if (exc instanceof TRANSACTION_ROLLEDBACK) {
                     rolled_back = true;
 
@@ -2996,7 +2998,7 @@ public class TopCoordinator extends CoordinatorImpl {
                     // in a row which is an error.
                 } else if (exc instanceof INTERNAL) {
                     // ADDED (Ram J) percolate up any system exception.
-                    throw (INTERNAL) exc;
+                    internalExc = exc;
                 } // end else if cascade on the exception types
 
                 // (Other exceptions are not passed back
@@ -3017,13 +3019,13 @@ public class TopCoordinator extends CoordinatorImpl {
                 if (!tranState.setState(
                         TransactionState.
                             STATE_COMMIT_ONE_PHASE_ROLLED_BACK)) {
-								_logger.log(Level.SEVERE,"jts.transaction_wrong_state",
-                                       "COMMIT_ONE_PHASE (4)");
-								 String msg = LogFormatter.getLocalizedMessage(_logger,
-								 						"jts.transaction_wrong_state",
-														new java.lang.Object[]
-														{ "COMMIT_ONE_PHASE (4)"});
-								  throw  new org.omg.CORBA.INTERNAL(msg);
+			_logger.log(Level.SEVERE,"jts.transaction_wrong_state",
+                            "COMMIT_ONE_PHASE (4)");
+			 String msg = LogFormatter.getLocalizedMessage(_logger,
+				"jts.transaction_wrong_state",
+				new java.lang.Object[]
+				{ "COMMIT_ONE_PHASE (4)"});
+		         throw  new org.omg.CORBA.INTERNAL(msg);
                     }
                   /**
 
@@ -3036,7 +3038,7 @@ public class TopCoordinator extends CoordinatorImpl {
 					  throw  new org.omg.CORBA.INTERNAL(msg);
                 }
                    **/
-            } else { // we commited
+            } else if (heuristicExc == null) { // we commited without a Heuristic exception
 
                 // GDH COPDEF1 Changed state movement to be via COP_OK
                 // this is needed by the state tables as the first
@@ -3089,7 +3091,7 @@ public class TopCoordinator extends CoordinatorImpl {
                 // transaction.
 
                 if (terminator != null) {
-                    terminator.setCompleted(false, heuristicExc != null);
+                    terminator.setCompleted(false, heuristicExc != null || internalExc != null);
                 }
 
                 /* commented out (Ram J) for memory leak fix.
@@ -3126,6 +3128,8 @@ public class TopCoordinator extends CoordinatorImpl {
                     } else {
                         throw (HeuristicHazard)heuristicExc;
                     }
+                } else if (internalExc != null) {
+                    throw (INTERNAL) internalExc;
                 }
 
                 // If the resource rolled back throw TRANSACTION_ROLLEDBACK
