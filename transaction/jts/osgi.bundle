@@ -1,5 +1,6 @@
 -exportcontents: \
                         com.sun.jts.jta; \
+                        com.sun.enterprise.transaction.jts.recovery; \
                         com.sun.jts.utils.RecoveryHooks; version=${project.osgi.version}
 Import-Package: \
                         com.sun.corba.ee.org.omg.CORBA;resolution:=optional, \
