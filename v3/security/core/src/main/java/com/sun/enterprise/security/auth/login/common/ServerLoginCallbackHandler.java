@@ -107,6 +107,8 @@ public class ServerLoginCallbackHandler implements CallbackHandler
                 ((CertificateRealm.AppContextCallback) callbacks[i]).setAppName(contextRoot);
             } else if (callbacks[i] instanceof GroupPrincipalCallback){
                 processGroupPricipal((GroupPrincipalCallback) callbacks[i]);
+            } else {
+                throw new UnsupportedCallbackException(callbacks[i]);
             }
 	}
     }

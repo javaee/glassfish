@@ -74,7 +74,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
      */
     protected Map<String, ?> _options;
     /**
-     * Logger.
+     * System Logger.
      */
     protected final Logger _logger =
             LogDomains.getLogger(AppservCertificateLoginModule.class, LogDomains.SECURITY_LOGGER);
