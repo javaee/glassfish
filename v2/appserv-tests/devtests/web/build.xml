@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="487"/>
+    <property name="TOTAL_EXPECTED" value="488"/>
 
     &commonSetup;
     &commonBuild;
@@ -411,6 +411,7 @@
         <ant dir="classPathManifestAttributePrecompile" target="all"/>
         <ant dir="disableDefaultErrorPage" target="all"/>
         <ant dir="weldJsfLoginPage" target="all"/>
+        <ant dir="sessionWithCookiePersistenceType" target="all"/>
         <!-- ant dir="asadminDeletes" target="all"/ -->
     </target>
 
