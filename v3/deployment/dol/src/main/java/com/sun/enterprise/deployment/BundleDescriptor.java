@@ -635,7 +635,7 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
          * A dummy implementation that we don't expect to be used ever.
          */
         assert (false);
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
     /**
