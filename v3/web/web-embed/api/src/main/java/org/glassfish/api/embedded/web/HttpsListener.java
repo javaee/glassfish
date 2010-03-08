@@ -47,7 +47,7 @@ public interface HttpsListener extends WebListener {
     /**
      * Sets the SSL configuration for this web listener
      *
-     * @see org.glassfish.web.embed.config.SslConfig
+     * @see org.glassfish.api.embedded.web.config.SslConfig
      *
      * @param sslConfig the SSL configuration for this web listener
      */
@@ -55,7 +55,7 @@ public interface HttpsListener extends WebListener {
     /**
      * Gets the SslConfig for this web listener
      *
-     * @see org.glassfish.web.embed.config.SslConfig
+     * @see org.glassfish.api.embedded.web.config.SslConfig
      *
      * @return the SSL configuration for this listener
      */

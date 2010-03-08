@@ -55,7 +55,7 @@ public interface Context extends ServletContext, Lifecycle {
     /**
      * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
      *
-     * @param t the <tt>Valve</tt> to be added
+     * @param valve the <tt>Valve</tt> to be added
      */
     public void addValve(Valve valve);
 
@@ -126,7 +126,7 @@ public interface Context extends ServletContext, Lifecycle {
     /**
      * Set the security related configuration for this context
      *
-     * @see org.glassfish.web.embed.config.SecurityConfig
+     * @see org.glassfish.api.embedded.web.config.SecurityConfig
      *
      * @param config the security configuration for this context
      */
@@ -135,7 +135,7 @@ public interface Context extends ServletContext, Lifecycle {
     /**
      * Gets the security related configuration for this context
      *
-     * @see org.glassfish.web.embed.config.SecurityConfig
+     * @see org.glassfish.api.embedded.web.config.SecurityConfig
      *
      * @return the security configuration for this context
      */
