@@ -32,11 +32,13 @@ own identifying information: Portions Copyright [yyyy]
 
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
-         <antcall target="addDtds"/>
+	 <antcall target="addDtds"/>
         <antcall target="rejar"/>
 
-        <antcall target="addRars"/>
+	<antcall target="unjar"/>
+        <antcall target="jar"/>
         
+    	<antcall target="addRars"/>
 	<attachArtifact file="${finaljar}"/>
      </target>
 
@@ -81,8 +83,10 @@ own identifying information: Portions Copyright [yyyy]
 
     <target name="addDtds" if="includeDtds">
         <echo message="adding dtds"/>
-        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/dtds/**/*"/>
-        <jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/schemas/**/*"/>
+        <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfishv3/glassfish/lib" includes="dtds/**/*"/>
+       <!-- do not include schemas for now because of duplicate issue   
+	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfishv3/glassfish/lib" includes="schemas/**/*"/>
+	-->
     </target>
     
     <target name="rejar">
@@ -95,6 +99,21 @@ own identifying information: Portions Copyright [yyyy]
                 <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
             </manifest>
         </rejar>
+    </target>
+
+
+    <target name="unjar">
+	<unjar src="${finaljar}" dest="${rootdir}/temp" />
+        <delete>
+		<fileset dir="${rootdir}/temp/META-INF/">
+			<include name="*.inf"/>
+			<include name=".RSA"/>
+		</fileset>
+	</delete>
+     </target>
+
+    <target name="jar">
+	<jar destfile="${finaljar}" basedir="${rootdir}/temp" />
     </target>
 
     <target name="addRars" if="includeRars">
