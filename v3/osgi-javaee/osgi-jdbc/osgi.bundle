@@ -1,0 +1,3 @@
+-exportcontents: org.osgi.service.jdbc;version="1"
+Bundle-Activator: org.glassfish.osgijdbc.JDBCActivator
+
