@@ -619,20 +619,13 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
      * referenced by one of the four following ways:
      * <persistence-context-ref>, @PersistenceContext,
      * <persistence-unit-ref> and @PersistenceUnit
-     * This method is intentionally not made abstract because we don't
-     * want every subclass to implement. So, we have a dummy implementation
-     * that we don't expect to be used ever. See, the actual implementation
-     * done in EjbBundleDescriptor, ApplicationClientDescriptor and
-     * WebBundleDescriptor.
+     * Only EjbBundleDescriptor, ApplicationClientDescriptor and
+     * WebBundleDescriptor have useful implementation of this method.
      *
      * @return persistence units that are referenced by this module
      */
     public Collection<? extends PersistenceUnitDescriptor> findReferencedPUs() {
-        /*
-         * A dummy implementation that we don't expect to be used ever.
-         */
-        assert (false);
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
     /**
