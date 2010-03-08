@@ -2,7 +2,6 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
-import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertTrue;
 
 public class ConnectorsTest extends BaseSeleniumTestClass {
@@ -19,11 +18,7 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:generalPropertySheet:jndiProp:name", testPool);
         selenium.select("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "label=jmsra");
         waitForElementContentNotEqualTo("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "\\\\n");
-        try {
-            sleep(500);
-        } catch (InterruptedException e) {
-            
-        }
+        sleep(750);
         selenium.click("propertyForm:title:topButtons:nextButton");
         waitForPageLoad("New Connector Connection Pool (Step 2 of 2)");
 
@@ -41,6 +36,8 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         waitForPageLoad("New Connector Resource");
 
         selenium.type("propertyForm:propertySheet:propertSectionTextField:jndiTextProp:jnditext", testConnector);
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:poolNameProp:PoolName", "label="+testPool);
+        
         selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
         waitForPageLoad("A connector resource is a program object that provides");
 
@@ -57,19 +54,12 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         waitForPageLoad("true");
 
         // Delete connector resource
-        selenium.chooseOkOnNextConfirmation();
-        selectTableRowByValue("propertyForm:resourcesTable", testConnector);
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
-        selenium.getConfirmation();
-        waitForPageLoad(testConnector, true);
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", testConnector);
 
         // Delete connector connection pool
-        selenium.chooseOkOnNextConfirmation();
         selenium.click("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link");
         waitForPageLoad("Click New to create a new connector connection pool.");
-        selectTableRowByValue("propertyForm:poolTable", testPool);
-        selenium.click("propertyForm:poolTable:topActionsGroup1:button1");
-        selenium.getConfirmation();
-        waitForPageLoad(testPool, true);
+
+        deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", testPool);
     }
 }

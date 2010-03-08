@@ -95,6 +95,18 @@ public class BaseSeleniumTestClass {
         return new BigInteger(130, random).toString(16);
     }
 
+    protected void deleteRow(String buttonId, String tableId, String triggerText) {
+        deleteRow(buttonId, tableId, triggerText, "col0", "col1");
+    }
+    
+    protected void deleteRow(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
+        selenium.chooseOkOnNextConfirmation();
+        selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
+		selenium.click(buttonId);
+		selenium.getConfirmation();
+		waitForPageLoad(triggerText, true);
+    }
+
     /**
      * This method will scan the all ths links for the link with the given text.  We can't rely on a link's position
      * in the table, as row order may vary (if, for example, a prior test run left data behind).  If the link is not

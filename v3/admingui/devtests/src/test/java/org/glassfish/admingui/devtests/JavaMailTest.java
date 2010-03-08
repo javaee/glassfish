@@ -5,13 +5,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 8, 2010
- * Time: 3:19:00 PM
- * To change this template use File | Settings | File Templates.
- */
 public class JavaMailTest extends BaseSeleniumTestClass {
     @Test
     public void createMailResource() {
@@ -31,7 +24,7 @@ public class JavaMailTest extends BaseSeleniumTestClass {
 		selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
 		selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
 		selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
-		selenium.click("propertyForm:sun_title3458:topButtons:newButton");
+		selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
 		waitForPageLoad("which provides a platform-independent");
 		assertTrue(selenium.isTextPresent(resourceName));
 
@@ -44,10 +37,6 @@ public class JavaMailTest extends BaseSeleniumTestClass {
 		waitForPageLoad("true");
 */
 
-        selenium.chooseOkOnNextConfirmation();
-		selectTableRowByValue("propertyForm:resourcesTable", resourceName);
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
-		selenium.getConfirmation();
-		waitForPageLoad(resourceName, true);    
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
     }
 }

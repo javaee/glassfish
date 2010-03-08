@@ -5,13 +5,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 8, 2010
- * Time: 3:41:07 PM
- * To change this template use File | Settings | File Templates.
- */
 public class JndiTest extends BaseSeleniumTestClass {
     @Test
     public void testCustomResource() {
@@ -51,11 +44,7 @@ public class JndiTest extends BaseSeleniumTestClass {
 		selenium.click("form1:propertyContentPage:topButtons:cancelButton");
 
         waitForPageLoad("Custom resources are nonstandard resources");
-        selenium.chooseOkOnNextConfirmation();
-        selectTableRowByValue("propertyForm:resourcesTable", resourceName);
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
-		selenium.getConfirmation();
-		waitForPageLoad(resourceName, true);
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
     }
     
     @Test
@@ -99,10 +88,6 @@ public class JndiTest extends BaseSeleniumTestClass {
 		selenium.click("form1:propertyContentPage:topButtons:cancelButton");
         waitForPageLoad("Manage external JNDI resources when");
 
-        selenium.chooseOkOnNextConfirmation();
-        selectTableRowByValue("propertyForm:resourcesTable", resourceName);
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
-		selenium.getConfirmation();
-		waitForPageLoad(resourceName, true);    
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resourceName);
     }
 }

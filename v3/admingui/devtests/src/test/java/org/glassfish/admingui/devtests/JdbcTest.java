@@ -3,13 +3,6 @@ package org.glassfish.admingui.devtests;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 3, 2010
- * Time: 11:09:17 AM
- * To change this template use File | Settings | File Templates.
- */
 public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
@@ -42,12 +35,7 @@ public class JdbcTest extends BaseSeleniumTestClass {
         waitForPageLoad("To store, organize, and retrieve data, most applications use relational databases.");
         assertTrue(selenium.isTextPresent(poolName) && selenium.isTextPresent(description));
 
-        selenium.chooseOkOnNextConfirmation();
-        selectTableRowByValue("propertyForm:poolTable", poolName);
-        selenium.click("propertyForm:poolTable:topActionsGroup1:button1");
-        waitForPageLoad(poolName, true);
-        selenium.getConfirmation();
-        assertFalse(selenium.isTextPresent(poolName) && selenium.isTextPresent(description));
+        deleteRow("propertyForm:poolTable:topActionsGroup1:button1","propertyForm:poolTable", poolName);
     }
     
     @Test
@@ -88,10 +76,6 @@ public class JdbcTest extends BaseSeleniumTestClass {
         waitForPageLoad("JDBC resources provide applications with a means to connect to a database.");
 		assertTrue(selenium.isTextPresent("false"));
 
-        selenium.chooseOkOnNextConfirmation();
-		selectTableRowByValue("propertyForm:resourcesTable", jndiName);
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
-        selenium.getConfirmation();
-		waitForPageLoad(jndiName, true);
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1","propertyForm:resourcesTable", jndiName);
     }
 }
