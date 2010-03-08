@@ -7,8 +7,7 @@ import static org.junit.Assert.*;
 public class EnterpriseServerTest extends BaseSeleniumTestClass {
     @Test
     public void testUntitled() throws Exception {
-        selenium.open("/common/appServer/serverInstGeneralPe.jsf?instanceName=server");
-        waitForPageLoad("General Information");
+        openAndWait("/common/appServer/serverInstGeneralPe.jsf?instanceName=server", "General Information");
         selenium.click("treeForm:tree:applicationServer:applicationServer_link");
 
         waitForPageLoad("JVM Report");

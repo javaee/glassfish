@@ -1,12 +1,13 @@
 package org.glassfish.admingui.devtests;
 
 import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.SeleneseTestCase;
 import com.thoughtworks.selenium.Selenium;
-import junit.framework.TestCase;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
 
 import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,11 +21,12 @@ public class BaseSeleniumTestClass {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        if (selenium ==  null) {
+        if (selenium == null) {
             String browserString = getBrowserString();
             selenium = new DefaultSelenium("localhost", getDefaultPort(), browserString, "http://localhost:4848");
             selenium.start();
-            (new BaseSeleniumTestClass()).openAndWait("/common/sysnet/registration.jsf", "Product Registration"); // Make sure the server has started and the user logged in
+            (new BaseSeleniumTestClass()).openAndWait(
+                    "/common/sysnet/registration.jsf", "Product Registration"); // Make sure the server has started and the user logged in
         }
     }
 
@@ -36,8 +38,9 @@ public class BaseSeleniumTestClass {
 
     /**
      * Cause the test to wait for the page to load, timing out after 1 minute.
-     * @See #waitForPageLoad(String triggerText, int timeout)
+     *
      * @param triggerText
+     * @See #waitForPageLoad(StringtriggerText,inttimeout)
      */
     protected void waitForPageLoad(String triggerText) {
         waitForPageLoad(triggerText, 60);
@@ -46,17 +49,32 @@ public class BaseSeleniumTestClass {
     /**
      * Cause the test to wait for the page to load.  This will be used, for example, after an initial page load
      * (selenium.open) or after an Ajaxy navigation request has been made.
+     *
      * @param triggerText The text that should appear on the page when it has finished loading
-     * @param timeout How long to wait (in seconds)
+     * @param timeout     How long to wait (in seconds)
      */
     protected void waitForPageLoad(String triggerText, int timeout) {
+        waitForPageLoad(triggerText, timeout, false);
+    }
+
+    protected void waitForPageLoad(String triggerText, boolean textShouldBeMissing) {
+        waitForPageLoad(triggerText, 60, textShouldBeMissing);
+    }
+
+    protected void waitForPageLoad(String triggerText, int timeout, boolean textShouldBeMissing) {
         for (int second = 0; ; second++) {
             if (second >= timeout) {
                 Assert.fail("timeout");
             }
             try {
-                if (selenium.isTextPresent(triggerText)) {
-                    break;
+                if (!textShouldBeMissing) {
+                    if (selenium.isTextPresent(triggerText)) {
+                        break;
+                    }
+                } else {
+                    if (!selenium.isTextPresent(triggerText)) {
+                        break;
+                    }
                 }
             } catch (Exception e) {
             }
@@ -65,6 +83,61 @@ public class BaseSeleniumTestClass {
             } catch (InterruptedException e) {
             }
         }
+    }
+
+    protected void waitForElementContentNotEqualTo(String id, String content) {
+        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "').innerHTML != '" + content + "'", "2500");
+    }
+
+    protected String generateRandomString() {
+        SecureRandom random = new SecureRandom();
+
+        return new BigInteger(130, random).toString(16);
+    }
+
+    /**
+     * This method will scan the specified table for the link with the given text.  We can't rely on a link's position
+     * in the table, as row order may vary (if, for example, a prior test run left data behind).  If the link is not
+     * found, null is returned, so the calling code may need to check the return value prior to use.
+     *
+     * @param tableId
+     * @param value
+     * @return
+     */
+    protected String getTableLinkByValue(String tableId, String value) {
+        String[] links = selenium.getAllLinks();
+
+        for (String link : links) {
+            if (link.startsWith(tableId)) {
+                String linkText = selenium.getText(link);
+                if (value.equals(linkText)) {
+                    return link;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected void selectTableRowByValue(String tableId, String value) {
+        selectTableRowByValue(tableId, value, "col0", "col1");
+    }
+    protected void selectTableRowByValue(String tableId, String value, String selectColId, String valueColId) {
+        try {
+            int row = 0;
+            while (true) { // iterate over any rows
+                // Assume one row group for now and hope it doesn't bite us
+                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                if (text.equals(value)) {
+                    selenium.click(tableId + ":rowGroup1:" + row + ":" + selectColId + ":select");
+                    return;
+                }
+                row++;
+            }
+        } catch (Exception e) {
+            Assert.fail("The specified row was not found: " + value);
+        }
+
     }
 
     private static String getBrowserString() {
@@ -76,14 +149,14 @@ public class BaseSeleniumTestClass {
             browserString = "firefox";
         }
 
-        return "*"+browserString;
+        return "*" + browserString;
     }
 
     private static int getDefaultPort() {
         try {
             Class c = Class.forName("org.openqa.selenium.server.SeleniumServer");
             Method getDefaultPort = c.getMethod("getDefaultPort", new Class[0]);
-            Integer portNumber = (Integer)getDefaultPort.invoke(null, new Object[0]);
+            Integer portNumber = (Integer) getDefaultPort.invoke(null, new Object[0]);
             return portNumber.intValue();
         } catch (Exception e) {
             return 4444;

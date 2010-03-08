@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
-    public void testPoolEdit() {
+    public void testPoolPing() {
         openAndWait("/common/commonTask.jsf", "Common Tasks");
         selenium.click("treeForm:tree:resources:JDBC:connectionPoolResources:amxppdomainresourcestypejdbc-connection-poolname__TimerPool:link");
 
@@ -24,37 +24,43 @@ public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
     public void testCreatingConnectionPool() {
+        final String poolName = generateRandomString();
+        final String description = "devtest test connection pool - " + poolName;
+
         openAndWait("/jdbc/jdbcConnectionPools.jsf", "JDBC Connection Pools");
         selenium.click("propertyForm:poolTable:topActionsGroup1:newButton");
         waitForPageLoad("New JDBC Connection Pool (Step 1 of 2)");
 
-        selenium.type("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:jndiProp:name","TestPool");
+        selenium.type("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:jndiProp:name", poolName);
         selenium.select("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:resTypeProp:resType", "label=javax.sql.DataSource");
         selenium.select("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:dbProp:db", "label=Derby");
         selenium.click("propertyForm:propertyContentPage:topButtons:nextButton");
         waitForPageLoad("New JDBC Connection Pool (Step 2 of 2)");
 
-        selenium.type("form2:sheet:generalSheet:descProp:desc", "devtest test connection pool");
+        selenium.type("form2:sheet:generalSheet:descProp:desc", description);
         selenium.click("form2:propertyContentPage:topButtons:finishButton");
-        waitForPageLoad("Pools (3)");
-        assertTrue(selenium.isTextPresent("TestPool") && selenium.isTextPresent("devtest test connection pool"));
+        waitForPageLoad("To store, organize, and retrieve data, most applications use relational databases.");
+        assertTrue(selenium.isTextPresent(poolName) && selenium.isTextPresent(description));
 
         selenium.chooseOkOnNextConfirmation();
-        selenium.click("propertyForm:poolTable:rowGroup1:1:col0:select");
+        selectTableRowByValue("propertyForm:poolTable", poolName);
         selenium.click("propertyForm:poolTable:topActionsGroup1:button1");
-        waitForPageLoad("Pools (2)");
+        waitForPageLoad(poolName, true);
         selenium.getConfirmation();
-        assertFalse(selenium.isTextPresent("TestPool") && selenium.isTextPresent("devtest test connection pool"));
+        assertFalse(selenium.isTextPresent(poolName) && selenium.isTextPresent(description));
     }
     
     @Test
     public void testJdbcResources() {
+        final String jndiName = generateRandomString();
+        final String description = "devtest test jdbc resource - " + jndiName;
+
 		openAndWait("/jdbc/jdbcResources.jsf", "JDBC Resources");
 		selenium.click("propertyForm:resourcesTable:topActionsGroup1:newButton");
         waitForPageLoad("New JDBC Resource");
 
-		selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", "jdbc/testResource");
-		selenium.type("propertyForm:propertySheet:propertSectionTextField:descProp:desc", "Test Resource");
+		selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+		selenium.type("propertyForm:propertySheet:propertSectionTextField:descProp:desc", description);
 		selenium.click("propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         waitForPageLoad("Additional Properties (1)");
 
@@ -62,11 +68,12 @@ public class JdbcTest extends BaseSeleniumTestClass {
 		selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "testValue");
 		selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "test description");
 		selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
-        waitForPageLoad("Resources (3)");
+        waitForPageLoad("JDBC resources provide applications");
 
-        assertTrue(selenium.isTextPresent("jdbc/testResource"));
-		assertTrue(selenium.isTextPresent("Test Resource"));
-		selenium.click("propertyForm:resourcesTable:rowGroup1:2:col1:link");
+        assertTrue(selenium.isTextPresent(jndiName));
+		assertTrue(selenium.isTextPresent(description));
+
+		selenium.click(getTableLinkByValue("propertyForm:resourcesTable", jndiName));
         waitForPageLoad("Edit JDBC Resource");
 
         assertEquals("testProp", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col2:col1St"));
@@ -78,24 +85,13 @@ public class JdbcTest extends BaseSeleniumTestClass {
 		waitForPageLoad("New values successfully saved.");
 
 		selenium.click("propertyForm:propertyContentPage:topButtons:cancelButton");
-        waitForPageLoad("Resources (3)");
+        waitForPageLoad("JDBC resources provide applications with a means to connect to a database.");
 		assertTrue(selenium.isTextPresent("false"));
 
-/*
-		selenium.click("propertyForm:resourcesTable:rowGroup1:2:col0:select");
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button2");
-        selenium.waitForCondition("document.getElementById('propertyForm:resourcesTable:rowGroup1:2:col22:typeCol').innerHTML == 'true'", "2500");
-        
-		selenium.click("propertyForm:resourcesTable:rowGroup1:2:col0:select");
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button3");
-		assertTrue(selenium.isElementPresent("propertyForm:resourcesTable:rowGroup1:2:col22:typeCol"));
-        selenium.waitForCondition("document.getElementById('propertyForm:resourcesTable:rowGroup1:2:col22:typeCol').innerHTML == 'false'", "2500");
-*/
-
         selenium.chooseOkOnNextConfirmation();
-		selenium.click("propertyForm:resourcesTable:rowGroup1:2:col0:select");
+		selectTableRowByValue("propertyForm:resourcesTable", jndiName);
 		selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
         selenium.getConfirmation();
-		waitForPageLoad("Resources (2)");
+		waitForPageLoad(jndiName, true);
     }
 }
