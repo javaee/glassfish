@@ -57,6 +57,7 @@ import org.glassfish.appclient.client.acc.callbackhandler.DefaultTextCallbackHan
 import org.glassfish.appclient.client.acc.config.ClientCredential;
 import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.TargetServer;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -72,12 +73,17 @@ public class AppClientContainerSecurityHelper {
 
     private static final String ORB_INITIAL_HOST_PROPERTYNAME = "org.omg.CORBA.ORBInitialHost";
     private static final String ORB_INITIAL_PORT_PROPERTYNAME = "org.omg.CORBA.ORBInitialPort";
+    private static final String ORB_SSL_CLIENT_REQUIRED = "com.sun.CSIV2.ssl.client.required";
+
 
     @Inject
     private InjectionManager injectionManager;
 
     @Inject
     private AppClientSecurityInfo secInfo;
+
+    @Inject
+    private GlassFishORBHelper orbHelper;
 
     private final Logger logger = Logger.getLogger(getClass().getName());
 
@@ -99,7 +105,7 @@ public class AppClientContainerSecurityHelper {
 
         this.isTextAuth = isTextAuth;
         this.classLoader = (classLoader == null) ? Thread.currentThread().getContextClassLoader() : classLoader;
-        iiopProperties = prepareIIOP(targetServers);
+        iiopProperties = prepareIIOP(targetServers,containerProperties);
 
         initLoginConfig();
         CallbackHandler callbackHandler = 
@@ -338,11 +344,15 @@ public class AppClientContainerSecurityHelper {
      * from the properties and target server elements in the sun-acc.xml file.
      * @return ORB-related properties to define host and port for bootstrapping
      */
-    private Properties prepareIIOP(final TargetServer[] targetServers) {
+    private Properties prepareIIOP(final TargetServer[] targetServers, Properties containerProperties) {
         Properties props = new Properties();
 
         props.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
         props.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, Integer.toString(targetServers[0].getPort()));
+        //If sun-acc.xml is configured to require ssl, set this property to true
+        if (isSSLRequired(targetServers, containerProperties)) {
+            orbHelper.setCSIv2Prop(ORB_SSL_CLIENT_REQUIRED, "true");
+        }
         logger.config("Using endpoint address: " + targetServers[0].getAddress() + ":" + targetServers[0].getPort());
         return props;
 
