@@ -489,4 +489,18 @@ public interface Manager {
      * @throws IOException
      */
     public Cookie toCookie(Session session) throws IOException;
+
+    /**
+     * Checks the given session attribute name and value to make sure they comply with any
+     * restrictions set forth by this session manager.
+     *
+     * For example, in the case of cookie-based persistence, session attribute values must be
+     * of type String.
+     *
+     * @param name the session attribute name
+     * @param value the session attribute value
+     * @throws IllegalArgumentException if the given session attribute name or value violate
+     * any restrictions set forth by this session manager
+     */
+    public void checkSessionAttribute(String name, Object value) throws IllegalArgumentException;
 }

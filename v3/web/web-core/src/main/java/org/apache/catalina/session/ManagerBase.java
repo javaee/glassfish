@@ -301,9 +301,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * HERCULES:added
      */
     public UuidGenerator getUuidGenerator() {
-
-        return (this.uuidGenerator);
-
+        return uuidGenerator;
     }
     
     /**
@@ -311,18 +309,14 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * HERCULES:added
      */
     public void setUuidGenerator(UuidGenerator aUuidGenerator) {
-
         uuidGenerator = aUuidGenerator;
-
-    }     
+    }
 
     /**
      * Return the message digest algorithm for this Manager.
      */
     public String getAlgorithm() {
-
-        return (this.algorithm);
-
+        return algorithm;
     }
 
 
@@ -332,11 +326,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param algorithm The new message digest algorithm
      */
     public void setAlgorithm(String algorithm) {
-
         String oldAlgorithm = this.algorithm;
         this.algorithm = algorithm;
         support.firePropertyChange("algorithm", oldAlgorithm, this.algorithm);
-
     }
 
 
@@ -344,9 +336,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * Return the Container with which this Manager is associated.
      */
     public Container getContainer() {
-
-        return (this.container);
-
+        return container;
     }
 
 
@@ -356,7 +346,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param container The newly associated Container
      */
     public void setContainer(Container container) {
-
         Container oldContainer = this.container;
         this.container = container;
         support.firePropertyChange("container", oldContainer, this.container);
@@ -369,9 +358,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * Return the DefaultContext with which this Manager is associated.
      */
     public DefaultContext getDefaultContext() {
-
-        return (this.defaultContext);
-
+        return defaultContext;
     }
 
 
@@ -381,11 +368,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param defaultContext The newly associated DefaultContext
      */
     public void setDefaultContext(DefaultContext defaultContext) {
-
         DefaultContext oldDefaultContext = this.defaultContext;
         this.defaultContext = defaultContext;
         support.firePropertyChange("defaultContext", oldDefaultContext, this.defaultContext);
-
     }
     
     
@@ -393,9 +378,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * Return the debugging detail level for this component.
      */
     public int getDebug() {
-
-        return (this.debug);
-
+        return debug;
     }
 
 
@@ -405,9 +388,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param debug The new debugging detail level
      */
     public void setDebug(int debug) {
-
         this.debug = debug;
-
     }
 
     /** Returns the name of the implementation class.
@@ -461,9 +442,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * this Manager.
      */
     public boolean getDistributable() {
-
-        return (this.distributable);
-
+        return distributable;
     }
 
 
@@ -475,13 +454,11 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param distributable The new distributable flag
      */
     public void setDistributable(boolean distributable) {
-
         boolean oldDistributable = this.distributable;
         this.distributable = distributable;
         support.firePropertyChange("distributable",
                                    Boolean.valueOf(oldDistributable),
                                    Boolean.valueOf(this.distributable));
-
     }
 
 
@@ -490,13 +467,10 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * if this String has not yet been set.
      */
     public String getEntropy() {
-
         // Calculate a semi-useful value if this has not been set
         if (this.entropy == null)
             setEntropy(this.toString());
-
         return (this.entropy);
-
     }
 
 
@@ -506,11 +480,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param entropy The new entropy increaser value
      */
     public void setEntropy(String entropy) {
-
         String oldEntropy = entropy;
         this.entropy = entropy;
         support.firePropertyChange("entropy", oldEntropy, this.entropy);
-
     }
 
 
@@ -520,9 +492,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
     public String getInfo() {
-
-        return (this.info);
-
+        return info;
     }
 
 
@@ -539,9 +509,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * for Sessions created by this Manager.
      */
     public int getMaxInactiveIntervalSeconds() {
-
-        return (this.maxInactiveInterval);
-
+        return maxInactiveInterval;
     }
 
 
@@ -560,13 +528,11 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param interval The new default value
      */
     public void setMaxInactiveIntervalSeconds(int interval) {
-
         int oldMaxInactiveInterval = this.maxInactiveInterval;
         this.maxInactiveInterval = interval;
         support.firePropertyChange("maxInactiveInterval",
                                    Integer.valueOf(oldMaxInactiveInterval),
                                    Integer.valueOf(this.maxInactiveInterval));
-
     }
 
 
@@ -577,9 +543,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @return The session id length
      */
     public int getSessionIdLength() {
-
-        return (this.sessionIdLength);
-
+        return sessionIdLength;
     }
 
 
@@ -650,29 +614,29 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     // as a hack, you can use a static file - and genarate the same
     // session ids ( good for strange debugging )
         if (Globals.IS_SECURITY_ENABLED){
-                randomIS = AccessController.doPrivileged(new PrivilegedSetRandomFile());          
-            } else {
-                FileInputStream fileInputStream = null;
+            randomIS = AccessController.doPrivileged(new PrivilegedSetRandomFile());
+        } else {
+            FileInputStream fileInputStream = null;
+            try{
+                devRandomSource=s;
+                File f=new File( devRandomSource );
+                if( ! f.exists() ) return;
+                fileInputStream = new FileInputStream(f);
+                randomIS= new DataInputStream( fileInputStream);
+                randomIS.readLong();
+                if (log.isLoggable(Level.FINE))
+                    log.fine( "Opening " + devRandomSource );
+            } catch( IOException ex ) {
+                randomIS=null;
+            } finally {
                 try{
-                    devRandomSource=s;
-                    File f=new File( devRandomSource );
-                    if( ! f.exists() ) return;
-                    fileInputStream = new FileInputStream(f);
-                    randomIS= new DataInputStream( fileInputStream);
-                    randomIS.readLong();
-                    if (log.isLoggable(Level.FINE))
-                        log.fine( "Opening " + devRandomSource );
-                } catch( IOException ex ) {
-                    randomIS=null;
-                } finally {
-                    try{
-                        if ( fileInputStream != null )
-                            fileInputStream.close();
-                    } catch (IOException ex){
-                        ;
-                    }
+                    if ( fileInputStream != null )
+                        fileInputStream.close();
+                } catch (IOException ex){
+                    ;
                 }
             }
+        }
     }
 
     public String getRandomFile() {
@@ -720,7 +684,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         }
 
         return (this.random);
-
     }
 
 
@@ -728,9 +691,7 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * Return the random number generator class name.
      */
     public String getRandomClass() {
-
-        return (this.randomClass);
-
+        return randomClass;
     }
 
 
@@ -740,12 +701,10 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      * @param randomClass The new random number generator class name
      */
     public void setRandomClass(String randomClass) {
-
         String oldRandomClass = this.randomClass;
         this.randomClass = randomClass;
         support.firePropertyChange("randomClass", oldRandomClass,
                                    this.randomClass);
-
     }
 
 
@@ -924,6 +883,13 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         return (getNewSession());
     }
 
+    @Override
+    public void checkSessionAttribute(String name, Object value) {
+        if (getDistributable() && !StandardSession.isSerializable(value)) {
+            throw new IllegalArgumentException(
+                    sm.getString("standardSession.setAttribute.iae", name));
+        }
+    }
 
     /**
      * Return the active Session, associated with this Manager, with the

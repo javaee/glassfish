@@ -1662,16 +1662,14 @@ public class StandardSession
         }
 
         // Validate our current state
-        if (!isValid())
+        if (!isValid()) {
             throw new IllegalStateException
                 (sm.getString("standardSession.setAttribute.ise"));
-        
-        if ((manager != null)
-                    && manager.getDistributable()
-                    && !isSerializable(value)) {
-            	throw new IllegalArgumentException
-                	(sm.getString("standardSession.setAttribute.iae", name)); 
-	}
+        }
+
+        if (manager != null) {
+            manager.checkSessionAttribute(name, value);
+        }
 
         // Construct an event with the new value
         HttpSessionBindingEvent event = null;
@@ -1940,7 +1938,6 @@ public class StandardSession
      * @exception IOException if an input/output error occurs
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
-
         stream.writeObject(SERIALIZED_FORM_VERSION);
         stream.writeObject(Long.valueOf(creationTime));
         stream.writeObject(Long.valueOf(lastAccessedTime));
@@ -2217,7 +2214,7 @@ public class StandardSession
      * 
      * @return true if the given value may be serialized, false otherwise
      */
-    private boolean isSerializable(Object value) {
+    static boolean isSerializable(Object value) {
         if ((value instanceof Serializable)
                 || (value instanceof BaseIndirectlySerializable)
                 || (value instanceof javax.naming.Context)) {

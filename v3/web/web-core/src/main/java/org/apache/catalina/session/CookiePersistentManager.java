@@ -45,8 +45,9 @@ import java.util.concurrent.*;
 import javax.servlet.http.*;
 
 /**
- * Session manager for cookie-based persistence, where cookies carry session
- * state.
+ * Session manager for cookie-based persistence, where cookies carry session state.
+ *
+ * With cookie-based persistence, only session attribute values of type String are supported.
  */
 
 public class CookiePersistentManager extends StandardManager {
@@ -130,6 +131,14 @@ public class CookiePersistentManager extends StandardManager {
         oos.writeObject(session);
         oos.close();
         return new Cookie(cookieName, HexUtils.convert(baos.toByteArray()));
+    }
+
+    @Override
+    public void checkSessionAttribute(String name, Object value) {
+        if (!(value instanceof String)) {
+            throw new IllegalArgumentException(
+                    sm.getString("standardSession.setAttribute.nonStringValue", name));
+        }
     }
 
     /*
