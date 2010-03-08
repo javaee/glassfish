@@ -76,6 +76,58 @@ public class FileUtils {
     final static Logger _logger = Logger.getLogger("javax.enterprise.system.util");
     final static Logger _utillogger = com.sun.logging.LogDomains.getLogger(FileUtils.class,com.sun.logging.LogDomains.UTIL_LOGGER);
 
+
+    /*
+    * Wrapper for File.listFiles
+    * Guaranteed to return an array in all cases.
+    * File.listFiles() returns either null or an empty array.  This is annoying and results in harder
+    * than neccessry to read code -- i.e. there are 3 results possible:
+    * an array with files in it
+    * an empty array
+    * a null
+    */
+    public static File[] listFiles(File f) {
+        try {
+            File[] files = f.listFiles();
+
+            if(files != null)
+            return files;
+        }
+        catch(Exception e) {
+            // fall through
+        }
+
+        return new File[0];
+    }
+
+    public static File[] listFiles(File f, FileFilter ff) {
+        try {
+            File[] files = f.listFiles(ff);
+
+            if(files != null)
+            return files;
+        }
+        catch(Exception e) {
+            // fall through
+        }
+
+        return new File[0];
+    }
+
+    public static File[] listFiles(File f, FilenameFilter fnf) {
+        try {
+            File[] files = f.listFiles(fnf);
+
+            if(files != null)
+            return files;
+        }
+        catch(Exception e) {
+            // fall through
+        }
+
+        return new File[0];
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
     public static boolean safeIsDirectory(File f) {
@@ -406,7 +458,7 @@ public class FileUtils {
         *is a symbolic link.
         */
         if (safeIsRealDirectory(parent)) {
-            File[] kids = parent.listFiles();
+            File[] kids = listFiles(parent);
 
             for (int i = 0; i < kids.length; i++) {
                 File f = kids[i];
@@ -522,7 +574,7 @@ public class FileUtils {
     // relativizingRoot can be null, in which case no relativizing is
     // performed.
     private static void recursiveGetFilesUnder(File relativizingRoot, File directory, FilenameFilter filenameFilter, Set set, boolean returnDirectories) {
-	File[] files = directory.listFiles(filenameFilter);
+	File[] files = listFiles(directory, filenameFilter);
 	for (int i = 0; i < files.length; i++) {
 	    if (files[i].isDirectory()) {
 		recursiveGetFilesUnder(relativizingRoot, files[i], filenameFilter, set, returnDirectories);
@@ -681,7 +733,7 @@ public class FileUtils {
         if (dirName.isDirectory()) {
             targetList = new ArrayList();
 
-            File[] list = dirName.listFiles();
+            File[] list = listFiles(dirName);
 
             for (int i = 0; i < list.length; i++) {
                 if (list[i].isDirectory()) {
