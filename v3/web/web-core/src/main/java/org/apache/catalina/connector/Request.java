@@ -1337,8 +1337,8 @@ public class Request
             if (connector.getAuthPassthroughEnabled() && connector.getProxyHandler() != null) {
                 remoteAddr = connector.getProxyHandler().getRemoteAddress(
                         getRequest());
-                if (remoteAddr == null) {
-                    log.warning(sm.getString(
+                if (remoteAddr == null && log.isLoggable(Level.FINEST)) {
+                    log.finest(sm.getString(
                             "coyoteRequest.nullRemoteAddressFromProxy"));
                 }
                 return remoteAddr;
@@ -1377,8 +1377,8 @@ public class Request
                                 addr),
                                 e);
                     }
-                } else {
-                    log.warning(sm.getString(
+                } else if (log.isLoggable(Level.FINEST)) {
+                    log.finest(sm.getString(
                             "coyoteRequest.nullRemoteAddressFromProxy"));
                 }
                 // END SJSAS 6347215
