@@ -72,7 +72,7 @@
 #include "/full/mailResourceAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
 
-    <sun:title>
+    <sun:title id="javaMail">
 #include "/common/shared/editPageButtons_2.inc"
     </sun:title>
 
