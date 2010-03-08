@@ -1086,10 +1086,13 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         boolean isGranted = false;
 
         try {
+            HttpServletRequest hsr = (HttpServletRequest) request.getRequest();
+            if (hsr.getUserPrincipal() == null) {
+                SecurityContext.setUnauthenticatedContext();
+            }
             if (helper != null && helper.getServerAuthConfig() != null) {
                 return Realm.AUTHENTICATE_NEEDED;
             }
-
             isGranted = invokeWebSecurityManager(
                     request, response, constraints);
         } catch (IOException iex) {
