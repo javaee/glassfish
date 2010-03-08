@@ -73,7 +73,7 @@ public class JdbcTest extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(jndiName));
 		assertTrue(selenium.isTextPresent(description));
 
-		selenium.click(getTableLinkByValue("propertyForm:resourcesTable", jndiName));
+		selenium.click(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName));
         waitForPageLoad("Edit JDBC Resource");
 
         assertEquals("testProp", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col2:col1St"));

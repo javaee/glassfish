@@ -16,7 +16,7 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
 
         waitForPageLoad("A resource adapter config provides the configuration information for a resource adapter.");
         assertTrue(selenium.isTextPresent("jmsra"));
-        selenium.click(getTableLinkByValue("propertyForm:poolTable", "jmsra"));
+        selenium.click(getLinkIdByLinkText("propertyForm:poolTable", "jmsra"));
 
         waitForPageLoad("Resource Adapter Name:");
         selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");

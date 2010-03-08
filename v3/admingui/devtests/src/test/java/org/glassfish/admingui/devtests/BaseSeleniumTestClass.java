@@ -96,19 +96,19 @@ public class BaseSeleniumTestClass {
     }
 
     /**
-     * This method will scan the specified table for the link with the given text.  We can't rely on a link's position
+     * This method will scan the all ths links for the link with the given text.  We can't rely on a link's position
      * in the table, as row order may vary (if, for example, a prior test run left data behind).  If the link is not
      * found, null is returned, so the calling code may need to check the return value prior to use.
      *
-     * @param tableId
+     * @param baseId
      * @param value
      * @return
      */
-    protected String getTableLinkByValue(String tableId, String value) {
+    protected String getLinkIdByLinkText(String baseId, String value) {
         String[] links = selenium.getAllLinks();
 
         for (String link : links) {
-            if (link.startsWith(tableId)) {
+            if (link.startsWith(baseId)) {
                 String linkText = selenium.getText(link);
                 if (value.equals(linkText)) {
                     return link;
@@ -138,6 +138,17 @@ public class BaseSeleniumTestClass {
             Assert.fail("The specified row was not found: " + value);
         }
 
+    }
+
+    /**
+     * Yuck
+     * @param millis
+     */
+    protected void sleep (int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
     }
 
     private static String getBrowserString() {
