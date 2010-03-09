@@ -180,7 +180,9 @@ public class AnnotationProcessorImpl implements AnnotationProcessor {
                                     "Class [ {0} ] not found. Error while loading [ {1} ]",
                                     new Object[]{err.getMessage(), c}));
             ctx.getErrorHandler().error(ape);
-            throw err;
+            // let's continue to the next class instead of aborting the whole 
+            // annotation processing
+            return result;
         }
 
         // process the class itself.
