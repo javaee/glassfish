@@ -197,11 +197,31 @@ public class EjbRemoteFutureTask<V>
 
 
     public boolean isDone() {
+
         // Per the Future javadoc.  It's a little odd that isDone()
         // is required to return true even if cancel() was called but
         // returned false.  However, that's the behavior.  There's nothing
         // stopping the caller from still calling get() though.
-        return (cancelCalled || complete);
+        boolean isDone = cancelCalled || complete;
+
+        if( !isDone ) {
+            // Ask server.
+            try {
+                RemoteAsyncResult result = server.isDone(asyncId);
+                if( result != null ) {
+                    isDone = true;
+                    if( result.resultException != null ) {
+                        setResultException(result.resultException);
+                    } else {
+                        setResultValue((V) result.resultValue);
+                    }
+                }
+            } catch(RemoteException re) {
+                throw new EJBException(re);
+            }
+        }
+
+        return isDone;
     }
 
 

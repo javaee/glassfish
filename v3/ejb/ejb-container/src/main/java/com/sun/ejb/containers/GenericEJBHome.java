@@ -58,4 +58,12 @@ public interface GenericEJBHome extends EJBHome {
      */
     public RemoteAsyncResult cancel(long asyncTaskID) throws RemoteException;
 
+    /**
+     *
+     * @param asyncTaskID
+     * @return if done, RemoteAsyncResult.  Else, returns null.
+     * @throws RemoteException
+     */
+    public RemoteAsyncResult isDone(long asyncTaskID) throws RemoteException;
+
 }

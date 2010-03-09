@@ -210,6 +210,10 @@ final class EJBHomeInvocationHandler
 
                         asyncResult = asyncManager.remoteGet(asyncTaskID);
                     
+                    } else if( method.getName().equals("isDone")) {
+
+                        asyncResult = asyncManager.remoteIsDone(asyncTaskID);
+
                     } else if( method.getName().equals("getWithTimeout")) {
 
                         Long timeout = (Long) args[1];
