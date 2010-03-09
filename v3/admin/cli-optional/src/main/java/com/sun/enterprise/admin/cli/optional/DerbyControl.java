@@ -63,16 +63,22 @@ public final class DerbyControl
     final private String derbyPort;
     final private String derbyHome;
     final private boolean redirect;
+    final private String derbyUser;
+    final private String derbyPassword;
+
 
         //constructor 
     public DerbyControl(final String dc, final String dht, final String dp,
-                        final String redirect, final String dhe)
+                        final String redirect, final String dhe, final String duser, final String dpwd)
     {
         this.derbyCommand = dc;
         this.derbyHost = dht;
         this.derbyPort = dp;
         this.derbyHome = dhe;
-	    this.redirect = Boolean.valueOf(redirect).booleanValue();
+	this.redirect = Boolean.valueOf(redirect).booleanValue();
+        this.derbyUser = duser;
+        this.derbyPassword = dpwd;
+
 	    if (this.redirect) {
 
 	        try {
@@ -108,15 +114,26 @@ public final class DerbyControl
         //constructor
     public DerbyControl(final String dc, final String dht, final String dp)
     {
-        this(dc,dht,dp,"true", null);
+        this(dc,dht,dp,"true", null, null, null);
     }
     
         //constructor
     public DerbyControl(final String dc, final String dht, final String dp, final String redirect)
     {
-        this(dc,dht,dp,redirect,null);
+        this(dc,dht,dp,redirect,null, null, null);
     }
-    
+
+     //constructor
+    public DerbyControl(final String dc, final String dht, final String dp, final String redirect, final String dhe)
+    {
+        this(dc,dht,dp,redirect,dhe, null, null);
+    }
+
+    public DerbyControl(final String dc, final String dht, final String dp, final String redirect, final String duser, final String dpassword)
+    {
+        this(dc,dht,dp,redirect,null, duser, dpassword);
+    }
+
         /**
          * This methos invokes the Derby's NetworkServerControl to start/stop/ping
          * the database.
@@ -127,7 +144,12 @@ public final class DerbyControl
             Class networkServer = Class.forName("org.apache.derby.drda.NetworkServerControl");
             Method networkServerMethod = networkServer.getDeclaredMethod("main",
                                                        new Class[]{String[].class});
-            Object [] paramObj = new Object[]{new String[]{derbyCommand, "-h", derbyHost, "-p", derbyPort}};
+            Object [] paramObj = null;
+            if (derbyUser == null && derbyPassword == null) {
+                paramObj = new Object[]{new String[]{derbyCommand, "-h", derbyHost, "-p", derbyPort}};
+            } else {
+                paramObj = new Object[]{new String[]{derbyCommand, "-h", derbyHost, "-p", derbyPort, "-user", derbyUser, "-password", derbyPassword}};
+            }
            
             networkServerMethod.invoke(networkServer, paramObj);
         }
@@ -209,8 +231,10 @@ public final class DerbyControl
             derbyControl = new DerbyControl(args[0], args[1], args[2]);
         else if (args.length == 4 )
             derbyControl = new DerbyControl(args[0], args[1], args[2], args[3]);
-        else if (args.length > 4)
-            derbyControl = new DerbyControl(args[0], args[1], args[2], args[3], args[4]);
+        else if (args.length == 5)
+             derbyControl = new DerbyControl(args[0], args[1], args[2], args[3], args[4]);
+        else if (args.length > 5)
+            derbyControl = new DerbyControl(args[0], args[1], args[2], args[3], args[4], args[5]);
         if (derbyControl != null)
             derbyControl.invokeNetworkServerControl();
     }

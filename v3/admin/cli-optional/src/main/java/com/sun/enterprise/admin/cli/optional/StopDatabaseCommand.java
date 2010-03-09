@@ -69,6 +69,8 @@ public final class StopDatabaseCommand extends DatabaseCommand {
         Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
         addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
         addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
+        addOption(opts, DB_USER, '\0', "STRING", false, null);
+        addOption(opts, DB_PASSWORD, '\0', "STRING", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
@@ -84,27 +86,53 @@ public final class StopDatabaseCommand extends DatabaseCommand {
      * "-Dderby.storage.fileSyncTransactionLog=True" is defined.
      */
     public String[] stopDatabaseCmd() throws Exception {
-        if (OS.isDarwin()) {
-            return new String [] {
-                sJavaHome+File.separator+"bin"+File.separator+"java",
-                "-Djava.library.path="+sInstallRoot+File.separator+"lib",
-                "-Dderby.storage.fileSyncTransactionLog=True",
-                "-cp",
-                sClasspath + File.pathSeparator + sDatabaseClasspath,
-                "com.sun.enterprise.admin.cli.optional.DerbyControl",
-                "shutdown",
-                dbHost, dbPort, "false"
-             };
+        dbUser = getOption(DB_USER);
+        dbPassword = getOption(DB_PASSWORD);
+        if (dbUser == null && dbPassword == null) {
+            if (OS.isDarwin()) {
+                return new String[]{
+                            sJavaHome + File.separator + "bin" + File.separator + "java",
+                            "-Djava.library.path=" + sInstallRoot + File.separator + "lib",
+                            "-Dderby.storage.fileSyncTransactionLog=True",
+                            "-cp",
+                            sClasspath + File.pathSeparator + sDatabaseClasspath,
+                            "com.sun.enterprise.admin.cli.optional.DerbyControl",
+                            "shutdown",
+                            dbHost, dbPort, "false"
+                        };
+            }
+            return new String[]{
+                        sJavaHome + File.separator + "bin" + File.separator + "java",
+                        "-Djava.library.path=" + sInstallRoot + File.separator + "lib",
+                        "-cp",
+                        sClasspath + File.pathSeparator + sDatabaseClasspath,
+                        "com.sun.enterprise.admin.cli.optional.DerbyControl",
+                        "shutdown",
+                        dbHost, dbPort, "false"
+                    };
+        } else {
+            if (OS.isDarwin()) {
+                return new String[]{
+                            sJavaHome + File.separator + "bin" + File.separator + "java",
+                            "-Djava.library.path=" + sInstallRoot + File.separator + "lib",
+                            "-Dderby.storage.fileSyncTransactionLog=True",
+                            "-cp",
+                            sClasspath + File.pathSeparator + sDatabaseClasspath,
+                            "com.sun.enterprise.admin.cli.optional.DerbyControl",
+                            "shutdown",
+                            dbHost, dbPort, "false", dbUser, dbPassword
+                        };
+            }
+            return new String[]{
+                        sJavaHome + File.separator + "bin" + File.separator + "java",
+                        "-Djava.library.path=" + sInstallRoot + File.separator + "lib",
+                        "-cp",
+                        sClasspath + File.pathSeparator + sDatabaseClasspath,
+                        "com.sun.enterprise.admin.cli.optional.DerbyControl",
+                        "shutdown",
+                        dbHost, dbPort, "false", dbUser, dbPassword
+                    };
         }
-        return new String [] {
-            sJavaHome+File.separator+"bin"+File.separator+"java",
-            "-Djava.library.path="+sInstallRoot+File.separator+"lib",
-            "-cp",
-            sClasspath + File.pathSeparator + sDatabaseClasspath,
-            "com.sun.enterprise.admin.cli.optional.DerbyControl",
-            "shutdown",
-            dbHost, dbPort, "false"
-       };
     }
 
     /**
@@ -125,18 +153,18 @@ public final class StopDatabaseCommand extends DatabaseCommand {
             } else if (cpe.exitValue() < 0) {
                 // Something terribly wrong!
                 throw new CommandException(
-                    strings.get("CommandUnSuccessful", name));
+                    strings.get("UnableToStopDatabase", "derby.log"));
             } else {
                 // database is running so go ahead and stop the database
                 cpe.execute("stopDatabaseCmd", stopDatabaseCmd(), true);
                 if (cpe.exitValue() > 0) {
                     throw new CommandException(
-                        strings.get("CommandUnSuccessful", name));
+                        strings.get("UnableToStopDatabase", "derby.log"));
                 }
             }
         } catch (Exception e) {
             throw new CommandException(
-                strings.get("CommandUnSuccessful", name), e);
+                strings.get("UnableToStopDatabase", "derby.log"), e);
         }
         return 0;
     }

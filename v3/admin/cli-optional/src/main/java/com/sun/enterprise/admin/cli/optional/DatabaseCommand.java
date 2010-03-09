@@ -62,12 +62,16 @@ public abstract class DatabaseCommand extends CLICommand {
     protected static final String DB_HOST_DEFAULT = "0.0.0.0";
     protected static final String DB_PORT       = "dbport";
     protected static final String DB_PORT_DEFAULT = "1527";
+    protected final static String DB_USER       = "dbuser";
+    protected final static String DB_PASSWORD   = "dbpassword";
 
     private static final String[] MODULES_IN_CLASSPATH =
                 { "glassfish", "admin-cli", "cli-framework", "common-util" };
 
     protected String dbHost;
     protected String dbPort;
+    protected String dbUser;
+    protected String dbPassword;
     protected File dbLocation;
     protected File sJavaHome;
     protected File sInstallRoot;
