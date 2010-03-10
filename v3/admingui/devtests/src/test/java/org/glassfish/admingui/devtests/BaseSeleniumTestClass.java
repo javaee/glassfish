@@ -56,12 +56,12 @@ public class BaseSeleniumTestClass {
     }
 
     /**
-     * Cause the test to wait for the page to load, timing out after 1 minute.
+     * Click the specified element and wait for the specified trigger text on the resulting page, timing out after 1 minute.  
      *
      * @param triggerText
-     * @See #waitForPageLoad(StringtriggerText,inttimeout)
      */
-    protected void waitForPageLoad(String triggerText) {
+    protected void clickAndWait(String id, String triggerText) {
+        selenium.click(id);
         waitForPageLoad(triggerText, 60);
     }
 
@@ -115,10 +115,6 @@ public class BaseSeleniumTestClass {
 
     protected void waitForCondition(String js, int timeOutInMillis) {
         selenium.waitForCondition(CURRENT_WINDOW + "." + js, Integer.toString(timeOutInMillis));
-    }
-
-    protected void waitForElementContentNotEqualTo(String id, String content) {
-        selenium.waitForCondition(CURRENT_WINDOW + ".document.getElementById('" + id + "').innerHTML != '" + content + "'", "2500");
     }
 
     protected void deleteRow(String buttonId, String tableId, String triggerText) {

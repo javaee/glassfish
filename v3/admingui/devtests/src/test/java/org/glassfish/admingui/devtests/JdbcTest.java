@@ -1,18 +1,17 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class JdbcTest extends BaseSeleniumTestClass {
 
     @Test
     public void testPoolPing() {
-        openAndWait("/common/commonTask.jsf", "Common Tasks");
-        selenium.click("treeForm:tree:resources:JDBC:connectionPoolResources:amxppdomainresourcestypejdbc-connection-poolname__TimerPool:link");
-
-        waitForPageLoad("Edit JDBC Connection Pool");
-        selenium.click("propertyForm:propertyContentPage:ping");
-        waitForPageLoad("Ping Succeeded");
+//        openAndWait("/common/commonTask.jsf", "Common Tasks");
+        clickAndWait("treeForm:tree:resources:JDBC:connectionPoolResources:amxppdomainresourcestypejdbc-connection-poolname__TimerPool:link", "Edit JDBC Connection Pool");
+        clickAndWait("propertyForm:propertyContentPage:ping", "Ping Succeeded");
     }
 
     @Test
@@ -21,61 +20,52 @@ public class JdbcTest extends BaseSeleniumTestClass {
         final String description = "devtest test connection pool - " + poolName;
 
         openAndWait("/jdbc/jdbcConnectionPools.jsf", "JDBC Connection Pools");
-        selenium.click("propertyForm:poolTable:topActionsGroup1:newButton");
-        waitForPageLoad("New JDBC Connection Pool (Step 1 of 2)");
+        clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", "New JDBC Connection Pool (Step 1 of 2)");
 
         selenium.type("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:jndiProp:name", poolName);
         selenium.select("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:resTypeProp:resType", "label=javax.sql.DataSource");
         selenium.select("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:dbProp:db", "label=Derby");
-        selenium.click("propertyForm:propertyContentPage:topButtons:nextButton");
-        waitForPageLoad("New JDBC Connection Pool (Step 2 of 2)");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:nextButton", "New JDBC Connection Pool (Step 2 of 2)");
 
         selenium.type("form2:sheet:generalSheet:descProp:desc", description);
-        selenium.click("form2:propertyContentPage:topButtons:finishButton");
-        waitForPageLoad("To store, organize, and retrieve data, most applications use relational databases.");
+        clickAndWait("form2:propertyContentPage:topButtons:finishButton", "To store, organize, and retrieve data, most applications use relational databases.");
         assertTrue(selenium.isTextPresent(poolName) && selenium.isTextPresent(description));
 
-        deleteRow("propertyForm:poolTable:topActionsGroup1:button1","propertyForm:poolTable", poolName);
+        deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", poolName);
     }
-    
+
     @Test
     public void testJdbcResources() {
         final String jndiName = generateRandomString();
         final String description = "devtest test jdbc resource - " + jndiName;
 
-		openAndWait("/jdbc/jdbcResources.jsf", "JDBC Resources");
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:newButton");
-        waitForPageLoad("New JDBC Resource");
+        openAndWait("/jdbc/jdbcResources.jsf", "JDBC Resources");
+        clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", "New JDBC Resource");
 
-		selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", jndiName);
-		selenium.type("propertyForm:propertySheet:propertSectionTextField:descProp:desc", description);
-		selenium.click("propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        waitForPageLoad("Additional Properties (1)");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:descProp:desc", description);
+        clickAndWait("propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Additional Properties (1)");
 
-		selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "testProp");
-		selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "testValue");
-		selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "test description");
-		selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
-        waitForPageLoad("JDBC resources provide applications");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "testProp");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "testValue");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "test description");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", "JDBC resources provide applications");
 
         assertTrue(selenium.isTextPresent(jndiName));
-		assertTrue(selenium.isTextPresent(description));
+        assertTrue(selenium.isTextPresent(description));
 
-		selenium.click(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName));
-        waitForPageLoad("Edit JDBC Resource");
+        clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), "Edit JDBC Resource");
 
         assertEquals("testProp", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col2:col1St"));
-		assertEquals("testValue", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col3:col1St"));
-		assertEquals("test description", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col4:col1St"));
+        assertEquals("testValue", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col3:col1St"));
+        assertEquals("test description", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col4:col1St"));
 
-		selenium.click("propertyForm:propertySheet:propertSectionTextField:statusProp:enabled");
-		selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");
-		waitForPageLoad("New values successfully saved.");
+        selenium.click("propertyForm:propertySheet:propertSectionTextField:statusProp:enabled");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", "New values successfully saved.");
 
-		selenium.click("propertyForm:propertyContentPage:topButtons:cancelButton");
-        waitForPageLoad("JDBC resources provide applications with a means to connect to a database.");
-		assertTrue(selenium.isTextPresent("false"));
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", "JDBC resources provide applications with a means to connect to a database.");
+        assertTrue(selenium.isTextPresent("false"));
 
-        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1","propertyForm:resourcesTable", jndiName);
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", jndiName);
     }
 }
