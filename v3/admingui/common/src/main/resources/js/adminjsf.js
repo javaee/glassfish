@@ -2149,6 +2149,18 @@ admingui.table = {
         admingui.table.changeButtons(buttons,tableId);
     },
 
+    toggleButtons : function(topActionGroup, tableId) {
+        var buttons = new Array();
+        var tag = document.getElementById(topActionGroup);
+        for (var i = 0; i < tag.childNodes.length; i++) {
+            var child = tag.childNodes[i];
+            if ((child.nodeName == "INPUT") && (child.id.indexOf("new") == -1)) {
+                buttons.push(child.id);
+            }
+        }
+        admingui.table.changeButtons(buttons,tableId);
+    },
+
     changeButtons : function (buttons,tableId){
         try {
             var table = document.getElementById(tableId);// + ":_table");

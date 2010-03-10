@@ -1,10 +1,13 @@
 <!facet actionsTop>
-     <sun:panelGroup id="topActionsGroup1">
+    <sun:panelGroup id="topActionsGroup1">
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$page{topActionGroup});
+        />
         <sun:button id="newButton" text="$resource{i18n.button.New}" >
             <!command gf.redirect(page="#{pageSession.createLink}") />
         </sun:button>
 
-        <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{isConnPage}"
+        <sun:button id="deleteConnButton" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}" rendered="#{isConnPage}"
             onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
@@ -19,7 +22,7 @@
             />
         </sun:button>
 
-        <sun:button id="deleteDestButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}" rendered="#{!isConnPage}"
+        <sun:button id="deleteDestButton" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}" rendered="#{!isConnPage}"
             onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
@@ -30,7 +33,7 @@
             />
         </sun:button>
 
-        <sun:button id="enableButton" text="$resource{i18n.button.Enable}" disabled="#{false}" primary="#{false}">
+        <sun:button id="enableButton" text="$resource{i18n.button.Enable}" disabled="#{true}" primary="#{false}">
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
@@ -40,7 +43,7 @@
             />
         </sun:button>
 
-        <sun:button id="disableButton" text="$resource{i18n.button.Disable}" disabled="#{false}" primary="#{false}">
+        <sun:button id="disableButton" text="$resource{i18n.button.Disable}" disabled="#{true}" primary="#{false}">
             <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
