@@ -70,7 +70,7 @@
     <sun:propertySheetSection id="sheetSection">
             
           <sun:property id="writeSystemLogEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.WriteSystemLog}" helpText="$resource{i18nc.log.WriteSystemlogHelp}">
-                <sun:checkbox d="writeSystemLogEnabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['useSystemLogging']}" selectedValue="true" />
+                <sun:checkbox id="writeSystemLogEnabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['useSystemLogging']}" selectedValue="true" />
            </sun:property> 
 
         <!-- commented out for now.
