@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,11 +24,40 @@ public class BaseSeleniumTestClass {
     public static void setUp() throws Exception {
         if (selenium == null) {
             String browserString = getBrowserString();
-            selenium = new DefaultSelenium("localhost", getDefaultPort(), browserString, "http://localhost:4848");
+            selenium = new DefaultSelenium("localhost", 4444, browserString, "http://localhost:4848");
             selenium.start();
             (new BaseSeleniumTestClass()).openAndWait(
                     "/common/sysnet/registration.jsf", "Product Registration"); // Make sure the server has started and the user logged in
         }
+    }
+
+    protected String generateRandomString() {
+        SecureRandom random = new SecureRandom();
+
+        return new BigInteger(130, random).toString(16);
+    }
+
+    /**
+     * Yuck
+     * @param millis
+     */
+    protected void sleep (int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    protected int generateRandomNumber() {
+        Random r = new Random();
+        return Math.abs(r.nextInt());
+    }
+
+    protected int getTableRowCount(String id) {
+        String text = selenium.getText(id);
+        int count = Integer.parseInt(text.substring(text.indexOf("(")+1, text.indexOf(")")));
+
+        return count;
     }
 
     protected void openAndWait(String url, String triggerText) {
@@ -85,20 +115,18 @@ public class BaseSeleniumTestClass {
         }
     }
 
-    protected void waitForElementContentNotEqualTo(String id, String content) {
-        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "').innerHTML != '" + content + "'", "2500");
+    protected void waitForCondition(String js, int timeOutInMillis) {
+        selenium.waitForCondition("selenium.browserbot.getCurrentWindow()."+js, Integer.toString(timeOutInMillis));
     }
 
-    protected String generateRandomString() {
-        SecureRandom random = new SecureRandom();
-
-        return new BigInteger(130, random).toString(16);
+    protected void waitForElementContentNotEqualTo(String id, String content) {
+        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "').innerHTML != '" + content + "'", "2500");
     }
 
     protected void deleteRow(String buttonId, String tableId, String triggerText) {
         deleteRow(buttonId, tableId, triggerText, "col0", "col1");
     }
-    
+
     protected void deleteRow(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         selenium.chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
@@ -134,6 +162,7 @@ public class BaseSeleniumTestClass {
     protected void selectTableRowByValue(String tableId, String value) {
         selectTableRowByValue(tableId, value, "col0", "col1");
     }
+    
     protected void selectTableRowByValue(String tableId, String value, String selectColId, String valueColId) {
         try {
             int row = 0;
@@ -152,17 +181,6 @@ public class BaseSeleniumTestClass {
 
     }
 
-    /**
-     * Yuck
-     * @param millis
-     */
-    protected void sleep (int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
-    }
-
     private static String getBrowserString() {
         String browserString = System.getenv("browser");
         if (browserString == null) {
@@ -173,16 +191,5 @@ public class BaseSeleniumTestClass {
         }
 
         return "*" + browserString;
-    }
-
-    private static int getDefaultPort() {
-        try {
-            Class c = Class.forName("org.openqa.selenium.server.SeleniumServer");
-            Method getDefaultPort = c.getMethod("getDefaultPort", new Class[0]);
-            Integer portNumber = (Integer) getDefaultPort.invoke(null, new Object[0]);
-            return portNumber.intValue();
-        } catch (Exception e) {
-            return 4444;
-        }
     }
 }
