@@ -40,12 +40,13 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         if ("WARNING".equals(selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"))) {
             newLevel = "INFO";
         }
-        selenium.select("form1:basicTable:topActionsGroup1:change_list", "label="+newLevel);
+        selenium.select("form1:basicTable:topActionsGroup1:change_list", "label=" + newLevel);
         selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton");
-        waitForCondition("document.getElementById('form1:basicTable:topActionsGroup1:button1').enabled = true", 5000);
+        waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
+
         selenium.click("form1:basicTable:topActionsGroup1:button1");
-        waitForCondition("document.getElementById('form1:basicTable:rowGroup1:0:col3:level').value = '"+newLevel+"'", 5000);
-        sleep(500);
+        waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
+
         selenium.click("form1:title:topButtons:saveButton");
         waitForPageLoad("New values successfully saved.");
         selenium.click("form1:loggingTabs:loggerGeneral");

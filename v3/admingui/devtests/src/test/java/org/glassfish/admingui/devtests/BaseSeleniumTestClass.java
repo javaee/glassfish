@@ -5,7 +5,6 @@ import com.thoughtworks.selenium.Selenium;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -19,6 +18,7 @@ import java.util.Random;
  */
 public class BaseSeleniumTestClass {
     protected static Selenium selenium;
+    public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -37,17 +37,6 @@ public class BaseSeleniumTestClass {
         return new BigInteger(130, random).toString(16);
     }
 
-    /**
-     * Yuck
-     * @param millis
-     */
-    protected void sleep (int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-        }
-    }
-
     protected int generateRandomNumber() {
         Random r = new Random();
         return Math.abs(r.nextInt());
@@ -55,7 +44,7 @@ public class BaseSeleniumTestClass {
 
     protected int getTableRowCount(String id) {
         String text = selenium.getText(id);
-        int count = Integer.parseInt(text.substring(text.indexOf("(")+1, text.indexOf(")")));
+        int count = Integer.parseInt(text.substring(text.indexOf("(") + 1, text.indexOf(")")));
 
         return count;
     }
@@ -115,12 +104,21 @@ public class BaseSeleniumTestClass {
         }
     }
 
+    protected void waitForButtonEnabled(String buttonId) {
+        waitForCondition("document.getElementById('" + buttonId + "').disabled == false", 5000);
+    }
+
+    protected void waitForButtonDisabled(String buttonId) {
+        String value = selenium.getEval(CURRENT_WINDOW + ".document.getElementById('" + buttonId + "').disabled");
+        waitForCondition("document.getElementById('" + buttonId + "').disabled == true", 5000);
+    }
+
     protected void waitForCondition(String js, int timeOutInMillis) {
-        selenium.waitForCondition("selenium.browserbot.getCurrentWindow()."+js, Integer.toString(timeOutInMillis));
+        selenium.waitForCondition(CURRENT_WINDOW + "." + js, Integer.toString(timeOutInMillis));
     }
 
     protected void waitForElementContentNotEqualTo(String id, String content) {
-        selenium.waitForCondition("selenium.browserbot.getCurrentWindow().document.getElementById('" + id + "').innerHTML != '" + content + "'", "2500");
+        selenium.waitForCondition(CURRENT_WINDOW + ".document.getElementById('" + id + "').innerHTML != '" + content + "'", "2500");
     }
 
     protected void deleteRow(String buttonId, String tableId, String triggerText) {
@@ -130,9 +128,9 @@ public class BaseSeleniumTestClass {
     protected void deleteRow(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         selenium.chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
-		selenium.click(buttonId);
-		selenium.getConfirmation();
-		waitForPageLoad(triggerText, true);
+        selenium.click(buttonId);
+        selenium.getConfirmation();
+        waitForPageLoad(triggerText, true);
     }
 
     /**
@@ -162,7 +160,7 @@ public class BaseSeleniumTestClass {
     protected void selectTableRowByValue(String tableId, String value) {
         selectTableRowByValue(tableId, value, "col0", "col1");
     }
-    
+
     protected void selectTableRowByValue(String tableId, String value, String selectColId, String valueColId) {
         try {
             int row = 0;

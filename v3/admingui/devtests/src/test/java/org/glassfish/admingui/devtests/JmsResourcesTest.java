@@ -1,7 +1,8 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertTrue;
 
 
 public class JmsResourcesTest extends BaseSeleniumTestClass {
@@ -10,7 +11,8 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         final String poolName = generateRandomString();
         final String description = "Test Pool - " + poolName;
 
-        openAndWait("/jms/jmsConnections.jsf", "JMS Connection Factories");
+        selenium.click("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link");
+        waitForPageLoad("JMS Connection Factories");
         selenium.click("propertyForm:resourcesTable:topActionsGroup1:newButton");
         waitForPageLoad("Pool Name:");
         selenium.type("propertyForm:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
@@ -22,14 +24,15 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(poolName));
 
         selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
-		waitForPageLoad("false");
+        waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
 
-		selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
-		selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
-		waitForPageLoad("true");
+        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
-        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton","propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
     }
 
     @Test
@@ -48,14 +51,14 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(resourceName) && selenium.isTextPresent(description));
 
         // TODO : write a better test for this. disabling for now
-//        selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
-//		selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
-//		waitForPageLoad("false");
-//
-//		selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
-//		selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
-//		waitForPageLoad("true");
+        selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
 
-        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteDestButton","propertyForm:resourcesTable", resourceName, "colSelect", "colName");
+        selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
+        selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteDestButton", "propertyForm:resourcesTable", resourceName, "colSelect", "colName");
     }
 }
