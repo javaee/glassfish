@@ -43,6 +43,7 @@ public class CreateSession extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = req.getSession(true);
         session.setAttribute("MYNAME", "MYVALUE");
+        session.setAttribute("ID", session.getId());
     }
 }
 

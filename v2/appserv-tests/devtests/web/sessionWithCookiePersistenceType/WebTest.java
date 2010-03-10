@@ -160,14 +160,10 @@ public class WebTest {
             bis = new BufferedReader(new InputStreamReader(is));
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
-		/*
                 if (line.equals("HTTP/1.1 200 OK")) {
                     okStatus = true;
-                } else if (line.startsWith("Set-Cookie:") &&
-                        line.indexOf("JSESSIONID") != -1) {
-                    sessionCookieHeader = line;
+                    break;
                 }
-		*/
             }
         } finally {
             try {
@@ -184,6 +180,10 @@ public class WebTest {
             } catch (IOException ioe) {
                 // ignore
             }
+        }
+
+        if (!okStatus) {
+            throw new Exception("Unable to resume session");
         }
     }
 }

@@ -46,7 +46,11 @@ public class CheckSession extends HttpServlet {
             throw new ServletException("Missing session");
         }
         if (!"MYVALUE".equals(session.getAttribute("MYNAME"))) {
-            throw new ServletException("Missing session attribute");
+            throw new ServletException("Missing session attribute MYNAME");
+        }
+        if (session.getId() == null ||
+                !session.getId().equals(session.getAttribute("ID"))) {
+            throw new ServletException("Missing session attribute ID");
         }
     }
 }
