@@ -271,6 +271,14 @@ public class JavaEETransactionManagerJTSDelegate
         }
     }
 
+    public JavaEETransaction getJavaEETransaction(Transaction t) {
+        if(t instanceof JavaEETransaction){
+            return  (JavaEETransaction)t;
+        }
+
+        return (JavaEETransaction)globalTransactions.get(t);
+
+    }
     public boolean enlistDistributedNonXAResource(Transaction tx, TransactionalResource h)
            throws RollbackException, IllegalStateException, SystemException {
         if(useLAO()) {
@@ -529,8 +537,24 @@ public class JavaEETransactionManagerJTSDelegate
             long elapsedTime = System.currentTimeMillis() - startTime;
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
 
-            tBean = new TransactionAdminBean(t, id, status, elapsedTime,
+            JavaEETransactionImpl tran = (JavaEETransactionImpl)globalTransactions.get(t);
+            if(tran != null) {
+                tBean = ((JavaEETransactionManagerSimplified)javaEETM).getTransactionAdminBean(tran);
+
+                // Override with JTS values
+                tBean.setIdentifier(t);
+                tBean.setId(id);
+                tBean.setStatus(status);
+                tBean.setElapsedTime(elapsedTime);
+                if (tBean.getComponentName() == null) {
+                    tBean.setComponentName("unknown");
+                }
+            } else {
+                tBean = new TransactionAdminBean(t, id, status, elapsedTime,
                                              "unknown", null);
+            }
+        } else {
+            tBean = ((JavaEETransactionManagerSimplified)javaEETM).getTransactionAdminBean(t);
         }
         return tBean;
     }

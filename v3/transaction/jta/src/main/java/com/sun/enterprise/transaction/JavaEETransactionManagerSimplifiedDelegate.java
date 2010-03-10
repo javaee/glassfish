@@ -133,9 +133,17 @@ public class JavaEETransactionManagerSimplifiedDelegate
             return javax.transaction.Status.STATUS_NO_TRANSACTION;
     }
 
-    public Transaction getTransaction() 
-            throws SystemException {
+    public Transaction getTransaction() throws SystemException {
         return  tm.getCurrentTransaction();
+    }
+
+    public JavaEETransaction getJavaEETransaction(Transaction t) {
+        if(t instanceof JavaEETransaction){
+            return  (JavaEETransaction)t;
+        }
+
+        throw new IllegalStateException(sm.getString("enterprise_distributedtx.nonxa_usein_jts"));
+        
     }
 
     public boolean enlistDistributedNonXAResource(Transaction tran, TransactionalResource h)
@@ -250,20 +258,6 @@ public class JavaEETransactionManagerSimplifiedDelegate
 
     public TransactionAdminBean getTransactionAdminBean(Transaction tran) 
             throws javax.transaction.SystemException {
-        TransactionAdminBean tBean = null;
-        if(tran instanceof JavaEETransaction){
-            JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
-            String id = tran1.getTransactionId();
-            long startTime = tran1.getStartTime();
-            String componentName = tran1.getComponentName();
-            ArrayList<String> resourceNames = tran1.getResourceNames();
-            long elapsedTime = System.currentTimeMillis()-startTime;
-            String status = JavaEETransactionManagerSimplified.getStatusAsString(tran.getStatus());
-
-            tBean = new TransactionAdminBean(tran, id, status, elapsedTime,
-                     componentName, resourceNames);
-        }
-
-        return tBean;
+        return ((JavaEETransactionManagerSimplified)tm).getTransactionAdminBean(tran);
     }
 }

@@ -96,6 +96,13 @@ public interface JavaEETransactionManagerDelegate {
     public Transaction getTransaction() throws SystemException;
 
     /**
+     * Get local transaction object that corresponds to this transaction instance.
+     *
+     * @return the transaction object.
+     */
+    public JavaEETransaction getJavaEETransaction(Transaction t);
+
+    /**
      * Perform implementation specific steps to enlist a non-XA resource
      * with a distribute transaction.
      *

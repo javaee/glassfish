@@ -276,8 +276,16 @@ public class JavaEETransactionManagerSimplified
             return false;
         }
 
-        if ( !(tran instanceof JavaEETransaction) )
+       if (monitoringEnabled) {
+           JavaEETransaction tx = getDelegate().getJavaEETransaction(tran);
+           if ( tx != null ) {
+               ((JavaEETransactionImpl)tx).addResourceName(h.getName());
+           }
+       }
+
+       if ( !(tran instanceof JavaEETransaction) ) {
            return enlistXAResource(tran, h);
+       }
 
        JavaEETransactionImpl tx = (JavaEETransactionImpl)tran;
 
@@ -302,10 +310,6 @@ public class JavaEETransactionManagerSimplified
            if ( !isSameRM ) {
                throw new IllegalStateException(sm.getString("enterprise_distributedtx.already_has_nonxa"));
            }
-       }
-
-       if (monitoringEnabled) {
-           tx.addResourceName(h.getName());
        }
 
        if ( h.supportsXA() ) {
@@ -1092,22 +1096,7 @@ public class JavaEETransactionManagerSimplified
         for(int i=0;i<active.size();i++){
             try{
                 Transaction tran = (Transaction)active.elementAt(i);
-                TransactionAdminBean tBean = null;
-                if(tran instanceof JavaEETransaction){
-                    JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
-                    String id = tran1.getTransactionId();
-                    long startTime = tran1.getStartTime();
-                    String componentName = tran1.getComponentName();
-                    ArrayList<String> resourceNames = tran1.getResourceNames();
-                    long elapsedTime = System.currentTimeMillis()-startTime;
-                    String status = getStatusAsString(tran.getStatus());
-
-                    tBean = new TransactionAdminBean(tran, id, status, elapsedTime,
-                             componentName, resourceNames);
-                } else {
-                    tBean = getDelegate().getTransactionAdminBean(tran);
-                }
-
+                TransactionAdminBean tBean = getDelegate().getTransactionAdminBean(tran);
                 if (tBean == null) {
                     // Shouldn't happen
                     _logger.warning("enterprise_distributedtx.txbean_null" + tran);
@@ -1116,10 +1105,31 @@ public class JavaEETransactionManagerSimplified
                     tranBeans.add(tBean);
                 }
             }catch(Exception ex){
-                //LOG !!!
+                _logger.log(Level.SEVERE,
+                    "transaction.monitor.error_while_getting_monitor_attr", ex);
             }
         }
         return tranBeans;
+    }
+
+    public TransactionAdminBean getTransactionAdminBean(Transaction tran)
+            throws javax.transaction.SystemException {
+
+        TransactionAdminBean tBean = null;
+        if(tran instanceof JavaEETransaction){
+            JavaEETransactionImpl tran1 = (JavaEETransactionImpl)tran;
+            String id = tran1.getTransactionId();
+            long startTime = tran1.getStartTime();
+            String componentName = tran1.getComponentName();
+            ArrayList<String> resourceNames = tran1.getResourceNames();
+            long elapsedTime = System.currentTimeMillis()-startTime;
+            String status = getStatusAsString(tran.getStatus());
+
+            tBean = new TransactionAdminBean(tran, id, status, elapsedTime,
+                     componentName, resourceNames);
+        }
+
+        return tBean;
     }
 
     /*

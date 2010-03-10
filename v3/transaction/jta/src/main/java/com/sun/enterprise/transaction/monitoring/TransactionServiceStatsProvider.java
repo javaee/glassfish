@@ -133,17 +133,22 @@ public class TransactionServiceStatsProvider {
         if (!aList.isEmpty()) {
             //Set the headings for the tabular output
             int componentNameLength = COLUMN_LENGTH;
+            int txIdLength = COLUMN_LENGTH + 15;
             for (int i=0; i < aList.size(); i++) {
                 TransactionAdminBean txnBean = (TransactionAdminBean)aList.get(i);
                 String componentName = txnBean.getComponentName();
                 if (componentName.length() > componentNameLength) {
                     componentNameLength = componentName.length() + 1;
                 }
+                String txnId = txnBean.getId();
+                if (txnId.length() > txIdLength) {
+                    txIdLength = txnId.length() + 1;
+                }
             }
             if (aList.size() > 0) {
                 
                 strBuf.append(LINE_BREAK).append(LINE_BREAK);
-                appendColumn(strBuf, "Transaction Id", COLUMN_LENGTH+15);
+                appendColumn(strBuf, "Transaction Id", txIdLength);
                 appendColumn(strBuf, "Status", COLUMN_LENGTH);
                 appendColumn(strBuf, "ElapsedTime(ms)", COLUMN_LENGTH);
                 appendColumn(strBuf, "ComponentName", componentNameLength);
@@ -155,7 +160,7 @@ public class TransactionServiceStatsProvider {
                 String txnId = txnBean.getId();
 
                 _logger.fine("=== Processing txnId: " + txnId);
-                appendColumn(strBuf, txnId, COLUMN_LENGTH+15);
+                appendColumn(strBuf, txnId, txIdLength);
                 appendColumn(strBuf, txnBean.getStatus(), COLUMN_LENGTH);
                 appendColumn(strBuf, String.valueOf(txnBean.getElapsedTime()), COLUMN_LENGTH);
                 appendColumn(strBuf, txnBean.getComponentName(), componentNameLength);
