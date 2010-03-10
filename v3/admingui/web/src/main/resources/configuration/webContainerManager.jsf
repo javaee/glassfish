@@ -68,8 +68,8 @@
 #include "/common/shared/editPageButtons.inc"
 </sun:title>
 
-    <sun:propertySheet requiredFields="#{hasRequiredFields}">
-    <sun:propertySheetSection>
+    <sun:propertySheet id="managerPropSheet" requiredFields="#{hasRequiredFields}">
+    <sun:propertySheetSection id="managerPropSheetSection">
         <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
             <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" text="#{pageSession.valueMap['ReapIntervalInSeconds']}" />
             <sun:staticText id="sec" style="padding: 8pt" text="$resource{i18n.common.Seconds}"/>

@@ -68,8 +68,8 @@
 #include "/common/shared/editPageButtons_2.inc"
 </sun:title>
 
-    <sun:propertySheet requiredFields="#{hasRequiredFields}">
-    <sun:propertySheetSection>
+    <sun:propertySheet id="storePropSheet" requiredFields="#{hasRequiredFields}">
+    <sun:propertySheetSection id="storePropSheetSection" >
         <!-- commented out, refer to issue# 8903 -->
         <!--
         <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
