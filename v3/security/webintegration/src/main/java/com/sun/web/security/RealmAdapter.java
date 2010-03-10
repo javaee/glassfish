@@ -188,7 +188,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      */
     private static String defaultSystemProviderID =
             getDefaultSystemProviderID();
-    private String appID;
+    //private String appID;
+    private String moduleID;
     private boolean isSystemApp;
     //private String jmacProviderRegisID = null;
     private HttpServletHelper helper = null;
@@ -207,8 +208,9 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * Roles related data is not available here.
      */
      
-    public RealmAdapter(String realmName) {
+    public RealmAdapter(String realmName, String moduleID) {
         _realmName = realmName;
+        this.moduleID = moduleID;
     }
 
     /**
@@ -473,7 +475,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 // Put the certificate chain as an List in the subject, to be accessed by user's LoginModule.
                 final List<X509Certificate> certificateCred = Arrays.asList(certs);
                 subject.getPublicCredentials().add(certificateCred);
-                LoginContextDriver.doX500Login(subject, appID);
+                LoginContextDriver.doX500Login(subject, moduleID);
                 realm_name = CertificateRealm.AUTH_TYPE;
             } else {
                 /*V3:Comment Switch.getSwitch().getCallFlowAgent().addRequestInfo(
@@ -1524,7 +1526,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
         // END IASRI 4747594
 
-        this.appID = app.getRegistrationName();
+        //this.appID = app.getRegistrationName();
+        this.moduleID = webDesc.getModuleID();
         // helper are set until setVirtualServer is invoked
         //handled in SecurityDeployer now.
         //configureSecurity(webDesc, isSystemApp);

@@ -37,6 +37,7 @@
 package com.sun.enterprise.security.auth.realm.certificate;
 
 import com.sun.enterprise.security.SecurityContext;
+import com.sun.enterprise.security.auth.login.DistinguishedPrincipalCredential;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -298,11 +299,14 @@ public final class CertificateRealm extends IASRealm
 		principalSet.add(new Group(e.nextElement()));
 	    }
 	}
-        
+        if (!subject.getPrincipals().isEmpty()) {
+            DistinguishedPrincipalCredential dpc = new DistinguishedPrincipalCredential(x500name);
+            subject.getPublicCredentials().add(dpc);
+        }
         
         SecurityContext securityContext =
 	    new SecurityContext(name, subject);
-        
+
 	SecurityContext.setCurrent(securityContext);
         /*AppServSecurityContext secContext = Util.getDefaultHabitat().getByContract(AppServSecurityContext.class);
         AppServSecurityContext securityContext = secContext.newInstance(name, subject);
@@ -318,25 +322,29 @@ public final class CertificateRealm extends IASRealm
      * name information.
      */
     public final static class AppContextCallback implements Callback {
-        private String appName;
+        private String moduleID;
 
         /**
-         * Get the application name.
+         * Get the fully qualified module name. The module name consists
+         * of the application name (if not a singleton) followed by a '#'
+         * and the name of the module.
          *
          * <p>
          *
-         * @return the application name. Non-null only for web container.
+         * @return the application name.
          */
-        public String getAppName() {
-            return appName;
+        public String getModuleID() {
+            return moduleID;
         }
 
         /**
-         * Set the application name.
+         * Set the fully qualified module name. The module name consists
+         * of the application name (if not a singleton) followed by a '#'
+         * and the name of the module.
          * 
          */
-        public void setAppName(String appName) {
-            this.appName = appName;
+        public void setModuleID(String moduleID) {
+            this.moduleID = moduleID;
         }
     }
 

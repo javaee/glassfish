@@ -635,7 +635,7 @@ public class LoginContextDriver  {
      * into this class.
      *
      */
-    public static void doX500Login(Subject s, String appContextRoot)
+    public static void doX500Login(Subject s, String appModuleID)
         throws LoginException
     {
        if(_logger.isLoggable(Level.FINE)){        
@@ -664,7 +664,7 @@ public class LoginContextDriver  {
                 String jaasCtx = certRealm.getJAASContext();
                 if (jaasCtx != null) {
                     // The subject has the Cretificate Credential.
-                    LoginContext lg = new LoginContext(jaasCtx, s, new ServerLoginCallbackHandler(user, null, appContextRoot));
+                    LoginContext lg = new LoginContext(jaasCtx, s, new ServerLoginCallbackHandler(user, null, appModuleID));
                     lg.login();
                 }
                 certRealm.authenticate(s, x500name);

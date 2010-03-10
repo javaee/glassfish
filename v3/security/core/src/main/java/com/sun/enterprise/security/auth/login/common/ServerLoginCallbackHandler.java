@@ -58,17 +58,17 @@ public class ServerLoginCallbackHandler implements CallbackHandler
 {
     private String username = null;
     private String password = null;
-    private String contextRoot = null;
+    private String moduleID = null;
 
     public ServerLoginCallbackHandler(String username, String password) {
 	this.username = username;
 	this.password = password;
     }
 
-    public ServerLoginCallbackHandler(String username, String password, String contextRoot) {
+    public ServerLoginCallbackHandler(String username, String password, String moduleID) {
 	this.username = username;
 	this.password = password;
-        this.contextRoot = contextRoot;
+        this.moduleID = moduleID;
     }
     
     public ServerLoginCallbackHandler(){
@@ -82,8 +82,8 @@ public class ServerLoginCallbackHandler implements CallbackHandler
 	password = pass;
     }
 
-    public void setContextRoot(String contextRoot) {
-        this.contextRoot = contextRoot;
+    public void setModuleID(String moduleID) {
+        this.moduleID = moduleID;
     }
 
     
@@ -104,7 +104,7 @@ public class ServerLoginCallbackHandler implements CallbackHandler
 		PasswordCallback pswd = (PasswordCallback)callbacks[i];
 		pswd.setPassword(password.toCharArray());
 	    } else if (callbacks[i] instanceof CertificateRealm.AppContextCallback){
-                ((CertificateRealm.AppContextCallback) callbacks[i]).setAppName(contextRoot);
+                ((CertificateRealm.AppContextCallback) callbacks[i]).setModuleID(moduleID);
             } else if (callbacks[i] instanceof GroupPrincipalCallback){
                 processGroupPricipal((GroupPrincipalCallback) callbacks[i]);
             } else {

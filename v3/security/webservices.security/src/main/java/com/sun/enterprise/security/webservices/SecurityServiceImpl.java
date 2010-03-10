@@ -177,7 +177,7 @@ public class SecurityServiceImpl implements SecurityService {
                 return authenticated;
             }
 
-            RealmAdapter ra = new RealmAdapter(realmName);
+            RealmAdapter ra = new RealmAdapter(realmName,endpoint.getBundleDescriptor().getModuleID());
             authenticated = ra.authenticate(webPrincipal);
             if (authenticated == false) {
                 sendAuthenticationEvents(false, hreq.getRequestURI(), webPrincipal);

@@ -210,7 +210,7 @@ public abstract class AppservCertificateLoginModule implements LoginModule {
         CertificateRealm.AppContextCallback appContext = new CertificateRealm.AppContextCallback();
         try {
             callbackHandler.handle(new Callback[]{appContext});
-            appName = appContext.getAppName();
+            appName = appContext.getModuleID();
         } catch (Exception ex) {
         }
     }
