@@ -57,7 +57,7 @@ package org.apache.catalina;
 
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
-import java.util.Iterator;
+import java.util.*;
 
 
 /**
@@ -332,5 +332,12 @@ public interface Session {
      * Gets the version number of this Session
      */    
     public long getVersion();
+
+    /**
+     * Gets the attributes of this session.
+     *
+     * @return the attributes of this session
+     */
+    public Map<String, Object> getAttributes();
 
 }

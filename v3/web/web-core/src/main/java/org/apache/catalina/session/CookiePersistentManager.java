@@ -38,10 +38,8 @@ package org.apache.catalina.session;
 
 import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.HexUtils;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 import javax.servlet.http.*;
 
 /**
@@ -51,6 +49,10 @@ import javax.servlet.http.*;
  */
 
 public class CookiePersistentManager extends StandardManager {
+
+    private static final String LAST_ACCESSED_TIME = "lastAccessedTime=";
+    private static final String MAX_INACTIVE_INTERVAL = "maxInactiveInterval=";
+    private static final String IS_VALID = "isValid=";
 
     private final Set<String> sessionIds = new HashSet<String>();
 
@@ -77,12 +79,6 @@ public class CookiePersistentManager extends StandardManager {
 
     @Override
     public Session findSession(String id, HttpServletRequest request) throws IOException {
-        synchronized (sessionIds) {
-            if (!sessionIds.contains(id)) {
-                // Session was never created
-                return null;
-            }
-        }
         if (cookieName == null) {
             return null;
         }
@@ -93,7 +89,7 @@ public class CookiePersistentManager extends StandardManager {
         String value = null;
         for (Cookie cookie : cookies) {
             if (cookieName.equals(cookie.getName())) {
-                return parseSession(cookie.getValue());
+                return parseSession(cookie.getValue(), request.getRequestedSessionId());
             }
         }
         return null;
@@ -120,17 +116,25 @@ public class CookiePersistentManager extends StandardManager {
 
     @Override
     public Cookie toCookie(Session session) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = null;
-        if (getContainer() != null) {
-            oos = ((StandardContext) getContainer()).createObjectOutputStream(
-                    new BufferedOutputStream(baos));
-        } else {
-            oos = new ObjectOutputStream(new BufferedOutputStream(baos));
+        StringBuilder sb = new StringBuilder();
+        sb.append(IS_VALID + session.isValid() + ';');
+        sb.append(LAST_ACCESSED_TIME + session.getLastAccessedTime() + ';');
+        sb.append(MAX_INACTIVE_INTERVAL + session.getMaxInactiveInterval() + ';');
+        synchronized (session.getAttributes()) {
+            Set<Map.Entry<String, Object>> entries = session.getAttributes().entrySet();
+            int numElements = entries.size();
+            int i = 0;
+            for (Map.Entry<String,Object> entry : entries) {
+                sb.append(entry.getKey() + "=" + entry.getValue());
+                if (i++ < numElements-1) {
+                    sb.append(',');
+                }
+            }
         }
-        oos.writeObject(session);
-        oos.close();
-        return new Cookie(cookieName, HexUtils.convert(baos.toByteArray()));
+
+        remove(session);
+
+        return new Cookie(cookieName, sb.toString());
     }
 
     @Override
@@ -143,21 +147,49 @@ public class CookiePersistentManager extends StandardManager {
 
     /*
      * Parses the given string into a session, and returns it.
-     * *
-     * The given string is supposed to contain the serialized representation of a session in Base64-encoded form.
+     * 
+     * The given string is supposed to contain a session encoded using toCookie().
      */
-    private Session parseSession(String value) throws IOException {
-        ObjectInputStream ois;
-        BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(HexUtils.convert(value)));
-        if (container != null) {
-            ois = ((StandardContext)container).createObjectInputStream(bis);
-        } else {
-            ois = new ObjectInputStream(bis);
+    private Session parseSession(String value, String sessionId) throws IOException {
+        String[] components = value.split(";");
+        if (components.length != 4) {
+            throw new IllegalArgumentException("Invalid session encoding");
         }
-        try {
-            return (Session) ois.readObject();
-        } catch (Exception e) {
-            throw new IOException(e);
+
+        StandardSession session = (StandardSession) createSession(sessionId);
+
+        // 1st component: isValid
+        int index = components[0].indexOf('=');
+        if (index < 0) {
+            throw new IllegalArgumentException("Missing separator for isValid");
         }
+        session.setValid(Boolean.parseBoolean(components[0].substring(index+1, components[0].length())));
+
+        // 2nd component: lastAccessedTime
+        index = components[1].indexOf('=');
+        if (index < 0) {
+            throw new IllegalArgumentException("Missing separator for lastAccessedTime");
+        }
+        session.setLastAccessedTime(Long.parseLong(components[1].substring(index+1, components[1].length())));
+
+        // 3rd component: maxInactiveInterval
+        index = components[2].indexOf('=');
+        if (index < 0) {
+            throw new IllegalArgumentException("Missing separator for maxInactiveInterval");
+        }
+        session.setMaxInactiveInterval(Integer.parseInt(
+                components[2].substring(index+1, components[2].length())));
+
+        // 4th component: comma-separated sequence of name-value pairs
+        String[] entries = components[3].split(",");
+        for (String entry : entries) {
+            index = entry.indexOf('=');
+            if (index < 0) {
+                throw new IllegalArgumentException("Missing session attribute key-value separator");
+            }
+            session.setAttribute(entry.substring(0, index), entry.substring(index+1, entry.length()));
+        }
+
+        return session;
     }
 }

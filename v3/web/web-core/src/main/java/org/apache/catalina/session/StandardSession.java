@@ -1205,6 +1205,10 @@ public class StandardSession
         return (attributes.get(name));
     }
 
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 
     /**
      * Return an <code>Enumeration</code> of <code>String</code> objects
