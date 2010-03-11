@@ -9,6 +9,8 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Random;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Created by IntelliJ IDEA.
  * User: jasonlee
@@ -19,6 +21,7 @@ import java.util.Random;
 public class BaseSeleniumTestClass {
     protected static Selenium selenium;
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
+    protected static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -40,6 +43,11 @@ public class BaseSeleniumTestClass {
     protected int generateRandomNumber() {
         Random r = new Random();
         return Math.abs(r.nextInt());
+    }
+
+    protected int generateRandomNumber(int max) {
+        Random r = new Random();
+        return Math.abs(r.nextInt(max));
     }
 
     protected int getTableRowCount(String id) {
@@ -173,6 +181,16 @@ public class BaseSeleniumTestClass {
             Assert.fail("The specified row was not found: " + value);
         }
 
+    }
+
+    protected int addTableRow(String tableId, String buttonId) {
+        int count = getTableRowCount(tableId);
+        clickAndWait(buttonId, "Additional Properties (" + (++count)+")");
+        return count;
+    }
+
+    protected void assertTableRowCount(String tableId, int count) {
+        assertEquals(count, getTableRowCount(tableId));
     }
 
     private static String getBrowserString() {

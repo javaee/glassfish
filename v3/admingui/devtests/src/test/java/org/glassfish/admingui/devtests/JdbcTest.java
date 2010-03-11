@@ -61,7 +61,7 @@ public class JdbcTest extends BaseSeleniumTestClass {
         assertEquals("test description", selenium.getValue("propertyForm:basicTable:rowGroup1:0:col4:col1St"));
 
         selenium.click("propertyForm:propertySheet:propertSectionTextField:statusProp:enabled");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", "New values successfully saved.");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", "JDBC resources provide applications with a means to connect to a database.");
         assertTrue(selenium.isTextPresent("false"));

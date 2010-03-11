@@ -11,7 +11,7 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         openAndWait("/common/javaConfig/serverInstJvmGeneral.jsf?configName=server-config", "JVM General Settings");
 
         selenium.click("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", "New values successfully saved.");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         assertTrue(selenium.isTextPresent("Restart Required"));
     }
 
@@ -25,7 +25,7 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options (" + (count + 1) + ")");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", property);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", "New values successfully saved.");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("propertyForm:javaConfigTab:pathSettings", "JVM Path Settings");
         clickAndWait("propertyForm:javaConfigTab:jvmOptions", "Options (");
 

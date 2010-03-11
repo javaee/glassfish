@@ -23,7 +23,7 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent("jmsra"));
         clickAndWait(getLinkIdByLinkText("propertyForm:poolTable", "jmsra"), "Resource Adapter Name:");
 
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", "New values successfully saved.");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", "A resource adapter config provides");
 
         deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", "jmsra");

@@ -17,7 +17,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
         selenium.type("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit", rotationTimeLimit);
         selenium.type("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", "New values successfully saved.");
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
         clickAndWait("treeForm:tree:ct", "GlassFish News");
 
@@ -43,7 +43,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selenium.click("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
 
-        clickAndWait("form1:title:topButtons:saveButton", "New values successfully saved.");
+        clickAndWait("form1:title:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerGeneral", "Enterprise Server logging messages");
         clickAndWait("form1:loggingTabs:loggerLevels", "Module Log Levels");
