@@ -54,10 +54,13 @@ import javax.security.auth.Subject;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jvnet.hk2.config.types.Property;
 
 
 /**
@@ -362,6 +365,65 @@ public final class ConnectionPoolObjectsUtils {
                 return false;
         }
     }
+
+
+     /**
+     * Validates and sets the values for LazyConnectionEnlistment and LazyConnectionAssociation.
+     * @param lazyAssocString Property value
+     * @param adminPool  Config Bean
+     * @param conConnPool Connector Connection Pool
+     */
+    public static void setLazyEnlistAndLazyAssocProperties(String lazyAssocString, List<Property> properties, ConnectorConnectionPool conConnPool){
+
+        //Get LazyEnlistment value.
+        //To set LazyAssoc to true, LazyEnlist also need to be true.
+        //If LazyAssoc is true and LazyEnlist is not set, set it to true.
+        //If LazyAssoc is true and LazyEnlist is false, throw exception.
+
+
+        if (properties == null) return ;
+
+        Property lazyEnlistElement = null;
+
+         for(Property property : properties){
+             if(property.getName().equalsIgnoreCase("LAZYCONNECTIONENLISTMENT")){
+                 lazyEnlistElement = property;
+             }
+         }
+
+            boolean lazyAssoc = toBoolean( lazyAssocString, false );
+            if(lazyEnlistElement != null){
+
+                boolean lazyEnlist = toBoolean(lazyEnlistElement.getValue(),false);
+                if(lazyAssoc){
+                    if(lazyEnlist){
+                        conConnPool.setLazyConnectionAssoc( true) ;
+                        conConnPool.setLazyConnectionEnlist( true);
+                    }else{
+                         _logger.log(Level.SEVERE,"conn_pool_obj_utils.lazy_enlist-lazy_assoc-invalid-combination",conConnPool.getName());
+                        String i18nMsg = localStrings.getString(
+               "cpou.lazy_enlist-lazy_assoc-invalid-combination");
+                        throw new RuntimeException(i18nMsg + conConnPool.getName());
+                    }
+                }else{
+                    conConnPool.setLazyConnectionAssoc(false);
+                }
+            }else{
+                if(lazyAssoc){
+                    conConnPool.setLazyConnectionAssoc( true) ;
+                    conConnPool.setLazyConnectionEnlist( true);
+                }else{
+                    conConnPool.setLazyConnectionAssoc( false) ;
+                }
+            }
+}
+
+    private static boolean toBoolean( Object prop, boolean defaultVal ) {
+        if ( prop == null ) {
+            return defaultVal;
+        }
+        return Boolean.valueOf(((String) prop).toLowerCase());
+     }
 
     public static int getTransactionSupportFromRaXml(String rarName) throws
             ConnectorRuntimeException {
