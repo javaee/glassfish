@@ -1319,6 +1319,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.configureRedirect();
         vs.configureErrorPage();
         vs.configureErrorReportValve();
+        vs.setServerContext(getServerContext());
 
         return vs;
     }

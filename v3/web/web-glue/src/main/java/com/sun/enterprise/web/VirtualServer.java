@@ -56,6 +56,7 @@ import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
@@ -204,6 +205,8 @@ public class VirtualServer extends StandardHost {
 
     private String defaultContextPath = null;
 
+    private ServerContext serverContext;
+    
 
     // ------------------------------------------------------------- Properties
 
@@ -1048,7 +1051,8 @@ public class VirtualServer extends StandardHost {
 
     private Object loadInstance(String className){
         try{
-            Class clazz = Class.forName(className);
+            // See IT 11674 for why CommonClassLoader must be used
+            Class clazz = serverContext.getCommonClassLoader().loadClass(className);
             return clazz.newInstance();
         } catch (Throwable ex){
             _logger.log(Level.SEVERE,"webcontainer.unableToLoadExtension",ex);
@@ -1629,5 +1633,9 @@ public class VirtualServer extends StandardHost {
         if (prop != null) {
             setErrorReportValveClass(prop.getValue());
         }
+    }
+
+    void setServerContext(ServerContext serverContext) {
+        this.serverContext = serverContext;
     }
 }
