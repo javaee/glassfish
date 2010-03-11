@@ -11,13 +11,6 @@ import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 2, 2010
- * Time: 4:47:15 PM
- * To change this template use File | Settings | File Templates.
- */
 public class BaseSeleniumTestClass {
     protected static Selenium selenium;
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -29,8 +22,7 @@ public class BaseSeleniumTestClass {
             String browserString = getBrowserString();
             selenium = new DefaultSelenium("localhost", 4444, browserString, "http://localhost:4848");
             selenium.start();
-            (new BaseSeleniumTestClass()).openAndWait(
-                    "/common/sysnet/registration.jsf", "Product Registration"); // Make sure the server has started and the user logged in
+            (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", "Please Register"); // Make sure the server has started and the user logged in
         }
     }
 
@@ -184,13 +176,67 @@ public class BaseSeleniumTestClass {
     }
 
     protected int addTableRow(String tableId, String buttonId) {
+        return addTableRow(tableId, buttonId, "Additional Properties");
+    }
+
+    protected int addTableRow(String tableId, String buttonId, String countLabel) {
         int count = getTableRowCount(tableId);
-        clickAndWait(buttonId, "Additional Properties (" + (++count)+")");
+        clickAndWait(buttonId, countLabel + " (" + (++count)+")");
         return count;
     }
 
     protected void assertTableRowCount(String tableId, int count) {
         assertEquals(count, getTableRowCount(tableId));
+    }
+
+    // Look at all those params. Maybe this isn't such a hot idea.
+
+    /**
+     * 
+     * @param resourceName
+     * @param tableId
+     * @param enableButtonId
+     * @param enabledId
+     * @param backToTableButtonId
+     * @param tableTriggerText
+     * @param editTriggerText
+     */
+    protected void testEnableButton(String resourceName,
+                                    String tableId,
+                                    String enableButtonId,
+                                    String enabledId,
+                                    String backToTableButtonId,
+                                    String tableTriggerText,
+                                    String editTriggerText) {
+        testEnableDisableButton(resourceName, tableId, enableButtonId, enabledId, backToTableButtonId, tableTriggerText, editTriggerText, "on");
+    }
+
+    protected void testDisableButton(String resourceName,
+                                    String tableId,
+                                    String enableButtonId,
+                                    String enabledId,
+                                    String backToTableButtonId,
+                                    String tableTriggerText,
+                                    String editTriggerText) {
+        testEnableDisableButton(resourceName, tableId, enableButtonId, enabledId, backToTableButtonId, tableTriggerText, editTriggerText, "off");
+    }
+
+    private void testEnableDisableButton(String resourceName,
+                                    String tableId,
+                                    String enableButtonId,
+                                    String enabledId,
+                                    String backToTableButtonId,
+                                    String tableTriggerText,
+                                    String editTriggerText,
+                                    String state) {
+        selectTableRowByValue(tableId, resourceName);
+        waitForButtonEnabled(enableButtonId);
+        selenium.click(enableButtonId);
+        waitForButtonDisabled(enableButtonId);
+
+        clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
+        assertEquals(state, selenium.getValue(enabledId));
+        clickAndWait(backToTableButtonId, tableTriggerText);
     }
 
     private static String getBrowserString() {

@@ -7,11 +7,9 @@ import static org.junit.Assert.assertTrue;
 
 public class EnterpriseServerTest extends BaseSeleniumTestClass {
     @Test
-    public void testUntitled() throws Exception {
-//        openAndWait("/common/appServer/serverInstGeneralPe.jsf?instanceName=server", "General Information");
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", "JVM Report");
+    public void testGeneralInformation() throws Exception {
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", "General Information");
 
-        assertTrue(selenium.isTextPresent("JVM Report"));
         assertTrue(selenium.isTextPresent("glassfishv3/glassfish/domains/domain1/config"));
     }
 }

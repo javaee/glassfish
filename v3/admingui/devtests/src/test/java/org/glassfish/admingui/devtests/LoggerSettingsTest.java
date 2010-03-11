@@ -5,13 +5,16 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class LoggerSettingsTest extends BaseSeleniumTestClass {
+    private static final String TRIGGER_LOGGER_SETTINGS = "Enterprise Server logging messages";
+    private static final String TRIGGER_LOG_LEVELS = "Module Log Levels";
+
     @Test
     public void testLoggerSettings() {
         final String rotationLimit = Integer.toString(generateRandomNumber());
         final String rotationTimeLimit = Integer.toString(generateRandomNumber());
         final String flushFrequency = Integer.toString(generateRandomNumber());
 
-        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", "Enterprise Server logging messages");
+        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         selenium.click("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
         String enabled = selenium.getValue("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
         selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
@@ -19,9 +22,9 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selenium.type("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
-        clickAndWait("treeForm:tree:ct", "GlassFish News");
+        clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
 
-        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", "Enterprise Server logging messages");
+        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         assertEquals(enabled, selenium.getValue("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled"));
         assertEquals(rotationLimit, selenium.getValue("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit"));
         assertEquals(rotationTimeLimit, selenium.getValue("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit"));
@@ -30,8 +33,8 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testLogLevels() {
-        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", "Enterprise Server logging messages");
-        clickAndWait("form1:loggingTabs:loggerLevels", "Module Log Levels");
+        clickAndWait("treeForm:tree:configuration:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
+        clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
         String newLevel = "WARNING";
         if ("WARNING".equals(selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"))) {
             newLevel = "INFO";
@@ -45,8 +48,8 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
 
         clickAndWait("form1:title:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
 
-        clickAndWait("form1:loggingTabs:loggerGeneral", "Enterprise Server logging messages");
-        clickAndWait("form1:loggingTabs:loggerLevels", "Module Log Levels");
+        clickAndWait("form1:loggingTabs:loggerGeneral", TRIGGER_LOGGER_SETTINGS);
+        clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
         assertEquals(newLevel, selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"));
     }
 }

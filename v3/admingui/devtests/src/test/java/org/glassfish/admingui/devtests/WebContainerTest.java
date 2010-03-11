@@ -60,8 +60,8 @@ public class WebContainerTest extends BaseSeleniumTestClass {
         assertTableRowCount("form1:basicTable", count);
         assertEquals("300", selenium.getValue("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout"));
 
-        selenium.click("form1:propertyContentPage:loadDefaults");
-        waitForCondition("document.getElementById('form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout').value == '1800'", 1000);
+        selenium.type("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout", "300");
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
     }
 
     @Test

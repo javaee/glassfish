@@ -6,31 +6,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class JvmSettingsTest extends BaseSeleniumTestClass {
+    private static final String TRIGGER_JVM_GENERAL_SETTINGS = "JVM General Settings";
+    private static final String TRIGGER_JVM_PATH_SETTINGS = "JVM Path Settings";
+    private static final String TRIGGER_JVM_OPTIONS = "Manage JVM options for the server.";
+
     @Test
     public void testJvmGeneralSettings() {
-        openAndWait("/common/javaConfig/serverInstJvmGeneral.jsf?configName=server-config", "JVM General Settings");
-
+        clickAndWait("treeForm:tree:configuration:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
         selenium.click("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
-        assertTrue(selenium.isTextPresent("Restart Required"));
+        waitForPageLoad("Restart Required", 1000);
     }
 
     @Test
     public void testJvmSettings() {
-        final String property = "-Dfoo=" + generateRandomString();
-        clickAndWait("treeForm:tree:configuration:jvmSettings:jvmSettings_link", "JVM General Settings");
+        clickAndWait("treeForm:tree:configuration:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
+        clickAndWait("propertyForm:javaConfigTab:jvmOptions", TRIGGER_JVM_OPTIONS);
 
-        clickAndWait("propertyForm:javaConfigTab:jvmOptions", "Options (");
-        int count = getTableRowCount("propertyForm:basicTable:_titleBar");
-
-        clickAndWait("propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options (" + (count + 1) + ")");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", property);
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
-        clickAndWait("propertyForm:javaConfigTab:pathSettings", "JVM Path Settings");
-        clickAndWait("propertyForm:javaConfigTab:jvmOptions", "Options (");
+        clickAndWait("propertyForm:javaConfigTab:pathSettings", TRIGGER_JVM_PATH_SETTINGS);
+        clickAndWait("propertyForm:javaConfigTab:jvmOptions", TRIGGER_JVM_OPTIONS);
 
-        // Too fragile?
-        //assertEquals(property, selenium.getValue("propertyForm:basicTable:rowGroup1:" + count + ":col3:col1St"));
-        assertEquals(getTableRowCount("propertyForm:basicTable:_titleBar"), count+1);
+        assertTableRowCount("propertyForm:basicTable", count);
     }
 }

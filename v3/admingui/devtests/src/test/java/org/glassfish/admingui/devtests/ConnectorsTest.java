@@ -5,15 +5,22 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class ConnectorsTest extends BaseSeleniumTestClass {
+    private static final String TRIGGER_CONNECTOR_CONNECTION_POOLS = "Click New to create a new connector connection pool.";
+    private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1 = "New Connector Connection Pool (Step 1 of 2)";
+    private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2 = "New Connector Connection Pool (Step 2 of 2)";
+    private static final String TRIGGER_CONNECTOR_RESOURCE = "A connector resource is a program object";
+    private static final String TRIGGER_NEW_CONNECTOR_RESOURCE = "New Connector Resource";
+    private static final String TRIGGER_EDIT_CONNECTOR_RESOURCE = "Edit Connector Resource";
+
     @Test
     public void testConnectorResources() {
         String testPool = generateRandomString();
         String testConnector = generateRandomString();
 
-        openAndWait("/jca/connectorConnectionPools.jsf", "Connector Connection Pools");
+        clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
 
         // Create new connection connection pool
-        clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", "New Connector Connection Pool (Step 1 of 2)");
+        clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1);
 
         selenium.type("propertyForm:propertySheet:generalPropertySheet:jndiProp:name", testPool);
         selenium.select("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "label=jmsra");
@@ -22,38 +29,45 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         selenium.select("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "label=javax.jms.QueueConnectionFactory");
         waitForButtonEnabled("propertyForm:title:topButtons:nextButton");
 
-        clickAndWait("propertyForm:title:topButtons:nextButton", "New Connector Connection Pool (Step 2 of 2)");
+        clickAndWait("propertyForm:title:topButtons:nextButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2);
 
         selenium.select("propertyForm:propertySheet:poolPropertySheet:transprop:trans", "label=NoTransaction");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:finishButton", "Click New to create a new connector connection pool.");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:finishButton", TRIGGER_CONNECTOR_CONNECTION_POOLS);
         assertTrue(selenium.isTextPresent(testPool));
 
         // Create new connector resource which uses this new pool
-        clickAndWait("treeForm:tree:resources:Connectors:connectorResources:connectorResources_link", "A connector resource is a program object");
+        clickAndWait("treeForm:tree:resources:Connectors:connectorResources:connectorResources_link", TRIGGER_CONNECTOR_RESOURCE);
 
-        clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", "New Connector Resource");
+        clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_RESOURCE);
 
         selenium.type("propertyForm:propertySheet:propertSectionTextField:jndiTextProp:jnditext", testConnector);
         selenium.select("propertyForm:propertySheet:propertSectionTextField:poolNameProp:PoolName", "label=" + testPool);
 
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", "A connector resource is a program object that provides");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CONNECTOR_RESOURCE);
 
         // Disable resource
-        assertTrue(selenium.isTextPresent(testConnector));
-        selectTableRowByValue("propertyForm:resourcesTable", testConnector);
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button3");
-        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button3");
+        testDisableButton(testConnector,
+                "propertyForm:resourcesTable",
+                "propertyForm:resourcesTable:topActionsGroup1:button3",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp:enabled",
+                "propertyForm:propertyContentPage:topButtons:cancelButton",
+                TRIGGER_CONNECTOR_RESOURCE,
+                TRIGGER_EDIT_CONNECTOR_RESOURCE);
 
         // Enable resource
-        selectTableRowByValue("propertyForm:resourcesTable", testConnector);
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button2");
-        waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button2");
+        testEnableButton(testConnector,
+                "propertyForm:resourcesTable",
+                "propertyForm:resourcesTable:topActionsGroup1:button2",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp:enabled",
+                "propertyForm:propertyContentPage:topButtons:cancelButton",
+                TRIGGER_CONNECTOR_RESOURCE,
+                TRIGGER_EDIT_CONNECTOR_RESOURCE);
 
         // Delete connector resource
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", testConnector);
 
         // Delete connector connection pool
-        clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", "Click New to create a new connector connection pool.");
+        clickAndWait("treeForm:tree:resources:Connectors:connectorConnectionPools:connectorConnectionPools_link", TRIGGER_CONNECTOR_CONNECTION_POOLS);
 
         deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", testPool);
     }
