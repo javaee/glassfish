@@ -41,6 +41,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.admin.cli.*;
+import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
 
@@ -70,7 +71,8 @@ public final class StopDatabaseCommand extends DatabaseCommand {
         addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
         addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
         addOption(opts, DB_USER, '\0', "STRING", false, null);
-        addOption(opts, DB_PASSWORD, '\0', "STRING", false, null);
+        //addOption(opts, DB_PASSWORD, '\0', "STRING", false, null);
+        addOption(opts, DB_PASSWORDFILE, '\0', "FILE", false, null);
         addOption(opts, "help", '?', "BOOLEAN", false, "false");
         commandOpts = Collections.unmodifiableSet(opts);
         operandType = "STRING";
@@ -87,7 +89,13 @@ public final class StopDatabaseCommand extends DatabaseCommand {
      */
     public String[] stopDatabaseCmd() throws Exception {
         dbUser = getOption(DB_USER);
-        dbPassword = getOption(DB_PASSWORD);
+        //dbPassword = getOption(DB_PASSWORD);
+        passwords = new HashMap<String, String>();
+        String dbPasswordFile = getOption(DB_PASSWORDFILE);
+        if (ok(dbPasswordFile)) {
+            passwords = CLIUtil.readPasswordFileOptions(dbPasswordFile, true);
+            dbPassword = passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "DBPASSWORD");
+        }
         if (dbUser == null && dbPassword == null) {
             if (OS.isDarwin()) {
                 return new String[]{
