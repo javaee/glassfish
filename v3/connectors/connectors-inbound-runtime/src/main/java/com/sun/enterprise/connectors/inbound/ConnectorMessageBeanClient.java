@@ -185,6 +185,11 @@ public final class ConnectorMessageBeanClient
         //the resource adapter this MDB client is deployed to
         ResourceAdapter ra = aira.getResourceAdapter();
 
+        if(ra == null){
+            String i18nMsg = localStrings.getString("msg-bean-client.ra.class.not.specified", resourceAdapterMid);
+            throw new ConnectorRuntimeException(i18nMsg);
+        }
+
         ConnectorDescriptor desc = aira.getDescriptor();
 
         MessageListener msgListener = getMessageListener(desc);
