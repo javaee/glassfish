@@ -42,6 +42,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.io.*;
 import java.util.*;
+
+import org.glassfish.api.admin.RuntimeType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -318,6 +320,12 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     public boolean isEmbedded() {
         return server!=null;
+    }
+
+    @Override
+    public RuntimeType getRuntimeType() {
+        // so far we are only the DAS...
+        return RuntimeType.DAS;
     }
 }
 

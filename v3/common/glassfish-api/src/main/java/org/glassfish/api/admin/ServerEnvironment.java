@@ -125,4 +125,11 @@ public interface ServerEnvironment {
      * Gets the server status
      */
     Status getStatus();
+
+    /**
+     * Returns the process type of this instance.
+     *
+     * @return the instance process type
+     */
+    public RuntimeType getRuntimeType();    
 }
