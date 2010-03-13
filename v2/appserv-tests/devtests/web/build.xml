@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="488"/>
+    <property name="TOTAL_EXPECTED" value="489"/>
 
     &commonSetup;
     &commonBuild;
@@ -146,7 +146,6 @@
         <ant dir="jstlHtmlParamOutsideFmtMessage" target="all"/>
         <ant dir="jstlLocaleSupportAPI" target="all"/>
     </target>
-
 
     <target name="el">
         <ant dir="elFunctionWithoutParams" target="all"/>
@@ -391,6 +390,7 @@
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
         <ant dir="valveTomcatStyle" target="all"/>
+        <ant dir="virtualServerWithCustomValves" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
         <ant dir="valveWithParams" target="all"/>
         <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
