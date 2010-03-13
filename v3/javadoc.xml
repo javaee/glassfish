@@ -567,7 +567,8 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="com.sun.hk2.*"/>
        <package name="com.sun.enterprise.security.audit.*"/>
        <package name="org.jvnet.*"/>
-       <package name="org.glassfish.api"/>
+       <package name="org.glassfish.api.*"/>
+       <package name="org.glassfish.api.admin.*"/>
        <package name="org.glassfish.api.admin.cli"/>
        <package name="org.glassfish.api.amx.*"/>
        <package name="org.glassfish.api.event"/>
