@@ -38,6 +38,7 @@ package org.glassfish.osgijdbc;
 
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.osgijavaeebase.Extender;
 import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.*;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -48,13 +49,15 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class JDBCExtender implements org.glassfish.osgijavaeebase.Extender, SynchronousBundleListener {
+public class JDBCExtender implements Extender, SynchronousBundleListener {
 
     private BundleContext bundleContext;
 
     private ServiceRegistration urlHandlerService;
 
     private Set<DataSourceFactoryImpl> dataSourceFactories = new HashSet<DataSourceFactoryImpl>();
+    private Habitat habitat;
+    private GlassFishResourceProviderService rps;
 
     public static final String JDBC_DRIVER_SCHEME = "jdbc";
     public static final String OSGI_RFC_122 = "OSGI_RFC_122";
@@ -71,12 +74,16 @@ public class JDBCExtender implements org.glassfish.osgijavaeebase.Extender, Sync
 
     public void start() {
         debug("begin start()");
+        habitat = Globals.getDefaultHabitat();
         bundleContext.addBundleListener(this);
         addURLHandler();
+        rps = new GlassFishResourceProviderService(habitat, bundleContext);
+        rps.registerJdbcResources();
         debug("completed start()");
     }
 
     public void stop() {
+        rps.unRegisterJdbcResources();
         removeURLHandler();
         for (DataSourceFactoryImpl dsfi : dataSourceFactories) {
             dsfi.preDestroy();
@@ -85,11 +92,14 @@ public class JDBCExtender implements org.glassfish.osgijavaeebase.Extender, Sync
         debug("stopped");
     }
 
+    private Habitat getHabitat(){
+        return habitat;
+    }
+
     private void addURLHandler() {
 
         //create parent class-loader (API ClassLoader to access Java EE API)
-        Habitat habitat = Globals.getDefaultHabitat();
-        ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
+        ClassLoaderHierarchy clh = getHabitat().getByContract(ClassLoaderHierarchy.class);
         ClassLoader apiClassLoader = clh.getAPIClassLoader();
 
         Properties p = new Properties();
