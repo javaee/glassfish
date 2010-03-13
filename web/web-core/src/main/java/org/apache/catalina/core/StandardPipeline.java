@@ -568,7 +568,7 @@ public class StandardPipeline
      * otherwise
      */
     public boolean hasNonBasicValves() {
-        return (valves != null && valves.length > 0);
+        return ((valves != null && valves.length > 0) || firstTcValve != null);
     }
 
 
