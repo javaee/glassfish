@@ -1334,9 +1334,7 @@ public class PECoyoteConnector extends Connector {
         if (ciphers != null) {
             String jsseCiphers = getJSSECiphers(ciphers);
             if (jsseCiphers == null) {
-                _logger.log(Level.WARNING,
-                            "pewebcontainer.all_ciphers_disabled",
-                            listener.getName());
+                _logger.log(Level.FINE, "pewebcontainer.all_ciphers_disabled", listener.getName());
             } else {
                 setCiphers(jsseCiphers);
             }
