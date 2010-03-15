@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.Param;
+import org.glassfish.config.support.Create;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
@@ -74,6 +76,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
+@Create(value="create-instance", parentType=Servers.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
     /**
@@ -87,6 +90,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
+    @Param(name = "config")
     String getConfigRef();
 
     /**
@@ -106,6 +110,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
+    @Param(name = "nodeagent")
     String getNodeAgentRef();
 
     /**
@@ -298,5 +303,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
+    @Param(name="systemproperties", optional = true)
     List<Property> getProperty();
 }

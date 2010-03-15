@@ -65,7 +65,8 @@ public class CommandModelImpl extends CommandModel {
 
     public CommandModelImpl(Class<? extends AdminCommand> commandType) {
 
-        commandName = commandType.getAnnotation(Service.class).name();
+        Service service = commandType.getAnnotation(Service.class);
+        commandName = service!=null?service.name():null;
         i18n = commandType.getAnnotation(I18n.class);
         init(commandType);
     }

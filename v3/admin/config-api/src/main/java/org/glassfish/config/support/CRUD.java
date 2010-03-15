@@ -40,7 +40,7 @@ import org.glassfish.config.support.Create;
 import org.glassfish.config.support.Delete;
 
 /**
- * Useful annotation for {@see Create} and {@Delete} compositions
+ * Useful annotation for {@link Create} and {@link Delete} compositions
  *
  * @author Jerome Dochez
  */

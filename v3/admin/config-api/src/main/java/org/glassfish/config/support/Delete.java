@@ -47,7 +47,7 @@ import org.glassfish.api.admin.AdminCommand;
  */
 @InhabitantAnnotation("default")
 @ContractProvided(AdminCommand.class)
-@ServiceProvider(GenericCRUDCommand.class)
+@ServiceProvider(GenericCreateCommand.class)
 public @interface Delete {
 
     @Index

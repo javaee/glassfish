@@ -42,7 +42,7 @@ import org.glassfish.api.ExecutionContext;
 import java.util.logging.Logger;
 
 /**
- * Useful services for Deployer service implementation
+ * Useful services for administrative commands implementation
  *
  * @author Jerome Dochez
  */

@@ -53,6 +53,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.deployment.*;
 import org.glassfish.config.support.CommandModelImpl;
+import org.glassfish.config.support.GenericCrudCommand;
 import org.glassfish.internal.api.*;
 
 import org.jvnet.hk2.annotations.Inject;
@@ -209,6 +210,13 @@ public class CommandRunnerImpl implements CommandRunner {
                 LogDomains.getLogger(command.getClass(),
                     LogDomains.ADMIN_LOGGER),
                 report, inboundPayload, outboundPayload);
+
+        try {
+            GenericCrudCommand c = GenericCrudCommand.class.cast(command);
+            c.setInjectionResolver(injector);
+        } catch(ClassCastException e) {
+            // do nothing.
+        }
 
         LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(command.getClass());

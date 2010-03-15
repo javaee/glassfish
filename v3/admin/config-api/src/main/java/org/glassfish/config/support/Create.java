@@ -51,7 +51,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @InhabitantAnnotation("default")
 @ContractProvided(AdminCommand.class)
-@ServiceProvider(GenericCRUDCommand.class)
+@ServiceProvider(GenericCreateCommand.class)
 public @interface Create {
 
     @Index
@@ -62,6 +62,6 @@ public @interface Create {
 
     String parentAccessor() default "";
 
-    Class<? extends ConfigResolver> resolver() default TargetResolver.class;
+    Class<? extends ConfigResolver> resolver() default ConfigParamResolver.class;
 
 }

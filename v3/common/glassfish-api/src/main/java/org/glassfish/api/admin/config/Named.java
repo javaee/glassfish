@@ -37,6 +37,7 @@
 
 package org.glassfish.api.admin.config;
 
+import org.glassfish.api.Param;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -59,6 +60,7 @@ public interface Named extends ConfigBeanProxy {
      */
     @Attribute(required=true, key=true)
     @NotNull
+    @Param(name="name",primary=true)
     public String getName();
 
     public void setName(String value) throws PropertyVetoException;
