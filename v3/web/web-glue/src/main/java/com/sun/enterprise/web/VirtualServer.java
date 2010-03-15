@@ -55,6 +55,10 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+import org.glassfish.api.embedded.web.Context;
+import org.glassfish.api.embedded.web.ConfigException;
+import org.glassfish.api.embedded.web.WebListener;
+import org.glassfish.api.embedded.web.config.VirtualServerConfig;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
@@ -68,6 +72,8 @@ import org.jvnet.hk2.config.types.Property;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -78,7 +84,8 @@ import java.util.logging.Logger;
  * the iPlanet Application Server.
  */
 
-public class VirtualServer extends StandardHost {
+public class VirtualServer extends StandardHost 
+        implements org.glassfish.api.embedded.web.VirtualServer {
 
     private static final String STATE = "state";
     private static final String SSO_MAX_IDLE ="sso-max-inactive-seconds";
@@ -962,6 +969,15 @@ public class VirtualServer extends StandardHost {
             }
         }
     }
+    
+    void configureAliases(String... hosts) {
+        for (String host : hosts) {
+            if ( !host.equalsIgnoreCase("localhost") &&
+                    !host.equalsIgnoreCase("localhost.localdomain")){
+                addAlias(host);
+            }
+        }
+    }
 
     /**
      * Configures this virtual server with its authentication realm.
@@ -1369,24 +1385,43 @@ public class VirtualServer extends StandardHost {
      * representation of the remote client's IP address.
      */
     void configureRemoteAddressFilterValve() {
-        RemoteAddrValve remoteAddrValve = null;
+        
         Property allow = vsBean.getProperty("allowRemoteAddress");
         Property deny = vsBean.getProperty("denyRemoteAddress");
-        if (allow != null && allow.getValue() != null
-                || deny != null && deny.getValue() != null)  {
+        String allowStr = null;
+        String denyStr = null;
+        if (allow != null) {
+            allowStr = allow.getValue();
+        }
+        if (deny != null) {
+            denyStr = deny.getValue();
+        }
+        configureRemoteAddressFilterValve(allowStr, denyStr);
+        
+    }
+        
+    /**
+     * Configures the Remote Address Filter valve of this VirtualServer.
+     *
+     * This valve enforces request accpetance/denial based on the string
+     * representation of the remote client's IP address.
+     */
+    protected void configureRemoteAddressFilterValve(String allow, String deny) {
+
+        RemoteAddrValve remoteAddrValve = null;
+
+        if (allow != null || deny != null)  {
             remoteAddrValve = new RemoteAddrValve();
         }
 
-        if (allow != null && allow.getValue() != null) {
-            _logger.fine("Allowing access to " + getID()+ " from " +
-                         allow.getValue());
-            remoteAddrValve.setAllow(allow.getValue());
+        if (allow != null) {
+            _logger.fine("Allowing access to " + getID()+ " from " + allow);
+            remoteAddrValve.setAllow(allow);
         }
 
-        if (deny != null && deny.getValue() != null) {
-            _logger.fine("Denying access to " + getID()+ " from " +
-                         deny.getValue());
-            remoteAddrValve.setDeny(deny.getValue());
+        if (deny != null) {
+            _logger.fine("Denying access to " + getID()+ " from " + deny);
+            remoteAddrValve.setDeny(deny);
         }
 
         if (remoteAddrValve != null) {
@@ -1409,22 +1444,35 @@ public class VirtualServer extends StandardHost {
      * remote host from where the request originated.
      */
     void configureRemoteHostFilterValve() {
-        RemoteHostValve remoteHostValve = null;
+        
         Property allow = vsBean.getProperty("allowRemoteHost");
         Property deny = vsBean.getProperty("denyRemoteHost");
-        if (allow != null && allow.getValue() != null
-                || deny != null && deny.getValue() != null)  {
+        String allowStr = null;
+        String denyStr = null;
+        if (allow != null) {
+            allowStr = allow.getValue();
+        }
+        if (deny != null) {
+            denyStr = deny.getValue();
+        }
+        configureRemoteHostFilterValve(allowStr, denyStr);
+        
+    }
+    
+    void configureRemoteHostFilterValve(String allow, String deny) {
+
+        RemoteHostValve remoteHostValve = null;
+
+        if (allow != null || deny != null)  {
             remoteHostValve = new RemoteHostValve();
         }
-        if (allow != null && allow.getValue() != null) {
-            _logger.fine("Allowing access to " + getID() + " from " +
-                allow.getValue());
-            remoteHostValve.setAllow(allow.getValue());
+        if (allow != null) {
+            _logger.fine("Allowing access to " + getID() + " from " + allow);
+            remoteHostValve.setAllow(allow);
         }
-        if (deny != null && deny.getValue() != null) {
-            _logger.fine("Denying access to " + getID() + " from " +
-                deny.getValue());
-            remoteHostValve.setDeny(deny.getValue());
+        if (deny != null) {
+            _logger.fine("Denying access to " + getID() + " from " + deny);
+            remoteHostValve.setDeny(deny);
         }
         if (remoteHostValve != null) {
             // Remove existing RemoteHostValve (if any), in case of a reconfig
@@ -1638,4 +1686,140 @@ public class VirtualServer extends StandardHost {
     void setServerContext(ServerContext serverContext) {
         this.serverContext = serverContext;
     }
+      
+    // ----------------------------------------------------- embedded methods
+    
+    
+    private VirtualServerConfig config;
+    
+    /**
+     * Gets the docroot of this <tt>VirtualServer</tt>.
+     */
+    public File getDocRoot() {
+        return new File(getAppBase());
+    }
+
+    /**
+     * Gets the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     */
+    public Collection<WebListener> getWebListeners() {
+        // TODO
+        return null;
+    }
+
+    /**
+     * Registers the given <tt>Context</tt> with this <tt>VirtualServer</tt>
+     * at the given context root.
+     *
+     * <p>If this <tt>VirtualServer</tt> has already been started, the
+     * given <tt>context</tt> will be started as well.
+     */
+    public void addContext(Context context, String contextRoot)
+        throws ConfigException, org.glassfish.api.embedded.LifecycleException {
+        
+        if (findContext(contextRoot)!=null) {
+            throw new ConfigException("Context with context "+
+                    context+" is already registered");
+        }
+        addChild((Container)context);
+    }
+
+    /**
+     * Stops the given <tt>context</tt> and removes it from this
+     * <tt>VirtualServer</tt>.
+     */
+    public void removeContext(Context context) {
+        removeChild((Container)context);
+    }
+
+    /**
+     * Finds the <tt>Context</tt> registered at the given context root.
+     */
+    public Context findContext(String contextRoot) {
+        Context context = null;
+        for (Context c : getContexts()) {
+            if (c.getPath().equals(contextRoot)) {
+                context = c;
+            }
+        }
+        return context;
+    }
+
+    /**
+     * Gets the collection of <tt>Context</tt> instances registered with
+     * this <tt>VirtualServer</tt>.
+     */
+    public Collection<Context> getContexts() {
+        List<Context> contexts = new ArrayList<Context>();
+        for (Container child : findChildren()) {
+            if (child instanceof Context) {
+                contexts.add((Context)child);
+            }
+        }
+        return contexts;
+    }
+
+    /**
+     * Reconfigures this <tt>VirtualServer</tt> with the given
+     * configuration.
+     *
+     * <p>In order for the given configuration to take effect, this
+     * <tt>VirtualServer</tt> may be stopped and restarted.
+     */
+    public void setConfig(VirtualServerConfig config) 
+        throws ConfigException {
+        
+        this.config = config;
+        configureSingleSignOn(config.isSsoEnabled(), 
+                Globals.getDefaultHabitat().getComponent(
+                PEWebContainerFeatureFactoryImpl.class));
+        if (config.isAccessLoggingEnabled()) {
+            enableAccessLogging();
+        } else {
+            disableAccessLogging();
+        }
+        setDefaultWebXmlLocation(config.getDefaultWebXml());
+        setDefaultContextXmlLocation(config.getContextXmlDefault());
+        setAllowLinking(config.isAllowLinking());
+        configureRemoteAddressFilterValve(config.getAllowRemoteAddress(), config.getDenyRemoteAddress());
+        configureRemoteHostFilterValve(config.getAllowRemoteHost(), config.getAllowRemoteHost());
+        configureAliases(config.getHostNames());
+        
+    }
+
+    /**
+     * Gets the current configuration of this <tt>VirtualServer</tt>.
+     */
+    public VirtualServerConfig getConfig() {
+        return config;
+    }
+        
+    /**
+     * Enables this component.
+     * 
+     * @throws LifecycleException if this component fails to be enabled
+     */    
+    public void enable() throws org.glassfish.api.embedded.LifecycleException {               
+       try {
+            start();
+        } catch (LifecycleException e) {
+            throw new org.glassfish.api.embedded.LifecycleException(e);
+        }
+    }
+    
+    /**
+     * Disables this component.
+     * 
+     * @throws LifecycleException if this component fails to be disabled
+     */
+    public void disable() throws org.glassfish.api.embedded.LifecycleException {
+       try {
+            stop();
+        } catch (LifecycleException e) {
+            throw new org.glassfish.api.embedded.LifecycleException(e);
+        }        
+    }
+    
+
 }

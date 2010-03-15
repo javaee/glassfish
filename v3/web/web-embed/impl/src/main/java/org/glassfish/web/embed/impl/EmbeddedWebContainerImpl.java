@@ -57,6 +57,7 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardEngine;
+import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Embedded;
 import org.apache.catalina.Connector;
@@ -99,11 +100,13 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     
     private String defaultDomain = "com.sun.appserv";
     
+    private boolean listings;
 
     // --------------------------------------------------------- Public Methods
 
     public void setConfiguration(WebBuilder builder) {
         setPath(builder.getDocRootDir());
+        listings = builder.getListings();
     }
 
     /**
@@ -179,11 +182,16 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             File docRoot = getPath();
         
             VirtualServer vs = findVirtualServer(virtualServerId);
-            if (vs!=null) {
+            if (vs != null) {
                 defaultVirtualServer = vs;
             } else {
                 defaultVirtualServer = createVirtualServer(virtualServerId, docRoot);
                 addVirtualServer(defaultVirtualServer);
+            }
+            if (listings) {
+                for (Context context : defaultVirtualServer.getContexts()) {
+                    context.setDirectoryListing(listings);
+                }
             }
         } catch (Exception e) {
             throw new LifecycleException(e);
@@ -590,7 +598,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers(){
-                
+                        
         VirtualServer[] virtualServers = (VirtualServer[]) engine.findChildren();
         
         return Arrays.asList(virtualServers);
@@ -611,9 +619,8 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             throws LifecycleException {
            
         engine.removeChild((Container)virtualServer);
-   
-    }   
-      
+        
+    }  
     
     /**
      * Sets the value of the context path
@@ -623,7 +630,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     public void setPath(File path) {
         this.path = path;
     }
-
   
     /**
      * Returning the value of the context path
@@ -633,7 +639,6 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     public File getPath() {
         return path;
     }
-
     
     /**
      * Sets log level

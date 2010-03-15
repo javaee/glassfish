@@ -38,8 +38,9 @@
 package org.glassfish.web.embed.impl;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.*;
 import org.apache.catalina.Container;
 import org.apache.catalina.Pipeline;
@@ -167,7 +168,6 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      */
     public void addContext(Context context, String contextRoot) 
             throws ConfigException, LifecycleException {
-        
         if (findContext(contextRoot)!=null) {
             throw new ConfigException("Context with context "+
                     context+" is already registered");
@@ -202,9 +202,8 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      */
     public Context findContext(String contextRoot) {
         Context context = null;
-        Context[] contexts = (Context[]) findChildren();
-        for (Context c : contexts) {
-            if (c.getContextPath().equals(contextRoot)) {
+        for (Context c : getContexts()) {
+            if (c.getPath().equals(contextRoot)) {
                 context = c;
             }
         }
@@ -219,8 +218,13 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * instances registered with this <tt>VirtualServer</tt>
      */
     public Collection<Context> getContexts() {
-        Context[] contexts = (Context[]) findChildren();
-        return Arrays.asList(contexts);
+        List<Context> contexts = new ArrayList<Context>();
+        for (Container child : findChildren()) {
+            if (child instanceof Context) {
+                contexts.add((Context)child);
+            }
+        }
+        return contexts;
     }
     
     /**

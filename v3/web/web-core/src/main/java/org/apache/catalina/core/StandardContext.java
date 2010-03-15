@@ -54,8 +54,11 @@
 
 package org.apache.catalina.core;
 
+import com.sun.grizzly.util.buf.CharChunk;
+import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.grizzly.util.http.mapper.MappingData;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
@@ -67,8 +70,10 @@ import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
 import org.apache.naming.resources.BaseDirContext;
+import org.apache.naming.resources.DirContextURLStreamHandler;
 import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ProxyDirContext;
+import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.WARDirContext;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
@@ -76,6 +81,8 @@ import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
 
 import javax.management.*;
+import javax.naming.Binding;
+import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
@@ -83,6 +90,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -101,7 +109,7 @@ import java.util.logging.Logger;
 
 public class StandardContext
     extends ContainerBase
-    implements Context, Serializable
+    implements Context, Serializable, ServletContext
 {
     private static final transient Logger log = Logger.getLogger(
         StandardContext.class.getName());
@@ -150,6 +158,10 @@ public class StandardContext
         namingResources.setContainer(this);
         broadcaster = new NotificationBroadcasterSupport();
         mySecurityManager = new MySecurityManager();
+        
+        //START PWC 6403328
+        this.logPrefix = sm.getString("standardContext.logPrefix", logName());
+        //END PWC 6403328
     }
 
     // ----------------------------------------------------- Instance Variables
@@ -163,7 +175,7 @@ public class StandardContext
      * Associated host name.
      */
     private String hostName;
-
+    
     /**
      * The list of instantiated application event listeners
      */
@@ -282,7 +294,13 @@ public class StandardContext
      * The distributable flag for this web application.
      */
     private boolean distributable = false;
-
+    
+    /**
+     * Thread local data used during request dispatch.
+     */
+    private ThreadLocal<DispatchData> dispatchData =
+        new ThreadLocal<DispatchData>();
+        
     /**
      * The document root for this web application.
      */
@@ -336,7 +354,14 @@ public class StandardContext
      * The login configuration descriptor for this web application.
      */
     private LoginConfig loginConfig = null;
-
+    
+    // START PWC 6403328
+    /**
+     * Log prefix string
+     */
+    private String logPrefix = null;
+    // END PWC 6403328
+    
     /**
      * The mapper associated with this context.
      */
@@ -6460,7 +6485,568 @@ public class StandardContext
     public void create() throws Exception{
         init();
     }
+    
+    // ------------------------------------------------- ServletContext Methods
+            
+    /**
+     * Return the value of the specified context attribute, if any;
+     * otherwise return <code>null</code>.
+     */
+    public Object getAttribute(String name) {
+        return context.getAttribute(name);
+    }
+    
+    /**
+     * Return an enumeration of the names of the context attributes
+     * associated with this context.
+     */
+    public Enumeration<String> getAttributeNames() {
+        return context.getAttributeNames();
+    }      
+        
+    /**
+     * Returns the context path of the web application.
+     */
+    public String getContextPath() {
+        return getPath();
+    }
 
+    /**
+     * Return a <code>ServletContext</code> object that corresponds to a
+     * specified URI on the server.  
+     */
+    public ServletContext getContext(String uri) {       
+        
+        // Validate the format of the specified argument
+        if ((uri == null) || (!uri.startsWith("/"))) {
+            return (null);
+        }
+
+        Context child = null;
+        try {
+            Host host = (Host) getParent();
+            String mapuri = uri;
+            while (true) {
+                child = (Context) host.findChild(mapuri);
+                if (child != null)
+                    break;
+                int slash = mapuri.lastIndexOf('/');
+                if (slash < 0)
+                    break;
+                mapuri = mapuri.substring(0, slash);
+            }
+        } catch (Throwable t) {
+            return (null);
+        }
+
+        if (child == null) {
+            return (null);
+        }
+
+        if (getCrossContext()) {
+            // If crossContext is enabled, can always return the context
+            return child.getServletContext();
+        } else if (child == this) {
+            // Can still return the current context
+            return getServletContext();
+        } else {
+            // Nothing to return
+            return (null);
+        }
+    }
+    
+    /**
+     * Return the value of the specified initialization parameter, or
+     * <code>null</code> if this parameter does not exist.
+     */
+    public String getInitParameter(final String name) {
+        return context.getInitParameter(name);
+    }
+
+    /**
+     * Return the names of the context's initialization parameters, or an
+     * empty enumeration if the context has no initialization parameters.
+     */
+    public Enumeration<String> getInitParameterNames() {
+        return context.getInitParameterNames();
+    }
+    
+    /**
+     * @return true if the context initialization parameter with the given
+     * name and value was set successfully on this ServletContext, and false
+     * if it was not set because this ServletContext already contains a
+     * context initialization parameter with a matching name
+     */
+    public boolean setInitParameter(String name, String value) {
+        return context.setInitParameter(name, value);
+    }    
+        
+    /**
+     * Return the major version of the Java Servlet API that we implement.
+     */
+    public int getMajorVersion() {
+        return context.getMajorVersion();
+    }
+
+    /**
+     * Return the minor version of the Java Servlet API that we implement.
+     */
+    public int getMinorVersion() {
+        return context.getMinorVersion();
+    }
+        
+    /**
+     * Return the MIME type of the specified file, or <code>null</code> if
+     * the MIME type cannot be determined.
+     */
+    public String getMimeType(String file) {
+        
+        if (file == null)
+            return (null);
+        int period = file.lastIndexOf(".");
+        if (period < 0)
+            return (null);
+        String extension = file.substring(period + 1);
+        if (extension.length() < 1)
+            return (null);
+        return (findMimeMapping(extension));
+        
+    }
+        
+    /**
+     * Return a <code>RequestDispatcher</code> object that acts as a
+     * wrapper for the named servlet.
+     */
+    public RequestDispatcher getNamedDispatcher(String name) {
+        
+        // Validate the name argument
+        if (name == null)
+            return (null);
+
+        // Create and return a corresponding request dispatcher
+        Wrapper wrapper = (Wrapper) findChild(name);
+        if (wrapper == null)
+            return (null);
+        
+        return new ApplicationDispatcher(wrapper, null, null, null, null, name);
+        
+    }
+    
+    /**
+     * Return the display name of this web application.
+     */
+    public String getServletContextName() {
+        return getDisplayName();
+    }
+        
+    /**
+     * Remove the context attribute with the specified name, if any.
+     */
+    public void removeAttribute(String name) {
+        context.removeAttribute(name);
+    }
+            
+    /**
+     * Bind the specified value with the specified context attribute name,
+     * replacing any existing value for that name.
+     */
+    public void setAttribute(String name, Object value) {
+        context.setAttribute(name, value);
+    }
+        
+    /**
+     * Return the name and version of the servlet container.
+     */
+    public String getServerInfo() {
+        return context.getServerInfo();
+    }
+        
+    /**
+     * Return the real path corresponding to the given virtual path, or
+     * <code>null</code> if the container was unable to perform the
+     * translation
+     */
+    public String getRealPath(String path) {
+        if (!isFilesystemBased())
+            return null;
+
+        if (path == null) {
+            return null;
+        }
+
+        File file = null;
+        if (alternateDocBases == null
+                || alternateDocBases.size() == 0) {
+            file = new File(getBasePath(getDocBase()), path);
+        } else {
+            AlternateDocBase match = AlternateDocBase.findMatch(
+                                                path, alternateDocBases);
+            if (match != null) {
+                file = new File(match.getBasePath(), path);
+            } else {
+                // None of the url patterns for alternate doc bases matched
+                file = new File(getBasePath(getDocBase()), path);
+            }
+        }
+
+        if (!file.exists()) {
+            try {
+                // Try looking up resource in
+                // WEB-INF/lib/[*.jar]/META-INF/resources
+                java.net.URL u = getLoader().getClassLoader().getResource(
+                    Globals.META_INF_RESOURCES + path);
+                return (u != null ? u.getPath() : file.getAbsolutePath());
+            } catch (Exception e) {
+                return null;
+            }
+        } else {
+            return file.getAbsolutePath();
+        }
+    }    
+    
+    /**
+     * Writes the specified message to a servlet log file.
+     */
+    public void log(String message) {
+        org.apache.catalina.Logger logger = getLogger();
+        if (logger != null) {
+            /* PWC 6403328
+            logger.log(context.logName() + message, Logger.INFORMATION);
+            */
+            //START PWC 6403328
+            logger.log(logPrefix + message, org.apache.catalina.Logger.INFORMATION);
+            //END PWC 6403328
+        }
+    }
+    
+    /**
+     * Writes the specified exception and message to a servlet log file.
+     */
+    public void log(Exception exception, String message) {     
+        org.apache.catalina.Logger logger = getLogger();
+        if (logger != null)
+            logger.log(exception, logName() + message);
+    }       
+        
+    /**
+     * Writes the specified message and exception to a servlet log file.
+     */
+    public void log(String message, Throwable throwable) {
+        org.apache.catalina.Logger logger = getLogger();
+        if (logger != null)
+            logger.log(logName() + message, throwable);
+    }
+        
+    public Servlet getServlet(String name) {
+        return context.getServlet(name);
+    }
+    
+    public Enumeration<String> getServletNames() {
+        return context.getServletNames();
+    }            
+        
+    public Enumeration<Servlet> getServlets() {
+        return context.getServlets();
+    }
+        
+    /**
+     * Return the requested resource as an <code>InputStream</code>.  The
+     * path must be specified according to the rules described under
+     * <code>getResource</code>.  If no such resource can be identified,
+     * return <code>null</code>.
+     */
+    public InputStream getResourceAsStream(String path) {
+
+        if (path == null || !path.startsWith("/"))
+            return (null);
+
+        path = RequestUtil.normalize(path);
+        if (path == null)
+            return (null);
+
+        DirContext resources = null;
+
+        if (alternateDocBases == null
+                || alternateDocBases.size() == 0) {
+            resources = getResources();
+        } else {
+            AlternateDocBase match = AlternateDocBase.findMatch(
+                                path, alternateDocBases);
+            if (match != null) {
+                resources = match.getResources();
+            } else {
+                // None of the url patterns for alternate doc bases matched
+                resources = getResources();
+            }
+        }
+
+        if (resources != null) {
+            try {
+                Object resource = resources.lookup(path);
+                if (resource instanceof Resource)
+                    return (((Resource) resource).streamContent());
+            } catch (Exception e) {
+                try {
+                    // Try looking up resource in
+                    // WEB-INF/lib/[*.jar]/META-INF/resources
+                    java.net.URL u = getLoader().getClassLoader().getResource(
+                        Globals.META_INF_RESOURCES + path);
+                    return (u != null ? u.openStream() : null);
+                } catch (Exception ee) {
+                    // do nothing
+                }
+            }
+        }
+        return (null);
+    }
+        
+    /**
+     * Return the URL to the resource that is mapped to a specified path.
+     * The path must begin with a "/" and is interpreted as relative to the
+     * current context root.
+     */
+    public java.net.URL getResource(String path)
+        throws MalformedURLException {
+
+        if (path == null || !path.startsWith("/")) {
+            throw new MalformedURLException(
+                sm.getString("applicationContext.resourcePaths.iae",
+                             path));
+        }
+        
+        path = RequestUtil.normalize(path);
+        if (path == null)
+            return (null);
+
+        String libPath = "/WEB-INF/lib/";
+        if ((path.startsWith(libPath)) && (path.endsWith(".jar"))) {
+            File jarFile = null;
+            if (isFilesystemBased()) {
+                jarFile = new File(getBasePath(docBase), path);
+            } else {
+                jarFile = new File(getWorkPath(), path);
+            }
+            if (jarFile.exists()) {
+                return jarFile.toURL();
+            } else {
+                return null;
+            }
+
+        } else {
+
+            DirContext resources = null;
+            if (alternateDocBases == null
+                    || alternateDocBases.size() == 0) {
+                resources = context.getResources();
+            } else {
+                AlternateDocBase match = AlternateDocBase.findMatch(
+                                                path, alternateDocBases);
+                if (match != null) {
+                    resources = match.getResources();
+                } else {
+                    // None of the url patterns for alternate doc bases matched
+                    resources = getResources();
+                }
+            }
+
+            if (resources != null) {
+                String fullPath = getName() + path;
+                String hostName = getParent().getName();
+                try {
+                    resources.lookup(path);
+                    return new java.net.URL
+                        /* SJSAS 6318494
+                        ("jndi", null, 0, getJNDIUri(hostName, fullPath),
+                         */
+                        // START SJAS 6318494
+                        ("jndi", "", 0, getJNDIUri(hostName, fullPath),
+                        // END SJSAS 6318494
+		         new DirContextURLStreamHandler(resources));
+                } catch (Exception e) {
+                    try {
+                        // Try looking up resource in
+                        // WEB-INF/lib/[*.jar]/META-INF/resources
+                        return getLoader().getClassLoader().getResource(Globals.META_INF_RESOURCES + path);
+                    } catch (Exception ee) {
+                        // do nothing
+                    }
+                }
+            }
+        }
+
+        return (null);
+    }
+        
+    /**
+     * Return a Set containing the resource paths of resources member of the
+     * specified collection. Each path will be a String starting with
+     * a "/" character. The returned set is immutable.
+     */
+    public Set<String> getResourcePaths(String path) {
+        // Validate the path argument
+        if (path == null) {
+            return null;
+        }
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException
+                (sm.getString("applicationContext.resourcePaths.iae", path));
+        }
+
+        path = RequestUtil.normalize(path);
+        if (path == null)
+            return (null);
+
+        DirContext resources = null;
+
+        if (alternateDocBases == null
+                || alternateDocBases.size() == 0) {
+            resources = getResources();
+        } else {
+            AlternateDocBase match = AlternateDocBase.findMatch(
+                                path, alternateDocBases);
+            if (match != null) {
+                resources = match.getResources();
+            } else {
+                // None of the url patterns for alternate doc bases matched
+                resources = getResources();
+            }
+        }
+
+        if (resources != null) {
+            return (getResourcePathsInternal(resources, path));
+        }
+
+        return (null);
+    }    
+    
+    /**
+     * Internal implementation of getResourcesPath() logic.
+     *
+     * @param resources Directory context to search
+     * @param path Collection path
+     */
+    private Set<String> getResourcePathsInternal(DirContext resources,
+                                                 String path) {
+        HashSet<String> set = new HashSet<String>();
+        try {
+            listCollectionPaths(set, resources, path);
+        } catch (NamingException e) {
+            // Ignore, need to check for resource paths underneath
+            // WEB-INF/lib/[*.jar]/META-INF/resources, see next
+        }
+        try {
+            // Trigger expansion of bundled JAR files
+            java.net.URL u = getLoader().getClassLoader().getResource(
+                Globals.META_INF_RESOURCES + path);
+            String realPath = (u != null ? u.getPath() : null);
+            if (realPath != null) {
+                File[] children = new File(realPath).listFiles();
+                StringBuilder sb = null;
+                for (File child : children) {
+                    sb = new StringBuilder(path);
+                    sb.append("/");
+                    sb.append(child.getName());
+                    if (child.isDirectory()) {
+                        sb.append("/");
+                    }
+                    set.add(sb.toString());
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return Collections.unmodifiableSet(set);
+    }
+         
+    /**
+     * Return a <code>RequestDispatcher</code> instance that acts as a
+     * wrapper for the resource at the given path.  The path must begin
+     * with a "/" and is interpreted as relative to the current context root.
+     */
+    public RequestDispatcher getRequestDispatcher(String path) {
+        
+        // Validate the path argument
+        if (path == null) {
+            return null;
+        }
+
+        if (!path.startsWith("/") && !path.isEmpty()) {
+            throw new IllegalArgumentException(
+                sm.getString("applicationContext.requestDispatcher.iae",
+                             path));
+        }
+
+        // Get query string
+        String queryString = null;
+        int pos = path.indexOf('?');
+        if (pos >= 0) {
+            queryString = path.substring(pos + 1);
+            path = path.substring(0, pos);
+        }
+
+        path = RequestUtil.normalize(path);
+        if (path == null)
+            return (null);
+
+        pos = path.length();
+
+        // Use the thread local URI and mapping data
+        DispatchData dd = dispatchData.get();
+        if (dd == null) {
+            dd = new DispatchData();
+            dispatchData.set(dd);
+        }
+
+        MessageBytes uriMB = dd.uriMB;
+        uriMB.recycle();
+
+        // Retrieve the thread local mapping data
+        MappingData mappingData = dd.mappingData;
+
+        // Map the URI
+        CharChunk uriCC = uriMB.getCharChunk();
+        try {
+            uriCC.append(getPath(), 0, getPath().length());
+            /*
+             * Ignore any trailing path params (separated by ';') for mapping
+             * purposes
+             */
+            int semicolon = path.indexOf(';');
+            if (pos >= 0 && semicolon > pos) {
+                semicolon = -1;
+            }
+            uriCC.append(path, 0, semicolon > 0 ? semicolon : pos);
+            getMapper().map(uriMB, mappingData);
+            if (mappingData.wrapper == null) {
+                return (null);
+            }
+            /*
+             * Append any trailing path params (separated by ';') that were
+             * ignored for mapping purposes, so that they're reflected in the
+             * RequestDispatcher's requestURI
+             */
+            if (semicolon > 0) {
+                uriCC.append(path, semicolon, pos - semicolon);
+            }
+        } catch (Exception e) {
+            // Should never happen
+            log(sm.getString("applicationContext.mapping.error"), e);
+            return (null);
+        }
+
+        Wrapper wrapper = (Wrapper) mappingData.wrapper;
+        String wrapperPath = mappingData.wrapperPath.toString();
+        String pathInfo = mappingData.pathInfo.toString();
+
+        mappingData.recycle();
+        
+        // Construct a RequestDispatcher to process this request
+        return new ApplicationDispatcher
+            (wrapper, uriCC.toString(), wrapperPath, pathInfo, 
+             queryString, null);
+    }
+    
+        
     // ------------------------------------------------------------- Attributes
 
 
@@ -6817,6 +7403,56 @@ public class StandardContext
                     !isAncestor(webappLoader, ccl)) {
                 sm.checkPermission(GET_CLASSLOADER_PERMISSION);
             }
+        }
+    }
+
+    /**
+     * List resource paths (recursively), and store all of them in the given
+     * Set.
+     */
+    private static void listCollectionPaths
+        (Set<String> set, DirContext resources, String path)
+        throws NamingException {
+
+        Enumeration<Binding> childPaths = resources.listBindings(path);
+        while (childPaths.hasMoreElements()) {
+            Binding binding = childPaths.nextElement();
+            String name = binding.getName();
+            StringBuffer childPath = new StringBuffer(path);
+            if (!"/".equals(path) && !path.endsWith("/"))
+                childPath.append("/");
+            childPath.append(name);
+            Object object = binding.getObject();
+            if (object instanceof DirContext) {
+                childPath.append("/");
+            }
+            set.add(childPath.toString());
+        }
+    }
+    
+    /**
+     * Get full path, based on the host name and the context path.
+     */
+    private static String getJNDIUri(String hostName, String path) {
+        if (!path.startsWith("/"))
+            return "/" + hostName + "/" + path;
+        else
+            return "/" + hostName + path;
+    }
+    
+    /**
+     * Internal class used as thread-local storage when doing path
+     * mapping during dispatch.
+     */
+    private static final class DispatchData {
+        public MessageBytes uriMB;
+        public MappingData mappingData;
+
+        public DispatchData() {
+            uriMB = MessageBytes.newInstance();
+            CharChunk uriCC = uriMB.getCharChunk();
+            uriCC.setLimit(-1);
+            mappingData = new MappingData();
         }
     }
 }

@@ -63,6 +63,8 @@ import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.session.StandardManager;
 import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.api.embedded.web.Context;
+import org.glassfish.api.embedded.web.config.SecurityConfig;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.web.admin.monitor.ServletProbeProvider;
 import org.glassfish.web.admin.monitor.SessionProbeProvider;
@@ -92,7 +94,7 @@ import java.util.logging.Logger;
  * Class representing a web module for use by the Application Server.
  */
 
-public class WebModule extends PwcWebModule {
+public class WebModule extends PwcWebModule implements Context {
 
     // ----------------------------------------------------- Class Variables
 
@@ -2075,6 +2077,79 @@ public class WebModule extends PwcWebModule {
             }
         }
     }
+    
+    
+    // --------------------------------------------------------- embedded Methods
+    
+    private SecurityConfig config;
+        
+    /**
+     * Enables or disables directory listings on this <tt>Context</tt>.
+     */
+    public void setDirectoryListing(boolean directoryListing) {
+        Wrapper wrapper = (Wrapper) findChild(
+                org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
+        if (wrapper !=null) {
+            wrapper.addInitParameter("listings", Boolean.toString(directoryListing));
+        }
+    }
+
+    /**
+     * Checks whether directory listings are enabled or disabled on this
+     * <tt>Context</tt>.
+     */
+    public boolean isDirectoryListing() {               
+        Wrapper wrapper = (Wrapper) findChild(
+                org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
+        if (wrapper !=null) {
+            return Boolean.parseBoolean(wrapper.findInitParameter("listings"));
+        }
+        return false;
+    }
+
+    /**
+     * Set the security related configuration for this context
+     */
+    public void setSecurityConfig(SecurityConfig config) {
+        this.config = config;
+        // TODO security settings
+    }
+
+    /**
+     * Gets the security related configuration for this context
+     */
+    public SecurityConfig getSecurityConfig() {
+        return config;
+    }
+        
+    // --------------------------------------------- embedded Lifecycle Methods
+            
+    /**
+     * Enables this component.
+     * 
+     * @throws LifecycleException if this component fails to be enabled
+     */    
+    public void enable() throws org.glassfish.api.embedded.LifecycleException {               
+       try {
+            start();
+        } catch (LifecycleException e) {
+            throw new org.glassfish.api.embedded.LifecycleException(e);
+        }
+    }
+
+    /**
+     * Disables this component.
+     * 
+     * @throws LifecycleException if this component fails to be disabled
+     */
+    public void disable() throws org.glassfish.api.embedded.LifecycleException {
+       try {
+            stop();
+        } catch (LifecycleException e) {
+            throw new org.glassfish.api.embedded.LifecycleException(e);
+        }        
+    }
+    
 }
 
 class V3WebappLoader extends WebappLoader {

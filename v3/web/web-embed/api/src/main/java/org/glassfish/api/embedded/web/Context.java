@@ -51,7 +51,7 @@ import org.glassfish.api.embedded.web.config.SecurityConfig;
 // TODO: Add support for configuring environment entries
 public interface Context extends ServletContext, Lifecycle {
 
-
+    
     /**
      * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
      *
@@ -143,5 +143,11 @@ public interface Context extends ServletContext, Lifecycle {
     
     
     public void setDefaultWebXml(String defaultWebXml);
+    
+    /**
+     * Return the context path for this Context.
+     */
+    public String getPath();
+    
 
 }

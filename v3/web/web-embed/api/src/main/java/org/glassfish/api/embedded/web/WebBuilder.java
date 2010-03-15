@@ -97,11 +97,14 @@ public class WebBuilder implements ContainerBuilder<EmbeddedWebContainer> {
         }
         return docRoot;
     }
-
     
     public WebBuilder setListings(boolean b) {
-        this.listings = b;
+        listings = b;
         return this;        
+    }
+
+    public boolean getListings() {
+        return listings;      
     }
  
     /**

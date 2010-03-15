@@ -54,25 +54,17 @@
 
 package org.apache.catalina.core;
 
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
 import com.sun.grizzly.util.http.mapper.AlternateDocBase;
-import com.sun.grizzly.util.http.mapper.MappingData;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
-import org.apache.naming.resources.DirContextURLStreamHandler;
-import org.apache.naming.resources.Resource;
 
-import javax.naming.Binding;
-import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
-import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -112,11 +104,6 @@ public class ApplicationContext implements ServletContext {
         this.context = context;
         this.basePath = basePath;
         this.alternateDocBases = alternateDocBases;
-
-        //START PWC 6403328
-        this.logPrefix = sm.getString("applicationContext.logPrefix",
-                                      context.logName());
-        //END PWC 6403328
 
         setAttribute("com.sun.faces.useMyFaces",
                      Boolean.valueOf(context.isUseMyFaces()));
@@ -182,18 +169,6 @@ public class ApplicationContext implements ServletContext {
      */
     private ArrayList<AlternateDocBase> alternateDocBases = null;
 
-    // START PWC 6403328
-    /**
-     * Log prefix string
-     */
-    private String logPrefix = null;
-    // END PWC 6403328
-
-    /**
-     * Thread local data used during request dispatch.
-     */
-    private ThreadLocal<DispatchData> dispatchData =
-        new ThreadLocal<DispatchData>();
     
     private boolean isRestricted;
 
@@ -264,43 +239,7 @@ public class ApplicationContext implements ServletContext {
      * @param uri Absolute URI of a resource on the server
      */
     public ServletContext getContext(String uri) {
-
-        // Validate the format of the specified argument
-        if ((uri == null) || (!uri.startsWith("/"))) {
-            return (null);
-        }
-
-        Context child = null;
-        try {
-            Host host = (Host) context.getParent();
-            String mapuri = uri;
-            while (true) {
-                child = (Context) host.findChild(mapuri);
-                if (child != null)
-                    break;
-                int slash = mapuri.lastIndexOf('/');
-                if (slash < 0)
-                    break;
-                mapuri = mapuri.substring(0, slash);
-            }
-        } catch (Throwable t) {
-            return (null);
-        }
-
-        if (child == null) {
-            return (null);
-        }
-
-        if (context.getCrossContext()) {
-            // If crossContext is enabled, can always return the context
-            return child.getServletContext();
-        } else if (child == context) {
-            // Can still return the current context
-            return context.getServletContext();
-        } else {
-            // Nothing to return
-            return (null);
-        }
+        return context.getContext(uri);
     }
 
     /**
@@ -398,17 +337,7 @@ public class ApplicationContext implements ServletContext {
      * @param file Filename for which to identify a MIME type
      */
     public String getMimeType(String file) {
-
-        if (file == null)
-            return (null);
-        int period = file.lastIndexOf(".");
-        if (period < 0)
-            return (null);
-        String extension = file.substring(period + 1);
-        if (extension.length() < 1)
-            return (null);
-        return (context.findMimeMapping(extension));
-
+        return context.getMimeType(file);
     }
 
     /**
@@ -418,17 +347,7 @@ public class ApplicationContext implements ServletContext {
      * @param name Name of the servlet for which a dispatcher is requested
      */
     public RequestDispatcher getNamedDispatcher(String name) {
-
-        // Validate the name argument
-        if (name == null)
-            return (null);
-
-        // Create and return a corresponding request dispatcher
-        Wrapper wrapper = (Wrapper) context.findChild(name);
-        if (wrapper == null)
-            return (null);
-        
-        return new ApplicationDispatcher(wrapper, null, null, null, null, name);
+        return context.getNamedDispatcher(name);
     }
 
     /**
@@ -439,42 +358,7 @@ public class ApplicationContext implements ServletContext {
      * translation
      */
     public String getRealPath(String path) {
-
-        if (!context.isFilesystemBased())
-            return null;
-
-        if (path == null) {
-            return null;
-        }
-
-        File file = null;
-        if (alternateDocBases == null
-                || alternateDocBases.size() == 0) {
-            file = new File(basePath, path);
-        } else {
-            AlternateDocBase match = AlternateDocBase.findMatch(
-                                                path, alternateDocBases);
-            if (match != null) {
-                file = new File(match.getBasePath(), path);
-            } else {
-                // None of the url patterns for alternate doc bases matched
-                file = new File(basePath, path);
-            }
-        }
-
-        if (!file.exists()) {
-            try {
-                // Try looking up resource in
-                // WEB-INF/lib/[*.jar]/META-INF/resources
-                URL u = context.getLoader().getClassLoader().getResource(
-                    Globals.META_INF_RESOURCES + path);
-                return (u != null ? u.getPath() : file.getAbsolutePath());
-            } catch (Exception e) {
-                return null;
-            }
-        } else {
-            return file.getAbsolutePath();
-        }
+        return context.getRealPath(path);
     }
 
     /**
@@ -486,86 +370,7 @@ public class ApplicationContext implements ServletContext {
      * @param path The path to the desired resource.
      */
     public RequestDispatcher getRequestDispatcher(String path) {
-
-        // Validate the path argument
-        if (path == null) {
-            return null;
-        }
-
-        if (!path.startsWith("/") && !path.isEmpty()) {
-            throw new IllegalArgumentException(
-                sm.getString("applicationContext.requestDispatcher.iae",
-                             path));
-        }
-
-        // Get query string
-        String queryString = null;
-        int pos = path.indexOf('?');
-        if (pos >= 0) {
-            queryString = path.substring(pos + 1);
-            path = path.substring(0, pos);
-        }
-
-        path = RequestUtil.normalize(path);
-        if (path == null)
-            return (null);
-
-        pos = path.length();
-
-        // Use the thread local URI and mapping data
-        DispatchData dd = dispatchData.get();
-        if (dd == null) {
-            dd = new DispatchData();
-            dispatchData.set(dd);
-        }
-
-        MessageBytes uriMB = dd.uriMB;
-        uriMB.recycle();
-
-        // Retrieve the thread local mapping data
-        MappingData mappingData = dd.mappingData;
-
-        // Map the URI
-        CharChunk uriCC = uriMB.getCharChunk();
-        try {
-            uriCC.append(context.getPath(), 0, context.getPath().length());
-            /*
-             * Ignore any trailing path params (separated by ';') for mapping
-             * purposes
-             */
-            int semicolon = path.indexOf(';');
-            if (pos >= 0 && semicolon > pos) {
-                semicolon = -1;
-            }
-            uriCC.append(path, 0, semicolon > 0 ? semicolon : pos);
-            context.getMapper().map(uriMB, mappingData);
-            if (mappingData.wrapper == null) {
-                return (null);
-            }
-            /*
-             * Append any trailing path params (separated by ';') that were
-             * ignored for mapping purposes, so that they're reflected in the
-             * RequestDispatcher's requestURI
-             */
-            if (semicolon > 0) {
-                uriCC.append(path, semicolon, pos - semicolon);
-            }
-        } catch (Exception e) {
-            // Should never happen
-            log(sm.getString("applicationContext.mapping.error"), e);
-            return (null);
-        }
-
-        Wrapper wrapper = (Wrapper) mappingData.wrapper;
-        String wrapperPath = mappingData.wrapperPath.toString();
-        String pathInfo = mappingData.pathInfo.toString();
-
-        mappingData.recycle();
-        
-        // Construct a RequestDispatcher to process this request
-        return new ApplicationDispatcher
-            (wrapper, uriCC.toString(), wrapperPath, pathInfo, 
-             queryString, null);
+        return context.getRequestDispatcher(path);
     }
 
     /**
@@ -580,74 +385,7 @@ public class ApplicationContext implements ServletContext {
      */
     public URL getResource(String path)
         throws MalformedURLException {
-
-        if (path == null || !path.startsWith("/")) {
-            throw new MalformedURLException(
-                sm.getString("applicationContext.resourcePaths.iae",
-                             path));
-        }
-        
-        path = RequestUtil.normalize(path);
-        if (path == null)
-            return (null);
-
-        String libPath = "/WEB-INF/lib/";
-        if ((path.startsWith(libPath)) && (path.endsWith(".jar"))) {
-            File jarFile = null;
-            if (context.isFilesystemBased()) {
-                jarFile = new File(basePath, path);
-            } else {
-                jarFile = new File(context.getWorkPath(), path);
-            }
-            if (jarFile.exists()) {
-                return jarFile.toURL();
-            } else {
-                return null;
-            }
-
-        } else {
-
-            DirContext resources = null;
-            if (alternateDocBases == null
-                    || alternateDocBases.size() == 0) {
-                resources = context.getResources();
-            } else {
-                AlternateDocBase match = AlternateDocBase.findMatch(
-                                                path, alternateDocBases);
-                if (match != null) {
-                    resources = match.getResources();
-                } else {
-                    // None of the url patterns for alternate doc bases matched
-                    resources = context.getResources();
-                }
-            }
-
-            if (resources != null) {
-                String fullPath = context.getName() + path;
-                String hostName = context.getParent().getName();
-                try {
-                    resources.lookup(path);
-                    return new URL
-                        /* SJSAS 6318494
-                        ("jndi", null, 0, getJNDIUri(hostName, fullPath),
-                         */
-                        // START SJAS 6318494
-                        ("jndi", "", 0, getJNDIUri(hostName, fullPath),
-                        // END SJSAS 6318494
-		         new DirContextURLStreamHandler(resources));
-                } catch (Exception e) {
-                    try {
-                        // Try looking up resource in
-                        // WEB-INF/lib/[*.jar]/META-INF/resources
-                        return context.getLoader().getClassLoader().getResource(Globals.META_INF_RESOURCES + path);
-                    } catch (Exception ee) {
-                        // do nothing
-                    }
-                }
-            }
-        }
-
-        return (null);
+        return context.getResource(path);
     }
 
     /**
@@ -659,49 +397,7 @@ public class ApplicationContext implements ServletContext {
      * @param path The path to the desired resource.
      */
     public InputStream getResourceAsStream(String path) {
-
-        if (path == null || !path.startsWith("/"))
-            return (null);
-
-        path = RequestUtil.normalize(path);
-        if (path == null)
-            return (null);
-
-        DirContext resources = null;
-
-        if (alternateDocBases == null
-                || alternateDocBases.size() == 0) {
-            resources = context.getResources();
-        } else {
-            AlternateDocBase match = AlternateDocBase.findMatch(
-                                path, alternateDocBases);
-            if (match != null) {
-                resources = match.getResources();
-            } else {
-                // None of the url patterns for alternate doc bases matched
-                resources = context.getResources();
-            }
-        }
-
-        if (resources != null) {
-            try {
-                Object resource = resources.lookup(path);
-                if (resource instanceof Resource)
-                    return (((Resource) resource).streamContent());
-            } catch (Exception e) {
-                try {
-                    // Try looking up resource in
-                    // WEB-INF/lib/[*.jar]/META-INF/resources
-                    URL u = context.getLoader().getClassLoader().getResource(
-                        Globals.META_INF_RESOURCES + path);
-                    return (u != null ? u.openStream() : null);
-                } catch (Exception ee) {
-                    // do nothing
-                }
-            }
-        }
-        return (null);
-
+        return context.getResourceAsStream(path);
     }
 
     /**
@@ -712,80 +408,7 @@ public class ApplicationContext implements ServletContext {
      * @param path Collection path
      */
     public Set<String> getResourcePaths(String path) {
-
-        // Validate the path argument
-        if (path == null) {
-            return null;
-        }
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException
-                (sm.getString("applicationContext.resourcePaths.iae", path));
-        }
-
-        path = RequestUtil.normalize(path);
-        if (path == null)
-            return (null);
-
-        DirContext resources = null;
-
-        if (alternateDocBases == null
-                || alternateDocBases.size() == 0) {
-            resources = context.getResources();
-        } else {
-            AlternateDocBase match = AlternateDocBase.findMatch(
-                                path, alternateDocBases);
-            if (match != null) {
-                resources = match.getResources();
-            } else {
-                // None of the url patterns for alternate doc bases matched
-                resources = context.getResources();
-            }
-        }
-
-        if (resources != null) {
-            return (getResourcePathsInternal(resources, path));
-        }
-
-        return (null);
-    }
-
-    /**
-     * Internal implementation of getResourcesPath() logic.
-     *
-     * @param resources Directory context to search
-     * @param path Collection path
-     */
-    private Set<String> getResourcePathsInternal(DirContext resources,
-                                                 String path) {
-        HashSet<String> set = new HashSet<String>();
-        try {
-            listCollectionPaths(set, resources, path);
-        } catch (NamingException e) {
-            // Ignore, need to check for resource paths underneath
-            // WEB-INF/lib/[*.jar]/META-INF/resources, see next
-        }
-        try {
-            // Trigger expansion of bundled JAR files
-            URL u = context.getLoader().getClassLoader().getResource(
-                Globals.META_INF_RESOURCES + path);
-            String realPath = (u != null ? u.getPath() : null);
-            if (realPath != null) {
-                File[] children = new File(realPath).listFiles();
-                StringBuilder sb = null;
-                for (File child : children) {
-                    sb = new StringBuilder(path);
-                    sb.append("/");
-                    sb.append(child.getName());
-                    if (child.isDirectory()) {
-                        sb.append("/");
-                    }
-                    set.add(sb.toString());
-                }
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-        return Collections.unmodifiableSet(set);
+        return context.getResourcePaths(path);
     }
 
     /**
@@ -829,15 +452,7 @@ public class ApplicationContext implements ServletContext {
      * @param message Message to be written
      */
     public void log(String message) {
-        Logger logger = context.getLogger();
-        if (logger != null) {
-            /* PWC 6403328
-            logger.log(context.logName() + message, Logger.INFORMATION);
-            */
-            //START PWC 6403328
-            logger.log(this.logPrefix + message, Logger.INFORMATION);
-            //END PWC 6403328
-        }
+        context.log(message);
     }
 
     /**
@@ -849,10 +464,8 @@ public class ApplicationContext implements ServletContext {
      * @deprecated As of Java Servlet API 2.1, use
      *  <code>log(String, Throwable)</code> instead
      */
-    public void log(Exception exception, String message) {        
-        Logger logger = context.getLogger();
-        if (logger != null)
-            logger.log(exception, context.logName() + message);
+    public void log(Exception exception, String message) {   
+        context.log(exception, message);
     }
 
     /**
@@ -862,9 +475,7 @@ public class ApplicationContext implements ServletContext {
      * @param throwable Exception to be reported
      */
     public void log(String message, Throwable throwable) {
-        Logger logger = context.getLogger();
-        if (logger != null)
-            logger.log(context.logName() + message, throwable);
+        context.log(message, throwable);
     }
 
     /**
@@ -1434,53 +1045,4 @@ public class ApplicationContext implements ServletContext {
         parameters = results;
     }
 
-    /**
-     * List resource paths (recursively), and store all of them in the given
-     * Set.
-     */
-    private static void listCollectionPaths
-        (Set<String> set, DirContext resources, String path)
-        throws NamingException {
-
-        Enumeration<Binding> childPaths = resources.listBindings(path);
-        while (childPaths.hasMoreElements()) {
-            Binding binding = childPaths.nextElement();
-            String name = binding.getName();
-            StringBuffer childPath = new StringBuffer(path);
-            if (!"/".equals(path) && !path.endsWith("/"))
-                childPath.append("/");
-            childPath.append(name);
-            Object object = binding.getObject();
-            if (object instanceof DirContext) {
-                childPath.append("/");
-            }
-            set.add(childPath.toString());
-        }
-    }
-
-    /**
-     * Get full path, based on the host name and the context path.
-     */
-    private static String getJNDIUri(String hostName, String path) {
-        if (!path.startsWith("/"))
-            return "/" + hostName + "/" + path;
-        else
-            return "/" + hostName + path;
-    }
-
-    /**
-     * Internal class used as thread-local storage when doing path
-     * mapping during dispatch.
-     */
-    private static final class DispatchData {
-        public MessageBytes uriMB;
-        public MappingData mappingData;
-
-        public DispatchData() {
-            uriMB = MessageBytes.newInstance();
-            CharChunk uriCC = uriMB.getCharChunk();
-            uriCC.setLimit(-1);
-            mappingData = new MappingData();
-        }
-    }
 }
