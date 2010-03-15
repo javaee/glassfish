@@ -57,9 +57,9 @@ public class HelloWeb extends HttpServlet {
 
         PrintWriter pw = res.getWriter();
         try {
-			pw.println("Hello World !");
-  		} catch(Exception e) {
-        	e.printStackTrace();
+            pw.println("Hello World !");
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 }

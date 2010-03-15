@@ -49,6 +49,7 @@ import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.web.*;
 import javax.servlet.Servlet;
+import javax.servlet.ServletRegistration;
 
 /**
  * @author Amy Roh
@@ -100,11 +101,12 @@ public class EmbeddedSetDocRootTest {
         embedded.addVirtualServer(defaultVirtualServer);
 
         Context context = (Context) embedded.createContext(f, null);
-        defaultVirtualServer.addContext(context, "");
-        //context.addServlet("test-servlet", "org.glassfish.tests.embedded.web.HellowWeb");
         Servlet servlet = new HelloWeb();
-        context.addServlet("test-servlet", servlet);
         
+        ServletRegistration reg = context.addServlet("test-servlet", servlet);
+        reg.addMapping(new String[] {"/hello"});
+        defaultVirtualServer.addContext(context, "");
+
         embedded.start();
 
         /*URL servlet = new URL("http://localhost:8080/hello");
