@@ -37,13 +37,10 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.PersistenceUnitsDescriptor;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -56,12 +53,10 @@ import java.util.logging.Logger;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Enumeration;
-import java.util.Set;
 
 public abstract class PersistenceArchivist extends ExtensionsArchivist {
     protected static final String JAR_EXT = ".jar";
     protected static final char SEPERATOR_CHAR = '/';
-    protected static final String LIB_DIR = "lib";
 
 
     private static final Logger st_logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
@@ -90,6 +85,22 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
         readPersistenceDeploymentDescriptor(main, archive, puRoot, descriptor);
         return null;  // return null so that the descritor does not get added twice to extensions
     }
+
+    /** @return true of given path is probable pu root */
+    public static boolean isProbablePuRootJar(String path) {
+        return isJarEntry(path) && checkIsInRootOfArchive(path);
+    }
+
+    /** @return true if given path is in root of archive */
+    private static boolean checkIsInRootOfArchive(String path) {
+        return path.indexOf('/') == -1;
+    }
+
+    /** @return true of give path corresponds to a jar entry */
+    private static boolean isJarEntry(String path) {
+        return path.endsWith(JAR_EXT);
+    }
+
 
     protected PersistenceUnitsDescriptor readPersistenceDeploymentDescriptor(Archivist main,
             ReadableArchive subArchive, String puRoot, RootDeploymentDescriptor descriptor)
@@ -193,28 +204,18 @@ public abstract class PersistenceArchivist extends ExtensionsArchivist {
 
         boolean isProbablePuRootJar(String jarName) {
             // all jars in root of subarchive are probable pu roots
-            return isJarEntry(jarName) && checkIsInRootOfArchive(jarName, getPathOfSubArchiveToScan());
-        }
-
-        private boolean checkIsInRootOfArchive(String path, String parentArchivePath) {
-            boolean inRootOfArchive = true;
-            if (path.indexOf('/') != -1) {
-                inRootOfArchive = false;
+            boolean probablePuRootJar = PersistenceArchivist.isProbablePuRootJar(jarName);
+            if(!probablePuRootJar && isJarEntry(jarName) ) {
+                // A jar that is not in root of archive. Log that it will not be scanned
                 if (st_logger.isLoggable(Level.FINE)) {
                     st_logger.logp(Level.FINE, "PersistenceArchivist",
                             "readPersistenceDeploymentDescriptors",
                             "skipping {0} as it exists inside a directory in {1}.",
-                            new Object[]{path, parentArchivePath});
+                            new Object[]{jarName, getPathOfSubArchiveToScan()});
                 }
             }
-            return inRootOfArchive;
+            return probablePuRootJar;
         }
-
-        private boolean isJarEntry(String path) {
-            return path.endsWith(JAR_EXT);
-        }
-
     }
 
-    
 }

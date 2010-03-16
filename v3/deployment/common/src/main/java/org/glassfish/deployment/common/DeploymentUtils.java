@@ -40,16 +40,10 @@ import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import org.glassfish.api.deployment.DeploymentContext;
-import org.glassfish.api.deployment.archive.ArchiveHandler;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.jvnet.hk2.component.Habitat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Set;
-import java.util.jar.*;
 
 
 /** 
@@ -57,6 +51,8 @@ import java.util.jar.*;
  */
 
 public class DeploymentUtils {
+
+    private static final String V2_COMPATIBILITY = "v2";
 
     private static final String WEB_INF = "WEB-INF";
     private static final String JSP_SUFFIX = ".jsp";
@@ -220,6 +216,10 @@ public class DeploymentUtils {
     public static String getEmbeddedModulePath(String appRootPath,
         String moduleUri) {
         return appRootPath + File.separator + getRelativeEmbeddedModulePath(appRootPath, moduleUri) ;
+    }
+
+    public static boolean useV2Compatibility(DeploymentContext context) {
+        return V2_COMPATIBILITY.equals(context.getAppProps().getProperty(DeploymentProperties.COMPATIBILITY));
     }
 
 }

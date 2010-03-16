@@ -52,7 +52,22 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
  *
  * @author tjquinn
  */
-class EARBasedPersistenceHelper {
+public class EARBasedPersistenceHelper {
+
+    /**
+     * @return true if the jarName corresponds to component jar (like a war or ejb.jar) in an .ear false otherwise
+     */
+    public static boolean isComponentJar(String jarName, Set<ModuleDescriptor<BundleDescriptor>> moduleDescriptors) {
+        boolean isComponentJar = false;
+        for (ModuleDescriptor md : moduleDescriptors) {
+            String archiveUri = md.getArchiveUri();
+            if (jarName.equals(archiveUri)) {
+                isComponentJar = true;
+                break;
+            }
+        }
+        return isComponentJar;
+    }
 
     /**
      * Adds candidate persistence archives from the EAR's library directory
@@ -140,19 +155,6 @@ class EARBasedPersistenceHelper {
                     // component roots are not scanned while scanning ear. They will be handled
                     // while scanning the component.
                     !isComponentJar(jarName,(app.getModules()));
-        }
-
-        private boolean isComponentJar(String jarName, Set<ModuleDescriptor<BundleDescriptor>> moduleDescriptors) {
-        //TODO : This method duplicated code in JPACompositeSniffer. Need to push this code into a common place (May be somewhere in deployment code)
-            boolean isComponentJar = false;
-            for (ModuleDescriptor md : moduleDescriptors) {
-                String archiveUri = md.getArchiveUri();
-                if (jarName.equals(archiveUri)) {
-                    isComponentJar = true;
-                    break;
-                }
-            }
-            return isComponentJar;
         }
     }
 }

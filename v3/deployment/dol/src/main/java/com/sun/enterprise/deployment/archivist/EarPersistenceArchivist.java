@@ -39,9 +39,7 @@ package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.Archive;
 import org.xml.sax.SAXParseException;
@@ -51,7 +49,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Set;
 
 @Service
 public class EarPersistenceArchivist extends PersistenceArchivist {
@@ -80,7 +77,8 @@ public class EarPersistenceArchivist extends PersistenceArchivist {
         try {
             final Application app = Application.class.cast(descriptor);
 
-            // TO DO: need to compute includeRoot, not hard-code it, in the next invocation.
+            // TODO: need to compute includeRoot, not hard-code it, in the next invocation. The flag should be set to true if operating in v2 compatibility mode false otherwise.
+            // Check with Hong how to get hold of the flag here?
             EARBasedPersistenceHelper.addLibraryAndTopLevelCandidates(earArchive, app, true /* includeRoot */,
                     probablePersitenceArchives);
 

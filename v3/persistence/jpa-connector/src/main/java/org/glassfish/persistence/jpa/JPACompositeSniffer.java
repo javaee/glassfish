@@ -37,14 +37,21 @@
 package org.glassfish.persistence.jpa;
 
 
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.archivist.EARBasedPersistenceHelper;
+import com.sun.enterprise.deployment.archivist.PersistenceArchivist;
+import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
+import java.util.Enumeration;
+import java.util.Set;
 
 /**
  * Sniffer handling ears
@@ -70,7 +77,24 @@ public class JPACompositeSniffer extends JPASniffer implements CompositeSniffer 
         ReadableArchive appRoot = context.getSource();
         if (holder != null && holder.app != null) {
             isJPAApplication = scanForPURootsInLibDir(appRoot, holder.app.getLibraryDirectory());
+
+            if(!isJPAApplication) {
+                if(DeploymentUtils.useV2Compatibility(context) ) {
+                    //Scan for pu roots in root of ear
+                    isJPAApplication = scanForPURRootsInEarRoot(context, holder.app.getModules());
+                }
+            }
         }
         return isJPAApplication;
+    }
+
+    private boolean scanForPURRootsInEarRoot(DeploymentContext ctx, Set<ModuleDescriptor<BundleDescriptor>> modules) {
+        boolean puPresentInEarRoot = false;
+        Enumeration<String> entriesInEar = ctx.getSource().entries();
+        while(entriesInEar.hasMoreElements() && !puPresentInEarRoot) {
+            String entry = entriesInEar.nextElement();
+            puPresentInEarRoot = PersistenceArchivist.isProbablePuRootJar(entry) && !EARBasedPersistenceHelper.isComponentJar(entry, modules);
+        }
+        return puPresentInEarRoot;
     }
 }

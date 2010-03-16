@@ -70,14 +70,12 @@ import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
-import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.jvnet.hk2.component.Habitat;
 
 public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
-
-    private static final String V2_COMPATIBILITY = "v2";
 
     private final static String LIBRARY_SECURITY_PROPERTY_NAME = "library.security";
     private final static String LIBRARY_JARS_PROPERTY_NAME = "library.jars";
@@ -325,16 +323,11 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
         addLibraryJARs(classPathForFacade, PUScanTargetsForFacade,
                 dependencyURIsProcessed);
 
-        if (useV2Compatibility() && ! appClientDesc().getApplication().isVirtual()) {
+        if (DeploymentUtils.useV2Compatibility(dc()) && ! appClientDesc().getApplication().isVirtual()) {
             addEJBJARs(classPathForFacade, dependencyURIsProcessed);
             addTopLevelJARs(classPathForFacade, PUScanTargetsForFacade,
                     dependencyURIsProcessed);
         }
-    }
-
-    private boolean useV2Compatibility() {
-        final String compat = dc().getAppProps().getProperty(DeploymentProperties.COMPATIBILITY);
-        return (compat != null && compat.equals(V2_COMPATIBILITY));
     }
 
     /**

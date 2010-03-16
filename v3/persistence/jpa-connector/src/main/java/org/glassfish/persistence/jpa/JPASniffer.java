@@ -74,12 +74,11 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
     private static final String JAR_SUFFIX = ".jar";
     /**
      * Returns true if the archive contains persistence.xml as defined by packaging rules of JPA
-     * Tries to getResource("META-INF/persitsence.xml") on curernt classLoader. If it succeeds, currrent archive is a pu
+     * Tries to getResource("META-INF/persitsence.xml") on current classLoader. If it succeeds, current archive is a pu
      * root.
      * This method will be called for each bundle inside an application which would include
      * .war (the resource can be present in WEB-INF/classes or WEB-INF/lib/pu.jar),
      * ejb.jar (the resource can be present in root of the jar),
-     * .ear (the resource can be present in lib dir of the ear)
      */
     public boolean handles(ReadableArchive location, ClassLoader loader) {
             boolean isJPAArchive = false;
