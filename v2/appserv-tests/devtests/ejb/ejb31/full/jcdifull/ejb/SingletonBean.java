@@ -2,6 +2,7 @@ package com.acme;
 
 import javax.ejb.*;
 import javax.annotation.*;
+import javax.interceptor.*;
 
 import javax.inject.Inject;
 
@@ -11,12 +12,18 @@ import javax.enterprise.inject.spi.BeanManager;
 
 import java.lang.reflect.Method;
 
+import org.jboss.weld.examples.translator.*;
+
 @Singleton
 @Startup
 public class SingletonBean implements SingletonRemote {
 
+    @Inject Foo foo;
+
     @EJB
 	private StatelessLocal statelessEE;
+
+    @EJB private TranslatorController tc;
 
     @Resource(lookup="java:module/FooManagedBean")
     private FooManagedBean fmb;
@@ -37,7 +44,7 @@ public class SingletonBean implements SingletonRemote {
     }
 
     public void hello() {
-	System.out.println("In SingletonBean::hello()");
+	System.out.println("In SingletonBean::hello() " + foo);
 	statelessEE.hello();
 
 	fmb.hello();
@@ -48,6 +55,12 @@ public class SingletonBean implements SingletonRemote {
 	System.out.println("Successfully retrieved bean manager " +
 			   beanMgr + " for JCDI enabled app");
 			   
+    }
+
+    @Schedule(second="*/10", minute="*", hour="*")
+	private void timeout() {
+	System.out.println("In SingletonBean::timeout() " + foo);
+	statelessEE.hello();
     }
 
     @PreDestroy

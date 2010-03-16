@@ -10,6 +10,7 @@ import javax.inject.Named;
 @LocalBean
 public class StatelessBean implements StatelessLocal {
 
+    @Inject Foo foo;
 
     @PostConstruct
 	public void init() {
@@ -17,7 +18,8 @@ public class StatelessBean implements StatelessLocal {
     }
 
     public void hello() {
-	System.out.println("In StatelessBean::hello()");
+	System.out.println("In StatelessBean::hello() " +
+			   foo);
     }
 
     @PreDestroy

@@ -43,10 +43,17 @@ public class Client {
 	    remoteAsync = (RemoteAsync) new InitialContext().lookup("java:global/" + appName + "/SingletonBean!com.acme.RemoteAsync");
 	    Future<String> future = remoteAsync.hello("Bob");
 	    
+	    boolean isDone = future.isDone();
+	    System.out.println("isDone = " + isDone);
+
 	    String result = future.get();
+
+	    if( !future.isDone() ) {
+		throw new RuntimeException("isDone should have been true");
+	    }
 	    
 	    System.out.println("Remote bean says " + result);
-
+		
 	    stat.addStatus("local main", stat.PASS);
 
 	} catch(Exception e) {
