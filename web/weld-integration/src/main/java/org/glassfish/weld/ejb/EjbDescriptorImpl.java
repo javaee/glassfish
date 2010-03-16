@@ -38,16 +38,15 @@
 package org.glassfish.weld.ejb;
 
 import org.jboss.weld.ejb.spi.BusinessInterfaceDescriptor;
+import org.jboss.weld.ejb.SessionBeanInterceptor;
 
 import javax.ejb.Local;
+import javax.interceptor.InvocationContext;
 
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbSessionDescriptor;
-import com.sun.enterprise.deployment.EjbRemovalInfo;
-import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
-import com.sun.enterprise.deployment.MethodDescriptor;
+import com.sun.enterprise.deployment.*;
 
 import java.lang.reflect.Method;
+import java.lang.annotation.Annotation;
 
 import java.util.Collection;
 import java.util.Set;
@@ -62,6 +61,15 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
 
     public EjbDescriptorImpl(EjbDescriptor e) {
         ejbDesc = e;
+
+        // Before handling application-level interceptors that are defined using 299 metadata,
+        // add the CDI impl-specific system-level interceptor that needs to be registered for ALL
+        // EJB components.  At runtime, this sets up the appropriate request context for invocations that
+        // do not originate via the web tier.  This interceptor must be registered *before*
+        // any application-level interceptors in the chain, so add it in the framework interceptor
+        // category within the ejb descriptor.
+        EjbInterceptor systemLevelCDIInterceptor = createSystemLevelCDIInterceptor();
+        ejbDesc.addFrameworkInterceptor(systemLevelCDIInterceptor);
     }
 
 
@@ -234,5 +242,54 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
             }
             addIfLocal(next.getInterfaces(), names);
         }
+    }
+
+    private EjbInterceptor createSystemLevelCDIInterceptor() {
+
+        EjbInterceptor interceptor = new EjbInterceptor();
+
+        Class interceptorClass = SessionBeanInterceptor.class;
+
+        String interceptorName = interceptorClass.getName();
+
+        interceptor.setInterceptorClass(interceptorClass);
+
+        // @@@ SessionBeanInterceptor.class no longer has @AroundInvoke annotation so
+        // we have to look for method explicitly.
+        try {
+            Method aroundInvokeMethod = interceptorClass.getMethod("aroundInvoke", InvocationContext.class);
+
+            if( aroundInvokeMethod != null ) {
+                LifecycleCallbackDescriptor aroundInvokeDesc = new LifecycleCallbackDescriptor();
+                aroundInvokeDesc.setLifecycleCallbackClass(interceptorName);
+                aroundInvokeDesc.setLifecycleCallbackMethod(aroundInvokeMethod.getName());
+                interceptor.addAroundInvokeDescriptor(aroundInvokeDesc);
+
+                // TODO BUG -- Existing SessionBeanInterceptor does not define an @AroundTimeout method.
+                // Until that's fixed, work around it by adding the method marked @AroundInvoke as an
+                // @AroundTimeout.
+                LifecycleCallbackDescriptor aroundTimeoutDesc = new LifecycleCallbackDescriptor();
+                aroundTimeoutDesc.setLifecycleCallbackClass(interceptorName);
+                aroundTimeoutDesc.setLifecycleCallbackMethod(aroundInvokeMethod.getName());
+                interceptor.addAroundTimeoutDescriptor(aroundTimeoutDesc);
+            }
+        } catch(NoSuchMethodException nsme) {
+            throw new RuntimeException("Cannot find weld EJB interceptor aroundInvoke method");
+        }
+
+        return interceptor;
+
+    }
+
+    private Method getMethodForMethodAnnotation(Class c, String annotationClassName) {
+        for(Method m : c.getDeclaredMethods()) {
+            for(Annotation next : m.getDeclaredAnnotations()) {
+
+                if( next.annotationType().getName().equals(annotationClassName)) {
+                    return m;
+                }
+            }
+        }
+        return null;
     }
 }

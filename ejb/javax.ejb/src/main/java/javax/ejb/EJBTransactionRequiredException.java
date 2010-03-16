@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package javax.ejb;
 
 /**
@@ -40,6 +41,8 @@ package javax.ejb;
  * but the target object requires an active transaction.  
  */
 public class EJBTransactionRequiredException extends EJBException {
+
+    private static final long serialVersionUID = 8880799605373282306L;
 
     /**
      * Constructs an EJBTransactionRequiredException with no detail message.

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -241,6 +241,44 @@ public class EjbAsyncInvocationManager
 
         if( _logger.isLoggable(Level.FINE) ) {
             _logger.log(Level.FINE, "Exit remoteCancel for async task " + asyncTaskID +
+                    " : " + task);
+        }
+
+        return result;
+    }
+
+    RemoteAsyncResult remoteIsDone(Long asyncTaskID) {
+
+        EjbFutureTask task = getLocalTaskForID(asyncTaskID);
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            EjbAsyncTask asyncTask = task.getEjbAsyncTask();
+            _logger.log(Level.FINE, "Enter remoteisDone for async task " + asyncTaskID +
+                    " : " + asyncTask.getEjbInvocation());
+        }
+
+        // If not done, just return null.
+        RemoteAsyncResult result = null;
+
+        if( task.isDone() ) {
+
+            // Since the task is done just return the result on this
+            // internal remote request.
+            result = new RemoteAsyncResult();
+
+            result.resultException = task.getResultException();
+            result.resultValue = task.getResultValue();
+            result.asyncID = asyncTaskID;
+
+            // The client object won't make another request once it
+            // has the result so we can remove it from the container map.
+            remoteTaskMap.remove(asyncTaskID);
+
+        }
+
+
+        if( _logger.isLoggable(Level.FINE) ) {
+            _logger.log(Level.FINE, "Exit remoteIsDone for async task " + asyncTaskID +
                     " : " + task);
         }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,5 +57,13 @@ public interface GenericEJBHome extends EJBHome {
      * @throws RemoteException
      */
     public RemoteAsyncResult cancel(long asyncTaskID) throws RemoteException;
+
+    /**
+     *
+     * @param asyncTaskID
+     * @return if done, RemoteAsyncResult.  Else, returns null.
+     * @throws RemoteException
+     */
+    public RemoteAsyncResult isDone(long asyncTaskID) throws RemoteException;
 
 }

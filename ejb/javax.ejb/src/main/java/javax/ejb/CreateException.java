@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package javax.ejb;
 
 /**
@@ -44,6 +45,8 @@ package javax.ejb;
  * report a failure to create an EJB object.
  */
 public class CreateException extends java.lang.Exception {
+
+    private static final long serialVersionUID = 7899534274371798660L;
 
     /**
      * Constructs a CreateException with no detail message.
