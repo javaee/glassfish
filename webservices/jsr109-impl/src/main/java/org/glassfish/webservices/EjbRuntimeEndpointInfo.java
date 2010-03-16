@@ -51,6 +51,7 @@ import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.WebServiceFeature;
 import javax.xml.ws.soap.MTOMFeature;
 import javax.xml.ws.soap.AddressingFeature;
+import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.Collection;
 import java.util.Iterator;
@@ -206,27 +207,32 @@ public class EjbRuntimeEndpointInfo {
                             String deployedDir =
                                 mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
                                 */
-                            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-                            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-                            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
-                                               endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
-                                        
-
-                            File pkgedWsdl = null;
-                            if(deployedDir != null) {
-                                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                                    pkgedWsdl = new File(deployedDir+File.separator+
-                                                endpoint.getWebService().getWsdlFileUri());
-                                } else {
-                                    pkgedWsdl = new File(deployedDir+File.separator+
-                                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
-                                            File.separator + endpoint.getWebService().getWsdlFileUri());
-                                }
-                            } else {
-                                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
+//                            WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
+//                            ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
+//                            String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
+//                                               endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
+//
+//
+//                            URL pkgedWsdl = null;
+//                            if(deployedDir != null) {
+//                                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
+//                                    pkgedWsdl = new File(deployedDir+File.separator+
+//                                                endpoint.getWebService().getWsdlFileUri());
+//                                } else {
+//                                    pkgedWsdl = new File(deployedDir+File.separator+
+//                                            endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_") +
+//                                            File.separator + endpoint.getWebService().getWsdlFileUri());
+//                                }
+//                            } else {
+//                                pkgedWsdl = new File(endpoint.getWebService().getWsdlFileUrl().getFile());
+//                            }
+                            URL pkgedWsdl = clazz.getResource('/' + endpoint.getWebService().getWsdlFileUri());
+                            if (pkgedWsdl == null) {
+                                pkgedWsdl = endpoint.getWebService().getWsdlFileUrl();
                             }
-                            if(pkgedWsdl.exists()) {
-                                primaryWsdl = SDDocumentSource.create(pkgedWsdl.toURL());
+
+                            if (pkgedWsdl != null) {
+                                primaryWsdl = SDDocumentSource.create(pkgedWsdl);
                                 docs = wsu.getWsdlsAndSchemas(pkgedWsdl);
                             }
                         }
@@ -236,12 +242,7 @@ public class EjbRuntimeEndpointInfo {
                                 endpoint);
 
                         // Get catalog info
-                        java.net.URL catalogURL = null;
-                        File catalogFile = new File(endpoint.getBundleDescriptor().getDeploymentDescriptorDir() +
-                                File.separator + "jax-ws-catalog.xml");
-                        if(catalogFile.exists()) {
-                            catalogURL = catalogFile.toURL();
-                        }
+                        java.net.URL catalogURL = clazz.getResource('/' + endpoint.getBundleDescriptor().getDeploymentDescriptorDir() + File.separator + "jax-ws-catalog.xml");
 
                         // Create Binding and set service side handlers on this binding
 
@@ -268,7 +269,7 @@ public class EjbRuntimeEndpointInfo {
                         } else {
                             binding = BindingID.parse(givenBinding).createBinding();
                         }
-                   
+
                         wsu.configureJAXWSServiceHandlers(endpoint,
                             endpoint.getProtocolBinding(), binding);
 
@@ -341,25 +342,25 @@ public class EjbRuntimeEndpointInfo {
                         wsc.setContextDelegate(wsCtxt.getContextDelegate());
 
                     }
-                } 
+                }
             }
         }
     }
 
    /**
-     * Force initialization of the endpoint runtime information  
-     * as well as the handlers injection 
+     * Force initialization of the endpoint runtime information
+     * as well as the handlers injection
      */
     public void initRuntimeInfo(ServletAdapterList list) throws Exception {
        AdapterInvocationInfo aInfo =null;
-        try { 
+        try {
             this.adapterList = list;
             aInfo = (AdapterInvocationInfo)prepareInvocation(true);
         } finally {
             releaseImplementor(aInfo.getInv())       ;
-        } 
-         
-    } 
+        }
+
+    }
 
 
     public InvocationManager getInvocationManager (){
@@ -378,10 +379,10 @@ public class EjbRuntimeEndpointInfo {
         container.endInvocation(inv);
 
     }
-    
+
     public EjbMessageDispatcher getMessageDispatcher() {
         if (messageDispatcher==null) {
-            messageDispatcher = new Ejb3MessageDispatcher();            
+            messageDispatcher = new Ejb3MessageDispatcher();
         }
         return messageDispatcher;
     }
@@ -394,9 +395,9 @@ public class EjbRuntimeEndpointInfo {
         if (s != null) {
                     return AddressingFeature.Responses.valueOf(AddressingFeature.Responses.class,s);
                 } else return AddressingFeature.Responses.ALL;
-               
+
     }
 
 
-   
+
 }
