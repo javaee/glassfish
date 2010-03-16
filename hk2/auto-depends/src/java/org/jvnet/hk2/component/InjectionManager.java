@@ -43,6 +43,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -54,6 +55,7 @@ import java.util.logging.Logger;
  */
 public class InjectionManager {
 
+
    /**
      * Initializes the component by performing injection.
      *
@@ -62,13 +64,26 @@ public class InjectionManager {
      *      if injection failed for some reason.
      */    
     public void inject(Object component, InjectionResolver... targets) {
+        inject(component, component.getClass(), targets);
+   }
+    /**
+      * Initializes the component by performing injection.
+      *
+      * @param component component instance to inject
+      * @param type component class
+      * @throws ComponentException
+      *      if injection failed for some reason.
+      */
+     public void inject(Object component, Class type, InjectionResolver... targets) {
+
         try {
+
             assert component!=null;
 
             // TODO: faster implementation needed.
 
-            Class currentClass = component.getClass();
-            while (!currentClass.equals(Object.class)) {
+            Class currentClass = type;
+            while (currentClass!=null && !currentClass.equals(Object.class)) {
                 // get the list of the instances variable
                 for (Field field : currentClass.getDeclaredFields()) {
 
@@ -116,6 +131,10 @@ public class InjectionManager {
                         if (inject == null)     continue;
 
                         if (method.getReturnType() != void.class) {
+                            if (Collection.class.isAssignableFrom(method.getReturnType())) {
+                                injectCollection(component, method, target.getValue(component, method, method.getReturnType()));
+                                continue;
+                            }
                             throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
                         }
 
@@ -159,7 +178,7 @@ public class InjectionManager {
             // reflection could trigger additional classloading and resolution, so it can cause linkage error.
             // report more information to assist diagnosis.
             // can't trust component.toString() as the object could be in an inconsistent state.
-            Class<?> cls = component.getClass();
+            Class<?> cls = type;
             LinkageError x = new LinkageError("Failed to inject " + cls +" from "+cls.getClassLoader());
             x.initCause(e);
             throw x;
@@ -167,6 +186,26 @@ public class InjectionManager {
 
 
     }
+
+    private void injectCollection(Object component, Method method, Object value) {
+        
+        if (value==null) {
+            return;
+        }
+        Collection c = Collection.class.cast(value);
+        Collection target = null;
+        try {
+            target = Collection.class.cast(method.invoke(component));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return;
+        }
+        target.addAll(c);
+    }
+    
     /**
      * Initializes the component by performing injection.
      *
