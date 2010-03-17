@@ -2090,7 +2090,10 @@ public class WebModule extends PwcWebModule implements Context {
         Wrapper wrapper = (Wrapper) findChild(
                 org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
         if (wrapper !=null) {
-            wrapper.addInitParameter("listings", Boolean.toString(directoryListing));
+            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
+            if (servlet instanceof DefaultServlet) {
+                ((DefaultServlet)servlet).setListings(directoryListing);
+            }
         }
     }
 
@@ -2098,11 +2101,14 @@ public class WebModule extends PwcWebModule implements Context {
      * Checks whether directory listings are enabled or disabled on this
      * <tt>Context</tt>.
      */
-    public boolean isDirectoryListing() {               
+    public boolean isDirectoryListing() {   
         Wrapper wrapper = (Wrapper) findChild(
                 org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
         if (wrapper !=null) {
-            return Boolean.parseBoolean(wrapper.findInitParameter("listings"));
+            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
+            if (servlet instanceof DefaultServlet) {
+                return ((DefaultServlet)servlet).isListings();
+            }
         }
         return false;
     }

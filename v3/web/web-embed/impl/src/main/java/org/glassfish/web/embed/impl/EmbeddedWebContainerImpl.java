@@ -256,6 +256,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         ContextImpl context = new ContextImpl();
         context.setDocBase(docRoot.getPath());
         context.setPath(contextRoot);
+        context.setDirectoryListing(listings);
         if (classLoader != null) {
             context.setParentClassLoader(classLoader);
         } else {
@@ -311,6 +312,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         ContextImpl context = new ContextImpl();
         context.setDocBase(docRoot.getPath());
         context.setPath(contextRoot);
+        context.setDirectoryListing(listings);
         if (classLoader != null) {
             context.setParentClassLoader(classLoader);
         } else {
@@ -598,9 +600,9 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers(){
-                        
+
         VirtualServer[] virtualServers = (VirtualServer[]) engine.findChildren();
-        
+            
         return Arrays.asList(virtualServers);
         
     }
@@ -619,7 +621,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             throws LifecycleException {
            
         engine.removeChild((Container)virtualServer);
-        
+   
     }  
     
     /**
