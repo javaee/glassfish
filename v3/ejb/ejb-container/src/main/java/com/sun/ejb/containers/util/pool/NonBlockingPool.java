@@ -75,7 +75,7 @@ public class NonBlockingPool
     private String	  poolName;
     private TimerTask	  poolTimerTask;
     protected boolean	  addedResizeTask = false;
-    protected boolean	  addedIdleBeanWork = false;
+    volatile protected boolean	  addedIdleBeanWork = false;
     protected boolean	  inResizing = false;
     private boolean	  maintainSteadySize = false;
 
@@ -641,10 +641,11 @@ public class NonBlockingPool
                 if (addedIdleBeanWork == true) {
                     return;
                 }
+                addedIdleBeanWork = true;
                 IdleBeanWork work = new IdleBeanWork();
                 EjbContainerUtilImpl.getInstance().addWork(work);
-                addedIdleBeanWork = true;
             } catch (Exception ex) {
+                addedIdleBeanWork = false;
                 _logger.log(Level.WARNING, 
                             "[Pool-"+poolName+"]: Cannot perform "
                             + " pool idle bean cleanup", ex);
