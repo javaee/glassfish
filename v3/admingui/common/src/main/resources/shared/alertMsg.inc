@@ -45,9 +45,16 @@
             getRequestValue(key="alertSummary" value="#{requestScope.alertSummary}");
             getRequestValue(key="alertDetail" value="#{requestScope.alertDetail}");
           }
-	  htmlEscape(value="#{alertType}" result="#{requestScope.alertType}");
-	  htmlEscape(value="#{alertSummary}" result="#{requestScope.alertSummary}");
-	  htmlEscape(value="#{alertDetail}" result="#{requestScope.alertDetail}");
+
+          if ("!#{escapedAlertDetail}"){
+              htmlEscape(value="#{alertSummary}" result="#{requestScope.alertSummary}");
+              htmlEscape(value="#{alertDetail}" result="#{requestScope.alertDetail}");
+          }
+          if ("#{escapedAlertDetail}"){
+              setAttribute(key="alertSummary" value="#{alertSummary}");
+              setAttribute(key="alertDetail" value="#{alertDetail}");
+          }
+
         />
 </event>
 
