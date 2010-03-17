@@ -49,4 +49,12 @@ public interface WorkContextHandler {
      * @return boolean indicating whether the workContextClass is supported or not
      */
     public boolean isContextSupported(boolean strict, String workContextClassName);
+
+
+    /**
+     * initialize the work-context-handler
+     * @param raName resource-adapter name
+     * @param loader class-loader of the resource-adapter
+     */
+    public void init(String raName, ClassLoader loader);
 }

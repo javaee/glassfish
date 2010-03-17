@@ -106,7 +106,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
      * @param poolName thread pool name
      * @return WorkManager work manager that can be used by resource-adapter
      */
-    public WorkManager createWorkManager(String poolName, String raName) {
+    public WorkManager createWorkManager(String poolName, String raName, ClassLoader rarCL) {
 
         String className = null;
         String methodName = "getInstance";
@@ -118,7 +118,7 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
 
             // Default work manager implementation is not a singleton.
             if (className.equals(DEFAULT)) {
-                return new CommonWorkManager(poolName, getConnectorRuntime(), raName);
+                return new CommonWorkManager(poolName, getConnectorRuntime(), raName, rarCL);
             }
 
             cls = Thread.currentThread().getContextClassLoader().loadClass(className);
@@ -185,10 +185,11 @@ public final class WorkManagerFactory implements com.sun.appserv.connectors.inte
      * @return WorkManager
      * @throws ConnectorRuntimeException when unable to get work manager
      */
-    public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException {
+    public WorkManager getWorkManagerProxy(String poolId, String moduleName, ClassLoader rarCL)
+            throws ConnectorRuntimeException {
         WorkManager wm = retrieveWorkManager(moduleName);
         if (wm == null) {
-            wm = createWorkManager(poolId, moduleName);
+            wm = createWorkManager(poolId, moduleName, rarCL);
             addWorkManager(moduleName, wm);
         }
         return new WorkManagerProxy(wm, moduleName);

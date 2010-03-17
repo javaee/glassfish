@@ -64,6 +64,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
     private XATerminator xa;
     private String moduleName;
     private String threadPoolId;
+    private ClassLoader rarCL;
 
     private static final Logger logger =
             LogDomains.getLogger(BootstrapContextImpl.class, LogDomains.RSR_LOGGER);
@@ -90,10 +91,11 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      * @throws ConnectorRuntimeException If there is a failure in
      *         retrieving WorkManager.
      */
-    public BootstrapContextImpl (String poolId, String moduleName)
+    public BootstrapContextImpl (String poolId, String moduleName, ClassLoader rarCL)
                                  throws ConnectorRuntimeException{
         this.threadPoolId = poolId;
         this.moduleName = moduleName;
+        this.rarCL = rarCL;
         initializeWorkManager();
     }
 
@@ -115,6 +117,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
      */
     public boolean isContextSupported(Class<? extends WorkContext> aClass) {
         WorkContextHandler wch = ConnectorRuntime.getRuntime().getWorkContextHandler();
+        wch.init(moduleName, rarCL);
         return wch.isContextSupported(true, aClass.getName());
     }
 
@@ -151,7 +154,7 @@ public final class BootstrapContextImpl implements BootstrapContext, Serializabl
     private void initializeWorkManager() {
         if (wm == null) {
             try {
-                wm = ConnectorRuntime.getRuntime().getWorkManagerProxy(threadPoolId, moduleName);
+                wm = ConnectorRuntime.getRuntime().getWorkManagerProxy(threadPoolId, moduleName, rarCL);
             } catch(Exception e) {
            	    logger.log(Level.SEVERE, "workmanager.instantiation_error", e);
             }

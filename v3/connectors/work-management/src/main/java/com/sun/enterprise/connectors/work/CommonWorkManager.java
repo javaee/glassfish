@@ -83,6 +83,7 @@ public final class CommonWorkManager implements WorkManager {
 
     private ConnectorRuntime runtime;
 	private String raName ;
+    private ClassLoader rarClassLoader;
 
     /**
      * Private constructor.
@@ -90,12 +91,13 @@ public final class CommonWorkManager implements WorkManager {
      * @param threadPoolId Id of the thread pool.
      * @throws ConnectorRuntimeException if thread pool is not accessible
      */
-    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName)
+    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName, ClassLoader cl)
             throws ConnectorRuntimeException {
 
         if (runtime.isServer()) {
             this.runtime = runtime;
             this.raName = raName;
+            this.rarClassLoader = cl;
             tpm = S1ASThreadPoolManager.getThreadPoolManager();
 
             if (threadPoolId == null) {
@@ -285,7 +287,7 @@ public final class CommonWorkManager implements WorkManager {
      * @return work-context-handler
      */
     private WorkContextHandler createWorkContextHandler() {
-        WorkContextHandler contextHandler = new WorkContextHandler(runtime);
+        WorkContextHandler contextHandler = new WorkContextHandler(runtime, raName, rarClassLoader);
         return contextHandler;
     }
 

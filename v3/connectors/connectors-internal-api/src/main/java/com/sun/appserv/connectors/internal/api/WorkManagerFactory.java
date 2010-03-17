@@ -49,7 +49,7 @@ public interface WorkManagerFactory {
      * @return work-manager proxy
      * @throws ConnectorRuntimeException when unable to provide a proxy work manager
      */
-    WorkManager getWorkManagerProxy(String threadPoolId, String moduleName) throws ConnectorRuntimeException;
+    WorkManager getWorkManagerProxy(String threadPoolId, String moduleName, ClassLoader rarCL) throws ConnectorRuntimeException;
 
     /**
      * remove the work manager of the module (rar) from work-manager registry
@@ -64,5 +64,5 @@ public interface WorkManagerFactory {
      * @param raName resource-adapter-name
      * @return WorkManager
      */
-    WorkManager createWorkManager(String threadPoolId, String raName);
+    WorkManager createWorkManager(String threadPoolId, String raName, ClassLoader rarCL);
 }

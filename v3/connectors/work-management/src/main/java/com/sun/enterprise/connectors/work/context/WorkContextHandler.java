@@ -75,7 +75,9 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     private static final Logger logger =
             LogDomains.getLogger(WorkCoordinator.class, LogDomains.RESOURCE_BUNDLE);
     @Inject
-    private ConnectorRuntime runtime = null;
+    private ConnectorRuntime runtime ;
+    private ClassLoader rarCL;
+    private String raName;
 
     static {
         containerSupportedContexts.add(TransactionContext.class);
@@ -90,9 +92,18 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     public WorkContextHandler(){
     }
 
-    //TODO V3 avoid this constructor ?
-    public WorkContextHandler(ConnectorRuntime runtime) {
+    public WorkContextHandler(ConnectorRuntime runtime, String raName, ClassLoader cl) {
         this.runtime = runtime;
+        this.raName = raName;
+        this.rarCL = cl;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void init(String raName, ClassLoader cl){
+        this.raName = raName;
+        this.rarCL = cl;
     }
 
     //TODO V3 setting scope as per-lookup and this variable seems to cache over multiple invocations ?
@@ -166,12 +177,16 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
                 debug("Container cannot load the context class [isAssignable] : " + contextClassName + " ");
             }
             //TODO JSR-322-WORK-CONTEXT : can we use workContext.getName() ??
-            for (Class workContextClass : containerSupportedContexts) {
-                if (workContextClass.isAssignableFrom(context)) {
-                    result = true;
-                    debug("Container can handle the context [isAssignable] : " + contextClassName);
-                    break;
+            if(context != null){
+                for (Class workContextClass : containerSupportedContexts) {
+                    if (workContextClass.isAssignableFrom(context)) {
+                        result = true;
+                        debug("Container can handle the context [isAssignable] : " + contextClassName);
+                        break;
+                    }
                 }
+            }else{
+                logger.log(Level.WARNING, "Unable to load context class [ "+contextClassName+" ]");
             }
         } else {
             result = true;
@@ -180,7 +195,7 @@ public class WorkContextHandler implements com.sun.appserv.connectors.internal.a
     }
 
     private Class loadClass(String contextClassName) throws ClassNotFoundException {
-        return runtime.getConnectorClassLoader().loadClass(contextClassName);
+        return rarCL.loadClass(contextClassName);
     }
 
     /**

@@ -36,7 +36,8 @@
 
 package com.sun.enterprise.connectors;
 
-import com.sun.enterprise.connectors.util.DriverLoader;
+import com.sun.enterprise.connectors.util.*;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -61,7 +62,6 @@ import com.sun.enterprise.connectors.module.ConnectorApplication;
 import com.sun.enterprise.connectors.naming.ConnectorNamingEventNotifier;
 import com.sun.enterprise.connectors.service.*;
 import com.sun.enterprise.connectors.service.ConnectorService;
-import com.sun.enterprise.connectors.util.RAWriterAdapter;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -93,8 +93,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
-import com.sun.enterprise.connectors.util.ConnectorTimerProxy;
-import com.sun.enterprise.connectors.util.ConnectorJavaBeanValidator;
 
 
 /**
@@ -930,11 +928,12 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      *
      * @param poolId     ThreadPoolId
      * @param moduleName resource-adapter name
+     * @param rarCL classloader of the resource-adapter
      * @return WorkManager
      * @throws ConnectorRuntimeException when unable to get work manager
      */
-    public WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException {
-        return habitat.getComponent(WorkManagerFactory.class).getWorkManagerProxy(poolId, moduleName);
+    public WorkManager getWorkManagerProxy(String poolId, String moduleName, ClassLoader rarCL) throws ConnectorRuntimeException {
+        return habitat.getComponent(WorkManagerFactory.class).getWorkManagerProxy(poolId, moduleName, rarCL);
     }
 
     /**
