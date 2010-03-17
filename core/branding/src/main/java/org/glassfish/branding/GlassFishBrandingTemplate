@@ -138,7 +138,7 @@ public class GlassFishBranding implements Branding, PostConstruct {
         if (ok(version_prefix))
             sb.append(" ").append(version_prefix);
         if (full_version != null)
-            sb.append(full_version);
+            sb.append(" ").append(full_version);
         if (ok(version_suffix))
             sb.append(" ").append(version_suffix);
         return sb.toString();
