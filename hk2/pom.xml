@@ -195,6 +195,7 @@
     </build>
 
     <modules>
+    	<module>class-model</module>
         <module>auto-depends</module>
         <module>apt</module>
         <module>core</module>
