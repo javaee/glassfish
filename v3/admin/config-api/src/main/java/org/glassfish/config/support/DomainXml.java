@@ -150,7 +150,7 @@ public abstract class DomainXml implements Populator {
      */
     protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
         try {
-            DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName);
+            DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName, logger, xif);
             parser.parse(xsr, getDomDocument());
             xsr.close();
             if(!xsr.foundConfig)
@@ -166,7 +166,7 @@ public abstract class DomainXml implements Populator {
     /**
      * {@link XMLStreamReader} that skips irrelvant &lt;config> elements that we shouldn't see.
      */
-    private class DomainXmlReader extends XMLStreamReaderFilter {
+    private static class DomainXmlReader extends XMLStreamReaderFilter {
         /**
          * We need to figure out the configuration name from the server name.
          * Once we find that out, it'll be set here.
@@ -174,7 +174,8 @@ public abstract class DomainXml implements Populator {
         private String configName;
         private final URL domainXml;
         private final String serverName;
-
+        private final Logger logger;
+        private final XMLInputFactory xif;
         /**
          * If we find a matching config, set to true. Used for error detection in case
          * we don't see any config for us.
@@ -187,8 +188,11 @@ public abstract class DomainXml implements Populator {
          */
         private InputStream stream;
 
-        public DomainXmlReader(URL domainXml, String serverName) throws XMLStreamException {
+        private DomainXmlReader(URL domainXml, String serverName, Logger theLogger,
+                XMLInputFactory theXif) throws XMLStreamException {
             try {
+                xif = theXif;
+                logger = theLogger;
                 stream = domainXml.openStream();
                 setParent(xif.createXMLStreamReader(domainXml.toExternalForm(), stream));
                 this.domainXml = domainXml;
@@ -198,6 +202,7 @@ public abstract class DomainXml implements Populator {
             }
         }
 
+        @Override
         public void close() throws XMLStreamException {
             super.close();
             try {
@@ -207,6 +212,7 @@ public abstract class DomainXml implements Populator {
             }
         }
 
+        @Override
         boolean filterOut() throws XMLStreamException {
             checkConfigRef(getParent());
 
@@ -234,8 +240,8 @@ public abstract class DomainXml implements Populator {
         private void parse2ndTime() throws XMLStreamException {
             logger.info("Forced to parse "+ domainXml +" twice because we didn't see <server> before <config>");
             try {
-                InputStream stream = domainXml.openStream();
-                XMLStreamReader xsr = xif.createXMLStreamReader(domainXml.toExternalForm(),stream);
+                InputStream stream2 = domainXml.openStream();
+                XMLStreamReader xsr = xif.createXMLStreamReader(domainXml.toExternalForm(),stream2);
                 while(configName==null) {
                     switch(xsr.next()) {
                     case XMLStreamConstants.START_ELEMENT:
@@ -246,7 +252,7 @@ public abstract class DomainXml implements Populator {
                     }
                 }
                 xsr.close();
-                stream.close();
+                stream2.close();
                 if(configName==null)
                     throw new RuntimeException(domainXml +" contains no <server> element that matches "+ serverName);
             } catch (IOException e) {
