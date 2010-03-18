@@ -122,15 +122,6 @@ public class DefaultModuleDefinition implements ModuleDefinition {
         }
         publicPkgs = tmpList.toArray(new String[tmpList.size()]);
         
-        // class imported
-        String imported = attr.getValue(ManifestConstants.BUNDLE_IMPORT_NAME);
-        if (imported!=null) {
-            for( String token : new Tokenizer(imported,",")) {
-                // no versioning so far...
-                dependencies.add(new ModuleDependency(token,""));
-            }
-        }
-
         importPolicy = attr.getValue(ManifestConstants.IMPORT_POLICY);
         lifecyclePolicy = attr.getValue(ManifestConstants.LIFECYLE_POLICY);
         

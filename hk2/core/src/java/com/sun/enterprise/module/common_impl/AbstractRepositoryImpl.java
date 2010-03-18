@@ -121,7 +121,7 @@ public abstract class AbstractRepositoryImpl implements Repository {
     protected ModuleDefinition loadJar(File jar) throws IOException {
         Jar jarFile = Jar.create(jar);
         Manifest manifest = jarFile.getManifest();
-        if (manifest==null || manifest.getMainAttributes().getValue(ManifestConstants.BUNDLE_NAME)==null) {
+        if (manifest==null) {
             // we cannot find a manifest file in the bundle, so we look
             // if there is a manifest file residing outside of the jar
             // file with the same jar file name with a .mf extension,

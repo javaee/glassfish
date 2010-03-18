@@ -100,7 +100,7 @@ public class Packager {
         else
             entries = new HashMap<String,String>();
 
-        entries.put(ManifestConstants.BUNDLE_NAME, pom.getGroupId()+':'+pom.getArtifactId() );
+        entries.put(ManifestConstants.BUNDLE_NAME, pom.getGroupId()+'.'+pom.getArtifactId() );
 
         // check META-INF/services/xxx.ImportPolicy to fill in Import-Policy
         configureImportPolicy(classesDirectory, entries, ImportPolicy.class, ManifestConstants.IMPORT_POLICY);
@@ -144,9 +144,6 @@ public class Packager {
                 // even optional modules need to be listed here
                 dependencyModules.add(a.getGroupId() + '.' + a.getArtifactId() + ':' + a.getVersion());
             }
-        }
-        if(!dependencyModuleNames.isEmpty()) {
-            entries.put(ManifestConstants.BUNDLE_IMPORT_NAME,dependencyModuleNames.toString());
         }
 
         // find jar files to be listed in Class-Path. This needs to include transitive

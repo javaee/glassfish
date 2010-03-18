@@ -19,7 +19,7 @@
           <artifactId>hk2-maven-plugin</artifactId>
         <configuration>
           <!-- specify myself as the main module -->
-          <mainModule>${groupId}:${artifactId}</mainModule>
+          <mainModule>${groupId}.${artifactId}</mainModule>
         </configuration>
       </plugin>
     </plugins>
