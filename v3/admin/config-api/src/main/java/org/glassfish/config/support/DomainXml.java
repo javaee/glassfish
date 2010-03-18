@@ -99,7 +99,7 @@ public abstract class DomainXml implements Populator {
                 new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
 
         try {
-            parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
+             parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
         } catch (IOException e) {
             // TODO: better exception handling scheme
             throw new RuntimeException("Failed to parse domain.xml",e);
@@ -151,14 +151,19 @@ public abstract class DomainXml implements Populator {
      */
     protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
         try {
-            DomainXmlReader xsr = new DomainXmlReader(domainXml, serverName, logger, xif);
-            parser.parse(xsr, getDomDocument());
+            // wbn: March 17, 2010 -- we use this constructor which adds ALL config
+            // elements to the habitat and checks that every server element has its
+            // config element available
+            DomainXmlReader xsr = new DomainXmlReader(domainXml, xif, logger);
+
+             parser.parse(xsr, getDomDocument());
             xsr.close();
-            if(!xsr.foundConfig())
-                throw new RuntimeException("No <config> seen for name="+xsr.getConfigName());
-        } catch (XMLStreamException e) {
-            // TODO: better exception handling scheme
-            throw new RuntimeException("Failed to parse "+domainXml,e);
+            String errorMessage = xsr.configWasFound();
+
+            if(errorMessage != null)
+                throw new RuntimeException(errorMessage);
+        } catch (Exception e) {
+            throw new RuntimeException("Fatal Error.  Unable to parse " + domainXml, e);
         }
     }
 
