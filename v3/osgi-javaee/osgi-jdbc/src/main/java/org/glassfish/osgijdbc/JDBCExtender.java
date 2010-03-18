@@ -59,11 +59,6 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
     private Habitat habitat;
     private GlassFishResourceProviderService rps;
 
-    public static final String JDBC_DRIVER_SCHEME = "jdbc";
-    public static final String OSGI_RFC_122 = "OSGI_RFC_122";
-    public static final String IMPL_VERSION = "Implementation-Version";
-    public static final String IMPL_VENDOR = "Implementation-Vendor";
-    public static final String IMPL_TITLE = "Implementation-Title";
 
     private static final Logger logger = Logger.getLogger(
             JDBCExtender.class.getPackage().getName());
@@ -103,7 +98,7 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
         ClassLoader apiClassLoader = clh.getAPIClassLoader();
 
         Properties p = new Properties();
-        p.put(URLConstants.URL_HANDLER_PROTOCOL, new String[]{JDBC_DRIVER_SCHEME});
+        p.put(URLConstants.URL_HANDLER_PROTOCOL, new String[]{Constants.JDBC_DRIVER_SCHEME});
         urlHandlerService = bundleContext.registerService(URLStreamHandlerService.class.getName(),
                 new JDBCDriverURLStreamHandlerService(apiClassLoader), p);
     }
@@ -127,19 +122,19 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
 
                     Properties serviceProperties = new Properties();
                     serviceProperties.put(DataSourceFactory.JDBC_DRIVER_CLASS,
-                            header.get(JDBCDriverLoader.DRIVER.replace(".", "_")));
+                            header.get(Constants.DRIVER.replace(".", "_")));
 
-                    String implVersion = (String) header.get(IMPL_VERSION);
+                    String implVersion = (String) header.get(Constants.IMPL_VERSION);
                     if (implVersion != null) {
                         serviceProperties.put(DataSourceFactory.JDBC_DRIVER_VERSION, implVersion);
                     }
 
-                    String implTitle = (String) header.get(IMPL_TITLE);
+                    String implTitle = (String) header.get(Constants.IMPL_TITLE);
                     if (implTitle != null) {
                         serviceProperties.put(DataSourceFactory.JDBC_DRIVER_NAME, implTitle);
                     }
                     debug(" registering service for driver [" +
-                            header.get(JDBCDriverLoader.DRIVER.replace(".", "_")) + "]");
+                            header.get(Constants.DRIVER.replace(".", "_")) + "]");
                     event.getBundle().getBundleContext().registerService(DataSourceFactory.class.getName(),
                             dsfi, serviceProperties);
                 }
@@ -153,7 +148,7 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
     }
 
     private boolean isJdbcDriverBundle(Bundle b) {
-        String osgiRFC = (String) b.getHeaders().get(OSGI_RFC_122);
+        String osgiRFC = (String) b.getHeaders().get(Constants.OSGI_RFC_122);
         if (osgiRFC != null && Boolean.valueOf(osgiRFC)) {
             return true;
         } else {

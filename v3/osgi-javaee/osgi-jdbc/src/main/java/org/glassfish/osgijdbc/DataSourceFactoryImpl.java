@@ -68,7 +68,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     public DataSource createDataSource(Properties props) throws SQLException {
-        String dataSourceClass = (String) header.get(JDBCDriverLoader.DS.replace('.', '_'));
+        String dataSourceClass = (String) header.get(Constants.DS.replace('.', '_'));
         try {
             Class dsClass = driverBundleContext.getBundle().loadClass(dataSourceClass);
             DataSource ds = (DataSource) dsClass.newInstance();
@@ -80,7 +80,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     public ConnectionPoolDataSource createConnectionPoolDataSource(Properties props) throws SQLException {
-        String cpdsClassName = (String) header.get(JDBCDriverLoader.CPDS.replace('.', '_'));
+        String cpdsClassName = (String) header.get(Constants.CPDS.replace('.', '_'));
         try {
             Class cpdsClass = driverBundleContext.getBundle().loadClass(cpdsClassName);
             ConnectionPoolDataSource cpds = (ConnectionPoolDataSource) cpdsClass.newInstance();
@@ -92,7 +92,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     public XADataSource createXADataSource(Properties props) throws SQLException {
-        String xadsClassName = (String) header.get(JDBCDriverLoader.XADS.replace('.', '_'));
+        String xadsClassName = (String) header.get(Constants.XADS.replace('.', '_'));
         try {
             Class xadsClass = driverBundleContext.getBundle().loadClass(xadsClassName);
             XADataSource xads = (XADataSource) xadsClass.newInstance();
@@ -104,7 +104,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
     }
 
     public Driver createDriver(Properties props) throws SQLException {
-        String driverClassName = (String) header.get(JDBCDriverLoader.DRIVER.replace('.', '_'));
+        String driverClassName = (String) header.get(Constants.DRIVER.replace('.', '_'));
         try {
             Class driverClass = driverBundleContext.getBundle().loadClass(driverClassName);
             Driver driver = (Driver) driverClass.newInstance();

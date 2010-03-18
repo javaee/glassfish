@@ -58,7 +58,7 @@ public class JDBCDriverURLStreamHandlerService extends AbstractURLStreamHandlerS
     }
 
     public URLConnection openConnection(URL u) throws IOException {
-        assert (JDBCExtender.JDBC_DRIVER_SCHEME.equals(u.getProtocol()));
+        assert (Constants.JDBC_DRIVER_SCHEME.equals(u.getProtocol()));
         try {
             debug("jdbc driver openConnection()");
             //final URL[] urls = getURLs(u);

@@ -71,11 +71,6 @@ public class JDBCDriverLoader {
     private static final String DRIVER_PROPERTIES = "driver.properties";
     private static final String VENDOR_PROPERTIES = "dbvendor.properties";
 
-    public static final String DS = "javax.sql.DataSource";
-    public static final String CPDS = "javax.sql.ConnectionPoolDataSource";
-    public static final String XADS = "javax.sql.XADataSource";
-    public static final String DRIVER = "java.sql.Driver";
-    private static final String DBVENDOR = "dbvendor";
 
     public static final Map<String, Map<String, String>> dbVendorMappings = new HashMap<String, Map<String, String>>();
 
@@ -90,11 +85,11 @@ public class JDBCDriverLoader {
     }
 
     private static void loadMappings(){
-        dbVendorMappings.put(DS, ((Map)loadProperties(DS_PROPERTIES)));
-        dbVendorMappings.put(CPDS, ((Map)loadProperties(CPDS_PROPERTIES)));
-        dbVendorMappings.put(XADS, ((Map)loadProperties(XADS_PROPERTIES)));
-        dbVendorMappings.put(DRIVER, ((Map)loadProperties(DRIVER_PROPERTIES)));
-        dbVendorMappings.put(DBVENDOR, ((Map)loadProperties(VENDOR_PROPERTIES)));
+        dbVendorMappings.put(Constants.DS, ((Map)loadProperties(DS_PROPERTIES)));
+        dbVendorMappings.put(Constants.CPDS, ((Map)loadProperties(CPDS_PROPERTIES)));
+        dbVendorMappings.put(Constants.XADS, ((Map)loadProperties(XADS_PROPERTIES)));
+        dbVendorMappings.put(Constants.DRIVER, ((Map)loadProperties(DRIVER_PROPERTIES)));
+        dbVendorMappings.put(Constants.DBVENDOR, ((Map)loadProperties(VENDOR_PROPERTIES)));
     }
 
     private static Properties loadProperties(String type){
@@ -125,7 +120,7 @@ public class JDBCDriverLoader {
      * @return database vendor names set.
      */
     private Set<String> getDatabaseVendorNames() {
-        Map vendors = dbVendorMappings.get(DBVENDOR);
+        Map vendors = dbVendorMappings.get(Constants.DBVENDOR);
         return vendors.keySet();
     }
 
@@ -173,42 +168,42 @@ public class JDBCDriverLoader {
                         InputStream metaInf = jarFile.getInputStream(zipEntry);
                         implClass = processMetaInfServicesDriverFile(metaInf);
                         if (implClass != null) {
-                            if (isLoaded(implClass, DRIVER, cl)) {
+                            if (isLoaded(implClass, Constants.DRIVER, cl)) {
                                 String vendor = getVendorFromManifest(f);
 
                                 Set<String> dbVendorNames = getDatabaseVendorNames();
                                 if (vendor != null && dbVendorNames.contains(vendor)) {
 
-                                    String dsClassName = getImplClassNameFromMapping(vendor, DS);
-                                    String cpdsClassName = getImplClassNameFromMapping(vendor, CPDS);
-                                    String xadsClassName = getImplClassNameFromMapping(vendor, XADS);
+                                    String dsClassName = getImplClassNameFromMapping(vendor, Constants.DS);
+                                    String cpdsClassName = getImplClassNameFromMapping(vendor, Constants.CPDS);
+                                    String xadsClassName = getImplClassNameFromMapping(vendor, Constants.XADS);
                                     //String driverClassName = getImplClassNameFromMapping(vendor,DRIVER);
                                     String driverClassName = implClass;
 
-                                    properties.put(DS, dsClassName);
-                                    properties.put(CPDS, cpdsClassName);
-                                    properties.put(XADS, xadsClassName);
-                                    properties.put(DRIVER, driverClassName);
+                                    properties.put(Constants.DS, dsClassName);
+                                    properties.put(Constants.CPDS, cpdsClassName);
+                                    properties.put(Constants.XADS, xadsClassName);
+                                    properties.put(Constants.DRIVER, driverClassName);
 
                                     return properties;
 
                                 } else if (vendor != null) {
 
-                                    Set<String> dsClasses = getImplClassesByIteration(f, DS, vendor, cl);
+                                    Set<String> dsClasses = getImplClassesByIteration(f, Constants.DS, vendor, cl);
                                     if (dsClasses.size() == 1) {
-                                        properties.put(DS, dsClasses.toArray()[0]);
+                                        properties.put(Constants.DS, dsClasses.toArray()[0]);
                                     }
 
-                                    Set<String> cpdsClasses = getImplClassesByIteration(f, CPDS, vendor, cl);
+                                    Set<String> cpdsClasses = getImplClassesByIteration(f, Constants.CPDS, vendor, cl);
                                     if (cpdsClasses.size() == 1) {
-                                        properties.put(CPDS, cpdsClasses.toArray()[0]);
+                                        properties.put(Constants.CPDS, cpdsClasses.toArray()[0]);
                                     }
 
-                                    Set<String> xadsClasses = getImplClassesByIteration(f, XADS, vendor, cl);
+                                    Set<String> xadsClasses = getImplClassesByIteration(f, Constants.XADS, vendor, cl);
                                     if (xadsClasses.size() == 1) {
-                                        properties.put(XADS, xadsClasses.toArray()[0]);
+                                        properties.put(Constants.XADS, xadsClasses.toArray()[0]);
                                     }
-                                    properties.put(DRIVER, implClass);
+                                    properties.put(Constants.DRIVER, implClass);
 
                                     return properties;
                                 }
@@ -225,42 +220,42 @@ public class JDBCDriverLoader {
                         if (entry.toUpperCase().contains("DATASOURCE")) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
-                                if (isLoaded(implClass, XADS, cl)) {
-                                    String dbVendor = getDBVendor(implClass, XADS);
+                                if (isLoaded(implClass, Constants.XADS, cl)) {
+                                    String dbVendor = getDBVendor(implClass, Constants.XADS);
                                     if (dbVendor != null) {
                                         detectImplClasses(properties, dbVendor);
                                         return properties;
                                     } else {
-                                        properties.put(XADS, implClass);
+                                        properties.put(Constants.XADS, implClass);
                                     }
-                                } else if (isLoaded(implClass, CPDS, cl)) {
-                                    String dbVendor = getDBVendor(implClass, CPDS);
+                                } else if (isLoaded(implClass, Constants.CPDS, cl)) {
+                                    String dbVendor = getDBVendor(implClass, Constants.CPDS);
                                     if (dbVendor != null) {
                                         detectImplClasses(properties, dbVendor);
                                         return properties;
                                     } else {
-                                        properties.put(CPDS, implClass);
+                                        properties.put(Constants.CPDS, implClass);
                                     }
-                                } else if (isLoaded(implClass, DS, cl)) {
-                                    String dbVendor = getDBVendor(implClass, DS);
+                                } else if (isLoaded(implClass, Constants.DS, cl)) {
+                                    String dbVendor = getDBVendor(implClass, Constants.DS);
                                     if (dbVendor != null) {
                                         detectImplClasses(properties, dbVendor);
                                         return properties;
                                     } else {
-                                        properties.put(DS, implClass);
+                                        properties.put(Constants.DS, implClass);
                                     }
                                 }
                             }
                         } else if (entry.toUpperCase().contains("DRIVER")) {
                             implClass = getClassName(entry);
                             if (implClass != null) {
-                                if (isLoaded(implClass, DRIVER, cl)) {
-                                    String dbVendor = getDBVendor(implClass, DRIVER);
+                                if (isLoaded(implClass, Constants.DRIVER, cl)) {
+                                    String dbVendor = getDBVendor(implClass, Constants.DRIVER);
                                     if (dbVendor != null) {
                                         detectImplClasses(properties, dbVendor);
                                         return properties;
                                     } else {
-                                        properties.put(DRIVER, implClass);
+                                        properties.put(Constants.DRIVER, implClass);
                                     }
                                 }
                             }
@@ -280,7 +275,7 @@ public class JDBCDriverLoader {
                 }
             }
         }
-        if (properties.get(DRIVER) != null) {
+        if (properties.get(Constants.DRIVER) != null) {
             return properties;
         } else {
             throw new RuntimeException("Unable to introspect jar [ "+f.getName()+" ] for Driver Class, " +
@@ -289,15 +284,15 @@ public class JDBCDriverLoader {
     }
 
     private void detectImplClasses(Properties properties, String dbVendor) {
-        String xads = getImplClassNameFromMapping(dbVendor, XADS);
-        String cpds = getImplClassNameFromMapping(dbVendor, CPDS);
-        String ds = getImplClassNameFromMapping(dbVendor, DS);
-        String driver = getImplClassNameFromMapping(dbVendor, DRIVER);
+        String xads = getImplClassNameFromMapping(dbVendor, Constants.XADS);
+        String cpds = getImplClassNameFromMapping(dbVendor, Constants.CPDS);
+        String ds = getImplClassNameFromMapping(dbVendor, Constants.DS);
+        String driver = getImplClassNameFromMapping(dbVendor, Constants.DRIVER);
 
-        properties.put(XADS, xads);
-        properties.put(CPDS, cpds);
-        properties.put(DS, ds);
-        properties.put(DRIVER, driver);
+        properties.put(Constants.XADS, xads);
+        properties.put(Constants.CPDS, cpds);
+        properties.put(Constants.DS, ds);
+        properties.put(Constants.DRIVER, driver);
     }
 
 
@@ -440,19 +435,19 @@ public class JDBCDriverLoader {
     private boolean isResType(Class cls, String resType) {
         boolean isResType = false;
         if (cls != null) {
-            if (DS.equals(resType)) {
+            if (Constants.DS.equals(resType)) {
                 if (javax.sql.DataSource.class.isAssignableFrom(cls)) {
                     isResType = isNotAbstract(cls);
                 }
-            } else if (CPDS.equals(resType)) {
+            } else if (Constants.CPDS.equals(resType)) {
                 if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(cls)) {
                     isResType = isNotAbstract(cls);
                 }
-            } else if (XADS.equals(resType)) {
+            } else if (Constants.XADS.equals(resType)) {
                 if (javax.sql.XADataSource.class.isAssignableFrom(cls)) {
                     isResType = isNotAbstract(cls);
                 }
-            } else if (DRIVER.equals(resType)) {
+            } else if (Constants.DRIVER.equals(resType)) {
                 if (java.sql.Driver.class.isAssignableFrom(cls)) {
                     isResType = isNotAbstract(cls);
                 }

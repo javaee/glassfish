@@ -92,14 +92,14 @@ public class JDBCJarManifestProcessor {
             }
 
             attrs.putValue((DataSourceFactory.JDBC_DRIVER_CLASS.replace('.', '_')),
-                    (String) properties.get(JDBCDriverLoader.DRIVER));
+                    (String) properties.get(Constants.DRIVER));
 
             attrs.putValue(OSGI_RFC_122, "TRUE");
 
             process(queryParams, attrs, BUNDLE_MANIFESTVERSION,
                     DEFAULT_MAN_VERSION);
 
-            String defaultSymName = properties.getProperty(JDBCDriverLoader.DRIVER);
+            String defaultSymName = properties.getProperty(Constants.DRIVER);
             process(queryParams, attrs, BUNDLE_SYMBOLICNAME,
                     defaultSymName);
 
