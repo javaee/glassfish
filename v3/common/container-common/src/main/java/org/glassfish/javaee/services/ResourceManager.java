@@ -144,7 +144,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
             }
         }
         /* TODO V3 
-            will there be a chance of double listener registrationf or a resource ?
+            will there be a chance of double listener registration for a resource ?
             eg: allresources added during startup, resources of a particular
             connector during connector startup / redeploy ?
         */

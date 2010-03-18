@@ -70,7 +70,7 @@ public class XAResourceImpl implements XAResource {
      *                 protocol to commit the work done on behalf of xid.
      */
     public void commit(Xid xid, boolean onePhase) throws XAException {
-        //the mc.transactionCompleted call has come here becasue
+        //the mc.transactionCompleted call has come here because
         //the transaction *actually* completes after the flow
         //reaches here. the end() method might not really signal
         //completion of transaction in case the transaction is
