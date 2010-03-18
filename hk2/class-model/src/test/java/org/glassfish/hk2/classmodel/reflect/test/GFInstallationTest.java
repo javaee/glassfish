@@ -40,6 +40,7 @@ import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.impl.AnnotationModelImpl;
 import org.glassfish.hk2.classmodel.reflect.util.*;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -57,6 +58,7 @@ import java.util.logging.Level;
  * Time: 9:32:58 PM
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class GFInstallationTest {
 
     @Test

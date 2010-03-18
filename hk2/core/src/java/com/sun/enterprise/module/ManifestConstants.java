@@ -62,9 +62,9 @@ public class ManifestConstants {
      * This uniquely identifies the module within modules,
      * but this shouldn't include the version number.
      * <p>
-     * Maven's <tt>hk2-module</tt> packaging type uses GROUPID:ARTIFACTID for this.
+     * <tt>hk2-module</tt> packaging type uses GROUPID.ARTIFACTID for this.
      */
-    public static final String BUNDLE_NAME = "HK2-Bundle-Name";
+    public static final String BUNDLE_NAME = "Bundle-SymbolicName";
 
     /**
      * Bundle Version

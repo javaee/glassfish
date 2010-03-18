@@ -12,6 +12,8 @@
     <name>Inversion of Control / Autodependency mechanism</name>
     <description>${project.name}</description>
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>               
         <plugins>
             <plugin>
                 <groupId>${project.groupId}</groupId>

@@ -35,7 +35,7 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <skipId>${groupId}:${artifactId}</skipId>
+                            <skipId>${groupId}.${artifactId}</skipId>
                         </configuration>
                     </execution>
                 </executions>
