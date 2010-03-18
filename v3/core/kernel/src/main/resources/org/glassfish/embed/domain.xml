@@ -25,10 +25,9 @@
   </servers>
  <configs>
    <config name="server-config">
-     <http-service> 
+     <http-service>
         <access-log rotation-interval-in-minutes="15" rotation-suffix="yyyy-MM-dd" />
         <virtual-server id="server"></virtual-server>
-        <property value="false" name="accessLoggingEnabled" />
       </http-service>
       <iiop-service>
         <orb use-thread-pool-ids="thread-pool-1" />

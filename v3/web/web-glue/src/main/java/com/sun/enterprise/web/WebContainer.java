@@ -1027,9 +1027,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 } else if ("proxyHandler".equals(propName)) {
                     connector.setProxyHandler(propValue);
                 } else {
-                    _logger.log(Level.WARNING,
-                        "pewebcontainer.invalid_http_service_property",
-                        httpServiceProp.getName());
+                    String msg = rb.getString("pewebcontainer.invalid_http_service_property");
+                    _logger.log(Level.WARNING, 
+                            MessageFormat.format(msg, httpServiceProp.getName()));
                 }
             }
         }
