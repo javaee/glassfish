@@ -51,5 +51,5 @@ import org.glassfish.api.admin.AdminCommandContext;
 @Contract
 public interface ConfigResolver {
 
-    ConfigBeanProxy resolve(AdminCommandContext context); 
+    ConfigBeanProxy resolve(AdminCommandContext context, String elementName, Class<? extends ConfigBeanProxy> type); 
 }

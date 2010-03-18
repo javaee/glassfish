@@ -38,6 +38,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.Param;
 import org.glassfish.config.support.Create;
+import org.glassfish.config.support.DomainResolver;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
@@ -76,8 +77,12 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
-@Create(value="create-instance", parentType=Servers.class)
+@Create(value="create-instance", parentType=Servers.class, resolver= DomainResolver.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
+
+    @Param(name="name", primary = true)
+    public void setName(String value) throws PropertyVetoException;
+
 
     /**
      * Gets the value of the configRef property.
@@ -90,7 +95,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    @Param(name = "config")
     String getConfigRef();
 
     /**
@@ -99,6 +103,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "config")
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -110,7 +115,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    @Param(name = "nodeagent")
     String getNodeAgentRef();
 
     /**
@@ -119,6 +123,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name = "nodeagent")
     void setNodeAgentRef(String value) throws PropertyVetoException;
 
     /**

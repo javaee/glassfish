@@ -70,9 +70,9 @@ public class ConfigParamResolver implements ConfigResolver {
 
     @Param(name="cluster",optional=true)
     String cluster=null;
-    
-    public ConfigBeanProxy resolve(AdminCommandContext context) {
 
+    @Override
+    public ConfigBeanProxy resolve(AdminCommandContext context, String elementName, Class<? extends ConfigBeanProxy> type) {
 
         if (config!=null && !config.isEmpty()) {
             for (Config c : domain.getConfigs().getConfig()) {

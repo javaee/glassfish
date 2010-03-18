@@ -1122,7 +1122,13 @@ public class CommandRunnerImpl implements CommandRunner {
             }
         }
 
-        final CommandModel model = new CommandModelImpl(command.getClass());
+        CommandModel model;
+        try {
+            GenericCrudCommand c = GenericCrudCommand.class.cast(command);
+            model = c.getCommandModel();
+        } catch (ClassCastException e) {
+            model = new CommandModelImpl(command.getClass());
+        }
         if (inv.typedParams() != null) {
             InjectionResolver<Param> injectionTarget =
                 new DelegatedInjectionResolver(model, inv.typedParams());

@@ -69,13 +69,17 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     @Inject
     Inhabitant<GenericCreateCommand> myself;
 
+
+    boolean skipParamValidation=true;
+
     boolean valid=false;
 
     String commandName;
-    Class targetType=null;
+    Class<ConfigBeanProxy> targetType=null;
     Class<? extends ConfigResolver> resolverType;
     CommandModel model;
     String elementName;
+    Create create;
 
 
     final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
@@ -104,7 +108,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
             logger.log(Level.SEVERE, "Cannot load target type", e);
         }
 
-        Create create = (Create) targetType.getAnnotation(Create.class);
+        create = targetType.getAnnotation(Create.class);
         resolverType = create.resolver();
         try {
             elementName = elementName(create.parentType(), targetType);
@@ -180,19 +184,19 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy target = resolver.resolve(context);
+        final ConfigBeanProxy target = resolver.resolve(context, elementName,  create.parentType());
         if (target==null) {
             context.logger.severe("Cannot find the target configuration");
             return;
         }
-        System.out.println("Will use the following config" + ((Named) target).getName());
+        
         try {
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
                 public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                    ConfigBeanProxy child = target.createChild(targetType);
-                    manager.inject(child, getInjectionResolver());
-                    Dom dom = Dom.unwrap(target);
-                    ((List) dom.element(elementName)).add(child);
+                    ConfigBeanProxy child = param.createChild(targetType);
+                    manager.inject(child, targetType, getInjectionResolver());
+                    Dom dom = Dom.unwrap(param);
+                    dom.insertAfter(null, elementName, Dom.unwrap(child));
                     return child;
                 }
             }, target);

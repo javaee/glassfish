@@ -60,7 +60,6 @@ public interface Named extends ConfigBeanProxy {
      */
     @Attribute(required=true, key=true)
     @NotNull
-    @Param(name="name",primary=true)
     public String getName();
 
     public void setName(String value) throws PropertyVetoException;
