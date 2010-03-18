@@ -13,6 +13,7 @@
 
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>class-model</artifactId>
+    <name>Class Model for Hk2</name> 
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
