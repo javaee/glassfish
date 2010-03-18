@@ -29,12 +29,10 @@ own identifying information: Portions Copyright [yyyy]
  
 
     <target name="create.distribution">
-
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
 	 <antcall target="addDtds"/>
         <antcall target="rejar"/>
-
 	<antcall target="unjar"/>
         <antcall target="jar"/>
         
@@ -107,7 +105,8 @@ own identifying information: Portions Copyright [yyyy]
         <delete>
 		<fileset dir="${rootdir}/temp/META-INF/">
 			<include name="*.inf"/>
-			<include name=".RSA"/>
+			<include name="*.RSA"/>
+			<include name="*.SF"/>
 		</fileset>
 	</delete>
      </target>
