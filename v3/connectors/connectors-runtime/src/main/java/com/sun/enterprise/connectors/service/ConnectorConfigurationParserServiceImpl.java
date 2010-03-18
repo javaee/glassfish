@@ -55,27 +55,24 @@ import java.util.logging.Level;
  * information from ra.xml
  * @author    Srikanth P
  */
-
-
 public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
-
 
     /**
      * Default constructor
      */
-
      public ConnectorConfigurationParserServiceImpl() {
          super();
      }
 
     /**
-     *  Obtains the Permission string that needs to be added to the
-     *  to the security policy files. These are the security permissions needed
-     *  by the resource adapter implementation classes.
-     *  These strings are obtained by parsing the ra.xml
-     *  @param moduleName rar module Name
-     *  @throws ConnectorRuntimeException If rar.xml parsing fails.
-     *  @return Required policy permissions in server.policy file
+     * Obtains the Permission string that needs to be added to the
+     * to the security policy files. These are the security permissions needed
+     * by the resource adapter implementation classes.
+     * These strings are obtained by parsing the ra.xml
+     *
+     * @param moduleName rar module Name
+     * @return Required policy permissions in server.policy file
+     * @throws ConnectorRuntimeException If rar.xml parsing fails.
      */
     public String getSecurityPermissionSpec(String moduleName)
             throws ConnectorRuntimeException {
@@ -83,36 +80,39 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
         if (moduleName == null) {
             return null;
         }
-        ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(moduleName);
-        Set securityPermissions = connectorDescriptor.getSecurityPermissions();
-        Iterator it = securityPermissions.iterator();
         String policyString = null;
-        String policyContent = null;
-        SecurityPermission secPerm = null;
-        String permissionString = null;
 
         //check whether the policy file already has required permissions.
-        File policyFile = new File(System.getProperty("java.security.policy"));
-        policyContent = getFileContent(policyFile);
+        String fileName = System.getProperty("java.security.policy");
+        if (fileName != null) {
+            File policyFile = new File(fileName);
+            String policyContent = getFileContent(policyFile);
 
-        while (it.hasNext()) {
-            secPerm = (SecurityPermission) it.next();
-            permissionString = secPerm.getPermission();
-            int intIndex = policyContent.indexOf(permissionString);
-            if (intIndex == -1) {
-                if (permissionString != null) {
-                    if(policyString != null){
-                        policyString = policyString + "\n \n" + permissionString;
-                    }else{
-                        policyString = "\n\n" + permissionString;
+            ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(moduleName);
+            Set securityPermissions = connectorDescriptor.getSecurityPermissions();
+            Iterator it = securityPermissions.iterator();
+            SecurityPermission secPerm = null;
+            String permissionString = null;
+
+            while (it.hasNext()) {
+                secPerm = (SecurityPermission) it.next();
+                permissionString = secPerm.getPermission();
+                int intIndex = policyContent.indexOf(permissionString);
+                if (intIndex == -1) {
+                    if (permissionString != null) {
+                        if (policyString != null) {
+                            policyString = policyString + "\n \n" + permissionString;
+                        } else {
+                            policyString = "\n\n" + permissionString;
+                        }
                     }
                 }
             }
-        }
 
-        //print the missing permissions
-        if (policyString != null) {
-            policyString = CAUTION_MESSAGE + policyString;
+            //print the missing permissions
+            if (policyString != null) {
+                policyString = CAUTION_MESSAGE + policyString;
+            }
         }
         return policyString;
     }
@@ -149,7 +149,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *  @param rarName rar moduleName
      *  @return Array of connection definition names.
      */
-
     public String[] getConnectionDefinitionNames(String rarName)
                throws ConnectorRuntimeException
     {
@@ -177,7 +176,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *  @return Resource adapter javabean properties with default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-
     public Properties getResourceAdapterConfigProps(String rarName)
                 throws ConnectorRuntimeException
     {
@@ -198,7 +196,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-
     public Properties getMCFConfigProps(
      String rarName,String connectionDefName) throws ConnectorRuntimeException
     {
@@ -225,7 +222,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-
     public Properties getAdminObjectConfigProps(
       String rarName,String adminObjectIntf) throws ConnectorRuntimeException
     {
@@ -248,7 +244,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-
     public Properties getAdminObjectConfigProps(
       String rarName,String adminObjectIntf, String adminObjectClass) throws ConnectorRuntimeException
     {
@@ -279,7 +274,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *          default values.
      *  @throws ConnectorRuntimeException if property retrieval fails.
      */
-
     public Properties getConnectorConfigJavaBeans(String rarName,
         String connectionDefName,String type) throws ConnectorRuntimeException
     {
@@ -301,7 +295,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      * @throws  ConnectorRuntimeException If moduleDir is null.
      *          If corresponding rar is not deployed.
      */
-
     public String getActivationSpecClass( String rarName,
              String messageListenerType) throws ConnectorRuntimeException
     {
@@ -326,7 +319,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *          If corresponding rar is not deployed.
      *
      */
-
     public String[] getMessageListenerTypes(String rarName)
                throws ConnectorRuntimeException
     {
@@ -370,7 +362,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *           If corresponding rar is not deployed i.e moduleDir is invalid.
      *           If messagelistener type is not found in ra.xml
      */
-
     public Properties getMessageListenerConfigProps(String rarName,
          String messageListenerType)throws ConnectorRuntimeException
     {
@@ -390,7 +381,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *           If corresponding rar is not deployed i.e moduleDir is invalid.
      *           If messagelistener type is not found in ra.xml
      */
-
     public Properties getMessageListenerConfigPropTypes(String rarName,
                String messageListenerType) throws ConnectorRuntimeException
     {
@@ -411,7 +401,6 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      *  @param rarName rar moduleName
      *  @return Array of connection definition names.
      */
-
     public String[] getAdminObjectInterfaceNames(String rarName)
                throws ConnectorRuntimeException
     {
