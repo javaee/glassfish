@@ -51,8 +51,7 @@ import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.deployment.*;
-import org.glassfish.config.support.CommandModelImpl;
+import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.config.support.GenericCrudCommand;
 import org.glassfish.internal.api.*;
 

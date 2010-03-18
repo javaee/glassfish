@@ -34,7 +34,7 @@
  * holder.
  */
 
-package org.glassfish.config.support;
+package org.glassfish.common.util.admin;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;
@@ -63,7 +63,7 @@ public class CommandModelImpl extends CommandModel {
     final I18n i18n;
     private boolean dashOk = false;
 
-    public CommandModelImpl(Class<? extends AdminCommand> commandType) {
+    public CommandModelImpl(Class<?> commandType) {
 
         Service service = commandType.getAnnotation(Service.class);
         commandName = service!=null?service.name():null;
@@ -71,12 +71,12 @@ public class CommandModelImpl extends CommandModel {
         init(commandType);
     }
 
-    CommandModelImpl() {
+    public CommandModelImpl() {
         commandName = null;
         i18n=null;
     }
 
-    void init(Class commandType) {
+    public void init(Class commandType) {
 
         Class currentClazz = commandType;
         while(currentClazz!=null) {

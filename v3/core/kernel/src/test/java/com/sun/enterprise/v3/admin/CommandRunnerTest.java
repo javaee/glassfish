@@ -37,6 +37,8 @@
 package com.sun.enterprise.v3.admin;
 
 import static org.junit.Assert.*;
+
+import org.glassfish.common.util.admin.CommandModelImpl;
 import org.junit.Test;
 import org.junit.Before;
 import java.util.Properties;
@@ -49,7 +51,6 @@ import java.lang.reflect.AnnotatedElement;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandModel;
-import org.glassfish.config.support.CommandModelImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 
