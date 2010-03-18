@@ -182,7 +182,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                 }
                 //since resource-adapter creation has failed, unregister bean validator of the RAR
                 unregisterBeanValidator(moduleName);
-                return null;
+                throw new RuntimeException(cre.getMessage(), cre);
             }
         }
         return new ConnectorApplication(moduleName, ConnectorsUtil.getApplicationName(context), resourceManager,
@@ -275,121 +275,128 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         deleteConnectionPools(conPools, moduleName);
         deleteAdminObjectResources(adminObjectResources, targetServer, moduleName);
         deleteWorkSecurityMaps(securityMaps, moduleName);
-        if (rac != null) {
-            deleteRAConfig(rac);
-        }
+        deleteRAConfig(rac);
 
     }
 
     private void deleteRAConfig(final ResourceAdapterConfig rac) {
-        try {
-            // delete resource-adapter-config
-            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    return param.getResources().remove(rac);
+        if (rac != null) {
+            try {
+                // delete resource-adapter-config
+                if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        return param.getResources().remove(rac);
+                    }
+                }, resources) == null) {
+                    _logger.log(Level.WARNING, "unable.to.delete.rac", rac.getResourceAdapterName());
                 }
-            }, resources) == null) {
-                _logger.log(Level.WARNING, "unable.to.delete.rac", rac.getResourceAdapterName());
-            }
 
-        } catch (TransactionFailure tfe) {
-            Object params[] = new Object[]{rac.getResourceAdapterName(), tfe};
-            _logger.log(Level.WARNING, "unable.to.delete.rac.exception", params);
+            } catch (TransactionFailure tfe) {
+                Object params[] = new Object[]{rac.getResourceAdapterName(), tfe};
+                _logger.log(Level.WARNING, "unable.to.delete.rac.exception", params);
+            }
         }
     }
 
     private void deleteWorkSecurityMaps(final Collection<WorkSecurityMap> workSecurityMaps, String raName) {
-        try {
-            // delete work-security-maps
-            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+        if (workSecurityMaps.size() > 0) {
+            try {
+                // delete work-security-maps
+                if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
 
-                public Object run(Resources param) throws PropertyVetoException,
-                        TransactionFailure {
-                    for (WorkSecurityMap resource : workSecurityMaps) {
-                        param.getResources().remove(resource);
+                    public Object run(Resources param) throws PropertyVetoException,
+                            TransactionFailure {
+                        for (WorkSecurityMap resource : workSecurityMaps) {
+                            param.getResources().remove(resource);
+                        }
+                        return true; // indicating that removal was successful
                     }
-                    return true; // indicating that removal was successful
+                }, resources) == null) {
+                    _logger.log(Level.WARNING, "unable.to.delete.work.security.map", raName);
                 }
-            }, resources) == null) {
-                _logger.log(Level.WARNING, "unable.to.delete.work.security.map", raName);
+
+            } catch (TransactionFailure tfe) {
+                Object params[] = new Object[]{raName, tfe};
+                _logger.log(Level.WARNING, "unable.to.delete.work.security.map.exception", params);
             }
 
-        } catch (TransactionFailure tfe) {
-            Object params[] = new Object[]{raName, tfe};
-            _logger.log(Level.WARNING, "unable.to.delete.work.security.map.exception", params);
         }
-
     }
 
     private void deleteAdminObjectResources(final AdminObjectResource[] adminObjectResources, String target,
                                             String raName) {
-        try {
-            final Server targetServer = domain.getServerNamed(target);
-            // delete admin-object-resource
-            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (AdminObjectResource resource : adminObjectResources) {
-                        param.getResources().remove(resource);
+        if (adminObjectResources != null && adminObjectResources.length > 0) {
+            try {
+                final Server targetServer = domain.getServerNamed(target);
+                // delete admin-object-resource
+                if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        for (AdminObjectResource resource : adminObjectResources) {
+                            param.getResources().remove(resource);
 
-                        // delete resource-ref
-                        targetServer.deleteResourceRef(resource.getJndiName());
+                            // delete resource-ref
+                            targetServer.deleteResourceRef(resource.getJndiName());
+                        }
+                        // not found
+                        return true;
                     }
-                    // not found
-                    return true;
+                }, resources) == null) {
+                    _logger.log(Level.WARNING, "unable.to.delete.admin.object", raName);
                 }
-            }, resources) == null) {
-                _logger.log(Level.WARNING, "unable.to.delete.admin.object", raName);
+            } catch (TransactionFailure tfe) {
+                Object params[] = new Object[]{raName, tfe};
+                _logger.log(Level.WARNING, "unable.to.delete.admin.object.exception", params);
             }
-        } catch (TransactionFailure tfe) {
-            Object params[] = new Object[]{raName, tfe};
-            _logger.log(Level.WARNING, "unable.to.delete.admin.object.exception", params);
-        }
 
+        }
     }
 
     private void deleteConnectorResources(final Collection<Resource> connectorResources, String target, String raName) {
-        try {
-            final Server targetServer = domain.getServerNamed(target);
+        if (connectorResources.size() > 0) {
+            try {
+                final Server targetServer = domain.getServerNamed(target);
 
-            // delete connector-resource
-            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (Resource resource : connectorResources) {
-                        param.getResources().remove(resource);
+                // delete connector-resource
+                if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        for (Resource resource : connectorResources) {
+                            param.getResources().remove(resource);
 
-                        // delete resource-ref
-                        targetServer.deleteResourceRef(((ConnectorResource) resource).getJndiName());
+                            // delete resource-ref
+                            targetServer.deleteResourceRef(((ConnectorResource) resource).getJndiName());
+                        }
+                        // not found
+                        return true;
                     }
-                    // not found
-                    return true;
+                }, resources) == null) {
+                    _logger.log(Level.WARNING, "unable.to.delete.connector.resource", raName);
                 }
-            }, resources) == null) {
-                _logger.log(Level.WARNING, "unable.to.delete.connector.resource", raName);
+            } catch (TransactionFailure tfe) {
+                Object params[] = new Object[]{raName, tfe};
+                _logger.log(Level.WARNING, "unable.to.delete.connector.resource.exception", params);
             }
-        } catch (TransactionFailure tfe) {
-            Object params[] = new Object[]{raName, tfe};
-            _logger.log(Level.WARNING, "unable.to.delete.connector.resource.exception", params);
         }
-
     }
 
     private void deleteConnectionPools(final Collection<ConnectorConnectionPool> conPools, String raName) {
-        // delete connector connection pool
-        try {
-            if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
-                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                    for (ConnectorConnectionPool cp : conPools) {
-                        return param.getResources().remove(cp);
+        if (conPools.size() > 0) {
+            // delete connector connection pool
+            try {
+                if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                    public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                        for (ConnectorConnectionPool cp : conPools) {
+                            return param.getResources().remove(cp);
+                        }
+                        // not found
+                        return null;
                     }
-                    // not found
-                    return null;
+                }, resources) == null) {
+                    _logger.log(Level.WARNING, "unable.to.delete.connector.connection.pool", raName);
                 }
-            }, resources) == null) {
-                _logger.log(Level.WARNING, "unable.to.delete.connector.connection.pool", raName);
+            } catch (TransactionFailure tfe) {
+                Object params[] = new Object[]{raName, tfe};
+                _logger.log(Level.WARNING, "unable.to.delete.connector.connection.pool.exception", params);
             }
-        } catch (TransactionFailure tfe) {
-            Object params[] = new Object[]{raName, tfe};
-            _logger.log(Level.WARNING, "unable.to.delete.connector.connection.pool.exception", params);
         }
     }
 
