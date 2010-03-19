@@ -87,6 +87,7 @@ import com.sun.enterprise.web.reconfig.WebConfigListener;
 import com.sun.grizzly.config.ContextRootInfo;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.util.buf.MessageBytes;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.util.http.mapper.Mapper;
@@ -546,12 +547,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             securityService = aConfig.getSecurityService();
 
             // Configure HTTP listeners
-            List<NetworkListener> listeners = networkConfig.getNetworkListeners().getNetworkListener();
-            for (NetworkListener listener : listeners) {
-                if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
-                    createJKConnector(listener, httpService);
-                } else {
-                    createHttpListener(listener, httpService);
+            NetworkListeners networkListeners = networkConfig.getNetworkListeners();
+            if (networkListeners != null) {
+                List<NetworkListener> listeners = networkListeners.getNetworkListener();
+                for (NetworkListener listener : listeners) {
+                    if (ConfigBeansUtilities.toBoolean(listener.getJkEnabled())) {
+                        createJKConnector(listener, httpService);
+                    } else {
+                        createHttpListener(listener, httpService);
+                    }
                 }
             }
             createJKConnector(null, httpService);
