@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,10 +38,10 @@
 
 
 <f:verbatim>
-<div style="height: 435px;background-image: url(#{request.contextPath}/resource/community-theme/images/login-backimage-open.png);background-repeat:no-repeat;background-position:left top; width: 720px; margin: auto;">
+<div style="height: 435px;background-image: url(#{request.contextPath}/resource/community-theme/images/login-backimage-open.jpg);background-repeat:no-repeat;background-position:left top; width: 720px; margin: auto;">
     <div style="width: 460px; padding-top: 160px; margin-left: 260px;">
 </f:verbatim>
-        <sun:image url="#{request.contextPath}/resource/community-theme/images/login-product_name_open.png" alt="Glassfish v3 Administration Console" height="42" width="318" />
+        <sun:image url="#{request.contextPath}/resource/community-theme/images/login-product_name_open.png" alt="$resource{theme.versionImage.description}" height="42" width="315" />
 <f:verbatim>
         <form method="POST" class="form" name="loginform" action="j_security_check">
         <table>
