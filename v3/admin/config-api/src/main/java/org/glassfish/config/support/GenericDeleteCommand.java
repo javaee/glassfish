@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,53 +35,52 @@
  */
 package org.glassfish.config.support;
 
-import org.glassfish.api.admin.*;
-import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
-import org.glassfish.common.util.admin.CommandModelImpl;
+import com.sun.hk2.component.InhabitantsFile;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandModelProvider;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
-import com.sun.hk2.component.InhabitantsFile;
-import com.sun.logging.LogDomains;
 
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.List;
-import java.util.Collection;
-import java.util.HashMap;
-import java.lang.reflect.Method;
-import java.lang.annotation.Annotation;
 import java.beans.PropertyVetoException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Not much so far, just to get the APIs figured out.
+ * Implementation of the generic delete command
+ *
+ * @author Jerome Dochez
  */
 @Scoped(PerLookup.class)
-public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
+public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
 
     @Inject
-    Habitat habitat;
-    
+    Logger logger;
+
     @Inject
     Inhabitant<GenericCreateCommand> myself;
 
-
-    boolean skipParamValidation=true;
-
-    boolean valid=false;
+    @Inject
+    Habitat habitat;
 
     String commandName;
+
     Class<ConfigBeanProxy> targetType=null;
     Class<? extends ConfigResolver> resolverType;
     CommandModel model;
     String elementName;
-    Create create;
+    Delete delete;    
 
+    @Override
+    public CommandModel getModel() {
+        return model;
+    }
 
-    final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
-
+    @Override
     public void postConstruct() {
         // first we need to retrieve our inhabitant.
         System.out.println("Lead " + myself);
@@ -106,27 +105,27 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
             logger.log(Level.SEVERE, "Cannot load target type", e);
         }
 
-        create = targetType.getAnnotation(Create.class);
-        resolverType = create.resolver();
+        delete = targetType.getAnnotation(Delete.class);
+        resolverType = delete.resolver();
         try {
-            elementName = elementName(create.parentType(), targetType);
+            elementName = elementName(delete.parentType(), targetType);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Cannot load child type", e);
         }
 
-        System.out.println("I create " + targetType.getName() + " instances which gets added to " +
-            create.parentType().getName() + " under " + elementName);
+        System.out.println("I delete " + targetType.getName() + " instances stored in " +
+            delete.parentType().getName() + " under " + elementName);
 
         try {
-            model = new GenericCommandModel(targetType, create.resolver(), habitat.getComponent(DomDocument.class), commandName);
+            model = new GenericCommandModel(null, delete.resolver(), document, commandName);
             for (String paramName : model.getParametersNames()) {
                 CommandModel.ParamModel param = model.getModelFor(paramName);
                 System.out.println("I take " + param.getName() + " parameters");
             }
         } catch(Exception e) {
             e.printStackTrace();
-        }        
-
+        }
+        
     }
 
     protected Class loadClass(String type) throws ClassNotFoundException {
@@ -134,9 +133,8 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         return myself.type().getClassLoader().loadClass(type);
     }
 
-
+    @Override
     public void execute(AdminCommandContext context) {
-
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
 
@@ -144,28 +142,18 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy target = resolver.resolve(context, elementName,  create.parentType());
+        final ConfigBeanProxy target = resolver.resolve(context, elementName,  targetType);
         if (target==null) {
             context.logger.severe("Cannot find the target configuration");
             return;
         }
-        
+        final ConfigBean child = (ConfigBean) ConfigBean.unwrap(target);
+
         try {
-            ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
-                public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                    ConfigBeanProxy child = param.createChild(targetType);
-                    manager.inject(child, targetType, getInjectionResolver());
-                    Dom dom = Dom.unwrap(param);
-                    dom.insertAfter(null, elementName, Dom.unwrap(child));
-                    return child;
-                }
-            }, target);
+            ConfigSupport.deleteChild((ConfigBean) child.parent(), child);
         } catch(TransactionFailure e) {
             e.printStackTrace();
         }
-    }
 
-    public CommandModel getModel() {
-        return model;
     }
 }

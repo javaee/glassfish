@@ -38,7 +38,9 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.Param;
 import org.glassfish.config.support.Create;
+import org.glassfish.config.support.Delete;
 import org.glassfish.config.support.DomainResolver;
+import org.glassfish.config.support.TypeAndNameResolver;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
@@ -77,7 +79,8 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
-@Create(value="create-instance", parentType=Servers.class, resolver= DomainResolver.class)
+@Create(value="create-instance", parentType=Servers.class, resolver=DomainResolver.class)
+@Delete(value="delete-instance", parentType=Servers.class, resolver= TypeAndNameResolver.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
     @Param(name="name", primary = true)

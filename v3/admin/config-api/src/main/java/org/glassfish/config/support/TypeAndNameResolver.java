@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,31 +33,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.config.support;
 
-import org.jvnet.hk2.annotations.*;
-import org.glassfish.api.admin.AdminCommand;
-
-import java.lang.annotation.Retention;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
- * Delete command annotation
+ * Resolver based on type + name.
+ *
+ * @author Jerome Dochez
  */
-@Contract
-@Retention(RUNTIME)
-@InhabitantAnnotation("default")
-@ContractProvided(AdminCommand.class)
-@ServiceProvider(GenericDeleteCommand.class)
-public @interface Delete {
+@Service
+public class TypeAndNameResolver implements ConfigResolver {
 
-    @Index
-    String value();
+    @Param(name="name", primary = true)
+    String name;
 
-    @InhabitantMetadata
-    Class parentType() default Void.class;
+    @Inject
+    Habitat habitat;
 
-    Class<? extends ConfigResolver> resolver() default ConfigParamResolver.class;    
+    @Override
+    public ConfigBeanProxy resolve(AdminCommandContext context, String elementName, Class<? extends ConfigBeanProxy> type) {
+        return habitat.getComponent(type, name);
+    }
 }
