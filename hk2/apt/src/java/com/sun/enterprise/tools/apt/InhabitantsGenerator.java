@@ -341,7 +341,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             }
 
             StringBuilder buf = new StringBuilder();
-            buf.append(InhabitantsFile.CLASS_KEY).append('=').append(d.getQualifiedName());
+            buf.append(InhabitantsFile.CLASS_KEY).append('=').append(getClassName(d));
             for (String contract : indices)
                 addMetadata(buf, INDEX_KEY, contract);
 
@@ -366,6 +366,20 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
 
             return buf.toString();
         }
+
+        /**
+         * Returns the fully qualified class name.
+         * The difference between this and {@link TypeDeclaration#getQualifiedName()}
+         * is that this method returns the same format as {@link Class#getName()}.
+         *
+         * Notably, separator for nested classes is '$', not '.'
+         */
+        private String getClassName(TypeDeclaration d) {
+            if(d.getDeclaringType()!=null)
+                return getClassName(d.getDeclaringType())+'$'+d.getSimpleName();
+            else
+                return d.getQualifiedName();
+        }        
 
         private void addMetadata(StringBuilder buf, String key, String value) {
             buf.append(',').append(key).append('=').append(value);
