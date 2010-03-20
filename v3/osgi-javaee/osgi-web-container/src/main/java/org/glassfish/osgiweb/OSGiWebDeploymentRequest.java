@@ -50,6 +50,7 @@ import org.osgi.framework.Bundle;
 
 import java.util.logging.Logger;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.io.IOException;
 
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -88,10 +89,25 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
             throw new Exception(Constants.WEB_CONTEXT_PATH +
                     " manifest header is mandatory");
         }
-        parameters.virtualservers = getDefaultVirtualServer();
+        parameters.virtualservers = getVirtualServers(archive);
         return parameters;
     }
 
+    private String getVirtualServers(ReadableArchive archive) {
+        String virtualServers = null;
+        try {
+            virtualServers = archive.getManifest().getMainAttributes().getValue(
+                    org.glassfish.osgiweb.Constants.VIRTUAL_SERVERS);
+        } catch (Exception e) {
+            // ignore
+        }
+        if (virtualServers == null) virtualServers = getDefaultVirtualServer();
+        StringTokenizer st = new StringTokenizer(virtualServers);
+        if (st.countTokens() > 1) {
+            throw new IllegalArgumentException("Currently, we only support deployment to one virtual server.");
+        }
+        return virtualServers;
+    }
     /**
      * @return comma-separated list of all defined virtual servers (exclusive
      * of __asadmin)
