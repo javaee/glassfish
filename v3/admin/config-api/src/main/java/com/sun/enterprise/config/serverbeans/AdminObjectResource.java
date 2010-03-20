@@ -134,30 +134,6 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
     void setResAdapter(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the objectType property.
-     * where object-type defines the type of the resource.
-     * It can be:
-     *  system-all - These are system resources for all instances and DAS
-     *  system-admin - These are system resources only in DAS
-     *  system-instance - These are system resources only in instances
-     *                    (and not DAS)
-     *  user - User resources (This is the default for all elements)
-     * 
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="user")
-    String getObjectType();
-
-    /**
-     * Sets the value of the objectType property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setObjectType(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the enabled property.
      *
      * @return possible object is

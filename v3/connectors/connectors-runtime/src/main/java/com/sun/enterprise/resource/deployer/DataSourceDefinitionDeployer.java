@@ -315,6 +315,16 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
             //do nothing
         }
 
+        @Override
+        public String getObjectType() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void setObjectType(String value) throws PropertyVetoException {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
         public String getSteadyPoolSize() {
             int minPoolSize = desc.getMinPoolSize();
             if (minPoolSize == -1) {

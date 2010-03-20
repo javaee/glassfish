@@ -64,4 +64,12 @@ public @interface Create {
 
     Class<? extends ConfigResolver> resolver() default ConfigParamResolver.class;
 
+    /**
+     * Returns a decorator type that should be looked up and called when a new
+     * configuration element of the annotated type is created.
+     *
+     * @return a decorator for the annotated type
+     */
+    Class<? extends ElementDecorator> decorator() default ElementDecorator.NoDecoration.class;
+
 }

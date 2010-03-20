@@ -102,23 +102,6 @@ public interface PersistenceManagerFactoryResource extends ConfigBeanProxy, Inje
     public void setJdbcResourceJndiName(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the objectType property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="user")
-    public String getObjectType();
-
-    /**
-     * Sets the value of the objectType property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setObjectType(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the enabled property.
      *
      * @return possible object is

@@ -37,10 +37,10 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.Param;
-import org.glassfish.config.support.Create;
-import org.glassfish.config.support.Delete;
-import org.glassfish.config.support.DomainResolver;
-import org.glassfish.config.support.TypeAndNameResolver;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.config.support.*;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
@@ -79,7 +79,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
-@Create(value="create-instance", parentType=Servers.class, resolver=DomainResolver.class)
+@Create(value="create-instance", parentType=Servers.class, resolver=DomainResolver.class, decorator=Server.Decorator.class)
 @Delete(value="delete-instance", parentType=Servers.class, resolver= TypeAndNameResolver.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
@@ -313,4 +313,39 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Element
     @Param(name="systemproperties", optional = true)
     List<Property> getProperty();
+
+    @Service
+    class Decorator implements ElementDecorator<Server> {
+        @Inject
+        Domain domain;
+        
+        @Override
+        public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
+            for (Resource resource : domain.getResources().getResources()) {
+                if (resource.getObjectType().equals("system-all")) {
+                    String name=null;
+                    if (resource instanceof BindableResource) {
+                        name = ((BindableResource) resource).getJndiName();
+                    }
+                    if (resource instanceof Named) {
+                        name = ((Named) resource).getName();
+                    }
+                    if (name==null) {
+                        throw new TransactionFailure("Cannot add un-named resources to the new server instance");
+                    }
+                    ResourceRef newResourceRef = instance.createChild(ResourceRef.class);
+                    newResourceRef.setRef(name);
+                    instance.getResourceRef().add(newResourceRef);
+                }
+            }
+            for (Application application : domain.getApplications().getApplications()) {
+                if (application.getObjectType().equals("system-all")) {
+                    ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
+                    newAppRef.setRef(application.getName());
+                    // todo : what about virtual-servers ?
+                    instance.getApplicationRef().add(newAppRef);
+                }
+            }
+        }
+    }
 }

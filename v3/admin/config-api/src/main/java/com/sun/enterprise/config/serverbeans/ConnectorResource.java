@@ -91,23 +91,6 @@ public interface ConnectorResource extends ConfigBeanProxy, Injectable, Resource
     void setPoolName(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the objectType property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="user")
-    String getObjectType();
-
-    /**
-     * Sets the value of the objectType property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setObjectType(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the enabled property.
      *
      * @return possible object is

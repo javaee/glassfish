@@ -111,23 +111,6 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
     public void setThreadPoolIds(String value) throws PropertyVetoException;
 
     /**
-     * Gets the value of the objectType property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="user")
-    public String getObjectType();
-
-    /**
-     * Sets the value of the objectType property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    public void setObjectType(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the resourceAdapterName property.
      *
      * @return possible object is

@@ -52,24 +52,6 @@ import java.util.List;
 public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Resource {
 
     /**
-     * Gets the value of the objectType property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="user")
-    @Pattern(regexp="(system-all|system-admin|system-instance|user)")
-    String getObjectType();
-
-    /**
-     * Sets the value of the objectType property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setObjectType(String value) throws PropertyVetoException;
-
-    /**
      * Gets the value of the enabled property.
      *
      * @return possible object is

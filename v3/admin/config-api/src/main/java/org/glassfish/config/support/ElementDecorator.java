@@ -33,47 +33,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.config.support;
 
-package com.sun.enterprise.config.serverbeans;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.TransactionFailure;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Configured;
-
-import javax.validation.constraints.Pattern;
 import java.beans.PropertyVetoException;
 
 /**
- * Tag interface for all types of resource.
- * 
+ * An element decorator decorates a newly added configuration element, usually added
+ * through the generic create command implementation.
+ *
  * @author Jerome Dochez
  */
-@Configured
-public interface Resource extends ConfigBeanProxy {
+public interface ElementDecorator<T> {
 
     /**
-     * Gets the value of the objectType property.
-     * where object-type defines the type of the resource.
-     * It can be:
-     *  system-all - These are system resources for all instances and DAS
-     *  system-admin - These are system resources only in DAS
-     *  system-instance - These are system resources only in instances
-     *                    (and not DAS)
-     *  user - User resources (This is the default for all elements)
+     * The element instance has been created and added to the parent, it can be
+     * customized. This method is called within a {@link org.jvnet.hk2.config.Transaction}
+     * and instance is therefore a writeable view on the configuration component.
      *
-     * @return possible object is
-     *         {@link String }
+     * @param context administration command context
+     * @param instance newly created configuration element
+     * @throws TransactionFailure if the transaction should be rollbacked
+     * @throws PropertyVetoException if one of the listener of <T> is throwing a veto exception
      */
-    @Attribute (defaultValue="user")
-    @Pattern(regexp="(system-all|system-admin|system-instance|user)")            
-    String getObjectType();
+    public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException;
 
-    /**
-     * Sets the value of the objectType property.
-     *
-     * @param value allowed object is {@link String }
-     * @throws PropertyVetoException if the change is unacceptable to one
-     * of the listeners.
-     */
-    void setObjectType(String value) throws PropertyVetoException;
+    @Service
+    public class NoDecoration<T> implements ElementDecorator<T> {
+        @Override
+        public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException {
+            // do nothing
+        }
+    }
 }

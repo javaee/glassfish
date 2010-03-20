@@ -135,7 +135,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     }
 
 
-    public void execute(AdminCommandContext context) {
+    public void execute(final AdminCommandContext context) {
 
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
@@ -157,6 +157,12 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                     manager.inject(child, targetType, getInjectionResolver());
                     Dom dom = Dom.unwrap(param);
                     dom.insertAfter(null, elementName, Dom.unwrap(child));
+                    ElementDecorator decorator = habitat.getComponent(create.decorator());
+                    if (decorator==null) {
+                        logger.severe("Cannot find " + create.decorator() + " component in the habitat");
+                    } else {
+                        decorator.decorate(context, child);
+                    }
                     return child;
                 }
             }, target);
