@@ -152,7 +152,8 @@ class DomainXmlReader extends XMLStreamReaderFilter {
     }
 
     /**
-     * Report on whether parsing was a success or not
+     * Report on whether parsing was a success or not.  If there is a missing config
+     * for a server just return a String message.
      * @return a String error message if there was an error else return null for all-ok
      */
     String configWasFound() {

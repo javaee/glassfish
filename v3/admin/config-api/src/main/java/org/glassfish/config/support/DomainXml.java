@@ -156,14 +156,17 @@ public abstract class DomainXml implements Populator {
             // config element available
             DomainXmlReader xsr = new DomainXmlReader(domainXml, xif, logger);
 
-             parser.parse(xsr, getDomDocument());
+            parser.parse(xsr, getDomDocument());
             xsr.close();
             String errorMessage = xsr.configWasFound();
 
             if(errorMessage != null)
-                throw new RuntimeException(errorMessage);
+                logger.warning(errorMessage);
         } catch (Exception e) {
-            throw new RuntimeException("Fatal Error.  Unable to parse " + domainXml, e);
+            if(e instanceof RuntimeException)
+                throw (RuntimeException) e;
+            else
+                throw new RuntimeException("Fatal Error.  Unable to parse " + domainXml, e);
         }
     }
 
