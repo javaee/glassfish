@@ -79,7 +79,7 @@ public class JPAExtender implements Extender, SynchronousBundleListener
             case BundleEvent.INSTALLED :
             case BundleEvent.UPDATED :
                 JPABundleProcessor bi = new JPABundleProcessor(bundle);
-                if (!bi.isEnhanced(bundle) && bi.isJPABundle()) {
+                if (!bi.isEnhanced() && bi.isJPABundle()) {
                     logger.logp(Level.INFO, "JPAExtender", "bundleChanged", "Bundle having id {0} is a JPA bundle", new Object[]{bundle.getBundleId()});
                     try {
                         bi.enhance();

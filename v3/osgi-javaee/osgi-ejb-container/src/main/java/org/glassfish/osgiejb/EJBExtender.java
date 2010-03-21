@@ -49,6 +49,7 @@ import org.glassfish.osgijavaeebase.Extender;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Dictionary;
 
 /**
  * An extender that listens to web application bundle's lifecycle
@@ -143,7 +144,9 @@ public class EJBExtender implements Extender, SynchronousBundleListener
      */
     private boolean isEJBBundle(Bundle b)
     {
-        return b.getHeaders().get(Constants.EXPORT_EJB) != null;
+        final Dictionary headers = b.getHeaders();
+        return headers.get(Constants.EXPORT_EJB) != null &&
+                headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
     }
 
     private void deploy(Bundle b)

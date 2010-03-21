@@ -192,20 +192,21 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
     }
 
     private void getEntryPaths(Collection<String> entries, String path) {
-//        Enumeration<String> subPaths = b.getEntryPaths(path);
-//        if (subPaths != null) {
-//            while (subPaths.hasMoreElements()) {
-//                String next = subPaths.nextElement();
-//                entries.add(next);
-//                getEntryPaths(entries, next);
-//            }
-//        }
+        Enumeration<String> subPaths = b.getEntryPaths(path);
+        if (subPaths != null) {
+            while (subPaths.hasMoreElements()) {
+                String next = subPaths.nextElement();
+                entries.add(next);
+                getEntryPaths(entries, next);
+            }
+        }
 //        BECAUSE OF A BUG IN FELIX (FELIX-1210), THE CODE ABOVE DOES NOT WORK
 //        WHEN THERE ARE NO DIRECTORY ENTRIES IN THE JAR FILE.
-//        WE DON'T HAVE A REPRODUCIBLE TEST CASE YET.
 //        IF WE CONSISTENTLY FACE THE ISSUE, THEN WE CAN USE AN ALTERNATIVE IMPL BASED ON findEntries.
 //        OF COURSE, IT WILL HAVE THE UNDESIRED SIDE EFFECT OF FINDINDG ENTRIES FROM FRAGMENTS AS WELL.
-        getEntryPaths2(entries, path); // call the new implementation
+//        WE HAVE NASTY SIDE EFFECTS WHEN THAT HAPPENS. e.g. NPE. SO, WE DON'T USE THE ALTERNATIVE
+//        IMPLEMENTATION ANY MORE. WE EXPECT JAR TO HAVE PROPER DIRECTORY ENTRIES.        
+//        getEntryPaths2(entries, path); // call the new implementation
     }
 
     private void getEntryPaths2(Collection<String> entries, String path) {

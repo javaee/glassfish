@@ -53,6 +53,7 @@ import org.jvnet.hk2.component.Inhabitant;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Properties;
+import java.util.Dictionary;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.sun.enterprise.web.WebModuleDecorator;
@@ -157,7 +158,9 @@ public class WebExtender implements Extender, SynchronousBundleListener
      */
     private boolean isWebBundle(Bundle b)
     {
-        return b.getHeaders().get(Constants.WEB_CONTEXT_PATH) != null;
+        final Dictionary headers = b.getHeaders();
+        return headers.get(Constants.WEB_CONTEXT_PATH) != null &&
+                headers.get(org.osgi.framework.Constants.FRAGMENT_HOST) == null;
     }
 
     private void deploy(Bundle b)

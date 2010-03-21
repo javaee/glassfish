@@ -90,6 +90,7 @@ class JPABundleProcessor
     void discoverPxmls() {
         assert(persistenceXMLs == null);
         persistenceXMLs = new ArrayList<Persistence>();
+        if (isFragment()) return;
         for (BundleResource r : new OSGiBundleArchive(b)) {
             if (PXML_PATH.equals(r.getPath())) {
                 URL pxmlURL;
@@ -139,7 +140,11 @@ class JPABundleProcessor
         b.update(enhancedStream);
     }
 
-    public boolean isEnhanced(Bundle b) {
+    public boolean isEnhanced() {
         return b.getHeaders().get(STATICALLY_WEAVED)!=null;
+    }
+
+    private boolean isFragment() {
+        return b.getHeaders().get(org.osgi.framework.Constants.FRAGMENT_HOST) != null;
     }
 }
