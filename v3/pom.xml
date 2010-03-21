@@ -510,6 +510,27 @@
 
         <plugins>
 
+            <!-- prints ${project.basedir} in build output -->
+            <plugin>
+               <groupId>org.glassfish.build</groupId>
+               <artifactId>maven-glassfishbuild-plugin</artifactId>
+               <version>${project.version}</version>
+               <executions>
+                   <execution>
+                        <id>echo</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>echo</goal>
+                        </goals>
+                        <configuration>
+                            <messages>
+                                <message>Building in ${project.basedir} </message>
+                            </messages>
+                       </configuration>
+                   </execution>
+               </executions>
+            </plugin>
+
             <!-- Enforces maven 2.0.9 and jdk 1.6.0-04 and above to be used to build v3 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -655,6 +676,7 @@
 		    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
 		</configuration>
 	    </plugin>
+
         </plugins>
     </build>
 
