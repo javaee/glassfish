@@ -102,7 +102,7 @@ public class OSGiResourceServlet extends HttpServlet {
         StringBuilder mappedPath = new StringBuilder(requestedPath);
         String internalName = name == "/" ? "" : name;
         mappedPath.replace(0, servletPath.length(), internalName);
-        System.out.println("Mapped [" + requestedPath + "] to [" + mappedPath + "]");
+//        System.out.println("Mapped [" + requestedPath + "] to [" + mappedPath + "]");
         return mappedPath.toString();
     }
 
