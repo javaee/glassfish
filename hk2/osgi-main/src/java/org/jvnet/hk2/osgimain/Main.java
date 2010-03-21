@@ -115,11 +115,12 @@ public class Main implements BundleActivator
     public void start(BundleContext context) throws Exception
     {
         this.context = context;
-        bundlesDir = new File(context.getProperty(BUNDLES_DIR));
-        if (bundlesDir == null) {
+        final String bundlesDirPath = context.getProperty(BUNDLES_DIR);
+        if (bundlesDirPath == null) {
             // nothing to do, let's return
             return;
         }
+        bundlesDir = new File(bundlesDirPath);
         String autostartBundlesProp = context.getProperty(AUTO_START_BUNDLES_PROP);
         if (autostartBundlesProp != null) {
             StringTokenizer st = new StringTokenizer(autostartBundlesProp, ",");
