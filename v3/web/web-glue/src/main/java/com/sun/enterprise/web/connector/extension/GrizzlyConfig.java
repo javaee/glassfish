@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.j2ee.statistics.Stats;
 import org.jvnet.hk2.component.Habitat;
 
@@ -138,7 +139,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     private void initMonitoringLevel() {
         try{
-            Config cfg = habitat.getComponent(Config.class);
+            Config cfg = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME );
             
             MonitoringLevel monitoringLevel = MonitoringLevel.OFF; // default per DTD
 

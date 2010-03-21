@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.logging.*;
 import java.util.regex.Pattern;
 
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.web.TldProvider;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Scoped;
@@ -109,7 +110,7 @@ public class GlassFishTldProvider
          * Check whether JSP caching has been enabled
          */        
         Config cfg = serverContext.getDefaultHabitat().getComponent(
-            Config.class);
+            Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
         WebContainer webContainer = cfg.getWebContainer();
         if (webContainer == null) {
             return;

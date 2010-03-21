@@ -42,6 +42,8 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.ServerContext;
 
@@ -106,7 +108,7 @@ public class WsTxUtils {
                 }
             }
 
-            Config config = Globals.getDefaultHabitat().getInhabitantByType(Config.class).get();
+            Config config = Globals.getDefaultHabitat().getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
             String[] networkListenerNames = config.getHttpService().getVirtualServerByName(serverName).getNetworkListeners().split(",");
 
             for (String listenerName : networkListenerNames) {

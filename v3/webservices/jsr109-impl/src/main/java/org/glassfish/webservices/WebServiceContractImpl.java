@@ -39,6 +39,7 @@ package org.glassfish.webservices;
 
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -86,7 +87,7 @@ public class WebServiceContractImpl implements WebServicesContract{
     }
 
     public Config getConfig() {
-        return habitat.getByContract(Config.class);
+        return habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
     }
     
     public Habitat getHabitat() {

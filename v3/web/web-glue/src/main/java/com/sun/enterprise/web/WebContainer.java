@@ -527,6 +527,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             HttpService httpService = aConfig.getHttpService();
             NetworkConfig networkConfig = aConfig.getNetworkConfig();
+            if (networkConfig==null)
+                continue;
             securityService = aConfig.getSecurityService();
 
             // Configure HTTP listeners
