@@ -2128,13 +2128,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Container[] hostArray = getEngine().findChildren();
         for(Container aHostArray : hostArray) {
             host = (VirtualServer)aHostArray;
-            /**
-             * Related to Bug: 4904290: Do not unload from __asadmin
-             */
-            if (unloadFromAll && host.getName().equalsIgnoreCase(
-                    org.glassfish.api.web.Constants.ADMIN_VS)) {
-                continue;
-            }
             if (unloadFromAll || hostList.contains(host.getName())
                     || verifyAlias(hostList, host)) {
                 context = (WebModule)host.findChild(contextRoot);
