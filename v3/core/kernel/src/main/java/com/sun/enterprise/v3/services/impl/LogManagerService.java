@@ -54,6 +54,7 @@ import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.api.branding.Branding;
 import org.glassfish.api.admin.FileMonitoring;
+import org.glassfish.internal.config.UnprocessedConfigListener;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -109,6 +110,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
     @Inject
     LoggingConfigImpl loggingConfig;
+
+    @Inject
+    UnprocessedConfigListener ucl;
 
     final Map <String, Handler> gfHandlers = new HashMap <String,Handler>();
     Logger logger = LogDomains.getLogger(LogManagerService.class,LogDomains.CORE_LOGGER);
@@ -252,6 +256,13 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                                         }
                                     }
 
+                                }
+                                else if(a.endsWith(".file")){
+                                    //check if file name was changed and send notification
+                                    if (!a.contains("${com.sun.aas.instanceRoot}/logs/server.log")){
+                                        ucl.serverRequiresRestart();
+
+                                    }
                                 }
 
                             }
