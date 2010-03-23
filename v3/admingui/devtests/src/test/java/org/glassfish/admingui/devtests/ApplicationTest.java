@@ -1,3 +1,39 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
@@ -22,65 +58,74 @@ public class ApplicationTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_EDIT_APPLICATION = "Edit Application";
     private static final String TRIGGER_APPLICATION_ENABLED = "Selected application(s) has been enabled.";
 
+    private static final String ELEMENT_STATUS = "propertyForm:propertySheet:propertSectionTextField:statusProp:status";
+    private static final String ELEMENT_APP_NAME = "form:war:psection:nameProp:appName";
+    private static final String ELEMENT_CONTEXT_ROOT = "form:war:psection:cxp:ctx";
+    private static final String ELEMENT_UNDEPLOY_BUTTON = "propertyForm:deployTable:topActionsGroup1:button1";
+    private static final String ELEMENT_DEPLOY_TABLE = "propertyForm:deployTable";
+    private static final String ELEMENT_ENABLE_BUTTON = "propertyForm:deployTable:topActionsGroup1:button2";
+    private static final String ELEMENT_CANCEL_BUTTON = "propertyForm:propertyContentPage:topButtons:cancelButton";
+    private static final String ELEMENT_DISABLE_BUTTON = "propertyForm:deployTable:topActionsGroup1:button3";
+    private static final String ELEMENT_UPLOAD_BUTTON = "form:title:topButtons:uploadButton";
+    private static final String ELEMENT_FILE_FIELD = "form:sheet1:section1:prop1:fileupload";
+    private static final String ELEMENT_DEPLOY_BUTTON = "propertyForm:deployTable:topActionsGroup1:deployButton";
+
     @Test
     public void testDeployWar() {
         final String applicationName = generateRandomString();
         clickAndWait("treeForm:tree:applications:applications_link", TRIGGER_APPLICATIONS);
-        int preCount = this.getTableRowCount("propertyForm:deployTable");
+        int preCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
 
         // hrm
-        clickAndWaitForElement("propertyForm:deployTable:topActionsGroup1:deployButton", "form:sheet1:section1:prop1:fileupload");
-//        clickAndWait("propertyForm:deployTable:topActionsGroup1:deployButton", TRIGGER_APPLICATIONS_DEPLOY);
-        //selenium.type("form:sheet1:section1:prop1:fileupload", "../war/target/admingui.war");
+        clickAndWaitForElement(ELEMENT_DEPLOY_BUTTON, ELEMENT_FILE_FIELD);
         File war = new File(new File(".."), "war/target/admingui.war");
         try {
-            selenium.attachFile("form:sheet1:section1:prop1:fileupload", war.toURL().toString());
+            selenium.attachFile(ELEMENT_FILE_FIELD, war.toURL().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-/*
-        selenium.type("form:sheet1:section1:prop1:extension", ".war");
-        selenium.type("form:sheet1:sun_propertySheetSection160:type:appType", "war");
-        selenium.fireEvent("form:sheet1:section1:prop1:fileupload", "onchange");
-        selenium.fireEvent("form:sheet1:section1:prop1:fileupload", "change");
-        selenium.select("form:sheet1:sun_propertySheetSection160:type:appType", "label=Web Application");
-*/
 
-//        waitForPageLoad("Context Root:", 60);
-//        selenium.waitForCondition(CURRENT_WINDOW+".document.getElementById('form:war').style == 'style: block;';", "2500");
-//        assertEquals("admingui", selenium.getValue("form:war:psection:cxp:ctx"));
-        assertEquals("admingui", selenium.getValue("form:war:psection:cxp:ctx"));
-        selenium.type("form:war:psection:cxp:ctx", applicationName);
-        assertEquals("admingui", selenium.getValue("form:war:psection:nameProp:appName"));
-        selenium.type("form:war:psection:nameProp:appName", applicationName);
-        clickAndWait("form:title:topButtons:uploadButton", TRIGGER_APPLICATIONS);
+        assertEquals("admingui", selenium.getValue(ELEMENT_CONTEXT_ROOT));
+        assertEquals("admingui", selenium.getValue(ELEMENT_APP_NAME));
+
+        selenium.type(ELEMENT_CONTEXT_ROOT, applicationName);
+        selenium.type(ELEMENT_APP_NAME, applicationName);
+
+        clickAndWait(ELEMENT_UPLOAD_BUTTON, TRIGGER_APPLICATIONS);
         String conf = "";
         if (selenium.isAlertPresent()) {
             conf = selenium.getAlert();
         }
-        int postCount = this.getTableRowCount("propertyForm:deployTable");
+        int postCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount < postCount);
         
         // Disable application
-        selectTableRowByValue("propertyForm:deployTable", applicationName);
-        clickAndWait("propertyForm:deployTable:topActionsGroup1:button3", TRIGGER_APPLICATION_DISABLED);
-        clickAndWait(getLinkIdByLinkText("propertyForm:deployTable", applicationName), TRIGGER_EDIT_APPLICATION);
-        assertEquals("off", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:statusProp:sun_checkbox211"));
-        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_APPLICATIONS);
+//        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
+//        clickAndWait(ELEMENT_DISABLE_BUTTON, TRIGGER_APPLICATION_DISABLED);
+//        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
+//        assertEquals("off", selenium.getValue(ELEMENT_STATUS));
+//        clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
+
+        testDisableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_DISABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
+
 
         // Enable Application
-        selectTableRowByValue("propertyForm:deployTable", applicationName);
-        clickAndWait("propertyForm:deployTable:topActionsGroup1:button2", TRIGGER_APPLICATION_ENABLED);
-        clickAndWait(getLinkIdByLinkText("propertyForm:deployTable", applicationName), TRIGGER_EDIT_APPLICATION);
-        assertEquals("on", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:statusProp:sun_checkbox211"));
-        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_APPLICATIONS);
+//        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
+//        clickAndWait(ELEMENT_ENABLE_BUTTON, TRIGGER_APPLICATION_ENABLED);
+//        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
+//        assertEquals("on", selenium.getValue(ELEMENT_STATUS));
+//        clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
+
+
+        testEnableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_ENABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
 
         // Undeploy application
         selenium.chooseOkOnNextConfirmation();
-        selectTableRowByValue("propertyForm:deployTable", applicationName);
-        selenium.click("propertyForm:deployTable:topActionsGroup1:button1");
+        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
+        selenium.click(ELEMENT_UNDEPLOY_BUTTON);
+        selenium.getConfirmation();
         waitForPageLoad(applicationName, true);
-        int postUndeployCount = this.getTableRowCount("propertyForm:deployTable");
+        int postUndeployCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount == postUndeployCount);
     }
 }
