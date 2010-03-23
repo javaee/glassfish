@@ -182,7 +182,9 @@ public class BaseSeleniumTestClass {
         selenium.chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
         selenium.click(buttonId);
-        selenium.getConfirmation();
+        if (selenium.isConfirmationPresent()) {
+            selenium.getConfirmation();
+        }
         waitForPageLoad(triggerText, true);
     }
 
@@ -275,7 +277,7 @@ public class BaseSeleniumTestClass {
                                      String tableTriggerText,
                                      String editTriggerText) {
         testEnableDisableButton(resourceName, tableId, disableButtonId, statusId, backToTableButtonId, tableTriggerText, editTriggerText, "off");
-     }
+    }
 
     private void testEnableDisableButton(String resourceName,
                                          String tableId,

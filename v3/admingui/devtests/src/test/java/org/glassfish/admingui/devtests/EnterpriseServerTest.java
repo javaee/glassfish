@@ -38,14 +38,86 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
 public class EnterpriseServerTest extends BaseSeleniumTestClass {
+    private static final String TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION = "Enable reloading so that changes to deployed applications are detected and the modified classes reloaded. Also enable and configure automatic deployment of applications. Click Add Property to specify additional settings.";
+    private static final String TRIGGER_GENERAL_INFORMATION = "General Information";
+    private static final String TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES = "Directory from which applications are deployed";
+    private static final String TRIGGER_SYSTEM_PROPERTIES = "A system property defines a common value for a setting at the server level. You can refer to a system property in a text field by enclosing it in a dollar sign and curly braces.";
+
     @Test
     public void testGeneralInformation() throws Exception {
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", "General Information");
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
 
         assertTrue(selenium.isTextPresent("glassfishv3/glassfish/domains/domain1/config"));
+    }
+
+    @Test
+    public void testAdvancedApplicationsConfiguration() {
+        final String property = generateRandomString();
+        final String value = property + "value";
+        final String description = property + "description";
+
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:serverInstTabs:advanced", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval", "5");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", "30");
+
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
+
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", property);
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
+
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+
+        clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
+        clickAndWait("propertyForm:serverInstTabs:advanced:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
+
+        assertEquals("5", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval"));
+        assertEquals("30", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout"));
+        
+        assertTableRowCount("propertyForm:basicTable", count);
+    }
+
+    @Test
+    public void testAdvancedDomainAttributes() {
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:serverInstTabs:advanced", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
+        clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "fr");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+
+        clickAndWait("propertyForm:serverInstTabs:advanced:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
+        clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
+
+        assertEquals("fr", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "");
+        selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+    }
+
+    @Test
+    public void testSystemProperties() {
+        final String property = generateRandomString();
+        final String value = property + "value";
+        final String description = property + "description";
+
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:serverInstTabs:token", TRIGGER_SYSTEM_PROPERTIES);
+
+        int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", property);
+        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", value);
+        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", description);
+
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:serverInstTabs:general", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:serverInstTabs:token", TRIGGER_SYSTEM_PROPERTIES);
+
+        assertTableRowCount("form1:basicTable", count);
     }
 }
