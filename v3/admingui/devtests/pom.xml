@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium.client-drivers</groupId>
             <artifactId>selenium-java-client-driver</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

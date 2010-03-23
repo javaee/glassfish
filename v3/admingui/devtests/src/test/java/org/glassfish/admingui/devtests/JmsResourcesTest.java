@@ -9,7 +9,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_JMS_CONNECTION_FACTORIES = "Java Message Service (JMS) connection factories";
     private static final String TRIGGER_NEW_JMS_CONN_FACT = "New JMS Connection Factory";
     private static final String TRIGGER_EDIT_JMS_CONN_FACT = "Edit JMS Connection Factory";
-    private static final String TRIGGER_JMS_DESTINATION_RESOURCES = "JMS destinations serve as the repositories for messages.";
+    private static final String TRIGGER_JMS_DESTINATION_RESOURCES = "Click New to create a new destination resource. Click the name of a destination resource to modify its properties.";
     private static final String TRIGGER_NEW_JMS_DEST_RES = "New JMS Destination Resource";
     private static final String TRIGGER_EDIT_JMS_DEST_RES = "Edit JMS Destination Resource";
 

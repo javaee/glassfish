@@ -34,12 +34,12 @@ public class BaseSeleniumTestClass {
 
     protected int generateRandomNumber() {
         Random r = new Random();
-        return Math.abs(r.nextInt());
+        return Math.abs(r.nextInt()) + 1;
     }
 
     protected int generateRandomNumber(int max) {
         Random r = new Random();
-        return Math.abs(r.nextInt(max));
+        return Math.abs(r.nextInt(max - 1)) + 1;
     }
 
     protected int getTableRowCount(String id) {
@@ -56,13 +56,33 @@ public class BaseSeleniumTestClass {
     }
 
     /**
-     * Click the specified element and wait for the specified trigger text on the resulting page, timing out after 1 minute.  
+     * Click the specified element and wait for the specified trigger text on the resulting page, timing out after 2 minutes.
      *
      * @param triggerText
      */
     protected void clickAndWait(String id, String triggerText) {
         selenium.click(id);
-        waitForPageLoad(triggerText, 60);
+        waitForPageLoad(triggerText, 120);
+    }
+
+    protected void clickAndWaitForElement(String clickId, String elementId) {
+        selenium.click(clickId);
+        for (int second = 0; ; second++) {
+            if (second >= 60) {
+                Assert.fail("timeout");
+            }
+            try {
+                if (selenium.isElementPresent(elementId)) {
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     /**
@@ -96,6 +116,7 @@ public class BaseSeleniumTestClass {
                     }
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
             try {
                 Thread.sleep(1000);
@@ -181,7 +202,7 @@ public class BaseSeleniumTestClass {
 
     protected int addTableRow(String tableId, String buttonId, String countLabel) {
         int count = getTableRowCount(tableId);
-        clickAndWait(buttonId, countLabel + " (" + (++count)+")");
+        clickAndWait(buttonId, countLabel + " (" + (++count) + ")");
         return count;
     }
 
@@ -192,7 +213,6 @@ public class BaseSeleniumTestClass {
     // Look at all those params. Maybe this isn't such a hot idea.
 
     /**
-     * 
      * @param resourceName
      * @param tableId
      * @param enableButtonId
@@ -212,23 +232,23 @@ public class BaseSeleniumTestClass {
     }
 
     protected void testDisableButton(String resourceName,
-                                    String tableId,
-                                    String enableButtonId,
-                                    String enabledId,
-                                    String backToTableButtonId,
-                                    String tableTriggerText,
-                                    String editTriggerText) {
+                                     String tableId,
+                                     String enableButtonId,
+                                     String enabledId,
+                                     String backToTableButtonId,
+                                     String tableTriggerText,
+                                     String editTriggerText) {
         testEnableDisableButton(resourceName, tableId, enableButtonId, enabledId, backToTableButtonId, tableTriggerText, editTriggerText, "off");
     }
 
     private void testEnableDisableButton(String resourceName,
-                                    String tableId,
-                                    String enableButtonId,
-                                    String enabledId,
-                                    String backToTableButtonId,
-                                    String tableTriggerText,
-                                    String editTriggerText,
-                                    String state) {
+                                         String tableId,
+                                         String enableButtonId,
+                                         String enabledId,
+                                         String backToTableButtonId,
+                                         String tableTriggerText,
+                                         String editTriggerText,
+                                         String state) {
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
         selenium.click(enableButtonId);
