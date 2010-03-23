@@ -47,6 +47,7 @@
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.newPageHelp}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
         getDefaultPhysicalDestinationValues(map="#{pageSession.valueMap}");
+        println("#{pageSession.valueMap}");
         
         //getRequestValue(key="name" value=>$page{targetName});
         //getRequestValue(key="actualLink" value=>$page{actualLink});

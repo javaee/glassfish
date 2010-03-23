@@ -90,18 +90,18 @@
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$page{configsTableRowGroupId});
                 />
-                <sun:tableColumn selectId="select" rowHeader="$boolean{false}" id="col0">
+                <sun:tableColumn id="col0" selectId="select" rowHeader="$boolean{false}" id="col0">
                     <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
                 </sun:tableColumn>
 
-                <sun:tableColumn headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{true}">
+                <sun:tableColumn id="col1" headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{true}">
                     <sun:hyperlink id="nameCol" text="#{td.value.name}" url="#{pageSession.editPage}?name=#{td.value.name}&type=#{td.value.type}" />
                 </sun:tableColumn>
 
-                <sun:tableColumn headerText="$resource{i18n.common.type.header}" sort="type" rowHeader="$boolean{true}">
+                <sun:tableColumn id="col3" headerText="$resource{i18n.common.type.header}" sort="type" rowHeader="$boolean{true}">
                     <staticText id="typeCol"  value="#{td.value.type}" />
                 </sun:tableColumn>
-                <sun:tableColumn headerText="$resource{i18njms.jmsPhysDestinations.stats}">
+                <sun:tableColumn id="col4" headerText="$resource{i18njms.jmsPhysDestinations.stats}">
                     <sun:hyperlink id="statsCol" text="$resource{i18njms.jmsPhysDestinations.view}" url="#{pageSession.viewPage}?name=#{td.value.name}&type=#{td.value.type}" />
                 </sun:tableColumn>
             </sun:tableRowGroup>

@@ -45,6 +45,10 @@
     />
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{topActionGroup});
+            />
+
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
                 <!command gf.redirect(page="#{createLink}?configName=#{configName}"); />
             </sun:button>

@@ -79,14 +79,14 @@
 
         <sun:propertySheetSection id="http" >
             <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.SsoEnbaled}">
-                <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true"/>
+                <sun:checkbox id="ssoEnabled" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['SsoEnabled']}" selectedValue="true"/>
             </sun:property>
         </sun:propertySheetSection>
     
         <sun:propertySheetSection id="accessLog" label="$resource{i18n_web.access.SectionTitle}">
 
         <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true"/>
+            <sun:checkbox id="accessLoggingEnabled" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap['AccessLoggingEnabled']}" selectedValue="true"/>
         </sun:property>
 
         <sun:property id="rotationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.Rotation}" helpText="$resource{i18n_web.access.RotationHelp}">

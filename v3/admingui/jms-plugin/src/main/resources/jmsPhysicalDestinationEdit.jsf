@@ -50,6 +50,7 @@
         getRequestValue(key="type" value=>$page{destType});
         
         getPhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", destData="#{pageSession.valueMap}");
+        println("#{pageSession.valueMap}");
     />
     </event>
 #include "/common/shared/alertMsg.inc"
