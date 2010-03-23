@@ -52,7 +52,8 @@ public class SecurityTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_EDIT_REALM = "Edit Realm";
     private static final String TRIGGER_FILE_USERS = "File Users";
     private static final String TRIGGER_NEW_FILE_REALM_USER = "New File Realm User";
-    private static final String TRIGGER_AUDIT_MODULES = "Use audit modules to develop an audit trail of all authentication and authorization decisions.";
+    private static final String TRIGGER_AUDIT_MODULES = "com.sun.enterprise.security.Audit"; 
+            //"Use audit modules to develop an audit trail of all authentication and authorization decisions.";
     private static final String TRIGGER_NEW_AUDIT_MODULE = "New Audit Module";
     private static final String TRIGGER_EDIT_AUDIT_MODULE = "Edit Audit Module";
 
