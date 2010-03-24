@@ -109,7 +109,7 @@
 <a name="100" href="#100">100</a>         <strong>else</strong>
 <a name="101" href="#101">101</a>             entries = <strong>new</strong> HashMap&lt;String,String>();
 <a name="102" href="#102">102</a> 
-<a name="103" href="#103">103</a>         entries.put(ManifestConstants.BUNDLE_NAME, pom.getGroupId()+':'+pom.getArtifactId() );
+<a name="103" href="#103">103</a>         entries.put(ManifestConstants.BUNDLE_NAME, pom.getGroupId()+'.'+pom.getArtifactId() );
 <a name="104" href="#104">104</a> 
 <a name="105" href="#105">105</a>         <em class="comment">// check META-INF/services/xxx.ImportPolicy to fill in Import-Policy</em>
 <a name="106" href="#106">106</a>         configureImportPolicy(<strong>class</strong>esDirectory, entries, ImportPolicy.<strong>class</strong>, ManifestConstants.IMPORT_POLICY);
@@ -131,83 +131,86 @@
 <a name="122" href="#122">122</a>             <strong>if</strong>(a.getFile()==<strong>null</strong>) {
 <a name="123" href="#123">123</a>                 <strong>throw</strong> <strong>new</strong> AssertionError(a.getId()+<span class="string">" is not resolved. a="</span>+a);
 <a name="124" href="#124">124</a>             }
-<a name="125" href="#125">125</a> 
-<a name="126" href="#126">126</a>             Manifest manifest = Jar.create(a.getFile()).getManifest();
-<a name="127" href="#127">127</a>             String name = <strong>null</strong>;
-<a name="128" href="#128">128</a>             <strong>if</strong> (man<strong>if</strong>est!=<strong>null</strong>) {
-<a name="129" href="#129">129</a>                 Attributes attributes = manifest.getMainAttributes();
-<a name="130" href="#130">130</a> 
-<a name="131" href="#131">131</a>                 name = attributes.getValue(ManifestConstants.BUNDLE_NAME);
-<a name="132" href="#132">132</a>             }
-<a name="133" href="#133">133</a>             <strong>if</strong> (name != <strong>null</strong>) {
-<a name="134" href="#134">134</a>                 <em class="comment">// this is a hk2 module</em>
-<a name="135" href="#135">135</a>                 <strong>if</strong> (!a.isOptional())
-<a name="136" href="#136">136</a>                     dependencyModuleNames.add(name);
-<a name="137" href="#137">137</a> 
-<a name="138" href="#138">138</a>                 <em class="comment">// even optional modules need to be listed here</em>
-<a name="139" href="#139">139</a>                 dependencyModules.add(a.getGroupId() + ':' + a.getArtifactId() + ':');
-<a name="140" href="#140">140</a>             }
-<a name="141" href="#141">141</a>         }
-<a name="142" href="#142">142</a>         <strong>if</strong>(!dependencyModuleNames.isEmpty()) {
-<a name="143" href="#143">143</a>             entries.put(ManifestConstants.BUNDLE_IMPORT_NAME,dependencyModuleNames.toString());
-<a name="144" href="#144">144</a>         }
-<a name="145" href="#145">145</a> 
-<a name="146" href="#146">146</a>         <em class="comment">// find jar files to be listed in Class-Path. This needs to include transitive</em>
-<a name="147" href="#147">147</a>         <em class="comment">// dependencies, except when the path involves a hk2 module.</em>
-<a name="148" href="#148">148</a>         <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a> classPathNames = <strong>new</strong> <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a>(<span class="string">" "</span>);
-<a name="149" href="#149">149</a>         <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a> classPathIds = <strong>new</strong> <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a>(<span class="string">" "</span>);
-<a name="150" href="#150">150</a>         <strong>for</strong> (Artifact a : (Set&lt;Artifact>)pom.getArtifacts()) {
-<a name="151" href="#151">151</a>             <em class="comment">// check the trail. does that include hk2 module in the path?</em>
-<a name="152" href="#152">152</a>             <strong>boolean</strong> throughModule = false;
-<a name="153" href="#153">153</a>             <strong>for</strong> (String module : dependencyModules)
-<a name="154" href="#154">154</a>                 throughModule |= a.getDependencyTrail().get(1).toString().startsWith(module);
-<a name="155" href="#155">155</a>             <strong>if</strong>(throughModule)
-<a name="156" href="#156">156</a>                 <strong>continue</strong>;   <em class="comment">// yep</em>
-<a name="157" href="#157">157</a> 
-<a name="158" href="#158">158</a>             <strong>if</strong>(a.getScope().equals(<span class="string">"system"</span>) || a.getScope().equals(<span class="string">"provided"</span>) || a.getScope().equals(<span class="string">"test"</span>))
-<a name="159" href="#159">159</a>                 <strong>continue</strong>;   <em class="comment">// ignore tools.jar and such dependencies.</em>
+<a name="125" href="#125">125</a>             Jar jar;
+<a name="126" href="#126">126</a>             <strong>try</strong> {
+<a name="127" href="#127">127</a>                 jar = Jar.create(a.getFile());
+<a name="128" href="#128">128</a>             } <strong>catch</strong> (IOException ioe) {
+<a name="129" href="#129">129</a>                 <em class="comment">// not a jar file, so continue.</em>
+<a name="130" href="#130">130</a>                 <strong>continue</strong>;
+<a name="131" href="#131">131</a>             }
+<a name="132" href="#132">132</a>             Manifest manifest = jar.getManifest();
+<a name="133" href="#133">133</a>             String name = <strong>null</strong>;
+<a name="134" href="#134">134</a>             <strong>if</strong> (man<strong>if</strong>est!=<strong>null</strong>) {
+<a name="135" href="#135">135</a>                 Attributes attributes = manifest.getMainAttributes();
+<a name="136" href="#136">136</a> 
+<a name="137" href="#137">137</a>                 name = attributes.getValue(ManifestConstants.BUNDLE_NAME);
+<a name="138" href="#138">138</a>             }
+<a name="139" href="#139">139</a>             <strong>if</strong> (name != <strong>null</strong>) {
+<a name="140" href="#140">140</a>                 <em class="comment">// this is a hk2 module</em>
+<a name="141" href="#141">141</a>                 <strong>if</strong> (!a.isOptional())
+<a name="142" href="#142">142</a>                     dependencyModuleNames.add(name);
+<a name="143" href="#143">143</a> 
+<a name="144" href="#144">144</a>                 <em class="comment">// even optional modules need to be listed here</em>
+<a name="145" href="#145">145</a>                 dependencyModules.add(a.getGroupId() + '.' + a.getArtifactId() + ':' + a.getVersion());
+<a name="146" href="#146">146</a>             }
+<a name="147" href="#147">147</a>         }
+<a name="148" href="#148">148</a> 
+<a name="149" href="#149">149</a>         <em class="comment">// find jar files to be listed in Class-Path. This needs to include transitive</em>
+<a name="150" href="#150">150</a>         <em class="comment">// dependencies, except when the path involves a hk2 module.</em>
+<a name="151" href="#151">151</a>         <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a> classPathNames = <strong>new</strong> <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a>(<span class="string">" "</span>);
+<a name="152" href="#152">152</a>         <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a> classPathIds = <strong>new</strong> <a href="../../../../../com/sun/enterprise/module/maven/TokenListBuilder.html">TokenListBuilder</a>(<span class="string">" "</span>);
+<a name="153" href="#153">153</a>         <strong>for</strong> (Artifact a : (Set&lt;Artifact>)pom.getArtifacts()) {
+<a name="154" href="#154">154</a>             <em class="comment">// check the trail. does that include hk2 module in the path?</em>
+<a name="155" href="#155">155</a>             <strong>boolean</strong> throughModule = false;
+<a name="156" href="#156">156</a>             <strong>for</strong> (String module : dependencyModules)
+<a name="157" href="#157">157</a>                 throughModule |= a.getDependencyTrail().get(1).toString().startsWith(module);
+<a name="158" href="#158">158</a>             <strong>if</strong>(throughModule)
+<a name="159" href="#159">159</a>                 <strong>continue</strong>;   <em class="comment">// yep</em>
 <a name="160" href="#160">160</a> 
-<a name="161" href="#161">161</a>             <strong>if</strong>(a.isOptional())
-<a name="162" href="#162">162</a>                 <strong>continue</strong>;   <em class="comment">// optional dependency</em>
-<a name="163" href="#163">163</a>             
-<a name="164" href="#164">164</a>             classPathNames.add(stripVersion(a));
-<a name="165" href="#165">165</a>             classPathIds.add(a.getId());
-<a name="166" href="#166">166</a>         }
-<a name="167" href="#167">167</a>         <strong>if</strong>(!classPathNames.isEmpty()) {
-<a name="168" href="#168">168</a>             String existingClassPath = entries.get(ManifestConstants.CLASS_PATH);
-<a name="169" href="#169">169</a>             <strong>if</strong>(existingClassPath!=<strong>null</strong>)
-<a name="170" href="#170">170</a>                 entries.put(ManifestConstants.CLASS_PATH,existingClassPath+<span class="string">" "</span>+classPathNames);
-<a name="171" href="#171">171</a>             <strong>else</strong>
-<a name="172" href="#172">172</a>                 entries.put(ManifestConstants.CLASS_PATH,classPathNames.toString());
-<a name="173" href="#173">173</a> 
-<a name="174" href="#174">174</a>             entries.put(ManifestConstants.CLASS_PATH_ID,classPathIds.toString());
-<a name="175" href="#175">175</a>         }
+<a name="161" href="#161">161</a>             <strong>if</strong>(a.getScope().equals(<span class="string">"system"</span>) || a.getScope().equals(<span class="string">"provided"</span>) || a.getScope().equals(<span class="string">"test"</span>))
+<a name="162" href="#162">162</a>                 <strong>continue</strong>;   <em class="comment">// ignore tools.jar and such dependencies.</em>
+<a name="163" href="#163">163</a> 
+<a name="164" href="#164">164</a>             <strong>if</strong>(a.isOptional())
+<a name="165" href="#165">165</a>                 <strong>continue</strong>;   <em class="comment">// optional dependency</em>
+<a name="166" href="#166">166</a>             
+<a name="167" href="#167">167</a>             classPathNames.add(stripVersion(a));
+<a name="168" href="#168">168</a>             classPathIds.add(a.getId());
+<a name="169" href="#169">169</a>         }
+<a name="170" href="#170">170</a>         <strong>if</strong>(!classPathNames.isEmpty()) {
+<a name="171" href="#171">171</a>             String existingClassPath = entries.get(ManifestConstants.CLASS_PATH);
+<a name="172" href="#172">172</a>             <strong>if</strong>(existingClassPath!=<strong>null</strong>)
+<a name="173" href="#173">173</a>                 entries.put(ManifestConstants.CLASS_PATH,existingClassPath+<span class="string">" "</span>+classPathNames);
+<a name="174" href="#174">174</a>             <strong>else</strong>
+<a name="175" href="#175">175</a>                 entries.put(ManifestConstants.CLASS_PATH,classPathNames.toString());
 <a name="176" href="#176">176</a> 
-<a name="177" href="#177">177</a>         <strong>return</strong> entries;
-<a name="178" href="#178">178</a>     }
+<a name="177" href="#177">177</a>             entries.put(ManifestConstants.CLASS_PATH_ID,classPathIds.toString());
+<a name="178" href="#178">178</a>         }
 <a name="179" href="#179">179</a> 
-<a name="180" href="#180">180</a>     <strong>private</strong> <strong>void</strong> configureImportPolicy(File classesDirectory, Map&lt;String, String> entries, Class&lt;?> clazz, String entryName) throws IOException {
-<a name="181" href="#181">181</a>         File importPolicy = <strong>new</strong> File(classesDirectory, <span class="string">"META-INF/services/"</span> + clazz.getName());
-<a name="182" href="#182">182</a>         <strong>if</strong>(importPolicy.exists()) {
-<a name="183" href="#183">183</a>             BufferedReader in = <strong>new</strong> BufferedReader(<strong>new</strong> InputStreamReader(<strong>new</strong> FileInputStream(importPolicy), <span class="string">"UTF-8"</span>));
-<a name="184" href="#184">184</a>             entries.put(entryName,in.readLine());
-<a name="185" href="#185">185</a>             in.close();
-<a name="186" href="#186">186</a>         }
-<a name="187" href="#187">187</a>     }
-<a name="188" href="#188">188</a> 
-<a name="189" href="#189">189</a>     <strong>private</strong> <strong>static</strong> String stripVersion(Artifact a) {
-<a name="190" href="#190">190</a>         String origName = a.getFile().getName();
-<a name="191" href="#191">191</a>         String newName = origName;
-<a name="192" href="#192">192</a>         <strong>int</strong> idx = origName.lastIndexOf(a.getVersion());
-<a name="193" href="#193">193</a>         <strong>if</strong> (idx != -1) {
-<a name="194" href="#194">194</a>             <em class="comment">// remove version in artifactId-version(-classifier).type</em>
-<a name="195" href="#195">195</a>             String baseFilename = origName.substring( 0, idx - 1 );
-<a name="196" href="#196">196</a>             String extension = origName.substring( idx + a.getVersion().length());
-<a name="197" href="#197">197</a>             newName = baseFilename + extension;
-<a name="198" href="#198">198</a>         }
-<a name="199" href="#199">199</a>         <strong>return</strong> newName;
-<a name="200" href="#200">200</a>     }
-<a name="201" href="#201">201</a> }
+<a name="180" href="#180">180</a>         <strong>return</strong> entries;
+<a name="181" href="#181">181</a>     }
+<a name="182" href="#182">182</a> 
+<a name="183" href="#183">183</a>     <strong>private</strong> <strong>void</strong> configureImportPolicy(File classesDirectory, Map&lt;String, String> entries, Class&lt;?> clazz, String entryName) throws IOException {
+<a name="184" href="#184">184</a>         File importPolicy = <strong>new</strong> File(classesDirectory, <span class="string">"META-INF/services/"</span> + clazz.getName());
+<a name="185" href="#185">185</a>         <strong>if</strong>(importPolicy.exists()) {
+<a name="186" href="#186">186</a>             BufferedReader in = <strong>new</strong> BufferedReader(<strong>new</strong> InputStreamReader(<strong>new</strong> FileInputStream(importPolicy), <span class="string">"UTF-8"</span>));
+<a name="187" href="#187">187</a>             entries.put(entryName,in.readLine());
+<a name="188" href="#188">188</a>             in.close();
+<a name="189" href="#189">189</a>         }
+<a name="190" href="#190">190</a>     }
+<a name="191" href="#191">191</a> 
+<a name="192" href="#192">192</a>     <strong>private</strong> <strong>static</strong> String stripVersion(Artifact a) {
+<a name="193" href="#193">193</a>         String origName = a.getFile().getName();
+<a name="194" href="#194">194</a>         String newName = origName;
+<a name="195" href="#195">195</a>         <strong>int</strong> idx = origName.lastIndexOf(a.getVersion());
+<a name="196" href="#196">196</a>         <strong>if</strong> (idx != -1) {
+<a name="197" href="#197">197</a>             <em class="comment">// remove version in artifactId-version(-classifier).type</em>
+<a name="198" href="#198">198</a>             String baseFilename = origName.substring( 0, idx - 1 );
+<a name="199" href="#199">199</a>             String extension = origName.substring( idx + a.getVersion().length());
+<a name="200" href="#200">200</a>             newName = baseFilename + extension;
+<a name="201" href="#201">201</a>         }
+<a name="202" href="#202">202</a>         <strong>return</strong> newName;
+<a name="203" href="#203">203</a>     }
+<a name="204" href="#204">204</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

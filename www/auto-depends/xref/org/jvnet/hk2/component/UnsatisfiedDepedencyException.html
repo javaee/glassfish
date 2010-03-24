@@ -50,58 +50,68 @@
 <a name="41" href="#41">41</a>  <strong>import</strong> java.lang.reflect.AnnotatedElement;
 <a name="42" href="#42">42</a>  <strong>import</strong> java.lang.reflect.Field;
 <a name="43" href="#43">43</a>  <strong>import</strong> java.lang.reflect.Method;
-<a name="44" href="#44">44</a>  
-<a name="45" href="#45">45</a>  <em>/**<em>*</em></em>
-<a name="46" href="#46">46</a>  <em> * Exception thrown by the injection manager when a dependency is not satisfied when</em>
-<a name="47" href="#47">47</a>  <em> * performing injection.</em>
-<a name="48" href="#48">48</a>  <em> *</em>
-<a name="49" href="#49">49</a>  <em> * @author Jerome Dochez</em>
-<a name="50" href="#50">50</a>  <em> */</em>
-<a name="51" href="#51">51</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a> <strong>extends</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a> {
-<a name="52" href="#52">52</a>  
-<a name="53" href="#53">53</a>      Field field = <strong>null</strong>;
-<a name="54" href="#54">54</a>      Method method = <strong>null</strong>;
-<a name="55" href="#55">55</a>  
+<a name="44" href="#44">44</a>  <strong>import</strong> java.lang.reflect.Member;
+<a name="45" href="#45">45</a>  <strong>import</strong> java.lang.annotation.Annotation;
+<a name="46" href="#46">46</a>  
+<a name="47" href="#47">47</a>  <em>/**<em>*</em></em>
+<a name="48" href="#48">48</a>  <em> * Exception thrown by the injection manager when a dependency is not satisfied when</em>
+<a name="49" href="#49">49</a>  <em> * performing injection.</em>
+<a name="50" href="#50">50</a>  <em> *</em>
+<a name="51" href="#51">51</a>  <em> * @author Jerome Dochez</em>
+<a name="52" href="#52">52</a>  <em> */</em>
+<a name="53" href="#53">53</a>  <strong>public</strong> <strong>class</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a> <strong>extends</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a> {
+<a name="54" href="#54">54</a>  
+<a name="55" href="#55">55</a>      Member member = <strong>null</strong>;
 <a name="56" href="#56">56</a>  
-<a name="57" href="#57">57</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Field target) {
-<a name="58" href="#58">58</a>          <strong>this</strong>(target,<strong>null</strong>);
-<a name="59" href="#59">59</a>      }
-<a name="60" href="#60">60</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Field target,Throwable cause) {
-<a name="61" href="#61">61</a>          <strong>super</strong>(<span class="string">"Unsatisfied dependency exception : "</span> + target,cause);
-<a name="62" href="#62">62</a>          <strong>this</strong>.field = target;
-<a name="63" href="#63">63</a>      }
-<a name="64" href="#64">64</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Method target) {
-<a name="65" href="#65">65</a>          <strong>this</strong>(target,<strong>null</strong>);
-<a name="66" href="#66">66</a>      }
-<a name="67" href="#67">67</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Method target,Throwable cause) {
-<a name="68" href="#68">68</a>          <strong>super</strong>(<span class="string">"Unsatisfied dependency exception : "</span> + target,cause);
-<a name="69" href="#69">69</a>          <strong>this</strong>.method = target;
-<a name="70" href="#70">70</a>      }
-<a name="71" href="#71">71</a>  
-<a name="72" href="#72">72</a>      <strong>public</strong> <strong>boolean</strong> isField() {
-<a name="73" href="#73">73</a>          <strong>return</strong> field!=<strong>null</strong>;
-<a name="74" href="#74">74</a>      }
-<a name="75" href="#75">75</a>  
-<a name="76" href="#76">76</a>      <strong>public</strong> <strong>boolean</strong> isMethod() {
-<a name="77" href="#77">77</a>          <strong>return</strong> method!=<strong>null</strong>;
-<a name="78" href="#78">78</a>      }
-<a name="79" href="#79">79</a>  
-<a name="80" href="#80">80</a>      <strong>public</strong> String getUnsatisfiedName() {
-<a name="81" href="#81">81</a>          <strong>if</strong> (field!=<strong>null</strong>) {
-<a name="82" href="#82">82</a>              <strong>return</strong> field.getName();
-<a name="83" href="#83">83</a>          }
-<a name="84" href="#84">84</a>          <strong>if</strong> (method!=<strong>null</strong>) {
-<a name="85" href="#85">85</a>              <strong>return</strong> method.getName().substring(3).toLowerCase();
-<a name="86" href="#86">86</a>          }
-<a name="87" href="#87">87</a>          <strong>return</strong> <span class="string">"unknown"</span>;
-<a name="88" href="#88">88</a>      }
-<a name="89" href="#89">89</a>  
-<a name="90" href="#90">90</a>      <strong>public</strong> AnnotatedElement getUnsatisfiedElement() {
-<a name="91" href="#91">91</a>          <strong>if</strong> (field!=<strong>null</strong>) <strong>return</strong> field;
-<a name="92" href="#92">92</a>          <strong>if</strong> (method!=<strong>null</strong>) <strong>return</strong> method;
-<a name="93" href="#93">93</a>          <strong>return</strong> <strong>null</strong>;
-<a name="94" href="#94">94</a>      }
-<a name="95" href="#95">95</a>  }
+<a name="57" href="#57">57</a>  
+<a name="58" href="#58">58</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Field target) {
+<a name="59" href="#59">59</a>          <strong>this</strong>(target,<strong>null</strong>);
+<a name="60" href="#60">60</a>      }
+<a name="61" href="#61">61</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Field target,Throwable cause) {
+<a name="62" href="#62">62</a>          <strong>super</strong>(<span class="string">"Unsatisfied dependency exception : "</span> + target,cause);
+<a name="63" href="#63">63</a>          <strong>this</strong>.member = target;
+<a name="64" href="#64">64</a>      }
+<a name="65" href="#65">65</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Method target) {
+<a name="66" href="#66">66</a>          <strong>this</strong>(target,<strong>null</strong>);
+<a name="67" href="#67">67</a>      }
+<a name="68" href="#68">68</a>      <strong>public</strong> <a href="../../../../org/jvnet/hk2/component/UnsatisfiedDepedencyException.html">UnsatisfiedDepedencyException</a>(Method target,Throwable cause) {
+<a name="69" href="#69">69</a>          <strong>super</strong>(<span class="string">"Unsatisfied dependency exception : "</span> + target,cause);
+<a name="70" href="#70">70</a>          <strong>this</strong>.member = target;
+<a name="71" href="#71">71</a>      }
+<a name="72" href="#72">72</a>  
+<a name="73" href="#73">73</a>      <strong>public</strong> <strong>boolean</strong> isField() {
+<a name="74" href="#74">74</a>          <strong>return</strong> member instanceof Field;
+<a name="75" href="#75">75</a>      }
+<a name="76" href="#76">76</a>  
+<a name="77" href="#77">77</a>      <strong>public</strong> <strong>boolean</strong> isMethod() {
+<a name="78" href="#78">78</a>          <strong>return</strong> member instanceof Method;
+<a name="79" href="#79">79</a>      }
+<a name="80" href="#80">80</a>  
+<a name="81" href="#81">81</a>      <strong>public</strong> String getUnsatisfiedName() {
+<a name="82" href="#82">82</a>          String name = member.getName();
+<a name="83" href="#83">83</a>          <strong>if</strong> (isMethod()) {
+<a name="84" href="#84">84</a>              <strong>return</strong> name.substring(3).toLowerCase();
+<a name="85" href="#85">85</a>          }
+<a name="86" href="#86">86</a>          <strong>return</strong> name;
+<a name="87" href="#87">87</a>      }
+<a name="88" href="#88">88</a>  
+<a name="89" href="#89">89</a>      <strong>public</strong> AnnotatedElement getUnsatisfiedElement() {
+<a name="90" href="#90">90</a>          <strong>try</strong> {
+<a name="91" href="#91">91</a>              <strong>return</strong> AnnotatedElement.<strong>class</strong>.<strong>cast</strong>(member);
+<a name="92" href="#92">92</a>          } <strong>catch</strong>(ClassCastException e) {
+<a name="93" href="#93">93</a>              <strong>return</strong> <strong>null</strong>;
+<a name="94" href="#94">94</a>          }
+<a name="95" href="#95">95</a>      }
+<a name="96" href="#96">96</a>  
+<a name="97" href="#97">97</a>      <strong>public</strong> &lt;T <strong>extends</strong> Annotation> T getAnnotation(Class&lt;T> annotationType) {
+<a name="98" href="#98">98</a>          AnnotatedElement annotated = getUnsatisfiedElement();
+<a name="99" href="#99">99</a>          <strong>if</strong> (annotated!=<strong>null</strong>) {
+<a name="100" href="#100">100</a>             <strong>return</strong> annotated.getAnnotation(annotationType);
+<a name="101" href="#101">101</a>         } <strong>else</strong> {
+<a name="102" href="#102">102</a>             <strong>return</strong> <strong>null</strong>;
+<a name="103" href="#103">103</a>         }
+<a name="104" href="#104">104</a>     }
+<a name="105" href="#105">105</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

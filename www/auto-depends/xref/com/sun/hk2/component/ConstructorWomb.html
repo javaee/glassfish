@@ -45,204 +45,86 @@
 <a name="36" href="#36">36</a>  <em class="comment"> */</em>
 <a name="37" href="#37">37</a>  <strong>package</strong> com.sun.hk2.component;
 <a name="38" href="#38">38</a>  
-<a name="39" href="#39">39</a>  <strong>import</strong> org.jvnet.hk2.annotations.Extract;
-<a name="40" href="#40">40</a>  <strong>import</strong> org.jvnet.hk2.annotations.Scoped;
-<a name="41" href="#41">41</a>  <strong>import</strong> org.jvnet.hk2.component.ComponentException;
-<a name="42" href="#42">42</a>  <strong>import</strong> org.jvnet.hk2.component.Habitat;
-<a name="43" href="#43">43</a>  <strong>import</strong> org.jvnet.hk2.component.Inhabitant;
-<a name="44" href="#44">44</a>  <strong>import</strong> org.jvnet.hk2.component.MultiMap;
-<a name="45" href="#45">45</a>  <strong>import</strong> org.jvnet.hk2.component.PerLookup;
-<a name="46" href="#46">46</a>  <strong>import</strong> org.jvnet.hk2.component.Scope;
-<a name="47" href="#47">47</a>  <strong>import</strong> org.jvnet.hk2.component.Singleton;
-<a name="48" href="#48">48</a>  
-<a name="49" href="#49">49</a>  <strong>import</strong> java.lang.reflect.Field;
-<a name="50" href="#50">50</a>  <strong>import</strong> java.lang.reflect.InvocationTargetException;
-<a name="51" href="#51">51</a>  <strong>import</strong> java.lang.reflect.Method;
-<a name="52" href="#52">52</a>  <strong>import</strong> java.security.AccessController;
-<a name="53" href="#53">53</a>  <strong>import</strong> java.security.PrivilegedAction;
-<a name="54" href="#54">54</a>  
-<a name="55" href="#55">55</a>  <em>/**<em>*</em></em>
-<a name="56" href="#56">56</a>  <em> * Creates an object from its constructor.</em>
-<a name="57" href="#57">57</a>  <em> * @author Kohsuke Kawaguchi</em>
-<a name="58" href="#58">58</a>  <em> */</em>
-<a name="59" href="#59">59</a>  <strong>public</strong> <strong>class</strong> ConstructorWomb&lt;T> <strong>extends</strong> AbstractWombImpl&lt;T> {
-<a name="60" href="#60">60</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat;
-<a name="61" href="#61">61</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> singletonScope;
-<a name="62" href="#62">62</a>  
-<a name="63" href="#63">63</a>  
-<a name="64" href="#64">64</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/ConstructorWomb.html">ConstructorWomb</a>(Class&lt;T> type, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, MultiMap&lt;String,String> metadata) {
-<a name="65" href="#65">65</a>          <strong>super</strong>(type,metadata);
-<a name="66" href="#66">66</a>          <strong>this</strong>.habitat = habitat;
-<a name="67" href="#67">67</a>          singletonScope = habitat.singletonScope;
-<a name="68" href="#68">68</a>      }
-<a name="69" href="#69">69</a>  
-<a name="70" href="#70">70</a>      <strong>public</strong> T create(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
-<a name="71" href="#71">71</a>          <strong>try</strong> {
-<a name="72" href="#72">72</a>              <strong>return</strong> type.newInstance();
-<a name="73" href="#73">73</a>          } <strong>catch</strong> (InstantiationException e) {
+<a name="39" href="#39">39</a>  <strong>import</strong> org.jvnet.hk2.annotations.Scoped;
+<a name="40" href="#40">40</a>  <strong>import</strong> org.jvnet.hk2.component.ComponentException;
+<a name="41" href="#41">41</a>  <strong>import</strong> org.jvnet.hk2.component.Habitat;
+<a name="42" href="#42">42</a>  <strong>import</strong> org.jvnet.hk2.component.Inhabitant;
+<a name="43" href="#43">43</a>  <strong>import</strong> org.jvnet.hk2.component.MultiMap;
+<a name="44" href="#44">44</a>  <strong>import</strong> org.jvnet.hk2.component.PerLookup;
+<a name="45" href="#45">45</a>  <strong>import</strong> org.jvnet.hk2.component.Scope;
+<a name="46" href="#46">46</a>  <strong>import</strong> org.jvnet.hk2.component.Singleton;
+<a name="47" href="#47">47</a>  
+<a name="48" href="#48">48</a>  <strong>import</strong> java.security.AccessController;
+<a name="49" href="#49">49</a>  <strong>import</strong> java.security.PrivilegedAction;
+<a name="50" href="#50">50</a>  
+<a name="51" href="#51">51</a>  <em>/**<em>*</em></em>
+<a name="52" href="#52">52</a>  <em> * Creates an object from its constructor.</em>
+<a name="53" href="#53">53</a>  <em> * @author Kohsuke Kawaguchi</em>
+<a name="54" href="#54">54</a>  <em> */</em>
+<a name="55" href="#55">55</a>  <strong>public</strong> <strong>class</strong> ConstructorWomb&lt;T> <strong>extends</strong> AbstractWombImpl&lt;T> {
+<a name="56" href="#56">56</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat;
+<a name="57" href="#57">57</a>      <strong>private</strong> <strong>final</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> singletonScope;
+<a name="58" href="#58">58</a>  
+<a name="59" href="#59">59</a>  
+<a name="60" href="#60">60</a>      <strong>public</strong> <a href="../../../../com/sun/hk2/component/ConstructorWomb.html">ConstructorWomb</a>(Class&lt;T> type, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, MultiMap&lt;String,String> metadata) {
+<a name="61" href="#61">61</a>          <strong>super</strong>(type,metadata);
+<a name="62" href="#62">62</a>          <strong>this</strong>.habitat = habitat;
+<a name="63" href="#63">63</a>          singletonScope = habitat.singletonScope;
+<a name="64" href="#64">64</a>      }
+<a name="65" href="#65">65</a>  
+<a name="66" href="#66">66</a>      <strong>public</strong> T create(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
+<a name="67" href="#67">67</a>          <strong>try</strong> {
+<a name="68" href="#68">68</a>              <strong>return</strong> type.newInstance();
+<a name="69" href="#69">69</a>          } <strong>catch</strong> (InstantiationException e) {
+<a name="70" href="#70">70</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to create "</span>+type,e);
+<a name="71" href="#71">71</a>          } <strong>catch</strong> (IllegalAccessException e) {
+<a name="72" href="#72">72</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to create "</span>+type,e);
+<a name="73" href="#73">73</a>          } <strong>catch</strong> (LinkageError e) {
 <a name="74" href="#74">74</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to create "</span>+type,e);
-<a name="75" href="#75">75</a>          } <strong>catch</strong> (IllegalAccessException e) {
+<a name="75" href="#75">75</a>          } <strong>catch</strong> (RuntimeException e) {
 <a name="76" href="#76">76</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to create "</span>+type,e);
-<a name="77" href="#77">77</a>          } <strong>catch</strong> (LinkageError e) {
-<a name="78" href="#78">78</a>              <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Failed to create "</span>+type,e);
-<a name="79" href="#79">79</a>          }
-<a name="80" href="#80">80</a>      }
+<a name="77" href="#77">77</a>          }
+<a name="78" href="#78">78</a>      }
+<a name="79" href="#79">79</a>  
+<a name="80" href="#80">80</a>      <strong>public</strong> <strong>void</strong> initialize(<strong>final</strong> T t, <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
 <a name="81" href="#81">81</a>  
-<a name="82" href="#82">82</a>  
-<a name="83" href="#83">83</a>      <strong>public</strong> <strong>void</strong> initialize(<strong>final</strong> T t, <strong>final</strong> <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
-<a name="84" href="#84">84</a>  
-<a name="85" href="#85">85</a>          <a href="../../../../org/jvnet/hk2/annotations/Scoped.html">Scoped</a> scoped = t.getClass().getAnnotation(Scoped.<strong>class</strong>);
-<a name="86" href="#86">86</a>          <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si = (scoped == <strong>null</strong> ? singletonScope : getScope(scoped));
-<a name="87" href="#87">87</a>          AccessController.doPrivileged(<strong>new</strong> PrivilegedAction() {
-<a name="88" href="#88">88</a>              <em class="comment">//doprivileged required for running with SecurityManager ON</em>
-<a name="89" href="#89">89</a>              <strong>public</strong> java.lang.Object run() {
-<a name="90" href="#90">90</a>                  inject(habitat, t, onBehalfOf);
-<a name="91" href="#91">91</a>                  <strong>return</strong> <strong>null</strong>;
-<a name="92" href="#92">92</a>              }
-<a name="93" href="#93">93</a>          });
-<a name="94" href="#94">94</a>  
-<a name="95" href="#95">95</a>          <strong>if</strong>(si!=<strong>null</strong>)
-<a name="96" href="#96">96</a>              <em class="comment">// extraction amounts to no-op if this is prototype scope. so skip that.</em>
-<a name="97" href="#97">97</a>              extract(t, si);
-<a name="98" href="#98">98</a>  
-<a name="99" href="#99">99</a>      }
-<a name="100" href="#100">100</a> 
-<a name="101" href="#101">101</a>     <em>/**<em>*</em></em>
-<a name="102" href="#102">102</a> <em>     * Extracts resources identified with {@link org.jvnet.hk2.annotations.Extract} annotations</em>
-<a name="103" href="#103">103</a> <em>     * into the given scope.</em>
-<a name="104" href="#104">104</a> <em>     *</em>
-<a name="105" href="#105">105</a> <em>     * &lt;p></em>
-<a name="106" href="#106">106</a> <em>     * This method is for the use within HK2, and not really meant</em>
-<a name="107" href="#107">107</a> <em>     * to be used by application code.</em>
-<a name="108" href="#108">108</a> <em>     *</em>
-<a name="109" href="#109">109</a> <em>     * @param component the component we should extract resources from</em>
-<a name="110" href="#110">110</a> <em>     * @throws ComponentException if the resource extract fail</em>
-<a name="111" href="#111">111</a> <em>     */</em>
-<a name="112" href="#112">112</a>     <strong>public</strong> <strong>void</strong> extract(Object component, <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si) throws ComponentException {
-<a name="113" href="#113">113</a>         Class&lt;?> currentClass = component.getClass();
-<a name="114" href="#114">114</a>         <strong>while</strong> (!currentClass.equals(Object.<strong>class</strong>)) {
-<a name="115" href="#115">115</a>             <strong>for</strong> (Field field : currentClass.getDeclaredFields()) {
-<a name="116" href="#116">116</a>                 <a href="../../../../org/jvnet/hk2/annotations/Extract.html">Extract</a> extract = field.getAnnotation(Extract.<strong>class</strong>);
-<a name="117" href="#117">117</a>                 <strong>if</strong> (extract == <strong>null</strong>)    <strong>continue</strong>;
-<a name="118" href="#118">118</a> 
-<a name="119" href="#119">119</a>                 <strong>try</strong> {
-<a name="120" href="#120">120</a>                     field.setAccessible(<strong>true</strong>);
-<a name="121" href="#121">121</a>                     Object value = field.get(component);
-<a name="122" href="#122">122</a>                     Class&lt;?> type = field.getType();
-<a name="123" href="#123">123</a> 
-<a name="124" href="#124">124</a> <em class="comment">//                    if (LOGGER.isLoggable(Level.FINER)) {</em>
-<a name="125" href="#125">125</a> <em class="comment">//                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + field);</em>
-<a name="126" href="#126">126</a> <em class="comment">//                    }</em>
-<a name="127" href="#127">127</a>                     <strong>if</strong> (value!=<strong>null</strong>) {
-<a name="128" href="#128">128</a>                         extractValue(value, si, extract.name(), type);
-<a name="129" href="#129">129</a>                     } <strong>else</strong> {
-<a name="130" href="#130">130</a> <em class="comment">//                        if (LOGGER.isLoggable(Level.FINE)) {</em>
-<a name="131" href="#131">131</a> <em class="comment">//                            LOGGER.log(Level.FINE, "Resource returned from " + field + " is null");</em>
-<a name="132" href="#132">132</a> <em class="comment">//                        }</em>
-<a name="133" href="#133">133</a>                     }
-<a name="134" href="#134">134</a>                 } <strong>catch</strong> (IllegalArgumentException ex) {
-<a name="135" href="#135">135</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed on "</span> + field, ex);
-<a name="136" href="#136">136</a> 
-<a name="137" href="#137">137</a>                 } <strong>catch</strong> (IllegalAccessException ex) {
-<a name="138" href="#138">138</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed on "</span> + field, ex);
-<a name="139" href="#139">139</a>                 }
-<a name="140" href="#140">140</a>             }
-<a name="141" href="#141">141</a>             <strong>for</strong> (Method method : currentClass.getDeclaredMethods()) {
-<a name="142" href="#142">142</a>                 <a href="../../../../org/jvnet/hk2/annotations/Extract.html">Extract</a> extract = method.getAnnotation(Extract.<strong>class</strong>);
-<a name="143" href="#143">143</a>                 <strong>if</strong> (extract == <strong>null</strong>)    <strong>continue</strong>;
-<a name="144" href="#144">144</a> 
-<a name="145" href="#145">145</a>                 Class&lt;?> type = method.getReturnType();
-<a name="146" href="#146">146</a>                 <strong>if</strong> (type == <strong>null</strong>) {
-<a name="147" href="#147">147</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed : %s has a void return type"</span>,method);
-<a name="148" href="#148">148</a>                 }
-<a name="149" href="#149">149</a>                 <strong>if</strong> (method.getParameterTypes().length > 0) {
-<a name="150" href="#150">150</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed : %s takes parameters, it should not"</span>,method);
-<a name="151" href="#151">151</a>                 }
-<a name="152" href="#152">152</a>                 <strong>try</strong> {
-<a name="153" href="#153">153</a>                     method.setAccessible(<strong>true</strong>);
-<a name="154" href="#154">154</a>                     Object value = method.invoke(component);
-<a name="155" href="#155">155</a> <em class="comment">//                    if (LOGGER.isLoggable(Level.FINER)) {</em>
-<a name="156" href="#156">156</a> <em class="comment">//                        LOGGER.log(Level.FINER, "Extracting resource " + value + " returned from " + method);</em>
-<a name="157" href="#157">157</a> <em class="comment">//                    }</em>
-<a name="158" href="#158">158</a>                     <strong>if</strong> (value!=<strong>null</strong>) {
-<a name="159" href="#159">159</a>                         extractValue(value, si, extract.name(), type);
-<a name="160" href="#160">160</a>                     } <strong>else</strong> {
-<a name="161" href="#161">161</a> <em class="comment">//                        if (LOGGER.isLoggable(Level.FINE)) {</em>
-<a name="162" href="#162">162</a> <em class="comment">//                            LOGGER.log(Level.FINE, "Resource returned from " + method + " is null");</em>
-<a name="163" href="#163">163</a> <em class="comment">//                        }</em>
-<a name="164" href="#164">164</a>                     }
-<a name="165" href="#165">165</a>                 } <strong>catch</strong> (IllegalArgumentException ex) {
-<a name="166" href="#166">166</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed on "</span> + method.toGenericString(), ex);
-<a name="167" href="#167">167</a>                 } <strong>catch</strong> (InvocationTargetException ex) {
-<a name="168" href="#168">168</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed on "</span> + method.toGenericString(), ex);
-<a name="169" href="#169">169</a>                 } <strong>catch</strong> (IllegalAccessException ex) {
-<a name="170" href="#170">170</a>                     <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="string">"Extraction failed on "</span> + method.toGenericString(), ex);
-<a name="171" href="#171">171</a>                 }
-<a name="172" href="#172">172</a>             }
-<a name="173" href="#173">173</a>             currentClass = currentClass.getSuperclass();
-<a name="174" href="#174">174</a>         }
-<a name="175" href="#175">175</a>     }
-<a name="176" href="#176">176</a> 
-<a name="177" href="#177">177</a>     @SuppressWarnings(<span class="string">"unchecked"</span>)
-<a name="178" href="#178">178</a>     <strong>private</strong> <strong>void</strong> extractValue(Object value, <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si, String name,  Class type) {
-<a name="179" href="#179">179</a>         <strong>if</strong>(value instanceof Iterable) {
-<a name="180" href="#180">180</a>             <strong>for</strong> (Object o : (Iterable)value) {
-<a name="181" href="#181">181</a>                 extractSingleValue(o,name, type, si);
-<a name="182" href="#182">182</a>             }
-<a name="183" href="#183">183</a>         } <strong>else</strong>
-<a name="184" href="#184">184</a>         <strong>if</strong> (type.isArray()) {
-<a name="185" href="#185">185</a>             Object[] values = (Object[]) value;
-<a name="186" href="#186">186</a>             <strong>for</strong> (Object o : values) {
-<a name="187" href="#187">187</a>                 extractSingleValue(o,name, type, si);
-<a name="188" href="#188">188</a>             }
-<a name="189" href="#189">189</a>         } <strong>else</strong> {
-<a name="190" href="#190">190</a>             extractSingleValue(value, name, type, si);
-<a name="191" href="#191">191</a>         }
-<a name="192" href="#192">192</a>     }
-<a name="193" href="#193">193</a> 
-<a name="194" href="#194">194</a>     <strong>private</strong> &lt;T> <strong>void</strong> extractSingleValue(T o, String name, Class type, <strong>final</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si) {
-<a name="195" href="#195">195</a>         <em class="comment">// TODO: name support. Wouldn't it be nice if Map&lt;String,Object> extracts to named objects?</em>
-<a name="196" href="#196">196</a>         <em class="comment">// or recognize the "Named" interface?</em>
-<a name="197" href="#197">197</a>         Inhabitant&lt;T> i = <strong>new</strong> AbstractWombImpl&lt;T>((Class&lt;T>)o.getClass(),MultiMap.&lt;String,String>emptyMap()) {
-<a name="198" href="#198">198</a>             <strong>public</strong> T create(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) throws ComponentException {
-<a name="199" href="#199">199</a>                 <em class="comment">// only look at objects already available in the scope.</em>
-<a name="200" href="#200">200</a>                 <em class="comment">// TODO: this obviously can return null. think about how to reconcile this semantics with the rest</em>
-<a name="201" href="#201">201</a>                 <strong>return</strong> si.get(<strong>this</strong>);
-<a name="202" href="#202">202</a>             }
-<a name="203" href="#203">203</a>         };
-<a name="204" href="#204">204</a>         <strong>if</strong> (name==<strong>null</strong>) {
-<a name="205" href="#205">205</a>             habitat.add(i);
-<a name="206" href="#206">206</a>         } <strong>else</strong> {
-<a name="207" href="#207">207</a>             habitat.addIndex(i, type.getName(), name);
-<a name="208" href="#208">208</a>         }
-<a name="209" href="#209">209</a>         si.put(i,o);
-<a name="210" href="#210">210</a>     }
-<a name="211" href="#211">211</a> 
-<a name="212" href="#212">212</a>     <em>/**<em>*</em></em>
-<a name="213" href="#213">213</a> <em>     * Determines the {@link ScopeInstance} that stores the component.</em>
-<a name="214" href="#214">214</a> <em>     *</em>
-<a name="215" href="#215">215</a> <em>     * @return</em>
-<a name="216" href="#216">216</a> <em>     *      null for prototype scope. (Note that in {@link Scope#current()}</em>
-<a name="217" href="#217">217</a> <em>     *      null return value is an error.)</em>
-<a name="218" href="#218">218</a> <em>     */</em>
-<a name="219" href="#219">219</a>     <strong>private</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> getScope(<a href="../../../../org/jvnet/hk2/annotations/Scoped.html">Scoped</a> svc) throws ComponentException {
-<a name="220" href="#220">220</a>         Class&lt;? <strong>extends</strong> Scope> s = svc.value();
-<a name="221" href="#221">221</a>         <em class="comment">// for performance reason and to avoid infinite recursion,</em>
-<a name="222" href="#222">222</a>         <em class="comment">// recognize these two fundamental built-in scopes and process them differently.</em>
-<a name="223" href="#223">223</a>         <strong>if</strong>(s==Singleton.<strong>class</strong>)
-<a name="224" href="#224">224</a>             <strong>return</strong> singletonScope;
-<a name="225" href="#225">225</a>         <strong>if</strong>(s==PerLookup.<strong>class</strong>)
-<a name="226" href="#226">226</a>             <strong>return</strong> <strong>null</strong>;
-<a name="227" href="#227">227</a> 
-<a name="228" href="#228">228</a>         <em class="comment">// for all the other scopes, including user-defined ones.</em>
-<a name="229" href="#229">229</a>         <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> scope = habitat.getByType(s);
-<a name="230" href="#230">230</a>         <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si = scope.current();
-<a name="231" href="#231">231</a>         <strong>if</strong>(si==<strong>null</strong>) <em class="comment">// scope is an extension point, so beware for broken implementations</em>
-<a name="232" href="#232">232</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(scope+<span class="string">" returned null from the current() method"</span>);
-<a name="233" href="#233">233</a>         <strong>return</strong> si;
-<a name="234" href="#234">234</a>     }
-<a name="235" href="#235">235</a>     
-<a name="236" href="#236">236</a> }
+<a name="82" href="#82">82</a>          <a href="../../../../org/jvnet/hk2/annotations/Scoped.html">Scoped</a> scoped = t.getClass().getAnnotation(Scoped.<strong>class</strong>);
+<a name="83" href="#83">83</a>          <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si = (scoped == <strong>null</strong> ? singletonScope : getScope(scoped));
+<a name="84" href="#84">84</a>          AccessController.doPrivileged(<strong>new</strong> PrivilegedAction() {
+<a name="85" href="#85">85</a>              <em class="comment">//doprivileged required for running with SecurityManager ON</em>
+<a name="86" href="#86">86</a>              <strong>public</strong> java.lang.Object run() {
+<a name="87" href="#87">87</a>                  inject(habitat, t, onBehalfOf);
+<a name="88" href="#88">88</a>                  <strong>return</strong> <strong>null</strong>;
+<a name="89" href="#89">89</a>              }
+<a name="90" href="#90">90</a>          });
+<a name="91" href="#91">91</a>  
+<a name="92" href="#92">92</a>      }
+<a name="93" href="#93">93</a>  
+<a name="94" href="#94">94</a>      <em>/**<em>*</em></em>
+<a name="95" href="#95">95</a>  <em>     * Determines the {@link ScopeInstance} that stores the component.</em>
+<a name="96" href="#96">96</a>  <em>     *</em>
+<a name="97" href="#97">97</a>  <em>     * @return</em>
+<a name="98" href="#98">98</a>  <em>     *      null for prototype scope. (Note that in {@link Scope#current()}</em>
+<a name="99" href="#99">99</a>  <em>     *      null return value is an error.)</em>
+<a name="100" href="#100">100</a> <em>     */</em>
+<a name="101" href="#101">101</a>     <strong>private</strong> <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> getScope(<a href="../../../../org/jvnet/hk2/annotations/Scoped.html">Scoped</a> svc) throws ComponentException {
+<a name="102" href="#102">102</a>         Class&lt;? <strong>extends</strong> Scope> s = svc.value();
+<a name="103" href="#103">103</a>         <em class="comment">// for performance reason and to avoid infinite recursion,</em>
+<a name="104" href="#104">104</a>         <em class="comment">// recognize these two fundamental built-in scopes and process them differently.</em>
+<a name="105" href="#105">105</a>         <strong>if</strong>(s==Singleton.<strong>class</strong>)
+<a name="106" href="#106">106</a>             <strong>return</strong> singletonScope;
+<a name="107" href="#107">107</a>         <strong>if</strong>(s==PerLookup.<strong>class</strong>)
+<a name="108" href="#108">108</a>             <strong>return</strong> <strong>null</strong>;
+<a name="109" href="#109">109</a> 
+<a name="110" href="#110">110</a>         <em class="comment">// for all the other scopes, including user-defined ones.</em>
+<a name="111" href="#111">111</a>         <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> scope = habitat.getByType(s);
+<a name="112" href="#112">112</a>         <a href="../../../../com/sun/hk2/component/ScopeInstance.html">ScopeInstance</a> si = scope.current();
+<a name="113" href="#113">113</a>         <strong>if</strong>(si==<strong>null</strong>) <em class="comment">// scope is an extension point, so beware for broken implementations</em>
+<a name="114" href="#114">114</a>             <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(scope+<span class="string">" returned null from the current() method"</span>);
+<a name="115" href="#115">115</a>         <strong>return</strong> si;
+<a name="116" href="#116">116</a>     }
+<a name="117" href="#117">117</a>     
+<a name="118" href="#118">118</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
