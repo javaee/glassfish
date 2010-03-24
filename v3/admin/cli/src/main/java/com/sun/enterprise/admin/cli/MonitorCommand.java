@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,7 @@ import java.util.*;
 import java.util.logging.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -58,57 +58,23 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public class MonitorCommand extends CLICommand {
 
-    private int interval = 30 * 1000;    // default 30 seconds
+    @Param(optional = true, defaultValue = "30")
+    private int interval = 30;	// default 30 seconds
+
+    @Param
     private String type;
+
+    @Param(optional = true)
     private String filter;
+
+    @Param(optional = true)
     private File fileName;
 
-    private static final String INTERVAL = "interval";
-    private static final String TYPE = "type";
-    private static final String FILTER = "filter";
-    private static final String FILENAME = "filename";
+    @Param(primary = true, optional = true)
+    private String target;	// XXX - not currently used
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(MonitorCommand.class);
-
-    /**
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, TYPE, '\0', "STRING", true, null);
-        addOption(opts, FILENAME, '\0', "STRING", false, null);
-        addOption(opts, INTERVAL, '\0', "STRING", false, "30");
-        addOption(opts, FILTER, '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "target";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 1;
-
-        processProgramOptions();
-    }
-
-    /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
-     */
-    @Override
-    protected void validate()
-            throws CommandException, CommandValidationException {
-        super.validate();
-        String sinterval = getOption(INTERVAL);
-        if (ok(sinterval))
-            interval = Integer.parseInt(sinterval) * 1000;
-        type = getOption(TYPE);
-        filter = getOption(FILTER);
-        //fileName = new File(getOption(FILENAME));
-    }
 
     @Override
     protected int executeCommand() 
@@ -118,7 +84,7 @@ public class MonitorCommand extends CLICommand {
         try {
             MonitorTask monitorTask = new MonitorTask(timer, getRemoteArgs(),
                             programOpts, env, type, filter, fileName);
-            timer.scheduleAtFixedRate(monitorTask, 0, interval);
+            timer.scheduleAtFixedRate(monitorTask, 0, interval * 1000);
 
             boolean done = false;
             // detect if a q or Q key is entered

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ import java.util.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.CLIConstants;
 import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
@@ -66,9 +67,19 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     private GFLauncherInfo info;
     private GFLauncher launcher;
+
+    @Param(optional = true, defaultValue = "false")
     private boolean verbose;
+
+    @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
+
+    @Param(optional = true, defaultValue = "false")
     private boolean debug;
+
+    @Param(name = "domain_name", primary = true, optional = true)
+    private String domainName0;
+
     private File pidFile;
 
     private static final LocalStringsImpl strings =
@@ -78,33 +89,15 @@ public class StartDomainCommand extends LocalDomainCommand {
     // the name of the master password option
     private static final String MASTER_PASSWORD = "AS_ADMIN_MASTERPASSWORD";
 
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
     @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "debug", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "domaindir", '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        addOption(opts, "upgrade", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "verbose", 'v', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "domain_name";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 1;
-
-        processProgramOptions();
+    protected void validate()
+                        throws CommandException, CommandValidationException {
+        domainName = domainName0;
+        super.validate();
     }
 
     @Override
     protected int executeCommand() throws CommandException {
-        verbose = getBooleanOption("verbose");
-        upgrade = getBooleanOption("upgrade");
-        debug = getBooleanOption("debug");
         if (domainName != null) {
             // local case, initialize pidFile
             pidFile = new File(new File(domainRootDir, "config"), "pid");

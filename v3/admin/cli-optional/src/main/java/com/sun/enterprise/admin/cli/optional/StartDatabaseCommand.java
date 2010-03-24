@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -60,54 +61,13 @@ import com.sun.enterprise.util.OS;
 @Service(name = "start-database")
 @Scoped(PerLookup.class)
 public final class StartDatabaseCommand extends DatabaseCommand {
-    private final static String DB_HOME         = "dbhome";
     private final static String DATABASE_DIR_NAME = "databases";
+
+    @Param(name = "dbhome", optional = true)
     private String dbHome;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDatabaseCommand.class);
-
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
-        addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
-        addOption(opts, DB_HOME, '\0', "FILE", false, null);
-        //addOption(opts, DB_USER, '\0', "STRING", false, null);
-        //addOption(opts, DB_PASSWORD, '\0', "STRING", false, null);
-        // not a remote command so have to process --terse and --echo ourselves
-        addOption(opts, "terse", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "echo", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-    }
-
-    /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
-     */
-    protected void validate()
-            throws CommandException, CommandValidationException  {
-        super.validate();
-
-        // if --terse or -echo are supplied, copy them over to program options
-        if (options.containsKey("echo"))
-            programOpts.setEcho(getBooleanOption("echo"));
-        if (options.containsKey("terse"))
-            programOpts.setTerse(getBooleanOption("terse"));
-        initializeLogger();     // in case program options changed
-    }
 
     /**
      *  defines the command to start the derby database
@@ -115,8 +75,6 @@ public final class StartDatabaseCommand extends DatabaseCommand {
      *  "-Dderby.storage.fileSyncTransactionLog=True" is defined.
      */
     public String[] startDatabaseCmd() throws Exception {
-        //dbUser = getOption(DB_USER);
-        //dbPassword = getOption(DB_PASSWORD);
         //if (dbUser == null && dbPassword == null) {
             if (OS.isDarwin()) {
                 return new String[]{
@@ -213,8 +171,8 @@ public final class StartDatabaseCommand extends DatabaseCommand {
      */
     private String getDatabaseHomeDir() {
         // dbhome is specified then return the dbhome option value
-        if (getOption(DB_HOME) != null)
-            return getOption(DB_HOME);
+        if (dbHome != null)
+            return dbHome;
 
         // check if current directory contains derby.log
         // for now we are going to rely on derby.log file to ascertain

@@ -39,7 +39,7 @@ package com.sun.enterprise.admin.cli;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -54,17 +54,9 @@ public class ExportCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ExportCommand.class);
 
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "environment-variable";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = Integer.MAX_VALUE;
-    }
+    @Param(name = "environment-variable", primary = true, optional = true,
+	    multiple = true)
+    private List<String> vars;
 
     @Override
     public int executeCommand()
@@ -72,12 +64,12 @@ public class ExportCommand extends CLICommand {
         int ret = 0;    // by default, success
 
         // if no operands, print out everything
-        if (operands.size() == 0) {
+        if (vars == null || vars.size() == 0) {
             for (Map.Entry<String, String> e : env.entrySet())
                 logger.printMessage(e.getKey() + " = " + e.getValue());
         } else {
             // otherwise, process each operand
-            for (String arg : operands) {
+            for (String arg : vars) {
                 // separate into name and value
                 String name, value;
                 int eq = arg.indexOf('=');

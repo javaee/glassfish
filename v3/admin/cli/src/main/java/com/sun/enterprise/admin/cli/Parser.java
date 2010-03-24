@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,9 @@ package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.CommandModel.ParamModel;
+import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 
@@ -46,15 +49,14 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * command line and verify that the command line is CLIP compliant.
  */
 public class Parser {
-    // Map of options and values from command-line
-    // XXX - Map doesn't allow for options that repeat
-    private Map<String,String> optionsMap = new HashMap<String,String>();
+    // MultiMap of options and values from command-line
+    private ParameterMap optionsMap = new ParameterMap();
     
     // Array of operands from command-line
     private List<String> operands = new ArrayList<String>();
 
     // The valid options for the command we're parsing
-    private Set<ValidOption> options;
+    private Collection<ParamModel> options;
 
     // Ignore unknown options when parsing?
     private boolean ignoreUnknown;
@@ -78,7 +80,7 @@ public class Parser {
      * @throws CommandValidationException if command line parsing fails
      */
     public Parser(String[] args, int start,
-            Set<ValidOption> options, boolean ignoreUnknown)
+            Collection<ParamModel> options, boolean ignoreUnknown)
             throws CommandValidationException {
         this.options = options;
         this.ignoreUnknown = ignoreUnknown;
@@ -119,7 +121,7 @@ public class Parser {
             }
 
             // at this point it's got to be an option of some sort
-            ValidOption opt = null;
+            ParamModel opt = null;
             String name = null;
             String value = null;
             if (arg.charAt(1) == '-') { // long option
@@ -203,13 +205,14 @@ public class Parser {
                     if (si + 1 < argv.length && !argv[si + 1].startsWith("-"))
                         value = argv[++si];
                     else
-                        opt.setType("BOOLEAN"); // fake it
+                        ((ParamModelData)opt).type = Boolean.class; // fake it
                 } else if (optionRequiresOperand(opt)) {
                     if (++si >= argv.length)
                         throw new CommandValidationException(
                             strings.get("parser.missingValue", name));
                     value = argv[si];
-                } else if (opt.getType().equals("BOOLEAN")) {
+                } else if (opt.getType() == Boolean.class ||
+                            opt.getType() == boolean.class) {
                     /*
                      * If it's a boolean option, the following parameter
                      * might be the value for the option; peek ahead to
@@ -236,7 +239,7 @@ public class Parser {
      *
      * @return options
      */
-    public Map<String,String> getOptions() {
+    public ParameterMap getOptions() {
         return optionsMap;
     }
 
@@ -251,35 +254,35 @@ public class Parser {
 
     public String toString() {
         return "CLI parser: Options = " + optionsMap +
-		"; Operands = " + operands;
+                "; Operands = " + operands;
     }
     
     /**
-     * Get ValidOption for long option name.
+     * Get ParamModel for long option name.
      */
-    private ValidOption lookupLongOption(String s) {
+    private ParamModel lookupLongOption(String s) {
         // XXX - for now, fake it if no options
         if (options == null) {
             // no valid options specified so everything is valid
-            return new ValidOption(s, "STRING", ValidOption.OPTIONAL, null);
+            return new ParamModelData(s, String.class, true, null);
         }
-        for (ValidOption od : options) {
-            if (od.getName().equals(s))
+        for (ParamModel od : options) {
+            if (od.getName().equals(s) && !od.getParam().primary())
                 return od;
         }
         return null;
     }
 
     /**
-     * Get ValidOption for short option name.
+     * Get ParamModel for short option name.
      */
-    private ValidOption lookupShortOption(char c) {
+    private ParamModel lookupShortOption(char c) {
         // XXX - for now, fake it if no options
         if (options == null)
             return null;
         String sc = Character.toString(c);
-        for (ValidOption od : options) {
-            if (od.getShortNames().contains(sc))
+        for (ParamModel od : options) {
+            if (od.getParam().shortName().equals(sc))
                 return od;
         }
         return null;
@@ -288,14 +291,15 @@ public class Parser {
     /**
      * Does this option require an operand?
      */
-    private static boolean optionRequiresOperand(ValidOption opt) {
-        return opt != null && !opt.getType().equals("BOOLEAN");
+    private static boolean optionRequiresOperand(ParamModel opt) {
+        return opt != null && opt.getType() != Boolean.class &&
+                                opt.getType() != boolean.class;
     }
 
     /**
      * Set the value for the option.
      */
-    private void setOption(ValidOption opt, String value)
+    private void setOption(ParamModel opt, String value)
             throws CommandValidationException {
         String name = opt.getName();
         // VERY basic validation
@@ -304,7 +308,7 @@ public class Parser {
         if (value != null)
             value = value.trim();
 
-        if (opt.getType().equals("FILE")) {
+        if (opt.getType() == File.class) {
             File f = new File(value);
             if (!(f.isFile() || f.canRead())) {
                 // get a real exception for why it's no good
@@ -324,26 +328,26 @@ public class Parser {
                 throw new CommandValidationException(
                     strings.get("parser.invalidFile", name, value));
             }
-        } else if (opt.getType().equals("BOOLEAN")) {
+        } else if (opt.getType() == Boolean.class ||
+                    opt.getType() == boolean.class) {
             if (value == null)
                 value = "true";
             else if (!(value.toLowerCase(Locale.ENGLISH).equals("true") ||
                     value.toLowerCase(Locale.ENGLISH).equals("false")))
                 throw new CommandValidationException(
                     strings.get("parser.invalidBoolean", name, value));
-        } else if (opt.getType().equals("PASSWORD"))
+        } else if (opt.getParam().password())
             throw new CommandValidationException(
                 strings.get("parser.passwordNotAllowed", opt.getName()));
 
-        if (true /* !Boolean.valueOf(opt.getRepeats().toLowerCase()) */) {
+        if (!opt.getParam().multiple()) {
             // repeats not allowed
             if (optionsMap.containsKey(name)) {
                 throw new CommandValidationException(
                         strings.get("parser.noRepeats", name));
             }
-            // XXX - repeat is going to replace previous value...
         }
 
-        optionsMap.put(name, value);
+        optionsMap.add(name, value);
     }
 }

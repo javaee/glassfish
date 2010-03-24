@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,13 +73,13 @@ public abstract class CommandModel {
 
         /**
          * get the Param name.  First it checks if the annotated Param
-         * includes a the name, if not then get the name from the field.
+         * includes a name, if not then it gets the name from the field.
          *
          * @param param class annotation
          * @param annotated annotated field or method
          * @return the name of the param
          */
-    public String getParamName(Param param, AnnotatedElement annotated) {
+    public static String getParamName(Param param, AnnotatedElement annotated) {
         if (param.name().equals("")) {
             if (annotated instanceof Field) {
                 return ((Field) annotated).getName();
@@ -95,7 +95,7 @@ public abstract class CommandModel {
         return "";
     }    
 
-    public abstract class ParamModel {
+    public static abstract class ParamModel {
 
         public abstract String getName();
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,16 @@
 
 package com.sun.enterprise.admin.cli;
 
+import java.io.File;
 import java.util.*;
+
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandModel.ParamModel;
+
+import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
+import com.sun.enterprise.admin.cli.CommandModelData.ParamData;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -57,7 +66,7 @@ public class ProgramOptions {
         DEFAULT, USER, PASSWORD_FILE, LOGIN_FILE, LOCAL_PASSWORD
     };
 
-    private static final Set<ValidOption> programOptions;
+    private static final Set<ParamModel> programOptions;
 
     // the known program option names
     public static final String HOST             = "host";
@@ -75,7 +84,7 @@ public class ProgramOptions {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ProgramOptions.class);
 
-    private Map<String, String>             options;
+    private ParameterMap                    options;
     private Environment                     env;
     private boolean                         optionsSet;
     private String                          password;
@@ -94,18 +103,18 @@ public class ProgramOptions {
      * Define the meta-options known by the asadmin command.
      */
     static {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
-        addMetaOption(opts, HOST, 'H', "STRING", false,
+        Set<ParamModel> opts = new HashSet<ParamModel>();
+        addMetaOption(opts, HOST, 'H', String.class, false,
                 CLIConstants.DEFAULT_HOSTNAME);
-        addMetaOption(opts, PORT, 'p', "STRING", false,
+        addMetaOption(opts, PORT, 'p', String.class, false,
                 "" + CLIConstants.DEFAULT_ADMIN_PORT);
-        addMetaOption(opts, USER, 'u', "STRING", false, null);
-        addMetaOption(opts, PASSWORDFILE, 'W', "FILE", false, null);
-        addMetaOption(opts, SECURE, 's', "BOOLEAN", false, "false");
-        addMetaOption(opts, TERSE, 't', "BOOLEAN", false, "false");
-        addMetaOption(opts, ECHO, 'e', "BOOLEAN", false, "false");
-        addMetaOption(opts, INTERACTIVE, 'I', "BOOLEAN", false, "false");
-        addMetaOption(opts, HELP, '?', "BOOLEAN", false, "false");
+        addMetaOption(opts, USER, 'u', String.class, false, null);
+        addMetaOption(opts, PASSWORDFILE, 'W', File.class, false, null);
+        addMetaOption(opts, SECURE, 's', Boolean.class, false, "false");
+        addMetaOption(opts, TERSE, 't', Boolean.class, false, "false");
+        addMetaOption(opts, ECHO, 'e', Boolean.class, false, "false");
+        addMetaOption(opts, INTERACTIVE, 'I', Boolean.class, false, "false");
+        addMetaOption(opts, HELP, '?', Boolean.class, false, "false");
         programOptions = Collections.unmodifiableSet(opts);
     }
 
@@ -114,16 +123,14 @@ public class ProgramOptions {
      *
      * @param name  long option name
      * @param sname short option name
-     * @param type  option type (STRING, BOOLEAN, etc.)
+     * @param type  option type (String.class, Boolean.class, etc.)
      * @param req   is option required?
      * @param def   default value for option
      */
-    private static void addMetaOption(Set<ValidOption> opts, String name,
-            char sname, String type, boolean req, String def) {
-        ValidOption opt = new ValidOption(name, type,
-                req ? ValidOption.REQUIRED : ValidOption.OPTIONAL, def);
-        String abbr = Character.toString(sname);
-        opt.setShortName(abbr);
+    private static void addMetaOption(Set<ParamModel> opts, String name,
+            char sname, Class type, boolean req, String def) {
+        ParamModel opt = new ParamModelData(name, type, !req, def, 
+                                                Character.toString(sname));
         opts.add(opt);
     }
 
@@ -132,7 +139,7 @@ public class ProgramOptions {
      * with no options from the command line.
      */
     public ProgramOptions(Environment env) throws CommandException {
-        this(new HashMap<String, String>(), env);
+        this(new ParameterMap(), env);
         optionsSet = false;
     }
 
@@ -141,7 +148,7 @@ public class ProgramOptions {
      * from the command line, with defaults supplied by the
      * environment.
      */
-    public ProgramOptions(Map<String, String> options, Environment env)
+    public ProgramOptions(ParameterMap options, Environment env)
             throws CommandException {
         this.env = env;
         updateOptions(options);
@@ -152,7 +159,7 @@ public class ProgramOptions {
      * options as the specified ProgramOptions.
      */
     public ProgramOptions(ProgramOptions other) {
-        this.options = new HashMap<String, String>(other.options);
+        this.options = new ParameterMap(other.options);
         this.env = other.env;
         this.password = other.password;
         this.programArguments = other.programArguments;
@@ -164,16 +171,19 @@ public class ProgramOptions {
      * Update the program options based on the specified
      * options from the command line.
      */
-    public void updateOptions(Map<String, String> newOptions)
+    public void updateOptions(ParameterMap newOptions)
             throws CommandException {
         if (options == null)
             options = newOptions;
-        else
-            options.putAll(newOptions); // merge in the new options
+        else {
+            // merge in the new options
+            for (Map.Entry<String, List<String>> e : newOptions.entrySet())
+                options.set(e.getKey(), e.getValue());
+        }
         optionsSet = true;
 
         // have to verify port value now
-        String sport = options.get(PORT);
+        String sport = options.getOne(PORT);
         if (ok(sport)) {
             String badPortMsg = strings.get("InvalidPortNumber", sport);
             try {
@@ -195,7 +205,7 @@ public class ProgramOptions {
      *
      * @return the valid program options
      */
-    public static Set<ValidOption> getValidOptions() {
+    public static Collection<ParamModel> getValidOptions() {
         return programOptions;
     }
 
@@ -217,7 +227,7 @@ public class ProgramOptions {
     }
 
     private void putEnv(Environment env, String name) {
-        String value = options.get(name);
+        String value = options.getOne(name);
         if (value != null)
             env.putOption(name, value);
     }
@@ -226,7 +236,7 @@ public class ProgramOptions {
      * @return the host
      */
     public String getHost() {
-        String host = options.get(HOST);
+        String host = options.getOne(HOST);
         if (!ok(host))
             host = env.getStringOption(HOST);
         if (!ok(host))
@@ -238,7 +248,7 @@ public class ProgramOptions {
      * @param host the host to set
      */
     public void setHost(String host) {
-        options.put(HOST, host);
+        options.set(HOST, host);
     }
 
     /**
@@ -246,7 +256,7 @@ public class ProgramOptions {
      */
     public int getPort() {
         int port;
-        String sport = options.get(PORT);
+        String sport = options.getOne(PORT);
         if (!ok(sport))
             sport = env.getStringOption(PORT);
         if (ok(sport)) {
@@ -266,14 +276,14 @@ public class ProgramOptions {
      * @param port the port to set
      */
     public void setPort(int port) {
-        options.put(PORT, Integer.toString(port));
+        options.set(PORT, Integer.toString(port));
     }
 
     /**
      * @return the user
      */
     public String getUser() {
-        String user = options.get(USER);
+        String user = options.getOne(USER);
         if (!ok(user))
             user = env.getStringOption(USER);
         if (!ok(user))
@@ -286,7 +296,7 @@ public class ProgramOptions {
      */
     public void setUser(String user) {
         logger.printDebugMessage("Setting user to: " + user);
-        options.put(USER, user);
+        options.set(USER, user);
     }
 
     /**
@@ -317,11 +327,11 @@ public class ProgramOptions {
      * @return the passwordFile
      */
     public String getPasswordFile() {
-        String passwordFile = options.get(PASSWORDFILE);
+        String passwordFile = options.getOne(PASSWORDFILE);
         if (!ok(passwordFile))
             passwordFile = env.getStringOption(PASSWORDFILE);
-	if (!ok(passwordFile))
-	    passwordFile = null;	// no default
+        if (!ok(passwordFile))
+            passwordFile = null;        // no default
         return passwordFile;
     }
 
@@ -329,7 +339,7 @@ public class ProgramOptions {
      * @param passwordFile the passwordFile to set
      */
     public void setPasswordFile(String passwordFile) {
-        options.put(PASSWORDFILE, passwordFile);
+        options.set(PASSWORDFILE, passwordFile);
     }
 
     /**
@@ -338,7 +348,7 @@ public class ProgramOptions {
     public boolean isSecure() {
         boolean secure;
         if (options.containsKey(SECURE)) {
-            String value = options.get(SECURE);
+            String value = options.getOne(SECURE);
             if (ok(value))
                 secure = Boolean.parseBoolean(value);
             else
@@ -352,7 +362,7 @@ public class ProgramOptions {
      * @param secure the secure to set
      */
     public void setSecure(boolean secure) {
-        options.put(SECURE, Boolean.toString(secure));
+        options.set(SECURE, Boolean.toString(secure));
     }
 
     /**
@@ -361,7 +371,7 @@ public class ProgramOptions {
     public boolean isTerse() {
         boolean terse;
         if (options.containsKey(TERSE)) {
-            String value = options.get(TERSE);
+            String value = options.getOne(TERSE);
             if (ok(value))
                 terse = Boolean.parseBoolean(value);
             else
@@ -375,7 +385,7 @@ public class ProgramOptions {
      * @param terse the terse to set
      */
     public void setTerse(boolean terse) {
-        options.put(TERSE, Boolean.toString(terse));
+        options.set(TERSE, Boolean.toString(terse));
     }
 
     /**
@@ -384,7 +394,7 @@ public class ProgramOptions {
     public boolean isEcho() {
         boolean echo;
         if (options.containsKey(ECHO)) {
-            String value = options.get(ECHO);
+            String value = options.getOne(ECHO);
             if (ok(value))
                 echo = Boolean.parseBoolean(value);
             else
@@ -398,7 +408,7 @@ public class ProgramOptions {
      * @param echo the echo to set
      */
     public void setEcho(boolean echo) {
-        options.put(ECHO, Boolean.toString(echo));
+        options.set(ECHO, Boolean.toString(echo));
     }
 
     /**
@@ -407,7 +417,7 @@ public class ProgramOptions {
     public boolean isInteractive() {
         boolean interactive;
         if (options.containsKey(INTERACTIVE)) {
-            String value = options.get(INTERACTIVE);
+            String value = options.getOne(INTERACTIVE);
             if (ok(value))
                 interactive = Boolean.parseBoolean(value);
             else
@@ -423,7 +433,7 @@ public class ProgramOptions {
      * @param interactive the interactive to set
      */
     public void setInteractive(boolean interactive) {
-        options.put(INTERACTIVE, Boolean.toString(interactive));
+        options.set(INTERACTIVE, Boolean.toString(interactive));
     }
 
     /**
@@ -432,7 +442,7 @@ public class ProgramOptions {
     public boolean isHelp() {
         boolean help = false;
         if (options.containsKey(HELP)) {
-            String value = options.get(HELP);
+            String value = options.getOne(HELP);
             if (ok(value))
                 help = Boolean.parseBoolean(value);
             else
@@ -446,7 +456,7 @@ public class ProgramOptions {
      * @param help the help to set
      */
     public void setHelp(boolean help) {
-        options.put(HELP, Boolean.toString(help));
+        options.set(HELP, Boolean.toString(help));
     }
 
     /**

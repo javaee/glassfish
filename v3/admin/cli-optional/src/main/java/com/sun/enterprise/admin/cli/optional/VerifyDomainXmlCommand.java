@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
+import org.glassfish.api.Param;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.*;
@@ -64,28 +65,17 @@ import org.jvnet.hk2.config.DomDocument;
 @Scoped(PerLookup.class)
 public final class VerifyDomainXmlCommand extends LocalDomainCommand {
 
-    private static final String DOMAINDIR = "domaindir";
+    @Param(name = "domain_name", primary = true, optional = true)
+    private String domainName0;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VerifyDomainXmlCommand.class);
 
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
     @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "domain_name";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 1;
-
-        //processProgramOptions();
+    protected void validate()
+            throws CommandException, CommandValidationException  {
+        domainName = domainName0;
+        super.validate();
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,8 @@ import java.util.*;
 import java.net.Socket;
 import java.security.KeyStore;
 
+import org.glassfish.api.Param;
+
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -57,9 +59,15 @@ import com.sun.enterprise.security.store.PasswordAdapter;
  */
 public abstract class LocalDomainCommand extends CLICommand {
 
+    @Param(name = "domaindir", optional = true)
+    protected String domainDir;
+
+    // subclasses decide whether it's optional, required, or not allowed
+    //@Param(name = "domain_name", primary = true, optional = true)
+    protected String domainName;
+
     protected File   domainsDir;
     protected File   domainRootDir;
-    protected String domainName;
     protected String localPassword;
     
     // the key for the Domain Root in the main attributes of the
@@ -72,20 +80,12 @@ public abstract class LocalDomainCommand extends CLICommand {
     @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
-        super.validate();
         initDomain();
     }
  
     protected void initDomain() throws CommandException {
-        if (!operands.isEmpty()) {
-            domainName = operands.get(0);
-        }
-
-        // get domainsDir
-        String domaindir = getOption("domaindir");
-
-        if (ok(domaindir)) {
-            domainsDir = new File(domaindir);
+        if (ok(domainDir)) {
+            domainsDir = new File(domainDir);
         } else {
             domainsDir = new File(getSystemProperty(
                             SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));

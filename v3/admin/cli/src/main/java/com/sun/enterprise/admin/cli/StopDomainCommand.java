@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
@@ -55,6 +56,9 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
 
+    @Param(name = "domain_name", primary = true, optional = true)
+    private String domainName0;
+
     private File pidFile;
 
     private static final long WAIT_FOR_DAS_TIME_MS = 60000; // 1 minute
@@ -62,21 +66,11 @@ public class StopDomainCommand extends LocalDomainCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopDomainCommand.class);
 
-    /**
-     */
     @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "domaindir", '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "domain_name";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 1;
-
-        processProgramOptions();
+    protected void validate()
+                        throws CommandException, CommandValidationException {
+        domainName = domainName0;
+        super.validate();
     }
 
     /**
@@ -89,7 +83,7 @@ public class StopDomainCommand extends LocalDomainCommand {
         // only initialize local domain information if it's a local operation
         if (programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
             super.initDomain();
-        else if (operands.size() > 0)   // remote case
+        else if (domainName != null)   // remote case
             throw new CommandException(
                 strings.get("StopDomain.noDomainNameAllowed"));
 

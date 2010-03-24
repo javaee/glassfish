@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import java.io.File;
 import java.io.FileFilter;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.ClassPathBuilder;
 import com.sun.enterprise.admin.cli.CLILogger;
@@ -58,9 +59,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 public abstract class DatabaseCommand extends CLICommand {
-    protected static final String DB_HOST       = "dbhost";
     protected static final String DB_HOST_DEFAULT = "0.0.0.0";
-    protected static final String DB_PORT       = "dbport";
     protected static final String DB_PORT_DEFAULT = "1527";
     protected final static String DB_USER       = "dbuser";
     //protected final static String DB_PASSWORD   = "dbpassword";
@@ -69,10 +68,12 @@ public abstract class DatabaseCommand extends CLICommand {
     private static final String[] MODULES_IN_CLASSPATH =
                 { "glassfish", "admin-cli", "cli-framework", "common-util" };
 
+    @Param(name = "dbhost", optional = true, defaultValue = DB_HOST_DEFAULT)
     protected String dbHost;
+
+    @Param(name = "dbport", optional = true, defaultValue = DB_PORT_DEFAULT)
     protected String dbPort;
-    protected String dbUser;
-    protected String dbPassword;
+
     protected File dbLocation;
     protected File sJavaHome;
     protected File sInstallRoot;
@@ -89,10 +90,8 @@ public abstract class DatabaseCommand extends CLICommand {
      */
     protected void prepareProcessExecutor() throws Exception {
         sInstallRoot = new File(getSystemProperty(INSTALL_ROOT_PROPERTY));
-        dbHost = getOption(DB_HOST);
         if (dbHost == null)
             dbHost = DB_HOST_DEFAULT;
-        dbPort = getOption(DB_PORT);
         if (dbPort == null)
             dbPort = DB_PORT_DEFAULT;
         else

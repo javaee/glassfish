@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
@@ -57,54 +58,36 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 @Scoped(PerLookup.class)
 public final class CreateServiceCommand extends CLICommand {
 
-    private static final String DOMAIN_PARENT_DIR = "domaindir";
-    private static final String TYPE = "type";
-    private static final String NAME = "name";
-    private static final String SERVICE_PROPERTIES = "serviceproperties";
-    private static final String DRY_RUN = "dry-run";
-    private static final String FORCE = "force";
     private static final String VALID_TYPES = "das|node-agent";
     private static final String DAS_TYPE = "das";
 
-    private File    domainDir;
+    @Param(name = "name", optional = true)
     private String  serviceName;
-    private File    asadminScript;
+
+    @Param(name = "serviceproperties", optional = true)
+    private String serviceProperties;
+
+    @Param(name = "dry-run", optional = true, defaultValue = "false")
+    private boolean dry_run;
+
+    @Param(name = "force", optional = true, defaultValue = "false")
+    private boolean force;
+
+    @Param(name = "domaindir", optional = true)
     private File    domainDirParent;
-    private String  domainName;
+
+    @Param(name = "domain_name", primary = true, optional = true)
+    private String domainName;
+
+    private File    domainDir;  // the directory of the domain itself
+    private File    asadminScript;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateServiceCommand.class);
 
     /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
      */
     @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, NAME, '\0', "STRING", false, null);
-        addOption(opts, SERVICE_PROPERTIES, '\0', "STRING", false, null);
-        addOption(opts, DRY_RUN, '\0', "BOOLEAN", false, "false");
-        addOption(opts, FORCE, '\0', "BOOLEAN", false, "false");
-        addOption(opts, DOMAIN_PARENT_DIR, '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "domain_name";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 1;
-
-        processProgramOptions();
-    }
-
-    /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
-     */
     protected void validate()
             throws CommandException, CommandValidationException  {
         try {
@@ -136,8 +119,7 @@ public final class CreateServiceCommand extends CLICommand {
         // good solid absolute paths because SmartFile is used for processing
         // all File objects in validate()
         try {
-            boolean dry_run = getBooleanOption(DRY_RUN);
-            String type = "das"; //getOption(TYPE);  TODO
+            String type = "das"; // TODO - make it a command option
             final Service service = ServiceFactory.getService();
             // configure service
             service.setDate(new Date().toString());
@@ -155,10 +137,10 @@ public final class CreateServiceCommand extends CLICommand {
                 service.setPasswordFilePath(SmartFile.sanitize(
                     new File(programOpts.getPasswordFile()).getPath()));
 
-            service.setServiceProperties(getOption(SERVICE_PROPERTIES));
+            service.setServiceProperties(serviceProperties);
             service.isConfigValid();
             service.setTrace(CLILogger.isDebug());
-            service.setForce(getBooleanOption("force"));
+            service.setForce(force);
 
             service.createService(service.tokensAndValues());
 
@@ -188,15 +170,10 @@ public final class CreateServiceCommand extends CLICommand {
     }
 
     private void validateDomainDir() throws CommandValidationException{
-        if (operands.size() >= 1)
-            domainName = operands.get(0);
-
-        String domainDirParentPath = getOption(DOMAIN_PARENT_DIR);
-
-        if (!ok(domainDirParentPath))
+        if (domainDirParent == null)
             domainDirParent = getDefaultDomainDirParent();
         else
-            domainDirParent = SmartFile.sanitize(new File(domainDirParentPath));
+            domainDirParent = SmartFile.sanitize(domainDirParent);
 
         // either the default or the given is set.  Make sure it is valid...
         if (!domainDirParent.isDirectory()) {
@@ -277,8 +254,6 @@ public final class CreateServiceCommand extends CLICommand {
  */
 
     private void validateName() {
-       serviceName = getOption(NAME);
-
        if (!ok(serviceName))
            serviceName = domainDir.getName();
 

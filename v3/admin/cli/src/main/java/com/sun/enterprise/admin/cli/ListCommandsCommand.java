@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ import java.util.logging.*;
 import java.util.regex.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
@@ -61,41 +62,25 @@ public class ListCommandsCommand extends CLICommand {
     private String[] remoteCommands;
     private String[] localCommands;
     private List<Pattern> patterns = new ArrayList<Pattern>();
+
+    @Param(name = "localonly", optional = true)
     private boolean localOnly;
+
+    @Param(name = "remoteonly", optional = true)
     private boolean remoteOnly;
+
+    @Param(name = "command-pattern", primary = true, optional = true,
+	    multiple = true)
+    private List<String> cmds;
+
     private static final String SPACES = "                                                            ";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListCommandsCommand.class);
 
     @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        /*
-         * Don't fetch information from server.
-         * We need to work even if server is down.
-         * XXX - could "merge" options if server is up
-         */
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "localonly", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "remoteonly", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandName = "command-pattern";
-        operandMin = 0;
-        operandMax = Integer.MAX_VALUE;
-
-        processProgramOptions();
-    }
-
-    @Override
     protected void validate()
             throws CommandException, CommandValidationException {
-        super.validate();
-        localOnly = getBooleanOption("localonly");
-        remoteOnly = getBooleanOption("remoteonly");
-        
         if (localOnly && remoteOnly) {
             throw new CommandException(strings.get("listCommands.notBoth"));
         }
@@ -106,8 +91,9 @@ public class ListCommandsCommand extends CLICommand {
             throws CommandException, CommandValidationException {
 
         // convert the patterns to regular expressions
-        for (String pat : operands)
-            patterns.add(Pattern.compile(globToRegex(pat)));
+        if (cmds != null)
+            for (String pat : cmds)
+                patterns.add(Pattern.compile(globToRegex(pat)));
 
         /*
          * If we need the remote commands, get them first so that

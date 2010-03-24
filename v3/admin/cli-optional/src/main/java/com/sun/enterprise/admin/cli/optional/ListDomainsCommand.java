@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,28 +61,8 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 @Scoped(PerLookup.class)
 public final class ListDomainsCommand extends LocalDomainCommand {
 
-    private static final String DOMAINDIR = "domaindir";
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
-
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-
-        processProgramOptions();
-    }
 
     /**
      * Override superclass version to do nothing, since this command
@@ -119,7 +99,6 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     }
 
     protected String getDomainsRoot() throws CommandException {
-        String domainDir = getOption(DOMAINDIR);
         if (domainDir == null) {
             domainDir = getSystemProperty(
                             SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
@@ -137,7 +116,7 @@ public final class ListDomainsCommand extends LocalDomainCommand {
             GFLauncher launcher = GFLauncherFactory.getInstance(
                 GFLauncherFactory.ServerType.domain);
             GFLauncherInfo li = launcher.getInfo();
-            String parent = getOption(DOMAINDIR);
+            String parent = domainDir;
             if (parent != null)
                 li.setDomainParentDir(parent);            
             li.setDomainName(dn);

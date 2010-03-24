@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@ package com.sun.enterprise.admin.cli.optional;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
@@ -55,49 +56,23 @@ import com.sun.appserv.management.client.prefs.StoreException;
 @Scoped(PerLookup.class)
 public final class DeleteDomainCommand extends LocalDomainCommand {
 
-    private static final String DOMAINDIR = "domaindir";
+    @Param(name = "domain_name", primary = true)
+    private String domainName0;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(DeleteDomainCommand.class);
 
-    private int adminPort;  //this is single threaded code, deliberately avoiding volatile/atomic
+    // this is single threaded code, deliberately avoiding volatile/atomic
+    private int adminPort;
+
+
     /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
      */
     @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, DOMAINDIR, '\0', "STRING", false, null);
-        // not a remote command so have to process --terse and --echo ourselves
-        addOption(opts, "terse", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "echo", '\0', "BOOLEAN", false, "false");
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "domain_name";
-        operandType = "STRING";
-        operandMin = 1;
-        operandMax = 1;
-    }
-
-    /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
-     */
     protected void validate()
             throws CommandException, CommandValidationException  {
+        domainName = domainName0;
         super.validate();
-
-        // if --terse or -echo are supplied, copy them over to program options
-        if (options.containsKey("echo"))
-            programOpts.setEcho(getBooleanOption("echo"));
-        if (options.containsKey("terse"))
-            programOpts.setTerse(getBooleanOption("terse"));
-        initializeLogger();     // in case program options changed
         adminPort = super.getAdminPort(super.getDomainXml());
     }
  
@@ -113,7 +88,8 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             checkRunning();
             DomainsManager manager = new PEDomainsManager();
             manager.deleteDomain(domainConfig);
-            //By default, do as what v2 does -- don't delete the entry - might need a revisit (Kedar: 09/16/2009)
+            // By default, do as what v2 does -- don't delete the entry -
+            // might need a revisit (Kedar: 09/16/2009)
             //deleteLoginInfo();
         } catch (Exception e) {
 	        throw new CommandException(e.getLocalizedMessage());
@@ -125,7 +101,8 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
 
     private void checkRunning() throws CommandException {
         if (super.isRunning(adminPort)) {
-            String msg = strings.get("domain.is.running", super.domainName, super.domainRootDir);
+            String msg = strings.get("domain.is.running", domainName,
+                                        domainRootDir);
             throw new IllegalStateException(msg);
         }
     }
@@ -135,6 +112,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
      */
     private void deleteLoginInfo() throws CommandException, StoreException {
         LoginInfoStore store = LoginInfoStoreFactory.getDefaultStore();
-        store.remove("localhost", adminPort);  //the host is always "localhost" in this case
+        // the host is always "localhost" in this case
+        store.remove("localhost", adminPort);
     }
 }

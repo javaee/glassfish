@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,6 +37,8 @@
 package com.sun.enterprise.admin.cli;
 
 import java.util.*;
+
+import org.glassfish.api.admin.ParameterMap;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -211,7 +213,7 @@ public class NewSyntaxTest {
                         throws CommandValidationException, CommandException {
         Parser rcp = new Parser(argv, 0,
                         ProgramOptions.getValidOptions(), false);
-        Map<String, String> params = rcp.getOptions();
+        ParameterMap params = rcp.getOptions();
         Environment env = new Environment(true);
         //operands = rcp.getOperands();
         return new ProgramOptions(params, env);

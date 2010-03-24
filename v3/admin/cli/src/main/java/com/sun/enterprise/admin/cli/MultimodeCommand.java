@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@ import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.CommandModel.ParamModel;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -55,34 +57,18 @@ public class MultimodeCommand extends CLICommand {
     @Inject
     private Habitat habitat;
 
-    private boolean printPrompt;
-    private ValidOption printPromptOption;
-    private String encoding;
+    @Param(optional = true, shortName = "f")
     private File file;
+
+    @Param(name = "printprompt", optional = true)
+    private Boolean printPromptOpt;
+    private boolean printPrompt;
+
+    @Param(optional = true)
+    private String encoding;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(MultimodeCommand.class);
-
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "file", 'f', "FILE", false, null);
-        printPromptOption =
-            addOption(opts, "printprompt", '\0', "BOOLEAN", false, null);
-        addOption(opts, "encoding", '\0', "STRING", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-
-        processProgramOptions();
-    }
 
     /**
      * The validate method validates that the type and quantity of
@@ -93,29 +79,28 @@ public class MultimodeCommand extends CLICommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
-        super.validate();
-        String pp = getOption("printprompt");
-        if (pp != null)
-            printPrompt = Boolean.parseBoolean(pp);
+        if (printPromptOpt != null)
+            printPrompt = printPromptOpt.booleanValue();
         else
             printPrompt = programOpts.isInteractive();
-        encoding = getOption("encoding");
-        String fname = getOption("file");
-        if (fname != null)
-            file = new File(fname);
     }
 
     /**
      * In the usage message modify the --printprompt option to have a
      * default based on the --interactive option.
      */
-    protected Set<ValidOption> usageOptions() {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "printprompt", '\0', "BOOLEAN", false,
-            Boolean.toString(programOpts.isInteractive()));
-        opts.addAll(commandOpts);
-        opts.remove(printPromptOption);
-        return opts;
+    protected Collection<ParamModel> usageOptions() {
+        Collection<ParamModel> opts = commandModel.getParameters();
+        Set<ParamModel> uopts = new LinkedHashSet<ParamModel>();
+	ParamModel p = new CommandModelData.ParamModelData("printprompt",
+	    boolean.class, true, Boolean.toString(programOpts.isInteractive()));
+	for (ParamModel pm : opts) {
+	    if (pm.getName().equals("printprompt"))
+                uopts.add(p);
+            else
+                uopts.add(pm);
+	}
+        return uopts;
     }
 
     @Override

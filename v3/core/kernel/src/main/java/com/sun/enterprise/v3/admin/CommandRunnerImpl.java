@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
+import org.glassfish.common.util.admin.MapInjectionResolver;
+import org.glassfish.common.util.admin.UnacceptableValueException;
 import org.glassfish.config.support.GenericCrudCommand;
 import org.glassfish.internal.api.*;
 
@@ -354,34 +356,6 @@ public class CommandRunnerImpl implements CommandRunner {
         return context.getActionReport();
     }
 
-    private static void checkAgainstAcceptableValues(AnnotatedElement target,
-                                                    String paramValueStr) {
-        Param param = target.getAnnotation(Param.class);
-        String acceptable = param.acceptableValues();
-        String paramName = getParamName(param, target);
-
-        if (ok(acceptable) && ok(paramValueStr)) {
-            String[] ss = acceptable.split(",");
-            boolean ok = false;
-
-            for (String s : ss) {
-                if (paramValueStr.equals(s.trim())) {
-                    ok = true;
-                    break;
-                }
-            }
-            if (!ok)
-                throw new UnacceptableValueException(
-                    adminStrings.getLocalString(
-                        "adapter.command.unacceptableValue",
-                        "Invalid parameter: {0}.  Its value is {1} " +
-                            "but it isn''t one of these acceptable values: {2}",
-                        paramName,
-                        paramValueStr,
-                        acceptable));
-        }
-    }
-
     private static String getParamDescription(
             LocalStringManagerImpl localStrings,
             String i18nKey,
@@ -401,139 +375,6 @@ public class CommandRunnerImpl implements CommandRunner {
 //                                                  "no description provided");
         }
         return paramDesc;
-    }
-
-    /**
-     * Get the Param name.  First it checks if the annotated Param
-     * includes a name, if not then get the name from the field.
-     *
-     * @param - Param class annotation
-     * @annotated - annotated element
-     * @return the name of the param
-     */
-    private static String getParamName(Param param,
-                                        AnnotatedElement annotated) {
-        if (param.name().equals("")) {
-            if (annotated instanceof Field) {
-                return ((Field) annotated).getName();
-            }
-            if (annotated instanceof Method) {
-                // skip the "get"
-                return ((Method)annotated).getName().substring(3).toLowerCase();
-            }
-        } else if (param.password()) {
-            return ASADMIN_CMD_PREFIX +
-                        param.name().toUpperCase(Locale.ENGLISH);
-        } else {
-            return param.name();
-        }
-        return "";
-    }
-
-    /**
-     * Get the param value.  Checks if the param (option) value
-     * is defined on the command line (URL passed by the client)
-     * by calling getParameterValue method.  If not, then check
-     * for the shortName.  If param value is not given by the
-     * shortName (short option) then if the default value is
-     * defined return it.
-     *
-     * @param parameters parameters from the command line.
-     * @param param from the annotated Param
-     * @param target annotated element
-     * @return param value
-     */
-    static String getParamValueString(final ParameterMap parameters,
-                               final Param param,
-                               final AnnotatedElement target) {
-        String paramValueStr = getParameterValue(parameters,
-                                                  getParamName(param, target),
-                                                  true);
-        if (paramValueStr == null) {
-            // check for shortName
-            paramValueStr = parameters.getOne(param.shortName());
-        }
-
-        /*
-         * If we still don't have a value, and it's a password parameter,
-         * try using the simple name of the parameter (instead of the
-         * "AS_ADMIN_" name).  This makes it easier to pass password
-         * parameters when using the local CommandRunner API, e.g., for
-         * embedded use.
-         */
-        if (paramValueStr == null && param.password())
-            paramValueStr = getParameterValue(parameters, param.name(), true);
-
-        // if paramValueStr is still null, then check to
-        // see if the defaultValue is defined
-        if (paramValueStr == null) {
-            final String defaultValue = param.defaultValue();
-            paramValueStr = (defaultValue.equals("")) ? null : defaultValue;
-        }
-        return paramValueStr;
-    }
-
-    /**
-     * Get the value of the field.  This value is defined in the
-     * annotated Param declaration.  For example:
-     * <code>
-     * @Param(optional=true)
-     * String name="server"
-     * </code>
-     * The Field, name's value, "server" is returned.
-     *
-     * @param component command class object
-     * @param annotated annotated element
-     * @return the annotated Field value
-     */
-    static Object getParamField(final Object component,
-                         final AnnotatedElement annotated) {
-        try {
-            if (annotated instanceof Field) {
-                Field field = (Field)annotated;
-                field.setAccessible(true);
-                return ((Field) annotated).get(component);
-            }
-        } catch (Exception e) {
-            // unable to get the field value, may not be defined
-            // return null instead.
-            return null;
-        }
-        return null;
-    }
-
-    /**
-     * Searches for the parameter with the specified key in this parameter map.
-     * The method returns null if the parameter is not found.
-     *
-     * @param params the parameter map to search in
-     * @param key the property key
-     * @param ignoreCase true to search the key ignoring case,
-     *                   false otherwise
-     * @return the value in this parameter map with the specified key value
-     */
-    static String getParameterValue(final ParameterMap params,
-                            final String key, final boolean ignoreCase) {
-        if (ignoreCase) {
-            for (Map.Entry<String,List<String>> entry : params.entrySet()) {
-                final String paramName = entry.getKey();
-                if (paramName.equalsIgnoreCase(key)) {
-                    if (paramName.startsWith(ASADMIN_CMD_PREFIX)) {
-                        try {
-                            GFBase64Decoder base64Decoder =
-                                new GFBase64Decoder();
-                            return new String(base64Decoder.decodeBuffer(
-                                entry.getValue().get(0)));
-                        } catch (IOException e) {
-                            // ignore for now. Not much can be done anyway.
-                            // todo: improve this error condition reporting
-                        }
-                    }
-                    return entry.getValue().get(0);
-                }
-            }
-        }
-        return params.getOne(key);
     }
 
     /**
@@ -855,204 +696,6 @@ public class CommandRunnerImpl implements CommandRunner {
     }
 
     /**
-     * Convert the String parameter to the specified type.
-     * For example if type is Properties and the String
-     * value is: name1=value1:name2=value2:...
-     * then this api will convert the String to a Properties
-     * class with the values {name1=name2, name2=value2, ...}
-     *
-     * @param target the target field
-     * @param type the type of class to convert
-     * @param paramValStr the String value to convert
-     * @return Object
-     */
-    static Object convertStringToObject(AnnotatedElement target,
-                                    Class type, String paramValStr) {
-        Param param = target.getAnnotation(Param.class);
-        Object paramValue = paramValStr;
-        if (type.isAssignableFrom(String.class)) {
-            paramValue = paramValStr;
-        } else if (type.isAssignableFrom(Properties.class)) {
-            paramValue =
-                convertStringToProperties(paramValStr, param.separator());
-        } else if (type.isAssignableFrom(List.class)) {
-            paramValue = convertStringToList(paramValStr, param.separator());
-        } else if (type.isAssignableFrom(Boolean.class)) {
-            String paramName = getParamName(param, target);
-            paramValue = convertStringToBoolean(paramName, paramValStr);
-        } else if (type.isAssignableFrom(String[].class)) {
-            paramValue =
-                convertStringToStringArray(paramValStr, param.separator());
-        } else if (type.isAssignableFrom(File.class)) {
-            return new File(paramValStr);
-        }
-        return paramValue;
-    }
-
-    /**
-     * Convert the List<String> parameter to the specified type.
-     *
-     * @param target the target field
-     * @param type the type of class to convert
-     * @param paramValList the List of String values to convert
-     * @return Object
-     */
-    static Object convertListToObject(AnnotatedElement target,
-                                    Class type, List<String> paramValList) {
-        Param param = target.getAnnotation(Param.class);
-        // does this parameter type allow multiple values?
-        if (!param.multiple()) {
-            if (paramValList.size() == 1)
-                return convertStringToObject(target, type, paramValList.get(0));
-            throw new UnacceptableValueException(
-                adminStrings.getLocalString("adapter.command.tooManyValues",
-                    "Invalid parameter: {0}.  This parameter may not have " +
-                    "more than one value.",
-                    getParamName(param, target)));
-        }
-
-        Object paramValue = paramValList;
-        if (type.isAssignableFrom(List.class)) {
-            // the default case, nothing to do
-        } else if (type.isAssignableFrom(String[].class)) {
-            paramValue = paramValList.toArray(new String[paramValList.size()]);
-        } else if (type.isAssignableFrom(Properties.class)) {
-            paramValue = convertListToProperties(paramValList);
-        }
-        // XXX - could handle arrays of other types
-        return paramValue;
-    }
-
-    /**
-     * Convert a String to a Boolean.
-     * null --> true
-     * "" --> true
-     * case insensitive "true" --> true
-     * case insensitive "false" --> false
-     * anything else --> throw Exception
-     *
-     * @param paramName - the name of the param
-     * @param s - the String to convert
-     * @return Boolean
-     */
-    private static Boolean convertStringToBoolean(String paramName, String s) {
-        if (!ok(s))
-            return true;
-
-        if (s.equalsIgnoreCase(Boolean.TRUE.toString()))
-            return true;
-
-        if (s.equalsIgnoreCase(Boolean.FALSE.toString()))
-            return false;
-
-        String msg = adminStrings.getLocalString(
-                "adapter.command.unacceptableBooleanValue",
-                "Invalid parameter: {0}.  This boolean option must be set " +
-                    "(case insensitive) to true or false.  " +
-                    "Its value was set to {1}",
-                paramName, s);
-
-        throw new UnacceptableValueException(msg);
-    }
-
-    /**
-     * Convert a String with the following format to Properties:
-     * name1=value1:name2=value2:name3=value3:...
-     * The Properties object contains elements:
-     * {name1=value1, name2=value2, name3=value3, ...}
-     *
-     * @param propsString the String to convert
-     * @param sep the separator character
-     * @return Properties containing the elements in String
-     */
-    static Properties convertStringToProperties(String propsString, char sep) {
-        final Properties properties = new Properties();
-        if (propsString != null) {
-            ParamTokenizer stoken = new ParamTokenizer(propsString, sep);
-            while (stoken.hasMoreTokens()) {
-                String token = stoken.nextTokenKeepEscapes();
-                final ParamTokenizer nameTok = new ParamTokenizer(token, '=');
-                String name = null, value = null;
-                if (nameTok.hasMoreTokens())
-                    name = nameTok.nextToken();
-                if (nameTok.hasMoreTokens())
-                    value = nameTok.nextToken();
-                if (nameTok.hasMoreTokens() || name == null || value == null)
-                    throw new IllegalArgumentException(
-                        adminStrings.getLocalString("InvalidPropertySyntax",
-                            "Invalid property syntax.", propsString));
-                properties.setProperty(name, value);
-            }
-        }
-        return properties;
-    }
-
-    /**
-     * Convert a List of Strings, each with the following format, to Properties:
-     * name1=value1
-     *
-     * @param propsList the List of Strings to convert
-     * @return Properties containing the elements in the list
-     */
-    static Properties convertListToProperties(List<String> propsList) {
-        final Properties properties = new Properties();
-        if (propsList != null) {
-            for (String prop : propsList) {
-                final ParamTokenizer nameTok = new ParamTokenizer(prop, '=');
-                String name = null, value = null;
-                if (nameTok.hasMoreTokens())
-                    name = nameTok.nextToken();
-                if (nameTok.hasMoreTokens())
-                    value = nameTok.nextToken();
-                if (nameTok.hasMoreTokens() || name == null || value == null)
-                    throw new IllegalArgumentException(
-                        adminStrings.getLocalString("InvalidPropertySyntax",
-                            "Invalid property syntax.", prop));
-                properties.setProperty(name, value);
-            }
-        }
-        return properties;
-    }
-
-    /**
-     * Convert a String with the following format to List<String>:
-     * string1:string2:string3:...
-     * The List object contains elements: string1, string2, string3, ...
-     *
-     * @param listString - the String to convert
-     * @param sep the separator character
-     * @return List containing the elements in String
-     */
-    static List<String> convertStringToList(String listString, char sep) {
-        List<String> list = new java.util.ArrayList();
-        if (listString != null) {
-            final ParamTokenizer ptoken = new ParamTokenizer(listString, sep);
-            while (ptoken.hasMoreTokens()) {
-                String token = ptoken.nextToken();
-                list.add(token);
-            }
-        }
-        return list;
-    }
-
-    /**
-     * convert a String with the following format to String Array:
-     * string1,string2,string3,...
-     * The String Array contains: string1, string2, string3, ...
-     *
-     * @param arrayString - the String to convert
-     * @param sep the separator character
-     * @return String[] containing the elements in String
-     */
-    static String[] convertStringToStringArray(String arrayString, char sep) {
-        final ParamTokenizer paramTok = new ParamTokenizer(arrayString, sep);
-        List<String> strs = new ArrayList<String>();
-        while (paramTok.hasMoreTokens())
-            strs.add(paramTok.nextToken());
-        return strs.toArray(new String[strs.size()]);
-    }
-
-    /**
      * Check if the variable, "skipParamValidation" is defined in the command
      * class.  If defined and set to true, then parameter validation will be
      * skipped from that command.
@@ -1268,7 +911,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
         @Override
         public boolean isOptional(AnnotatedElement element, Param annotation) {
-            String name = model.getParamName(annotation, element);
+            String name = CommandModel.getParamName(annotation, element);
             CommandModel.ParamModel param = model.getModelFor(name);
             return param.getParam().optional();
         }
@@ -1303,57 +946,31 @@ public class CommandRunnerImpl implements CommandRunner {
             }
             return null;
         }
-    }
 
-    /**
-     * An InjectionResolver that uses a ParameterMap object as the source of
-     * the data to inject.
-     */
-    private static class MapInjectionResolver
-                            extends InjectionResolver<Param> {
-        private final CommandModel model;
-        private final ParameterMap parameters;
-
-        public MapInjectionResolver(CommandModel model,
-                                            ParameterMap parameters) {
-            super(Param.class);
-            this.model = model;
-            this.parameters = parameters;
-        }
-
-        @Override
-        public boolean isOptional(AnnotatedElement element, Param annotation) {
-           String name = model.getParamName(annotation, element);
-           CommandModel.ParamModel param = model.getModelFor(name);
-           return param.getParam().optional();
-        }
-
-        @Override
-        public Object getValue(Object component, AnnotatedElement target,
-                                    Class type) throws ComponentException {
-            // look for the name in the list of parameters passed.
+        private static void checkAgainstAcceptableValues(
+                                AnnotatedElement target, String paramValueStr) {
             Param param = target.getAnnotation(Param.class);
-            //String acceptable = param.acceptableValues();
-            String paramName = getParamName(param, target);
-            if (param.primary()) {
-                // this is the primary parameter for the command
-                // XXX - for now, only handle multiple values for primary
-                List<String> value = parameters.get("DEFAULT");
-                if (value != null && value.size() > 0) {
-                    // let's also copy this value to the cmd with a real name
-                    parameters.set(paramName, value);
-                    return convertListToObject(target, type, value);
-                }
-            }
-            String paramValueStr = getParamValueString(parameters, param,
-                                                       target);
+            String acceptable = param.acceptableValues();
+            String paramName = CommandModel.getParamName(param, target);
 
-            checkAgainstAcceptableValues(target, paramValueStr);
-            if (paramValueStr != null) {
-                return convertStringToObject(target, type, paramValueStr);
+            if (ok(acceptable) && ok(paramValueStr)) {
+                String[] ss = acceptable.split(",");
+
+                for (String s : ss) {
+                    if (paramValueStr.equals(s.trim()))
+                        return;         // matched, value is good
+                }
+
+                // didn't match any, error
+                throw new UnacceptableValueException(
+                    adminStrings.getLocalString(
+                        "adapter.command.unacceptableValue",
+                        "Invalid parameter: {0}.  Its value is {1} " +
+                            "but it isn''t one of these acceptable values: {2}",
+                        paramName,
+                        paramValueStr,
+                        acceptable));
             }
-            //return default value
-            return getParamField(component, target);
         }
     }
 

@@ -39,8 +39,8 @@ package com.sun.enterprise.admin.cli;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.appserv.server.util.Version;
-import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -59,29 +59,19 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "version")
 @Scoped(PerLookup.class)
 public class VersionCommand extends CLICommand {
+
+    @Param(optional = true)
+    private boolean verbose;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);
-
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, "verbose", 'v', "BOOLEAN", false, "false");
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-
-        processProgramOptions();
-    }
 
     @Override
     protected int executeCommand() throws CommandException {
         try {
             RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
             String version;
-            if (getBooleanOption("verbose"))
+            if (verbose)
                 version = cmd.executeAndReturnOutput("version", "--verbose");
             else
                 version = cmd.executeAndReturnOutput("version");
@@ -98,8 +88,9 @@ public class VersionCommand extends CLICommand {
     private void invokeLocal() {
         logger.printMessage(
             strings.get("version.local", Version.getFullVersion()));
-        if (getBooleanOption(("verbose")))
-            logger.printMessage(strings.get("version.local.java", System.getProperty("java.version")));
+        if (verbose)
+            logger.printMessage(strings.get("version.local.java",
+				    System.getProperty("java.version")));
     }
 
     private void printRemoteException(Exception e) {

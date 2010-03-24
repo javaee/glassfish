@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@ import java.io.*;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -61,19 +61,8 @@ public class HelpCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(HelpCommand.class);
 
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        commandOpts = Collections.emptySet();
-        operandName = "command-name";
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 1;
-    }
+    @Param(name = "command-name", primary = true, optional = true)
+    private String cmd;
 
     @Override
     protected int executeCommand()
@@ -93,7 +82,7 @@ public class HelpCommand extends CLICommand {
     }
 
     private String getCommandName() {
-	return (operands.size() > 0 ? operands.get(0) : DEFAULT_HELP_PAGE);
+	return cmd != null ? cmd : DEFAULT_HELP_PAGE;
     }
 
     private Writer getDestination() {

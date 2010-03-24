@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,24 +34,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.admin;
+
+package org.glassfish.common.util.admin;
 
 import org.jvnet.hk2.component.ComponentException;
 
 /**
- * HK2 has an Injection Manager.  CommandRunner makes an instance of this Injection
- * Manager and overrides/overrides some methods.  Now we throw an Exception out.  If it
+ * HK2 has an Injection Manager.  We make an instance of this Injection
+ * Manager and override some methods.  Now we throw an Exception out.  If it
  * is a ComponentException and if the field is optional -- HK2 swallows the
  * Exception.
  * So, instead, we throw this RuntimeException and HK2 will propagate it back as
  * a wrapped Exception.
  * Then we look at the cause and pull out the real error message.
+ *
  * @author bnevins
  */
-class UnacceptableValueException extends RuntimeException{
+public class UnacceptableValueException extends RuntimeException {
 
-    UnacceptableValueException(String msg) {
+    public UnacceptableValueException(String msg) {
         super(msg);
     }
-
 }

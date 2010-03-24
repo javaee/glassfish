@@ -65,21 +65,6 @@ public class LoginCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LoginCommand.class);
 
-    /**
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-
-        processProgramOptions();
-    }
-
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {

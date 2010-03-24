@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -57,30 +58,16 @@ import com.sun.enterprise.util.OS;
 @Scoped(PerLookup.class)
 public final class StopDatabaseCommand extends DatabaseCommand {
 
+    @Param(name = "dbuser", optional = true)
+    private String dbUser;
+
+    @Param(name = "dbpasswordfile", optional = true)
+    private File dbPasswordFile;
+
+    private String dbPassword;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopDatabaseCommand.class);
-
-    /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
-     */
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new LinkedHashSet<ValidOption>();
-        addOption(opts, DB_HOST, '\0', "STRING", false, DB_HOST_DEFAULT);
-        addOption(opts, DB_PORT, '\0', "STRING", false, DB_PORT_DEFAULT);
-        addOption(opts, DB_USER, '\0', "STRING", false, null);
-        //addOption(opts, DB_PASSWORD, '\0', "STRING", false, null);
-        addOption(opts, DB_PASSWORDFILE, '\0', "FILE", false, null);
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
-
-        processProgramOptions();
-    }
 
     /**
      * Defines the command to stop the derby database.
@@ -88,12 +75,10 @@ public final class StopDatabaseCommand extends DatabaseCommand {
      * "-Dderby.storage.fileSyncTransactionLog=True" is defined.
      */
     public String[] stopDatabaseCmd() throws Exception {
-        dbUser = getOption(DB_USER);
-        //dbPassword = getOption(DB_PASSWORD);
         passwords = new HashMap<String, String>();
-        String dbPasswordFile = getOption(DB_PASSWORDFILE);
-        if (ok(dbPasswordFile)) {
-            passwords = CLIUtil.readPasswordFileOptions(dbPasswordFile, true);
+        if (dbPasswordFile != null) {
+            passwords =
+                CLIUtil.readPasswordFileOptions(dbPasswordFile.getPath(), true);
             dbPassword = passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "DBPASSWORD");
         }
         if (dbUser == null && dbPassword == null) {

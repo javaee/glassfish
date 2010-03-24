@@ -46,6 +46,10 @@ import org.jvnet.hk2.component.*;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandModel.ParamModel;
+import org.glassfish.api.admin.ParameterMap;
+
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
 import com.sun.appserv.management.client.prefs.LoginInfoStoreFactory;
@@ -56,6 +60,8 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.util.*;
+import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
+import com.sun.enterprise.admin.cli.CommandModelData.ParamData;
 import com.sun.enterprise.admin.cli.ProgramOptions.PasswordLocation;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.net.NetUtils;
@@ -189,11 +195,11 @@ public class RemoteCommand extends CLICommand {
              * fake everything else.
              */
             if (doHelp || programOpts.isHelp()) {
-                commandOpts = new HashSet<ValidOption>();
-                ValidOption opt = new ValidOption("help", "BOOLEAN",
-                        ValidOption.OPTIONAL, "false");
-                opt.setShortName("?");
-                commandOpts.add(opt);
+                CommandModelData cm = new CommandModelData(name, null);
+                ParamModel opt = new ParamModelData("help", boolean.class, true,
+                        "false", "?");
+                cm.add(opt);
+                commandModel = cm;
                 return;
             }
 
@@ -201,8 +207,8 @@ public class RemoteCommand extends CLICommand {
              * Find the metadata for the command.
              */
             /*
-            commandOpts = cache.get(name, ts);
-            if (commandOpts == null)
+            commandModel = cache.get(name, ts);
+            if (commandModel == null)
                 // goes to server
              */
             try {
@@ -220,15 +226,13 @@ public class RemoteCommand extends CLICommand {
                     throw ex;
                 logger.printDebugMessage("Updated authentication worked");
             }
-            if (commandOpts == null) {
-                String msg = metadataErrors != null ? metadataErrors.toString() : ""; 
+            if (commandModel == null) {
+                String msg =
+                    metadataErrors != null ? metadataErrors.toString() : ""; 
                 throw new CommandException(strings.get("InvalidCommand", name),
                         new InvalidCommandException(msg));
             }
 
-            // everyone gets a --help option until we have a help command
-            // on the server
-            addOption(commandOpts, "help", '?', "BOOLEAN", false, "false");
         } catch (CommandException cex) {
             logger.printDebugMessage("RemoteCommand.prepare throws " + cex);
             throw cex;
@@ -244,7 +248,7 @@ public class RemoteCommand extends CLICommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException  {
-        if (doHelp || programOpts.isHelp() || getBooleanOption("help"))
+        if (doHelp || programOpts.isHelp())
             return;
         super.validate();
     }
@@ -277,9 +281,15 @@ public class RemoteCommand extends CLICommand {
             GFBase64Encoder encoder = new GFBase64Encoder();
             if (doHelp)
                 addStringOption(uriString, "help", "true");
-            for (ValidOption opt : commandOpts) {
+            ParamModel operandParam = null;
+            for (ParamModel opt : commandModel.getParameters()) {
+                if (opt.getParam().primary()) {
+                    operandParam = opt;
+                    continue;
+                }
                 String paramName = opt.getName();
-                String paramValue = options.get(paramName);
+                // XXX - no multi-value support
+                String paramValue = options.getOne(paramName);
                 if (paramValue == null) // perhaps it's set in the environment?
                     paramValue = env.getStringOption(paramName);
                 if (paramValue == null) {
@@ -292,15 +302,15 @@ public class RemoteCommand extends CLICommand {
                      * which should never happen here because validate()
                      * should check it first.
                      */
-                    if (opt.isValueRequired() == ValidOption.REQUIRED)
+                    if (!opt.getParam().optional())
                         throw new CommandException(strings.get("missingOption",
                                 paramName));
                     // optional param not set, skip it
                     continue;
                 }
-                if (opt.getType().equals("FILE")) {
+                if (opt.getType() == File.class) {
                     addFileOption(uriString, paramName, paramValue);
-                } else if (opt.getType().equals("PASSWORD")) {
+                } else if (opt.getParam().password()) {
                     addStringOption(uriString, paramName,
                                 encoder.encode(paramValue.getBytes()));
                 } else
@@ -309,7 +319,7 @@ public class RemoteCommand extends CLICommand {
 
             // add operands
             for (String operand : operands) {
-                if (operandType.equals("FILE"))
+                if (operandParam.getType() == File.class)
                     addFileOption(uriString, "DEFAULT", operand);
                 else
                     addStringOption(uriString, "DEFAULT", operand);
@@ -333,7 +343,7 @@ public class RemoteCommand extends CLICommand {
             }
         } catch (CommandException ex) {
             // if a --help request failed, try to emulate it locally
-            if (programOpts.isHelp() || getBooleanOption("help")) {
+            if (programOpts.isHelp()) {
                 Reader r = getLocalManPage();
                 if (r != null) {
                     try {
@@ -739,7 +749,7 @@ public class RemoteCommand extends CLICommand {
         }
     }
     
-    private void handleResponse(Map<String, String> params,
+    private void handleResponse(ParameterMap params,
             InputStream in, int code, OutputStream userOut)
             throws IOException, CommandException {
         if (userOut == null) {
@@ -749,7 +759,7 @@ public class RemoteCommand extends CLICommand {
         }
     }
 
-    private void handleResponse(Map<String, String> params,
+    private void handleResponse(ParameterMap params,
             InputStream in, int code) throws IOException, CommandException {
         RemoteResponseManager rrm = null;
 
@@ -818,11 +828,12 @@ public class RemoteCommand extends CLICommand {
                      */
                     if (!isReportProcessed) {
                         metadataErrors = new StringBuilder();
-                        commandOpts =
-                                parseMetadata(partIt.next().getInputStream(), metadataErrors);
+                        commandModel =
+                                parseMetadata(partIt.next().getInputStream(),
+                                metadataErrors);
                         logger.printDebugMessage(
                             "fetchCommandMetadata: got command opts: " +
-                            commandOpts);
+                            commandModel);
                         isReportProcessed = true;
                     } else {
                         partIt.next();  // just throw it away
@@ -838,7 +849,7 @@ public class RemoteCommand extends CLICommand {
      * @param in the input stream
      * @return the set of ValidOptions
      */
-    private Set<ValidOption> parseMetadata(InputStream in, StringBuilder errors) {
+    private CommandModel parseMetadata(InputStream in, StringBuilder errors) {
         if (logger.isLoggable(Level.FINER)) { // XXX - assume "debug" == "FINER"
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
@@ -851,7 +862,8 @@ public class RemoteCommand extends CLICommand {
             logger.printDebugMessage("------- RAW METADATA RESPONSE ---------");
         }
 
-        Set<ValidOption> valid = new LinkedHashSet<ValidOption>();
+        //Set<ValidOption> valid = new LinkedHashSet<ValidOption>();
+        CommandModelData cm = new CommandModelData(name, null);
         boolean sawFile = false;
         try {
             DocumentBuilder d =
@@ -864,33 +876,33 @@ public class RemoteCommand extends CLICommand {
                 String cause = getAttr(report.getAttributes(), "failure-cause");
                 if (cause != null)
                     errors.append(cause);
-                return null;    // no command info, must be invalid command or something wrong with command implementation
+                // no command info, must be invalid command or something
+                // wrong with command implementation
+                return null;
             }
             NamedNodeMap cmdattrs = cmdnode.getAttributes();
             usage = getAttr(cmdattrs, "usage");
             String dashOk = getAttr(cmdattrs, "unknown-options-are-operands");
             if (dashOk != null)
-                unknownOptionsAreOperands = Boolean.parseBoolean(dashOk);
+                cm.dashOk = Boolean.parseBoolean(dashOk);
             NodeList opts = doc.getElementsByTagName("option");
             for (int i = 0; i < opts.getLength(); i++) {
                 Node n = opts.item(i);
                 NamedNodeMap attrs = n.getAttributes();
-                ValidOption opt = new ValidOption(
-                        getAttr(attrs, "name"),
-                        getAttr(attrs, "type"),
-                        Boolean.parseBoolean(getAttr(attrs, "optional")) ?
-                            ValidOption.OPTIONAL : ValidOption.REQUIRED,
-                        getAttr(attrs, "default"));
                 String sn = getAttr(attrs, "short");
-                if (ok(sn))
-                    opt.setShortName(sn);
-                if (opt.getType().equals("PASSWORD") &&
-                        getAttr(attrs, "description") != null)
-                    // XXX - hack alert!  description is stored in default value
-                    // but only for passwords for now
-                    opt.setDefaultValue(getAttr(attrs, "description"));
-                valid.add(opt);
-                if (opt.getType().equals("FILE"))
+                String def = getAttr(attrs, "default");
+                ParamModelData opt = new ParamModelData(
+                        getAttr(attrs, "name"),
+                        typeOf(getAttr(attrs, "type")),
+                        Boolean.parseBoolean(getAttr(attrs, "optional")),
+                        def,
+                        ok(sn) ? sn : null);
+                if (getAttr(attrs, "type").equals("PASSWORD")) {
+                    opt.param._password = true;
+                    opt.description = getAttr(attrs, "description");
+                }
+                cm.add(opt);
+                if (opt.getType() == File.class)
                     sawFile = true;
             }
             // should be only one operand item
@@ -898,16 +910,17 @@ public class RemoteCommand extends CLICommand {
             for (int i = 0; i < opts.getLength(); i++) {
                 Node n = opts.item(i);
                 NamedNodeMap attrs = n.getAttributes();
-                operandName = getAttr(attrs, "name");
-                operandType = getAttr(attrs, "type");
-                operandMin = Integer.parseInt(getAttr(attrs, "min"));
+                Class<?> type = typeOf(getAttr(attrs, "type"));
+                if (type == File.class)
+                    sawFile = true;
+                int min = Integer.parseInt(getAttr(attrs, "min"));
                 String max = getAttr(attrs, "max");
                 if (max.equals("unlimited"))
-                    operandMax = Integer.MAX_VALUE;
-                else
-                    operandMax = Integer.parseInt(max);
-                if (operandType.equals("FILE"))
-                    sawFile = true;
+                    type = List.class;
+                ParamModelData pm = new ParamModelData(
+                    getAttr(attrs, "name"), type, min == 0, null);
+                pm.param._primary = true;
+                cm.add(pm);
             }
 
             /*
@@ -917,8 +930,8 @@ public class RemoteCommand extends CLICommand {
              * XXX - should just define upload parameter on remote command
              */
             if (sawFile) {
-                valid.add(new ValidOption("upload", "BOOLEAN",
-                        ValidOption.OPTIONAL, null));
+                cm.add(new ParamModelData("upload", Boolean.class,
+                        true, null));
                 addedUploadOption = true;
             }
         } catch (ParserConfigurationException pex) {
@@ -931,7 +944,22 @@ public class RemoteCommand extends CLICommand {
             // ignore for now
             return null;
         }
-        return valid;
+        return cm;
+    }
+
+    private Class<?> typeOf(String type) {
+        if (type.equals("STRING"))
+            return String.class;
+        else if (type.equals("BOOLEAN"))
+            return Boolean.class;
+        else if (type.equals("FILE"))
+            return File.class;
+        else if (type.equals("PASSWORD"))
+            return String.class;
+        else if (type.equals("PROPERTIES"))
+            return Properties.class;
+        else
+            return String.class;
     }
 
     /**
@@ -953,13 +981,13 @@ public class RemoteCommand extends CLICommand {
     private void initializeDoUpload() throws CommandException {
         boolean sawFile = false;
         boolean sawDirectory = false;
-        for (Map.Entry<String, String> param : options.entrySet()) {
+        for (Map.Entry<String, List<String>> param : options.entrySet()) {
             String paramName = param.getKey();
-            ValidOption opt = getValidOption(paramName);
-            if (opt != null && opt.getType().equals("FILE")) {
+            ParamModel opt = commandModel.getModelFor(paramName);
+            if (opt != null && opt.getType() == File.class) {
                 sawFile = true;
                 // if any FILE parameter is a directory, turn off doUpload
-                String filename = param.getValue();
+                String filename = param.getValue().get(0);
                 File file = new File(filename);
                 if (file.isDirectory())
                     sawDirectory = true;
@@ -967,7 +995,8 @@ public class RemoteCommand extends CLICommand {
         }
 
         // now check the operands for files
-        if (operandType != null && operandType.equals("FILE")) {
+        ParamModel operandParam = getOperandModel();
+        if (operandParam != null && operandParam.getType() == File.class) {
             for (String filename : operands) {
                 sawFile = true;
                 // if any FILE parameter is a directory, turn off doUpload
@@ -992,8 +1021,11 @@ public class RemoteCommand extends CLICommand {
             }
         }
 
+        /*
+         * XXX - can't remove it, no remove method on MultiMap
         if (addedUploadOption)
             options.remove("upload");    // XXX - remove it
+        */
 
         logger.printDebugMessage("doUpload set to " + doUpload);
     }
@@ -1016,19 +1048,6 @@ public class RemoteCommand extends CLICommand {
              */
             return false;
         }
-    }
-
-    /**
-     * Get the ValidOption descriptor for the named option.
-     *
-     * @param name  the option name
-     * @return      the ValidOption descriptor
-     */
-    private ValidOption getValidOption(String name) {
-        for (ValidOption opt : commandOpts)
-            if (opt.getName().equals(name))
-                return opt;
-        return null;
     }
 
     /**

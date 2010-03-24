@@ -118,12 +118,8 @@ public final class BackupCommands extends LocalDomainCommand {
     }
 
     /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
-     * the environment.  It also supplies passwords from the password
-     * file or prompts for them if interactive.
      */
+    @Override
     protected void validate()
             throws CommandException, CommandValidationException  {
         super.validate();

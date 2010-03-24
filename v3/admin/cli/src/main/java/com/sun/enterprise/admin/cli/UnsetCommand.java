@@ -39,7 +39,7 @@ package com.sun.enterprise.admin.cli;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -51,20 +51,11 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Scoped(PerLookup.class)
 public class UnsetCommand extends CLICommand {
 
+    @Param(name = "environment-variable", primary = true, multiple = true)
+    private List<String> vars;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(UnsetCommand.class);
-
-    @Override
-    protected void prepare()
-            throws CommandException, CommandValidationException {
-        Set<ValidOption> opts = new HashSet<ValidOption>();
-        addOption(opts, "help", '?', "BOOLEAN", false, "false");
-        commandOpts = Collections.unmodifiableSet(opts);
-        operandName = "environment-variable";
-        operandType = "STRING";
-        operandMin = 1;
-        operandMax = Integer.MAX_VALUE;
-    }
 
     @Override
     public int executeCommand()
@@ -72,7 +63,7 @@ public class UnsetCommand extends CLICommand {
         int ret = 0;    // by default, success
 
         // process each operand
-        for (String name : operands) {
+        for (String name : vars) {
             // check that name is legitimate
             if (!name.startsWith(Environment.AS_ADMIN_ENV_PREFIX)) {
                 logger.printMessage(strings.get("badEnvVarUnset", name));

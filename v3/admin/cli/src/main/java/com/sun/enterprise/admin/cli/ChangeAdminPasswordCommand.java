@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@ import java.io.Console;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.admin.CommandModel;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -57,6 +57,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "change-admin-password")
 @Scoped(PerLookup.class)
 public class ChangeAdminPasswordCommand extends RemoteCommand {
+    private CommandModel savedCommandModel;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
@@ -66,17 +67,17 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
     }
 
     @Override
-    protected void fetchCommandMetadata() {
+    protected void fetchCommandMetadata() throws CommandException {
         /*
-         * Don't fetch information from server.
+         * Fetch information from the server and save it,
+         * then replace it with our own metadata.
          * The options the server requires are different
          * than the options presented to the user; the
          * user specifes no command options.
          */
-        commandOpts = new HashSet<ValidOption>();
-        operandType = "STRING";
-        operandMin = 0;
-        operandMax = 0;
+        super.fetchCommandMetadata();
+        savedCommandModel = commandModel;
+        commandModel = new CommandModelData();
     }
 
     /**
@@ -85,9 +86,6 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
-        if (programOpts.isHelp())
-            return;
-
         /*
          * If --user wasn't specified as a program option,
          * we treat it as a required option and prompt for it
@@ -121,8 +119,6 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
             throw new CommandException(cve);
         }
 
-        super.validate();
-
         /*
          * No more prompting at this point.  If the remote command
          * fails authentication, for example, don't prompt for the
@@ -132,20 +128,15 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
 
         /*
          * Now that the user-supplied parameters have been validated,
-         * we add the parameters required by the server command and
-         * set their values.
+         * we restore the metadata required by the server command and
+         * set the parameter values.
          */
-        addOption(commandOpts, Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
-                    '\0', "PASSWORD", false, null);
-        addOption(commandOpts, Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
-                    '\0', "PASSWORD", false, null);
-        operandType = "STRING";
-        operandMin = operandMax = 1;
+        commandModel = savedCommandModel;
         operands = new ArrayList<String>();
         operands.add(programOpts.getUser());
-        options.put(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
+        options.set(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
                 passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD"));
-        options.put(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
+        options.set(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
                 passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD"));
     }
 

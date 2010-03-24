@@ -42,11 +42,21 @@ import java.lang.reflect.*;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
+import com.sun.hk2.component.InjectionResolver;
+
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandModel.ParamModel;
+import org.glassfish.common.util.admin.CommandModelImpl;
+import org.glassfish.common.util.admin.MapInjectionResolver;
 
 import com.sun.enterprise.admin.cli.util.*;
+import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+
 
 /**
  * Base class for a CLI command.  An instance of a subclass of this
@@ -87,6 +97,10 @@ public abstract class CLICommand implements PostConstruct {
 
     protected static final CLILogger logger = CLILogger.getInstance();
 
+    // InjectionManager is completely stateless with only one method that
+    // operates on its arguments, so we can share a single instance.
+    private static final InjectionManager injectionMgr = new InjectionManager();
+
     /**
      * The name of the command.
      * Initialized in the constructor.
@@ -115,21 +129,16 @@ public abstract class CLICommand implements PostConstruct {
 
     /**
      * The metadata describing the command's options and operands.
-     * XXX - should be collected together into a CommandModel object
      */
-    protected Set<ValidOption> commandOpts;
+    protected CommandModel commandModel;
+
     protected StringBuilder metadataErrors;
-    protected String operandName = "";
-    protected String operandType;
-    protected int operandMin;
-    protected int operandMax;
-    protected boolean unknownOptionsAreOperands = false;
 
     /**
      * The options parsed from the command line.
      * Initialized by the parse method.
      */
-    protected Map<String, String> options;
+    protected ParameterMap options;
 
     /**
      * The operands parsed from the command line.
@@ -204,28 +213,6 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
-     * Helper method to define an option.
-     *
-     * @param name  long option name
-     * @param sname short option name
-     * @param type  option type (STRING, BOOLEAN, etc.)
-     * @param req   is option required?
-     * @param def   default value for option
-     * @return the ValidOption created for the option
-     */
-    protected static ValidOption addOption(Set<ValidOption> opts, String name,
-            char sname, String type, boolean req, String def) {
-        ValidOption opt = new ValidOption(name, type,
-                req ? ValidOption.REQUIRED : ValidOption.OPTIONAL, def);
-        if (sname != '\0') {
-            String abbr = Character.toString(sname);
-            opt.setShortName(abbr);
-        }
-        opts.add(opt);
-        return opt;
-    }
-
-    /**
      * Execute this command with the given arguemnts.
      * The implementation in this class saves the passed arguments in
      * the argv field and calls the initializePasswords method.
@@ -241,10 +228,19 @@ public abstract class CLICommand implements PostConstruct {
             throws CommandException, CommandValidationException  {
         this.argv = argv;
         initializePasswords();
+        logger.printDebugMessage("Prepare");
         prepare();
+        logger.printDebugMessage("Process program options");
+        processProgramOptions();
+        logger.printDebugMessage("Parse command options");
         parse();
         if (checkHelp())
             return 0;
+        logger.printDebugMessage("Prevalidate command options");
+        prevalidate();
+        logger.printDebugMessage("Inject command options");
+        inject();
+        logger.printDebugMessage("Validate command options");
         validate();
         if (programOpts.isEcho()) {
             logger.printMessage(toString());
@@ -254,6 +250,7 @@ public abstract class CLICommand implements PostConstruct {
             programOpts.setEcho(false);
         } else if (logger.isDebug())
             logger.printDebugMessage(toString());
+        logger.printDebugMessage("Execute command");
         return executeCommand();
     }
 
@@ -285,23 +282,23 @@ public abstract class CLICommand implements PostConstruct {
         int len = usageText.length();
         StringBuilder optText = new StringBuilder();
         String lsep = System.getProperty("line.separator");
-        for (ValidOption opt : usageOptions()) {
+        for (ParamModel opt : usageOptions()) {
             optText.setLength(0);
             final String optName = opt.getName();
             // do not want to display password as an option
-            if (opt.getType().equals("PASSWORD"))
+            if (opt.getParam().password())
                 continue;
-            boolean optional = opt.isValueRequired() != ValidOption.REQUIRED;
-            String defValue = opt.getDefaultValue();
+            boolean optional = opt.getParam().optional();
+            String defValue = opt.getParam().defaultValue();
             if (optional)
                 optText.append("[");
-            if (opt.hasShortName()) {
-                Vector<String> sn = opt.getShortNames(); // XXX - why Vector?
-                optText.append('-').append(sn.get(0)).append('|');
-            }
+            String sn = opt.getParam().shortName();
+            if (ok(sn))
+                optText.append('-').append(sn).append('|');
             optText.append("--").append(optName);
 
-            if (opt.getType().equals("BOOLEAN")) {
+            if (opt.getType() == Boolean.class ||
+                opt.getType() == boolean.class) {
                 // canonicalize default value
                 if (ok(defValue) && Boolean.parseBoolean(defValue))
                     defValue = "true";
@@ -333,9 +330,18 @@ public abstract class CLICommand implements PostConstruct {
         }
 
         optText.setLength(0);
-        String opname = operandName;
+        ParamModel operandParam = getOperandModel();
+        String opname = operandParam != null ? operandParam.getName() : null;
         if (!ok(opname))
             opname = "operand";
+
+        int operandMin = 0;
+        int operandMax = 0;
+        if (operandParam != null) {
+            operandMin = operandParam.getParam().optional() ? 0 : 1;
+            operandMax = operandParam.getParam().multiple() ?
+                                                        Integer.MAX_VALUE : 1;
+        }
         if (operandMax > 0) {
             if (operandMin == 0) {
                 optText.append("[").append(opname);
@@ -365,8 +371,8 @@ public abstract class CLICommand implements PostConstruct {
      * Most commands will never need to do this, but the create-domain
      * command uses it to include the --user option as a required option.
      */
-    protected Set<ValidOption> usageOptions() {
-        return commandOpts;
+    protected Collection<ParamModel> usageOptions() {
+        return commandModel.getParameters();
     }
 
     /**
@@ -385,17 +391,20 @@ public abstract class CLICommand implements PostConstruct {
 
         // have we parsed any options yet?
         if (options != null && operands != null) {
-            for (ValidOption opt : commandOpts) {
-                if (opt.getType().equals("PASSWORD"))
+            for (ParamModel opt : commandModel.getParameters()) {
+                if (opt.getParam().password())
                     continue;       // don't print passwords
+                if (opt.getParam().primary())
+                    continue;
                 // include every option that was specified on the command line
                 // and every option that has a default value
                 String value = getOption(opt.getName());
                 if (value == null)
-                    value = opt.getDefaultValue();
+                    value = opt.getParam().defaultValue();
                 if (value != null) {
                     sb.append("--").append(opt.getName());
-                    if (opt.getType().equals("BOOLEAN")) {
+                    if (opt.getType() == Boolean.class ||
+                        opt.getType() == boolean.class) {
                         if (Boolean.parseBoolean(value))
                             sb.append("=").append("true");
                         else
@@ -439,7 +448,7 @@ public abstract class CLICommand implements PostConstruct {
              */
             Parser rcp = new Parser(argv, 0,
                             ProgramOptions.getValidOptions(), true);
-            Map<String, String> params = rcp.getOptions();
+            ParameterMap params = rcp.getOptions();
             List<String> operands = rcp.getOperands();
             argv = operands.toArray(new String[operands.size()]);
             if (params.size() > 0) {
@@ -453,14 +462,14 @@ public abstract class CLICommand implements PostConstruct {
                     // warn about deprecated use of program options
                     // (except --help)
                     // XXX - a lot of work for a nice message...
-                    Set<ValidOption> programOptions =
+                    Collection<ParamModel> programOptions =
                             ProgramOptions.getValidOptions();
                     StringBuilder sb = new StringBuilder();
                     sb.append("asadmin");
-                    for (Map.Entry<String, String> p : params.entrySet()) {
-                        // find the corresponding ValidOption
-                        ValidOption opt = null;
-                        for (ValidOption vo : programOptions) {
+                    for (Map.Entry<String,List<String>> p : params.entrySet()) {
+                        // find the corresponding ParamModel
+                        ParamModel opt = null;
+                        for (ParamModel vo : programOptions) {
                             if (vo.getName().equals(p.getKey())) {
                                 opt = vo;
                                 break;
@@ -471,12 +480,15 @@ public abstract class CLICommand implements PostConstruct {
 
                         // format the option appropriately
                         sb.append(" --").append(p.getKey());
-                        if (opt.getType().equals("BOOLEAN")) {
-                            if (!p.getValue().equalsIgnoreCase("true"))
+                        List<String> pl = p.getValue();
+                        // XXX - won't handle multi-values
+                        if (opt.getType() == Boolean.class ||
+                            opt.getType() == boolean.class) {
+                            if (!pl.get(0).equalsIgnoreCase("true"))
                                 sb.append("=false");
                         } else {
-                            if (ok(p.getValue()))
-                                sb.append(" ").append(p.getValue());
+                            if (pl != null && pl.size() > 0)
+                                sb.append(" ").append(pl.get(0));
                         }
                     }
                     sb.append(" ").append(name).append(" [options] ...");
@@ -519,11 +531,12 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
-     * The prepare method must ensure that the commandOpts,
-     * operandType, operandMin, and operandMax fields are set.
+     * The prepare method must ensure that the commandModel field is set.
      */
-    protected abstract void prepare()
-            throws CommandException, CommandValidationException;
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        commandModel = new CommandModelImpl(this.getClass());
+    }
 
     /**
      * The parse method sets the options and operands fields
@@ -543,12 +556,13 @@ public abstract class CLICommand implements PostConstruct {
          * fake everything else.
          */
         if (programOpts.isHelp()) {
-            options = new HashMap<String, String>();
-            options.put("help", "true");
+            options = new ParameterMap();
+            options.set("help", "true");
             operands = Collections.emptyList();
         } else {
             Parser rcp =
-                new Parser(argv, 1, commandOpts, unknownOptionsAreOperands);
+                new Parser(argv, 1, commandModel.getParameters(),
+                    commandModel.unknownOptionsAreOperands());
             options = rcp.getOptions();
             operands = rcp.getOperands();
 
@@ -557,7 +571,7 @@ public abstract class CLICommand implements PostConstruct {
              * operands, the special "--" delimiter will also be
              * accepted as an operand.  We eliminate it here.
              */
-            if (unknownOptionsAreOperands &&
+            if (commandModel.unknownOptionsAreOperands() &&
                     operands.size() > 0 && operands.get(0).equals("--"))
                 operands.remove(0);
         }
@@ -566,9 +580,37 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
-     * The validate method validates that the type and quantity of
-     * parameters and operands matches the requirements for this
-     * command.  The validate method supplies missing options from
+     * Check if the current request is a help request, either because
+     * --help was specified as a programoption or a command option.
+     * If so, get the man page using the getManPage method, copy the
+     * content to System.out, and return true.  Otherwise return false.
+     * Subclasses may override this method to perform a different check
+     * or to use a different method to display the man page.
+     * If this method returns true, the validate and executeCommand methods
+     * won't be called.
+     */
+    protected boolean checkHelp()
+            throws CommandException, CommandValidationException {
+        if (programOpts.isHelp()) {
+            Reader r = getManPage();
+            if (r == null)
+                throw new CommandException(strings.get("ManpageMissing", name));
+            BufferedReader br = new BufferedReader(r);
+            String line;
+            try {
+            while ((line = br.readLine()) != null)
+                System.out.println(line);
+            } catch (IOException ioex) {
+                throw new CommandException(
+                            strings.get("ManpageMissing", name), ioex);
+            }
+            return true;
+        } else
+            return false;
+    }
+
+    /**
+     * The prevalidate method supplies missing options from
      * the environment.  It also supplies passwords from the password
      * file or prompts for them if interactive.
      *
@@ -576,7 +618,7 @@ public abstract class CLICommand implements PostConstruct {
      * @throws CommandValidationException if there's something wrong
      *          with the options or arguments
      */
-    protected void validate()
+    protected void prevalidate()
             throws CommandException, CommandValidationException  {
         /*
          * Check for missing options and operands.
@@ -584,10 +626,12 @@ public abstract class CLICommand implements PostConstruct {
         Console cons = programOpts.isInteractive() ? System.console() : null;
 
         boolean missingOption = false;
-        for (ValidOption opt : commandOpts) {
-            if (opt.getType().equals("PASSWORD"))
+        for (ParamModel opt : commandModel.getParameters()) {
+            if (opt.getParam().password())
                 continue;       // passwords are handled later
-            if (opt.isValueRequired() != ValidOption.REQUIRED)
+            if (opt.getParam().optional())
+                continue;
+            if (opt.getParam().primary())
                 continue;
             // if option isn't set, prompt for it (if interactive)
             if (getOption(opt.getName()) == null && cons != null &&
@@ -596,7 +640,7 @@ public abstract class CLICommand implements PostConstruct {
                     strings.get("optionPrompt", opt.getName()));
                 String val = cons.readLine();
                 if (ok(val))
-                    options.put(opt.getName(), val);
+                    options.set(opt.getName(), val);
             }
             // if it's still not set, that's an error
             if (getOption(opt.getName()) == null) {
@@ -609,9 +653,18 @@ public abstract class CLICommand implements PostConstruct {
             throw new CommandValidationException(
                     strings.get("missingOptions", name));
 
+        int operandMin = 0;
+        int operandMax = 0;
+        ParamModel operandParam = getOperandModel();
+        if (operandParam != null) {
+            operandMin = operandParam.getParam().optional() ? 0 : 1;
+            operandMax = operandParam.getParam().multiple() ?
+                                                        Integer.MAX_VALUE : 1;
+        }
+
         if (operands.size() < operandMin && cons != null) {
             cons.printf("%s",
-                strings.get("operandPrompt", operandName));
+                strings.get("operandPrompt", operandParam.getName()));
             String val = cons.readLine();
             if (ok(val)) {
                 operands = new ArrayList<String>();
@@ -620,7 +673,8 @@ public abstract class CLICommand implements PostConstruct {
         }
         if (operands.size() < operandMin)
             throw new CommandValidationException(
-                    strings.get("notEnoughOperands", name, operandType));
+                    strings.get("notEnoughOperands", name,
+                                operandParam.getType()));
         if (operands.size() > operandMax) {
             if (operandMax == 0)
                 throw new CommandValidationException(
@@ -637,33 +691,42 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
-     * Check if the current request is a help request, either because
-     * --help was specified as a programoption or a command option.
-     * If so, get the man page using the getManPage method, copy the
-     * content to System.out, and return true.  Otherwise return false.
-     * Subclasses may override this method to perform a different check
-     * or to use a different method to display the man page.
-     * If this method returns true, the validate and executeCommand methods
-     * won't be called.
+     * Inject this instance with the final values of all the command
+     * parameters.
+     *
+     * @throws CommandException if execution of the command fails
+     * @throws CommandValidationException if there's something wrong
+     *          with the options or arguments
      */
-    protected boolean checkHelp()
-            throws CommandException, CommandValidationException {
-        if (programOpts.isHelp() || getBooleanOption("help")) {
-            Reader r = getManPage();
-            if (r == null)
-                throw new CommandException(strings.get("ManpageMissing", name));
-            BufferedReader br = new BufferedReader(r);
-            String line;
-            try {
-            while ((line = br.readLine()) != null)
-                System.out.println(line);
-            } catch (IOException ioex) {
-                throw new CommandException(
-                            strings.get("ManpageMissing", name), ioex);
-            }
-            return true;
-        } else
-            return false;
+    protected void inject()
+            throws CommandException, CommandValidationException  {
+        // injector expects operands to be in the ParameterMap with the key
+        // "DEFAULT"
+        options.set("DEFAULT", operands);
+
+        // initialize the injector.
+        InjectionResolver<Param> injector =
+                    new MapInjectionResolver(commandModel, options);
+
+        // inject
+        try {
+            injectionMgr.inject(this, injector);
+        } catch (UnsatisfiedDepedencyException e) {
+            throw new CommandValidationException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * The validate method can be used by a subclass to validate
+     * that the type and quantity of parameters and operands matches
+     * the requirements for this command.
+     *
+     * @throws CommandException if execution of the command fails
+     * @throws CommandValidationException if there's something wrong
+     *          with the options or arguments
+     */
+    protected void validate()
+            throws CommandException, CommandValidationException  {
     }
 
     /**
@@ -691,22 +754,23 @@ public abstract class CLICommand implements PostConstruct {
          * is missing and we're interactive, prompt for it.  Store the
          * password as if it was a parameter.
          */
-        for (ValidOption opt : commandOpts) {
-            if (!opt.getType().equals("PASSWORD"))
+        for (ParamModel opt : commandModel.getParameters()) {
+            if (!opt.getParam().password())
                 continue;
             String pwdname = opt.getName();
             String pwd = getPassword(opt, null, true);
-            // XXX - hack alert!  the description is stored in the default value
-            String description = opt.getDefaultValue();
+            String description = null;
+            if (opt instanceof ParamModelData)
+                description = ((ParamModelData)opt).getDescription();
             if (!ok(description))
                 description = pwdname;
             if (pwd == null) {
-                if (opt.isValueRequired() != ValidOption.REQUIRED)
+                if (opt.getParam().optional())
                     continue;       // not required, skip it
                 throw new CommandValidationException(
                             strings.get("missingPassword", name, description));
             }
-            options.put(pwdname, pwd);
+            options.set(pwdname, pwd);
         }
     }
 
@@ -720,7 +784,7 @@ public abstract class CLICommand implements PostConstruct {
      * criteria (i.e., length) returns the password.  If defaultPassword is
      * not null, "Enter" selects this default password, which is returned.
      */
-    protected String getPassword(ValidOption opt, String defaultPassword,
+    protected String getPassword(ParamModel opt, String defaultPassword,
             boolean create) throws CommandValidationException {
 
         String passwordName = opt.getName();
@@ -728,14 +792,15 @@ public abstract class CLICommand implements PostConstruct {
         if (password != null)
             return password;
 
-        if (opt.isValueRequired() != ValidOption.REQUIRED)
+        if (opt.getParam().optional())
             return null;        // not required
 
         if (!programOpts.isInteractive())
             return null;        // can't prompt for it
 
-        // XXX - hack alert!  the description is stored in the default value
-        String description = opt.getDefaultValue();
+        String description = null;
+        if (opt instanceof ParamModelData)
+            description = ((ParamModelData)opt).getDescription();
         String newprompt;
         if (ok(description)) {
             if (defaultPassword != null) {
@@ -827,30 +892,32 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
+     * Get the ParamModel that corresponds to the operand
+     * (primary parameter).  Return null if none.
+     */
+    protected ParamModel getOperandModel() {
+        for (ParamModel pm : commandModel.getParameters()) {
+            if (pm.getParam().primary())
+                return pm;
+        }
+        return null;
+    }
+
+    /**
      * Get an option value, that might come from the command line
      * or from the environment.  Return the default value for the
      * option if not otherwise specified.
      */
     protected String getOption(String name) {
-        String val = options.get(name);
+        String val = options.getOne(name);
         if (val == null)
             val = env.getStringOption(name);
         if (val == null) {
             // no value, find the default
-            for (ValidOption opt : commandOpts) {
-                // XXX - hack alert!  the description is stored in the default
-                // value for passwords
-                if (opt.getType().equals("PASSWORD"))
-                    continue;
-                if (opt.getName().equals(name)) {
-                    // if no value was specified and there's a default value,
-                    // return it
-                    if (opt.getDefaultValue() != null) {
-                        val = opt.getDefaultValue();
-                        break;
-                    }
-                }
-            }
+            ParamModel opt = commandModel.getModelFor(name);
+            // if no value was specified and there's a default value, return it
+            if (opt.getParam().defaultValue() != null)
+                val = opt.getParam().defaultValue();
         }
         return val;
     }
