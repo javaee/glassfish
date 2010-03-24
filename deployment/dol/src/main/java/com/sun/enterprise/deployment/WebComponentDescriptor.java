@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,6 +107,7 @@ public class WebComponentDescriptor extends Descriptor {
     private Boolean asyncSupported = null;
     private MultipartConfig multipartConfig = null;
     private List<Method> httpMethods = null;
+    private boolean conflict = false;
 
     /**
      * The default constructor.
@@ -134,6 +135,7 @@ public class WebComponentDescriptor extends Descriptor {
         setAsyncSupported(other.isAsyncSupported());
         setMultipartConfig(other.getMultipartConfig());
         setWebBundleDescriptor(other.getWebBundleDescriptor());
+        setConflict(other.isConflict());
     }
 
     private Set<InitializationParameter> getInitializationParameterSet() {
@@ -425,6 +427,14 @@ public class WebComponentDescriptor extends Descriptor {
         return asyncSupported;
     }
 
+    void setConflict(boolean conflict) {
+        this.conflict = conflict;
+    }
+
+    boolean isConflict() {
+        return conflict;
+    }
+
     /**
      * This method return an array of user defined http doDelete, doGet,
      * doHead, doOptions, doPost, doPut, doTrace methods.
@@ -547,6 +557,7 @@ public class WebComponentDescriptor extends Descriptor {
     //
     // Note: in the Set API, we only add value when such value 
     // is not existed in the Set already
+    // And the conflict boolean will not be set.
     public void add(WebComponentDescriptor other) {
         // do not do anything if the canonical name of the two web 
         // components are different
@@ -608,5 +619,22 @@ public class WebComponentDescriptor extends Descriptor {
             setWebComponentImplementation(
                     other.getWebComponentImplementation());
         }
+    }
+
+    boolean isConflict(WebComponentDescriptor other, boolean allowNullImplNameOverride) {
+        if (conflict || other.isConflict()) {
+            return true;
+        }
+
+        if (!getCanonicalName().equals(other.getCanonicalName())) {
+            return false;
+        }
+
+        String otherImplFile = other.getWebComponentImplementation();
+        boolean matchImplName = (allowNullImplNameOverride) ?
+            (implFile == null || otherImplFile == null || implFile.equals(otherImplFile)) :
+            ((implFile == null && otherImplFile == null) ||
+                (implFile != null && implFile.equals(otherImplFile)) );
+        return !matchImplName;
     }
 }

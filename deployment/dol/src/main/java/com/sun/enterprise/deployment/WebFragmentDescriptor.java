@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,6 +77,30 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
 
     public void setOrderingDescriptor(OrderingDescriptor ordering) {
         this.ordering = ordering;
+    }
+
+    @Override
+    protected WebComponentDescriptor combineWebComponentDescriptor(
+            WebComponentDescriptor webComponentDescriptor) {
+
+        WebComponentDescriptor resultDesc = null;
+        String name = webComponentDescriptor.getCanonicalName();
+        WebComponentDescriptor webCompDesc = getWebComponentByCanonicalName(name);
+
+        if (webCompDesc != null) {
+            resultDesc = webCompDesc;
+            if (webCompDesc.isConflict(webComponentDescriptor, false)) {
+                webCompDesc.setConflict(true);
+            } else {
+                // combine the contents of the given one to this one
+                webCompDesc.add(webComponentDescriptor);
+            }
+        } else {
+            resultDesc = webComponentDescriptor;
+            this.getWebComponentDescriptors().add(webComponentDescriptor);
+        }
+
+        return resultDesc;
     }
 
     @Override
