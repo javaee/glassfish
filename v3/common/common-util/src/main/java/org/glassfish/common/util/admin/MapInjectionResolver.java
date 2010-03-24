@@ -342,10 +342,20 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                     name = nameTok.nextToken();
                 if (nameTok.hasMoreTokens())
                     value = nameTok.nextToken();
-                if (nameTok.hasMoreTokens() || name == null || value == null)
+                if (name == null)       // probably "::"
                     throw new IllegalArgumentException(
-                        localStrings.getLocalString("InvalidPropertySyntax",
-                            "Invalid property syntax.", propsString));
+                        localStrings.getLocalString("PropertyMissingName",
+                        "Invalid property syntax, missing property name",
+                        propsString));
+                if (value == null)
+                    throw new IllegalArgumentException(
+                        localStrings.getLocalString("PropertyMissingValue",
+                        "Invalid property syntax, missing property value",
+                        token));
+                if (nameTok.hasMoreTokens())
+                    throw new IllegalArgumentException(
+                        localStrings.getLocalString("PropertyExtraEquals",
+                        "Invalid property syntax, \"=\" in value", token));
                 properties.setProperty(name, value);
             }
         }
