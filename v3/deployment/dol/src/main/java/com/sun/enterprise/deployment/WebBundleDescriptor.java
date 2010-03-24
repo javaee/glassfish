@@ -341,18 +341,12 @@ public class WebBundleDescriptor extends BundleDescriptor
      * @param webComponentDescriptor
      */
     public void addWebComponentDescriptor(WebComponentDescriptor webComponentDescriptor) {
-        WebComponentDescriptor resultDesc = webComponentDescriptor;
         String name = webComponentDescriptor.getCanonicalName();
         webComponentDescriptor.setWebBundleDescriptor(this);
         WebComponentDescriptor webCompDesc = getWebComponentByCanonicalName(name);
 
-        if (webCompDesc != null) {
-            // combine the contents of the given one to this one
-            webCompDesc.add(webComponentDescriptor);
-            resultDesc = webCompDesc;
-        } else {
-            this.getWebComponentDescriptors().add(webComponentDescriptor);
-        }
+        WebComponentDescriptor resultDesc =
+                combineWebComponentDescriptor(webComponentDescriptor);
 
         // sync up urlPattern2ServletName map
         for (String up : resultDesc.getUrlPatternsSet()) {
@@ -364,6 +358,42 @@ public class WebBundleDescriptor extends BundleDescriptor
                     new Object[] { oldName, name, up }));
             }
         }
+    }
+
+    /**
+     * This method combines descriptor except urlPattern and add
+     * to current bundle descriptor if necessary.
+     * It returns the web component descriptor in the current bundle descriptor.
+     * @param webComponentDescriptor the new descriptor
+     *
+     * @return web component descriptor in current bundle
+     */
+    protected WebComponentDescriptor combineWebComponentDescriptor(
+            WebComponentDescriptor webComponentDescriptor) {
+
+        WebComponentDescriptor resultDesc = null;
+        String name = webComponentDescriptor.getCanonicalName();
+        WebComponentDescriptor webCompDesc = getWebComponentByCanonicalName(name);
+
+        if (webCompDesc != null) {
+            // Servlet defined in web.xml
+            resultDesc = webCompDesc;
+            if (!webCompDesc.isConflict(webComponentDescriptor, true)) {
+                // combine the contents of the given one to this one
+                webCompDesc.add(webComponentDescriptor);
+            }
+        } else {
+            resultDesc = webComponentDescriptor;
+            if (webComponentDescriptor.isConflict()) {
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.exceptionconflictwebcomp",
+                        "One or more web fragments define the same Servlet in a conflicting way, and the Servlet is not defined in web.xml"));
+            } else {
+                this.getWebComponentDescriptors().add(webComponentDescriptor);
+            }
+        }
+
+        return resultDesc;
     }
 
     /**
@@ -450,7 +480,7 @@ public class WebBundleDescriptor extends BundleDescriptor
             if (sr != null) {
                 combineInjectionTargets(sr, (EnvironmentProperty)serviceRef);
             } else {
-                if (webBundleDescriptor.conflictEnvironmentEntry) {
+                if (webBundleDescriptor.conflictServiceReference) {
                     throw new IllegalArgumentException(localStrings.getLocalString(
                             "enterprise.deployment.exceptionconflictserviceref",
                             "There are more than one service references defined in web fragments with the same name, but not overrided in web.xml"));
@@ -1050,7 +1080,7 @@ public class WebBundleDescriptor extends BundleDescriptor
             if (ejbRefDesc != null) {
                 combineInjectionTargets(ejbRefDesc, (EnvironmentProperty)ejbRef);
             } else {
-                if (webBundleDescriptor.conflictEnvironmentEntry) {
+                if (webBundleDescriptor.conflictEjbReference) {
                     throw new IllegalArgumentException(localStrings.getLocalString(
                             "enterprise.deployment.exceptionconflictejbref",
                             "There are more than one ejb references defined in web fragments with the same name, but not overrided in web.xml"));

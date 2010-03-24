@@ -81,6 +81,30 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
+    protected WebComponentDescriptor combineWebComponentDescriptor(
+            WebComponentDescriptor webComponentDescriptor) {
+
+        WebComponentDescriptor resultDesc = null;
+        String name = webComponentDescriptor.getCanonicalName();
+        WebComponentDescriptor webCompDesc = getWebComponentByCanonicalName(name);
+
+        if (webCompDesc != null) {
+            resultDesc = webCompDesc;
+            if (webCompDesc.isConflict(webComponentDescriptor, false)) {
+                webCompDesc.setConflict(true);
+            } else {
+                // combine the contents of the given one to this one
+                webCompDesc.add(webComponentDescriptor);
+            }
+        } else {
+            resultDesc = webComponentDescriptor;
+            this.getWebComponentDescriptors().add(webComponentDescriptor);
+        }
+
+        return resultDesc;
+    }
+
+    @Override
     protected void combineSecurityConstraints(Set<SecurityConstraint> firstScSet,
            Set<SecurityConstraint>secondScSet) {
         firstScSet.addAll(secondScSet);
