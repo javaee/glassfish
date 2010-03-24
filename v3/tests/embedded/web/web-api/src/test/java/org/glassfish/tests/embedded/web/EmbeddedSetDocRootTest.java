@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,16 +96,19 @@ public class EmbeddedSetDocRootTest {
             
         System.out.println("================ EmbeddedSetDocRoot Test");
                 
-        VirtualServer defaultVirtualServer = (VirtualServer)
+        /*VirtualServer defaultVirtualServer = (VirtualServer)
                 embedded.createVirtualServer("test-server", f);
         embedded.addVirtualServer(defaultVirtualServer);
 
-        Context context = (Context) embedded.createContext(f, null);
+        Context context = (Context) embedded.createContext(f, null);*/
+        
+        VirtualServer vs = (VirtualServer) embedded.findVirtualServer("server");
+        System.out.println("vs "+vs);
+        Context context = (Context) vs.findContext("");
         Servlet servlet = new HelloWeb();
         
         ServletRegistration reg = context.addServlet("test-servlet", servlet);
         reg.addMapping(new String[] {"/hello"});
-        defaultVirtualServer.addContext(context, "");
 
         embedded.start();
 
@@ -123,7 +126,7 @@ public class EmbeddedSetDocRootTest {
         in.close();
         System.out.println(inputLine);*/
         
-        Thread.sleep(1000);
+        Thread.sleep(1000000);
         
      }
 
