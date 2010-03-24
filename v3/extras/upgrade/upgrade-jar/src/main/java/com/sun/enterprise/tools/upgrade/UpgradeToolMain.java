@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -219,10 +219,6 @@ public class UpgradeToolMain {
 
     /*
      * Called from the GUI worker thread to perform the upgrade.
-     * 
-     * If we have an exit code from the process, return it here.
-     * Otherwise we can remove the return value. Will know once
-     * the asadmin upgrade process is final.
      */
     public void performUpgrade() {
         upgrade();
