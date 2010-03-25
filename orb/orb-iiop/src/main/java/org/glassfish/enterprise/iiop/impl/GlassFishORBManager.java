@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.enterprise.iiop.impl;
 
 import com.sun.corba.ee.spi.oa.rfm.ReferenceFactoryManager;
@@ -196,6 +197,8 @@ public final class GlassFishORBManager {
             "com.sun.CSIV2.ssl.CertDB";
     private static final String ORB_SSL_CERTDB_PASSWORD =
             "com.sun.CSIV2.ssl.CertDBPassword";
+    private static final String ORB_SSL_STANDALONE_CLIENT_REQUIRED =
+            "com.sun.CSIV2.ssl.standalone.client.required";
     public static final String SUN_GIOP_FRAGMENT_SIZE_PROPERTY =
             "com.sun.CORBA.giop.ORBFragmentSize";
     public static final String SUN_GIOP_BUFFER_SIZE_PROPERTY =
@@ -318,6 +321,14 @@ public final class GlassFishORBManager {
             // In this case iiopListener beans will be null.
 
             checkORBInitialPort(EMPTY_PROPERTIES);
+
+            if(processType != ProcessType.ACC) {
+                    String sslClientRequired = System.getProperty(ORB_SSL_STANDALONE_CLIENT_REQUIRED);
+
+                    if ( sslClientRequired != null && sslClientRequired.equals("true")) {
+                        csiv2Props.put(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
+                    }
+            }
 
         } else {
 
@@ -484,7 +495,7 @@ public final class GlassFishORBManager {
             // Standard OMG Properties.
             String orbDefaultServerId = DEFAULT_SERVER_ID;
             if (!processType.isServer() && !processType.isStandaloneServer()) {
-                orbDefaultServerId = ACC_DEFAULT_SERVER_ID;
+                orbDefaultServerId = ACC_DEFAULT_SERVER_ID;               
             }
 
             orbDefaultServerId = System.getProperty(USER_DEFINED_ORB_SERVER_ID_PROPERTY, orbDefaultServerId);
