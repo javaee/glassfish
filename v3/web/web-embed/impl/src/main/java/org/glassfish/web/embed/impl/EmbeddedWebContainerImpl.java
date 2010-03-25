@@ -264,16 +264,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                     Thread.currentThread().getContextClassLoader());
         }        
                 
+        Realm realm = habitat.getByContract(Realm.class);
+        // XXX RealmAdapter.initializeRealm
+        context.setRealm(realm);
+                
         ContextConfig config = new ContextConfig();
         ((Lifecycle) context).addLifecycleListener(config);
-        
-        try {
-            if (defaultVirtualServer!=null) {
-                defaultVirtualServer.addContext(context, contextRoot);
-            }
-        } catch (Exception ex) {
-            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
-        }
         
         return context;
         
@@ -321,7 +317,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         }       
         
         Realm realm = habitat.getByContract(Realm.class);
-        // XXX
+        //XXX RealmAdapter.initializeRealm
         context.setRealm(realm);
         
         ContextConfig config = new ContextConfig();
@@ -600,10 +596,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * instances registered with this <tt>EmbeddedWebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers(){
-
-        VirtualServer[] virtualServers = (VirtualServer[]) engine.findChildren();
-            
-        return Arrays.asList(virtualServers);
+        
+        List<VirtualServer> virtualServers = new ArrayList<VirtualServer>();
+        for (Container child : engine.findChildren()) {
+            if (child instanceof VirtualServer) {
+                virtualServers.add((VirtualServer)child);
+            }
+        }
+        return virtualServers;
         
     }
 
