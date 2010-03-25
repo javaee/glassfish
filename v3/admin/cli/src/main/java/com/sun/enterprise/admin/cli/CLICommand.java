@@ -329,6 +329,18 @@ public abstract class CLICommand implements PostConstruct {
             len += optText.length();
         }
 
+        // add --help text
+        String helpText = "[-?|--help[=<help(default:false)>]]";
+        if (len + 1 + helpText.length() > 80) {
+            usageText.append(lsep).append('\t');
+            len = 8;
+        } else {
+            usageText.append(' ');
+            len++;
+        }
+        usageText.append(helpText);
+        len += helpText.length();
+
         optText.setLength(0);
         ParamModel operandParam = getOperandModel();
         String opname = operandParam != null ? operandParam.getName() : null;
