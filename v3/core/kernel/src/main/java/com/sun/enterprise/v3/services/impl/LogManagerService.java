@@ -61,6 +61,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.UnprocessedChangeEvent;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -75,6 +78,9 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import java.beans.PropertyChangeEvent;
 import java.util.logging.Handler;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -260,8 +266,11 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                                 else if(a.endsWith(".file")){
                                     //check if file name was changed and send notification
                                     if (!a.contains("${com.sun.aas.instanceRoot}/logs/server.log")){
-                                        ucl.serverRequiresRestart();
-
+                                        PropertyChangeEvent pce= new PropertyChangeEvent(this,a,"${com.sun.aas.instanceRoot}/logs/server.log",props.get(a));
+                                        UnprocessedChangeEvents ucel= new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce,"server log filename changed."));
+                                        List<UnprocessedChangeEvents> b = new ArrayList();
+                                        b.add(ucel);
+                                        ucl.unprocessedTransactedEvents(b);
                                     }
                                 }
 
