@@ -1021,11 +1021,16 @@ public class RemoteCommand extends CLICommand {
             }
         }
 
-        /*
-         * XXX - can't remove it, no remove method on MultiMap
-        if (addedUploadOption)
-            options.remove("upload");    // XXX - remove it
-        */
+        if (addedUploadOption) {
+            //options.remove("upload");    // remove it
+            // XXX - no remove method, have to copy it
+            ParameterMap noptions = new ParameterMap();
+            for (Map.Entry<String, List<String>> e : options.entrySet()) {
+                if (!e.getKey().equals("upload"))
+                    noptions.set(e.getKey(), e.getValue());
+            }
+            options = noptions;
+        }
 
         logger.printDebugMessage("doUpload set to " + doUpload);
     }
