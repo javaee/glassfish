@@ -56,7 +56,7 @@ public class Client {
 
     public static void main(String[] s) {
         appName = s[0];
-        System.out.println(".......... Testing module: " + appName);
+        System.err.println(".......... Testing module: " + appName);
         stat.addDescription(appName);
         Client t = new Client();
         t.test(appName);
@@ -69,25 +69,25 @@ public class Client {
         // ok now let's look up the EJB...
         Context ic = c.getContext();
         try {
-            System.out.println("Looking up EJB...");
+            System.err.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
             if (ejb!=null) {
-                System.out.println("Invoking EJB...");
+                System.err.println("Invoking EJB...");
                 ejb.createTimer();
-                Thread.sleep(10);
+                Thread.sleep(4000);
                 boolean result = ejb.verifyTimer();
-                System.out.println("EJB timer called: " + result);
+                System.err.println("EJB timer called: " + result);
             }
 
             stat.addStatus("EJB embedded with timertest", stat.PASS);
         } catch (Exception e) {
             stat.addStatus("EJB embedded with timertest", stat.FAIL);
-            System.out.println("ERROR calling EJB:");
+            System.err.println("ERROR calling EJB:");
             e.printStackTrace();
         } finally {
             c.close();
         }
-        System.out.println("Done calling EJB");
+        System.err.println("Done calling EJB");
     }
 
 }
