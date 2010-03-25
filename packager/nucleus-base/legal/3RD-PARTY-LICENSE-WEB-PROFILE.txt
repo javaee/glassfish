@@ -1,6 +1,6 @@
 
 DO NOT TRANSLATE OR LOCALIZE
-
+3.0.1
 ***************************************************************************
 
 %%The following software may be included in this product:
@@ -1741,7 +1741,7 @@ Apache License
 %%The following software may be included in this product:
 EclipseLink
 
-Sun elects to have this file available under and governed by the BSD license
+Oracle elects to have this file available under and governed by the BSD license
 (see below for full license text).  
 
 Copyright (c) 2007, Eclipse Foundation, Inc. and its licensors.
@@ -4070,7 +4070,7 @@ limitations under the License.
 %%The following software may be included in this product:
 cometd
 
-Sun elects to have this file available under and governed by the BSD license
+Oracle elects to have this file available under and governed by the BSD license
 (see below for full license text).  However, the following notice accompanied
 the original version of this file:
 
