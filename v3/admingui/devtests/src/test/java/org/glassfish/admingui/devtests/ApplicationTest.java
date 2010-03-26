@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -100,24 +100,24 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         assertTrue (preCount < postCount);
         
         // Disable application
-//        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
-//        clickAndWait(ELEMENT_DISABLE_BUTTON, TRIGGER_APPLICATION_DISABLED);
-//        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
-//        assertEquals("off", selenium.getValue(ELEMENT_STATUS));
-//        clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
+        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
+        clickAndWait(ELEMENT_DISABLE_BUTTON, TRIGGER_APPLICATION_DISABLED);
+        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
+        assertEquals("off", selenium.getValue(ELEMENT_STATUS));
+        clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
 
-        testDisableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_DISABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
+//        testDisableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_DISABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
 
 
         // Enable Application
-//        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
-//        clickAndWait(ELEMENT_ENABLE_BUTTON, TRIGGER_APPLICATION_ENABLED);
-//        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
-//        assertEquals("on", selenium.getValue(ELEMENT_STATUS));
-//        clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
+        selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
+        clickAndWait(ELEMENT_ENABLE_BUTTON, TRIGGER_APPLICATION_ENABLED, 300);
+        clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
+        assertEquals("on", selenium.getValue(ELEMENT_STATUS));
+        clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
 
 
-        testEnableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_ENABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
+//        testEnableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_ENABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
 
         // Undeploy application
         selenium.chooseOkOnNextConfirmation();

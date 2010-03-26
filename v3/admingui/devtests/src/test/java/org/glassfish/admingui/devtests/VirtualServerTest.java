@@ -38,35 +38,35 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 12, 2010
- * Time: 2:38:16 PM
- * To change this template use File | Settings | File Templates.
- */
-public class ConnectorServiceTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_CONNECTOR_SERVICE = "The attributes specified apply to all resource adapters deployed in this Enterprise Server.";
+public class VirtualServerTest extends BaseSeleniumTestClass {
+    private static final String TRIGGER_VIRTUAL_SERVERS = "A virtual server, sometimes called a virtual host, is an object that allows";
+    private static final String TRIGGER_NEW_VIRTUAL_SERVER = "New Virtual Server";
 
     @Test
-    public void testConnectorService() {
-        clickAndWait("treeForm:tree:configuration:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
+    public void testAddVirtualServer() {
+        final String serverName = "vs" + generateRandomString();
 
-        String policy = "derived";
-        if (selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy").equals(policy)) {
-            policy = "global";
-        }
-        final String timeout = "60";
+        clickAndWait("treeForm:tree:configuration:virtualServers:virtualServers_link", TRIGGER_VIRTUAL_SERVERS);
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_VIRTUAL_SERVER);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", serverName);
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout", timeout);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy", "label="+policy);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
-        clickAndWait("treeForm:tree:ct", "Please Register");
-        clickAndWait("treeForm:tree:configuration:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
-        assertEquals(timeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout"));
-        assertEquals(policy, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy"));
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_VIRTUAL_SERVERS);
+
+        assertTrue(selenium.isTextPresent(serverName));
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", serverName), "Edit Virtual Server");
+
+        assertTableRowCount("propertyForm:basicTable", count);
+
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_VIRTUAL_SERVERS);
+
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", serverName);
     }
 }

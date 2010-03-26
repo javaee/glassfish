@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,6 +85,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         final String description = "Test Destination - " + resourceName;
 
         clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
+        sleep(1000);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_DEST_RES);
         selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
         selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
@@ -106,4 +107,42 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteDestButton", "propertyForm:resourcesTable", resourceName, "colSelect", "colName");
     }
+
+/*
+    @Test
+    public void testAddingTransport() {
+        selenium.click("treeForm:tree:configuration:networkConfig:transports:transports_link");
+        verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
+        selenium.click("propertyForm:configs:topActionsGroup1:newButton");
+        verifyTrue(selenium.isTextPresent("New Transport"));
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", "transport");
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "label=DIRECT");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "16384");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "2");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:MaxConnectionsCount:MaxConnectionsCount", "8192");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdleKeyTimeoutSeconds:IdleKeyTimeoutSeconds", "60");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:ReadTimeoutMillis:ReadTimeoutMillis", "60000");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:SelectorPollTimeoutMillis:SelectorPollTimeoutMillis", "2000");
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:WriteTimeoutMillis:WriteTimeoutMillis", "60000");
+        selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
+        verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
+        assertTrue(selenium.isTextPresent("transport"));
+        selenium.click("propertyForm:configs:rowGroup1:0:col1:link");
+        verifyTrue(selenium.isTextPresent("Edit Transport"));
+        verifyTrue(selenium.isElementPresent("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType"));
+        verifyEquals("16384", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes"));
+        verifyEquals("2", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads"));
+        verifyEquals("8192", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:MaxConnectionsCount:MaxConnectionsCount"));
+        verifyEquals("60", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:IdleKeyTimeoutSeconds:IdleKeyTimeoutSeconds"));
+        verifyEquals("60000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ReadTimeoutMillis:ReadTimeoutMillis"));
+        verifyEquals("2000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:SelectorPollTimeoutMillis:SelectorPollTimeoutMillis"));
+        verifyEquals("60000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:WriteTimeoutMillis:WriteTimeoutMillis"));
+        selenium.click("propertyForm:propertyContentPage:topButtons:cancelButton");
+        verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
+        selenium.click("propertyForm:configs:rowGroup1:0:col0:select");
+        selenium.click("propertyForm:configs:topActionsGroup1:button1");
+        assertTrue(selenium.getConfirmation().matches("^Selected Transport\\(s\\) will be deleted\\.  Continue[\\s\\S]$"));
+
+    }
+*/
 }

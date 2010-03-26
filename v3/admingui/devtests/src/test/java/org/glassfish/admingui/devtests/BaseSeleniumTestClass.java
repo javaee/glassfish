@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@ package org.glassfish.admingui.devtests;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.math.BigInteger;
@@ -50,7 +51,8 @@ import static org.junit.Assert.assertEquals;
 public class BaseSeleniumTestClass {
     protected static Selenium selenium;
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
-    protected static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
+    public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
+    public static final String TRIGGER_COMMON_TASKS = "Please Register";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -58,8 +60,13 @@ public class BaseSeleniumTestClass {
             String browserString = getBrowserString();
             selenium = new DefaultSelenium("localhost", 4444, browserString, "http://localhost:4848");
             selenium.start();
-            (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", "Please Register"); // Make sure the server has started and the user logged in
+            (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS); // Make sure the server has started and the user logged in
         }
+    }
+
+    @Before
+    public void reset() {
+        clickAndWait("treeForm:tree:registration:registration_link", "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more");
     }
 
     protected String generateRandomString() {
@@ -76,6 +83,12 @@ public class BaseSeleniumTestClass {
     protected int generateRandomNumber(int max) {
         Random r = new Random();
         return Math.abs(r.nextInt(max - 1)) + 1;
+    }
+
+    protected <T> T selectRandomItem(T... items) {
+        Random r = new Random();
+        
+        return items[r.nextInt(items.length)];
     }
 
     protected int getTableRowCount(String id) {
@@ -97,8 +110,12 @@ public class BaseSeleniumTestClass {
      * @param triggerText
      */
     protected void clickAndWait(String id, String triggerText) {
+        clickAndWait(id, triggerText, 120);
+    }
+
+    protected void clickAndWait(String id, String triggerText, int seconds) {
         selenium.click(id);
-        waitForPageLoad(triggerText, 120);
+        waitForPageLoad(triggerText, seconds);
     }
 
     protected void clickAndWaitForElement(String clickId, String elementId) {
@@ -114,10 +131,16 @@ public class BaseSeleniumTestClass {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            sleep(500);
+        }
+    }
+
+    // Argh!
+    protected void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -154,10 +177,7 @@ public class BaseSeleniumTestClass {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            sleep(1000);
         }
     }
 

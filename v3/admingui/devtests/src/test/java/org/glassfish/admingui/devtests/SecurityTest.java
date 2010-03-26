@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,29 +38,30 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by IntelliJ IDEA.
- * User: jasonlee
- * Date: Mar 23, 2010
- * Time: 5:00:33 PM
- * To change this template use File | Settings | File Templates.
- */
 public class SecurityTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_SECURITY_REALMS = "Manage security realms.";
     private static final String TRIGGER_EDIT_REALM = "Edit Realm";
     private static final String TRIGGER_FILE_USERS = "File Users";
     private static final String TRIGGER_NEW_FILE_REALM_USER = "New File Realm User";
-    private static final String TRIGGER_AUDIT_MODULES = "com.sun.enterprise.security.Audit"; 
-            //"Use audit modules to develop an audit trail of all authentication and authorization decisions.";
+    private static final String TRIGGER_AUDIT_MODULES = "com.sun.enterprise.security.Audit";
+    //"Use audit modules to develop an audit trail of all authentication and authorization decisions.";
     private static final String TRIGGER_NEW_AUDIT_MODULE = "New Audit Module";
     private static final String TRIGGER_EDIT_AUDIT_MODULE = "Edit Audit Module";
+    private static final String TRIGGER_JACC_PROVIDERS = "Manage Java Authorization Contract for Containers (JACC) providers to define an interface for pluggable authorization providers.";
+    private static final String TRIGGER_NEW_JACC_PROVIDER = "New JACC Provider";
+    private static final String TRIGGER_EDIT_JACC_PROVIDER = "Edit JACC Provider";
+    private static final String TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS = "Message Security Configurations";
+    private static final String TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION = "New Message Security Configuration";
+    private static final String TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION = "Edit Message Security Configuration";
+    private static final String TRIGGER_EDIT_PROVIDER_CONFIGURATION = "Edit Provider Configuration";
 
     @Test
     public void testNewSecurityRealm() {
-        final String realmName = "TestRealm"+generateRandomString();
-        final String contextName = "Context"+generateRandomString();
+        final String realmName = "TestRealm" + generateRandomString();
+        final String contextName = "Context" + generateRandomString();
 
         clickAndWait("treeForm:tree:configuration:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
         clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", "Create a new security realm.");
@@ -76,8 +77,8 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAddUserToFileRealm() {
-        final String userId = "user"+generateRandomString();
-        final String password = "password"+generateRandomString();
+        final String userId = "user" + generateRandomString();
+        final String password = "password" + generateRandomString();
 
         clickAndWait("treeForm:tree:configuration:security:realms:realms_link", TRIGGER_SECURITY_REALMS);
         clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", "file"), TRIGGER_EDIT_REALM);
@@ -96,7 +97,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
     @Test
     public void testAddAuditModule() {
-        final String auditModuleName = "auditModule"+generateRandomString();
+        final String auditModuleName = "auditModule" + generateRandomString();
         final String className = "org.glassfish.NonexistentModule";
 
         clickAndWait("treeForm:tree:configuration:security:auditModules:auditModules_link", TRIGGER_AUDIT_MODULES);
@@ -104,7 +105,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", auditModuleName);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:classNameProp:ClassName", className);
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        
+
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
@@ -118,5 +119,82 @@ public class SecurityTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_AUDIT_MODULES);
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", auditModuleName);
+    }
+
+    @Test
+    public void testAddJaccModule() {
+        final String providerName = "testJaccProvider" + generateRandomString();
+        final String policyConfig = "com.example.Foo";
+        final String policyProvider = "com.example.Foo";
+
+        clickAndWait("treeForm:tree:configuration:security:jaccProviders:jaccProviders_link", TRIGGER_JACC_PROVIDERS);
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JACC_PROVIDER);
+
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", providerName);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig", policyConfig);
+        selenium.type("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider", policyProvider);
+
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JACC_PROVIDERS);
+        assertTrue(selenium.isTextPresent(providerName));
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_JACC_PROVIDER);
+        assertEquals(policyConfig, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig"));
+        assertEquals(policyProvider, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider"));
+
+        assertTableRowCount("propertyForm:basicTable", count);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JACC_PROVIDERS);
+
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", providerName);
+    }
+
+    @Test
+    public void testAddMessageSecurityConfiguration() {
+        final String providerName = "provider" + generateRandomString();
+        final String providerType = selectRandomItem(new String[] {"client", "server", "client-server"});
+        final String className = "com.example.Foo";
+        final String LAYER_NAME = "HttpServlet";
+
+        clickAndWait("treeForm:tree:configuration:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
+
+        // Clean up, just in case...
+        if (selenium.isTextPresent(LAYER_NAME)) {
+            deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);            
+        }
+
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION);
+        selenium.type("propertyForm:propertySheet:providerConfSection:ProviderIdTextProp:ProviderIdText", providerName);
+        selenium.select("propertyForm:propertySheet:providerConfSection:ProviderTypeProp:ProviderType", "label="+providerType);
+        selenium.type("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName", className);
+        int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
+
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
+        assertTrue(selenium.isTextPresent(LAYER_NAME));
+
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", LAYER_NAME), TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION);
+        clickAndWait("propertyForm:msgSecurityTabs:providers", "Provider Configurations");
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_PROVIDER_CONFIGURATION);
+        
+        assertEquals(providerType, selenium.getValue("propertyForm:propertySheet:providerConfSection:ProviderTypeProp:ProviderType"));
+        assertEquals(className, selenium.getValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
+        assertTableRowCount("propertyForm:basicTable", count);
+
+        clickAndWait("treeForm:tree:configuration:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);
+    }
+
+    public static void main(String... args) {
+        BaseSeleniumTestClass bstc = new BaseSeleniumTestClass();
+        for (int i = 0; i < 100; i++) {
+            System.out.println(bstc.selectRandomItem(new String[] {"client", "server", "client-server"}));
+        }
     }
 }
