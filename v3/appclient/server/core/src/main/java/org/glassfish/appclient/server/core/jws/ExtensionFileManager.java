@@ -243,7 +243,7 @@ public class ExtensionFileManager implements PostConstruct {
         Set<Extension> result = new HashSet<Extension>();
 
         Vector<File> filesToProcess = new Vector<File>();
-        
+
         filesToProcess.addAll(getClassPathJars(mainAttrs));
         
         Set<Extension> extensionsUsedByApp = getReferencedExtensions(mainAttrs);

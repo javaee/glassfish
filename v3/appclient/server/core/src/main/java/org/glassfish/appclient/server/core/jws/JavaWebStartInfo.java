@@ -59,6 +59,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
@@ -72,7 +73,6 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
-import org.glassfish.deployment.common.DownloadableArtifacts.FullAndPartURIs;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -108,6 +108,9 @@ public class JavaWebStartInfo implements ConfigListener {
 
     @Inject
     private ExtensionFileManager extensionFileManager;
+
+    @Inject
+    private ServerEnvironment serverEnv;
 
     private AppClientServerApplication acServerApp;
 
@@ -305,7 +308,6 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private void startJWSServices() throws EndpointRegistrationException, IOException {
         if (myContent == null) {
-            processExtensionReferences();
             myContent = addClientContentToHTTPAdapters();
         }
 
@@ -328,18 +330,39 @@ public class JavaWebStartInfo implements ConfigListener {
         
         // TODO: needs to be expanded to handle signed library JARS, perhap signed by different certs
         final URI fileURI = URI.create("file:" + helper.appClientServerOriginalAnchor(dc).getRawSchemeSpecificPart());
-        tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, 
-                jarElementsForExtensions(extensionFileManager.findExtensionTransitiveClosure(
+        Set<Extension> exts = extensionFileManager.findExtensionTransitiveClosure(
                 new File(fileURI),
                 //new File(helper.appClientServerURI(dc)).getParentFile(),
-                dc.getSource().getManifest().getMainAttributes())));
+                dc.getSource().getManifest().getMainAttributes());
+        tHelper.setProperty(APP_LIBRARY_EXTENSION_PROPERTY_NAME, 
+                jarElementsForExtensions(exts));
+        for (Extension e : exts) {
+            final StaticContent newSystemContent = createSignedStaticContent(
+                    e.getFile(),
+                    signedFileForDomainFile(e.getFile()));
+            jwsAdapterManager.addStaticSystemContent(
+                    URI.create(JWSAdapterManager.publicExtensionLookupURIText(e)).toString(),
+                    newSystemContent);
+        }
 
+    }
+
+    private File signedFileForDomainFile(final File unsignedFile) {
+
+        final File rootForSignedFilesInDomain = jwsAdapterManager.rootForSignedFilesInDomain();
+        rootForSignedFilesInDomain.mkdirs();
+        final URI signedFileURI = rootForSignedFilesInDomain.toURI().resolve(relativeURIToDomainFile(unsignedFile));
+        return new File(signedFileURI);
+    }
+
+    private URI relativeURIToDomainFile(final File domainFile) {
+        return serverEnv.getDomainRoot().toURI().relativize(domainFile.toURI());
     }
 
     private String jarElementsForExtensions(final Set<Extension> exts) {
         final StringBuilder sb = new StringBuilder();
         for (Extension e : exts) {
-            sb.append("<jar href=" + JWSAdapterManager.publicExtensionHref(e) + "/>");
+            sb.append("<jar href=\"" + JWSAdapterManager.publicExtensionHref(e) + "\"/>");
         }
         return sb.toString();
     }
@@ -458,7 +481,13 @@ public class JavaWebStartInfo implements ConfigListener {
                     helper.groupFacadeUserURI(dc),
                     GROUP_FACADE_PATH_PROPERTY_NAME);
         }
-        
+
+        /*
+         * Add static content representing any extension libraries this client
+         * (or the JARs it depends on) uses.
+         */
+        processExtensionReferences();
+
         /*
          * Make sure that there are versions of gf-client.jar and gf-client-module.jar
          * that are signed by the same cert used to sign the facade JAR for
@@ -528,16 +557,33 @@ public class JavaWebStartInfo implements ConfigListener {
             final Map<String,StaticContent> content,
             final File unsignedFile,
             final File signedFile,
+            final URI uriForLookup
+            ) throws FileNotFoundException {
+        createAndAddSignedStaticContent(content, unsignedFile, signedFile, uriForLookup, null);
+    }
+
+    private void createAndAddSignedStaticContent(
+            final Map<String,StaticContent> content,
+            final File unsignedFile,
+            final File signedFile,
             final URI uriForLookup,
             final String tokenName
             ) throws FileNotFoundException {
+        final StaticContent signedJarContent = createSignedStaticContent(
+                unsignedFile, signedFile);
+        recordStaticContent(content, signedJarContent, uriForLookup, tokenName);
+    }
+
+    private StaticContent createSignedStaticContent(
+            final File unsignedFile,
+            final File signedFile) throws FileNotFoundException {
         signedFile.getParentFile().mkdirs();
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
                 signedFile,
                 JWSAdapterManager.signingAlias(dc),
                 jarSigner);
-        recordStaticContent(content, signedJarContent, uriForLookup, tokenName);
+        return signedJarContent;
     }
     
     private void recordStaticContent(final Map<String,StaticContent> content,
@@ -547,7 +593,9 @@ public class JavaWebStartInfo implements ConfigListener {
 
         final String uriStringForLookup = uriForLookup.toASCIIString();
         recordStaticContent(content, newContent, uriStringForLookup);
-        tHelper.setProperty(tokenName, uriForLookup.toASCIIString());
+        if (tokenName != null) {
+            tHelper.setProperty(tokenName, uriForLookup.toASCIIString());
+        }
     }
 
     private void recordStaticContent(final Map<String,StaticContent> content,

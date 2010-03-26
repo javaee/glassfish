@@ -48,13 +48,15 @@ import org.glassfish.appclient.server.core.AppClientServerApplication;
  * @author tjquinn
  */
 public class NamingConventions {
-    private static final String JWSAPPCLIENT_PREFIX = "/___JWSappclient";
+    public static final String JWSAPPCLIENT_PREFIX = "/___JWSappclient";
 
     public static final String JWSAPPCLIENT_SYSTEM_PREFIX =
             JWSAPPCLIENT_PREFIX + "/___system";
 
+    public static final String JWSAPPCLIENT_EXT_INTRODUCER = "___ext";
+
     public static final String JWSAPPCLIENT_EXT_PREFIX =
-            JWSAPPCLIENT_SYSTEM_PREFIX + "/___ext";
+            JWSAPPCLIENT_SYSTEM_PREFIX + "/" + JWSAPPCLIENT_EXT_INTRODUCER;
 
     private  static final String JWSAPPCLIENT_APP_PREFIX =
             JWSAPPCLIENT_PREFIX + "/___app";

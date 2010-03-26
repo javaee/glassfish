@@ -306,7 +306,7 @@ public abstract class AppClientDeployerHelper {
      * @return File object for the signed JAR root directory
      */
     public abstract File rootForSignedFilesInApp();
-    
+
     /**
      * If the specified URI is for an expanded submodule, makes a copy of
      * the submodule as a JAR and returns the URI for the copy.

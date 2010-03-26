@@ -123,6 +123,7 @@ public class JWSAdapterManager implements PostConstruct {
             Arrays.asList("glassfish/modules/jaxb-osgi.jar");
 
     private static final String JWS_SIGNED_SYSTEM_JARS_ROOT = "java-web-start/___system";
+    private static final String JWS_SIGNED_DOMAIN_JARS_ROOT = "java-web-start/___domain";
 
     private static final String JAVA_WEB_START_CONTEXT_ROOT_PROPERTY_NAME =
             "javaWebStartContextRoot";
@@ -149,6 +150,7 @@ public class JWSAdapterManager implements PostConstruct {
 
     private URI umbrellaRootURI;
     private File umbrellaRoot;
+    private File systemLevelSignedJARsRoot;
     private File domainLevelSignedJARsRoot;
 
     @Override
@@ -158,11 +160,30 @@ public class JWSAdapterManager implements PostConstruct {
         iiopService = config.getIiopService();
         umbrellaRoot = new File(installRootURI).getParentFile();
         umbrellaRootURI = umbrellaRoot.toURI();
-        domainLevelSignedJARsRoot = new File(serverEnv.getDomainRoot(), JWS_SIGNED_SYSTEM_JARS_ROOT);
+        systemLevelSignedJARsRoot = new File(serverEnv.getDomainRoot(), JWS_SIGNED_SYSTEM_JARS_ROOT);
+        domainLevelSignedJARsRoot = new File(serverEnv.getDomainRoot(), JWS_SIGNED_DOMAIN_JARS_ROOT);
     }
 
     public static String signingAlias(final DeploymentContext dc) {
         return chooseAlias(dc);
+    }
+
+    File rootForSignedFilesInDomain() {
+        return domainLevelSignedJARsRoot;
+    }
+    
+    /**
+     * Adds more static content to the content served by the system adapter.
+     * <p>
+     * Most system content is known during start-up and is set by initStaticSystemContent.
+     * One use for this method is during deployment of an app client which
+     * declares a dependency on an optional library JAR.  The JAR is really a
+     * system JAR but we discover the need to serve it only during deployment.
+     * @param lookupURI
+     * @param content
+     */
+    void addStaticSystemContent(final String lookupURI, StaticContent newContent) throws IOException {
+        systemAdapter().addContentIfAbsent(lookupURI, newContent);
     }
 
     private static String chooseAlias(final DeploymentContext dc) {
@@ -181,7 +202,7 @@ public class JWSAdapterManager implements PostConstruct {
         try {
             final List<String> systemJARRelativeURIs = new ArrayList<String>();
 
-            final Map<String,StaticContent> staticSystemContent =
+            Map<String,StaticContent> staticSystemContent =
                     initStaticSystemContent(systemJARRelativeURIs);
 
             final Map<String,DynamicContent> dynamicSystemContent =
@@ -246,21 +267,11 @@ public class JWSAdapterManager implements PostConstruct {
              */
             final File candidateFile = new File(uri);
             final String relativeSystemPath = relativeSystemPath(uri);
-            if (candidateFile.exists() && ( ! DO_NOT_SERVE_LIST.contains(relativeSystemPath))) {
+            if (candidateFile.exists() && 
+                ( ! candidateFile.isDirectory()) && ( ! DO_NOT_SERVE_LIST.contains(relativeSystemPath))) {
                 result.put(systemPath, new FixedContent(new File(uri)));
                 systemJARRelativeURIs.add(relativeSystemPath(uri));
             }
-        }
-
-        /*
-         * Add the installed extension JARs to the system content.
-         */
-        for (Map.Entry<ExtensionKey,Extension> e : extensionFileManager.getExtensionFileEntries().entrySet()) {
-            final File extFile = e.getValue().getFile();
-            final URI uri = extFile.toURI();
-            final String extPath = publicExtensionHref(e.getValue());
-            result.put(extPath, new FixedContent(extFile));
-            systemJARRelativeURIs.add(relativeSystemPath(uri));
         }
 
         /*
@@ -281,7 +292,11 @@ public class JWSAdapterManager implements PostConstruct {
     }
 
     static String publicExtensionHref(final Extension ext) {
-        return NamingConventions.JWSAPPCLIENT_EXT_PREFIX + "/" +
+        return NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX + "/" + publicExtensionLookupURIText(ext);
+    }
+
+    static String publicExtensionLookupURIText(final Extension ext) {
+        return NamingConventions.JWSAPPCLIENT_EXT_INTRODUCER + "/" +
                 ext.getExtDirectoryNumber() + "/" +
                 ext.getFile().getName();
     }
@@ -406,7 +421,14 @@ public class JWSAdapterManager implements PostConstruct {
         final String ufContextRoot = userFriendlyContextRoot(contributor);
         return createAndRegisterAdapter(ufContextRoot, staticContent, dynamicContent, tokens, contributor);
     }
-    
+
+    private synchronized AppClientHTTPAdapter systemAdapter() {
+        if (systemAdapter == null) {
+            systemAdapter = startSystemContentAdapter();
+        }
+        return systemAdapter;
+    }
+
     private synchronized AppClientHTTPAdapter addAppAdapter(
             final String appName, 
             final Map<String,StaticContent> staticContent,
@@ -414,9 +436,7 @@ public class JWSAdapterManager implements PostConstruct {
             final Properties tokens,
             final AppClientServerApplication contributor) throws IOException, EndpointRegistrationException {
 
-        if (systemAdapter == null) {
-            systemAdapter = startSystemContentAdapter();
-        }
+        systemAdapter(); // Make sure it is started
         final String contextRoot = NamingConventions.contextRootForAppAdapter(appName);
 
         final AppClientHTTPAdapter adapter = createAndRegisterAdapter(
@@ -486,7 +506,7 @@ public class JWSAdapterManager implements PostConstruct {
         AutoSignedContent result = appLevelSignedSystemContent.get(key);
         if (result == null) {
             final File unsignedFile = new File(umbrellaRoot, relativePathToSystemJar);
-            final File signedFile = new File(domainLevelSignedJARsRoot, key);
+            final File signedFile = new File(systemLevelSignedJARsRoot, key);
             result = new AutoSignedContent(unsignedFile, signedFile, alias, jarSigner);
             appLevelSignedSystemContent.put(key, result);
         }

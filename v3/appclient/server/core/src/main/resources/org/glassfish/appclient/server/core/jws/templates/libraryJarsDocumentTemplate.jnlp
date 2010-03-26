@@ -60,6 +60,7 @@
 
     <resources>
         ${library.jars}
+        ${app.library.extension}
     </resources>
 
     <component-desc/>
