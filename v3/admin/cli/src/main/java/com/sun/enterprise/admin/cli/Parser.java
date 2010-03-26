@@ -175,7 +175,8 @@ public class Parser {
                                 operands.add(arg);
                                 break;
                             }
-                            if (opt.getType().equals("BOOLEAN"))
+                            if (opt.getType() == Boolean.class ||
+                                opt.getType() == boolean.class)
                                 setOption(opt, "true");
                             else
                                 throw new CommandValidationException(
