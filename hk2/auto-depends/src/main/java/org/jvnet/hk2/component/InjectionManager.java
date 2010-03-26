@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,8 +48,7 @@ import java.util.logging.Logger;
 
 /**
  * InjectionManager is responsible for injecting resources into a component.
- * Resources tagged for injection are identified via an annotation which is
- * a parameter type of this class.
+ * Injection targets are identified by the injection resolver type attribute.
  *
  * @author Jerome Dochez
  */
@@ -130,15 +129,17 @@ public class InjectionManager {
                         Annotation inject = method.getAnnotation(target.type);
                         if (inject == null)     continue;
 
-                        if (method.getReturnType() != void.class) {
-                            if (Collection.class.isAssignableFrom(method.getReturnType())) {
-                                injectCollection(component, method, target.getValue(component, method, method.getReturnType()));
+                        Method setter = target.getSetterMethod(method, inject);
+
+                        if (setter.getReturnType() != void.class) {
+                            if (Collection.class.isAssignableFrom(setter.getReturnType())) {
+                                injectCollection(component, setter, target.getValue(component, method, setter.getReturnType()));
                                 continue;
                             }
                             throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
                         }
 
-                        Class<?>[] paramTypes = method.getParameterTypes();
+                        Class<?>[] paramTypes = setter.getParameterTypes();
 
                         if (paramTypes.length > 1) {
                             throw new ComponentException("injection failed on %s : setter method takes more than 1 parameter",method.toGenericString());
@@ -150,8 +151,8 @@ public class InjectionManager {
                         try {
                             Object value = target.getValue(component, method, paramTypes[0]);
                             if (value != null) {
-                                method.setAccessible(true);
-                                method.invoke(component, value);
+                                setter.setAccessible(true);
+                                setter.invoke(component, value);
                                 try {
                                     Injectable injectable = Injectable.class.cast(value);
                                     if (injectable!=null) {
@@ -164,11 +165,11 @@ public class InjectionManager {
                                     throw new UnsatisfiedDepedencyException(method);
                             }
                         } catch (IllegalAccessException e) {
-                            throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                            throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
                         } catch (InvocationTargetException e) {
-                            throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                            throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
                         } catch (RuntimeException e) {
-                            throw new ComponentException("Injection failed on " + method.toGenericString(), e);
+                            throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
                         }
                     }
                 }
