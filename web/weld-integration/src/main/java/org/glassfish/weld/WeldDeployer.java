@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,14 +46,8 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 
 import com.sun.logging.LogDomains;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -109,14 +103,14 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     private Logger _logger = LogDomains.getLogger(WeldDeployer.class, LogDomains.CORE_LOGGER);
     
     public static final String WELD_EXTENSION = "org.glassfish.weld";
-
+    
     public static final String WELD_DEPLOYMENT = "org.glassfish.weld.WeldDeployment";
 
     /* package */ static final String WELD_BOOTSTRAP = "org.glassfish.weld.WeldBootstrap";
 
     private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
-
     private static final String WELD_SHUTDOWN = "false";
+    private static char SEPARATOR_CHAR = '/';
 
     @Inject
     private Events events;
@@ -148,7 +142,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     /**
      * Specific stages of the Weld bootstrapping process will execute across different stages
      * of the deployment process.  Weld deployment will happen when the load phase of the 
-     * deployment process is complete.
+     * deployment process is complete.  When all modules have been loaded, a deployment 
+     * graph is produced defining the accessiblity relationships between 
+     * <code>BeanDeploymentArchive</code>s.
      */
     public void event(Event event) {
         if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_LOADED) ) {
@@ -158,7 +154,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             if( bootstrap != null ) {
                 DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
                     WELD_DEPLOYMENT, DeploymentImpl.class);
-                deploymentImpl = buildDeploymentGraph(deploymentImpl);
+                deploymentImpl.buildDeploymentGraph();
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine(deploymentImpl.toString());
                 }
@@ -267,7 +263,16 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         return null;
     }
 
-
+    /**
+     * Processing in this method is performed for each module that is in the process of being
+     * loaded by the container.  This method will collect information from each archive (module)
+     * and produce  <code>BeanDeploymentArchive</code> information for each module.
+     * The <code>BeanDeploymentArchive</code>s are stored in the <code>Deployment</code> 
+     * (that will eventually be handed off to <code>Weld</code>.  Once this method is called
+     * for all modules (and <code>BeanDeploymentArchive</code> information has been collected
+     * for all <code>Weld</code> modules), a relationship structure is produced defining the
+     * accessiblity rules for the <code>BeanDeploymentArchive</code>s. 
+     */
     @Override
     public WeldApplicationContainer load(WeldContainer container, DeploymentContext context) {
 
@@ -293,10 +298,17 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             ejbServices = new EjbServicesImpl(habitat);
         }
 
+        // Check if we already have a Deployment
+
         DeploymentImpl deploymentImpl = (DeploymentImpl)context.getTransientAppMetaData(
             WELD_DEPLOYMENT, DeploymentImpl.class);
+
+        // Create a Deployment Collecting Information From The ReadableArchive (archive)
+
         if (null == deploymentImpl) {
-            deploymentImpl = new DeploymentImpl(archive, ejbs);
+            
+            deploymentImpl = new DeploymentImpl(archive, ejbs, context);
+
             // Add services
 
             ServletServices servletServices = new ServletServicesImpl(context);
@@ -316,7 +328,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 deploymentImpl.getServices().add(EjbServices.class, ejbServices);
             }
         } else {
-            deploymentImpl.scanArchive(archive, ejbs);
+            deploymentImpl.scanArchive(archive, ejbs, context);
         }
 
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
@@ -340,9 +352,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr, bundle);
 
             bda.getServices().add(InjectionServices.class, injectionServices);
-            bundleToBeanDeploymentArchive.put(bundle, bda); 
+            bundleToBeanDeploymentArchive.put(bundle, bda);
         }
-        
+
         WeldApplicationContainer wbApp = new WeldApplicationContainer(bootstrap);
 
         // Stash the WeldBootstrap instance, so we may access the WeldManager later..
@@ -368,55 +380,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             }
         }
         return ejbBundle;
-    }
-
-    private DeploymentImpl buildDeploymentGraph(DeploymentImpl deploymentImpl) {
-        List<BeanDeploymentArchive> jarBDAs = deploymentImpl.getJarBeanDeploymentArchives();
-        ListIterator jarIter = jarBDAs.listIterator();
-        while (jarIter.hasNext()) {
-            boolean modifiedArchive = false;
-            BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)jarIter.next();
-            ListIterator jarIter1 = jarBDAs.listIterator();
-            while (jarIter1.hasNext()) {
-                BeanDeploymentArchive jarBDA1 = (BeanDeploymentArchive)jarIter1.next();
-                if (jarBDA1.getId().equals(jarBDA.getId())) {
-                    continue;
-                }
-                jarBDA.getBeanDeploymentArchives().add(jarBDA1);
-                modifiedArchive = true;
-            }
-            if (modifiedArchive) {
-                int idx = deploymentImpl.getBeanDeploymentArchives().indexOf(jarBDA);
-                if (idx >= 0) {
-                    deploymentImpl.getBeanDeploymentArchives().remove(idx);
-                    deploymentImpl.getBeanDeploymentArchives().add(jarBDA);
-                }
-                modifiedArchive = false;
-            }
-        }            
-            
-        List<BeanDeploymentArchive> warBDAs = deploymentImpl.getWarBeanDeploymentArchives();
-        ListIterator lIter = warBDAs.listIterator();
-        boolean modifiedArchive = false;
-        while (lIter.hasNext()) {
-            BeanDeploymentArchive warBDA = (BeanDeploymentArchive)lIter.next();
-            jarBDAs = deploymentImpl.getJarBeanDeploymentArchives();
-            ListIterator lIter1 = jarBDAs.listIterator();
-            while (lIter1.hasNext()) {
-                BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)lIter1.next();
-                warBDA.getBeanDeploymentArchives().add(jarBDA);
-                modifiedArchive = true;
-            }
-            if (modifiedArchive) {
-                int idx = deploymentImpl.getBeanDeploymentArchives().indexOf(warBDA);
-                if (idx >= 0) {
-                    deploymentImpl.getBeanDeploymentArchives().remove(idx);
-                    deploymentImpl.getBeanDeploymentArchives().add(warBDA);
-                }
-                modifiedArchive = false;
-            }
-        }
-        return deploymentImpl;
     }
 }
 
