@@ -38,6 +38,7 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -54,14 +55,37 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @ServiceProvider(GenericCreateCommand.class)
 public @interface Create {
 
+    /**
+     * Name of the command that will be used to register this generic command implementation under.
+     *
+     * @return the command name as the user types it.
+     */
     @Index
     String value();
 
+    /**
+     * Type of the parent the new configuration object will be stored to when using that command
+     * name. 
+     * @return parent type.
+     */
     @InhabitantMetadata
     Class parentType() default Void.class;
 
+    /**
+     * name of the getter or setter method that will be used to mutate the parent
+     * configuration object with the newly created instance.
+     * 
+     * @return the accessor method name.
+     */
     String parentAccessor() default "";
 
+    /**
+     * Returns the instance of the parent that should be used to add the newly created
+     * instance under. The implementation of that interface can use the command parameters
+     * to make a determination about which instance should be used.
+     *
+     * @return the parent instance. 
+     */
     Class<? extends ConfigResolver> resolver() default ConfigParamResolver.class;
 
     /**

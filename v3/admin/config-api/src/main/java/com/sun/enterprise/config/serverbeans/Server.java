@@ -106,7 +106,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @param value allowed object is
      *              {@link String }
      */
-    @Param(name = "config")
+    @Param(name = "config", optional=true)
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -311,7 +311,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
-    @Param(name="systemproperties", optional = true)
+    @Param(name="properties", optional = true)
     List<Property> getProperty();
 
     @Service

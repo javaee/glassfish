@@ -21,15 +21,8 @@ public class DomainResolver implements ConfigResolver {
     @Inject
     Domain domain;
 
-    @Inject
-    Habitat habitat;
-
     @Override
-    public ConfigBeanProxy resolve(AdminCommandContext context, String elementName, Class<? extends ConfigBeanProxy> type) {
-        if (elementName==null)
-            return domain;
-
-
-        return habitat.getComponent(type);
+    public ConfigBeanProxy resolve(AdminCommandContext context, Class<? extends ConfigBeanProxy> type) {
+        return domain;
     }
 }

@@ -36,6 +36,7 @@
 package org.glassfish.config.support;
 
 import com.sun.hk2.component.InhabitantsFile;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandModel;
@@ -59,17 +60,8 @@ import java.util.logging.Logger;
 public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
 
     @Inject
-    Logger logger;
-
-    @Inject
-    Inhabitant<GenericCreateCommand> myself;
-
-    @Inject
     Habitat habitat;
 
-    String commandName;
-
-    Class<ConfigBeanProxy> targetType=null;
     Class<? extends ConfigResolver> resolverType;
     CommandModel model;
     String elementName;
@@ -79,31 +71,9 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     public CommandModel getModel() {
         return model;
     }
-
+       
     @Override
     public void postConstruct() {
-        // first we need to retrieve our inhabitant.
-        System.out.println("Lead " + myself);
-
-        // let's find command name, parent type and such...
-        List<String> indexes = myself.metadata().get(InhabitantsFile.INDEX_KEY);
-        if (indexes.size()!=1) {
-            logger.log(Level.SEVERE, "Inhabitant has more than 1 index " + indexes.get(0));
-            return;
-        }
-        String index = indexes.get(0);
-        if (index.indexOf(":")==-1) {
-            logger.log(Level.SEVERE, "This is not a named service " + index);
-            return;
-        }
-        commandName = index.substring(index.indexOf(":")+1);
-        String targetTypeName = myself.metadata().get(InhabitantsFile.TARGET_TYPE).get(0);
-
-        try {
-            targetType = loadClass(targetTypeName);
-        } catch(ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Cannot load target type", e);
-        }
 
         delete = targetType.getAnnotation(Delete.class);
         resolverType = delete.resolver();
@@ -111,30 +81,41 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
             elementName = elementName(delete.parentType(), targetType);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Cannot load child type", e);
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCrudCommand.configbean_not_found",
+                    "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
+                    delete.parentType(), e.getMessage());
+            logger.severe(msg);
+            throw new ComponentException(msg, e);         
         }
 
-        System.out.println("I delete " + targetType.getName() + " instances stored in " +
-            delete.parentType().getName() + " under " + elementName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Generic Command configured for deleting " + targetType.getName() + " instances stored in " +
+               delete.parentType().getName() + " under " + elementName);
+        }        
 
         try {
             model = new GenericCommandModel(null, delete.resolver(), document, commandName);
-            for (String paramName : model.getParametersNames()) {
-                CommandModel.ParamModel param = model.getModelFor(paramName);
-                System.out.println("I take " + param.getName() + " parameters");
+            if (logger.isLoggable(Level.FINE)) {
+                for (String paramName : model.getParametersNames()) {
+                    CommandModel.ParamModel param = model.getModelFor(paramName);
+                    logger.fine("I take " + param.getName() + " parameters");
+                }
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCreateCommand.command_model_exception",
+                    "Exception while creating the command model for the generic command {0} : {1}",
+                    commandName, e.getMessage());
+            logger.severe(msg);
+            throw new ComponentException(msg, e);
         }
-        
-    }
-
-    protected Class loadClass(String type) throws ClassNotFoundException {
-        // by default I use the inhabitant class loader
-        return myself.type().getClassLoader().loadClass(type);
     }
 
     @Override
     public void execute(AdminCommandContext context) {
+
+        final ActionReport result = context.getActionReport();
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
 
@@ -142,17 +123,24 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy target = resolver.resolve(context, elementName,  targetType);
+        final ConfigBeanProxy target = resolver.resolve(context, targetType);
         if (target==null) {
-            context.logger.severe("Cannot find the target configuration");
-            return;
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericDeleteCommand.target_object_not_found",
+                    "The ConfigResolver {0} could not find the configuration object of type {1} where instances of {2} should be removed",
+                    resolver.getClass().toString(), delete.parentType(), targetType);
+            result.failure(logger, msg);
         }
         final ConfigBean child = (ConfigBean) ConfigBean.unwrap(target);
 
         try {
             ConfigSupport.deleteChild((ConfigBean) child.parent(), child);
         } catch(TransactionFailure e) {
-            e.printStackTrace();
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericDeleteCommand.transaction_exception",
+                    "Exception while deleting the configuration {0} :{1}",
+                    child.typeName(), e.getMessage());
+            result.failure(logger, msg);
         }
 
     }

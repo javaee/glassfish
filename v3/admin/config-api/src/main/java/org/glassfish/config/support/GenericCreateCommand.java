@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,28 +35,28 @@
  */
 package org.glassfish.config.support;
 
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
-import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
-import org.glassfish.common.util.admin.CommandModelImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
-import com.sun.hk2.component.InhabitantsFile;
 import com.sun.logging.LogDomains;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.util.List;
-import java.util.Collection;
-import java.util.HashMap;
-import java.lang.reflect.Method;
-import java.lang.annotation.Annotation;
 import java.beans.PropertyVetoException;
 
 /**
- * Not much so far, just to get the APIs figured out.
+ * Generic create command implementation.
+ *
+ * This command can create POJO configuration objects from an asadmin command
+ * invocation parameters.
+ *
+ * So far, such POJO must be ConfigBeanProxy subclasses and be annotated with the
+ * {@see Param} annotation to property function. 
+ *
+ * @author Jerome Dochez
  */
 @Scoped(PerLookup.class)
 public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand, PostConstruct, CommandModelProvider {
@@ -64,16 +64,6 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     @Inject
     Habitat habitat;
     
-    @Inject
-    Inhabitant<GenericCreateCommand> myself;
-
-
-    boolean skipParamValidation=true;
-
-    boolean valid=false;
-
-    String commandName;
-    Class<ConfigBeanProxy> targetType=null;
     Class<? extends ConfigResolver> resolverType;
     CommandModel model;
     String elementName;
@@ -83,28 +73,8 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
 
     public void postConstruct() {
-        // first we need to retrieve our inhabitant.
-        System.out.println("Lead " + myself);
 
-        // let's find command name, parent type and such...
-        List<String> indexes = myself.metadata().get(InhabitantsFile.INDEX_KEY);
-        if (indexes.size()!=1) {
-            logger.log(Level.SEVERE, "Inhabitant has more than 1 index " + indexes.get(0));
-            return;
-        }
-        String index = indexes.get(0);
-        if (index.indexOf(":")==-1) {
-            logger.log(Level.SEVERE, "This is not a named service " + index);
-            return;
-        }
-        commandName = index.substring(index.indexOf(":")+1);
-        String targetTypeName = myself.metadata().get(InhabitantsFile.TARGET_TYPE).get(0);
-
-        try {
-            targetType = loadClass(targetTypeName);
-        } catch(ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Cannot load target type", e);
-        }
+        super.postConstruct();
 
         create = targetType.getAnnotation(Create.class);
         resolverType = create.resolver();
@@ -112,31 +82,46 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
             elementName = elementName(create.parentType(), targetType);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Cannot load child type", e);
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCrudCommand.configbean_not_found",
+                    "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
+                    create.parentType(), e.getMessage());
+            logger.severe(msg);
+            throw new ComponentException(msg, e);            
         }
 
-        System.out.println("I create " + targetType.getName() + " instances which gets added to " +
-            create.parentType().getName() + " under " + elementName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("Generic Command configured for creating " + targetType.getName() + " instances which gets added to " +
+                create.parentType().getName() + " under " + elementName);
+        }
 
         try {
             model = new GenericCommandModel(targetType, create.resolver(), habitat.getComponent(DomDocument.class), commandName);
-            for (String paramName : model.getParametersNames()) {
-                CommandModel.ParamModel param = model.getModelFor(paramName);
-                System.out.println("I take " + param.getName() + " parameters");
+            if (logger.isLoggable(Level.FINE)) {
+                for (String paramName : model.getParametersNames()) {
+                    CommandModel.ParamModel param = model.getModelFor(paramName);
+                    logger.fine("I take " + param.getName() + " parameters");
+                }
             }
         } catch(Exception e) {
-            e.printStackTrace();
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCreateCommand.command_model_exception",
+                    "Exception while creating the command model for the generic command {0} : {1}",
+                    commandName, e.getMessage());
+            logger.severe(msg);
+            throw new ComponentException(msg, e);
+
         }        
 
     }
 
-    protected Class loadClass(String type) throws ClassNotFoundException {
-        // by default I use the inhabitant class loader
-        return myself.type().getClassLoader().loadClass(type);
-    }
+
 
 
     public void execute(final AdminCommandContext context) {
 
+        final ActionReport result = context.getActionReport();
+        
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
 
@@ -144,9 +129,13 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy target = resolver.resolve(context, elementName,  create.parentType());
+        final ConfigBeanProxy target = resolver.resolve(context, create.parentType());
         if (target==null) {
-            context.logger.severe("Cannot find the target configuration");
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCreateCommand.target_object_not_found",
+                    "The ConfigResolver {0} could not find the configuration object of type {1} where instances of {2} should be added",
+                    resolver.getClass().toString(), create.parentType(), targetType);
+            result.failure(logger, msg);
             return;
         }
         
@@ -157,9 +146,14 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                     manager.inject(child, targetType, getInjectionResolver());
                     Dom dom = Dom.unwrap(param);
                     dom.insertAfter(null, elementName, Dom.unwrap(child));
-                    ElementDecorator decorator = habitat.getComponent(create.decorator());
+                    ElementDecorator<ConfigBeanProxy> decorator = habitat.getComponent(create.decorator());
                     if (decorator==null) {
-                        logger.severe("Cannot find " + create.decorator() + " component in the habitat");
+                        String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                                "GenericCreateCommand.decorator_not_found",
+                                "The ElementDecorator {0} could not be found in the habitat",
+                                create.decorator().toString());
+                        result.failure(logger, msg);
+                        throw new TransactionFailure(msg);
                     } else {
                         decorator.decorate(context, child);
                     }
@@ -167,7 +161,11 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                 }
             }, target);
         } catch(TransactionFailure e) {
-            e.printStackTrace();
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCreateCommand.transaction_exception",
+                    "Exception while adding the new configuration {0}",
+                    e.getMessage());
+            result.failure(logger, msg);
         }
     }
 

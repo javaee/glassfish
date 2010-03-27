@@ -42,14 +42,23 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.api.admin.AdminCommandContext;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Apr 13, 2009
- * Time: 10:07:28 PM
- * To change this template use File | Settings | File Templates.
+ * A config resolver is responsible for finding the parent object of a specified
+ * type on which a command invocation will be processed.
+ *
+ * Implementation of these interfaces can be injected with the command invocation
+ * parameters in order to determine which object should be returned
+ *
+ * @author Jerome Dochez
  */
 @Contract
 public interface ConfigResolver {
 
-    ConfigBeanProxy resolve(AdminCommandContext context, String elementName, Class<? extends ConfigBeanProxy> type); 
+    /**
+     * Retrieves a configuration object a command invocation is intented to mutate.
+     *
+     * @param context the command invcation context
+     * @param type the type of the expected instance
+     * @return the instance or null if not found 
+     */
+    ConfigBeanProxy resolve(AdminCommandContext context,Class<? extends ConfigBeanProxy> type);
 }

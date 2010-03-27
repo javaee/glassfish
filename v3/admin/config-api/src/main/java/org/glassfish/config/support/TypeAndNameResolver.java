@@ -50,14 +50,14 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 @Service
 public class TypeAndNameResolver implements ConfigResolver {
 
-    @Param(name="name", primary = true)
+    @Param(primary = true)
     String name;
 
     @Inject
     Habitat habitat;
 
     @Override
-    public ConfigBeanProxy resolve(AdminCommandContext context, String elementName, Class<? extends ConfigBeanProxy> type) {
+    public ConfigBeanProxy resolve(AdminCommandContext context, Class<? extends ConfigBeanProxy> type) {
         return habitat.getComponent(type, name);
     }
 }
