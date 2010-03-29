@@ -47,7 +47,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
-public interface ElementDecorator<T> {
+public interface CreationDecorator<T> {
 
     /**
      * The element instance has been created and added to the parent, it can be
@@ -62,7 +62,7 @@ public interface ElementDecorator<T> {
     public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException;
 
     @Service
-    public class NoDecoration<T> implements ElementDecorator<T> {
+    public class NoDecoration<T> implements CreationDecorator<T> {
         @Override
         public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException {
             // do nothing

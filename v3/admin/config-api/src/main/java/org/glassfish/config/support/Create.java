@@ -38,7 +38,6 @@ package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
-import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -94,6 +93,8 @@ public @interface Create {
      *
      * @return a decorator for the annotated type
      */
-    Class<? extends ElementDecorator> decorator() default ElementDecorator.NoDecoration.class;
+    Class<? extends CreationDecorator> decorator() default CreationDecorator.NoDecoration.class;
+
+
 
 }

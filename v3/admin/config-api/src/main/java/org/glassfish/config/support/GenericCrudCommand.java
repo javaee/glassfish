@@ -172,6 +172,12 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                         throw new ComponentException(msg, e);
                     }
                     Object value = delegate.getValue(component, annotated, type);
+                    if (value==null) {
+                        if (logger.isLoggable(level)) {
+                            logger.log(level, "Value of " + annotated.toString() + " is null");
+                        }
+                        return null;
+                    }
                     final Class<? extends ConfigBeanProxy> itemType = Types.erasure(Types.getTypeArgument(
                             annotated instanceof Method?
                             ((Method) annotated).getGenericReturnType():((Field) annotated).getGenericType(), 0));
@@ -313,11 +319,13 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     /**
      * Returns the element name used by the parent to store instances of the child
      *
+     * @param document the dom document this configuration element lives in.
      * @param parent type of the parent
      * @param child type of the child
      * @return the element name holding child's instances in the parent
+     * @throws ClassNotFoundException when subclasses cannot be loaded
      */
-    protected String elementName(Class<ConfigBeanProxy> parent, Class<ConfigBeanProxy> child)
+    public static String elementName(DomDocument document, Class<?> parent, Class<?> child)
         throws ClassNotFoundException {
 
         ConfigModel cm = document.buildModel(parent);
@@ -332,9 +340,11 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                 // check the inheritance hierarchy
                 List<ConfigModel> subChildrenModels = document.getAllModelsImplementing(
                         childCM.classLoaderHolder.get().loadClass(childTypeName));
-                for (ConfigModel subChildModel : subChildrenModels) {
-                    if (subChildModel.targetTypeName.equals(child.getName())) {
-                        return elementName;
+                if (subChildrenModels!=null) {
+                    for (ConfigModel subChildModel : subChildrenModels) {
+                        if (subChildModel.targetTypeName.equals(child.getName())) {
+                            return elementName;
+                        }
                     }
                 }
 

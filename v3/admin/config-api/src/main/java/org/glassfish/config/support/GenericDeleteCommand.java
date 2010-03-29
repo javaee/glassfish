@@ -75,7 +75,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
         delete = targetType.getAnnotation(Delete.class);
         resolverType = delete.resolver();
         try {
-            elementName = elementName(delete.parentType(), targetType);
+            elementName = elementName(document, delete.parentType(), targetType);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Cannot load child type", e);
             String msg = localStrings.getLocalString(GenericCrudCommand.class,

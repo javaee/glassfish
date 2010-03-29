@@ -79,7 +79,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
-@Create(value="create-instance", parentType=Servers.class, resolver=DomainResolver.class, decorator=Server.Decorator.class)
+@Create(value="create-instance", parentType=Servers.class, resolver= TypeResolver.class, decorator=Server.Decorator.class)
 @Delete(value="delete-instance", parentType=Servers.class, resolver= TypeAndNameResolver.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
@@ -228,6 +228,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system properties" )
     @Element
+    @Param(name="systemproperties", optional = true)
     List<SystemProperty> getSystemProperty();
 
     @DuckTyped
@@ -315,7 +316,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     List<Property> getProperty();
 
     @Service
-    class Decorator implements ElementDecorator<Server> {
+    class Decorator implements CreationDecorator<Server> {
         @Inject
         Domain domain;
         

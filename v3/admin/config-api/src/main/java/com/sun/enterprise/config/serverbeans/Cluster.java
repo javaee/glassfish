@@ -77,7 +77,7 @@ import javax.validation.constraints.NotNull;
  * instances that share the same applications, resources, and configuration.                                                
  *
  */
-@Create(value="create-cluster", parentType=Clusters.class, resolver= DomainResolver.class, decorator=Cluster.Decorator.class)
+@Create(value="create-cluster", parentType=Clusters.class, resolver= TypeResolver.class, decorator=Cluster.Decorator.class)
 @Delete(value="delete-cluster", parentType=Clusters.class, resolver= TypeAndNameResolver.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
@@ -266,7 +266,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Element
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system props" )
-    @Param(name="systemproperties")
+    @Param(name="systemproperties",optional=true)
     List<SystemProperty> getSystemProperty();
 
     /**
@@ -275,7 +275,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
-    @Param(name="properties")
+    @Param(name="properties", optional=true)
     List<Property> getProperty();
     
     @DuckTyped
@@ -288,7 +288,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     }
 
     @Service
-    class Decorator implements ElementDecorator {
+    class Decorator implements CreationDecorator {
 
         @Param(optional = true)
         String hosts=null;
@@ -298,10 +298,33 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
         @Param(optional = true)
         String haadminpassword=null;
+
+        @Param(optional = true)
+        String haadminpasswordfile=null;
+
+        @Param(optional = true)
+        String devicesize=null;
+
+        @Param(optional = true)        
+        String haproperty=null;
+
+        @Param(optional = true)
+        String autohadb=null;
+
+        @Param(optional = true)
+        String portbase=null;        
         
         @Override
         public void decorate(AdminCommandContext context, Object instance) throws TransactionFailure, PropertyVetoException {
-            if (hosts!=null || haagentport!=0 || haadminpassword!=null) {
+            if (hosts!=null ||
+                    haagentport!=0 ||
+                    haadminpassword!=null ||
+                    haadminpasswordfile!=null ||
+                    devicesize!=null ||
+                    haproperty!=null ||
+                    autohadb!=null ||
+                    portbase!=null
+                    ) {
                 context.getActionReport().setActionExitCode(ActionReport.ExitCode.WARNING);
                 context.getActionReport().setMessage("Obsolete options used.");
             }

@@ -35,8 +35,10 @@
  */
 package org.glassfish.config.support;
 
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.config.Named;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
@@ -79,7 +81,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         create = targetType.getAnnotation(Create.class);
         resolverType = create.resolver();
         try {
-            elementName = elementName(create.parentType(), targetType);
+            elementName = elementName(document, create.parentType(), targetType);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Cannot load child type", e);
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
@@ -129,8 +131,8 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy target = resolver.resolve(context, create.parentType());
-        if (target==null) {
+        final ConfigBeanProxy parentBean = resolver.resolve(context, create.parentType());
+        if (parentBean==null) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.target_object_not_found",
                     "The ConfigResolver {0} could not find the configuration object of type {1} where instances of {2} should be added",
@@ -141,35 +143,56 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         
         try {
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
-                public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                    // we must first ensure that our parent is already added to the ConfigBeanProxy param
-                    // that we got passed.
+                public Object run(ConfigBeanProxy writeableParentBean) throws PropertyVetoException, TransactionFailure {
 
-                    
 
-                    ConfigBeanProxy child = param.createChild(targetType);
-                    manager.inject(child, targetType, getInjectionResolver());
-                    Dom dom = Dom.unwrap(param);
-                    dom.insertAfter(null, elementName, Dom.unwrap(child));
-                    ElementDecorator<ConfigBeanProxy> decorator = habitat.getComponent(create.decorator());
+                    ConfigBeanProxy childBean = writeableParentBean.createChild(targetType);
+                    manager.inject(childBean, targetType, getInjectionResolver());
+
+                    String name = null;
+                    if (Named.class.isAssignableFrom(targetType)) {
+                        name = ((Named) childBean).getName();
+
+                    }
+
+                    // check that such instance does not exist yet...
+                    Object cbp = habitat.getComponent(targetType.getName(), name);
+                    if (cbp!=null) {
+                        String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                                "GenericCreateCommand.already_existing_instance",
+                                "A {0} instance with a \"{1}\" name already exist in the configuration",
+                                targetType.getSimpleName(), name);
+                        result.failure(logger, msg);
+                        throw new TransactionFailure(msg);
+                    }
+
+                    Dom parentDom = Dom.unwrap(writeableParentBean);
+                    parentDom.insertAfter(null, elementName, Dom.unwrap(childBean));
+                    CreationDecorator<ConfigBeanProxy> decorator = habitat.getComponent(create.decorator());
                     if (decorator==null) {
                         String msg = localStrings.getLocalString(GenericCrudCommand.class,
                                 "GenericCreateCommand.decorator_not_found",
-                                "The ElementDecorator {0} could not be found in the habitat",
+                                "The CreationDecorator {0} could not be found in the habitat, is it annotated with @Service ?",
                                 create.decorator().toString());
                         result.failure(logger, msg);
                         throw new TransactionFailure(msg);
                     } else {
-                        decorator.decorate(context, child);
+                        decorator.decorate(context, childBean);
                     }
-                    return child;
+
+                    // Now we need to add our new configuration object to the habitat so it can looked up
+                    // just like if it had been read from the domain.xml
+                    Dom childDom = Dom.unwrap(childBean);
+                    habitat.addIndex(new ExistingSingletonInhabitant<ConfigBeanProxy>(childDom.<ConfigBeanProxy>createProxy()), targetType.getName(), name);
+                    return childBean;
                 }
-            }, target);
+            }, parentBean);
         } catch(TransactionFailure e) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.transaction_exception",
                     "Exception while adding the new configuration {0}",
-                    e.getMessage());
+                    e.toString());
+            logger.log(Level.SEVERE, msg, e);
             result.failure(logger, msg);
         }
     }
