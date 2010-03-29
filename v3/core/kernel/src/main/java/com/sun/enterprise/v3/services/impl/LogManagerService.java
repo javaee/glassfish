@@ -220,7 +220,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
 
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
-        Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
+/*        Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
         LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
         LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
         System.setOut(pout);
@@ -229,7 +229,14 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
         los = new LoggingOutputStream(_elogger, Level.SEVERE);
         LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
         System.setErr(perr);
-        
+*/
+        LoggingOutputStream los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.INFO);
+        PrintStream pout = new PrintStream(los,true);
+        System.setOut(pout);
+
+        los = new LoggingOutputStream(Logger.getAnonymousLogger(), Level.SEVERE);
+        PrintStream perr = new PrintStream(los,true);
+        System.setErr(perr);
 
         // finally listen to changes to the logging.properties file
         if (logging!=null) {

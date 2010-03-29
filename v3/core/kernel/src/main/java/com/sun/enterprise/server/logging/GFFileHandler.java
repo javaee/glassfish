@@ -194,7 +194,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         };
         pump.start();
         LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: "+version.getFullVersion());
-        this.publish(lr);        
+        lr.setThreadID((int)Thread.currentThread().getId());
+        this.publish(lr);
 
         Long rotationTimeLimitValue = 0L;
          try {
@@ -202,6 +203,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         } catch (NumberFormatException e) {
             lr = new LogRecord(Level.SEVERE,
                     "Cannot read rotationTimelimitInMinutes property from logging config file");
+            lr.setThreadID((int)Thread.currentThread().getId());
             this.publish(lr);
         }
 
@@ -230,10 +232,9 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             try {
                 rotationLimitAttrValue = Integer.parseInt(manager.getProperty(cname + ".rotationLimitInBytes"));
             } catch (NumberFormatException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE,
-                    "Cannot read rotationLimitInBytes property from logging config file. Using default.");
                 lr = new LogRecord(Level.WARNING,
                     "Cannot read rotationLimitInBytes property from logging config file. Using default.");
+                lr.setThreadID((int)Thread.currentThread().getId());
                 this.publish(lr);
             } 
             // We set the LogRotation limit here. The rotation limit is the
@@ -250,9 +251,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             } catch (NumberFormatException e) {
                 lr = new LogRecord(Level.WARNING,
                     "Cannot read flushFrequency property from logging config file. Using default.");
+                lr.setThreadID((int)Thread.currentThread().getId());
                 this.publish(lr);
-                Logger.getAnonymousLogger().log( Level.WARNING,
-                    "Cannot read flushFrequency property from logging config file. Using default.");
 
             }
         if (flushFrequency <= 0)
@@ -271,19 +271,19 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
             try {
                 setFormatter((Formatter) this.getClass().getClassLoader().loadClass(formatterName).newInstance());
             } catch (InstantiationException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot instantiate formatter " + formatterName,e);
                 lr = new LogRecord(Level.SEVERE,
                     "Cannot instantiate formatter class " + formatterName);
+                lr.setThreadID((int)Thread.currentThread().getId());
                 this.publish(lr);
             } catch (IllegalAccessException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot instantiate formatter " + formatterName,e);
                 lr = new LogRecord(Level.SEVERE,
                     "Cannot instantiate formatter class " + formatterName);
+                lr.setThreadID((int)Thread.currentThread().getId());
                 this.publish(lr);
             } catch (ClassNotFoundException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "Cannot load formatter class " + formatterName,e);
                 lr = new LogRecord(Level.SEVERE,
                     "Cannot load formatter class " + formatterName);
+                lr.setThreadID((int)Thread.currentThread().getId());
                 this.publish(lr);
             }
         }
@@ -578,6 +578,8 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         }
 
         try {
+            // set the thread id to be the current thread that is logging the message
+//            record.setThreadID((int)Thread.currentThread().getId());
             pendingRecords.add(record);
         } catch(IllegalStateException e) {
             // queue is full, start waiting.

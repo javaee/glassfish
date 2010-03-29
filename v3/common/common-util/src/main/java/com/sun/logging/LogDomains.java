@@ -37,9 +37,12 @@
 package com.sun.logging;
 
 import java.util.logging.Logger;
+import java.util.logging.LogRecord;
+import java.util.logging.Filter;
 import java.util.logging.LogManager;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.Handler;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.Locale;
@@ -297,6 +300,48 @@ public class LogDomains
             if (cLogger == null) {
                 //first time through for this logger.  create it and find the resource bundle
                 cLogger = new Logger(loggerName, null) {
+
+                    /*
+                       override this method to set the the thread id so all handlers get the same info
+
+                     */
+                    private final int offValue = Level.OFF.intValue();
+
+                    public  void log (LogRecord record) {
+                        int levelValue = Level.INFO.intValue();
+                        Filter filter = super.getFilter();
+
+                        if (record.getLevel().intValue() < levelValue || levelValue == offValue) {
+                            return;
+                        }
+                        synchronized (this) {
+                            if (filter != null && !filter.isLoggable(record)) {
+                                return;
+                            }
+                        }
+
+                        record.setThreadID((int)Thread.currentThread().getId());
+                        // Post the LogRecord to all our Handlers, and then to
+                        // our parents' handlers, all the way up the tree.
+
+                        Logger logger = this;
+                        while (logger != null) {
+                            Handler targets[] = logger.getHandlers();
+
+                            if (targets != null) {
+                                for (int i = 0; i < targets.length; i++) {
+                                    targets[i].publish(record);
+                                }
+                            }
+
+                            if (!logger.getUseParentHandlers()) {
+                                break;
+                            }
+
+                            logger = logger.getParent();
+                        }
+                    }
+                    
 
                     /**
                      * Retrieve the localization resource bundle for this
