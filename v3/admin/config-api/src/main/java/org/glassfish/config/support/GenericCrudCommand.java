@@ -76,14 +76,14 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     DomDocument document;
 
     @Inject
-    Inhabitant<GenericCreateCommand> myself;    
+    Inhabitant<?> myself;    
 
     final protected static Logger logger = LogDomains.getLogger(GenericCrudCommand.class, LogDomains.ADMIN_LOGGER);
     final protected static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GenericCrudCommand.class);
 
     String commandName;
     Class<ConfigBeanProxy> targetType=null;
-
+    protected final Level level = Level.INFO;
 
     public void postConstruct() {
         List<String> indexes = myself.metadata().get(InhabitantsFile.INDEX_KEY);
@@ -110,8 +110,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         }
         commandName = index.substring(index.indexOf(":")+1);
         String targetTypeName = myself.metadata().get(InhabitantsFile.TARGET_TYPE).get(0);
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Generic method intented application type is " + targetType);
+        if (logger.isLoggable(level)) {
+            logger.log(level,"Generic method targeted type is " + targetTypeName);
         }
 
         try {
@@ -175,8 +175,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     final Class<? extends ConfigBeanProxy> itemType = Types.erasure(Types.getTypeArgument(
                             annotated instanceof Method?
                             ((Method) annotated).getGenericReturnType():((Field) annotated).getGenericType(), 0));
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.fine("Found that List<?> really is a List<" + itemType.toString() + ">");
+                    if (logger.isLoggable(level)) {
+                        logger.log(level, "Found that List<?> really is a List<" + itemType.toString() + ">");
                     }
                     if (itemType==null) {
                             String msg = localStrings.getLocalString(GenericCrudCommand.class,
@@ -186,7 +186,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                             logger.severe(msg);
                             throw new ComponentException(msg);
                     }
-                    if (!itemType.isAssignableFrom(ConfigBeanProxy.class)) {
+                    if (!ConfigBeanProxy.class.isAssignableFrom(itemType)) {
                         String msg = localStrings.getLocalString(GenericCrudCommand.class,
                                 "GenericCrudCommand.wrong_type",
                                 "The generic type {0} is not supported, only List<? extends ConfigBeanProxy> is",
@@ -196,9 +196,9 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                         
                     }
                     Properties props = convertStringToProperties(value.toString(), ':');
-                    if (logger.isLoggable(Level.FINE)) {
+                    if (logger.isLoggable(level)) {
                         for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                            logger.fine("Subtype " + itemType + " key:" + entry.getKey() + " value:" + entry.getValue());
+                            logger.log(level, "Subtype " + itemType + " key:" + entry.getKey() + " value:" + entry.getValue());
                         }
                     }
                     final BeanInfo beanInfo;

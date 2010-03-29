@@ -96,7 +96,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         }
 
         try {
-            model = new GenericCommandModel(targetType, create.resolver(), habitat.getComponent(DomDocument.class), commandName);
+            model = new GenericCommandModel(targetType, habitat.getComponent(DomDocument.class), commandName, create.resolver(), create.decorator());
             if (logger.isLoggable(Level.FINE)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
@@ -142,6 +142,11 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         try {
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
                 public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                    // we must first ensure that our parent is already added to the ConfigBeanProxy param
+                    // that we got passed.
+
+                    
+
                     ConfigBeanProxy child = param.createChild(targetType);
                     manager.inject(child, targetType, getInjectionResolver());
                     Dom dom = Dom.unwrap(param);

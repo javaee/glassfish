@@ -36,6 +36,11 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.config.support.*;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
@@ -68,24 +73,17 @@ import javax.validation.constraints.NotNull;
 
 @Configured
 /**
- * SE/EE Cluster configuration. A cluster defines a homogenous set of server 
+ * SE/EE Cluster configuration. A cluster defines a homogeneous set of server
  * instances that share the same applications, resources, and configuration.                                                
  *
  */
+@Create(value="create-cluster", parentType=Clusters.class, resolver= DomainResolver.class, decorator=Cluster.Decorator.class)
+@Delete(value="delete-cluster", parentType=Clusters.class, resolver= TypeAndNameResolver.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
 
-    /**
-     *  Name of the configured object
-     *
-     * @return name of the configured object
-     FIXME: should set 'key=true'.  See bugs 6039, 6040
-    @Attribute(key=true, required=true)
-    @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
-    String getName();
-
-    void setName(String value) throws PropertyVetoException;
-     */
+    @Param(name="name", primary = true)
+    public void setName(String value) throws PropertyVetoException;
+    
 
     /**
      * Gets the value of the configRef property.
@@ -106,6 +104,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @param value allowed object is
      *              {@link String }
      */
+    @Param(name="config-ref")
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -267,6 +266,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Element
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal system props" )
+    @Param(name="systemproperties")
     List<SystemProperty> getSystemProperty();
 
     /**
@@ -275,6 +275,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
+    @Param(name="properties")
     List<Property> getProperty();
     
     @DuckTyped
@@ -284,5 +285,26 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         public static String getReference(Cluster cluster) {
             return cluster.getConfigRef();
         }
-    }    
+    }
+
+    @Service
+    class Decorator implements ElementDecorator {
+
+        @Param(optional = true)
+        String hosts=null;
+
+        @Param(optional = true)
+        int haagentport=0;
+
+        @Param(optional = true)
+        String haadminpassword=null;
+        
+        @Override
+        public void decorate(AdminCommandContext context, Object instance) throws TransactionFailure, PropertyVetoException {
+            if (hosts!=null || haagentport!=0 || haadminpassword!=null) {
+                context.getActionReport().setActionExitCode(ActionReport.ExitCode.WARNING);
+                context.getActionReport().setMessage("Obsolete options used.");
+            }
+        }
+    }
 }

@@ -57,7 +57,7 @@ public class GenericCommandModel extends CommandModel {
     final HashMap<String, ParamModel> params = new HashMap<String, ParamModel>();
     final String commandName;
 
-    public GenericCommandModel(Class<?> targetType, Class<? extends ConfigResolver> resolverType, DomDocument document, String commandName) {
+    public GenericCommandModel(Class<?> targetType, DomDocument document, String commandName, Class<?>... extraTypes) {
         this.commandName = commandName;
         if (targetType!=null && ConfigBeanProxy.class.isAssignableFrom(targetType)) {
             ConfigModel cm = document.buildModel(targetType);
@@ -82,12 +82,17 @@ public class GenericCommandModel extends CommandModel {
                 }
             }
         }
-        // now the resolver parameters.
-        CommandModelImpl classModel = new CommandModelImpl();
-        classModel.init(resolverType);
 
-        for (String paramName : classModel.getParametersNames()) {
-            params.put(paramName, classModel.getModelFor(paramName));
+        if (extraTypes!=null) {
+            for (Class extraType : extraTypes) {
+                CommandModelImpl cm = new CommandModelImpl();
+                cm.init(extraType);
+                
+                for (String paramName : cm.getParametersNames()) {
+                    params.put(paramName, cm.getModelFor(paramName));
+                }
+
+            }
         }
     }
 

@@ -35,7 +35,6 @@
  */
 package org.glassfish.config.support;
 
-import com.sun.hk2.component.InhabitantsFile;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -46,10 +45,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 
-import java.beans.PropertyVetoException;
-import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implementation of the generic delete command
@@ -66,7 +62,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     CommandModel model;
     String elementName;
     Delete delete;    
-
+    
     @Override
     public CommandModel getModel() {
         return model;
@@ -75,6 +71,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     @Override
     public void postConstruct() {
 
+        super.postConstruct();
         delete = targetType.getAnnotation(Delete.class);
         resolverType = delete.resolver();
         try {
@@ -89,17 +86,17 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
             throw new ComponentException(msg, e);         
         }
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Generic Command configured for deleting " + targetType.getName() + " instances stored in " +
+        if (logger.isLoggable(level)) {
+            logger.log(level, "Generic Command configured for deleting " + targetType.getName() + " instances stored in " +
                delete.parentType().getName() + " under " + elementName);
         }        
 
         try {
-            model = new GenericCommandModel(null, delete.resolver(), document, commandName);
-            if (logger.isLoggable(Level.FINE)) {
+            model = new GenericCommandModel(null, document, commandName, delete.resolver());
+            if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
-                    logger.fine("I take " + param.getName() + " parameters");
+                    logger.log(level, "I take " + param.getName() + " parameters");
                 }
             }
         } catch(Exception e) {
@@ -130,6 +127,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
                     "The ConfigResolver {0} could not find the configuration object of type {1} where instances of {2} should be removed",
                     resolver.getClass().toString(), delete.parentType(), targetType);
             result.failure(logger, msg);
+            return;
         }
         final ConfigBean child = (ConfigBean) ConfigBean.unwrap(target);
 

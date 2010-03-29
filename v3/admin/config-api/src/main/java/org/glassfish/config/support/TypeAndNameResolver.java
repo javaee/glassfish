@@ -35,6 +35,7 @@
  */
 package org.glassfish.config.support;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -56,8 +57,17 @@ public class TypeAndNameResolver implements ConfigResolver {
     @Inject
     Habitat habitat;
 
+    final protected static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GenericCrudCommand.class);
+
     @Override
     public ConfigBeanProxy resolve(AdminCommandContext context, Class<? extends ConfigBeanProxy> type) {
-        return habitat.getComponent(type, name);
+        ConfigBeanProxy proxy = habitat.getComponent(type, name);
+        if (proxy==null) {
+            String msg = localStrings.getLocalString(TypeAndNameResolver.class,
+                    "TypeAndNameResolver.target_object_not_found",
+                    "Cannot find a {0} with a name {1}", type.getSimpleName(), name);
+            throw new RuntimeException(msg);
+        }
+        return proxy;
     }
 }
