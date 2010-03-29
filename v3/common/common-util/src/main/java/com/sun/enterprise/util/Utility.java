@@ -422,4 +422,20 @@ public final class Utility {
     public static void setEnvironment() {
         Environment.obtain().activateEnvironment();
     }
+/**
+ * Return the value for a given name from the System Properties or the
+ * Environmental Variables.  The former overrides the latter.
+ * @param name - the name of the System Property or Environmental Variable
+ * @return the value of the variable or null if it was not found
+ */
+    public static String getEnvOrProp(String name) {
+        // System properties override env. variables
+        String envVal = System.getenv(name);
+        String sysPropVal = System.getProperty(name);
+
+        if(sysPropVal != null)
+            return sysPropVal;
+
+        return envVal;
+    }
 }
