@@ -54,7 +54,6 @@
 
 package org.apache.catalina.core;
 
-import com.sun.grizzly.util.http.mapper.AlternateDocBase;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.util.Enumerator;
@@ -93,17 +92,9 @@ public class ApplicationContext implements ServletContext {
      * @param context The associated Context instance
      */
     public ApplicationContext(String basePath, StandardContext context) {
-        this(basePath, null, context);
-    }
-
-    public ApplicationContext(
-                String basePath,
-                ArrayList<AlternateDocBase> alternateDocBases,
-                StandardContext context) {
         super();
         this.context = context;
         this.basePath = basePath;
-        this.alternateDocBases = alternateDocBases;
 
         setAttribute("com.sun.faces.useMyFaces",
                      Boolean.valueOf(context.isUseMyFaces()));
@@ -164,12 +155,6 @@ public class ApplicationContext implements ServletContext {
      */
     private String basePath = null;
 
-    /**
-     * Alternate doc bases
-     */
-    private ArrayList<AlternateDocBase> alternateDocBases = null;
-
-    
     private boolean isRestricted;
 
     
