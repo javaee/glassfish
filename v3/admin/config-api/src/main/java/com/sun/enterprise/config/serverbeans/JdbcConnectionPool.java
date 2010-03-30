@@ -36,7 +36,9 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import com.sun.enterprise.config.serverbeans.customvalidators.ResTypeConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConnectionPoolConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConnectionPoolConstraints;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConnectionPoolErrorMessages;
 import java.util.List;
 
 import org.jvnet.hk2.config.Attribute;
@@ -57,8 +59,6 @@ import org.glassfish.api.admin.RestRedirect;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import com.sun.enterprise.config.serverbeans.customvalidators.JdbcSteadyMaxPoolSizes;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -77,8 +77,11 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
-@JdbcSteadyMaxPoolSizes
-@ResTypeConstraint        
+@ConnectionPoolConstraints ({
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.MAX_STEADY_INVALID), 
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.STMT_WRAPPING_DISABLED),
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.RES_TYPE_MANDATORY)
+})
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-connection-pool"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-connection-pool")

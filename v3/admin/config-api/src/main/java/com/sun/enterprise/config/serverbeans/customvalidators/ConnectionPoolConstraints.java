@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,31 +37,15 @@
 
 package com.sun.enterprise.config.serverbeans.customvalidators;
 
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- *
- * @author Nandini Ektare
+ * List of @ConnectionPoolConstraint
+ * 
+ * @author Shalini M
  */
-public class JdbcSteadyMaxPoolSizesValidator
-    implements ConstraintValidator<JdbcSteadyMaxPoolSizes, JdbcConnectionPool> {
-    public void initialize(final JdbcSteadyMaxPoolSizes fqcn) {
-    }
-
-    public boolean isValid(final JdbcConnectionPool pool,
-        final ConstraintValidatorContext constraintValidatorContext) {
-
-        if (Integer.parseInt(pool.getMaxPoolSize()) <
-            (Integer.parseInt(pool.getSteadyPoolSize())) ) {
-            return false;
-        }
-        else return true;
-    }
+@Retention(RUNTIME)
+public @interface ConnectionPoolConstraints {
+    ConnectionPoolConstraint[] value();
 }
-
-
-
-
-

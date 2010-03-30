@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,38 +32,37 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
  */
 
 package com.sun.enterprise.config.serverbeans.customvalidators;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import javax.validation.Constraint;
-import javax.validation.Payload;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 /**
- * User defined constraint to check if the resource type is valid and if so, 
- * the appropriate attribute datasource-classname or driver-classname is 
- * provided with a valid value.
+ * Enum containing the different custom validation failures for a connection 
+ * pool. The message strings for the different validation scenarios are 
+ * used for interpolation and display when there is a failure in 
+ * custom validation.
  * 
  * @author Shalini M
  */
-
-@Documented
-@Constraint(validatedBy = ResTypeConstraintValidator.class)
-@Target({TYPE})
-@Retention(RUNTIME)
-public @interface ResTypeConstraint {
+public enum ConnectionPoolErrorMessages {
     
-    //TODO : Move message string to a properties file 
-    String message() default "Must specify a datasource/driver classname. " +
+    MAX_STEADY_INVALID ("Max-pool-size has to be greater than or equal to steady-pool-size"),
+    
+    STMT_WRAPPING_DISABLED ("Statement Wrapping should be set to true before performing this operation"),
+    
+    RES_TYPE_MANDATORY ("Must specify a datasource/driver classname. " +
             "DatasourceClassname is mandatory when resType is " +
                     "javax.sql.DataSource/javax.sql.ConnectionPoolDataSource/" +
                             "javax.sql.XADataSource. DriverClassname is mandatory" +
-                                    "when resType is java.sql.Driver.";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+                                    "when resType is java.sql.Driver.");
+    
+    private ConnectionPoolErrorMessages(String message) {
+        this.message = message;
+    }
+    private final String message;    
+    
+    public String toString() {
+        return message;
+    }
 }

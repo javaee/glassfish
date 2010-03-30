@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,12 +47,21 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
+/**
+ * User defined constraint for Jdbc/Connector Connection Pools. 
+ * 
+ * Different validations are done based on the value and appropriate error 
+ * messages are displayed in case of failure.
+ * 
+ * @author Shalini M
+ */
 @Retention(RUNTIME)
 @Target({METHOD, FIELD, TYPE})
 @Documented
-@Constraint(validatedBy = JdbcSteadyMaxPoolSizesValidator.class)
-public @interface JdbcSteadyMaxPoolSizes {
-    String message() default "Max-pool-size has to be greater than or equal to steady-pool-size";
+@Constraint(validatedBy = ConnectionPoolValidator.class)
+public @interface ConnectionPoolConstraint {
+    String message() default "{value}";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+    ConnectionPoolErrorMessages value();
 }

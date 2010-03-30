@@ -45,6 +45,9 @@
    
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.ConnectionPoolConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConnectionPoolConstraints;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConnectionPoolErrorMessages;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
@@ -88,6 +91,9 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
+@ConnectionPoolConstraints ({
+    @ConnectionPoolConstraint(value = ConnectionPoolErrorMessages.MAX_STEADY_INVALID)
+})
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-connector-connection-pool"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-connector-connection-pool")
