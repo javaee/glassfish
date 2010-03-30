@@ -67,8 +67,12 @@ public class GFLauncherFactory {
                 return new GFEmbeddedLauncher(
                         new GFLauncherInfo(GFLauncherFactory.ServerType.embedded));
 
+            case instance:
+                return new GFEmbeddedLauncher(
+                        new GFLauncherInfo(GFLauncherFactory.ServerType.instance));
+
             default:
-                throw new GFLauncherException("Only domain and embedded launching is currently supported.");
+                throw new GFLauncherException("Only domain, instance and embedded launching are currently supported.");
         }
     }
 }
