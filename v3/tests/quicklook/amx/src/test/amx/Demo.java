@@ -348,12 +348,12 @@ public final class Demo {
             {
                 if ( mbs.getType().equals(MBeanServerNotification.REGISTRATION_NOTIFICATION ) )
                 {
-                    debug( "Registered: " + objectName );
+                   // debug( "Registered: " + objectName );
                     mRegistered.add( objectName );
                 }
                 else if ( mbs.getType().equals(MBeanServerNotification.UNREGISTRATION_NOTIFICATION ) )
                 {
-                    debug( "Unregistered: " + objectName );
+                   // debug( "Unregistered: " + objectName );
                     mUnregistered.add( objectName );
                 }
             }
