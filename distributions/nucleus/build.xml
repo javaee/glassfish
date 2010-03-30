@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish v3 Nucleus"/>
+    <property name="source.distribution.name" value="GlassFish Server Open Source Edition 3.0.1 Nucleus"/>
     <target name="init">
         <condition property="windows">
             <os family="windows" />
@@ -75,6 +75,24 @@ own identifying information: Portions Copyright [yyyy]
 	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
     
+	<!-- stage appropriate legal content for this distribution -->
+
+	<resolveArtifact artifactId="legal-fragment" groupId="org.glassfish.packager" property="legal-fragment.zip"/>
+   
+
+        <unzip src="${legal-fragment.zip}"
+           dest="target/stage/${install.dir.name}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<!-- use web profile 3rd party licence file -->
+
+	<delete file="target/stage/${install.dir.name}/glassfish/legal/3RD-PARTY-LICENSE.txt" quiet="true" />
+	<move file="target/stage/${install.dir.name}/glassfish/legal/3RD-PARTY-LICENSE-WEB-PROFILE.txt"	
+		tofile="target/stage/${install.dir.name}/glassfish/legal/3RD-PARTY-LICENSE.txt" />
+	
 
         <!-- create distribution zip -->
 

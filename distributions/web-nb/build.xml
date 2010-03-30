@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish web-nb distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish v3 Web Profile"/>
+    <property name="source.distribution.name" value="GlassFish Server Open Source Edition 3.0.1 Web Profile"/>
     <target name="create.distribution">
         <echo message="Creating distribution: web-nb"/>
         <unzip dest="target/stage">
@@ -48,6 +48,9 @@ own identifying information: Portions Copyright [yyyy]
 
 	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+
+	<!-- stage appropriate legal content for this distribution -
+          if is OK to inherit nucleus content at this point	-->
 
         <!-- create distribution zip-->
       	<zip file="target/web-nb.zip" duplicate="preserve">

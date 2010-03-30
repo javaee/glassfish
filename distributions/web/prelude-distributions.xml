@@ -20,7 +20,7 @@ own identifying information: Portions Copyright [yyyy]
 [name of copyright owner]
 -->
 <project name="Web Distribution (ips) Creation" default="create-image" basedir=".">
-<property name="source.distribution.name" value="GlassFish v3 Web Profile"/>
+<property name="source.distribution.name" value="GlassFish Server Open Source Edition 3.0.1 Web Profile"/>
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
     <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
@@ -91,6 +91,9 @@ own identifying information: Portions Copyright [yyyy]
 
 	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+
+	 <!-- stage appropriate legal content for this distribution -
+          it is OK to inherit nucleus content at this point	-->
 
 </target>
 

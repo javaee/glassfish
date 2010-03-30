@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="Nucleus Distribution (ips) Creation" default="create-image" basedir=".">
 <property name="image.name" value="nucleus"/>
-<property name="source.distribution.name" value="GlassFish v3 Nucleus"/>
+<property name="source.distribution.name" value="GlassFish Server Open Source Edition 3.0.1 Nucleus"/>
 
 <target name="init">
     <condition property="windows">
@@ -169,7 +169,25 @@ own identifying information: Portions Copyright [yyyy]
 
 	<replace file="${image.dir}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
-    
+
+	<!-- stage appropriate legal content for this distribution -->
+
+	<resolveArtifact artifactId="legal-fragment" groupId="org.glassfish.packager" property="legal-fragment.zip"/>
+   
+
+        <unzip src="${legal-fragment.zip}"
+           dest="${image.dir}">
+          <patternset>
+		  <exclude name="META-INF/**"/>
+	  </patternset>
+        </unzip>
+
+	<!-- use web profile 3rd party licence file -->
+
+	<delete file="${image.dir}/glassfish/legal/3RD-PARTY-LICENSE.txt" quiet="true" />
+	<move file="${image.dir}/glassfish/legal/3RD-PARTY-LICENSE-WEB-PROFILE.txt"	
+		tofile="${image.dir}/glassfish/legal/3RD-PARTY-LICENSE.txt" />
+	 
 </target>
 
 <target name="install-l10n-packages" description="Installing l10n packages">

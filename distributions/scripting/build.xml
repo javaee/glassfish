@@ -21,7 +21,7 @@ own identifying information: Portions Copyright [yyyy]
 -->
 <project name="glassfish scripting distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish v3 Scripting"/>
+    <property name="source.distribution.name" value="GlassFish Server Open Source Edition 3.0.1 Scripting"/>
     <target name="create.distribution">
         <echo message="Creating distribution: scripting"/>
         <unzip dest="target/stage">
@@ -49,6 +49,9 @@ own identifying information: Portions Copyright [yyyy]
 
 	<replace file="target/stage/${install.dir.name}/glassfish/lib/registration/servicetag-registry.xml" 
 		token="%%%SOURCE%%%" value="${source.distribution.name}"/>
+
+	<!-- stage appropriate legal content for this distribution -
+          it is OK to inherit nucleus content at this point	-->
 
 
         <!--  create distribution zip -->
