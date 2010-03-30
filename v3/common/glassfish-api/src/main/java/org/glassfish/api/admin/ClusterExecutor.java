@@ -58,9 +58,10 @@ public interface ClusterExecutor {
      * or framework can get feedback on the success or failure or such executions.
      *
      * @param command the command to execute
+     * @param context the original command context
      * @param parameters the parameters passed to the original local command
      * @return an array of @{link org.glassfish.api.ActionReport} for each remote
      * execution status. 
      */
-    public ActionReport[] execute(AdminCommand command, ParameterMap parameters);
+    public ActionReport[] execute(AdminCommand command, AdminCommandContext context, ParameterMap parameters);
 }

@@ -79,7 +79,7 @@ import javax.validation.constraints.NotNull;
  */
 @Create(value="create-cluster", parentType=Clusters.class, resolver= TypeResolver.class, decorator=Cluster.Decorator.class)
 @Delete(value="delete-cluster", parentType=Clusters.class, resolver= TypeAndNameResolver.class)
-public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
+public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     @Param(name="name", primary = true)
     public void setName(String value) throws PropertyVetoException;
@@ -197,52 +197,6 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Element
     List<ServerRef> getServerRef();
-
-    /**
-     * Gets the value of the resourceRef property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the resourceRef property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getResourceRef().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ResourceRef }
-     */
-    @Element
-    List<ResourceRef> getResourceRef();
-
-    /**
-     * Gets the value of the applicationRef property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the applicationRef property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getApplicationRef().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ApplicationRef }
-     */
-    @Element
-    List<ApplicationRef> getApplicationRef();
 
     /**
      * Gets the value of the systemProperty property.

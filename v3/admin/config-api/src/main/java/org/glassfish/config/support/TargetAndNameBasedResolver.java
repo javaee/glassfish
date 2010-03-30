@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,62 +32,19 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
-
 package org.glassfish.config.support;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.Config;
-import org.glassfish.api.admin.config.Named;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.Param;
-import com.sun.enterprise.config.serverbeans.Domain;
+import org.jvnet.hk2.annotations.Service;
 
-import java.util.List;
-
-/**
- * Responsible for finding the config or cluster the administrative operation is intended to
- * be applied to.
- *
- * @author Jerome Dochez
- */
 @Service
-@Scoped(PerLookup.class)
-public class ConfigParamResolver implements ConfigResolver {
-
-    @Inject
-    Domain domain;
-
-    @Param(name="config",optional=true)
-    String config=null;
-
-    @Param(name="cluster",optional=true)
-    String cluster=null;
+public class TargetAndNameBasedResolver extends TargetBasedResolver {
+    @Param(primary = true)
+    String name = "";
 
     @Override
-    public ConfigBeanProxy resolve(AdminCommandContext context, Class<? extends ConfigBeanProxy> type) {
-
-        if (config!=null && !config.isEmpty()) {
-            for (Config c : domain.getConfigs().getConfig()) {
-                if (config.equals(c.getName())) {
-                    return c;
-                }
-            }
-        }
-        if (cluster!=null && !cluster.isEmpty()) {
-            for (Cluster c: domain.getClusters().getCluster()) {
-                if (cluster.equals(c.getName())) {
-                    return c;
-                }
-            }
-        }
-        return null;
+    public String getName() {
+        return name;
     }
 }

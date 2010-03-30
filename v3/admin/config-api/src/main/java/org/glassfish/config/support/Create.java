@@ -85,7 +85,7 @@ public @interface Create {
      *
      * @return the parent instance. 
      */
-    Class<? extends ConfigResolver> resolver() default ConfigParamResolver.class;
+    Class<? extends CrudResolver> resolver() default TypeResolver.class;
 
     /**
      * Returns a decorator type that should be looked up and called when a new

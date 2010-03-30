@@ -66,7 +66,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     @Inject
     Habitat habitat;
     
-    Class<? extends ConfigResolver> resolverType;
+    Class<? extends CrudResolver> resolverType;
     CommandModel model;
     String elementName;
     Create create;
@@ -127,7 +127,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
 
-        ConfigResolver resolver = habitat.getComponent(resolverType);
+        CrudResolver resolver = habitat.getComponent(resolverType);
 
         manager.inject(resolver, getInjectionResolver());
 
@@ -135,7 +135,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         if (parentBean==null) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.target_object_not_found",
-                    "The ConfigResolver {0} could not find the configuration object of type {1} where instances of {2} should be added",
+                    "The CrudResolver {0} could not find the configuration object of type {1} where instances of {2} should be added",
                     resolver.getClass().toString(), create.parentType(), targetType);
             result.failure(logger, msg);
             return;
@@ -156,14 +156,16 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                     }
 
                     // check that such instance does not exist yet...
-                    Object cbp = habitat.getComponent(targetType.getName(), name);
-                    if (cbp!=null) {
-                        String msg = localStrings.getLocalString(GenericCrudCommand.class,
-                                "GenericCreateCommand.already_existing_instance",
-                                "A {0} instance with a \"{1}\" name already exist in the configuration",
-                                targetType.getSimpleName(), name);
-                        result.failure(logger, msg);
-                        throw new TransactionFailure(msg);
+                    if (name!=null) {
+                        Object cbp = habitat.getComponent(targetType.getName(), name);
+                        if (cbp!=null) {
+                            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                                    "GenericCreateCommand.already_existing_instance",
+                                    "A {0} instance with a \"{1}\" name already exist in the configuration",
+                                    targetType.getSimpleName(), name);
+                            result.failure(logger, msg);
+                            throw new TransactionFailure(msg);
+                        }
                     }
 
                     Dom parentDom = Dom.unwrap(writeableParentBean);

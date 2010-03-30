@@ -103,8 +103,8 @@ public @interface Cluster {
         private ClusterExecutor delegate=null;
 
         @Override
-        public ActionReport[] execute(AdminCommand command, ParameterMap parameters) {
-            return delegate.execute(command, parameters);
+        public ActionReport[] execute(AdminCommand command, AdminCommandContext context, ParameterMap parameters) {
+            return delegate.execute(command, context, parameters);
         }
     }
 }

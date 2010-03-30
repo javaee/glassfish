@@ -81,7 +81,7 @@ import javax.validation.constraints.Min;
 @Configured
 @Create(value="create-instance", parentType=Servers.class, resolver= TypeResolver.class, decorator=Server.Decorator.class)
 @Delete(value="delete-instance", parentType=Servers.class, resolver= TypeAndNameResolver.class)
-public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer {
+public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     @Param(name="name", primary = true)
     public void setName(String value) throws PropertyVetoException;
@@ -154,57 +154,6 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     void setLbWeight(String value) throws PropertyVetoException;
 
-    /**
-     * Gets the value of the applicationRef property.
-     *
-     * References to applications deployed to the server instance
-     *
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the applicationRef property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getApplicationRef().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ApplicationRef }
-     */
-    @Element
-    List<ApplicationRef> getApplicationRef();
-
-    /**
-     * Gets the value of the resourceRef property.
-     *
-     * References to resources deployed to the server instance
-     *
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the resourceRef property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getResourceRef().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ResourceRef }
-     */
-    @Element
-    List<ResourceRef> getResourceRef();
 
     /**
      * Gets the value of the systemProperty property.

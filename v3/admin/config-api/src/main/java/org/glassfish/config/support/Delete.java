@@ -59,5 +59,5 @@ public @interface Delete {
     @InhabitantMetadata
     Class parentType() default Void.class;
 
-    Class<? extends ConfigResolver> resolver() default ConfigParamResolver.class;    
+    Class<? extends CrudResolver> resolver() default TypeResolver.class;
 }

@@ -41,9 +41,11 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.api.admin.AdminCommandContext;
 
+import java.lang.annotation.Annotation;
+
 /**
  * A config resolver is responsible for finding the parent object of a specified
- * type on which a command invocation will be processed.
+ * type on which a creation command invocation will be processed.
  *
  * Implementation of these interfaces can be injected with the command invocation
  * parameters in order to determine which object should be returned
@@ -51,14 +53,14 @@ import org.glassfish.api.admin.AdminCommandContext;
  * @author Jerome Dochez
  */
 @Contract
-public interface ConfigResolver {
+public interface CrudResolver {
 
     /**
-     * Retrieves a configuration object a command invocation is intented to mutate.
+     * Retrieves the existing configuration object a command invocation is intented to mutate.
      *
      * @param context the command invcation context
      * @param type the type of the expected instance
      * @return the instance or null if not found 
      */
-    ConfigBeanProxy resolve(AdminCommandContext context,Class<? extends ConfigBeanProxy> type);
+    <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type);
 }

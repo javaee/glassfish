@@ -49,7 +49,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
  * @author Jerome Dochez
  */
 @Service
-public class TypeAndNameResolver implements ConfigResolver {
+public class TypeAndNameResolver implements CrudResolver {
 
     @Param(primary = true)
     String name;
@@ -60,8 +60,8 @@ public class TypeAndNameResolver implements ConfigResolver {
     final protected static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GenericCrudCommand.class);
 
     @Override
-    public ConfigBeanProxy resolve(AdminCommandContext context, Class<? extends ConfigBeanProxy> type) {
-        ConfigBeanProxy proxy = habitat.getComponent(type, name);
+    public <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type) {
+        T proxy = habitat.getComponent(type, name);
         if (proxy==null) {
             String msg = localStrings.getLocalString(TypeAndNameResolver.class,
                     "TypeAndNameResolver.target_object_not_found",

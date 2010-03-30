@@ -44,8 +44,6 @@ stop-cluster R
 copy-config R
 delete-config R
 list-configs R
-create-application-ref R
-delete-application-ref R
 list-application-refs R
 create-resource-ref R
 delete-resource-ref R

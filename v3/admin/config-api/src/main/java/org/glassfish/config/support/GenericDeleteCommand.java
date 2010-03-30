@@ -58,7 +58,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     @Inject
     Habitat habitat;
 
-    Class<? extends ConfigResolver> resolverType;
+    Class<? extends CrudResolver> resolverType;
     CommandModel model;
     String elementName;
     Delete delete;    
@@ -116,7 +116,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
         // inject resolver with command parameters...
         final InjectionManager manager = new InjectionManager();
 
-        ConfigResolver resolver = habitat.getComponent(resolverType);
+        CrudResolver resolver = habitat.getComponent(resolverType);
 
         manager.inject(resolver, getInjectionResolver());
 
@@ -124,7 +124,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
         if (target==null) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericDeleteCommand.target_object_not_found",
-                    "The ConfigResolver {0} could not find the configuration object of type {1} where instances of {2} should be removed",
+                    "The CrudResolver {0} could not find the configuration object of type {1} where instances of {2} should be removed",
                     resolver.getClass().toString(), delete.parentType(), targetType);
             result.failure(logger, msg);
             return;
