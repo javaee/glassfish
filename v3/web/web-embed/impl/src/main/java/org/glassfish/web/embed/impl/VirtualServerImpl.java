@@ -172,9 +172,10 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
+        context.setPath(contextRoot);
         addChild((Container)context);
         if (log.isLoggable(Level.INFO)) {
-            log.info("Added context "+context.getContextPath());
+            log.info("Added context "+context.getPath());
         }
     }
 

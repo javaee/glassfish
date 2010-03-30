@@ -1719,10 +1719,12 @@ public class VirtualServer extends StandardHost
         throws ConfigException, org.glassfish.api.embedded.LifecycleException {
         
         if (findContext(contextRoot)!=null) {
-            throw new ConfigException("Context with context "+
-                    context+" is already registered");
+            throw new ConfigException("Context with contextRoot "+
+                    contextRoot+" is already registered");
         }
+        context.setPath(contextRoot);
         addChild((Container)context);
+        _logger.log(Level.INFO, "Added context "+context.getPath());
     }
 
     /**

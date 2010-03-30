@@ -148,6 +148,10 @@ public interface Context extends ServletContext, Lifecycle {
      * Return the context path for this Context.
      */
     public String getPath();
-    
+        
+    /**
+     * Set the context path for this Context.
+     */
+    public void setPath(String path);
 
 }
