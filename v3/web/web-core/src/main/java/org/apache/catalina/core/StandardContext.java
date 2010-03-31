@@ -3417,17 +3417,12 @@ public class StandardContext
      */
     public <T extends Servlet> T createServlet(Class<T> clazz)
             throws ServletException {
-        T servlet = null;
         try {
-            servlet = createServletInstance(clazz);
-            StandardWrapper wrapper = (StandardWrapper) createWrapper();
-            wrapper.setServlet(servlet);
+            return createServletInstance(clazz);
         } catch (Throwable t) {
             throw new ServletException("Unable to create Servlet from " +
                                        "class " + clazz.getName(), t);
         }
-
-        return servlet;
     }
 
     /**
