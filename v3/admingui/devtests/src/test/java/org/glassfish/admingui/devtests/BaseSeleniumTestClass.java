@@ -57,8 +57,12 @@ public class BaseSeleniumTestClass {
     @BeforeClass
     public static void setUp() throws Exception {
         if (selenium == null) {
-            String browserString = getBrowserString();
-            selenium = new DefaultSelenium("localhost", 4444, browserString, "http://localhost:4848");
+            String browserString = "*" + getParameter("browser", "firefox");
+            String port = getParameter("admin.port", "4848");
+            String seleniumPort = getParameter("selenium.port", "4444");
+            String baseUrl = "http://localhost:" + port;
+            System.out.println("Creating Selenium server on port " + seleniumPort + ".  GlassFish is at " + baseUrl);
+            selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), browserString, baseUrl);
             selenium.start();
             (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS); // Make sure the server has started and the user logged in
         }
@@ -317,15 +321,15 @@ public class BaseSeleniumTestClass {
         clickAndWait(backToTableButtonId, tableTriggerText);
     }
 
-    private static String getBrowserString() {
-        String browserString = System.getenv("browser");
-        if (browserString == null) {
-            browserString = System.getProperty("browser");
+    private static String getParameter(String paramName, String defaultValue) {
+        String value = System.getenv(paramName);
+        if (value == null) {
+            value = System.getProperty(paramName);
         }
-        if (browserString == null) {
-            browserString = "firefox";
+        if (value == null) {
+            value = defaultValue;
         }
 
-        return "*" + browserString;
+        return value;
     }
 }
