@@ -1910,6 +1910,7 @@ public class WebModule extends PwcWebModule implements Context {
      *
      * @return the new Servlet instance
      */
+    @Override
     protected <T extends Servlet> T createServletInstance(Class<T> clazz)
             throws Exception {
         if (DefaultServlet.class.equals(clazz) ||
@@ -1926,6 +1927,7 @@ public class WebModule extends PwcWebModule implements Context {
      *
      * @return the new Filter instance
      */
+    @Override
     protected <T extends Filter> T createFilterInstance(Class<T> clazz)
             throws Exception {
         return webContainer.createFilterInstance(this, clazz);
@@ -1936,6 +1938,7 @@ public class WebModule extends PwcWebModule implements Context {
      *
      * @return the new EventListener instance
      */
+    @Override
     public <T extends EventListener> T createListenerInstance(
                 Class<T> clazz) throws Exception {
         return webContainer.createListenerInstance(this, clazz);
