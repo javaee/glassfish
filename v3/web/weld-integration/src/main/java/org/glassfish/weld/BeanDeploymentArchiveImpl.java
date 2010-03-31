@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,9 @@
 
 package org.glassfish.weld;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -57,41 +60,78 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
    
     private Logger logger = Logger.getLogger(BeanDeploymentArchiveImpl.class.getName());
 
+    private static final char SEPARATOR_CHAR = '/';
+    private static final String WEB_INF = "WEB-INF";
+    private static final String WEB_INF_CLASSES = WEB_INF + SEPARATOR_CHAR + "classes";
+    private static final String WEB_INF_LIB = WEB_INF + SEPARATOR_CHAR + "lib";
+    private static final String WEB_INF_BEANS_XML = "WEB-INF" + SEPARATOR_CHAR + "beans.xml";
+    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
+    private static final String CLASS_SUFFIX = ".class";
+    private static final String JAR_SUFFIX = ".jar";
+
+    private ReadableArchive archive;
     private String id;
-    private final List<Class<?>> wbClasses;
-    private final List<URL> wbUrls;
+    private List<Class<?>> wClasses = null;
+    private List<URL> wUrls = null;
     private final Collection<EjbDescriptor<?>> ejbDescImpls;
     private List<BeanDeploymentArchive> beanDeploymentArchives;
 
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
-    public BeanDeploymentArchiveImpl(String id, List<Class<?>> wbClasses, List<URL> wbUrls,
-                                     Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
-        this.id = id;
-        this.wbClasses = wbClasses;
-        this.wbUrls = wbUrls;
+    public static final String WAR = "WAR";
+    public static final String JAR = "JAR";
+    public static String bdaType;
+
+    /**
+     * Produce a <code>BeanDeploymentArchive</code> form information contained 
+     * in the provided <code>ReadableArchive</code>.
+     */
+    public BeanDeploymentArchiveImpl(ReadableArchive archive,
+        Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
+        this.wClasses = new ArrayList();
+        this.wUrls = new ArrayList();
+        this.archive = archive;
+        this.id = archive.getURI().getPath(); 
         this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
 
         for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
-
             EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
             ejbDescImpls.add(wbEjbDesc);
-
         }
-
+        populate();
+        try {
+            this.archive.close();
+        } catch (Exception e) {
+        }
+        this.archive = null;
     }
+
+    public BeanDeploymentArchiveImpl(String id, List<Class<?>> wClasses, List<URL> wUrls,
+        Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
+        this.id = id;
+        this.wClasses = wClasses;
+        this.wUrls = wUrls;
+        this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
+        this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
+
+        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
+            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
+            ejbDescImpls.add(wbEjbDesc);
+        }
+    }
+
 
     public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
         return beanDeploymentArchives;
     }
 
     public Collection<Class<?>> getBeanClasses() {
-        return wbClasses;
+        return wClasses;
     }
 
     public Collection<URL> getBeansXml() {
-        return wbUrls;
+        return wUrls;
     }
 
     /**
@@ -139,4 +179,88 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         return val;
     }
 
+    private void populate() {
+        try {
+            if (archive.exists(WEB_INF_BEANS_XML)) {
+                bdaType = WAR;
+                Enumeration entries = archive.entries();
+                while (entries.hasMoreElements()) {
+                    String entry = (String)entries.nextElement();
+                    if (entry.endsWith(CLASS_SUFFIX)) {
+                        entry = entry.substring(WEB_INF_CLASSES.length()+1);
+                        String className = filenameToClassname(entry);
+                        wClasses.add(getClassLoader().loadClass(className));
+                    } else if (entry.endsWith("beans.xml")) {
+                        URI uri = archive.getURI();
+                        File file = new File(uri.getPath() + entry);
+                        URL beansXmlUrl = file.toURL();
+                        wUrls.add(beansXmlUrl);
+                    }
+                }
+                archive.close();
+            }
+
+            // If this archive has WEB-INF/lib entry..
+            // Examine all jars;  If the examined jar has a META_INF/beans.xml:
+            //  collect all classes in the jar archive
+            //  beans.xml in the jar archive
+
+            if (archive.exists(WEB_INF_LIB)) {
+                bdaType = WAR;
+                Enumeration<String> entries = archive.entries(WEB_INF_LIB);
+                while (entries.hasMoreElements()) {
+                    String entry = (String)entries.nextElement();
+                    if (entry.endsWith(JAR_SUFFIX) &&
+                        entry.indexOf(SEPARATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) {
+                        ReadableArchive jarArchive = archive.getSubArchive(entry);
+                        if (jarArchive.exists(META_INF_BEANS_XML)) {
+                            collectJarInfo(jarArchive);
+                        }
+                    }
+               }
+            }
+
+            if (archive.exists(META_INF_BEANS_XML)) {
+                bdaType = JAR;
+                collectJarInfo(archive);
+            }
+        } catch(IOException e) {
+            logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+        } catch(ClassNotFoundException cne) {
+            logger.log(Level.SEVERE, cne.getLocalizedMessage(), cne);
+        }
+    }   
+
+    private void collectJarInfo(ReadableArchive archive) throws IOException, ClassNotFoundException {
+        Enumeration entries = archive.entries();
+        while (entries.hasMoreElements()) {
+            String entry = (String)entries.nextElement();
+            if (entry.endsWith(CLASS_SUFFIX)) {
+                String className = filenameToClassname(entry);
+                wClasses.add(getClassLoader().loadClass(className));
+            } else if (entry.endsWith("beans.xml")) {
+                URL beansXmlUrl = Thread.currentThread().getContextClassLoader().getResource(entry);
+                wUrls.add(beansXmlUrl);
+            }
+        }
+    }
+
+    private static String filenameToClassname(String filename) {
+        String className = null;
+        if (filename.indexOf(File.separatorChar) >= 0) {
+            className = filename.replace(File.separatorChar, '.');
+        } else {
+            className = filename.replace(SEPARATOR_CHAR, '.');
+        }
+        className = className.substring(0, className.length()-6);
+        return className;
+    }
+
+    private ClassLoader getClassLoader() {
+        if (Thread.currentThread().getContextClassLoader() != null) {
+            return Thread.currentThread().getContextClassLoader();
+        } else {
+            return DeploymentImpl.class.getClassLoader();
+        }
+    }
 }

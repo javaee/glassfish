@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,6 @@
 
 package org.glassfish.weld;
 
-
 import com.sun.enterprise.deployment.deploy.shared.Util;
 
 import org.glassfish.internal.deployment.GenericSniffer;
@@ -49,7 +48,9 @@ import org.jvnet.hk2.component.Singleton;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 
 /**
@@ -62,30 +63,27 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
 
     private static final String[] containers = { "org.glassfish.weld.WeldContainer" };
 
+    private static char SEPARATOR_CHAR = '/';
+    private static final String WEB_INF = "WEB-INF";
+    private static final String WEB_INF_LIB = WEB_INF + SEPARATOR_CHAR + "lib";
+    private static final String WEB_INF_BEANS_XML = "WEB-INF" + SEPARATOR_CHAR + "beans.xml";
+    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
+    private static final String JAR_SUFFIX = ".jar";
+    private static final String EXPANDED_JAR_SUFFIX = "_jar";
+
     public WeldSniffer() {
         // We do not haGenericSniffer(String containerName, String appStigma, String urlPattern
         super("weld", null /* appStigma */, null /* urlPattern */);
     }
 
-    private static char SEPERATOR_CHAR = '/';
-    private static final String WEB_INF = "WEB-INF";
-    private static final String WEB_INF_LIB = WEB_INF + SEPERATOR_CHAR + "lib";
-    private static final String WEB_INF_CLASSSES = WEB_INF + SEPERATOR_CHAR + "classes";
-    private static final String WEB_INF_BEANS_XML = "WEB-INF" + SEPERATOR_CHAR + "beans.xml";
-    private static final String META_INF_BEANS_XML = "META-INF" + SEPERATOR_CHAR + "beans.xml";
-    private static final String JAR_SUFFIX = ".jar";
-    private static final String EXPANDED_JAR_SUFFIX = "_jar";
-
     /**
      * Returns true if the archive contains beans.xml as defined by packaging rules of Weld 
-     * TODO : Enhance this to handle ears
      */
     @Override
     public boolean handles(ReadableArchive archive, ClassLoader loader) {
         boolean isWeldArchive = false;
-
         // scan for beans.xml in expected locations. If at least one is found, this is
-        // a Web Beans archive
+        // a Weld archive
         //
         if (isEntryPresent(archive, WEB_INF)) {
             isWeldArchive = isEntryPresent(archive, WEB_INF_BEANS_XML);
@@ -116,7 +114,7 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
         return isWeldArchive;
     }
 
-    protected boolean scanLibDir(ReadableArchive archive, String libLocation) {
+    private boolean scanLibDir(ReadableArchive archive, String libLocation) {
         boolean entryPresent = false;
         if (libLocation != null && !libLocation.isEmpty()) { 
             Enumeration<String> entries = archive.entries(libLocation);
@@ -124,7 +122,7 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
                 String entryName = entries.nextElement();
                 // if a jar in lib dir and not WEB-INF/lib/foo/bar.jar
                 if (entryName.endsWith(JAR_SUFFIX) && 
-                    entryName.indexOf(SEPERATOR_CHAR, libLocation.length() + 1 ) == -1 ) {
+                    entryName.indexOf(SEPARATOR_CHAR, libLocation.length() + 1 ) == -1 ) {
                     try {
                         ReadableArchive jarInLib = archive.getSubArchive(entryName);
                         entryPresent = isEntryPresent(jarInLib, META_INF_BEANS_XML);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,11 @@
 
 package org.glassfish.weld;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -52,13 +57,54 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class WeldCompositeSniffer extends WeldSniffer implements CompositeSniffer {
 
+    private static char SEPARATOR_CHAR = '/';
+    private static final String JAR_SUFFIX = ".jar";
+    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
+
     public boolean handles(DeploymentContext context) {
         boolean isWeldApplication = false;
         ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
         ReadableArchive appRoot = context.getSource();
         if (null != holder && null != holder.app) {
-            isWeldApplication = scanLibDir(appRoot, holder.app.getLibraryDirectory());
+            isWeldApplication = scanLibDir(appRoot, holder.app.getLibraryDirectory(), context);
         }
         return isWeldApplication;
+    }
+
+    // This method returns true if at least one /lib jar is a Weld archive
+    // A more thorough scan is done in WeldDeployer to extract all Weld archives
+    // under the /lib directory.
+
+    private boolean scanLibDir(ReadableArchive archive, String libLocation, DeploymentContext context) {
+        boolean entryPresent = false;
+        List libJars = null;
+        if (libLocation != null && !libLocation.isEmpty()) {
+            Enumeration<String> entries = archive.entries(libLocation);
+            while (entries.hasMoreElements() && !entryPresent) {
+                String entryName = entries.nextElement();
+                // if a jar in lib dir and not WEB-INF/lib/foo/bar.jar
+                if (entryName.endsWith(JAR_SUFFIX) &&
+                    entryName.indexOf(SEPARATOR_CHAR, libLocation.length() + 1 ) == -1 ) {
+                    try {
+                        ReadableArchive jarInLib = archive.getSubArchive(entryName);
+                        entryPresent = isEntryPresent(jarInLib, META_INF_BEANS_XML);
+                        jarInLib.close();
+                        if (entryPresent) break;
+                    } catch (IOException e) {
+                    }
+                }
+            }
+        }
+        return entryPresent;
+    }
+
+    private boolean isEntryPresent(ReadableArchive archive, String entry) {
+        boolean entryPresent = false;
+        try {
+            entryPresent = archive.exists(entry);
+        } catch (IOException e) {
+            // ignore
+        }
+        return entryPresent;
     }
 }
