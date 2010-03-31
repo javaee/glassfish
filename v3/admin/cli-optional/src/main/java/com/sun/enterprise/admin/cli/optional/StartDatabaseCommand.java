@@ -243,7 +243,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
             CLIProcessExecutor cpePing = new CLIProcessExecutor();
             CLIProcessExecutor cpeSysInfo = new CLIProcessExecutor();
             try {
-                if (!(programOpts.isTerse() || getBooleanOption("terse"))) {
+                if (!programOpts.isTerse()) {
                     // try getting sysinfo
                     logger.printDetailMessage(strings.get("database.info.msg", dbHost, dbPort));
                 }
@@ -262,7 +262,7 @@ public final class StartDatabaseCommand extends DatabaseCommand {
                         continue;
                     }
                 }
-                if (!(programOpts.isTerse() || getBooleanOption("terse"))) {
+                if (!programOpts.isTerse()) {
                     logger.printDebugMessage("Database SysInfo");
                     if (cpePing.exitValue() == 0) {
                         cpeSysInfo.execute("sysinfoCmd", sysinfoCmd(), true);

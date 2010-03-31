@@ -928,8 +928,11 @@ public abstract class CLICommand implements PostConstruct {
             // no value, find the default
             ParamModel opt = commandModel.getModelFor(name);
             // if no value was specified and there's a default value, return it
-            if (opt.getParam().defaultValue() != null)
-                val = opt.getParam().defaultValue();
+            if (opt != null) {
+                String def = opt.getParam().defaultValue();
+                if (ok(def))
+                    val = def;
+            }
         }
         return val;
     }
