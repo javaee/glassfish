@@ -35,8 +35,7 @@
  */
 
 
-
 <sun:image url="#{request.contextPath}/resource/community-theme/images/login-product_name_open.png" 
      alt="$resource{theme.productName}"
-      height="42" width="315"
+      height="42" width="329"
 />

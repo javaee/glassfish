@@ -41,7 +41,11 @@
 <div style="height: 435px;background-image: url(#{request.contextPath}/resource/community-theme/images/login-backimage-open.jpg);background-repeat:no-repeat;background-position:left top; width: 720px; margin: auto;">
     <div style="width: 460px; padding-top: 160px; margin-left: 260px;">
 </f:verbatim>
-        <sun:image url="#{request.contextPath}/resource/community-theme/images/login-product_name_open.png" alt="$resource{theme.productName}" height="42" width="329" />
+        <sun:image url="#{request.contextPath}/resource/community-theme/images/login-product_name_open.png" alt="$resource{theme.productName}" height="42" width="329" >
+        <!beforeCreate
+                setResourceBundle(key="theme" bundle="org.glassfish.admingui.community-theme.Strings");
+            />
+        </sun:image>
 <f:verbatim>
         <form method="POST" class="form" name="loginform" action="j_security_check">
         <table>
