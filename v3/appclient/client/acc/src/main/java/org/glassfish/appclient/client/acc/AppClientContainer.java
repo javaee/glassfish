@@ -539,6 +539,13 @@ public class AppClientContainer {
      * help with this.
      */
     public void stop() {
+        /*
+         * Because stop can be invoked automatically at the end of launch, allow
+         * the developer's driver program to invoke stop again without penalty.
+         */
+        if (state == State.STOPPED) {
+            return;
+        }
         if ( state != State.STARTED) {
             throw new IllegalStateException();
         }
