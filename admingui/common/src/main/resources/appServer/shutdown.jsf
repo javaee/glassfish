@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -86,9 +86,11 @@
           <tr>
             <td width="260"><img src="/resource/images/dot.gif" width="260" height="245" alt="" /></td>
             <td width="415" bgcolor="#FFFFFF" valign="top" align="left">&nbsp;
+                <!--
                 <img name="Login.welcomeImg"  src="/resource/images/LoginProductName.png"
-                     "alt="GlassFish v3 Adminstration Console" border="0" height="42" width="318" />
-
+                     "alt="GlassFish v3 Adminstration Console" border="0" height="42" width="318"
+                />
+                -->
               <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td>&nbsp;</td>
