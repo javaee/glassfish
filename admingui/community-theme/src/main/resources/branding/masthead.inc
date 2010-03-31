@@ -38,8 +38,8 @@
 
 <sun:masthead id="Masthead" productImageURL="#{request.contextPath}/resource/community-theme/images/masthead-product_name_open.png" 
               style="border-width: 0px"
-              productImageDescription="$resource{theme.versionImage.description}"
-              productImageWidth="318"
+              productImageDescription="$resource{theme.productName}"
+              productImageWidth="327"
               productImageHeight="23"
               userInfo="#{userName}"  userInfoLabel="$resource{i18n.masthead.userInfoLabel}"
               roleInfo="#{domainName}" roleInfoLabel="$resource{i18n.masthead.domainInfoLabel}"
@@ -52,7 +52,7 @@
         <sun:hyperlink id="homeLink" toolTip="$resource{i18n.homeLinkTooltip}" target="_top" text="$resource{i18n.masthead.Home}" url="#{request.contextPath}/common/index.jsf" />
     </facet>
     <!facet versionLink>
-        <sun:hyperlink id="versionLink" toolTip="$resource{i18n.versionTooltip}" text="$resource{i18n.masthead.Version}" onClick="javascript: var versionWin = window.open('#{request.contextPath}/common/version.jsf','VersionWindow','scrollbars,resizable,width=700,height=500,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" />
+        <sun:hyperlink id="versionLink" toolTip="$resource{i18n.versionTooltip}" text="$resource{i18n.masthead.Version}" onClick="javascript: var versionWin = window.open('#{request.contextPath}/common/version.jsf','VersionWindow','scrollbars,resizable,width=600,height=400,top='+((screen.height - (screen.height/1.618)) - (500/2))+',left='+((screen.width-650)/2) ); versionWin.focus(); return false;" onKeyPress="javascript: return true;" />
     </facet>
     <!facet helpLink>
         <sun:button id="helpLink" rendered="true" toolTip="$resource{i18n.helpWindowTooltip}" target="help_window" text="$resource{i18n.masthead.Help}" onClick="admingui.help.launchHelp(this); return false;" />

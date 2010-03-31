@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,8 @@
 <sun:form>
     <sun:versionPage id="version"
         productImageURL="/resource/community-theme/images/VersionProductName.png"
-        productImageDescription="$resource{theme.versionImage.description}"
+        productImageDescription="$resource{theme.productName}"
         versionString="#{sessionScope.appServerVersion}"
-        copyrightString="$resource{i18n.copyright.shortMessage}"
+        copyrightString="$resource{theme.copyright.shortMessage}"
     />
 </sun:form>
