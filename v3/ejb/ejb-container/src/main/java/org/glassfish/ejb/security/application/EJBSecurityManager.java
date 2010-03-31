@@ -551,10 +551,9 @@ public final class EJBSecurityManager
                 }
 
                 if (mthdIntf == null || mthdIntf.equals("")) {
-                    _logger.severe("MethodDescriptor interface not defined - " +
-                            " ejbName: " + eName +
-                            " methodName: " + md.getName() +
-                            " methodParams: " + md.getParameterClassNames());
+                    _logger.log(Level.SEVERE, "method_descriptor_not_defined" , new Object[] {eName,
+                        md.getName(), md.getParameterClassNames()});
+
                     continue;
                 }
 
@@ -712,17 +711,17 @@ public final class EJBSecurityManager
                 try {
                     ret = policy.implies(prdm, ejbmp);
                 } catch (SecurityException se) {
-                    _logger.log(Level.SEVERE, "JACC: Unexpected security exception on access decision", se);
+                    _logger.log(Level.SEVERE, "jacc_access_exception", se);
                     ret = false;
                 } catch (Throwable t) {
-                    _logger.log(Level.SEVERE, "JACC: Unexpected exception on access decision", t);
+                    _logger.log(Level.SEVERE, "jacc_access_exception", t);
                     ret = false;
                 } finally {
                     resetPolicyContext(oldContextId, this.contextId);
                 }
 
             } catch (Throwable t) {
-                _logger.log(Level.SEVERE, "JACC: Unexpected exception manipulating policy context", t);
+                _logger.log(Level.SEVERE, "jacc_policy_context_exception", t);
                 ret = false;
             }
         }
@@ -865,16 +864,16 @@ public final class EJBSecurityManager
             oldContextId = setPolicyContext(this.contextId);
             ret = policy.implies(prdm, ejbrr);
         } catch (SecurityException se) {
-            _logger.log(Level.SEVERE, "JACC: Unexpected security exception isCallerInRole", se);
+            _logger.log(Level.SEVERE, "jacc_is_caller_in_role_exception", se);
             ret = false;
         } catch (Throwable t) {
-            _logger.log(Level.SEVERE, "JACC: Unexpected exception isCallerInRole", t);
+            _logger.log(Level.SEVERE, "jacc_is_caller_in_role_exception", t);
             ret = false;
         } finally {
             try {
                 resetPolicyContext(oldContextId, this.contextId);
             } catch (Throwable ex) {
-                _logger.log(Level.SEVERE, "JACC: Unexpected security exception isCallerInRole", ex); 
+                _logger.log(Level.SEVERE, "jacc_policy_context_exception", ex);
                 ret = false;
             }
         }
@@ -1078,9 +1077,9 @@ public final class EJBSecurityManager
             } catch (java.security.PrivilegedActionException pae) {
                 Throwable cause = pae.getCause();
                 if (cause instanceof java.security.AccessControlException) {
-                    _logger.log(Level.SEVERE, "setPolicy SecurityPermission required to call PolicyContext.setContextID", cause);
+                    _logger.log(Level.SEVERE, "jacc_policy_context_security_exception", cause);
                 } else {
-                    _logger.log(Level.SEVERE, "Unexpected Exception while setting PolicyContext", cause);
+                    _logger.log(Level.SEVERE, "jacc_policy_context_exception", cause);
                 }
                 throw cause;
             }

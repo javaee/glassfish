@@ -95,7 +95,7 @@ public class EjbSecurityComponentInvocationHandler implements  RegisteredCompone
                 try {
                     ((EjbInvocation) curInv).getEjbSecurityManager().postInvoke(curInv);
                 } catch (Exception ex) {
-                    _logger.log(Level.FINE, "ejb.security_postinvoke_exception", ex);
+                    _logger.log(Level.SEVERE, "ejb.security_postinvoke_exception", ex);
 
                     ((EjbInvocation) curInv).exception = ex;
                 }
