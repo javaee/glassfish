@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -69,7 +69,7 @@
             <sun:checkbox  selected="#{pageSession.valueMap['WrapJdbcObjects']}" label="$resource{i18n.common.Enabled}" selectedValue="true" />
        </sun:property>
        <sun:property id="poolingProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.pooling}" helpText="$resource{i18njdbc.jdbcPool.poolingHelp}">
-            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{valueMap.Pooling}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['Pooling']}" selectedValue="true" />
        </sun:property>
 </sun:propertySheetSection>
 <sun:propertySheetSection id="connectionPropertySheet" label="$resource{i18njdbc.jdbcPool.connectionSettings}">
