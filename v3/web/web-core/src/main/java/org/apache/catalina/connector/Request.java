@@ -81,6 +81,7 @@ import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardSession;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.ParameterMap;
+import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.glassfish.web.valve.GlassFishValve;
@@ -298,8 +299,17 @@ public class Request
      * The requested session ID (if any) for this request.
      */
     protected String requestedSessionId = null;
+
+    /**
+     * The requested session version (if any) for this request.
+     */
+    protected String requestedSessionVersion = null;
+
+    private boolean isRequestedSessionIdFromSecureCookie;
+
     // The requested session cookie path, see IT 7426
     protected String requestedSessionCookiePath;
+
     // Temporary holder for URI params from which session id is parsed
     protected CharChunk uriParamsCC = new CharChunk();
     /**
@@ -2598,11 +2608,30 @@ public class Request
     }
 
     /**
+     * Marks (or unmarks) this request as having a JSESSIONID cookie
+     * that is marked as secure
+     *
+     * @param secure true if this request has a JSESSIONID cookie that is
+     * marked as secure, false otherwise
+     */
+    public void setRequestedSessionIdFromSecureCookie(boolean secure) {
+        isRequestedSessionIdFromSecureCookie = secure;
+    }
+
+
+    /**
+     * @return true if this request contains a JSESSIONID cookie that is
+     * marked as secure, false otherwise
+     */
+    public boolean isRequestedSessionIdFromSecureCookie() {
+        return isRequestedSessionIdFromSecureCookie;
+    }
+
+    /**
      * Return <code>true</code> if the session identifier included in this
      * request identifies a valid session.
      */
     public boolean isRequestedSessionIdValid() {
-
         if (requestedSessionId == null) {
             return (false);
         }
@@ -2610,7 +2639,8 @@ public class Request
             return (false);
         }
 
-        if (session != null && requestedSessionId.equals(session.getIdInternal())) {
+        if (session != null &&
+                requestedSessionId.equals(session.getIdInternal())) {
             return session.isValid();
         }
 
@@ -2620,7 +2650,12 @@ public class Request
         }
         Session localSession = null;
         try {
-            localSession = manager.findSession(requestedSessionId, this);
+            if (manager.isSessionVersioningSupported()) {
+                localSession = manager.findSession(requestedSessionId,
+                                                   requestedSessionVersion);
+            } else {
+                localSession = manager.findSession(requestedSessionId, this);
+            }
         } catch (IOException e) {
             localSession = null;
         }
@@ -2759,7 +2794,14 @@ public class Request
         if (requestedSessionId != null) {
             if (!checkUnsuccessfulSessionFind || !unsuccessfulSessionFind) {
                 try {
-                    session = manager.findSession(requestedSessionId, this);
+                    if (manager.isSessionVersioningSupported()) {
+                        session = manager.findSession(requestedSessionId,
+                                                      requestedSessionVersion);
+                        incrementSessionVersion((StandardSession) session,
+                                                context);
+                    } else {
+                        session = manager.findSession(requestedSessionId, this);
+                    }
                     if (session == null) {
                         unsuccessfulSessionFind = true;
                     }
@@ -3393,11 +3435,40 @@ public class Request
     }
     // END SJSWS 6376484
 
+    /*
+     * Parses the given session version string into its components. Each
+     * component is stored as an entry in a HashMap, which maps a context
+     * path to its session version number. The HashMap is stored as a 
+     * request attribute, to make it available to any target contexts to which
+     * this request may be dispatched.
+     *
+     * This method also sets the session version number for the context with
+     * which this request has been associated.
+     */
+    void parseSessionVersionString(String sessionVersionString) {
+        if (sessionVersionString == null || !isSessionVersioningSupported()) {
+            return;
+        }
+
+        HashMap<String, String> sessionVersions =
+            RequestUtil.parseSessionVersions(sessionVersionString);
+        if (sessionVersions != null) {
+            attributes.put(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,
+                           sessionVersions);
+            if (context != null) {
+                String path = context.getPath();
+                if ("".equals(path)) {
+                    path = "/";
+                }
+                this.requestedSessionVersion = sessionVersions.get(path);
+            }
+        }
+    }
+
     /**
      * Parses the value of the JROUTE cookie, if present.
      */
     void parseJrouteCookie() {
-
         Cookies serverCookies = coyoteRequest.getCookies();
         int count = serverCookies.getCookieCount();
         if (count <= 0) {
@@ -3469,7 +3540,14 @@ public class Request
                     // Accept only the first session id cookie
                     B2CConverter.convertASCII(scookie.getValue());
                     setRequestedSessionId(scookie.getValue().toString());
+                    // TODO: Pass cookie path into
+                    // getSessionVersionFromCookie()
+                    String sessionVersionString = getSessionVersionFromCookie();
+                    parseSessionVersionString(sessionVersionString);
                     setRequestedSessionCookie(true);
+                    // TBD: ServerCookie#getSecure currently always returns
+                    // false. 
+                    setRequestedSessionIdFromSecureCookie(scookie.getSecure());
                     setRequestedSessionURL(false);
                     if (log.isLoggable(Level.FINE)) {
                         log.fine("Requested cookie session id is " +
@@ -3480,12 +3558,46 @@ public class Request
                         // Replace the session id until one is valid
                         B2CConverter.convertASCII(scookie.getValue());
                         setRequestedSessionId(scookie.getValue().toString());
+                        // TODO: Pass cookie path into
+                        // getSessionVersionFromCookie()
+                        String sessionVersionString =
+                            getSessionVersionFromCookie();
+                        parseSessionVersionString(sessionVersionString);
                     }
                 }
             }
         }
     }
     // END CR 6309511
+
+    /*
+     * Returns the value of the first JSESSIONIDVERSION cookie, or null
+     * if no such cookie present in the request.
+     *
+     * TODO: Add cookie path argument, and return value of JSESSIONIDVERSION
+     * cookie with the specified path.
+     */
+    private String getSessionVersionFromCookie() {
+        if (!isSessionVersioningSupported()) {
+            return null;
+        }
+
+        Cookies serverCookies = coyoteRequest.getCookies();
+        int count = serverCookies.getCookieCount();
+        if (count <= 0) {
+            return null;
+        }
+
+        for (int i = 0; i < count; i++) {
+            ServerCookie scookie = serverCookies.getCookie(i);
+            if (scookie.getName().equals(
+                                Globals.SESSION_VERSION_COOKIE_NAME)) {
+                return scookie.getValue().toString();
+            }
+        }
+
+        return null;
+    }
 
     /*
      * @return temporary holder for URI params from which session id is parsed
@@ -3944,6 +4056,38 @@ public class Request
             haSess.unlockForeground();
         }        
     }     
+
+    /**
+     * Increments the version of the given session, and stores it as a
+     * request attribute, so it can later be included in a response cookie.
+     */
+    private void incrementSessionVersion(StandardSession ss,
+                                         Context context) {
+        if (ss == null || context == null) {
+            return;
+        }
+
+        String versionString = Long.toString(ss.incrementVersion());
+
+        HashMap<String, String> sessionVersions = (HashMap<String, String>)
+            getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+        if (sessionVersions == null) {
+            sessionVersions = new HashMap<String, String>();
+            setAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,
+                         sessionVersions);
+        }
+        String path = context.getPath();
+        if ("".equals(path)) {
+            path = "/";
+        }
+        sessionVersions.put(path, versionString);
+    }
+
+    private boolean isSessionVersioningSupported() {
+        return (context != null &&
+            context.getManager() != null &&
+            context.getManager().isSessionVersioningSupported());
+    }
 
     /**
      * This class will be invoked by Grizzly when a suspend operation is either

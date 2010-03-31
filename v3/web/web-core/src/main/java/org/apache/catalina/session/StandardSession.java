@@ -1410,6 +1410,14 @@ public class StandardSession
         _sessionLock = sessionLock;
     }
     
+    /**
+     * @return true if this session has been locked by any
+     * out-of-band (i.e., non-http) request, false otherwise
+     */      
+    public synchronized boolean hasNonHttpLockOccurred() {
+        return _sessionLock.hasNonHttpLockOccurred();
+    }
+
     protected transient SessionLock _sessionLock = new SessionLock();
 
 // ------------------------end session locking ---HERCULES:add--------        

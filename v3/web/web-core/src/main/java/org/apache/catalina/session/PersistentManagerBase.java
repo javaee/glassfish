@@ -1115,7 +1115,6 @@ public abstract class PersistentManagerBase
      * nothing if the session is invalid or past its expiration.
      */
     protected void writeSession(Session session) throws IOException {
-
         if (store == null || !session.isValid()) {
             return;
         }
@@ -1123,11 +1122,20 @@ public abstract class PersistentManagerBase
         ((StandardContext)getContainer()).sessionPersistedStartEvent(
             (StandardSession) session);
 
+        // If the given session is being persisted after a lock has been
+        // acquired out-of-band, its version needs to be incremented
+        // here (otherwise, it will have already been incremented at the
+        // time the session was acquired via HttpServletRequest.getSession())
+        if (isSessionVersioningSupported()
+                && ((StandardSession) session).hasNonHttpLockOccurred()) {
+            ((StandardSession) session).incrementVersion();
+        }
+
         try {
             if (SecurityUtil.isPackageProtectionEnabled()){
                 try{
                     AccessController.doPrivileged(new PrivilegedStoreSave(session));
-                }catch(PrivilegedActionException ex){
+                } catch(PrivilegedActionException ex){
                     Exception exception = ex.getException();
                     log.log(Level.SEVERE,
                             "Exception in the Store during writeSession",

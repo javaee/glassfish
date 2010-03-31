@@ -61,7 +61,7 @@ import com.sun.grizzly.util.buf.C2BConverter;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
-
+import org.apache.catalina.util.RequestUtil;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.io.Writer;
@@ -71,7 +71,6 @@ import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 
 /**
@@ -663,11 +662,40 @@ public class OutputBuffer extends Writer
 
         StandardContext ctx = (StandardContext) coyoteResponse.getContext();
         if (ctx == null || !ctx.getCookies()) {
+            // cookies disabled
             return;
         }
 
+        addSessionVersionCookie(req, ctx);
         addSessionCookieWithJvmRoute(req, ctx);
         addPersistedSessionCookie(req, ctx);
+    }
+
+    /**
+     * Adds a session version cookie to the response if necessary.
+     */
+    private void addSessionVersionCookie(Request request,
+                                         StandardContext context) {
+        HashMap<String, String> sessionVersions = (HashMap<String, String>)
+            request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+        if (sessionVersions != null) {
+            Cookie cookie = new Cookie(
+                Globals.SESSION_VERSION_COOKIE_NAME,
+                RequestUtil.makeSessionVersionString(sessionVersions));
+            request.configureSessionCookie(cookie);
+            if (request.isRequestedSessionIdFromCookie()) {
+                /*
+                 * Have the JSESSIONIDVERSION cookie inherit the 
+                 * security setting of the JSESSIONID cookie to avoid
+                 * session loss when switching from HTTPS to HTTP,
+                 * see IT 7414
+                 */
+                cookie.setSecure(
+                    request.isRequestedSessionIdFromSecureCookie());
+            }
+            response.addHeader(SET_COOKIE_HEADER,
+                               coyoteResponse.getCookieString(cookie));
+        }
     }
 
     /**

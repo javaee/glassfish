@@ -79,6 +79,10 @@ public class SessionLock {
      */    
     public void setLockType(String lockType) {
         _lockType = lockType;
+        // If resetting lock then also reset the _hasNonHttpLockOccurred
+        if (lockType == null) {
+            _hasNonHttpLockOccurred = false;
+        }
     }
     
     /**
@@ -144,6 +148,13 @@ public class SessionLock {
         return (_lockType != null);
     }
    
+    /**
+     * @return true if lock has been locked by non-http request, false otherwise
+     */       
+    public boolean hasNonHttpLockOccurred() {    
+        return _hasNonHttpLockOccurred;
+    }
+
     /**
      * unlock the lock
      * if background locked the lock will become fully unlocked
@@ -231,15 +242,23 @@ public class SessionLock {
      * (i.e. lock failed) otherwise it will return true (lock succeeded)
      */     
     public synchronized boolean lockForeground() {
-        if(isBackgroundLocked()) {
+        return lockForeground(true);
+    }
+
+    public synchronized boolean lockForeground(boolean isHttp) {
+        if (!isHttp) {
+            _hasNonHttpLockOccurred = true;
+        }
+        if (isBackgroundLocked()) {
             return false;
         }
-        if(isForegroundLocked()) {
+        if (isForegroundLocked()) {
             incrementForegroundRefCount();
         } else {
             setForegroundRefCount(1);
         }
         setLockType(FOREGROUND_LOCK);
+
         return true;
     }
     
@@ -251,11 +270,12 @@ public class SessionLock {
      * (i.e. lock failed) otherwise it will return true (lock succeeded)
      */      
     public synchronized boolean lockBackground() {
-        if(isForegroundLocked()) {
+        if (isForegroundLocked()) {
             return false;
         } 
         setLockType(BACKGROUND_LOCK);
         setForegroundRefCount(0);
+
         return true;
     }
     
@@ -271,5 +291,5 @@ public class SessionLock {
     
     private String _lockType = null;
     private int _foregroundRefCount = 0;
-    
+    private boolean _hasNonHttpLockOccurred = false;    
 }
