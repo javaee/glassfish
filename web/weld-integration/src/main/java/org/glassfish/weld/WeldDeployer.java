@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -213,6 +213,11 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     _logger.log(Level.WARNING, "JCDI shutdown error", e);
                 }
                 appInfo.addTransientAppMetaData(WELD_SHUTDOWN, "true");
+            }
+            DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
+                WELD_DEPLOYMENT, DeploymentImpl.class);
+            if (null != deploymentImpl) {
+                deploymentImpl.cleanup();
             }
         }
     }
