@@ -75,7 +75,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.docroot=${env.S1AS_HOME}/domains/${admin.domain}/config"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.docroot=${env.S1AS_HOME}/domains/${admin.domain}/config"/>
         </antcall>
     </target>
 
@@ -83,7 +83,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="${appserver.instance.name}.http-service.virtual-server.server.property.docroot=${com.sun.aas.instanceRoot}/docroot"/>
+                   value="${appserver.instance.name}.http-service.virtual-server.server.docroot=${com.sun.aas.instanceRoot}/docroot"/>
         </antcall>
     </target>
 
