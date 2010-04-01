@@ -78,11 +78,10 @@ public class EJBExtender implements Extender, SynchronousBundleListener
 
         // EJB Container bundle can come into existence after
         // ejb application bundles, so we must go through existing bundles
-        // to see if there are any ejb application bundles already started.
+        // to see if there are any ejb application bundles is already in "ready" state.
         for (Bundle b : context.getBundles())
         {
-            if (((b.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) &&
-                    isEJBBundle(b))
+            if (isEJBBundle(b) && isReady(b))
             {
                 deploy(b);
             }
@@ -101,7 +100,7 @@ public class EJBExtender implements Extender, SynchronousBundleListener
         Bundle bundle = event.getBundle();
         switch (event.getType())
         {
-            case BundleEvent.STARTING:
+            case BundleEvent.STARTED:
                 if (!isLazy(bundle) && isEJBBundle(bundle))
                 {
                     deploy(bundle);
@@ -114,13 +113,6 @@ public class EJBExtender implements Extender, SynchronousBundleListener
                 }
                 break;
             case BundleEvent.STOPPED:
-                // We undeploy in STOPPED event rather than STOPPING event
-                // to make it symmetrical. Had we decided to undeploy in
-                // STOPPING event, activator.stop() would have been called
-                // after the app gets undeployed, where as activator.start()
-                // would have been called after deployment. SO, activator
-                // could not do meaningful cleanup using Java EE components in stop().
-                //  Hence, we undeploy in STOPPED event.
                 if (isEJBBundle(bundle) && c.isDeployed(bundle))
                 {
                     undeploy(bundle);
@@ -133,6 +125,14 @@ public class EJBExtender implements Extender, SynchronousBundleListener
     {
         return ACTIVATION_LAZY.equals(
                 bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
+    }
+
+    private boolean isReady(Bundle b) {
+        final int state = b.getState();
+        final boolean isActive = (state & Bundle.ACTIVE) != 0;
+        final boolean isStarting = (state & Bundle.STARTING) != 0;
+        final boolean isReady = isActive || (isLazy(b) && isStarting);
+        return isReady;
     }
 
     /**

@@ -38,6 +38,8 @@
 package org.glassfish.osgijpa;
 
 import org.osgi.framework.*;
+import org.osgi.service.packageadmin.PackageAdmin;
+import org.osgi.util.tracker.ServiceTracker;
 import org.glassfish.osgijavaeebase.Extender;
 
 import java.util.logging.Logger;
@@ -53,10 +55,13 @@ public class JPAExtender implements Extender, SynchronousBundleListener
 {
     private Logger logger = Logger.getLogger(JPAExtender.class.getPackage().getName());
     private BundleContext context;
+    private final ServiceTracker tracker;
 
     public JPAExtender(BundleContext context)
     {
         this.context = context;
+        this.tracker  = new ServiceTracker(context, PackageAdmin.class.getName(), null);
+        tracker.open();
     }
 
     public void start()
@@ -83,6 +88,7 @@ public class JPAExtender implements Extender, SynchronousBundleListener
                     logger.logp(Level.INFO, "JPAExtender", "bundleChanged", "Bundle having id {0} is a JPA bundle", new Object[]{bundle.getBundleId()});
                     try {
                         bi.enhance();
+                        getPackageAdmin().refreshPackages(new Bundle[]{bundle});
                     } catch (Exception e) {
                         logger.logp(Level.WARNING, "JPAExtender", "bundleChanged", "Failed to enhance bundle having id " + bundle.getBundleId(), e);
                     }
@@ -91,6 +97,10 @@ public class JPAExtender implements Extender, SynchronousBundleListener
             default:
                 break;
         }
+    }
+
+    private PackageAdmin getPackageAdmin() {
+        return PackageAdmin.class.cast(tracker.getService());
     }
 
 }

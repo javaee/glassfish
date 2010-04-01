@@ -91,8 +91,7 @@ public class WebExtender implements Extender, SynchronousBundleListener
         // to see if there are any web application bundles already started.
         for (Bundle b : context.getBundles())
         {
-            if (((b.getState() & (Bundle.STARTING | Bundle.ACTIVE)) != 0) &&
-                    isWebBundle(b))
+            if (isWebBundle(b) && isReady(b))
             {
                 deploy(b);
             }
@@ -114,7 +113,7 @@ public class WebExtender implements Extender, SynchronousBundleListener
         Bundle bundle = event.getBundle();
         switch (event.getType())
         {
-            case BundleEvent.STARTING:
+            case BundleEvent.STARTED:
                 if (!isLazy(bundle) && isWebBundle(bundle))
                 {
                     deploy(bundle);
@@ -127,13 +126,6 @@ public class WebExtender implements Extender, SynchronousBundleListener
                 }
                 break;
             case BundleEvent.STOPPED:
-                // We undeploy in STOPPED event rather than STOPPING event
-                // to make it symmetrical. Had we decided to undeploy in
-                // STOPPING event, activator.stop() would have been called
-                // after the app gets undeployed, where as activator.start()
-                // would have been called after deployment. SO, activator
-                // could not do meaningful cleanup using Java EE components in stop().
-                //  Hence, we undeploy in STOPPED event.
                 if (isWebBundle(bundle) && wc.isDeployed(bundle))
                 {
                     undeploy(bundle);
@@ -146,6 +138,14 @@ public class WebExtender implements Extender, SynchronousBundleListener
     {
         return ACTIVATION_LAZY.equals(
                 bundle.getHeaders().get(BUNDLE_ACTIVATIONPOLICY));
+    }
+
+    private boolean isReady(Bundle b) {
+        final int state = b.getState();
+        final boolean isActive = (state & Bundle.ACTIVE) != 0;
+        final boolean isStarting = (state & Bundle.STARTING) != 0;
+        final boolean isReady = isActive || (isLazy(b) && isStarting);
+        return isReady;
     }
 
     /**
