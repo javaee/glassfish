@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,10 +37,8 @@ package com.sun.enterprise.universal.glassfish;
 
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.util.HashMap;
 
 import java.io.*;
-import java.util.logging.*;
 import java.util.*;
 
 /**
@@ -331,6 +329,8 @@ public class ASenvPropertyReader {
                 SystemPropertyConstants.JAVA_ROOT_PROPERTY);
         envToPropMap.put("AS_DEF_DOMAINS_PATH",
                 SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
+        envToPropMap.put("AS_DEF_NODEAGENTS_PATH",
+                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
     }
     private Map<String, String> envToPropMap = new HashMap<String, String>();
     private Map<String, String> props = new HashMap<String, String>();

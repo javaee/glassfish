@@ -1,5 +1,5 @@
 rem
-rem Copyright 2004-2005 Sun Microsystems, Inc. All rights reserved.
+rem Copyright 2004-2010 Sun Microsystems, Inc. All rights reserved.
 rem Use is subject to license terms.
 rem
 
@@ -20,6 +20,7 @@ set AS_ACC_CONFIG=..\domains\domain1\config\sun-acc.xml
 set AS_JHELP=..\lib
 set AS_ICU_LIB=..\lib
 set AS_DEF_DOMAINS_PATH=..\domains
+set AS_DEF_NODEAGENTS_PATH=..\nodeagents
 set AS_JDMK_HOME=../lib/SUNWjdmk/5.1
 set AS_NATIVE_LAUNCHER=false
 set AS_NATIVE_LAUNCHER_LIB_PREFIX=\jre\bin\client
