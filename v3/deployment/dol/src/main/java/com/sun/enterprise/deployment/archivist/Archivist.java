@@ -382,7 +382,9 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 if (extension.supportsModuleType(getModuleType())) {
                     Object o = extension.open(this, descriptorArchive, descriptor);
                     if (o instanceof RootDeploymentDescriptor) {
-                        extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
+                        if (o != descriptor) {
+                            extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
+                        }
                         extensions.put(extension, (RootDeploymentDescriptor) o);
                     } else {
                         extensions.put(extension, null); // maybe annotation processing will yield results

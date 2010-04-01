@@ -49,6 +49,12 @@ public interface RuntimeTagNames extends TagNames {
     public final static String S1AS_APPLICATION_RUNTIME_TAG = "sun-application";
     public final static String S1AS_WEB_RUNTIME_TAG = "sun-web-app";
     public final static String S1AS_CONNECTOR_RUNTIME_TAG = "sun-connector";
+
+    public final static String WL_EJB_RUNTIME_TAG = "weblogic-ejb-jar";
+    public final static String WL_APPCLIENT_RUNTIME_TAG = "weblogic-application-client";
+    public final static String WL_APPLICATION_RUNTIME_TAG = "weblogic-application";
+    public final static String WL_WEB_RUNTIME_TAG = "weblogic-web-app";
+    public final static String WL_CONNECTOR_RUNTIME_TAG = "weblogic-connector";
     
     String AS_CONTEXT = "as-context";
     String AUTH_METHOD = "auth-method";

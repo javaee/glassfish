@@ -64,6 +64,9 @@ public interface DescriptorConstants {
 
     /** Prefix used for S1AS Cmp xmls */
     String S1AS_CMP_PREFIX = "sun-cmp-";
+
+    /** Prefix used for WebLogic xmls */
+    String WL_PREFIX = "weblogic-";
     
     /** The name of the deployment descriptor entry in the application ear. */
     String APPLICATION_DD_ENTRY = "META-INF"+File.separator+"application.xml";
@@ -116,6 +119,23 @@ public interface DescriptorConstants {
 
     /** The name of the deployment descriptor entry in the rar jar */
     String S1AS_RAR_JAR_ENTRY = "META-INF/" + S1AS_PREFIX + "ra.xml";
+
+    /** The name of the deployment descriptor entry inside the ear. */
+    String WL_APPLICATION_JAR_ENTRY = "META-INF/" + WL_PREFIX + 
+        "application.xml";
+
+    /** The name of the WebLogic deployment descriptor entry in web jar. */
+    String WL_WEB_JAR_ENTRY = "WEB-INF/" + "weblogic.xml";
+
+    /** The name of the WebLogic deployment descriptor entry in the ejb jar. */
+    String WL_EJB_JAR_ENTRY = "META-INF/" + WL_PREFIX + "ejb-jar.xml";
+
+    /** The name of the WebLogic deployment descriptor entry in the rar */
+    String WL_RAR_JAR_ENTRY = "META-INF/"+ WL_PREFIX + "ra.xml";
+
+    /** The name of the deployment descriptor entry in the client jar. */
+    String WL_APP_CLIENT_JAR_ENTRY = "META-INF/"+ WL_PREFIX + "application-client.xml";
+
 
     /** The name of the WEB-INF entry in a war. */
     String WEB_INF = "WEB-INF";

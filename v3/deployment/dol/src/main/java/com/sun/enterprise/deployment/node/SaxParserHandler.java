@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.node.runtime.AppClientRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.EjbBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.application.ApplicationRuntimeNode;
 import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.web.WLWebBundleRuntimeNode;
 import com.sun.enterprise.deployment.node.web.WebBundleNode;
 import com.sun.enterprise.deployment.node.web.WebFragmentNode;
 import com.sun.enterprise.deployment.util.DOLUtils;
@@ -171,6 +172,8 @@ public class SaxParserHandler extends DefaultHandler {
             rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.S1AS_CONNECTOR_RUNTIME_TAG, com.sun.enterprise.deployment.node.runtime.connector.ConnectorNode.class);
                 com.sun.enterprise.deployment.node.runtime.connector.ConnectorNode.registerBundle(mapping);              
             
+            rootNodes.put(com.sun.enterprise.deployment.xml.RuntimeTagNames.WL_WEB_RUNTIME_TAG, WLWebBundleRuntimeNode.class);
+
             // post treatment, let's remove the URL from the DTD so we use local copies...
             for (java.util.Enumeration publicIDs=mapping.keys();publicIDs.hasMoreElements();) {
                 final String publicID = (String) publicIDs.nextElement();
