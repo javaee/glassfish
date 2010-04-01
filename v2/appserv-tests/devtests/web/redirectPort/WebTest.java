@@ -51,7 +51,6 @@ public class WebTest {
 
     private String host;
     private String port;
-    private String httpsPort;
     private String contextRoot;
     private String trustStorePath;
 
@@ -60,7 +59,6 @@ public class WebTest {
         port = args[1];
         contextRoot = args[2];
         trustStorePath = args[3];
-        httpsPort = args[4];
     }
     
     public static void main(String[] args) {
@@ -77,8 +75,6 @@ public class WebTest {
         boolean fail = false;
 
         try {
-
-            System.out.println("http-listener secure port: " + httpsPort);
 
             url = new URL("http://" + host  + ":" + port + contextRoot
                     + "/jsp/test.jsp");

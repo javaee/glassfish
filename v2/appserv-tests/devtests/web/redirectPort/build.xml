@@ -92,7 +92,6 @@
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
             <arg value="${keystore.db.file}"/>
-            <arg value="${https.port}"/>
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="."/>
