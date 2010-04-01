@@ -587,7 +587,33 @@ public class ConnectorsHandlers {
         }
     }
 
-    
+
+
+    /**
+     *	<p> If the RAR is an embedded rar, we don't wan to show the .rar extension.
+     *  <p> eg. myjca.ear containing myTest.rar  will be shown as myjca.ear#myTest
+     */
+    @Handler(id = "filterOutRarExtension",
+        input = {
+            @HandlerInput(name = "inList", type = java.util.List.class, required = true)},
+        output = {
+            @HandlerOutput(name = "convertedList", type = java.util.List.class)
+    })
+    public static void filterOutRarExtension(HandlerContext handlerCtx) {
+        List<String> inList = (List) handlerCtx.getInputValue("inList");
+        List<String> convertedList = new ArrayList();
+        for(String one: inList){
+            if( (one.indexOf("#") != -1) && one.endsWith(".rar")){
+                convertedList.add( one.substring(0, one.length() - 4));
+            }else{
+                convertedList.add(one);
+            }
+        }
+        handlerCtx.setOutputValue("convertedList", convertedList);
+    }
+
+
+
    public static Map stringToMap(String str, String delimiter) {
         Map props = new HashMap();
          if ( str != null && delimiter != null) {
