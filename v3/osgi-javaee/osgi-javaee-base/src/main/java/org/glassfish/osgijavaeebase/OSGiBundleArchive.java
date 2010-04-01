@@ -182,7 +182,7 @@ public class OSGiBundleArchive implements ReadableArchive, URIable, Iterable<Bun
      */
     private Collection<String> getSubDiretcories(String path) {
         final Enumeration firstLevelEntries = b.getEntryPaths(path);
-        if (firstLevelEntries != null) return Collections.EMPTY_LIST;
+        if (firstLevelEntries == null) return Collections.EMPTY_LIST;
         Collection<String> firstLevelDirs = new ArrayList<String>();
         while (firstLevelEntries.hasMoreElements()) {
             String firstLevelEntry = (String) firstLevelEntries.nextElement();
