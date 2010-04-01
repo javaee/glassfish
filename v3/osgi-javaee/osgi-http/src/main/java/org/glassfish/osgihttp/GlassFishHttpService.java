@@ -95,6 +95,7 @@ public class GlassFishHttpService {
                 new OSGiServletConfig(wrapperName, servletContext, initParams);
         OSGiServletWrapper wrapper = new OSGiServletWrapper(
                 wrapperName, servlet, servletConfig, convert(alias));
+        wrapper.addValve((GlassFishValve)new OSGiSecurityValve(httpContext));
         context.addChild(wrapper);
         try {
             wrapper.initializeServlet();
