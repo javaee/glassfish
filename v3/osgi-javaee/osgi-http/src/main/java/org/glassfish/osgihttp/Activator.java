@@ -41,6 +41,10 @@ import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.WebModuleConfig;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Host;
 import org.apache.catalina.Realm;
@@ -51,19 +55,17 @@ import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.core.StandardContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
 import org.osgi.service.http.HttpService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.jvnet.hk2.component.Habitat;
 
+import java.util.*;
+
 /**
  * This is the entry point to our implementation of OSGi/HTTP service.
- * Based on user input (for now it uses configuration property called
- * org.glassfish.web.osgihttp.VirtualHostId), it selects the virtual host
- * under which it creates a new context. The context path can be defined
+ * For every virtual server in the configuration, it creates HTTPService.
+ * Every service has same context path. The context path can be defined
  * by user using configuration property org.glassfish.web.osgihttp.ContextPath.
  * If it is absent, we use a default value of "/osgi." After initializing
  * the HttpService factory with necessary details, we register the factory
@@ -76,14 +78,9 @@ public class Activator implements BundleActivator {
     // TODO(Sahoo): Use config admin to configure context path, virtual server, etc.
     
     private BundleContext bctx;
-    private Host vs;
+    private Map<String, Host> vss = new HashMap<String, Host>();
     private String contextPath;
-    private ServiceRegistration registration;
-
-    // configuration property used to select virtual host under which
-    // this service is deployed.
-    private static final String VS_ID_PROP =
-            Activator.class.getPackage().getName() + ".VirtualServerId";
+    private List<ServiceRegistration> registrations = new ArrayList<ServiceRegistration>();
 
     // configuration property used to select context root under which
     // this service is deployed.
@@ -97,30 +94,44 @@ public class Activator implements BundleActivator {
         serverTracker.open();
     }
 
+    /**
+     * This method is responsible for registering a HTTPService for every virtual server.
+     * Each service is registered with a service property called "VirtualServer," which can be used by clients
+     * to select a service. e.g., web console can use this to select __asadmin virtual server.
+     * While registering the service for the default virtual server, it sets the service.ranking
+     * to the maximum value so that any client just looking for an HTTPService gets to see the
+     * HTTPService bound to default virtual server.
+     * @param webContainer
+     */
     private void doActualWork(WebContainer webContainer) {
-        try {
-            StandardContext standardContext = getStandardContext(webContainer);
-            GlassFishHttpService httpService = new GlassFishHttpService(standardContext);
-            registration = bctx.registerService(HttpService.class.getName(),
-                    new HttpServiceWrapper.HttpServiceFactory(httpService),
-                    null);
-        } catch (Exception e) {
-            e.printStackTrace();
+        String defaultVsId = getDefaultVirtualServer();
+        final StringTokenizer vsIds = new StringTokenizer(getAllVirtualServers(), ",");
+        while (vsIds.hasMoreTokens()) {
+            String vsId = vsIds.nextToken().trim();
+            try {
+                StandardContext standardContext = getStandardContext(webContainer, vsId);
+                if (standardContext == null) continue;
+                GlassFishHttpService httpService = new GlassFishHttpService(standardContext);
+                Properties props = new Properties();
+                props.put("VirtualServer", vsId);
+                if (vsId.equals(defaultVsId)) {
+                    props.put(Constants.SERVICE_RANKING, Integer.MAX_VALUE);
+                }
+                ServiceRegistration registration = bctx.registerService(HttpService.class.getName(),
+                        new HttpServiceWrapper.HttpServiceFactory(httpService),
+                        props);
+                registrations.add(registration);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private StandardContext getStandardContext(WebContainer webContainer) throws Exception {
+    private StandardContext getStandardContext(WebContainer webContainer, String vsId) throws Exception {
         Engine engine = webContainer.getEngine();
-        String vsId = bctx.getProperty(VS_ID_PROP);
-        if (vsId == null) {
-            vsId = "server";
-//            throw new Exception("You must specify which virtual server to use using property called " + VS_ID_PROP);
-        }
-        vs = (Host) engine.findChild(vsId);
-        if (vs == null) {
-            throw new Exception("No virtual host by name : " + vsId +
-                    ". Please specify virtual server name using property called " + VS_ID_PROP);
-        }
+        Host vs = (Host) engine.findChild(vsId);
+        if (vs == null) return null; // this can happen if some one deleted a virtual server after we read domain.xml
+        vss.put(vsId, vs);
         contextPath = bctx.getProperty(CONTEXT_PATH_PROP);
         if (contextPath == null) {
             contextPath = "/osgi"; // default value
@@ -167,8 +178,8 @@ public class Activator implements BundleActivator {
 
     public void stop(BundleContext context) throws Exception {
         if (serverTracker != null) serverTracker.close();
-        if (registration != null ) registration.unregister();
-        if (vs != null) {
+        for (ServiceRegistration registration : registrations) registration.unregister();
+        for (Host vs : vss.values()) {
             StandardContext standardContext =
                     StandardContext.class.cast(vs.findChild(contextPath));
             for (Container child : standardContext.findChildren()) {
@@ -221,4 +232,44 @@ public class Activator implements BundleActivator {
         }
     }
 
+    /**
+     * @return comma-separated list of all defined virtual servers (including __asadmin)
+     */
+    private String getAllVirtualServers() {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        Domain domain = Globals.get(Domain.class);
+        String target = "server"; // Need to understand how to dynamically obtains this
+        Server server = domain.getServerNamed(target);
+        if (server != null) {
+            Config config = domain.getConfigs().getConfigByName(
+                server.getConfigRef());
+            if (config != null) {
+                com.sun.enterprise.config.serverbeans.HttpService httpService = config.getHttpService();
+                if (httpService != null) {
+                    List<VirtualServer> hosts = httpService.getVirtualServer();
+                    if (hosts != null) {
+                        for (VirtualServer host : hosts) {
+                            if (first) {
+                                sb.append(host.getId());
+                                first = false;
+                            } else {
+                                sb.append(",");
+                                sb.append(host.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * @return the dafault virtual server
+     */
+    private String getDefaultVirtualServer() {
+        com.sun.grizzly.config.dom.NetworkListener nl = Globals.get(com.sun.grizzly.config.dom.NetworkListener.class);
+        return nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
+    }
 }
