@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,61 +35,26 @@
  *
  */
 
-package org.glassfish.kernel.embedded;
+package org.glassfish.api.embedded;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.w3c.dom.Element;
 
-import java.net.URL;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+final class DomBuilder {
+    private Element current;
 
-import com.sun.enterprise.v3.server.GFDomainXml;
-import java .io.File;
-
-/**
- * Embedded domain.xml, can use externally pointed domain.xml
- */
-public class EmbeddedDomainXml extends GFDomainXml {
-
-    @Inject(optional=true)
-    Server server=null;
-
-    @Inject
-    Logger logger;
-
-    @Override
-    protected URL getDomainXml(ServerEnvironmentImpl env) throws IOException {
-        if (server!=null) {
-            EmbeddedFileSystem fs = server.getFileSystem();
-            if (fs != null) {
-                if (fs.configFile != null) {
-                    logger.log(Level.FINE, "Using configuration file at " + server.getFileSystem().configFile);
-                    return server.getFileSystem().configFile.toURI().toURL();
-                }
-                File f = new File(fs.instanceRoot, "config");
-                f = new File(f, "domain.xml");
-                if (f.exists()) {
-                    logger.log(Level.FINE, "Using configuration file at " + f);
-                    return f.toURL();
-                }
-            }
-            return getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
-        } else {
-            return super.getDomainXml(env);
-        }
+    DomBuilder(Element current) {
+        this.current = current;
     }
 
-    @Override
-    protected void upgrade() {
-        // for now, we don't upgrade in embedded mode...
-        if (server==null) {
-            super.upgrade();
-        }
+    DomBuilder addElement(String name) {
+        Element e = current.getOwnerDocument().createElement(name);
+        current.appendChild(e);
+        current = e;
+        return this;
     }
 
+    DomBuilder attribute(String name, Object value) {
+        current.setAttribute(name,value.toString());
+        return this;
+    }
 }

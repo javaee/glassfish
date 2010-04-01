@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,19 @@ import com.sun.enterprise.module.bootstrap.PlatformMain;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import java.net.URL;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 
 /**
  * Instances of server are embedded application servers, capable of attaching various containers
@@ -72,6 +85,7 @@ public class Server {
         boolean verbose;
         File loggerFile;
         EmbeddedFileSystem fileSystem;
+        int jmxPort = 0;
 
         /**
          * Creates an unconfigured instance. The habitat will be obtained
@@ -81,7 +95,7 @@ public class Server {
          */
         public Builder(String id) {
             this.serverName = id;
-        }                              
+        }
 
         /**
          * Enables or disables the logger for this server
@@ -113,6 +127,18 @@ public class Server {
          */
         public Builder verbose(boolean b) {
             this.verbose = b;
+            return this;
+        }
+
+        /**
+         * Set the jmx port number. Also enables the jmx connector. This applies
+         * only when the default configuration is being used.
+         * 
+         * @param portNumber jmx port number.
+         * @return this instance
+         */
+        public Builder jmxPort(int portNumber) {
+            this.jmxPort = portNumber;
             return this;
         }
 
@@ -195,18 +221,18 @@ public class Server {
     private final boolean loggerEnabled;
     private final boolean verbose;
     private final File loggerFile;
+    private final int jmxPort;
     private final ContainerStatus status = new ContainerStatus();
     private final Inhabitant<EmbeddedFileSystem> fileSystem;
     private final Habitat habitat;
     private final List<Container> containers = new ArrayList<Container>();
-
-
 
     private Server(Builder builder, Properties properties) {
         serverName = builder.serverName;
         loggerEnabled = builder.loggerEnabled;
         verbose = builder.verbose;
         loggerFile = builder.loggerFile;
+        jmxPort = builder.jmxPort;
 
         EmbeddedFileSystem fs;
         File instanceRoot=null;
@@ -239,7 +265,6 @@ public class Server {
         } else {
             fs = builder.fileSystem;
         }
-
         if (!fs.instanceRoot.exists()) {
             fs.instanceRoot.mkdirs();
         }
@@ -260,6 +285,7 @@ public class Server {
         }
         
         fileSystem = new ExistingSingletonInhabitant<EmbeddedFileSystem>(fs);
+        preProcessDomainXML();
 
         final PlatformMain embedded = getMain();
         if (embedded==null) {
@@ -301,6 +327,38 @@ public class Server {
         }
     }
 
+    private boolean modifyJMXPort(Document domainXmlDocument) throws XPathExpressionException {
+        if (jmxPort <= 0)
+            return false;
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        DomBuilder domBuilder =
+                new DomBuilder((Element) xpath.evaluate("//admin-service/jmx-connector", domainXmlDocument, XPathConstants.NODE));
+        domBuilder.attribute("port", jmxPort).attribute("enabled", true);
+        return true;
+    }
+
+    private void preProcessDomainXML() {
+        // if user specifed domain.xml, then do not pre-process.
+        if (getFileSystem().configFile != null) {
+            return;
+        }
+        //only jmx port is supported at this time, so return quickly if a port has not been specified.
+        if (jmxPort <=0)
+            return;
+        URL url = getClass().getClassLoader().getResource("org/glassfish/embed/domain.xml");
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+            Document domainXmlDocument = dbf.newDocumentBuilder().parse(url.toExternalForm());
+            if (!modifyJMXPort(domainXmlDocument))
+                return;
+            // config directory should exist at this time
+            File f = new File(getFileSystem().instanceRoot, "config");
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(domainXmlDocument), new StreamResult(new File(f, "domain.xml")));
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
     /**
      * Returns the list of existing embedded instances
      *
@@ -399,7 +457,7 @@ public class Server {
                 return sniffers;
             }
 
-            public void bind(Port port, String protocol) {
+            public void bind(Port port, String protocol)  {
                 for (Container delegate : delegates) {
                     delegate.container.bind(port, protocol);
                 }
@@ -432,6 +490,7 @@ public class Server {
                         public void stop() throws LifecycleException {
 
                         }
+
                     });
                 }
             }
@@ -454,6 +513,7 @@ public class Server {
                 }
 
             }
+
         }));
     }
 
