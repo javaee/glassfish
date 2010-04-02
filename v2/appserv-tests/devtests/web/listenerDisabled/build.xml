@@ -77,7 +77,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-http-listener" />
             <param name="operand.props"
-                   value="--enabled=false --listeneraddress 127.0.0.1 --listenerport 8079 --defaultvs server --servername=localhost.localdomain --acceptorthreads 1 http-listener-3"/>
+                value="--enabled=false --listeneraddress ${http.address} --listenerport ${http.alternate.port} --defaultvs server http-listener-3"/>
         </antcall>
     </target>
 

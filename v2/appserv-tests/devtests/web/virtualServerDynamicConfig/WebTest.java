@@ -62,7 +62,7 @@ public class WebTest {
 
         try{
             System.out.println("Running test");
-            url = new URL("http://" + host  + ":8100" + contextRoot + "/ServletTest");
+            url = new URL("http://" + host  + ":" + port  + contextRoot + "/ServletTest");
             String originalLoc = url.toString();
             System.out.println("\n Invoking url: " + url.toString());
             conn = url.openConnection();

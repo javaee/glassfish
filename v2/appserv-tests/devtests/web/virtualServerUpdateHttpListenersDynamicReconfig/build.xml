@@ -96,8 +96,8 @@
             <arg line="create-http-listener"/>
             <arg line="-u ${admin.user}"/>
             <arg line="--port ${admin.port}"/>
-            <arg line="--listeneraddress 0.0.0.0" />
-            <arg line="--listenerport 9090" />
+            <arg line="--listeneraddress ${http.address}" />
+            <arg line="--listenerport ${http.alternate.port}" />
             <arg line="--defaultvs vs1" />
             <arg line="my-listener" />
         </exec>
@@ -139,7 +139,7 @@
     <target name="run" depends="init-common">
         <java classname="WebTest">
             <arg value="${http.host}"/>
-            <arg value="9090"/>
+            <arg value="${http.alternate.port}"/>
             <arg value="${contextroot}"/>
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>

@@ -55,7 +55,7 @@
             <arg line="--passwordfile ${admin.password.file}"/>
             <arg line="--host ${admin.host}"/>
             <arg line="--port ${admin.port}"/>
-            <arg line="--listenerport ${test.port}"/>
+            <arg line="--listenerport ${http.alternate.port}"/>
             <arg line="--protocol http-listener-1"/>
             <arg line="network-listener-1" />
         </exec>
@@ -109,7 +109,7 @@
     <target name="run-again" depends="init-common">
         <java classname="WebTest">
           <arg value="${http.host}"/>
-          <arg value="${test.port}"/>
+          <arg value="${http.alternate.port}"/>
           <arg value="${contextroot}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
@@ -121,7 +121,7 @@
     <target name="run" depends="init-common">
         <java classname="WebTest2">
           <arg value="${http.host}"/>
-          <arg value="${test.port}"/>
+          <arg value="${http.alternate.port}"/>
           <arg value="${contextroot}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>

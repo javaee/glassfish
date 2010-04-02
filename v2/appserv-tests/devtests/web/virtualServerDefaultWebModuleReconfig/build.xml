@@ -80,10 +80,12 @@
     </target>
 
     <target name="create-vs" depends="init-common">
+        <!-- any hostname that cannot be matched to an existing virtual servers will be
+            dispatched to listener default virtual server -->
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-virtual-server" />
             <param name="operand.props"
-                   value="--hosts 127.0.0.1 ${new-virtual-server}"/>
+                   value="--hosts foo ${new-virtual-server}"/>
         </antcall>
     </target>
 
@@ -99,7 +101,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="create-http-listener" />
             <param name="operand.props"
-                   value="--listeneraddress 0.0.0.0 --listenerport ${new-http-port} --defaultvs ${new-virtual-server} ${new-http-listener}"/>
+                value="--listeneraddress ${http.address} --listenerport ${http.alternate.port} --defaultvs ${new-virtual-server} ${new-http-listener}"/>
         </antcall>
         <sleep seconds="5"/>
     </target>
@@ -119,7 +121,7 @@
     <target name="run" depends="init-common">
         <java classname="WebTest">
           <arg value="${http.host}"/>
-          <arg value="${new-http-port}"/>
+          <arg value="${http.alternate.port}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>

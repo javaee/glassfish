@@ -50,7 +50,7 @@ public class WebTest {
 
         stat.addDescription("Dynamic virtual-server/listener creation");
         String host = args[0];
-        String port = "9090";
+        String port = args[1];
         String contextRoot = args[2];
 
         try {
