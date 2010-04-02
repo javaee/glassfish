@@ -48,8 +48,7 @@
     <groupId>org.glassfish.cluster</groupId>
     <artifactId>cluster</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish clustering/HA modules</name>
-
+    <name>Cluster</name>
     <developers>
          <developer>           
             <name>Sheetal Vartak</name>
@@ -58,8 +57,23 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>shannon</id>
+            <name>Bill Shannon</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>bnevins</id>
+            <name>Byron Nevins</name>
+            <organization>Oracle Corporation</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
-    
     <modules>
         <module>admin</module>
         <module>cli</module>
