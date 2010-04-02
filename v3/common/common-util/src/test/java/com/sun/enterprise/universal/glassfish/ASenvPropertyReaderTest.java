@@ -82,12 +82,8 @@ public class ASenvPropertyReaderTest {
     }
 
     @Test
-    public void test1() {
-        // this is too noisy for the build system.
-        // I wonder how to get output to the surefire directory?!?
+    public void test() {
         System.out.println(pr);
-        Map<String,String> props = pr.getProps();
-        assertEquals(props.get("com.sun.aas.antLib"), props.get("com.sun.aas.hadbRoot"));
     }
     ASenvPropertyReader pr;
     private static File installDir;
