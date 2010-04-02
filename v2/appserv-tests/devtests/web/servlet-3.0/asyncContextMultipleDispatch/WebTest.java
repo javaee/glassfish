@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,7 +38,7 @@ import java.net.*;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for repeated call to AsyncContext#dispatch with one 
+ * Unit test for repeated calls to AsyncContext#dispatch with one 
  * intervening ServletRequest#startAsync. This unit test also checks
  * to make sure that the intervening ServletRequest#startAsync notifies
  * the registered AsyncListener at its onStartAsync method, and provides
