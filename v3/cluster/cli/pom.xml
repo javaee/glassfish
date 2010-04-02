@@ -47,13 +47,21 @@
     
     <artifactId>cluster-cli</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Cluster Admin CLI commands</name>
+    <name>Cluster Admin CLI</name>
     
     <developers>
         <developer>
             <id>shannon</id>
             <name>Bill Shannon</name>
             <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>bnevins</id>
+            <name>Byron Nevins</name>
+            <organization>Oracle Corporation</organization>
             <roles>
                 <role>developer</role>
             </roles>
