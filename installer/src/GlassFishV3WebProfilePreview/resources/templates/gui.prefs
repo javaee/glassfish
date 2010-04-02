@@ -13,11 +13,11 @@ dynamic_component_viewportborder_color=WHITE
 
 # Size for panels
 frame_size=790,632
-contentpanel_size=558,443
-contentpanel_size_m1=558,443
-contentpanel_size_m2=558,443
-contentpanel_size_m3=558,443
-contentpanel_size_m4=558,443
+contentpanel_size=579,371
+contentpanel_size_m1=579,371
+contentpanel_size_m2=579,371
+contentpanel_size_m3=579,371
+contentpanel_size_m4=579,371
 sizeAttr=preferredsize
 
 # Insets (GridBagConstraints) for panels
