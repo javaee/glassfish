@@ -1166,14 +1166,19 @@ public class Response
      * @param url URL to be encoded
      */
     public String encodeRedirectURL(String url) {
-
         if (isEncodeable(toAbsolute(url))) {
+            String sessionVersion = null;
+            HashMap<String, String> sessionVersions = (HashMap<String, String>)
+                request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+            if (sessionVersions != null) {
+                sessionVersion = RequestUtil.makeSessionVersionString(sessionVersions);
+            }
             return (toEncoded(url,
-                    request.getSessionInternal().getIdInternal()));
+                              request.getSessionInternal().getIdInternal(),
+                              sessionVersion));
         } else {
             return (url);
         }
-
     }
 
 
@@ -1198,19 +1203,24 @@ public class Response
      * @param url URL to be encoded
      */
     public String encodeURL(String url) {
-        
         String absolute = toAbsolute(url);
         if (isEncodeable(absolute)) {
             // W3c spec clearly said 
             if (url.equalsIgnoreCase("")){
                 url = absolute;
             }
+            String sessionVersion = null;
+            HashMap<String, String> sessionVersions = (HashMap<String, String>)
+                request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+            if (sessionVersions != null) {
+                sessionVersion = RequestUtil.makeSessionVersionString(sessionVersions);
+            }
             return (toEncoded(url,
-                    request.getSessionInternal().getIdInternal()));
+                              request.getSessionInternal().getIdInternal(),
+                              sessionVersion));
         } else {
             return (url);
         }
-
     }
 
 
@@ -1709,7 +1719,20 @@ public class Response
      * @param sessionId Session id to be included in the encoded URL
      */
     protected String toEncoded(String url, String sessionId) {
+        return toEncoded(url, sessionId, null);
+    }
 
+
+    /**
+     * Return the specified URL with the specified session identifier
+     * suitably encoded.
+     *
+     * @param url URL to be encoded with the session id
+     * @param sessionId Session id to be included in the encoded URL
+     * @param sessionVersion Session version to be included in the encoded URL
+     */
+    private String toEncoded(String url, String sessionId,
+                             String sessionVersion) {
         if ((url == null) || (sessionId == null))
             return (url);
 
@@ -1748,6 +1771,11 @@ public class Response
                 sb.append(jrouteId);
             }
             // END SJSAS 6337561
+
+            if (sessionVersion != null) {
+                sb.append(Globals.SESSION_VERSION_PARAMETER);
+                sb.append(sessionVersion);
+            }
         }
 
         sb.append(anchor);
