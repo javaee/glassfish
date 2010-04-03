@@ -42,9 +42,17 @@
 
     <parent>
         <groupId>org.glassfish</groupId>
+        <artifactId>pom</artifactId>
+        <version>8</version>
+    </parent>
+
+    <!--
+    <parent>
+        <groupId>org.glassfish</groupId>
         <artifactId>glassfish-parent</artifactId>
         <version>3.1-SNAPSHOT</version>
     </parent>
+    -->
 
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-devtests</artifactId>
@@ -64,6 +72,13 @@
             <artifactId>htmlunit</artifactId>
             <version>2.7</version>
         </dependency>
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.3.1</version>
+	    <scope>test</scope>
+	    <optional>true</optional>
+	</dependency>
     </dependencies>
     <build>
         <pluginManagement>
