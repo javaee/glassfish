@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.v3.admin.cluster.cli;
+package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CommandException;
 import com.sun.enterprise.admin.cli.CommandValidationException;
