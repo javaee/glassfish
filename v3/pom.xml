@@ -184,6 +184,7 @@
             <modules>
                 <!-- Every time you change module list, please change
                      the same under release profiles as well (below) -->
+                <module>cluster</module>
                 <module>javaee-api</module>
                 <module>common</module>
                 <module>deployment</module>
@@ -247,6 +248,7 @@
             <modules>
                 <!-- Every time you change module list, please change
                      the same under release profiles as well (below) -->
+                <module>cluster</module>
                 <module>javaee-api</module>
                 <module>common</module>
                 <module>deployment</module>
@@ -318,6 +320,7 @@
             </build>
 
             <modules>
+                <module>cluster</module>
                 <module>javaee-api</module>
                 <module>common</module>
                 <module>deployment</module>
@@ -365,6 +368,7 @@
             -->
             <id>release-phase-all</id>
             <modules>
+                <module>cluster</module>
                 <module>build</module>
                 <module>javaee-api</module>
                 <module>common</module>
