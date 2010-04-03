@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <mirrors>
+        <mirror>
+            <id>GF Nexus</id>
+            <name>Nexus Public Mirror</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>
+</settings>
