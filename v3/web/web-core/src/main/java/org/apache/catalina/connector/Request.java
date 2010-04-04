@@ -3685,7 +3685,7 @@ public class Request
      */
     @Override
     public AsyncContext startAsync(ServletRequest servletRequest,
-            ServletResponse servletResponse)
+                                   ServletResponse servletResponse)
             throws IllegalStateException {
         // If original or container-wrapped request and response,
         // AsyncContext#hasOriginalRequestAndResponse must return true;
@@ -3711,8 +3711,8 @@ public class Request
      * startAsync was called, false otherwise
      */
     private AsyncContext startAsync(ServletRequest servletRequest,
-            ServletResponse servletResponse,
-            boolean isOriginalRequestAndResponse)
+                ServletResponse servletResponse,
+                boolean isOriginalRequestAndResponse)
             throws IllegalStateException {
 
         if (servletRequest == null || servletResponse == null) {
@@ -3747,33 +3747,34 @@ public class Request
                     isOriginalRequestAndResponse);
 
             CompletionHandler requestCompletionHandler =
-                    new CompletionHandler<Request>() {
+                new CompletionHandler<Request>() {
 
-                        @Override
-                        public void resumed(Request attachment) {
-                            if (attachment.asyncContext != null) {
-                                attachment.asyncContext.notifyAsyncListeners(
-                                        AsyncContextImpl.AsyncEventType.COMPLETE,
+                    @Override
+                    public void resumed(Request attachment) {
+                        if (attachment.asyncContext != null) {
+                            attachment.asyncContext.notifyAsyncListeners(
+                                    AsyncContextImpl.AsyncEventType.COMPLETE,
+                                    null);
+                        }
+                    }
+
+                    @Override
+                    public void cancelled(Request attachment) {
+                        if (attachment.clientClosedConnection &&
+                                attachment.asyncContext != null) {
+                            attachment.asyncContext.notifyAsyncListeners(
+                                        AsyncContextImpl.AsyncEventType.ERROR,
                                         null);
-                            }
+                        } else {
+                            attachment.asyncTimeout();
                         }
-
-                        @Override
-                        public void cancelled(Request attachment) {
-                            if (attachment.clientClosedConnection &&
-                                    attachment.asyncContext != null) {
-                                attachment.asyncContext.notifyAsyncListeners(
-                                            AsyncContextImpl.AsyncEventType.ERROR,
-                                            null);
-                           } else {
-                                attachment.asyncTimeout();
-                            }
-                        }
-                    };
+                    }
+                };
 
             org.apache.catalina.connector.Response res =
-                    (org.apache.catalina.connector.Response) coyoteRequest.getResponse().getNote(
-                    CoyoteAdapter.ADAPTER_NOTES);
+                (org.apache.catalina.connector.Response)
+                    coyoteRequest.getResponse().getNote(
+                        CoyoteAdapter.ADAPTER_NOTES);
             coyoteRequest.getResponse().suspend(asyncContext.getTimeout(),
                     this, requestCompletionHandler,
                     new RequestAttachment<org.apache.catalina.connector.Request>(
