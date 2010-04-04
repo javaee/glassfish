@@ -506,7 +506,7 @@ public final class RequestUtil {
      * @return The mappings from context paths to session version numbers
      * that were parsed from the given session version string
      */
-    public static final HashMap<String, String> parseSessionVersions(
+    public static final HashMap<String, String> parseSessionVersionString(
                                                 String sessionVersion) {
         if (sessionVersion == null) {
             return null;
@@ -528,13 +528,19 @@ public final class RequestUtil {
 
 
     /**
-     * Gets the string representation of the given session version mappings.
+     * Creates the string representation for the given context path to
+     * session version mappings.
      *
-     * @param sessionVersions The session version mappings
+     * <p>The returned string will be used as the value of a
+     * JSESSIONIDVERSION cookie or jsessionidversion URI parameter, depending
+     * on the configured session tracking mode.
      *
-     * @return The string representation of the given session version mappings
+     * @param sessionVersions Context path to session version mappings
+     *
+     * @return The resulting string representation, to be used as the value
+     * of a JSESSIONIDVERSION cookie or jsessionidversion URI parameter
      */
-    public static String makeSessionVersionString(HashMap sessionVersions) {
+    public static String createSessionVersionString(HashMap sessionVersions) {
         if (sessionVersions == null) {
             return null;
         }

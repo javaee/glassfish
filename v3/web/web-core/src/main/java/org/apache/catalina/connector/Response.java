@@ -1171,7 +1171,8 @@ public class Response
             HashMap<String, String> sessionVersions = (HashMap<String, String>)
                 request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
             if (sessionVersions != null) {
-                sessionVersion = RequestUtil.makeSessionVersionString(sessionVersions);
+                sessionVersion = RequestUtil.createSessionVersionString(
+                    sessionVersions);
             }
             return (toEncoded(url,
                               request.getSessionInternal().getIdInternal(),
@@ -1213,7 +1214,8 @@ public class Response
             HashMap<String, String> sessionVersions = (HashMap<String, String>)
                 request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
             if (sessionVersions != null) {
-                sessionVersion = RequestUtil.makeSessionVersionString(sessionVersions);
+                sessionVersion = RequestUtil.createSessionVersionString(
+                    sessionVersions);
             }
             return (toEncoded(url,
                               request.getSessionInternal().getIdInternal(),
