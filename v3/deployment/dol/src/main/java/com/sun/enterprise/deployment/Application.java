@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.node.ApplicationNode;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
+import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -197,6 +198,9 @@ public class Application extends BundleDescriptor
             new HashSet<DataSourceDefinitionDescriptor>();
 
     private Set<String> resourceAdapters = new HashSet<String>();
+
+    private Set<ApplicationParameter> applicationParams = 
+            new HashSet<ApplicationParameter>();
 
     public Application(Habitat habitat) {
         super("", localStrings.getLocalString(
@@ -1893,4 +1897,19 @@ public class Application extends BundleDescriptor
     public Set<String> getResourceAdapters(){
         return resourceAdapters;
     }
+
+    /**
+     * @return the Set of application paramaters.
+     */
+    public Set<ApplicationParameter> getApplicationParams() {
+        return applicationParams; 
+    }
+
+   /**
+     * Adds a new context parameter to my list.
+     */
+    public void addApplicationParam(ApplicationParameter appParam) {
+        applicationParams.add(appParam);
+    }
+
 }

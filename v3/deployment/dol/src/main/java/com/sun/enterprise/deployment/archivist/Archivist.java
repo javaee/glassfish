@@ -925,12 +925,35 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     }
 
     /**
+     * writes the WL runtime deployment descriptors to an abstract archive
+     *
+     * @param out output archive
+     */
+    public void writeWLRuntimeDeploymentDescriptors(WritableArchive out) throws IOException {
+
+        T desc = getDescriptor();
+
+        // Runtime DDs
+        if (isHandlingRuntimeInfo()) {
+            DeploymentDescriptorFile confDD = getWLConfigurationDDFile();
+            if (confDD != null) {
+                OutputStream os = out.putNextEntry(
+                        confDD.getDeploymentDescriptorPath());
+                confDD.write(desc, os);
+                out.closeEntry();
+            }
+        }
+    }
+
+
+    /**
      * write all extra deployment descriptors (like cmp related and runtime dds)
      *
      * @out the abstract archive file to write to
      */
     protected void writeExtraDeploymentDescriptors(WritableArchive out) throws IOException {
         writeRuntimeDeploymentDescriptors(out);
+        writeWLRuntimeDeploymentDescriptors(out);
     }
 
     /**
@@ -1083,6 +1106,14 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      *         handling the configuration deployment descriptors
      */
     public abstract DeploymentDescriptorFile getConfigurationDDFile();
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     *         handling the WL configuration deployment descriptors
+     */
+    public DeploymentDescriptorFile getWLConfigurationDDFile() {
+        return null;
+    }
 
     /**
      * @return a default BundleDescriptor for this archivist

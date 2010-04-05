@@ -34,18 +34,21 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.node.runtime.web;
+package com.sun.enterprise.deployment.node.runtime.application;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.EnvironmentProperty;
+import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.node.web.InitParamNode;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
-import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,11 +56,11 @@ import java.util.Collections;
 
 /**
  * This node is responsible for handling all WebLogic runtime information for 
- * web bundle.
+ * application.
  */
-public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor> {
+public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
 
-    public final static String SCHEMA_ID = "weblogic-web-app.xsd";
+    public final static String SCHEMA_ID = "weblogic-application.xsd";
 
     private final static List<String> systemIDs = initSystemIDs();
 
@@ -67,24 +70,34 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         return Collections.unmodifiableList(systemIDs);
     }
 
-    WebBundleDescriptor descriptor=null;
+
+    Application descriptor=null;
         
-    /** Creates new WLWebBundleRuntimeNode */
-    public WLWebBundleRuntimeNode(WebBundleDescriptor descriptor) {
+    /** Creates new WLApplicationRuntimeNode */
+    public WLApplicationRuntimeNode(Application descriptor) {
         super(descriptor);
         this.descriptor = descriptor;        
     }
     
     /** Creates new WebBundleRuntimeNode */
-    public WLWebBundleRuntimeNode() {
+    public WLApplicationRuntimeNode() {
         super(null);    
     }
     
     /**
+     * Initialize the child handlers
+     */
+    protected void Init() {
+        super.Init();
+        registerElementHandler(new XMLElement(
+                RuntimeTagNames.APPLICATION_PARAM), InitParamNode.class);
+    }
+
+    /**
      * @return the XML tag associated with this XMLNode
      */
     protected XMLElement getXMLRootTag() {
-        return new XMLElement(RuntimeTagNames.WL_WEB_RUNTIME_TAG);
+        return new XMLElement(RuntimeTagNames.WL_APPLICATION_RUNTIME_TAG);
     }    
     
     /** 
@@ -109,44 +122,47 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     }
     
    /**
-    * @return the web bundle descriptor instance to associate with this XMLNode
+    * @return the application instance to associate with this XMLNode
     */    
-    public WebBundleDescriptor getDescriptor() {    
+    public Application getDescriptor() {    
 	return descriptor;               
     }
-
+    
     /**
-     * receives notification of the value for a particular tag
-     * 
-     * @param element the xml element
-     * @param value it's associated value
+     * Adds  a new DOL descriptor instance to the descriptor instance 
+     * associated with this XMLNode
+     *
+     * @param descriptor the new descriptor
      */
-    public void setElementValue(XMLElement element, String value) {
-        if (element.getQName().equals(RuntimeTagNames.CONTEXT_ROOT)) {
-            // only set the context root for standalone war;
-            // for embedded war, the context root will be set 
-            // using the value in application.xml
-            Application app = descriptor.getApplication();
-            if ( (app == null) || (app!=null && app.isVirtual()) ) {
-                descriptor.setContextRoot(value);
-            }
-        } else
-	super.setElementValue(element, value);
+    public void addDescriptor(Object newDescriptor) {
+        if (newDescriptor instanceof EnvironmentProperty) {
+            descriptor.addApplicationParam((ApplicationParameter)newDescriptor);
+        } else super.addDescriptor(newDescriptor);
     }
 
     /**
      * write the descriptor class to a DOM tree and return it
      *
      * @param parent node for the DOM tree
-     * @param the descriptor to write
+     * @param nodeName the node name
+     * @param descriptor the descriptor to write
      * @return the DOM tree top node
      */
-    public Node writeDescriptor(Node parent, WebBundleDescriptor bundleDescriptor) {
+    public Node writeDescriptor(Node parent, String nodeName, Application application) {
         Element root = appendChildNS(parent, getXMLRootTag().getQName(),
-                    TagNames.WL_WEB_APP_NAMESPACE);
+                    TagNames.WL_APPLICATION_NAMESPACE);
 
-        // context-root?
-        appendTextChild(root, RuntimeTagNames.CONTEXT_ROOT, bundleDescriptor.getContextRoot());
+        // application-param*
+        Set<ApplicationParameter> applicationParams = 
+            application.getApplicationParams(); 
+        if (!applicationParams.isEmpty()) {
+            InitParamNode initParamNode = new InitParamNode();
+            for (ApplicationParameter appParam : applicationParams) {
+                initParamNode.writeDescriptor(root, 
+                        RuntimeTagNames.APPLICATION_PARAM,
+                        (EnvironmentProperty)appParam);
+            }
+        }
 
         return root;
     }

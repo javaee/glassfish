@@ -39,6 +39,7 @@
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.InitializationParameter;
+import com.sun.enterprise.deployment.runtime.ApplicationParameter;
 import com.sun.enterprise.deployment.web.WebDescriptor;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.RelativePathResolver;
@@ -51,7 +52,7 @@ import java.util.Set;
     ** @author Danny Coward 
     */
  
-public class EnvironmentProperty extends Descriptor implements InitializationParameter, ContextParameter, WebDescriptor, EnvironmentEntry, InjectionCapable {
+public class EnvironmentProperty extends Descriptor implements InitializationParameter, ContextParameter, ApplicationParameter, WebDescriptor, EnvironmentEntry, InjectionCapable {
     private String value; 
     private String type;
     private Object valueObject;

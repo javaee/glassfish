@@ -71,6 +71,7 @@ public class DescriptorFactory {
         // Application
         register(new XMLElement(ApplicationTagNames.APPLICATION), Application.class);
         register(new XMLElement(ApplicationTagNames.MODULE), ModuleDescriptor.class);
+        register(new XMLElement(RuntimeTagNames.APPLICATION_PARAM), EnvironmentProperty.class);        
         
 	//EJB
         register(new XMLElement(EjbTagNames.EJB_BUNDLE_TAG), EjbBundleDescriptor.class);

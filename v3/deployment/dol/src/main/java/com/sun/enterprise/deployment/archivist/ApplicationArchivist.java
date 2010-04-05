@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ApplicationRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.WLApplicationRuntimeDDFile;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
@@ -228,12 +229,17 @@ public class ApplicationArchivist extends Archivist<Application>
 
         setDescriptor(application);
 
+        Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions = new HashMap<ExtensionsArchivist, RootDeploymentDescriptor>();
+
         if (extensionsArchivists!=null) {
             for (ExtensionsArchivist extension : extensionsArchivists) {
                 if (extension.supportsModuleType(getModuleType())) {
                     Object o = extension.open(this, archive, descriptor);
                     if (o instanceof RootDeploymentDescriptor) {
-                        extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
+                        if (o != descriptor) {
+                            extension.addExtension(descriptor, (RootDeploymentDescriptor) o);
+                        }
+                        extensions.put(extension, (RootDeploymentDescriptor) o);
                     }
                 }
             }
@@ -247,6 +253,15 @@ public class ApplicationArchivist extends Archivist<Application>
         // now read the runtime deployment descriptors
         handleRuntimeInfo = true;
         readRuntimeDeploymentDescriptor(archive, application);
+
+        // read extensions runtime deployment descriptors if any
+        for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
+            // after standard DD and annotations are processed, we should
+            // an extension descriptor now
+            if (extension.getValue() != null) {
+                extension.getKey().readRuntimeDeploymentDescriptor(this, archive, extension.getValue());
+            }
+        }
 
         // validate...
         if (classLoader!=null && isHandlingRuntimeInfo()) {
@@ -792,6 +807,15 @@ public class ApplicationArchivist extends Archivist<Application>
     public DeploymentDescriptorFile getConfigurationDDFile() {
         return new ApplicationRuntimeDDFile();
     }   
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     * handling the WL configuration deployment descriptors
+     */
+    @Override
+    public DeploymentDescriptorFile getWLConfigurationDDFile() {
+        return new WLApplicationRuntimeDDFile();
+    }
     
     /**
      * Perform Optional packages dependencies checking on an archive 

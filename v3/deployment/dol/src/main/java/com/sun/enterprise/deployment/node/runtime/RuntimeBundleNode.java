@@ -43,6 +43,7 @@ import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 
 import java.util.Iterator;
 
@@ -132,5 +133,12 @@ public abstract class RuntimeBundleNode<T extends RootDeploymentDescriptor>
         return restrictDTDDeclarations.booleanValue();
     }
     
+    public static Element appendChildNS(Node parent, String elementName,
+        String nameSpace) {
+        Element child = getOwnerDocument(parent).createElementNS(nameSpace, elementName);
+        parent.appendChild(child);
+        return child;
+    }
+
     private static Boolean restrictDTDDeclarations=null;
 }
