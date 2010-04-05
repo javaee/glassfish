@@ -102,7 +102,6 @@
                         <configuration>
                             <background>true</background>
                             <logOutput>true</logOutput>
-                            <browserSessionReuse>true</browserSessionReuse>
                             <port>${selenium.port}</port>
                         </configuration>
                     </execution>
