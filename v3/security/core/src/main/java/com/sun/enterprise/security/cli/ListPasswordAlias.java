@@ -36,9 +36,6 @@
 
 package com.sun.enterprise.security.cli;
 
-import com.sun.enterprise.security.store.IdentityManager;
-import com.sun.enterprise.util.SystemPropertyConstants;
-
 import java.util.Enumeration;
 
 import org.glassfish.api.admin.AdminCommand;
@@ -50,6 +47,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import org.glassfish.internal.api.MasterPassword;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * List Password Aliases Command
@@ -82,6 +81,9 @@ public class ListPasswordAlias implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(ListPasswordAlias.class);
 
+    @Inject(name="Security SSL Password Provider Service")
+    private MasterPassword masterPasswordHelper;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are paramter names and the values the parameter values
@@ -92,19 +94,7 @@ public class ListPasswordAlias implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            String mp = System.getProperty(
-                        SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY);
-            if (mp == null)
-                mp = System.getProperty(
-                        SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
-
-            if (mp == null)
-                mp = IdentityManager.getMasterPassword();
-
-            if (mp == null)
-                mp = "changeit";
-
-            PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
+            PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
             Enumeration e = pa.getAliases();
 
             if (! e.hasMoreElements()) {

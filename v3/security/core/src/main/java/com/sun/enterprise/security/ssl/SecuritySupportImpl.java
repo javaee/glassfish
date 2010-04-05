@@ -37,6 +37,10 @@
 package com.sun.enterprise.security.ssl;
 
 import com.sun.enterprise.security.common.Util;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -50,9 +54,10 @@ import java.security.Provider;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
-import javax.security.auth.callback.CallbackHandler;
+import java.security.Key;
+import java.util.Arrays;
+import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.Singleton;
 
@@ -77,6 +82,8 @@ public class SecuritySupportImpl implements SecuritySupport {
     protected static final List<KeyStore> trustStores = new ArrayList<KeyStore>();
     protected static final List<String> keyStorePasswords = new ArrayList<String>();
     protected static final List<String> tokenNames = new ArrayList<String>();
+
+    private MasterPasswordImpl masterPasswordHelper = null;
 
     public SecuritySupportImpl() {
         this(true);
@@ -104,16 +111,32 @@ public class SecuritySupportImpl implements SecuritySupport {
             trustStoreFileName = System.getProperty(trustStoreProp);
         }
 
+        char[] keyStorePass = null;
+        char[] trustStorePass = null;
+        if (masterPasswordHelper == null && Globals.getDefaultHabitat() != null) {
+            masterPasswordHelper = Globals.getDefaultHabitat().getByType(MasterPasswordImpl.class);
+        }
+        if (masterPasswordHelper instanceof MasterPasswordImpl) {
+            keyStorePass = masterPasswordHelper.getMasterPassword();
+            trustStorePass = keyStorePass;
+        }
+        if (keyStorePass == null) {
+            keyStorePass = System.getProperty(SSLUtils.KEYSTORE_PASS_PROP, SSLUtils.DEFAULT_KEYSTORE_PASS).toCharArray();
+            trustStorePass = System.getProperty(SSLUtils.TRUSTSTORE_PASS_PROP, SSLUtils.DEFAULT_TRUSTSTORE_PASS).toCharArray();
+        }
+
         if (!initialized) {
             loadStores(
                     null, 
                     null, 
                    keyStoreFileName, 
-                    SSLUtils.getKeyStorePass(),
+                    keyStorePass,
                     SSLUtils.getKeyStoreType(),
                     trustStoreFileName, 
-                    SSLUtils.getTrustStorePass(),
+                    trustStorePass,
                     SSLUtils.getTrustStoreType());
+            Arrays.fill(keyStorePass, ' ');
+            Arrays.fill(trustStorePass, ' ');
             initialized = true;
         }
     }
@@ -138,10 +161,10 @@ public class SecuritySupportImpl implements SecuritySupport {
                        String tokenName,
                        Provider provider,
                        String keyStoreFile,
-                       String keyStorePass,
+                       char[] keyStorePass,
                        String keyStoreType,
                        String trustStoreFile,
-                       String trustStorePass,                       
+                       char[] trustStorePass,
                        String trustStoreType) {
 
         try {
@@ -151,7 +174,7 @@ public class SecuritySupportImpl implements SecuritySupport {
                 trustStorePass);
             keyStores.add(keyStore);
             trustStores.add(trustStore);
-            keyStorePasswords.add(keyStorePass);
+            keyStorePasswords.add(new String(keyStorePass));
             tokenNames.add(tokenName);
         } catch(Exception ex) {
             throw new IllegalStateException(ex);
@@ -169,7 +192,7 @@ public class SecuritySupportImpl implements SecuritySupport {
      * @retun keystore loaded
      */
     private static KeyStore loadKS(String keyStoreType, Provider provider,
-		    String keyStoreFile, String keyStorePass)
+		    String keyStoreFile, char[] keyStorePass)
 		    throws Exception
     {
         KeyStore ks = null;
@@ -178,7 +201,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         } else {
             ks = KeyStore.getInstance(keyStoreType);
         }
-        char[] passphrase = keyStorePass.toCharArray();
+        char[] passphrase = keyStorePass;
 
         FileInputStream istream = null;
         BufferedInputStream bstream = null;
@@ -273,9 +296,9 @@ public class SecuritySupportImpl implements SecuritySupport {
         }
         return trustStores.get(idx);
     }
-
+   
     /**
-     * @param  token 
+     * @param  token
      * @return the password for this token
      */
     public String getKeyStorePassword(String token) {
@@ -285,7 +308,7 @@ public class SecuritySupportImpl implements SecuritySupport {
         }
         return keyStorePasswords.get(idx);
     }
-   
+
     /**
      * @return returned index 
      */ 
@@ -302,5 +325,14 @@ public class SecuritySupportImpl implements SecuritySupport {
 
     public void synchronizeKeyFile(Object configContext, String fileRealmName) throws Exception {
         //throw new UnsupportedOperationException("Not supported yet in V3.");
+    }
+
+    public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        Key key = keyStores.get(keystoreIndex).getKey(alias, keyStorePasswords.get(keystoreIndex).toCharArray());
+        if (key instanceof PrivateKey) {
+            return (PrivateKey) key;
+        } else {
+            return null;
+        }
     }
 }

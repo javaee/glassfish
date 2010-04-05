@@ -38,7 +38,6 @@ package org.glassfish.appclient.client.acc;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.security.GUILoginDialog;
 import com.sun.enterprise.security.appclient.integration.AppClientSecurityInfo;
 import java.io.File;
 import java.io.IOException;

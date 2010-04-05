@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.security.cli;
 
-import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
@@ -47,6 +46,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import org.glassfish.internal.api.MasterPassword;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
  * Update Password Alias Command
@@ -83,6 +84,9 @@ public class UpdatePasswordAlias implements AdminCommand {
     @Param(name="aliaspassword", password=true)
     String aliasPassword;
 
+    @Inject(name="Security SSL Password Provider Service")
+    private MasterPassword masterPasswordHelper;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are paramter names and the values the parameter values
@@ -93,18 +97,7 @@ public class UpdatePasswordAlias implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            String mp = System.getProperty(
-                        SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY);
-            if (mp == null)
-                mp = System.getProperty(
-                        SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY);
-
-            // TODO : remove the hardcoded masterpassword when the issue of
-            // fetching the correct values of above system property is resolved
-            if (mp == null)
-                mp = "changeit";
-
-            PasswordAdapter pa = new PasswordAdapter(mp.toCharArray());
+            PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
 
             if (pa.getPasswordForAlias(aliasName) == null) {
                 report.setMessage(localStrings.getLocalString(

@@ -66,7 +66,7 @@ import com.sun.enterprise.deployment.ConnectorConfigProperty ;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.resource.listener.UnpooledConnectionEventListener;
 import com.sun.enterprise.resource.pool.PoolManager;
-import com.sun.enterprise.util.RelativePathResolver;
+import org.glassfish.internal.api.RelativePathResolver;
 import com.sun.enterprise.util.i18n.StringManager;
 import javax.resource.spi.ConnectionRequestInfo;
 import org.jvnet.hk2.config.types.Property;

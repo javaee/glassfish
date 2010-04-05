@@ -45,7 +45,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.data.ApplicationInfo;
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.util.RelativePathResolver;
+import org.glassfish.internal.api.RelativePathResolver;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.deploy.shared.FileArchive;

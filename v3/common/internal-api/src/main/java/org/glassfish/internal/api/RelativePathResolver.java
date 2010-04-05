@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.util;
+package org.glassfish.internal.api;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import java.io.File;
@@ -43,7 +43,6 @@ import com.sun.enterprise.util.i18n.StringManagerBase;
 import com.sun.logging.LogDomains;
 
 import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.security.store.IdentityManager;
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -52,7 +51,6 @@ import java.security.cert.CertificateException;
 
 import java.util.logging.Logger;
 import java.util.logging.Level; 
-import java.util.ArrayList;
 
 /**
  * The purpose of this class is to expand paths that contain embedded 
@@ -78,6 +76,12 @@ public class RelativePathResolver {
     
     private static final String ALIAS_TOKEN = "ALIAS";
     private static final String ALIAS_DELIMITER = "=";
+
+    private static MasterPassword masterPasswordHelper = null;
+
+    static{
+        masterPasswordHelper = Globals.getDefaultHabitat().getByContract(MasterPassword.class);
+    }
     
     protected synchronized static Logger getLogger() {
         if (_logger == null) {
@@ -217,10 +221,7 @@ public class RelativePathResolver {
                     //System.err.println("aliasName " + aliasName);
                     try {
                         if (pwdAdapter==null) {
-                            //The masterPassword in the IdentityManager is available only through
-                            //a running DAS, server instance, or node agent.
-                            String masterPassword = IdentityManager.getMasterPassword();
-                            pwdAdapter = new PasswordAdapter(masterPassword.toCharArray());
+                            pwdAdapter = masterPasswordHelper.getMasterPasswordAdapter();
                         }
                         result = pwdAdapter.getPasswordForAlias(aliasName);
                         //System.err.println("alias password " + result);
@@ -378,8 +379,7 @@ public class RelativePathResolver {
             return (at);
         }
         final String          an = RelativePathResolver.getAlias(at);
-        String          sp = IdentityManager.getMasterPassword();
-        final PasswordAdapter pa = new PasswordAdapter(sp.toCharArray()); // use default password store
+        final PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter(); // use default password store
         final boolean     exists = pa.aliasExists(an);
         if (!exists) {
             final StringManager lsm = StringManager.getManager(RelativePathResolver.class);

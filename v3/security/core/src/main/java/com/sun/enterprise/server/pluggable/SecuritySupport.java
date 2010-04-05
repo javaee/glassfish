@@ -38,7 +38,10 @@ package com.sun.enterprise.server.pluggable;
 
 import java.security.KeyStore;
 //V3:Commented import com.sun.enterprise.config.ConfigContext;
-import javax.security.auth.callback.CallbackHandler;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -79,11 +82,24 @@ public interface SecuritySupport {
     public KeyStore getTrustStore(String token);
 
     /**
-     * @param  token 
-     * @return the password for this token. 
+     * @param  token
+     * @return the password for this token.
      */
     public String getKeyStorePassword(String token);
-    
+
+    /**
+     * Gets the PrivateKey for specified alias from the corresponding keystore
+     * indicated by the index.
+     *
+     * @param alias Alias for which the PrivateKey is desired.
+     * @param keystoreIndex Index of the keystore.
+     * @return
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     * @throws UnrecoverableKeyException
+     */
+    public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException;
+
     /**
      * This method returns an array of token names in order corresponding to
      * array of keystores.

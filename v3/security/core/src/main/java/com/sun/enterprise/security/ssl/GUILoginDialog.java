@@ -34,10 +34,12 @@
  * holder.
  */
 
-package com.sun.enterprise.security;
+package com.sun.enterprise.security.ssl;
 
 
-import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.enterprise.security.GUIErrorDialog;
+import com.sun.enterprise.security.LoginDialog;
+import org.glassfish.internal.api.MasterPassword;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -46,6 +48,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.util.logging.*;
 import com.sun.logging.*;
+import java.util.Arrays;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -78,7 +82,7 @@ public final class GUILoginDialog implements LoginDialog  {
 	JFrame f = new JFrame();
 	String phrase = localStrings.getLocalString("enterprise.security.loginPhrase", "Login for ");
 	passphraseDialog = new PassphraseDialog(f, phrase + entity + ":");
-	passphraseDialog.show();
+	passphraseDialog.setVisible(true);
     }
 
     public GUILoginDialog(String entity, Callback[] callbacks) {
@@ -86,7 +90,7 @@ public final class GUILoginDialog implements LoginDialog  {
 	String phrase = localStrings.getLocalString("enterprise.security.loginPhrase", "Login for ");
 	JFrame f = new JFrame();
 	passphraseDialog = new PassphraseDialog(f, phrase + entity + ":", callbacks);
-	passphraseDialog.show();
+	passphraseDialog.setVisible(true);
     }
 
 
@@ -131,9 +135,6 @@ class PassphraseDialog extends JDialog
 
     private JPasswordField keystorePassword;
     private JLabel lbl;
-    // password for the keystore
-    private String passKPFromUser;
-    private String keystorePass;
     // parent panel for keystore password
     private JPanel pnl = new JPanel (new GridLayout (2, 0));
     // panel for buttons for keystore password
@@ -244,7 +245,7 @@ class PassphraseDialog extends JDialog
 	    kpPanel.add (lbl);
 	    kpPanel.add (keystorePassword);
 	    /* get the keystore password */
-	    keystorePass = SSLUtils.getKeyStorePass();
+	    final char[] keystorePass = ((MasterPasswordImpl) Globals.get(MasterPassword.class)).getMasterPassword();
 	    // ok button For keystore password
 	    okForKP = new
 		JButton(localStrings.getLocalString
@@ -253,22 +254,22 @@ class PassphraseDialog extends JDialog
 	
 	    okForKP.addActionListener (new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-		    passKPFromUser = 
-			new String (keystorePassword.getPassword ());
-		    if (keystorePass.equals (passKPFromUser)){
+		    char[] passKPFromUser = keystorePassword.getPassword();
+		    if (Arrays.equals(passKPFromUser, keystorePass)) {
 			okForKP.setEnabled (false);
 			cancelForKP.setEnabled (false);
 			keystorePassword.setEditable (false);
 			CardLayout cl = (CardLayout) (getContentPane ()).getLayout ();
 			cl.show (getContentPane (), pnlCertificateList);
-		    } else{
+		    } else {
 			String errmessage = localStrings.getLocalString("enterprise.security.IncorrectKeystorePassword","Incorrect Keystore Password");
 			GUIErrorDialog guierr = new GUIErrorDialog(errmessage);
-			guierr.show();
+			guierr.setVisible(true);
 		    }
+                    Arrays.fill(keystorePass, ' ');
+                    Arrays.fill(passKPFromUser, ' ');
 		}
-	    }
-					  );
+	    });            
 
 	    cancelForKP = new 
 		JButton (localStrings.getLocalString

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,6 @@
 package com.sun.enterprise.util;
 
 import com.sun.enterprise.util.i18n.StringManager;
-import com.sun.enterprise.util.OS;
 
 public class SystemPropertyConstants
 {
@@ -158,13 +157,11 @@ public class SystemPropertyConstants
     public static final String NATIVE_LAUNCHER_LIB_PREFIX = "com.sun.aas.nativeLauncherLibPrefix";       
     
     public static final String KEYSTORE_PROPERTY = "javax.net.ssl.keyStore";
-    public static final String KEYSTORE_PASSWORD_PROPERTY = "javax.net.ssl.keyStorePassword";
     public static final String JKS_KEYSTORE = 
         System.getProperty("file.separator") + "config" +
         System.getProperty("file.separator") + "keystore.jks";
 
     public static final String TRUSTSTORE_PROPERTY = "javax.net.ssl.trustStore";
-    public static final String TRUSTSTORE_PASSWORD_PROPERTY = "javax.net.ssl.trustStorePassword";
     public static final String JKS_TRUSTSTORE = 
         System.getProperty("file.separator") + "config" +
         System.getProperty("file.separator") + "cacerts.jks";
@@ -179,7 +176,7 @@ public class SystemPropertyConstants
         //"com.sun.appserv.client.truststore";
 
     public static final String CLIENT_TRUSTSTORE_PASSWORD_PROPERTY =
-        TRUSTSTORE_PASSWORD_PROPERTY;
+        "javax.net.ssl.trustStorePassword";
         //"com.sun.appserv.client.truststore.password";
     
     public static final String PID_FILE = ".__com_sun_appserv_pid";

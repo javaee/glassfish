@@ -40,8 +40,8 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.security.store.IdentityManagement;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
+import org.glassfish.internal.api.MasterPassword;
 import org.glassfish.internal.api.Init;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
@@ -54,6 +54,7 @@ import java.io.*;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.security.KeyStore;
+import java.util.Arrays;
 
 /** An implementation of the @link {IdentityManagement} that manages the password needs of the server.
  *  This implementation consults the Java KeyStore and assumes that the stores are available in server's
@@ -62,7 +63,7 @@ import java.security.KeyStore;
  */
 @Service(name="jks-based")
 @Scoped(Singleton.class)
-public class IdmService implements Init, PostConstruct, IdentityManagement {
+public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
 
     private final Logger logger = Logger.getAnonymousLogger();
 
@@ -72,7 +73,12 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
     @Inject
     private volatile ServerEnvironmentImpl env = null;
 
-    private volatile String masterPassword;
+    @Inject(name="Security SSL Password Provider Service")
+    private MasterPassword masterPasswordHelper;
+
+    private volatile char[] masterPassword;
+
+    private final String[] masterPasswordServices = {"Security SSL Password Provider Service"};
 
     //private final Map<String, String> otherPasswords = Collections.synchronizedMap(new HashMap<String, String>());  //TODO later
 
@@ -94,27 +100,32 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
             }
         }
         if (!success) {
-            masterPassword = "changeit"; //the default;
+            masterPassword = "changeit".toCharArray(); //the default;
         }
         //success = verify();            //See 9592 for details. This saves some time
         //if (!success)
             //logger.warning("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET OR KEYSTORE DOES NOT EXIST ...");
+
+        masterPasswordHelper.setMasterPassword(masterPassword);
+        // TODO: Remove once Grizzly provides a method to set the store passwords.
         setJSSEProperties();
-        com.sun.enterprise.security.store.IdentityManager.setMasterPassword(masterPassword);
+        Arrays.fill(masterPassword, ' ');
+        masterPassword = null;
     }
 
+    // TODO: Remove once Grizzly provides a method to set the store passwords.
     private void setJSSEProperties() {
-        System.setProperty(SystemPropertyConstants.KEYSTORE_PASSWORD_PROPERTY, masterPassword);
-        System.setProperty(SystemPropertyConstants.TRUSTSTORE_PASSWORD_PROPERTY, masterPassword);
+        System.setProperty("javax.net.ssl.trustStorePassword", new String(masterPassword));
+        System.setProperty("javax.net.ssl.keyStorePassword", new String(masterPassword));
     }
 
     /** Returns the master password. Others are expected to call this method instead of relying on JSSE properties.
      *
      * @return char[] as a master password. It's guaranteed that this password is valid
      */
-    public char[] getMasterPassword() {
-        return masterPassword.toCharArray();
-    }
+//    public char[] getMasterPassword() {
+//        return masterPassword;
+//    }
 
     ///// All Private
     
@@ -127,7 +138,7 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
                 return false;
             }
             PasswordAdapter p   = new PasswordAdapter(mp.getAbsolutePath(), FIXED_KEY.toCharArray());
-            this.masterPassword = p.getPasswordForAlias(FIXED_KEY);
+            this.masterPassword = p.getPasswordForAlias(FIXED_KEY).toCharArray();
 //            long t1 = System.currentTimeMillis();
 //            System.out.println("time spent in setFromMasterPasswordFile(): " + (t1-t0) + " ms");
             return true;
@@ -170,10 +181,9 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
         try {
             br = new BufferedReader(new FileReader(pwf));
             p.load(br);
-            String mp = p.getProperty(MP_PROPERTY);
-            if (mp == null)
+            if (p.getProperty(MP_PROPERTY) == null)
                 return false;
-            masterPassword = mp;  //this would stay in memory, so this needs some security audit, frankly
+            masterPassword = p.getProperty(MP_PROPERTY).toCharArray();  //this would stay in memory, so this needs some security audit, frankly
             return true;
         } catch (IOException e) {
             logger.fine("Passwordfile: " + pwf.getAbsolutePath() + " (a simple property file) could not be processed, ignoring ...");
@@ -198,9 +208,10 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
                 if (ind == -1) {
                     return false; // this means stdin isn't behaving. That's bad and shouldn't happen.
                 }
-                masterPassword = s.substring(MP_PROPERTY.length() + 1); //begIndex is that of "AS_ADMIN_MASTERPASSWORD=; consider trailing '='
+                masterPassword = s.substring(MP_PROPERTY.length() + 1).toCharArray(); //begIndex is that of "AS_ADMIN_MASTERPASSWORD=; consider trailing '='
             }
-            logger.fine("******************* Password from stdin: " + masterPassword);
+            // We don't want reveal the master password in the logs.
+            //logger.fine("******************* Password from stdin: " + new String(masterPassword));
             return true;
         } catch(Exception e) {
             logger.fine("Stdin isn't behaving, ignoring it ..." + e.getMessage());
@@ -215,7 +226,7 @@ public class IdmService implements Init, PostConstruct, IdentityManagement {
         try {
             fis = new FileInputStream(env.getJKS());
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(fis, masterPassword.toCharArray());
+            ks.load(fis, masterPassword);
 //            long t1 = System.currentTimeMillis();
 //            System.out.println("time spent in verify(): " + (t1-t0) + " ms");
             return true;

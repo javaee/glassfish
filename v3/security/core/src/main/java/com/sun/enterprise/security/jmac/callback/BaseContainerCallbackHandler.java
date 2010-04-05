@@ -44,7 +44,6 @@ package com.sun.enterprise.security.jmac.callback;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
@@ -94,7 +93,7 @@ import com.sun.enterprise.security.jmac.config.CallbackHandlerConfig;
 import com.sun.enterprise.security.jmac.config.GFServerConfigProvider;
 import com.sun.enterprise.security.jmac.config.HandlerContext;
 import com.sun.enterprise.security.ssl.SecuritySupportImpl;
-import com.sun.enterprise.security.store.IdentityManager;
+import org.glassfish.internal.api.MasterPassword;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.logging.LogDomains;
@@ -118,9 +117,7 @@ abstract class BaseContainerCallbackHandler
         "com.sun.appserv.client.secretKeyStore";
     private static final String CLIENT_SECRET_KEYSTORE_PASSWORD =
         "com.sun.appserv.client.secretKeyStorePassword";
-    private static final String DEFAULT_CLIENT_SECRET_KEYSTORE_PASSWORD =
-        "changeit";
-
+    
     protected final static Logger _logger = LogDomains.getLogger(BaseContainerCallbackHandler.class, LogDomains.SECURITY_LOGGER);
 
     protected HandlerContext handlerContext = null;
@@ -128,15 +125,18 @@ abstract class BaseContainerCallbackHandler
     // TODO: inject them once this class becomes a component
     protected final SSLUtils sslUtils;
     protected final SecuritySupport secSup;
+    protected final MasterPassword masterPasswordHelper;
     
     protected BaseContainerCallbackHandler() {
         if(Globals.getDefaultHabitat() == null){
             sslUtils = new SSLUtils();
             secSup = new SecuritySupportImpl();
+            masterPasswordHelper = null;
             sslUtils.postConstruct();
         } else {
             sslUtils = Globals.getDefaultHabitat().getComponent(SSLUtils.class);
             secSup = Globals.getDefaultHabitat().getByContract(SecuritySupport.class);
+            masterPasswordHelper = Globals.getDefaultHabitat().getComponent(MasterPassword.class, "Security SSL Password Provider Service");
         }
     }
     
@@ -353,17 +353,13 @@ abstract class BaseContainerCallbackHandler
             return;
         }
 
-        String[] passwords =
-            secSup.getKeyStorePasswords();
-
         // get the request type
         PrivateKeyCallback.Request req = privKeyCallback.getRequest();
         PrivateKey privKey = null;
         Certificate[] certs = null;
         if (req == null) {
             // no request type - set default key
-            PrivateKeyEntry pke = getDefaultPrivateKeyEntry(
-                    kstores, passwords);
+            PrivateKeyEntry pke = getDefaultPrivateKeyEntry(kstores);
             if (pke != null) {
                 privKey = pke.getPrivateKey();
                 certs = pke.getCertificateChain();
@@ -382,7 +378,7 @@ abstract class BaseContainerCallbackHandler
                 PrivateKeyEntry privKeyEntry;
                 if (alias == null) {
                     // use default key
-                    privKeyEntry = getDefaultPrivateKeyEntry(kstores, passwords);
+                    privKeyEntry = getDefaultPrivateKeyEntry(kstores);
                 } else {
                     privKeyEntry = sslUtils.getPrivateKeyEntryFromTokenAlias(alias);
                 }
@@ -402,15 +398,15 @@ abstract class BaseContainerCallbackHandler
                         Enumeration aliases = kstores[i].aliases();
                         while (aliases.hasMoreElements() && !found) {
                             String nextAlias = (String)aliases.nextElement();
-                            Key key = kstores[i].getKey(nextAlias, passwords[i].toCharArray());
-                            if (key != null && (key instanceof PrivateKey)) {
+                            PrivateKey key = secSup.getPrivateKeyForAlias(nextAlias, i);
+                            if (key != null) {
                                 Certificate[] certificates =
                                         kstores[i].getCertificateChain(nextAlias);
                                 // check issuer/serial
                                 X509Certificate eeCert = (X509Certificate)certificates[0];
                                 if (eeCert.getIssuerX500Principal().equals(issuer) &&
                                         eeCert.getSerialNumber().equals(serialNum)) {
-                                    privKey = (PrivateKey)key;
+                                    privKey = key;
                                     certs = certificates;
                                     found = true;
                                 }
@@ -435,8 +431,8 @@ abstract class BaseContainerCallbackHandler
                         Enumeration aliases = kstores[i].aliases();
                         while (aliases.hasMoreElements() && !found) {
                             String nextAlias = (String)aliases.nextElement();
-                            Key key = kstores[i].getKey(nextAlias, passwords[i].toCharArray());
-                            if (key != null && (key instanceof PrivateKey)) {
+                            PrivateKey key = secSup.getPrivateKeyForAlias(nextAlias, i);
+                            if (key != null) {
                                 Certificate[] certificates =
                                         kstores[i].getCertificateChain(nextAlias);
                                 X509Certificate eeCert = (X509Certificate)certificates[0];
@@ -444,7 +440,7 @@ abstract class BaseContainerCallbackHandler
                                 byte[] derSubKeyID = eeCert.getExtensionValue(SUBJECT_KEY_IDENTIFIER_OID);
                                 if (derSubKeyID != null &&
                                         Arrays.equals(derSubKeyID, derSubjectKeyID)) {
-                                    privKey = (PrivateKey)key;
+                                    privKey = key;
                                     certs = certificates;
                                     found = true;
                                 }
@@ -461,13 +457,13 @@ abstract class BaseContainerCallbackHandler
                 PrivateKeyEntry privKeyEntry = null;
                 if (digest == null) {
                     // get default key
-                    privKeyEntry = getDefaultPrivateKeyEntry(kstores, passwords);
+                    privKeyEntry = getDefaultPrivateKeyEntry(kstores);
                 } else {
                     if (algorithm == null) {
                         algorithm = DEFAULT_DIGEST_ALGORITHM;
                     }
                     MessageDigest md = MessageDigest.getInstance(algorithm);
-                    privKeyEntry = getPrivateKeyEntry(kstores, passwords, md, digest);
+                    privKeyEntry = getPrivateKeyEntry(kstores, md, digest);
                 }
 
                 if (privKeyEntry != null) {
@@ -491,7 +487,6 @@ abstract class BaseContainerCallbackHandler
             }
         } finally {
             privKeyCallback.setKey(privKey, certs);
-            passwords = null;
         }
     }
     
@@ -500,7 +495,7 @@ abstract class BaseContainerCallbackHandler
      * get out of the keystore
      */
     private PrivateKeyEntry getDefaultPrivateKeyEntry(
-            KeyStore[] kstores, String[] passwords) {
+            KeyStore[] kstores) {
         PrivateKey privKey = null;
         Certificate[] certs = null;
         try {
@@ -511,9 +506,9 @@ abstract class BaseContainerCallbackHandler
                     String nextAlias = (String)aliases.nextElement();
                     privKey = null;
                     certs = null;
-                    Key key = kstores[i].getKey(nextAlias, passwords[i].toCharArray());
-                    if (key != null && (key instanceof PrivateKey)) {
-                        privKey = (PrivateKey)key;
+                    PrivateKey key = secSup.getPrivateKeyForAlias(nextAlias, i);
+                    if (key != null) {
+                        privKey = key;
                         certs = kstores[i].getCertificateChain(nextAlias);
                     }
                 }
@@ -532,7 +527,7 @@ abstract class BaseContainerCallbackHandler
     }
 
     private PrivateKeyEntry getPrivateKeyEntry(
-            KeyStore[] kstores, String[] passwords,
+            KeyStore[] kstores,
             MessageDigest md, byte[] digest) {
         PrivateKey privKey = null;
         Certificate[] certs = null;
@@ -544,13 +539,13 @@ abstract class BaseContainerCallbackHandler
                     String nextAlias = (String)aliases.nextElement();
                     privKey = null;
                     certs = null;
-                    Key key = kstores[i].getKey(nextAlias, passwords[i].toCharArray());
-                    if (key != null && (key instanceof PrivateKey)) {
+                    PrivateKey key = secSup.getPrivateKeyForAlias(nextAlias, i);
+                    if (key != null) {
                         certs = kstores[i].getCertificateChain(nextAlias);
                         md.reset();
                         byte[] cDigest = md.digest(certs[0].getEncoded());
                         if (Arrays.equals(digest, cDigest)) {
-                            privKey = (PrivateKey)key;
+                            privKey = key;
                         }
                     }
                 }
@@ -635,11 +630,9 @@ abstract class BaseContainerCallbackHandler
                 if (SecurityServicesUtil.getInstance().isACC()) {
                     passwordAdapter = new PasswordAdapter(
                         System.getProperty(CLIENT_SECRET_KEYSTORE),
-                        System.getProperty(CLIENT_SECRET_KEYSTORE_PASSWORD,
-                            DEFAULT_CLIENT_SECRET_KEYSTORE_PASSWORD).toCharArray());
+                        System.getProperty(CLIENT_SECRET_KEYSTORE_PASSWORD).toCharArray());
                 } else {
-                    passwordAdapter = new PasswordAdapter(
-                        IdentityManager.getMasterPassword().toCharArray());
+                    passwordAdapter = masterPasswordHelper.getMasterPasswordAdapter();
                 }
 
                 secretKeyCallback.setKey(

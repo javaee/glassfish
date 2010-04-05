@@ -34,9 +34,10 @@
  * holder.
  */
 
-package com.sun.enterprise.security;
+package com.sun.enterprise.security.ssl;
 
-import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.enterprise.security.LoginDialog;
+import org.glassfish.internal.api.MasterPassword;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -48,6 +49,7 @@ import javax.security.auth.callback.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
+import org.glassfish.internal.api.Globals;
 
 
 /**
@@ -169,23 +171,25 @@ public final class TextLoginDialog implements LoginDialog {
 		    String lbl = (localStrings.getLocalString
 				  ("enterprise.security.keystore",
 				   "Enter the KeyStore Password "));
-		    String keystorePass = SSLUtils.getKeyStorePass();
+		    final char[] keystorePass = ((MasterPasswordImpl) Globals.get(MasterPassword.class)).getMasterPassword();
 		    System.out.println (lbl+
 					" : (max 3 tries)"); 
 		    int cnt=0;
 		    for (cnt=0; cnt<3; cnt++){
 			// Let the user try putting password thrice
 			System.out.println (lbl+" : "); 
-			String kp = 
+			char[] kp =
 			    (new BufferedReader
-			     (new InputStreamReader(System.in))).readLine();
-			if (kp.equals (keystorePass)) {
+			     (new InputStreamReader(System.in))).readLine().toCharArray();
+			if (Arrays.equals(kp,keystorePass)) {
 			    break; 
-			} else{
+			} else {
 			    String errmessage = localStrings.getLocalString("enterprise.security.IncorrectKeystorePassword","Incorrect Keystore Password");
 			    System.err.println (errmessage); 
 			}
+                        Arrays.fill(kp, ' ');
 		    }
+                    Arrays.fill(keystorePass, ' ');
 		    if (cnt>=3){
 			cc.setSelectedIndex (-1);
 		    } else {

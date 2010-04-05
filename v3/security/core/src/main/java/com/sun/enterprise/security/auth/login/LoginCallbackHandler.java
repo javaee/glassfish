@@ -36,15 +36,12 @@
 
 package com.sun.enterprise.security.auth.login;
 
-import java.util.*;
 import java.io.*;
-import javax.security.auth.*;
 import javax.security.auth.callback.*;
-import javax.security.auth.login.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.security.TextLoginDialog;
-import com.sun.enterprise.security.GUILoginDialog;
+import com.sun.enterprise.security.ssl.TextLoginDialog;
+import com.sun.enterprise.security.ssl.GUILoginDialog;
 
 /**
  * This is the default callback handler provided by the application

@@ -1,11 +1,8 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -13,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -22,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,24 +33,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.security.ssl;
 
-package org.glassfish.appclient.client.acc.callbackhandler;
-
-import com.sun.enterprise.security.ssl.TextLoginDialog;
+import org.glassfish.internal.api.MasterPassword;
+import com.sun.enterprise.security.store.PasswordAdapter;
 import java.io.IOException;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.Arrays;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PreDestroy;
+import org.jvnet.hk2.component.Singleton;
 
 /**
+ * A contract to pass the Glassfish master password between the admin module and
+ * the security module.
  *
- * @author tjquinn
+ * @author Sudarsan Sridhar
  */
-public class DefaultTextCallbackHandler implements CallbackHandler {
+@Service(name="Security SSL Password Provider Service")
+@Scoped(Singleton.class)
+public class MasterPasswordImpl implements MasterPassword, PreDestroy {
+
+    private char[] _masterPassword;
 
     @Override
-    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-        new TextLoginDialog(callbacks);
+    public void setMasterPassword(char[] masterPassword) {
+        _masterPassword = Arrays.copyOf(masterPassword, masterPassword.length);
     }
 
+    @Override
+    public PasswordAdapter getMasterPasswordAdapter() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException {
+        PasswordAdapter passwordAdapter = new PasswordAdapter(_masterPassword);
+        return passwordAdapter;
+    }
+
+    char[] getMasterPassword() {
+        if (_masterPassword == null) {
+            return null;
+        }
+        return Arrays.copyOf(_masterPassword, _masterPassword.length);
+    }
+
+    @Override
+    public void preDestroy() {
+        Arrays.fill(_masterPassword, ' ');
+    }
 }

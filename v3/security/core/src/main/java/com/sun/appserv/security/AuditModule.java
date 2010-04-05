@@ -1,4 +1,4 @@
-/*
+    /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
@@ -51,7 +51,7 @@ import javax.servlet.http.HttpServletRequest;
  * @version
  */
 public abstract class AuditModule {
-    Properties props = null;
+    protected Properties props = null;
     /** 
      * Method is invoked at server startup, during AuditModule initialization.
      * If method returns without any exception then S1AS assumes that the module
