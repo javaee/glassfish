@@ -35,6 +35,6 @@ $S1AS_HOME/bin/asadmin create-domain --adminport ${GUI_ADMIN_PORT} --nopassword=
 #(jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 $S1AS_HOME/bin/asadmin start-domain
 
-mvn -Dbrowser=$BROWSER -Dadmin.port=$GUI_ADMIN_PORT -Dselenium.port=$SELENIUM_PORT test || true
+mvn -Dbrowser=$BROWSER -Dadmin.port=$GUI_ADMIN_PORT -Dselenium.port=$SELENIUM_PORT test
 
 $S1AS_HOME/bin/asadmin stop-domain

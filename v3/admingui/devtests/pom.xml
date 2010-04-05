@@ -46,21 +46,21 @@
         <version>8</version>
     </parent>
 
-    <!--
-    <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>3.1-SNAPSHOT</version>
-    </parent>
-    -->
-
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-devtests</artifactId>
+    <version>3.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Admin Dev Tests</name>
     <description>This module contains the dev tests for the admin console</description>
 
     <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium.client-drivers</groupId>
             <artifactId>selenium-java-client-driver</artifactId>
@@ -72,13 +72,6 @@
             <artifactId>htmlunit</artifactId>
             <version>2.7</version>
         </dependency>
-	<dependency>
-	    <groupId>junit</groupId>
-	    <artifactId>junit</artifactId>
-	    <version>4.3.1</version>
-	    <scope>test</scope>
-	    <optional>true</optional>
-	</dependency>
     </dependencies>
     <build>
         <pluginManagement>
@@ -91,6 +84,12 @@
           </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>none</forkMode>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>selenium-maven-plugin</artifactId>
