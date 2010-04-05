@@ -471,9 +471,7 @@
         <ant dir="keepAliveTimeoutZero" target="all"/>
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
-<!-- Temporarily commented out due to IT 11219
         <ant dir="defaultResponseType" target="all"/>
--->
         <ant dir="httpListenerAdminReconfig" target="all"/>
         <ant dir="headerBufferSize" target="all"/>
 <!-- Temporarily commented out due to IT 11219
