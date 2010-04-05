@@ -19,7 +19,7 @@
 
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
-        <get src="${glassfish.dist.url}"/>
+        <get src="${glassfish.dist.url}" dest="glassfish.zip" usetimestamp="true"/>
         <!--
         <get src="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip" dest="glassfish.zip" usetimestamp="true"/>
         -->
