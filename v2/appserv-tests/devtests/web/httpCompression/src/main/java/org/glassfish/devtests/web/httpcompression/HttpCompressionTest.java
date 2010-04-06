@@ -78,6 +78,8 @@ public class HttpCompressionTest extends BaseDevTest {
                 "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=true"));
             report("set-compression-off", asadmin("set",
                 "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=off"));
+            report("set-compression-1024", asadmin("set",
+                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=1024"));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         } finally {
