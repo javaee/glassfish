@@ -45,6 +45,7 @@ import org.glassfish.api.Param;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.ObjectAnalyzer;
 
 /**
  * Start a local server instance.
@@ -62,8 +63,12 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
-        instanceName = instanceName0;
-        super.validate();
+        super.validate(); // sets all the dirs
+
+        //instanceName is set to the default right now...
+        // only change if the commandline is overriding
+        if(ok(instanceName0))
+            instanceName = instanceName0;
     }
 
     /**
@@ -72,6 +77,11 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
-        throw new CommandException("Not implemented");
+        System.out.println("" + this);
+        throw new CommandException("ZZZZZZZZZZZZZZZZZZZZZZZ   Not implemented yet");
+    }
+
+    public String toString() {
+        return ObjectAnalyzer.toStringWithSuper(this);
     }
 }

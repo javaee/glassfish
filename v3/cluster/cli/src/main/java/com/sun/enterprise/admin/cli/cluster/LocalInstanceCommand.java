@@ -88,8 +88,12 @@ public abstract class LocalInstanceCommand extends CLICommand {
                 agentsDir = new File(new File(getSystemProperty(
                                 SystemPropertyConstants.INSTALL_ROOT_PROPERTY)),
                                 "nodeagents");
+
+            // TODO -- agentDir might be set to null
         }
 
+        agentsDir.mkdirs();
+        
         if (!agentsDir.isDirectory()) {
             throw new CommandException(
                     strings.get("Instance.badAgentDir", agentsDir));
