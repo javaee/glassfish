@@ -42,7 +42,6 @@ list-clusters R
 start-cluster R
 stop-cluster R
 copy-config R
-delete-config R
 list-configs R
 list-application-refs R
 create-resource-ref R

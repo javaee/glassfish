@@ -36,18 +36,26 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.module.bootstrap.Populator;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.*;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
@@ -58,6 +66,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  *
@@ -104,7 +113,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * @param value allowed object is
      *              {@link String }
      */
-    @Param(name="config-ref")
+    @Param(name="config-ref", optional=true)
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -242,7 +251,10 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     }
 
     @Service
-    class Decorator implements CreationDecorator {
+    class Decorator implements CreationDecorator<Cluster> {
+
+        @Param(name="config-ref", optional=true)
+        String configRef=null;
 
         @Param(optional = true)
         String hosts=null;
@@ -266,10 +278,69 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         String autohadb=null;
 
         @Param(optional = true)
-        String portbase=null;        
+        String portbase=null;
+
+        @Inject
+        Habitat habitat;
+
+        @Inject
+        ServerEnvironment env;
+
+        @Inject
+        Domain domain;
         
         @Override
-        public void decorate(AdminCommandContext context, Object instance) throws TransactionFailure, PropertyVetoException {
+        public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
+            if (configRef==null) {
+                ConfigParser configParser = new ConfigParser(habitat);
+
+                (new Populator() {
+
+                    public void run(ConfigParser parser) {
+                        long now = System.currentTimeMillis();
+                        File f = new File(env.getConfigDirPath(), "default-config.xml");
+                        if (!f.exists()) {
+                            Logger.getAnonymousLogger().severe("Cannot find default-config.xml at " + f.getAbsolutePath());
+                            return;
+                        }
+                        URL url = null;
+                        try {
+                            url = f.toURI().toURL();
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            return;
+                        }
+                        if (url != null) {
+                            try {
+                                DomDocument document = parser.parse(url,  new DomDocument(habitat) {
+                                    @Override
+                                    public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
+                                        return new ConfigBean(habitat, this, parent, model, in);
+                                    }
+                                }, Dom.unwrap(domain.getConfigs()));
+                                final Config defaultConfig = document.getRoot().createProxy(Config.class);
+                                final String configName = "config-"+instance.getName();
+                                instance.setConfigRef(configName);
+
+                                // needs to be changed to join the transaction of instance
+                                ConfigSupport.apply(new ConfigCode() {
+                                    @Override
+                                    public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
+                                        ((Configs) w[0]).getConfig().add(defaultConfig);
+                                        ((Config) w[1]).setName(configName);
+                                        return null;
+                                    }
+                                }, domain.getConfigs(), defaultConfig);
+
+                            } catch(Exception e) {
+                                e.printStackTrace();
+                            }
+                            Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
+                        }
+                    }
+                }).run(configParser);
+            }
+
             if (hosts!=null ||
                     haagentport!=0 ||
                     haadminpassword!=null ||

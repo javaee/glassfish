@@ -271,6 +271,11 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                 }
                 return delegate.getValue(component, annotated, type);
             }
+
+            @Override
+            public boolean isOptional(AnnotatedElement annotated, Param annotation) {
+                return annotation.optional();
+            }
         };
         
     }
