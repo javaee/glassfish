@@ -55,7 +55,6 @@
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
 
     <target name="jsp">
-        <ant dir="keepAliveTimeoutZero" target="all"/>
         <ant dir="jspAnonymousClass" target="all"/>
         <ant dir="emptyServletPathJspInclude" target="all"/>
         <ant dir="jspUseBean" target="all"/>
@@ -469,6 +468,7 @@
         <ant dir="readerThreadsConfig" target="all"/>
         <ant dir="readerSelectorsConfig" target="all"/>
         <ant dir="httpServletDoPost" target="all"/>
+        <ant dir="keepAliveTimeoutZero" target="all"/>
         <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
         <ant dir="httpResponseServerHeader" target="all"/>
         <ant dir="defaultResponseType" target="all"/>

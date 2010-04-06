@@ -48,7 +48,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup,restart-server-instance-common,run, restore,restart-server-instance-common"/>
+    <target name="all" depends="setup,run,restore"/>
 
     <target name="setup" depends="init-common">
         <antcall target="asadmin-common-ignore-fail">
@@ -56,6 +56,7 @@
             <param name="operand.props"
 						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=0"/>
         </antcall>
+        <sleep seconds="10"/>
     </target>
 
     <target name="restore" depends="init-common">
