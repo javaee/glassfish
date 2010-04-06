@@ -17,9 +17,9 @@
       <format property="TODAY" pattern="d-MMMM-yyyy hh:mm" locale="en,US"/>
   </tstamp>
 
-  <property name="build.v3.javadocs" value="${basedir}/build/v3/javadocs"/>
-  <property name="v3.Name" value="GlassFish v3" />
-  <property name="v3.Title" value="GlassFish v3 ${DRAFT}" />
+  <property name="build-3.0.1-javadocs" value="${basedir}/build/3.0.1/javadocs"/>
+  <property name="3.0.1-Name" value="GlassFish 3.0.1" />
+  <property name="3.0.1-Title" value="GlassFish 3.0.1 ${DRAFT}" />
 
   <path id="src.dir">
     <dirset dir="${basedir}">
@@ -50,17 +50,18 @@
       <include name="external/saaj-api/**" />
       <include name="external/uel/**"/>
       <include name="external/validation-api/src/main/java/**"/>
-      <include name="external/weld-api/**"/>
+      <include name="external/weld-osgi-bundle/**"/>
     </dirset>
   </path>
 
-  <path id="v3.src.path">
+  <path id="3.0.1-src-path">
     <dirset dir="${basedir}">
       <include name="external/hk2/**"/>
       <include name="common/glassfish-api/src/main/java/**"/>
       <include name="common/amx-core/src/main/java/**"/>
       <include name="common/amx-config/src/main/java/**"/>
       <include name="common/amx-j2ee/src/main/java/**"/>
+      <include name="web/web-embed/api/src/main/java/**"/>
       <include name="flashlight/framework/src/main/java/**"/>
       <include name="external/management-api-sources/**"/>
       <include name="external/appclient-tmp/**"/>
@@ -76,15 +77,15 @@
       <antcall target="jar-javadoc" />
   </target>
 
-  <target name="v3-javadocs" description="all javadocs including
+  <target name="3.0.1-javadocs" description="all javadocs including
                          GlassFish specific javadocs"
                          depends="checkout.source,appclient-source">
-      <antcall target="create-v3-javadocs" />
+      <antcall target="create-3.0.1-javadocs" />
       <antcall target="copy-jsf-image-files">
-        <param name="build.javadocs" value="${build.v3.javadocs}"/>
+        <param name="build.javadocs" value="${build-3.0.1-javadocs}"/>
       </antcall>
       <antcall target="jar-javadoc" >
-        <param name="build.javadocs" value="${build.v3.javadocs}"/>
+        <param name="build.javadocs" value="${build-3.0.1-javadocs}"/>
         <param name="destfile.name" value="glassfish-all.jar"/>
       </antcall>
       <antcall target="clean-javadocs-dir">
@@ -124,8 +125,8 @@
       <antcall target="eclipse-persistence.download" />
       <antcall target="saaj-api.download" />
       <antcall target="uel.download" />
-      <antcall target="bean-validator.checkout" />
-      <antcall target="weld-api.download" />
+      <antcall target="bean-validator.download" />
+      <antcall target="weld-osgi-bundle.download" />
       <antcall target="hk2.download" />
       <antcall target="flashlight.download" />
   </target>
@@ -134,15 +135,15 @@
       <mkdir dir="${external.dir}"/>
   </target>
 
-  <target name="v3.checkout" description="Checkout v3 workspace"> 
-      <echo message="checkout v3 from ${v3.svn.url}."/>
-      <!-- checkout v3 source -->
+  <target name="3.0.1.checkout" description="Checkout 3.0.1 workspace"> 
+      <echo message="checkout 3.0.1 from ${3.0.1.svn.url}."/>
+      <!-- checkout 3.0.1 source -->
       <exec executable="svn" dir="${basedir}" failonerror="true" >
 	  <arg line="checkout" />
-          <arg line="${v3.svn.url}" />
+          <arg line="${3.0.1.svn.url}" />
           <arg line="--username" />
           <arg line="guest" />
-          <arg line="v3" />
+          <arg line="3.0.1" />
 	</exec>
   </target>
 
@@ -204,7 +205,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxb-api.download" description="Download JAXB-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxb-api">
-          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2"/>
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.1" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -237,9 +238,11 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxws-api.download" description="Download JAXWS-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxws-api">
-          <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2-rc2"/>
-           <remoteRepository refid="nexus.repository" />
-           <localRepository path="${maven.repo.local}"/>
+          <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2-rc2">
+              <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+          </dependency>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
        </artifact:dependencies>
       <mkdir dir="${external.dir}/jaxws-api" />
       <copy todir="${external.dir}/jaxws-api" verbose="true">
@@ -255,7 +258,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsf.download" description="Download JSF" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
-          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.0.2-b07"/>
+          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.0.2-b10"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -274,7 +277,7 @@ fileset refid of artifact:dependencies does not work in unjar
   <target name="jsp.download" description="Download JSP" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsp">
           <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.2"/>
-          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.2.1-b01"/>
+          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.2.1"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -347,8 +350,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="mq.download" description="Download MQ" depends="initialize.maven" >
       <artifact:dependencies filesetId="dependency.fileset" sourcesFilesetId="sources.dependency.mq" >
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.1-007" classifier="sources" type="zip"/>
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.1-007" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.2-002-1" classifier="sources" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.4.2-002-1" type="zip"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -371,7 +374,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="eclipse-persistence.download" description="Download Eclipse Persistence source" depends="initialize.maven" > 
       <artifact:dependencies sourcesFilesetId="sources.dependency.eclipse-persistence">
-          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.0-M15"/>
+          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.0"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -424,30 +427,39 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-  <target name="bean-validator.checkout" description="Checkout BeanValidator workspace"> 
-      <echo message="checkout Bean validation from ${bean-validator.svn.url}." />
-      <!-- checkout BeanValidator source -->
-      <exec executable="svn" dir="${basedir}" >
-	  <arg line="checkout" />
-          <arg line="${bean-validator.svn.url}/api/checkout-source/src" />
-          <arg line="external/validation-api/src" />
-	</exec>
-  </target>
-
-
-  <target name="weld-api.download" description="Download Weld API" depends="initialize.maven" >
-      <artifact:dependencies sourcesFilesetId="sources.dependency.weld-api" >
-          <dependency groupId="org.jboss.weld" artifactId="weld-api" version="1.0" classifier="sources" />
+  <target name="bean-validator.download" description="Download BeanValidator" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.bean-validator" >
+          <dependency groupId="org.glassfish" artifactId="bean-validator" version="3.0-JBoss-4.0.2_02" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
-      <mkdir dir="${external.dir}/weld-api" />
-      <copy todir="${external.dir}/weld-api" verbose="true">
-          <fileset refid="sources.dependency.weld-api" />
+      <mkdir dir="${external.dir}/validation-api" />
+      <copy todir="${external.dir}/validation-api" verbose="true">
+          <fileset refid="sources.dependency.bean-validator" />
           <mapper type="flatten" />
       </copy>
-      <unjar dest="${external.dir}/weld-api"  >
-          <fileset dir="${external.dir}/weld-api">
+      <unjar dest="${external.dir}/validation-api"  >
+          <fileset dir="${external.dir}/validation-api">
+              <include name="**/*.jar"/>
+          </fileset>
+      </unjar>
+  </target>
+
+  <target name="weld-osgi-bundle.download" description="Download Weld OSGI Bundle" depends="initialize.maven" >
+      <artifact:dependencies sourcesFilesetId="sources.dependency.weld-osgi-bundle" >
+          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.0.1-SP1" classifier="sources" >
+              <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
+          </dependency>
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
+      <mkdir dir="${external.dir}/weld-osgi-bundle" />
+      <copy todir="${external.dir}/weld-osgi-bundle" verbose="true">
+          <fileset refid="sources.dependency.weld-osgi-bundle" />
+          <mapper type="flatten" />
+      </copy>
+      <unjar dest="${external.dir}/weld-osgi-bundle"  >
+          <fileset dir="${external.dir}/weld-osgi-bundle">
               <include name="**/*.jar"/>
           </fileset>
       </unjar>
@@ -455,7 +467,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="hk2.download" description="Download hk2" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.hk2" >
-          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="0.4.17" classifier="sources" />
+          <dependency groupId="com.sun.enterprise" artifactId="hk2" version="1.0.0" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -518,27 +530,27 @@ fileset refid of artifact:dependencies does not work in unjar
              encoding="ISO-8859-1"
              windowtitle="${Title}"
              doctitle="&lt;h1&gt;${Name} &lt;br&gt;API Specification&lt;/h1&gt;&lt;p&gt;This document is the API specification for version 6 of the Java&lt;sup&gt;TM&lt;/sup&gt; Platform, Enterprise Edition."
-             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009, 2010, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
              Header="${DRAFT}" 
              Footer="${DRAFT}" >
     </javadoc>
   </target>
 
-  <target name="create-v3-javadocs" description="Creates GlassFish v3 JavaDocs">
+  <target name="create-3.0.1-javadocs" description="Creates GlassFish 3.0.1 JavaDocs">
     <antcall target="clean-javadocs-dir">
-      <param name="build.javadocs" value="${build.v3.javadocs}"/>
+      <param name="build.javadocs" value="${build-3.0.1-javadocs}"/>
     </antcall>
-    <mkdir dir="${build.v3.javadocs}"/>
+    <mkdir dir="${build-3.0.1-javadocs}"/>
     <javadoc 
-             destdir="${build.v3.javadocs}"
+             destdir="${build-3.0.1-javadocs}"
              Verbose="true"
              maxmemory="2048m"
              author="false"
              version="true"
              source="1.6"
              encoding="ISO-8859-1"
-             windowtitle="${v3.Title}"
-             doctitle="&lt;h1&gt;${v3.Name} &lt;/h1&gt;&lt;p&gt;This document is the API specification for GlassFish v3."
+             windowtitle="${3.0.1-Title}"
+             doctitle="&lt;h1&gt;${3.0.1-Name} &lt;/h1&gt;&lt;p&gt;This document is the API specification for GlassFish 3.0.1."
              bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009 Sun Microsystems, Inc. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
              Header="${DRAFT}" 
              Footer="${DRAFT}" >
@@ -557,7 +569,8 @@ fileset refid of artifact:dependencies does not work in unjar
        <package name="com.sun.hk2.*"/>
        <package name="com.sun.enterprise.security.audit.*"/>
        <package name="org.jvnet.*"/>
-       <package name="org.glassfish.api"/>
+       <package name="org.glassfish.api.*"/>
+       <package name="org.glassfish.api.admin.*"/>
        <package name="org.glassfish.api.admin.cli"/>
        <package name="org.glassfish.api.amx.*"/>
        <package name="org.glassfish.api.event"/>
@@ -585,7 +598,7 @@ fileset refid of artifact:dependencies does not work in unjar
        <excludepackage name="com.sun.appserv.connectors.internal.*"/>
        <excludepackage name="com.sun.enterprise.module.common_impl.*"/>
        <excludepackage name="com.sun.enterprise.module.impl.*"/>
-       <sourcepath refid="v3.src.path"/>
+       <sourcepath refid="3.0.1-src-path"/>
     </javadoc>
   </target>
 
