@@ -489,7 +489,7 @@
         <ant dir="readLineWithMaxLength" target="all"/>
         <ant dir="httpResponseErrorMessage" target="all"/>
         <ant dir="redirectWithRootWildCardUrlPattern" target="all"/>
-        <!-- ant dir="httpCompression" target="all"/ -->
+        <ant dir="httpCompression" target="all"/>
     </target>
 
     <target name="comet">
