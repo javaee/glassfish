@@ -4091,10 +4091,9 @@ public class Request
     }
 
     /**
-     * This class will be invoked by Grizzly when a suspend operation is either
-     * {@link com.sun.grizzly.tcp.Response#resume} or when the response
-     * is idle for X time. More info can be found look at
-     * {@link com.sun.grizzly.tcp.Response#ResponseAttachment}
+     * This class will be invoked by Grizzly when a suspended operation is
+     * resumed {@link com.sun.grizzly.tcp.Response#resume} or has timed out.
+     * See {@link com.sun.grizzly.tcp.Response#ResponseAttachment} for details.
      */
     private final static class RequestAttachment<A> extends
             com.sun.grizzly.tcp.Response.ResponseAttachment {

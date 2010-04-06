@@ -96,10 +96,11 @@ public class AsyncContextImpl implements AsyncContext {
     private LinkedList<AsyncListenerContext> asyncListenerContexts =
         new LinkedList<AsyncListenerContext>();
 
+    // The number of times this AsyncContext has been reinitialized via a call
+    // to ServletRequest#startAsync
     private AtomicInteger startAsyncCounter = new AtomicInteger(0);
 
-    private ThreadLocal<Boolean> isStartAsyncInScope =
-    new ThreadLocal<Boolean>() {
+    private ThreadLocal<Boolean> isStartAsyncInScope = new ThreadLocal<Boolean>() {
         @Override  
         protected Boolean initialValue() {  
             return Boolean.FALSE;  
@@ -379,7 +380,10 @@ public class AsyncContextImpl implements AsyncContext {
                     asyncContext.getResponse(), DispatcherType.ASYNC);
                 /* 
                  * Close the response after the dispatch target has
-                 * completed execution, unless startAsync was called.
+                 * completed execution, unless the dispatch target has called
+                 * ServletRequest#startAsync, in which case the AsyncContext's
+                 * startAsyncCounter will be greater than it was before the
+                 * dispatch
                  */
                 if (asyncContext.startAsyncCounter.compareAndSet(
                         startAsyncCurrent, startAsyncCurrent)) {
