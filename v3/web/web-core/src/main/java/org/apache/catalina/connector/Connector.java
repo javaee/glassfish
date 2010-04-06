@@ -387,6 +387,8 @@ public class Connector
      * The <code>SelectorThread</code> implementation class.
      */
     private String selectorThreadImpl = null; 
+
+    protected String defaultResponseType = null;
     
     
     // ------------------------------------------------------------- Properties
@@ -2000,4 +2002,11 @@ public class Connector
     public void setSelectorThreadImpl(String selectorThreadImpl) {
         this.selectorThreadImpl = selectorThreadImpl;
     } 
+
+    /**
+     * Get the default response type.
+     */
+    public String getDefaultResponseType() {
+        return defaultResponseType;
+    }
 }

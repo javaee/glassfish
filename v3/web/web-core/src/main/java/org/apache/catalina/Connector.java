@@ -346,4 +346,9 @@ public interface Connector {
      */    
     public Adapter getAdapter();
     // END SJSAS 6363251
+
+    /**
+     * Get the default response type.
+     */
+    public String getDefaultResponseType();
 }

@@ -1164,6 +1164,7 @@ public class PECoyoteConnector extends Connector {
         setDisableUploadTimeout(!ConfigBeansUtilities.toBoolean(http.getUploadTimeoutEnabled()));
         setURIEncoding(http.getUriEncoding());
         setChunkingDisabled(!ConfigBeansUtilities.toBoolean(http.getChunkingEnabled()));
+        defaultResponseType = http.getDefaultResponseType();
         configSslOptions(ssl);
     }
 
