@@ -91,6 +91,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
     private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
+    private static RuntimeType serverType = RuntimeType.DAS;
 
     /**
      * Compute all the values per default.
@@ -171,6 +172,14 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         // bnevins IT 10209
         asenv.getProps().put(SystemPropertyConstants.SERVER_NAME, instanceName);
         System.setProperty(SystemPropertyConstants.SERVER_NAME, instanceName);
+
+        // bnevins Apr 2010 adding clustering support...
+        String typeString = args.getProperty("-type");
+
+        if(typeString != null && typeString.equals("instance"))
+            serverType = RuntimeType.INSTANCE;
+        else
+            serverType = RuntimeType.DAS;
     }
 
     public String getInstanceName() {
@@ -322,10 +331,17 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         return server!=null;
     }
 
+    public boolean isDAS() {
+        return serverType == RuntimeType.DAS;
+    }
+
+    public boolean isInstance() {
+        return serverType == RuntimeType.INSTANCE;
+    }
+    
     @Override
     public RuntimeType getRuntimeType() {
-        // so far we are only the DAS...
-        return RuntimeType.DAS;
+        return serverType;
     }
 }
 

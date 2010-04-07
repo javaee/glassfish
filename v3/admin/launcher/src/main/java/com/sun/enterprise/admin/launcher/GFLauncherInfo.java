@@ -238,6 +238,8 @@ public class GFLauncherInfo {
         }
 
         Map<String, String> map = new HashMap<String, String>();
+
+        map.put("-type", type.toString());
         
         if(isDomain()) {
             map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));

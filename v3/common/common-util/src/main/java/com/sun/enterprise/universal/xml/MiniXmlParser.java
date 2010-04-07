@@ -217,8 +217,30 @@ public class MiniXmlParser {
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
         domainXmlstream = new FileInputStream(domainXml);
-        parser = XMLInputFactory.newInstance().createXMLStreamReader(domainXml.toURI().toString(), domainXmlstream);
+        parser = getXmlInputFactory().createXMLStreamReader(
+                            domainXml.toURI().toString(), domainXmlstream);
     }
+
+    // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
+    // newInstance(), where as on JDK 1.5, we use two argument version of
+    // newInstance() so that we can pass the classloader that loads
+    // XMLInputFactory to load the factory, otherwise by default StAX uses
+    // Thread's context class loader to locate the factory. See:
+    // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
+    // 
+    
+    private XMLInputFactory getXmlInputFactory() {
+        Class   clazz = XMLInputFactory.class;
+        ClassLoader cl = clazz.getClassLoader();
+
+        // jdk6+
+        if(cl == null)
+            return XMLInputFactory.newInstance();
+
+        // jdk5
+        return XMLInputFactory.newInstance(clazz.getName(), cl);
+     }
+
 
     private void getConfigRefName() throws XMLStreamException, EndDocumentException {
         if (configRef != null) {
@@ -239,8 +261,9 @@ public class MiniXmlParser {
         while (true) {
             // get to first <server> element
             skipNonStartElements();
-            if (!"server".equals(parser.getLocalName())) {
-                throw new XMLStreamException("no server found");
+            String localName = parser.getLocalName();
+            if (!"server".equals(localName)) {
+                throw new XMLStreamException(strings.get("noserver", serverName));
             }
             // get the attributes for this <server>
             Map<String, String> map = parseAttributes();
@@ -251,6 +274,8 @@ public class MiniXmlParser {
                 skipToEnd("servers");
                 return;
             }
+            else
+                skipToEnd("server");
         }
     }
 
