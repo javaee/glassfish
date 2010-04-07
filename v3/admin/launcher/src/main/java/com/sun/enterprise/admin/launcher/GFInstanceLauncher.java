@@ -82,7 +82,7 @@ class GFInstanceLauncher extends GFLauncher{
 
     @Override
     String getMainClass() throws GFLauncherException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return MAIN_CLASS;
     }
     
     private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.ASMain";
