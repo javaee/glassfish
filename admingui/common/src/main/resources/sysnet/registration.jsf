@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -232,8 +232,6 @@
             "<br/> <br/><div style="margin-left: 30px;">
                 "$resource{i18nc.reg.yourPrivacy}<br><br>
                 "$resource{i18nc.reg.privacy}
-                "<br>
-                "$resource{i18nc.reg.privacy2}
             "</div>
             <sun:title id="title2" >
             <!facet pageButtonsBottom>
