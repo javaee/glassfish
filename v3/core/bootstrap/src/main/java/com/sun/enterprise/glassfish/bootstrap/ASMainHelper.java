@@ -396,6 +396,24 @@ public class ASMainHelper {
         }
     }
 
+    /**
+     * CLI or any other client needs to ALWAYS pass in the instanceDir for
+     * instances.
+
+     * @param args
+     * @param asEnv
+     * @return
+     */
+    File getInstanceRoot(Properties args, Properties asEnv) {
+
+        String instanceDir = getParam(args, "instancedir");
+
+        if(ok(instanceDir))
+            return new File(instanceDir);
+
+        return null;
+    }
+
 
     private class PlainJarRepository extends AbstractRepositoryImpl {
         File aFile = null;
