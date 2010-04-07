@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -52,6 +53,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -116,6 +118,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
     @Inject
     protected Applications applications;
+
+    @Inject
+    protected SystemApplications systemApplications;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
@@ -389,8 +394,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
 
         final ActionReport dummy = new HTMLActionReporter();
-        // stop all running applications
-        for (Application app : applications.getApplications()) {
+        // stop all running applications including user and system applications
+        List<Application> allApplications = new ArrayList<Application>();
+        allApplications.addAll(applications.getApplications());
+        allApplications.addAll(systemApplications.getApplications());
+
+        for (Application app : allApplications) {
             ApplicationInfo appInfo = deployment.get(app.getName());
             if (appInfo!=null) {
                 UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
@@ -398,7 +407,11 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                 try {
                     ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, dummy).source(appInfo.getSource()).build();
-                    appInfo.stop(depContext, depContext.getLogger());
+                    try {
+                        appInfo.stop(depContext, depContext.getLogger());
+                    } catch (Throwable t) {
+                        logger.log(Level.WARNING, "Cannot stop application " + app.getName(), t);
+                    }
                     appInfo.unload(depContext);
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Cannot create unloading context for " + app.getName(), e);
