@@ -57,15 +57,10 @@ public class ASMain {
 
     public static void main(final String args[]) {
         checkJdkVersion();
-
         String platform = whichPlatform();
-
         File installRoot = findInstallRoot();
-
         File instanceRoot = findInstanceRoot(installRoot, args);
-
         Properties ctx = buildStartupContext(platform, installRoot, instanceRoot, args);
-
         setSystemProperties(ctx);
 
         PlatformMain delegate=getMain(platform);
@@ -101,9 +96,18 @@ public class ASMain {
     private static File findInstanceRoot(File installRoot, String[] args) {
         ASMainHelper helper = new ASMainHelper(logger);
         Properties asEnv = helper.parseAsEnv(installRoot);
-        File domainDir = helper.getDomainRoot(ArgumentManager.argsToMap(args), asEnv);
-        helper.verifyDomainRoot(domainDir);
-        return domainDir;
+
+        // IMPORTANT - check for instance BEFORE domain.  We will always come up
+        // with a default domain but there is no such thing sa a default instance
+
+        File instanceDir = helper.getInstanceRoot(ArgumentManager.argsToMap(args), asEnv);
+
+        if(instanceDir == null) {
+            // that means that this is a DAS.
+            instanceDir = helper.getDomainRoot(ArgumentManager.argsToMap(args), asEnv);
+        }
+        helper.verifyDomainRoot(instanceDir);
+        return instanceDir;
     }
 
     private static String whichPlatform() {
@@ -237,6 +241,4 @@ public class ASMain {
                     + ASMain.class + " class location, aborting");
         }
     }
-
-
 }
