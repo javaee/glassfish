@@ -44,6 +44,7 @@
     </target>
 
     <target name="pre-test" depends="download,setup,shutdown-server">
+        <!--
         <exec executable="${executable}">
             <arg value="delete-domain"/>
             <arg value="domain1"/>
@@ -51,15 +52,16 @@
 
         <exec executable="${executable}">
             <arg value="create-domain"/>
-            <arg value="--adminport"/>
+            <arg value="- - adminport"/>
             <arg value="${env.GUI_ADMIN_PORT}"/>
-            <arg value="--nopassword=true"/>
-            <arg value="--domainproperties"/>
+            <arg value="- - nopassword=true"/>
+            <arg value="- - domainproperties"/>
             <arg value="jms.port=${env.GUI_JMS_PORT}:domain.jmxPort=${env.GUI_JMX_PORT}:orb.listener.port=${env.GUI_ORB_PORT}:http.ssl.port=${env.GUI_SSL_PORT}:orb.ssl.port=${env.GUI_ORB_SSL_PORT}:orb.mutualauth.port=${env.GUI_ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${env.GUI_OSGI_SHELL}"/>
-            <arg value="--instanceport"/>
+            <arg value="- - instanceport"/>
             <arg value="${env.GUI_PORT}"/>
             <arg value="domain1"/>
         </exec>
+        -->
 
         <exec executable="${executable}">
             <arg value="start-domain"/>

@@ -58,7 +58,7 @@ public class BaseSeleniumTestClass {
     public static void setUp() throws Exception {
         if (selenium == null) {
             String browserString = "*" + getParameter("browser", "firefox");
-            String port = getParameter("admin.port", "50000");
+            String port = getParameter("admin.port", "4848");
             String seleniumPort = getParameter("selenium.port", "4444");
             String baseUrl = "http://localhost:" + port;
             System.out.println("Creating Selenium server on port " + seleniumPort + ".  GlassFish is at " + baseUrl);
