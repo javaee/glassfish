@@ -43,6 +43,6 @@
         productImageURL="/resource/community-theme/images/VersionProductName.png"
         productImageDescription="$resource{theme.productName}"
         versionString="#{sessionScope.appServerVersion}"
-        copyrightString="$resource{theme.copyright.shortMessage}"
+        copyrightString="$resource{theme.copyright.fullPage}"
     />
 </sun:form>
