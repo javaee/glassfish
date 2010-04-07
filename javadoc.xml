@@ -49,7 +49,7 @@
       <include name="external/eclipse.persistence/**"/>
       <include name="external/saaj-api/**" />
       <include name="external/uel/**"/>
-      <include name="external/validation-api/src/main/java/**"/>
+      <include name="external/validation-api/**"/>
       <include name="external/weld-osgi-bundle/**"/>
     </dirset>
   </path>
@@ -522,7 +522,7 @@ fileset refid of artifact:dependencies does not work in unjar
     <mkdir dir="${build.javadocs}"/>
     <javadoc sourcepathref="src.dir"
              destdir="${build.javadocs}"
-	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*"
+	     excludepackagenames="com.*,org.*,sample.*,killer.*,net.*,testing.*,java.*,javax.xml.messaging.*,javax.xml.registry.samples.*,javax.xml.namespace.*,javassist.*"
              maxmemory="2048m"
              author="true"
              version="true"
