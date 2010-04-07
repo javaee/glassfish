@@ -36,14 +36,17 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import java.io.File;
-import java.util.List;
+import com.sun.enterprise.universal.io.SmartFile;
+import java.io.*;
+import java.util.*;
+import static com.sun.enterprise.util.SystemPropertyConstants.*;
+
 
 /**
  *
  * @author bnevins
  */
-public class GFInstanceLauncher extends GFLauncher{
+class GFInstanceLauncher extends GFLauncher{
 
     GFInstanceLauncher(GFLauncherInfo info) {
         super(info);
@@ -51,17 +54,37 @@ public class GFInstanceLauncher extends GFLauncher{
     
     @Override
     void internalLaunch() throws GFLauncherException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            launchInstance();
+        }
+        catch (GFLauncherException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new GFLauncherException(ex);
+        }
     }
 
     @Override
     List<File> getMainClasspath() throws GFLauncherException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        List<File> list = new ArrayList<File>();
+        File dir = new File(getEnvProps().get(INSTALL_ROOT_PROPERTY),"modules");
+
+        File bootjar = new File(dir, BOOTSTRAP_JAR);
+        if (!bootjar.exists() && !isFakeLaunch())
+            throw new GFLauncherException("nobootjar", dir.getPath());
+
+        if(bootjar.exists())
+            list.add(SmartFile.sanitize(bootjar));
+
+        return list;
     }
 
     @Override
     String getMainClass() throws GFLauncherException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
+    private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.ASMain";
+    private static final String BOOTSTRAP_JAR = "glassfish.jar";
 }

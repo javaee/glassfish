@@ -68,7 +68,7 @@ public class GFLauncherFactory {
                         new GFLauncherInfo(GFLauncherFactory.ServerType.embedded));
 
             case instance:
-                return new GFEmbeddedLauncher(
+                return new GFInstanceLauncher(
                         new GFLauncherInfo(GFLauncherFactory.ServerType.instance));
 
             default:

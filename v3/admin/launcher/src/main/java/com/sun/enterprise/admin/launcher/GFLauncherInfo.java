@@ -104,8 +104,19 @@ public class GFLauncherInfo {
         domainRootDir = f;
     }
 
-    public boolean isDomain() {
+    public void setInstanceName(String name) {
+        instanceName = name;
+    }
+
+    public void setInstanceRootDir(File f) {
+        instanceRootDir = f;
+    }
+    public final boolean isDomain() {
         return type == ServerType.domain;
+    }
+
+    public final boolean isInstance() {
+        return type == ServerType.instance;
     }
 
     /**
@@ -227,10 +238,17 @@ public class GFLauncherInfo {
         }
 
         Map<String, String> map = new HashMap<String, String>();
-        map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));
+        
+        if(isDomain()) {
+            map.put("-domaindir", SmartFile.sanitize(domainRootDir.getPath()));
+            map.put("-domainname", domainName);
+        }
+        else if(isInstance()) {
+            map.put("-instancedir", SmartFile.sanitize(instanceRootDir.getPath()));
+        }
+
         map.put("-verbose", Boolean.toString(verbose));
         map.put("-debug", Boolean.toString(debug));
-        map.put("-domainname", domainName);
         map.put("-instancename", instanceName);
         map.put("-upgrade", Boolean.toString(upgrade));
         map.put("-read-stdin", "true"); //always make the server read the stdin for master password, at least.
@@ -354,13 +372,7 @@ public class GFLauncherInfo {
             }
         }
 
-        setupDomainRootDir();
-
-        if (!GFLauncherUtils.safeIsDirectory(domainRootDir)) {
-            throw new GFLauncherException("noDomainRootDir", domainRootDir);
-        }
-
-        configDir = new File(domainRootDir, CONFIG_DIR);
+        setupServerDirs();
 
         if (!GFLauncherUtils.safeIsDirectory(configDir)) {
             throw new GFLauncherException("noConfigDir", configDir);
@@ -380,7 +392,14 @@ public class GFLauncherInfo {
         valid = true;
     }
 
-    private void setupDomainRootDir() throws GFLauncherException {
+    private void setupServerDirs() throws GFLauncherException {
+        if(isDomain())
+            setupDomainDirs();
+        else if(isInstance())
+            setupInstanceDirs();
+    }
+
+    private void setupDomainDirs() throws GFLauncherException {
         // if they set domainrootdir -- it takes precedence
         if (domainRootDir != null) {
             domainParentDir = domainRootDir.getParentFile();
@@ -401,6 +420,21 @@ public class GFLauncherInfo {
         }
 
         domainRootDir = new File(domainParentDir, domainName);
+
+        if (!GFLauncherUtils.safeIsDirectory(domainRootDir)) {
+            throw new GFLauncherException("noDomainRootDir", domainRootDir);
+        }
+
+        configDir = new File(domainRootDir, CONFIG_DIR);
+    }
+    private void setupInstanceDirs() throws GFLauncherException {
+        if (instanceRootDir == null) {
+            throw new GFLauncherException("Missing instanceRootDir");
+        }
+        if (instanceName == null) {
+            throw new GFLauncherException("Missing instanceName");
+        }
+        configDir = new File(instanceRootDir, CONFIG_DIR);
     }
 
     private String getTheOneAndOnlyDomain() throws GFLauncherException {
@@ -473,6 +507,8 @@ public class GFLauncherInfo {
     private File domainParentDir;
     private File domainRootDir;
     private File instanceRootDir;
+    //private File nodeAgentDir;
+    //private File nodeAgentsDir;
     private File configDir;
     private File configFile; // domain.xml
     private String domainName;
@@ -489,4 +525,3 @@ public class GFLauncherInfo {
     //password tokens -- could be multiple -- launcher should *just* write them onto stdin of server
     final List<String> securityTokens = new ArrayList<String>(); // note: it's package private
 }
-

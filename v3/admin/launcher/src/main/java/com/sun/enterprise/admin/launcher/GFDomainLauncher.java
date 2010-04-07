@@ -38,10 +38,7 @@ package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.*;
-import java.util.regex.Pattern;
-
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 
 /**
@@ -85,9 +82,7 @@ class GFDomainLauncher extends GFLauncher {
     String getMainClass() throws GFLauncherException {
         return MAIN_CLASS;
     }
-    
     private static final String MAIN_CLASS = "com.sun.enterprise.glassfish.bootstrap.ASMain";
-
     private static final String BOOTSTRAP_JAR = "glassfish.jar";
 }
 
