@@ -9,9 +9,9 @@
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PRODUCT_NAME=GlassFish v3 Web Profile
+PRODUCT_NAME=GlassFish Server Open Source Edition Web Profile
 
-app_title=GlassFish v3 Web Profile
+app_title=GlassFish Server Open Source Edition Web Profile
 # Text for Buttons
 btnCancel_text=Cancel
 btnExit_text=Exit
@@ -49,7 +49,7 @@ title2_color=BLACK
 
 # Text for titles
 title1_text=Welcome to
-title2_text=GlassFish v3
+title2_text=GlassFish Server Open Source Edition Web Profile
 # Colors for content panel
 contentpanel_bordercolor=587993
 contentpanel_bgcolor=e8e9ed
@@ -470,7 +470,7 @@ ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}\
 Provide the following information to create a Sun Online Account. All fields are required.\
 ${BODY_END}
 ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}\
-&lt;a href=http://www.sun.com/privacy/&gt;Sun's Privacy Policy&lt;/a&gt;.\
+&lt;a href=http://www.oracle.com/html/privacy.html&gt;Oracle's Privacy Policy&lt;/a&gt;.\
 ${BODY_END}
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
