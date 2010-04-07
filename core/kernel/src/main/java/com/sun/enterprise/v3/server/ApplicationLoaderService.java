@@ -1,30 +1,45 @@
 /*
- * The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License).  You may not use this file except in
- * compliance with the License.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * You can obtain a copy of the license at
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing
- * permissions and limitations under the License.
+ * Copyright 2006-2010 Sun Microsystems, Inc. All rights reserved.
  *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
  *
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
+
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -38,6 +53,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.config.Named;
+import org.glassfish.api.admin.config.ApplicationName;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.DeployCommandParameters;
@@ -102,6 +118,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
     @Inject
     protected Applications applications;
+
+    @Inject
+    protected SystemApplications systemApplications;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
@@ -375,8 +394,12 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
 
         final ActionReport dummy = new HTMLActionReporter();
-        // stop all running applications
-        for (Application app : applications.getApplications()) {
+        // stop all running applications including user and system applications
+        List<Application> allApplications = new ArrayList<Application>();
+        allApplications.addAll(applications.getApplications());
+        allApplications.addAll(systemApplications.getApplications());
+
+        for (Application app : allApplications) {
             ApplicationInfo appInfo = deployment.get(app.getName());
             if (appInfo!=null) {
                 UndeployCommandParameters parameters = new UndeployCommandParameters(appInfo.getName());
@@ -384,7 +407,11 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                 try {
                     ExtendedDeploymentContext depContext = deployment.getBuilder(logger, parameters, dummy).source(appInfo.getSource()).build();
-                    appInfo.stop(depContext, depContext.getLogger());
+                    try {
+                        appInfo.stop(depContext, depContext.getLogger());
+                    } catch (Throwable t) {
+                        logger.log(Level.WARNING, "Cannot stop application " + app.getName(), t);
+                    }
                     appInfo.unload(depContext);
                 } catch (IOException e) {
                     logger.log(Level.SEVERE, "Cannot create unloading context for " + app.getName(), e);
