@@ -100,6 +100,8 @@ public interface ServerEnvironment {
 
     public File getApplicationEJBStubPath();
 
+    public File getApplicationPolicyFilePath();
+
     /** A JCEKS keystore which is locked with a fixed-key. This is the "security-by-obfuscation"
      *  carried over from V2.
      *

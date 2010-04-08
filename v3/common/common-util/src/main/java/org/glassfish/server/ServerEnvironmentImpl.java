@@ -71,6 +71,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public static final String kRepositoryDirName = "applications";
     public static final String kEJBStubDirName = "ejb";
     public static final String kGeneratedXMLDirName = "xml";
+    public static final String kPolicyFileDirName = "policy";
 
     public static final String kConfigXMLFileName = "domain.xml";
     public static final String kLoggingPropertiesFileName = "logging.properties";
@@ -182,19 +183,23 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
             serverType = RuntimeType.DAS;
     }
 
+    // XXX - many of these methods should be on ServerEnvironment
+
     public String getInstanceName() {
         return instanceName;
     }
-    
+
     public String getDomainName() {
         return domainName;
     }
-    
+
+    @Override
     public File getDomainRoot() {
         return root;
     }
 
 
+    @Override
     public StartupContext getStartupContext() {
         return startupContext;
     }
@@ -203,6 +208,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      * Gets the directory to store configuration.
      * Normally {@code ROOT/config}
      */
+    @Override
     public File getConfigDirPath() {
         return new File(root,kConfigDirName);
     }
@@ -211,6 +217,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      * Gets the directory to store deployed applications
      * Normally {@code ROOT/applications}
      */
+    @Override
     public File getApplicationRepositoryPath() {
         return new File(root,kRepositoryDirName);
     }
@@ -219,6 +226,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      * Gets the directory to store generated stuff.
      * Normally {@code ROOT/generated}
      */
+    @Override
     public File getApplicationStubPath() {
         return new File(root,kGeneratedDirName);
     }
@@ -234,15 +242,18 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      * Gets the directory for hosting user-provided jar files.
      * Normally {@code ROOT/lib}
      */
+    @Override
     public File getLibPath() {
         return new File(root,"lib");
 
     }
 
+    @Override
     public File getApplicationEJBStubPath() {
         return new File(getApplicationStubPath(), kEJBStubDirName);
     }
 
+    @Override
     public File getApplicationGeneratedXMLPath() {
         return new File(getApplicationStubPath(),kGeneratedXMLDirName);
     }
@@ -252,10 +263,25 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      * that is deployed on this instance. By default all such compiled JSPs
      * should lie in the same folder.
      */
+    @Override
     public File getApplicationCompileJspPath() {
         return new File(getApplicationStubPath(),kCompileJspDirName);
     }
 
+    /**
+     * Returns the path for policy files for applications
+     * deployed on this instance.
+     */
+    @Override
+    public File getApplicationPolicyFilePath() {
+        return new File(getApplicationStubPath(),kPolicyFileDirName);
+    }
+
+    /*
+     * XXX - no one is using these methods, so I'm commenting them out
+     * for now.  When they're needed, they should probably be added to
+     * the ServerEnvironment Interface.
+     *
     public String getJavaWebStartPath() {
         return null;
     }
@@ -267,13 +293,10 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public String getInstanceClassPath() {
         return null;
     }
+     */
 
     public Map<String, String> getProps() {
         return Collections.unmodifiableMap(asenv.getProps());
-    }
-
-    private boolean ok(String s) {
-        return s != null && s.length() > 0;
     }
     
     /** Returns the folder where the admin console application's folder (in the
@@ -288,19 +311,23 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         File agp = new File(new File(new File(install, "lib"), "install"), "applications");
         return (agp);
     }
-    
+
+    @Override
     public File getMasterPasswordFile() {
         return new File (getDomainRoot(), "master-password");
     }
 
+    @Override
     public File getJKS() {
         return new File (getConfigDirPath(), "keystore.jks");
     }
 
     private Status status=Status.starting;
+    @Override
     public Status getStatus() {
         return status;
     }
+
     public void setStatus(Status status) {
         this.status = status;
     }
@@ -316,10 +343,14 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public boolean isInstance() {
         return serverType == RuntimeType.INSTANCE;
     }
-    
+
     @Override
     public RuntimeType getRuntimeType() {
         return serverType;
+    }
+
+    private boolean ok(String s) {
+        return s != null && s.length() > 0;
     }
 }
 

@@ -247,7 +247,7 @@ public class UpgradeStartup implements ModuleStartup {
         FileUtils.whack(oldJ2eeModulesJSPCompileDir);
 
         // 5. clean up old system apps policy files
-        File policyRootDir = new File(env.getApplicationStubPath(), "policy");
+        File policyRootDir = env.getApplicationPolicyFilePath();
         File adminapp = new File(policyRootDir, "adminapp");
         FileUtils.whack(adminapp);
         File admingui = new File(policyRootDir, "admingui");
