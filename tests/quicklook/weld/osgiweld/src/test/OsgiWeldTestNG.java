@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,17 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test.web.extensions;
+package test.weld.osgi;
 
 import org.testng.annotations.*;
 import org.testng.Assert;
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 /**
- * Test Weld extension beans
+ * Test Weld Osgi Bundle Integrity 
  *
- * @author Santiago.PericasGeertsen@sun.com
+ * @author Santiago.PericasGeertsen@oracle.com
+ * @author Roger.Kitain@oracle.com
  */
 public class OsgiWeldTestNG {
 
@@ -58,18 +60,53 @@ public class OsgiWeldTestNG {
         m_port=System.getProperty("http.port");
     }
 
-    @Test(groups = {"pulse"})
-    public void testOsgiModuleIntegrity() throws Exception {
+    @DataProvider(name = "exports")
+    public Object[][] getExportData() throws Exception {
+        Properties props = new Properties();
+        props.load(this.getClass().getResourceAsStream("weld-osgi.properties"));
+
+        Object[] exportPackages = new Object[1];
+        exportPackages[0] = props.getProperty("exports");
+        return (new Object[][] {exportPackages});
+    }
+
+    @Test(groups = {"pulse"}, dataProvider = "exports")
+    public void testOsgiModuleIntegrity(String exports) throws Exception {
         try {
-            String testurl;
-            testurl = "http://" + m_host  + ":" + m_port + "/"
-                    + strContextRoot +"/OsgiWeld";
-            boolean result = checkForString(testurl, "OK");
+            boolean result = checkManifestAttributes();
             Assert.assertEquals(result, true, "Unexpected HTML");
+            result = checkExports(exports);
+            Assert.assertEquals(result, true, "Unexpected Package Exports");
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(e);
         }
+    }
+
+    private boolean checkManifestAttributes() throws Exception {
+        String testUrl = "http://" + m_host  + ":" + m_port + "/"
+                    + strContextRoot +"/OsgiWeld?command=manifest";
+        boolean result = checkForString(testUrl, "OK");
+        return result;
+    }
+
+    private boolean checkExports(String exports) throws Exception {
+        boolean result = false;
+        String testurl = "http://" + m_host  + ":" + m_port + "/"
+                + strContextRoot +"/OsgiWeld?command=exports";
+        URL url = new URL(testurl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = input.readLine();
+        if (line.equals("ERROR")) {
+            return false;
+        }
+        result = exports.equals(line);
+        return result;
     }
 
     private boolean checkForString(String testurl, String str) throws Exception {

@@ -48,6 +48,11 @@
     <target name="build-deploy" depends="build,deploy" />
    
     <target name="build" depends="compile-tests">
+        <copy todir="${test.class.output}/test/weld/osgi">
+          <fileset dir="metadata">
+            <include name="**/*.properties"/>
+          </fileset>
+        </copy>
         <antcall target="build-impl"/>
     </target>
     
