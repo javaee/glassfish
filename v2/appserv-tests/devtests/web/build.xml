@@ -43,7 +43,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="489"/>
+    <property name="TOTAL_EXPECTED" value="490"/>
 
     &commonSetup;
     &commonBuild;
@@ -244,9 +244,7 @@
         <ant dir="servletContextNullPathArgument" target="all"/>
         <ant dir="servletRequestParamsPreserveOrder" target="all"/>
         <ant dir="servlet-3.0/servletRequestListenerInvocationOrder" target="all"/>
-        <!-- See IT 3505
         <ant dir="servletRequestGetPathInfoCollapseContiguousSlashes" target="all"/>
-        -->
         <ant dir="servletRequestSetCharEncodingIllegalStateException" target="all"/>
         <ant dir="servletRequestGetPathInfoGetPathTranslated" target="all"/>
         <ant dir="servletFilterMappingWithServletNameAndURLPattern" target="all"/>
