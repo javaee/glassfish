@@ -30,9 +30,7 @@
              dest="maven-ant-tasks.jar" usetimestamp="true"/>
         <get src="http://www.ibiblio.org/pub/mirrors/apache/maven/binaries/${maven.version}-bin.zip"
              dest="maven.zip" usetimestamp="true"/>
-<!--
         <get src="${glassfish.dist.url}" dest="glassfish.zip" usetimestamp="true"/>
--->
 
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
