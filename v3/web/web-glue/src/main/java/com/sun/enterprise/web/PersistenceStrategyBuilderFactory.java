@@ -49,6 +49,9 @@ public class PersistenceStrategyBuilderFactory {
     private static final Logger _logger = LogDomains.getLogger(
             PersistenceStrategyBuilderFactory.class, LogDomains.WEB_LOGGER);
 
+    private static final String COHERENCE_WEB_PACKAGE =
+        "com.tangosol.coherence.glassfish";
+
     // The path where ee builders reside
     private String _eeBuilderPath = null;
 
@@ -222,7 +225,12 @@ public class PersistenceStrategyBuilderFactory {
         if(!(persistenceType.equalsIgnoreCase(PersistenceType.MEMORY.getType()) ||
                 persistenceType.equalsIgnoreCase(PersistenceType.FILE.getType()) ||
                 persistenceType.equalsIgnoreCase(PersistenceType.COOKIE.getType()))) {
-            pkg = getEEBuilderPath();
+            if (persistenceType.equalsIgnoreCase(
+                    PersistenceType.COHERENCE_WEB.getType())) {
+                pkg = COHERENCE_WEB_PACKAGE;
+            } else {
+                pkg = getEEBuilderPath();
+            }
         }
         sb.append(pkg + ".");
         sb.append(camelCase(persistenceType));

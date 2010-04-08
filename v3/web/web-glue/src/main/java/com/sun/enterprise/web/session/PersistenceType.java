@@ -104,6 +104,12 @@ public final class PersistenceType {
     public static final PersistenceType REPLICATED =
         new PersistenceType("replicated");
 
+    /**
+     * Coherence Web
+     */
+    public static final PersistenceType COHERENCE_WEB =
+        new PersistenceType("coherence-web");
+
     // ----------------------------------------------------------- Constructors
 
     /**
