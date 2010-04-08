@@ -274,6 +274,7 @@
         <ant dir="servlet-3.0/webListenerAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAnnotationWithWebFragment" target="all"/>
+        <ant dir="servlet-3.0/xmlOverrideUrlPatternWithWebFragment" target="all"/>
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
         <ant dir="servlet-3.0/webFragmentWithEjbLite" target="all"/>
