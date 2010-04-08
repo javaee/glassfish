@@ -46,6 +46,8 @@ public class WebTest {
         new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "default-content-type";
     private static final String EXPECTED_CONTENT_TYPE =
+        "text/plain; charset=iso-8859-1";
+    private static final String EXPECTED_CONTENT_TYPE_1 =
         "text/plain;charset=iso-8859-1";
 
     private String host;
@@ -88,7 +90,8 @@ public class WebTest {
 
         String contentType = conn.getHeaderField("Content-Type");
         if (contentType == null ||
-                !(EXPECTED_CONTENT_TYPE.equals(contentType))) {
+                !(EXPECTED_CONTENT_TYPE.equals(contentType) ||
+                    EXPECTED_CONTENT_TYPE_1.equals(contentType))) {
             throw new Exception("Missing or wrong response Content-Type. " +
                                 "Expected: " + EXPECTED_CONTENT_TYPE +
                                 ", received: " + contentType);
