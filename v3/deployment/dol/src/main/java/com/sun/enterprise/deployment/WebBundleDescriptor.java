@@ -1,4 +1,4 @@
-/*
+    /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
@@ -220,11 +220,9 @@ public class WebBundleDescriptor extends BundleDescriptor
         combineSecurityConstraints(getSecurityConstraintsSet(), webBundleDescriptor.getSecurityConstraintsSet());
 
         // ServletFilters
-        // do not call getServletFilters.addAll() as there is special overriding rule
-        for (ServletFilter servletFilter : webBundleDescriptor.getServletFilters()) {
-            addServletFilter(servletFilter);
-        }
-        getServletFilterMappings().addAll(webBundleDescriptor.getServletFilterMappings());
+        combineServletFilters(webBundleDescriptor);
+        combineServletFilterMappings(webBundleDescriptor);
+
         if (getLocaleEncodingMappingListDescriptor() == null) {
             setLocaleEncodingMappingListDescriptor(webBundleDescriptor.getLocaleEncodingMappingListDescriptor());
         }
@@ -380,7 +378,17 @@ public class WebBundleDescriptor extends BundleDescriptor
             resultDesc = webCompDesc;
             if (!webCompDesc.isConflict(webComponentDescriptor, true)) {
                 // combine the contents of the given one to this one
-                webCompDesc.add(webComponentDescriptor);
+                // except the urlPatterns
+                webCompDesc.add(webComponentDescriptor, false);
+            }
+
+            String implFile = webCompDesc.getWebComponentImplementation();
+            if (webComponentDescriptor.isConflict() &&
+                    (implFile == null || implFile.length() == 0)) {
+
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                        "enterprise.deployment.exceptionconflictwebcompwithoutimpl",
+                        "Two or more web fragments define the same Servlet with conflicting implementation class names that are not overridden by the web.xml"));
             }
         } else {
             resultDesc = webComponentDescriptor;
@@ -1692,6 +1700,46 @@ public class WebBundleDescriptor extends BundleDescriptor
         removeVectorItem(getServletFilters(), ref);
     }
 
+    protected void combineServletFilters(WebBundleDescriptor webBundleDescriptor) {
+        for (ServletFilter servletFilter : webBundleDescriptor.getServletFilters()) {
+            ServletFilterDescriptor servletFilterDesc = (ServletFilterDescriptor)servletFilter;
+            String name = servletFilter.getName();
+            ServletFilterDescriptor aServletFilterDesc = null;
+            for (ServletFilter sf : getServletFilters()) {
+                if (name.equals(sf.getName())) {
+                    aServletFilterDesc = (ServletFilterDescriptor)sf;
+                    break;
+                }
+            }
+
+            if (aServletFilterDesc != null) {
+                if (!aServletFilterDesc.isConflict(servletFilterDesc)) {
+                    if (aServletFilterDesc.getClassName().length() == 0) {
+                        aServletFilterDesc.setClassName(servletFilter.getClassName());
+                    }
+                    if (aServletFilterDesc.isAsyncSupported() == null) {
+                        aServletFilterDesc.setAsyncSupported(servletFilter.isAsyncSupported());
+                    }
+                }
+
+                String className = aServletFilterDesc.getClassName();
+                if (servletFilterDesc.isConflict() && (className == null || className.length() == 0)) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictfilterwithoutimpl",
+                            "Two or more web fragments define the same Filter with conflicting implementation class names that are not overridden by the web.xml"));
+                }
+            } else {
+                if (servletFilterDesc.isConflict()) {
+                    throw new IllegalArgumentException(localStrings.getLocalString(
+                            "enterprise.deployment.exceptionconflictfilter",
+                            "One or more web fragments define the same Filter in a conflicting way, and the Filter is not defined in web.xml"));
+                } else {
+                    getServletFilters().add(servletFilterDesc);
+                }
+            }
+        }
+    }
+
     /* ----
     */
 
@@ -1741,6 +1789,40 @@ public class WebBundleDescriptor extends BundleDescriptor
      */
     public void moveServletFilterMapping(ServletFilterMapping ref, int relPos) {
         moveVectorItem(getServletFilterMappings(), ref, relPos);
+    }
+
+    protected void combineServletFilterMappings(WebBundleDescriptor webBundleDescriptor) {
+        Map<String, ServletFilterMappingInfo> map = new HashMap<String, ServletFilterMappingInfo>();
+        for (ServletFilterMapping sfMapping : getServletFilterMappings()) {
+            ServletFilterMappingInfo sfmInfo = map.get(sfMapping.getName());
+            if (sfmInfo == null) {
+                sfmInfo = new ServletFilterMappingInfo();
+                sfmInfo.servletFilterMapping = sfMapping;
+                map.put(sfMapping.getName(), sfmInfo);
+            }
+            if (!sfmInfo.hasMapping) {
+                sfmInfo.hasMapping = (sfMapping.getServletNames().size() > 0 ||
+                       sfMapping.getURLPatterns().size() > 0);
+            }
+            if (!sfmInfo.hasDispatcher) {
+                sfmInfo.hasDispatcher = (sfMapping.getDispatchers().size() > 0);
+            }
+        }
+
+        for (ServletFilterMapping sfMapping : webBundleDescriptor.getServletFilterMappings()) {
+            ServletFilterMappingInfo sfmInfo = map.get(sfMapping.getName());
+            if (sfmInfo != null) {
+                if (!sfmInfo.hasMapping) {
+                    sfmInfo.servletFilterMapping.getServletNames().addAll(sfMapping.getServletNames());
+                    sfmInfo.servletFilterMapping.getURLPatterns().addAll(sfMapping.getURLPatterns());
+                }
+                if (!sfmInfo.hasDispatcher) {
+                    sfmInfo.servletFilterMapping.getDispatchers().addAll(sfMapping.getDispatchers());
+                }
+            } else {
+                addServletFilterMapping(sfMapping);
+            }
+        }
     }
 
     /* ----
@@ -2130,6 +2212,12 @@ public class WebBundleDescriptor extends BundleDescriptor
             return false;
         }
         return true;
+    }
+
+    private static final class ServletFilterMappingInfo {
+        private ServletFilterMapping servletFilterMapping;
+        private boolean hasMapping = false;
+        private boolean hasDispatcher = false;
     }
 
     /*******************************************************************************************

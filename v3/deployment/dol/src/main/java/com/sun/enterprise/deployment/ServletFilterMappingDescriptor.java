@@ -122,9 +122,15 @@ public final class ServletFilterMappingDescriptor
     public boolean equals(Object obj) {
         if (obj instanceof ServletFilterMapping) {
             ServletFilterMapping o = (ServletFilterMapping) obj;
+            Set<DispatcherType> otherDispatchers = o.getDispatchers();
+            boolean sameDispatchers =
+                ( (dispatchers == null &&
+                        (otherDispatchers == null || otherDispatchers.size() == 0)) ||
+                    (dispatchers != null && dispatchers.equals(otherDispatchers)) );
             if ( this.getName().equals(o.getName())
                     && this.getServletNames().equals(o.getServletNames())
-                    && this.getURLPatterns().equals(o.getURLPatterns()) ) {
+                    && this.getURLPatterns().equals(o.getURLPatterns())
+                    && sameDispatchers ) {
                 return true;
             }
         }

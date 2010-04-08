@@ -66,6 +66,8 @@ public class ServletFilterDescriptor
     /** async supported */
     private Boolean asyncSupported = null;
 
+    private boolean conflict = false;
+
     /* ----
     */
 
@@ -166,6 +168,34 @@ public class ServletFilterDescriptor
 
     public Boolean isAsyncSupported() {
         return asyncSupported;
+    }
+
+    void setConflict(boolean conflict) {
+        this.conflict = conflict;
+    }
+
+    boolean isConflict() {
+        return conflict;
+    }
+
+    boolean isConflict(ServletFilterDescriptor other) {
+        if (conflict || other.isConflict()) {
+            return true;
+        }
+
+        if (!getName().equals(other.getName())) {
+            return false;
+        }
+
+        // getClassName() cannot be null
+        boolean matchClassName = (getClassName().length() == 0 ||
+            other.getClassName().length() == 0 || getClassName().equals(other.getClassName()));
+
+        boolean otherAsyncSupported = (other.isAsyncSupported() != null) ? other.isAsyncSupported() : false;
+        boolean thisAsyncSupported = (asyncSupported != null) ? asyncSupported : false;
+        boolean matchAsyncSupported = (thisAsyncSupported == otherAsyncSupported);
+
+        return !(matchClassName && matchAsyncSupported);
     }
 
     /* ----
