@@ -547,6 +547,9 @@ public class WebComponentDescriptor extends Descriptor {
         return result;
     }
 
+    public void add(WebComponentDescriptor other) {
+        add(other, true);
+    }
 
     // this method will combine the information from this "other" 
     // WebComponentDescriptor with current WebComponentDescriptor
@@ -557,8 +560,12 @@ public class WebComponentDescriptor extends Descriptor {
     //
     // Note: in the Set API, we only add value when such value 
     // is not existed in the Set already
+    //
+    // If combineUrlPatterns is false, then the first one take priority,
+    // otherwise take the secone one.
+    //
     // And the conflict boolean will not be set.
-    public void add(WebComponentDescriptor other) {
+    void add(WebComponentDescriptor other, boolean combineUrlPatterns) {
         // do not do anything if the canonical name of the two web 
         // components are different
         if (!getCanonicalName().equals(other.getCanonicalName())) {
@@ -572,8 +579,7 @@ public class WebComponentDescriptor extends Descriptor {
         }
 
         // for simple String types, we can rely on Set API
-        // the first one take priority, otherwise take the secone one.
-        if (getUrlPatternsSet().size() == 0) {
+        if (combineUrlPatterns || getUrlPatternsSet().size() == 0) {
             getUrlPatternsSet().addAll(other.getUrlPatternsSet());
         }
 
@@ -632,9 +638,17 @@ public class WebComponentDescriptor extends Descriptor {
 
         String otherImplFile = other.getWebComponentImplementation();
         boolean matchImplName = (allowNullImplNameOverride) ?
-            (implFile == null || otherImplFile == null || implFile.equals(otherImplFile)) :
-            ((implFile == null && otherImplFile == null) ||
+            // note that "" and null are regarded as the same here
+            (implFile == null || implFile.length() == 0 ||
+                otherImplFile == null || otherImplFile.length() == 0 ||
+                implFile.equals(otherImplFile)) :
+            (((implFile == null || implFile.length() == 0) &&
+                (otherImplFile == null || otherImplFile.length() == 0)) ||
                 (implFile != null && implFile.equals(otherImplFile)) );
-        return !matchImplName;
+        boolean otherAsyncSupported = (other.isAsyncSupported() != null) ? other.isAsyncSupported() : false;
+        boolean thisAsyncSupported = (asyncSupported != null) ? asyncSupported : false;
+        boolean matchAsyncSupported = (thisAsyncSupported == otherAsyncSupported);
+
+        return !(matchImplName && matchAsyncSupported);
     }
 }

@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.web.EnvironmentEntry;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
+import com.sun.enterprise.deployment.web.ServletFilter;
 import com.sun.enterprise.deployment.types.EjbReference;
 
 /**
@@ -101,6 +102,34 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
         }
 
         return resultDesc;
+    }
+
+    @Override
+    protected void combineServletFilters(WebBundleDescriptor webBundleDescriptor) {
+        for (ServletFilter servletFilter : webBundleDescriptor.getServletFilters()) {
+            ServletFilterDescriptor servletFilterDesc = (ServletFilterDescriptor)servletFilter;
+            String name = servletFilter.getName();
+            ServletFilterDescriptor aServletFilterDesc = null;
+            for (ServletFilter sf : getServletFilters()) {
+                if (name.equals(sf.getName())) {
+                    aServletFilterDesc = (ServletFilterDescriptor)sf;
+                    break;
+                }
+            }
+
+            if (aServletFilterDesc != null) {
+                if (aServletFilterDesc.isConflict(servletFilterDesc)) {
+                    aServletFilterDesc.setConflict(true);
+                }
+            } else {
+                getServletFilters().add(servletFilterDesc);
+            }
+        }
+    }
+
+    @Override
+    protected void combineServletFilterMappings(WebBundleDescriptor webBundleDescriptor) {
+        getServletFilterMappings().addAll(webBundleDescriptor.getServletFilterMappings());
     }
 
     @Override
