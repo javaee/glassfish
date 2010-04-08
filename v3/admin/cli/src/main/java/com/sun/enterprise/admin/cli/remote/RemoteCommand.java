@@ -666,18 +666,7 @@ public class RemoteCommand extends CLICommand {
         /*
          * Remaining parts are typically files to be downloaded.
          */
-        Properties partProps = part.getProperties();
-        String dataRequestType = partProps.getProperty("data-request-type");
-        if (dataRequestType.equals("file-xfer")) {
-            /*
-             * Treat this part as a downloaded file.  The
-             * server is responsible for setting the part's file name
-             * to be a valid URI, relative to the file-xfer-root or absolute,
-             * that will deliver the file according to the user's
-             * wishes.
-             */
-            downloadedFilesMgr.extractFile(part);
-        }
+        downloadedFilesMgr.processPart(part);
     }
 
     /**

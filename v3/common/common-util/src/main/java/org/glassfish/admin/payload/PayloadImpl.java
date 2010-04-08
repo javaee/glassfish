@@ -43,10 +43,12 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -97,7 +99,16 @@ public class PayloadImpl implements Payload {
                 final URI fileURI,
                 final String dataRequestName,
                 final File file) throws IOException {
-            attachFile(contentType, fileURI, dataRequestName, null /* props */, file);
+            attachFile(contentType, fileURI, dataRequestName, null /* props */, file, false /* isRecursive */);
+        }
+
+        public void attachFile(
+                final String contentType,
+                final URI fileURI,
+                final String dataRequestName,
+                final File file,
+                final boolean isRecursive) throws IOException {
+            attachFile(contentType, fileURI, dataRequestName, null /* props */, file, isRecursive);
         }
 
         public void attachFile(
@@ -106,20 +117,114 @@ public class PayloadImpl implements Payload {
                 final String dataRequestName,
                 final Properties props,
                 final File file) throws IOException {
+            attachFile(contentType, fileURI, dataRequestName, props, file, false /* isRecursive */);
+        }
+        
+        public void attachFile(
+                final String contentType,
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props,
+                final File file,
+                final boolean isRecursive) throws IOException {
             Properties enhancedProps = new Properties();
             if (props != null) {
                 enhancedProps.putAll(props);
             }
             enhancedProps.setProperty("data-request-type", "file-xfer");
             enhancedProps.setProperty("data-request-name", dataRequestName);
+            enhancedProps.setProperty("data-request-is-recursive", Boolean.toString(isRecursive));
             enhancedProps.setProperty("last-modified", Long.toString(file.lastModified())
                     );
+
+            if (file.isDirectory() && isRecursive) {
+                attachFilesRecursively(
+                        file.toURI(),
+                        fileURI,
+                        fileURI,
+                        dataRequestName,
+                        enhancedProps,
+                        file);
+            } else {
+                parts.add(Part.newInstance(
+                        contentType,
+                        fileURI.getPath(),
+                        enhancedProps,
+                        (file.isDirectory()) ? null : new BufferedInputStream(new FileInputStream(file))));
+            }
+        }
+
+        private void attachFilesRecursively(
+                final URI actualBaseDirAbsURI,
+                final URI targetBaseDirRelURI,
+                final URI dirFileURI,
+                final String dataRequestName,
+                final Properties enhancedProps,
+                final File dirFile) throws FileNotFoundException, IOException {
             parts.add(Part.newInstance(
-                    contentType,
+                "application/octet-stream", /* for the directory itself */
+                dirFileURI.getPath(),
+                enhancedProps,
+                (InputStream) null));
+
+            for (File f : dirFile.listFiles()) {
+                if (f.isDirectory()) {
+                    attachFilesRecursively(
+                            actualBaseDirAbsURI,
+                            targetBaseDirRelURI,
+                            actualBaseDirAbsURI.relativize(f.toURI()),
+                            dataRequestName,
+                            enhancedProps,
+                            f);
+                } else {
+                    final InputStream is = new BufferedInputStream(new FileInputStream(f));
+                    String contentType = URLConnection.guessContentTypeFromName(f.getName());
+                    if (contentType == null) {
+                        contentType = URLConnection.guessContentTypeFromStream(is);
+                        if (contentType == null) {
+                            contentType = "application/octet-stream";
+                        }
+                    }
+                    enhancedProps.setProperty("last-modified", Long.toString(f.lastModified()));
+                    final URI fileURI = targetBaseDirRelURI.resolve(actualBaseDirAbsURI.relativize(f.toURI()));
+                    parts.add(Part.newInstance(
+                            contentType,
+                            fileURI.getPath(),
+                            enhancedProps,
+                            is));
+                }
+            }
+
+        }
+
+        @Override
+        public void requestFileRemoval(
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props) throws IOException {
+            requestFileRemoval(fileURI, dataRequestName, props, false /* isRecursive */);
+        }
+
+        @Override
+        public void requestFileRemoval(
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props,
+                final boolean isRecursive) throws IOException {
+            final Properties enhancedProps = new Properties();
+            if (props != null) {
+                enhancedProps.putAll(props);
+            }
+            enhancedProps.setProperty("data-request-type", "file-remove");
+            enhancedProps.setProperty("data-request-name", dataRequestName);
+            enhancedProps.setProperty("data-request-is-recursive", Boolean.toString(isRecursive));
+            parts.add(Part.newInstance(
+                    "application/octet-stream", /* not much effect */
                     fileURI.getPath(),
                     enhancedProps,
-                    new BufferedInputStream(new FileInputStream(file))));
+                    (String) null));
         }
+
 
         public String getHeaderName() {
             return Payload.PAYLOAD_HEADER_NAME;
@@ -243,6 +348,7 @@ public class PayloadImpl implements Payload {
         private String name;
         private String contentType;
         private Properties props;
+        private boolean isRecursive;
 
         /**
          * Creates a new Part implementation.
@@ -261,6 +367,7 @@ public class PayloadImpl implements Payload {
             if (props != null) {
                 this.props.putAll(props);
             }
+            isRecursive = Boolean.valueOf(this.props.getProperty("data-request-is-recursive"));
         }
 
         public String getName() {
@@ -273,6 +380,10 @@ public class PayloadImpl implements Payload {
 
         public Properties getProperties() {
             return props;
+        }
+
+        public boolean isRecursive() {
+            return isRecursive;
         }
 
         /**
@@ -311,8 +422,13 @@ public class PayloadImpl implements Payload {
             int bytesRead;
             byte [] buffer = new byte[1024];
             final InputStream is = getInputStream();
-            while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
+            /*
+             * Directory entries can have null input streams.
+             */
+            if (is != null) {
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
             }
         }
 
@@ -369,7 +485,12 @@ public class PayloadImpl implements Payload {
 
             public InputStream getInputStream() {
                 if (is == null) {
-                    is = new ByteArrayInputStream(content.getBytes());
+                    /*
+                     * Some parts might not have content.
+                     */
+                    final byte[] data = (content != null) ?
+                        content.getBytes() : new byte[0];
+                    is = new ByteArrayInputStream(data);
                 }
                 return is;
             }

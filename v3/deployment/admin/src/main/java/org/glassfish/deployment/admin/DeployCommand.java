@@ -152,7 +152,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             payloadFilesMgr = new PayloadFilesManager.Temp(
                     context.getActionReport(),
                     logger);
-            payloadFiles = payloadFilesMgr.extractFiles(context.getInboundPayload());
+            payloadFiles = payloadFilesMgr.processParts(context.getInboundPayload());
         } catch (Exception e) {
             report.setFailureCause(e);
             report.failure(logger, localStrings.getLocalString(

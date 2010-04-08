@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,8 @@ import java.util.Properties;
 /**
  * Interface for admin command payloads--data carried
  * in the http request and response which flow between the admin client and the server.
+ * This API also allows the requester to ask that the receiver remove a file,
+ * presumably one that was transferred via an earlier request payload.
  * <h2>Motivation and Overview</h2>
  * The API is intended to be a simple abstraction of the
  * input and output streams in HTTP requests and responses,
@@ -63,11 +65,13 @@ import java.util.Properties;
  * the individual parts.
  * <h2>Usage</h2>
  * <h3>Outbound</h3>
- * Code (on the client or the server) that needs to place data in the payload
+ * Code (on the client or the server) that needs to place data in the payload or
+ * request that earlier-sent data be removed
  * would instantiate an implementation of {@link Payload.Outbound}. (The
  * {@link org.glassfish.admin.payload.PayloadImpl.Outbound} class is such an implementation.)
  * To this Payload.Outbound object the code can add parts using any of the {@link Outbound#addPart}
- * methods or the {@link Outbound#attachFile} convenience method.  After the code has added all
+ * methods or the {@link Outbound#attachFile} or {@link Outbound#requestFileRemoval} convenience methods.
+ * After the code has added all
  * the relevant parts to the payload it invokes the {@link Outbound#writeTo} method to write
  * the outbound payload to an OutputStream.  Typically the caller will pass the
  * output stream associated with the request (in the client case) or the response (in the
@@ -75,7 +79,7 @@ import java.util.Properties;
  * <h3>Inbound</h3>
  * Code that needs to read the payload from a request (as the server does) or
  * from a response (as the client does) will instantiate an implementation of
- * {@link Payload.Inbound}. (The {@link AbstractMethodError.glassfish.admin.payload.PayloadImpl.Inbound}
+ * {@link Payload.Inbound}. (The {@link org.glassfish.admin.payload.PayloadImpl.Inbound}
  * is such an implementation.
  * <p>
  * Payload.Inbound exposes the {@link Payload.Inbound#parts()} method
@@ -197,6 +201,26 @@ public interface Payload {
          * Adds a part to the payload of the given content type from the
          * specified file.  The name assigned to the new part is the URI
          * for the file relativized according to the specified file URI.  The
+         * properties which indicate that this is file transfer data request
+         * are set automatically.
+         * @param contentType content type of the part
+         * @param fileURI URI relative to which the part's name should be computed
+         * @param dataRequestName name identifying which part of a request this file answers
+         * @param file File containing the content for the part
+         * @param isRecursive if file is a directory, whether to add its contents as well
+         * @throws java.io.IOException
+         */
+        public void attachFile(
+                final String contentType,
+                final URI fileURI,
+                final String dataRequestName,
+                final File file,
+                final boolean isRecursive) throws IOException;
+
+        /**
+         * Adds a part to the payload of the given content type from the
+         * specified file.  The name assigned to the new part is the URI
+         * for the file relativized according to the specified file URI.  The
          * properties which indicate that this is a file transfer data request
          * are set automatically and added to the properties passed by the caller.
          * @param contentType content type of the part
@@ -212,6 +236,58 @@ public interface Payload {
                 final String dataRequestName,
                 final Properties props,
                 final File file) throws IOException;
+
+        /**
+         * Adds a part to the payload of the given content type from the
+         * specified file.  The name assigned to the new part is the URI
+         * for the file relativized according to the specified file URI.  The
+         * properties which indicate that this is a file transfer data request
+         * are set automatically and added to the properties passed by the caller.
+         * @param contentType content type of the part
+         * @param fileURI URI relative to which the part's name should be computed
+         * @param dataRequestName name identifying which part of a request this file answers
+         * @param props Properties to be included with the part
+         * @param file File containing the content for the part
+         * @param isRecursive if file is a directory, whether to add its contents as well
+         * @throws java.io.IOException
+         */
+        public void attachFile(
+                final String contentType,
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props,
+                final File file,
+                final boolean isRecursive) throws IOException;
+
+        /**
+         * Adds a part to the payload that represents a request to remove the
+         * specified file, presumably previously transferred in a payload
+         * during an earlier request.
+         * @param fileURI relative URI of the file for deletion
+         * @param dataRequestName name identifying which part of a request triggered the file removal
+         * @param props Properties to be included with the part
+         * @throws IOException
+         */
+        public void requestFileRemoval(
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props) throws IOException;
+
+        /**
+         * Adds a part to the payload that represents a request to remove the
+         * specified file, presumably previously transferred in a payload
+         * during an earlier request.
+         * @param fileURI relative URI of the file for deletion
+         * @param dataRequestName name identifying which part of a request triggered the file removal
+         * @param props Properties to be included with the part
+         * @param isRecursive if fileURI is a directory, whether to remove its contents as well
+         * @throws IOException
+         */
+        public void requestFileRemoval(
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props,
+                final boolean isRecursive) throws IOException;
 
         /**
          * Writes the parts already added to the payload to the specified
@@ -294,6 +370,12 @@ public interface Payload {
          * @throws java.io.IOException
          */
         public void copy(final OutputStream os) throws IOException;
+
+        /**
+         * Indicates if the Part represents a recursive action or not.
+         * @return
+         */
+        public boolean isRecursive();
 
     }
 }

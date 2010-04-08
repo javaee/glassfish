@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,11 +51,13 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Payload;
@@ -64,8 +67,8 @@ import org.glassfish.api.admin.Payload.Part;
  * Manages transferred files delivered via the request or response {@link Payload}.
  * <p>
  * Callers can process the entire payload
- * at once, treating each Part as a file, using the {@link #extractFiles}
- * method.  Or, the caller can invoke the {@link #extractFile}
+ * at once, treating each Part as a file, using the {@link #processParts}
+ * method.  Or, the caller can invoke the {@link #processPart}
  * method to work with a single Part as a file.
  * <p>
  * If the caller wants to extract the payload's content as temporary files it should
@@ -78,7 +81,8 @@ import org.glassfish.api.admin.Payload.Part;
  * <p>
  * <code>Temp</code> uses a unique temporary directory, then creates one
  * temp file for each part it is asked to deal with, either from an entire payload
- * (extractFiles) or a single part (extractFile).  Recall that each part in the
+ * ({@link #processParts(org.glassfish.api.admin.Payload.Inbound)}) or a
+ * single part ({@link #processPart(org.glassfish.api.admin.Payload.Part)}).  Recall that each part in the
  * payload has a name which is a relative or absolute URI.
  * 
  * @author tjquinn
@@ -91,6 +95,8 @@ public abstract class PayloadFilesManager {
     private final File targetDir;
     protected final Logger logger;
     private final ActionReport report;
+
+    protected final Map<File,Long> dirTimestamps = new HashMap<File,Long>();
 
     private PayloadFilesManager(
             final File targetDir,
@@ -204,6 +210,22 @@ public abstract class PayloadFilesManager {
             URI targetURI = getParentURI(part).resolve(name);
             return targetURI;
         }
+
+        @Override
+        protected void postProcessParts() {
+            final boolean isFine = logger.isLoggable(Level.FINE);
+            for (Map.Entry<File,Long> entry : dirTimestamps.entrySet()) {
+                if (isFine) {
+                    final Date when = new Date(entry.getValue());
+                    logger.fine("Setting lastModified for " +
+                            entry.getKey().getAbsolutePath() +
+                            " explicitly to " + when);
+                }
+                entry.getKey().setLastModified(entry.getValue());
+            }
+        }
+
+
     }
 
     /**
@@ -280,6 +302,12 @@ public abstract class PayloadFilesManager {
             return tempFile.toURI();
         }
 
+        @Override
+        protected void postProcessParts() {
+            // no-op
+        }
+
+
         private String getParentPath(final String partName) {
             int lastSlash = partName.lastIndexOf('/');
             if (lastSlash != -1) {
@@ -317,16 +345,49 @@ public abstract class PayloadFilesManager {
 
     protected abstract URI getOutputFileURI(final Payload.Part part, final String name) throws IOException;
 
-    /**
-     * Extract a file from the Part, using the name stored in the part and
-     * the file-xfer-root part property (if present) to derive
-     * the relative or absolute URI to use for creating the extracted file.
-     * @param part the Part containing the data to extract
-     * @return the extracted File
-     * @throws java.io.IOException
-     */
-    public File extractFile(final Payload.Part part) throws IOException {
-        return extractFile(part, part.getName());
+    public File processPart(final Payload.Part part) throws IOException {
+        File result = null;
+        final DataRequestType drt = DataRequestType.getType(part);
+        if (drt != null) {
+            result = drt.processPart(this, part, part.getName());
+        }
+        return result;
+    }
+
+    private File removeFile(final Payload.Part part) throws IOException {
+        final boolean isFine = logger.isLoggable(Level.FINE);
+        File targetFile = new File(getOutputFileURI(part, part.getName()));
+        consumePartBody(targetFile, part);
+        if (targetFile.exists()) {
+            if ((targetFile.isDirectory() && part.isRecursive()) ?
+                    FileUtils.whack(targetFile) : targetFile.delete()) {
+                if (isFine) {
+                    logger.fine("Deleted " + targetFile.getAbsolutePath() + " as requested");
+                }
+                reportDeletionSuccess();
+            } else {
+                reportDeletionFailure(part.getName(),
+                        strings.getLocalString("payload.deleteFailedOnFile",
+                        "Requested deletion of {0} failed; the file was found but the deletion attempt failed - no reason is available"));
+            }
+        } else {
+            reportDeletionFailure(part.getName(), new FileNotFoundException(targetFile.getAbsolutePath()));
+        }
+        return targetFile;
+    }
+
+    private void consumePartBody(final File targetFile, final Part part) throws FileNotFoundException, IOException {
+        InputStream is = null;
+        try {
+            is = part.getInputStream();
+            byte[] buffer = new byte[1024 * 64];
+            while (is.read(buffer) != -1) {
+            }
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
     }
 
     /**
@@ -340,7 +401,8 @@ public abstract class PayloadFilesManager {
      * @return File for the extracted file
      * @throws java.io.IOException
      */
-    public File extractFile(final Payload.Part part, final String outputName) throws IOException {
+    private File extractFile(final Payload.Part part, final String outputName) throws IOException {
+        final boolean isFine = logger.isLoggable(Level.FINE);
         OutputStream os = null;
         InputStream is = null;
         /*
@@ -362,28 +424,52 @@ public abstract class PayloadFilesManager {
             File immediateParent = extractedFile.getParentFile();
             immediateParent.mkdirs();
             if (extractedFile.exists()) {
-                if (!extractedFile.delete()) {
+                if (!extractedFile.delete() && ! extractedFile.isDirectory()) {
+                    /*
+                     * Don't warn if we cannot delete the directory - there
+                     * are likely to be files in it preventing its removal.
+                     */
                       logger.warning(strings.getLocalString(
                             "payload.overwrite",
                             "Overwriting previously-uploaded file because the attempt to delete it failed: {0}",
                             extractedFile.getAbsolutePath()));
+                } else if (isFine) {
+                    logger.fine("Deleted pre-existing file " + extractedFile.getAbsolutePath() + " before extracting transferred file");
                 }
             }
 
-            os = new BufferedOutputStream(new FileOutputStream(extractedFile));
+            /*
+             * If we are extracting a directory, then we need to consume the
+             * Part's body but we won't write anything into the directory
+             * file.
+             */
+            if (outputName.endsWith("/")) {
+                extractedFile.mkdir();
+            }
+
+            final boolean isDir = extractedFile.isDirectory();
+
+            os = isDir ? null :new BufferedOutputStream(new FileOutputStream(extractedFile));
             is = part.getInputStream();
             int bytesRead;
             byte[] buffer = new byte[1024 * 64];
             while ((bytesRead = is.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
+                if (os != null) {
+                    os.write(buffer, 0, bytesRead);
+                }
             }
-            os.close();
+            if (os != null) {
+                os.close();
+            }
             final String lastModifiedString = part.getProperties().getProperty("last-modified");
             final long lastModified = (lastModifiedString != null ?
                 Long.parseLong(lastModifiedString) :
                 System.currentTimeMillis());
 
             extractedFile.setLastModified(lastModified);
+            if (extractedFile.isDirectory()) {
+                dirTimestamps.put(extractedFile, lastModified);
+            }
             postExtract(extractedFile);
             logger.fine("Extracted transferred entry " + part.getName() + " to " +
                     extractedFile.getAbsolutePath());
@@ -410,7 +496,7 @@ public abstract class PayloadFilesManager {
      * @return the Files corresponding to the content of each extracted file
      * @throws java.io.IOException
      */
-    public List<File> extractFiles(final Payload.Inbound inboundPayload) throws IOException {
+    public List<File> processParts(final Payload.Inbound inboundPayload) throws IOException {
 
         if (inboundPayload == null) {
             return Collections.EMPTY_LIST;
@@ -424,9 +510,14 @@ public abstract class PayloadFilesManager {
             StringBuilder uploadedEntryNames = new StringBuilder();
             for (Iterator<Payload.Part> partIt = inboundPayload.parts(); partIt.hasNext();) {
                 Payload.Part part = partIt.next();
-                result.add(extractFile(part));
-                uploadedEntryNames.append(part.getName()).append(" ");
+                DataRequestType drt = DataRequestType.getType(part);
+                if (drt != null) {
+                    result.add(drt.processPart(this, part, part.getName()));
+                    uploadedEntryNames.append(part.getName()).append(" ");
+                }
             }
+
+            postProcessParts();
             return result;
         } catch (Exception e) {
             final IOException ioe = new IOException();
@@ -441,21 +532,48 @@ public abstract class PayloadFilesManager {
         }
     }
 
+    protected abstract void postProcessParts();
+
     private void reportExtractionSuccess() {
+        reportSuccess();
+    }
+
+    private void reportSuccess() {
         if (report != null) {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         }
     }
 
-    private void reportExtractionFailure(final String partName, final Exception e) {
+    private void reportDeletionSuccess() {
+        reportSuccess();
+    }
+
+    private void reportDeletionFailure(final String partName, final String msg) {
+        reportFailure(partName, msg, null);
+    }
+
+    private void reportDeletionFailure(final String partName, final Exception e) {
+        reportFailure(partName, strings.getLocalString(
+                    "payload.errDeleting",
+                    "Error deleting file {0}",
+                    partName), e);
+    }
+
+    private void reportFailure(final String partName, final String formattedMessage, final Exception e) {
         if (report != null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(strings.getLocalString(
-                    "payload.errExtracting",
-                    "Error extracting tranferred file {0}",
-                    partName));
+            report.setMessage(formattedMessage);
             report.setFailureCause(e);
         }
+    }
+
+    private void reportExtractionFailure(final String partName, final Exception e) {
+        reportFailure(partName,
+                strings.getLocalString(
+                    "payload.errExtracting",
+                    "Error extracting tranferred file {0}",
+                    partName),
+                    e);
     }
 
     /**
@@ -494,6 +612,77 @@ public abstract class PayloadFilesManager {
 
     private static File createTempFolder(final File parent, final Logger logger) throws IOException {
         return createTempFolder(parent, XFER_DIR_PREFIX, logger);
+    }
+
+    /**
+     * Types of data requests the PayloadFilesManager understands.
+     * <p>
+     * To add a new type, add a new enum value with the value of the data
+     * request type as the constructor argument and implement the processPart
+     * method.
+     */
+    private enum DataRequestType {
+        FILE_TRANSFER("file-xfer") {
+
+            @Override
+            protected File processPart(
+                    final PayloadFilesManager pfm,
+                    final Part part,
+                    final String partName) throws IOException {
+                return pfm.extractFile(part, partName);
+            }
+
+        },
+        FILE_REMOVAL("file-remove") {
+            @Override
+            protected File processPart(
+                    final PayloadFilesManager pfm,
+                    final Part part,
+                    final String partName) throws IOException {
+                return pfm.removeFile(part);
+            }
+
+        };
+
+        /** data-request-type value for this enum */
+        private final String dataRequestType;
+
+        /**
+         * Creates a new instance of the enum
+         * @param type
+         */
+        private DataRequestType(final String type) {
+            dataRequestType = type;
+        }
+
+        /**
+         * Processes the specified part by delegating to the right method on
+         * the PayloadFilesManager.
+         * @param pfm
+         * @param part
+         * @param partName
+         * @return
+         * @throws IOException
+         */
+        protected abstract File processPart(
+                final PayloadFilesManager pfm, final Part part, final String partName)
+                throws IOException;
+
+        /**
+         * Finds the DataRequestType enum which matches the data-request-type
+         * in the Part's properties.
+         * @param part
+         * @return DataRequestType matching the Part's data-request-type; null if no match exists
+         */
+        private static DataRequestType getType(final Part part) {
+            final String targetDataRequestType = part.getProperties().getProperty("data-request-type");
+            for (DataRequestType candidateType : values()) {
+                if (candidateType.dataRequestType.equals(targetDataRequestType)) {
+                    return candidateType;
+                }
+            }
+            return null;
+        }
     }
 }
 
