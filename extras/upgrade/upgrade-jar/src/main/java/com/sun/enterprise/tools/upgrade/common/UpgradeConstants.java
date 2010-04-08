@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 1997, 2010 Oracle and/or its affiliates, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -13,8 +13,8 @@
  * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
+ * Oracle designates this particular file as subject to the "Classpath" exception
+ * as provided by Oracle in the GPL Version 2 section of the License file that
  * accompanied this code.  If applicable, add the following below the License
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
@@ -56,7 +56,13 @@ public class UpgradeConstants {
     public static final String VERSION_91_01 = "9.1_01";	//as91_ur1
     public static final String VERSION_91_02 = "9.1_02";	//as91_ur2
     public static final String VERSION_91_1 = "9.1.1";		// sailfin  (not to be upgraded to v3)
+
+    /*
+     * String#startsWith() should return true for VERSION_3_0_1
+     * if it's true for VERSION_3_0. Otherwise, check code for use.
+     */
     public static final String VERSION_3_0 = "3.0";		// GF_v3
+    public static final String VERSION_3_0_1 = "3.0.1";		// GF 3.0.1
     public static final String VERSION_2_1 = "2.1";         // as91_ur2 ( Sun GlassFish Enterprise Server v2.1)
     
     public static final String DEVELOPER_PROFILE = "developer";

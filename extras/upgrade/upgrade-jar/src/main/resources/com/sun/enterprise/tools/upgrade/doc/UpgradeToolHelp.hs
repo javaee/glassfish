@@ -3,7 +3,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright (c) 1997, 2010 Oracle and/or its affiliates, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -15,8 +15,8 @@
 
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- Sun designates this particular file as subject to the "Classpath" exception
- as provided by Sun in the GPL Version 2 section of the License file that
+ Oracle designates this particular file as subject to the "Classpath" exception
+ as provided by Oracle in the GPL Version 2 section of the License file that
  accompanied this code.  If applicable, add the following below the License
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
@@ -43,7 +43,7 @@
 <helpset version="1.0">
 
   <!-- title -->
-  <title>Upgrade Tool for GlassFish Application Server - Help</title>
+  <title>Upgrade Tool for GlassFish Server Open Source Edition - Help</title>
 
   <!-- maps -->
   <maps>
@@ -71,7 +71,7 @@
      <name>main window</name>
      <size width="700" height="400" />
      <location x="200" y="200" />
-     <title>Upgrade Tool for Sun Java System Application Server - Online Help</title>
+     <title>Upgrade Tool for GlassFish Server Open Source Edition - Online Help</title>
      <toolbar>
 	<helpaction>javax.help.BackAction</helpaction>
 	<helpaction>javax.help.ForwardAction</helpaction>
@@ -87,6 +87,6 @@
      <name>main</name>
      <size width="400" height="400" />
      <location x="200" y="200" />
-     <title>Upgrade Tool for GlassFish Application Server - Online Help</title>
+     <title>Upgrade Tool for GlassFish Server Open Source Edition - Online Help</title>
   </presentation>
 </helpset>

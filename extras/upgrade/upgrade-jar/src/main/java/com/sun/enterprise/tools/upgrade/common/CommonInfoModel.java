@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 1997, 2010 Oracle and/or its affiliates, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -13,8 +13,8 @@
  * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
+ * Oracle designates this particular file as subject to the "Classpath" exception
+ * as provided by Oracle in the GPL Version 2 section of the License file that
  * accompanied this code.  If applicable, add the following below the License
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
@@ -54,6 +54,12 @@ public class CommonInfoModel{
 
     // singleton
     private static final CommonInfoModel instance = new CommonInfoModel();
+
+    private static final String [] SUPPORTED_VERSIONS = {
+        UpgradeConstants.VERSION_91,
+        UpgradeConstants.VERSION_3_0,
+        UpgradeConstants.VERSION_3_0_1
+    };
 
     private TargetAppSrvObj tAppSrvObj = new TargetAppSrvObj();
     private SourceAppSrvObj sAppSrvObj = new SourceAppSrvObj();
@@ -95,17 +101,20 @@ public class CommonInfoModel{
     }
 	
     public boolean isUpgradeSupported() {
-        boolean retVal = true;
         String sourceVersion = sAppSrvObj.getVersion();
         String targetVersion = tAppSrvObj.getVersion();
 
-        if (!sourceVersion.equals(UpgradeConstants.VERSION_91) &&
-            !sourceVersion.equals(UpgradeConstants.VERSION_3_0)) {
-            logger.info(stringManager.getString("upgrade.common.upgrade_not_supported",
-                sourceVersion, sAppSrvObj.getEdition(), targetVersion, tAppSrvObj.getEdition()));
-            retVal = false;
+        for (String version : SUPPORTED_VERSIONS) {
+            if (version.equals(sourceVersion)) {
+                return true;
+            }
         }
-        return retVal;
+
+        logger.info(stringManager.getString(
+            "upgrade.common.upgrade_not_supported",
+            sourceVersion, sAppSrvObj.getEdition(),
+            targetVersion, tAppSrvObj.getEdition()));
+        return false;
     }
 	
 }

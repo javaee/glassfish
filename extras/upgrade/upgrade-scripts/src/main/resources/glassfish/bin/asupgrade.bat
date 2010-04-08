@@ -1,7 +1,7 @@
 @echo off
 
 REM
-REM Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+REM Copyright (c) 1997, 2010 Oracle and/or its affiliates, Inc. All rights reserved.
 REM Use is subject to license terms.
 REM
 

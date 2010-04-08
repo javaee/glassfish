@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 1997, 2010 Oracle and/or its affiliates, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -13,8 +13,8 @@
  *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
+ * Oracle designates this particular file as subject to the "Classpath" exception
+ * as provided by Oracle in the GPL Version 2 section of the License file that
  * accompanied this code.  If applicable, add the following below the License
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade.gui;
 
-import com.sun.enterprise.tools.upgrade.common.CLIConstants;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -161,89 +160,90 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         headerLabel.setText(stringManager.getString("upgrade.gui.detailspanel.headerPanel"));
 
         contentLabel.setForeground(java.awt.Color.blue);
-        contentLabel.setText(stringManager.getString("upgrade.gui.detailspanel.contentLabel"));
+        contentLabel.setText(stringManager.getString("upgrade.gui.detailspanel.contentLabel",
+            commonInfoModel.getTarget().getVersion()));
 
-        sourceLabel.setLabelFor(sourceTextField);
-        sourceLabel.setText(SOURCE_LABEL_TEXT);
+    sourceLabel.setLabelFor(sourceTextField);
+    sourceLabel.setText(SOURCE_LABEL_TEXT);
 
-        sourceTextField.setToolTipText(stringManager.getString("upgrade.gui.detailspanel.sourceHelpLabel"));
+    sourceTextField.setToolTipText(stringManager.getString("upgrade.gui.detailspanel.sourceHelpLabel"));
 
-        sourceBrowseButton.setText(stringManager.getString("upgrade.gui.detailspanel.browseButtonText"));
+    sourceBrowseButton.setText(stringManager.getString("upgrade.gui.detailspanel.browseButtonText"));
 
-        targetLabel.setLabelFor(targetTextField);
-        targetLabel.setText(TARGET_LABEL_TEXT);
+    targetLabel.setLabelFor(targetTextField);
+    targetLabel.setText(TARGET_LABEL_TEXT);
 
-        targetBrowseButton.setText(stringManager.getString("upgrade.gui.detailspanel.browseButtonText"));
+    targetBrowseButton.setText(stringManager.getString("upgrade.gui.detailspanel.browseButtonText"));
 
-        masterPWLabel.setText(stringManager.getString("upgrade.gui.detailspanel.masterPWLabel"));
+    masterPWLabel.setText(stringManager.getString("upgrade.gui.detailspanel.masterPWLabel"));
 
-        reqTextLabel.setText(REQUIRED_TEXT_LABEL);
+    reqTextLabel.setText(REQUIRED_TEXT_LABEL);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(contentLabel)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
-                            .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(sourceLabel)
-                                    .addComponent(targetLabel)
-                                    .addComponent(targetTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
-                                    .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(targetBrowseButton)
-                                    .addComponent(sourceBrowseButton))))
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(masterPWField, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
-                        .addGap(266, 266, 266))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(masterPWLabel)
-                        .addContainerGap(419, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(reqTextLabel)
-                        .addContainerGap(419, Short.MAX_VALUE))))
-        );
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+    this.setLayout(layout);
+    layout.setHorizontalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(contentLabel)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                        .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(sourceLabel)
+                                .addComponent(targetLabel)
+                                .addComponent(targetTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE)
+                                .addComponent(sourceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 363, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(targetBrowseButton)
+                                .addComponent(sourceBrowseButton))))
+                    .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addComponent(masterPWField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
+                    .addGap(266, 266, 266))
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(masterPWLabel)
+                    .addContainerGap(436, Short.MAX_VALUE))
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(reqTextLabel)
+                    .addContainerGap(436, Short.MAX_VALUE))))
+    );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {sourceBrowseButton, targetBrowseButton});
+    layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {sourceBrowseButton, targetBrowseButton});
 
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(headerLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(contentLabel)
-                .addGap(18, 18, 18)
-                .addComponent(sourceLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sourceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sourceBrowseButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(targetLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(targetTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(targetBrowseButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(masterPWLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(masterPWField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(reqTextLabel)
-                .addContainerGap(52, Short.MAX_VALUE))
-        );
+    layout.setVerticalGroup(
+        layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(headerLabel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(contentLabel)
+            .addGap(18, 18, 18)
+            .addComponent(sourceLabel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(sourceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sourceBrowseButton))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(targetLabel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(targetTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(targetBrowseButton))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(masterPWLabel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(masterPWField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(reqTextLabel)
+            .addContainerGap(52, Short.MAX_VALUE))
+    );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
