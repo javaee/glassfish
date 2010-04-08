@@ -39,6 +39,7 @@ package com.sun.enterprise.web;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.appserv.ha.util.PersistenceTypeResolver;
+import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 
@@ -46,6 +47,9 @@ public class PersistenceStrategyBuilderFactory {
     
     private static final Logger _logger = LogDomains.getLogger(
             PersistenceStrategyBuilderFactory.class, LogDomains.WEB_LOGGER);
+
+    private static final String COHERENCE_WEB_PACKAGE =
+        "com.tangosol.coherence.glassfish";
 
     // The path where ee builders reside
     private String _eeBuilderPath = null;
@@ -218,7 +222,12 @@ public class PersistenceStrategyBuilderFactory {
         String pkg = getClass().getPackage().getName();
         if(!(persistenceType.equalsIgnoreCase("memory") 
                 || persistenceType.equalsIgnoreCase("file"))) {
-            pkg = getEEBuilderPath();
+            if (persistenceType.equalsIgnoreCase(
+                    PersistenceType.COHERENCE_WEB.getType())) {
+                pkg = COHERENCE_WEB_PACKAGE;
+            } else {
+                pkg = getEEBuilderPath();
+            }
         }
         sb.append(pkg + ".");
         sb.append(camelCase(persistenceType));
