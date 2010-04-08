@@ -90,20 +90,11 @@ public interface ServerEnvironment {
     public File getApplicationStubPath();
 
     /**
-     * Returns the path for compiled JSP Pages from an J2EE application
+     * Returns the path for compiled JSP Pages from an application
      * that is deployed on this instance. By default all such compiled JSPs
      * should lie in the same folder.
      */
     public File getApplicationCompileJspPath();
-
-    /**
-     * Returns the path for compiled JSP Pages from an Web application
-     * that is deployed standalone on this instance. By default all such compiled JSPs
-     * should lie in the same folder.
-     */
-    public File getWebModuleCompileJspPath();
-
-    public String getModuleStubPath();
 
     public File getApplicationGeneratedXMLPath();
 

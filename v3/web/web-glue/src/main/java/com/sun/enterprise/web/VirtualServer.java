@@ -1724,7 +1724,9 @@ public class VirtualServer extends StandardHost
         }
         context.setPath(contextRoot);
         addChild((Container)context);
-        _logger.log(Level.INFO, "Added context "+context.getPath());
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.INFO, "Added context "+context.getPath());
+        }
     }
 
     /**

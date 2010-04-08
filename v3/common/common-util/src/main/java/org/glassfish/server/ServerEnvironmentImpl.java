@@ -248,29 +248,12 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     }
 
     /**
-     * Returns the path for compiled JSP Pages from an J2EE application
+     * Returns the path for compiled JSP Pages from an application
      * that is deployed on this instance. By default all such compiled JSPs
      * should lie in the same folder.
      */
     public File getApplicationCompileJspPath() {
         return new File(getApplicationStubPath(),kCompileJspDirName);
-    }
-
-    /**
-     * Returns the path for compiled JSP Pages from an Web application
-     * that is deployed standalone on this instance. By default all such compiled JSPs
-     * should lie in the same folder.
-     */
-    public File getWebModuleCompileJspPath() {
-        return getApplicationCompileJspPath();
-    }
-
-    /**
-    Returns the absolute path for location where all the deployed
-    standalone modules are stored for this Server Instance.
-     */
-    public String getModuleRepositoryPath() {
-        return null;
     }
 
     public String getJavaWebStartPath() {
@@ -284,11 +267,6 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public String getInstanceClassPath() {
         return null;
     }
-
-    public String getModuleStubPath() {
-        return null;
-    }
-
 
     public Map<String, String> getProps() {
         return Collections.unmodifiableMap(asenv.getProps());

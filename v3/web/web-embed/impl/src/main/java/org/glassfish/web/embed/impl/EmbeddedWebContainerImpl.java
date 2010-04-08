@@ -270,6 +270,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                 
         ContextConfig config = new ContextConfig();
         ((Lifecycle) context).addLifecycleListener(config);
+
+        try {
+            if (defaultVirtualServer!=null) {
+                defaultVirtualServer.addContext(context, contextRoot);
+            }
+        } catch (Exception ex) {
+            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
+        }
         
         return context;
         
@@ -298,16 +306,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      */
     public Context createContext(File docRoot, ClassLoader classLoader) {
         
-        String contextRoot = "";
-        
         if (log.isLoggable(Level.INFO)) {
-            log.info("Creating context '" + contextRoot + "' with docBase '" +
-                docRoot.getPath() + "'");
+            log.info("Creating context with docBase '" + docRoot.getPath() + "'");
         }
 
         ContextImpl context = new ContextImpl();
-        context.setDocBase(docRoot.getPath());
-        context.setPath(contextRoot);
+        context.setDocBase(docRoot.getAbsolutePath());
         context.setDirectoryListing(listings);
         if (classLoader != null) {
             context.setParentClassLoader(classLoader);
@@ -583,7 +587,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * registered with this <tt>EmbeddedWebContainer</tt>
      */
     public VirtualServer findVirtualServer(String id) {
-        
+
         return (VirtualServer)engine.findChild(id);
         
     }

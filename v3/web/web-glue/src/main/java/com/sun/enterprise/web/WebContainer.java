@@ -274,13 +274,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     private String _modulesWorkRoot = null;
 
-    // START S1AS 6178005
-    /**
-     * Top-level directory where ejb stubs of standalone web modules are stored
-     */
-    private String modulesStubRoot = null;
-    // END S1AS 6178005
-
     /**
      * Absolute path for location where all the deployed
      * standalone modules are stored for this Server Instance.
@@ -378,14 +371,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         setJspFactory();
 
-        _modulesWorkRoot =
-            instance.getWebModuleCompileJspPath().getAbsolutePath();
         _appsWorkRoot =
             instance.getApplicationCompileJspPath().getAbsolutePath();
         _modulesRoot = instance.getApplicationRepositoryPath();
 
         // START S1AS 6178005
-        modulesStubRoot = instance.getModuleStubPath();
         appsStubRoot = instance.getApplicationStubPath().getAbsolutePath();
         // END S1AS 6178005
 
@@ -1664,17 +1654,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             throw new Exception(msg);
         }
 
-        if (wmName.indexOf(Constants.NAME_SEPARATOR) != -1) {
-            wmInfo.setWorkDirBase(_appsWorkRoot);
-            // START S1AS 6178005
-            wmInfo.setStubBaseDir(appsStubRoot);
-            // END S1AS 6178005
-        } else {
-            wmInfo.setWorkDirBase(_modulesWorkRoot);
-            // START S1AS 6178005
-            wmInfo.setStubBaseDir(modulesStubRoot);
-            // END S1AS 6178005
-        }
+        wmInfo.setWorkDirBase(_appsWorkRoot);
+        // START S1AS 6178005
+        wmInfo.setStubBaseDir(appsStubRoot);
+        // END S1AS 6178005
 
         String displayContextPath = null;
         if (wmContextPath.length() == 0)
