@@ -59,18 +59,12 @@
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
             <scope>test</scope>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium.client-drivers</groupId>
             <artifactId>selenium-java-client-driver</artifactId>
             <version>1.0.2</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.7</version>
         </dependency>
     </dependencies>
     <build>
@@ -107,38 +101,6 @@
                     </execution>
                 </executions>
             </plugin>
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>download_and_start_server</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <ant antfile="hudson.xml" target="pre-test"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>shutdown-server</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <ant antfile="hudson.xml" target="shutdown-server"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
--->
         </plugins>
     </build>
 </project>

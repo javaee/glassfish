@@ -57,12 +57,15 @@ public class BaseSeleniumTestClass {
     @BeforeClass
     public static void setUp() throws Exception {
         if (selenium == null) {
-            String browserString = "*" + getParameter("browser", "firefox");
+            String browser = getParameter("browser", "firefox");
             String port = getParameter("admin.port", "4848");
             String seleniumPort = getParameter("selenium.port", "4444");
             String baseUrl = "http://localhost:" + port;
-            System.out.println("Creating Selenium server on port " + seleniumPort + ".  GlassFish is at " + baseUrl + ". The browserString was set to " + browserString);
-            selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), browserString, baseUrl);
+
+            System.out.println("Starting Selenium tests.  The GlassFish Admin console is at " + baseUrl +".  The Selenium server is listening on " + seleniumPort +
+                    " and will use " + browser + " as the test browser.");
+
+            selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
             selenium.start();
             (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS); // Make sure the server has started and the user logged in
         }
