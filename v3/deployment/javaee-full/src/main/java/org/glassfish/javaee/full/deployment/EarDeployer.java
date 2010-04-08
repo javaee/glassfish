@@ -59,6 +59,7 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deployment.deploy.shared.Util;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 
 import java.util.*;
@@ -106,6 +107,8 @@ public class EarDeployer implements Deployer {
 
     final static Logger logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
     
+    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(EarDeployer.class);
+
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] { Application.class});
     }
@@ -129,7 +132,16 @@ public class EarDeployer implements Deployer {
         try {
             doOnAllBundles(application, new BundleBlock<ModuleInfo>() {
                 public ModuleInfo doBundle(ModuleDescriptor bundle) throws Exception {
-                    ModuleInfo info = prepareBundle(bundle, application, subContext(application, context, bundle.getArchiveUri()));
+                    ExtendedDeploymentContext sContext = subContext(application, context, bundle.getArchiveUri());
+                    ModuleInfo info = prepareBundle(bundle, application, 
+                        sContext);
+                    if (info == null) {
+                        sContext.getActionReport().setActionExitCode(ActionReport.ExitCode.WARNING);
+                        String msg = localStrings.getLocalString("skipmoduleprocessing", "Skipped processing for module {0} as its module type was not recognized", bundle.getArchiveUri());
+                        sContext.getActionReport().setMessage(msg);
+                        logger.warning(msg);  
+                        return null;
+                    }
                     info.addMetaData(application);
                     BundleDescriptor bundleDesc = application.getModuleByUri(
                         bundle.getArchiveUri());
@@ -263,6 +275,9 @@ public class EarDeployer implements Deployer {
                 getSniffersForModule(bundleContext, md, application);
             // let's get the list of containers interested in this module
             orderedContainers = deployment.setupContainerInfos(null, sniffers, bundleContext);
+            if (orderedContainers == null) {
+                return null;
+            }
         } catch(Exception e) {
             logger.log(Level.WARNING, "Error occurred", e);  
             throw e;
@@ -463,8 +478,12 @@ public class EarDeployer implements Deployer {
             }
         }
 
+        // if the sub module does not show characteristics of certain module
+        // type, we should still use the application.xml defined module type
+        // to add the appropriate sniffer
         if (mainSniffer == null) {
-            return new ArrayList();
+            mainSniffer = snifferManager.getSniffer(type);
+            sniffers.add(mainSniffer);
         }
 
         String [] incompatibleTypes = mainSniffer.getIncompatibleSnifferTypes();

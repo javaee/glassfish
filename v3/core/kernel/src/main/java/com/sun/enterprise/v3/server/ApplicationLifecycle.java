@@ -243,7 +243,7 @@ public class ApplicationLifecycle implements Deployment {
                 context.setArchiveHandler(handler);
             }
             if (handler==null) {
-                report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",context.getSource()));
+                report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",context.getSourceDir()));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return null;                
             }
@@ -422,7 +422,7 @@ public class ApplicationLifecycle implements Deployment {
         }
 
         if (sniffers.size()==0) {
-            report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized"));
+            report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized for module {0}", context.getSourceDir()));
             return null;
         }
 
