@@ -93,7 +93,8 @@ public class WebTest {
         try{
             while ((line = bis.readLine()) != null) {
                 System.out.println(i++ + ": " + line);
-                if ("Content-Type: test/html; charset=utf-8".equals(line)){
+                if ("Content-Type: test/html; charset=utf-8".equals(line) ||
+                        "Content-Type: test/html;charset=utf-8".equals(line)) {
                     found = true;
                 }
                 if (found) {
