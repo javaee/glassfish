@@ -61,7 +61,7 @@ public class BaseSeleniumTestClass {
             String port = getParameter("admin.port", "4848");
             String seleniumPort = getParameter("selenium.port", "4444");
             String baseUrl = "http://localhost:" + port;
-            System.out.println("Creating Selenium server on port " + seleniumPort + ".  GlassFish is at " + baseUrl);
+            System.out.println("Creating Selenium server on port " + seleniumPort + ".  GlassFish is at " + baseUrl + ". The browserString was set to " + browserString);
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), browserString, baseUrl);
             selenium.start();
             (new BaseSeleniumTestClass()).openAndWait("/common/index.jsf", TRIGGER_COMMON_TASKS); // Make sure the server has started and the user logged in
