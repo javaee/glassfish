@@ -72,7 +72,7 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
     private boolean upgrade;
 
 
-    @Param(name = "instance_name", primary = true, optional = true)
+    @Param(name = "instance_name", primary = true, optional = false)
     private String instanceName0;
 
     private static final LocalStringsImpl strings =
@@ -81,12 +81,16 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
-        super.validate(); // sets all the dirs
-
-        //instanceName is set to the default right now...
-        // only change if the commandline is overriding
+      
         if(ok(instanceName0))
             instanceName = instanceName0;
+        else
+            throw new CommandValidationException(strings.get("Instance.badInstanceName"));
+
+        // call this AFTER the above!  validate() calls initInstance() which
+        // will use instanceName.
+
+        super.validate(); // sets all the dirs
     }
 
     /**
