@@ -81,6 +81,10 @@ public abstract class ExtensionsArchivist  {
         return null;
     }
 
+    public DeploymentDescriptorFile getGFCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
+        return null;
+    }
+
     public <T extends RootDeploymentDescriptor> void addExtension(RootDeploymentDescriptor root, RootDeploymentDescriptor extension) {
         root.addExtensionDescriptor(extension.getClass(), extension, null);
         extension.setModuleDescriptor(root.getModuleDescriptor());
@@ -133,9 +137,26 @@ public abstract class ExtensionsArchivist  {
             confDD.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
         }
         InputStream is = null;
+        InputStream is2 = null;
         try {
             is = archive.getEntry(confDD.getDeploymentDescriptorPath());
             if (is != null) {
+                DeploymentDescriptorFile gfConfDD = 
+                    getGFCounterPartConfigurationDDFile(descriptor);
+                if (gfConfDD != null) {
+                   is2 = archive.getEntry(
+                       gfConfDD.getDeploymentDescriptorPath()); 
+                   // when Glassfish counterpart configuration file is present
+                   // we should ignore this extension configuration file
+                   if (is2 != null) {
+                       logger.log(Level.WARNING, "counterpart.configdd.exists",
+                           new Object[] {
+                               confDD.getDeploymentDescriptorPath(),      
+                               archive.getURI().getSchemeSpecificPart(), 
+                               gfConfDD.getDeploymentDescriptorPath()});
+                       return null;
+                   }
+                }
                 confDD.setXMLValidation(main.getRuntimeXMLValidation());
                 confDD.setXMLValidationLevel(main.getRuntimeXMLValidationLevel());
                 return confDD.read(descriptor, is);
@@ -143,6 +164,9 @@ public abstract class ExtensionsArchivist  {
         } finally {
             if (is != null) {
                 is.close();
+            }
+            if (is2 != null) {
+                is2.close();
             }
         }
         return null;

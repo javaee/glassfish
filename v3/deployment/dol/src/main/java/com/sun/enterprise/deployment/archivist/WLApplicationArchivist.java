@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.runtime.WLApplicationRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.ApplicationRuntimeDDFile;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Inject;
@@ -89,5 +90,11 @@ public class WLApplicationArchivist extends ExtensionsArchivist {
     public RootDeploymentDescriptor getDefaultDescriptor() {
         return new Application(habitat);
     }
+
+    @Override
+    public DeploymentDescriptorFile getGFCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
+        return new ApplicationRuntimeDDFile();
+    }
+
 }
 
