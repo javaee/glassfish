@@ -153,7 +153,7 @@
   <test name="weld_tests">
     <classes>
         <class name="test.web.numberguess.NumberGuessTestNG" />
-	<class name="test.web.extensions.OsgiWeldTestNG" />
+        <class name="test.weld.osgi.OsgiWeldTestNG" />
 	<class name="test.web.extensions.ExtensionsTestNG" />
     </classes>
   </test>

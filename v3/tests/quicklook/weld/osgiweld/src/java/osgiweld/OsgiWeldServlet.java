@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,10 +81,30 @@ public class OsgiWeldServlet extends HttpServlet {
                 System.out.println("Weld Osgi module = " + jarFile);
                 JarFile jar = new JarFile(jarFile);
                 Manifest manifest = jar.getManifest();
-                Set<Object> keys = manifest.getMainAttributes().keySet();
-                // Make sure all attrs are there
-                if (!keys.containsAll(ATTRS)) {
-                    result = "ERROR";
+
+                String command = request.getParameter("command");
+                if (command.equals("manifest")) {
+                    // Make sure all manifest attrs are there
+                    Set<Object> keys = manifest.getMainAttributes().keySet();
+                    if (!keys.containsAll(ATTRS)) {
+                        result = "ERROR";
+                    }
+                } else if (command.equals("exports")) {
+                    // Make sure package exports are present and return them
+                    String exportedValues = manifest.getMainAttributes().getValue(new Attributes.Name("Export-Package"));
+                    if (null != exportedValues) {
+                        result = exportedValues;
+                    } else {
+                        result = "ERROR";
+                    }
+                } else if (command.equals("imports")) {
+                    //Make sure package imports are present and return them
+                    String importedValues = manifest.getMainAttributes().getValue(new Attributes.Name("Import-Package"));
+                    if (null != importedValues) {
+                        result = importedValues;
+                    } else {
+                        result = "ERROR";
+                    }
                 }
             } else {
                 System.out.println("Unable to find Weld module");
@@ -93,11 +113,7 @@ public class OsgiWeldServlet extends HttpServlet {
             result = "ERROR";
         }
 
-        out.println("<html>");
-        out.println("<body>");
-        out.println("<h1>" + result + "</h1>");
-        out.println("</body>");
-        out.println("</html>");
+        out.println(result);
         out.close();
     }
 
