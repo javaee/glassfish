@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,7 @@
     
 
     <sun:property id="statusProp" rendered="#{useCheckBox}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-        <sun:checkbox label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
+        <sun:checkbox id="status" label="$resource{i18n.common.Enabled}"  selected="#{pageSession.valueMap2['Enabled']}" selectedValue="true" />
    </sun:property>
 
     <sun:property id="failProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.lifecycleModule.onLoadFailure}" helpText="$resource{i18nc.lifecycleModule.onLoadFailureHelp}" >
