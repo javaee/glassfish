@@ -418,11 +418,17 @@ public class ScatteredArchive extends ReadableArchiveAdapter {
      *
      * @param s the prefix of entries to be included
      * @return an enumeration of the archive file entries.
-     * @throws UnsupportedOperationException always
      */
 
     public Enumeration<String> entries(String s) {
-        throw new UnsupportedOperationException("entries(String)");
+        Enumeration <String> entries = entries();
+        Vector<String> prefixedEntries = new Vector();
+        while (entries.hasMoreElements()) {
+            String entry = (String)entries.nextElement();
+            if (entry.startsWith(s))
+                prefixedEntries.add(entry);
+        }
+        return prefixedEntries.elements();
     }
 
     @Override
