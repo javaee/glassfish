@@ -52,12 +52,10 @@ import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -73,18 +71,16 @@ import com.sun.enterprise.v3.admin.listener.SystemPropertyListener;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.hk2.component.ConstructorWomb;
 
 import java.io.*;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
-import java.lang.annotation.Annotation;
 
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.RestrictTo;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.ConfigSupport;
 
@@ -226,8 +222,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
             report.writeReport(baos);
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            final Properties reportProps = new Properties();
+            reportProps.setProperty("data-request-type", "report");
             outboundPayload.addPart(0, report.getContentType(), "report", 
-                    null /* no special props for report */, bais);
+                    reportProps, bais);
             res.setContentType(outboundPayload.getContentType());
             outboundPayload.writeTo(res.getOutputStream());
             res.getOutputStream().flush();

@@ -290,6 +290,34 @@ public interface Payload {
                 final boolean isRecursive) throws IOException;
 
         /**
+         * Adds a part to the payload to request that the specified file be
+         * replaced.  
+         * <p>
+         * If the fileURI translates to a non-directory file on the receiving
+         * system then calling this method will replace the file's contents
+         * on the target with the contents of the <code>file</code> argument.
+         * <p>
+         * If the fileURI is for a directory, then if isRecursive is also 
+         * specified the payload will contain one Part to replace the 
+         * directory (which will have the result of removing the directory
+         * and its contents and then recreating the directory) plus a Part for
+         * each file, including subdirectories, below the directory.  The
+         * intent is to replace the entire directory with new contents.  
+         * @param fileURI
+         * @param dataRequestName
+         * @param props
+         * @param isRecursive
+         * @throws IOException
+         */
+        public void requestFileReplacement(
+                final String contentType,
+                final URI fileURI,
+                final String dataRequestName,
+                final Properties props,
+                final File file,
+                final boolean isRecursive) throws IOException;
+
+        /**
          * Writes the parts already added to the payload to the specified
          * OutputStream.
          * @param os OutputStream to receive the formatted payload

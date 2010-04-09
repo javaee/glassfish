@@ -154,18 +154,52 @@ public class PayloadImpl implements Payload {
             }
         }
 
-        private void attachFilesRecursively(
+        @Override
+        public void requestFileReplacement(
+                final String contentType, 
+                final URI fileURI, 
+                final String dataRequestName, 
+                final Properties props, 
+                final File file, 
+                final boolean isRecursive) throws IOException {
+            final Properties enhancedProps = new Properties();
+            if (props != null) {
+                enhancedProps.putAll(props);
+            }
+            enhancedProps.setProperty("data-request-type", "file-replace");
+            enhancedProps.setProperty("data-request-name", dataRequestName);
+            enhancedProps.setProperty("data-request-is-recursive", Boolean.toString(isRecursive));
+
+            /*
+             * Add a part for the recursive replacement of the directory.
+             */
+            parts.add(Part.newInstance(
+                    "application/octet-stream", /* not much effect */
+                    fileURI.getPath(),
+                    enhancedProps,
+                    (String) null));
+
+            /*
+             * If this is a directory and it's a recursive replacement add
+             * file-xfer Parts for the files in the directory.
+             */
+            if (file.isDirectory() && isRecursive) {
+                enhancedProps.setProperty("data-request-type", "file-xfer");
+                attachContainedFilesRecursively(
+                        file.toURI(),
+                        fileURI,
+                        dataRequestName,
+                        enhancedProps,
+                        file);
+            }
+        }
+
+        private void attachContainedFilesRecursively(
                 final URI actualBaseDirAbsURI,
                 final URI targetBaseDirRelURI,
-                final URI dirFileURI,
                 final String dataRequestName,
                 final Properties enhancedProps,
                 final File dirFile) throws FileNotFoundException, IOException {
-            parts.add(Part.newInstance(
-                "application/octet-stream", /* for the directory itself */
-                dirFileURI.getPath(),
-                enhancedProps,
-                (InputStream) null));
 
             for (File f : dirFile.listFiles()) {
                 if (f.isDirectory()) {
@@ -194,6 +228,27 @@ public class PayloadImpl implements Payload {
                             is));
                 }
             }
+        }
+
+        private void attachFilesRecursively(
+                final URI actualBaseDirAbsURI,
+                final URI targetBaseDirRelURI,
+                final URI dirFileURI,
+                final String dataRequestName,
+                final Properties enhancedProps,
+                final File dirFile) throws FileNotFoundException, IOException {
+            parts.add(Part.newInstance(
+                "application/octet-stream", /* for the directory itself */
+                dirFileURI.getPath(),
+                enhancedProps,
+                (InputStream) null));
+
+            attachContainedFilesRecursively(
+                    actualBaseDirAbsURI,
+                    targetBaseDirRelURI,
+                    dataRequestName,
+                    enhancedProps,
+                    dirFile);
 
         }
 

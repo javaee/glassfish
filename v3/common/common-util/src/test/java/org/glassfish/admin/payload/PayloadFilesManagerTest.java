@@ -58,6 +58,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.Payload.Inbound;
@@ -487,25 +490,14 @@ public class PayloadFilesManagerTest {
     }
 
     @Test
-    public void simplePermanentRecursiveTransferAndRemovalTest() throws Exception {
+    public void simplePermanentDirWithNoSlashRemovalTest() throws Exception {
         final String DIR = "x/";
-        final String Y_SUBDIR = "y/";
-        final String Z_SUBDIR = "z/";
+        final String DIR_WITH_NO_SLASH = "x";
         
-        final String DIR_TO_REMOVE = DIR + Y_SUBDIR;
-        
-        final String FILE_A_PREFIX = DIR + Y_SUBDIR;
+        final String FILE_A_PREFIX = DIR;
         final String FILE_A_NAME = "fileA.txt";
 
-        final String FILE_B_PREFIX = DIR + Y_SUBDIR + Z_SUBDIR;
-        final String FILE_B_NAME = "fileB.txt";
-        
-        final String FILE_C_PREFIX = DIR;
-        final String FILE_C_NAME = "fileC.txt";
-
-        final Set<File> desiredPresent = new HashSet<File>();
         final Set<File> desiredAbsent = new HashSet<File>();
-
         /*
          * Create a directory into which we'll copy some small files.
          */
@@ -515,18 +507,10 @@ public class PayloadFilesManagerTest {
 
         final File dir = new File(origDir, DIR);
         dir.mkdir();
-        final File ySubdir = new File(dir, Y_SUBDIR);
-        ySubdir.mkdir();
-        final File zSubdir = new File(dir, Y_SUBDIR + Z_SUBDIR);
-        zSubdir.mkdir();
-
-        final File fileA = new File(ySubdir, FILE_A_NAME);
-        final File fileB = new File(zSubdir, FILE_B_NAME);
-        final File fileC = new File(dir, FILE_C_NAME);
+        
+        final File fileA = new File(dir, FILE_A_NAME);
 
         writeFile(fileA, "This is FileA", "with two lines of content");
-        writeFile(fileB, "This is FileB", "with a" , "third line");
-        writeFile(fileC, "This is FileC", "at the top level of the downloaded tree");
 
         File targetDir = null;
 
@@ -541,13 +525,6 @@ public class PayloadFilesManagerTest {
             targetDir.mkdir();
 
             desiredAbsent.add(new File(targetDir.toURI().resolve(FILE_A_PREFIX + FILE_A_NAME)));
-            desiredAbsent.add(new File(targetDir.toURI().resolve(FILE_B_PREFIX + FILE_B_NAME)));
-            desiredPresent.add(new File(targetDir.toURI().resolve(FILE_C_PREFIX + FILE_C_NAME)));
-
-            /*
-             * Add the original directory recursively.
-             */
-
 
             new CommonPermTest() {
 
@@ -576,6 +553,7 @@ public class PayloadFilesManagerTest {
                      */
                     instance.processParts(ib);
 
+//                    listDir("After creation, before deletion", myTargetDir);
                     /*
                      * Now ask another PayloadFilesManager to remove a directory
                      * recursively.
@@ -583,31 +561,30 @@ public class PayloadFilesManagerTest {
 
                     Payload.Outbound ob = PayloadImpl.Outbound.newInstance();
                     ob.requestFileRemoval(
-                            URI.create(DIR_TO_REMOVE),
+                            URI.create(DIR_WITH_NO_SLASH),
                             "removeTest" /* dataRequestName */,
                             null /* props */,
                             true /* isRecursive */);
 
+                    ob.requestFileRemoval(
+                            URI.create("notThere"),
+                            "removeTest",
+                            null,
+                            true);
                     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ob.writeTo(baos);
                     baos.close();
 
                     final PayloadFilesManager remover =
                             new PayloadFilesManager.Perm(instance.getTargetDir(), null,
-                            Logger.getAnonymousLogger());
+                            debugLogger());
 
                     final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
                     Payload.Inbound removerIB = PayloadImpl.Inbound.newInstance("application/zip", bais);
 
                     remover.processParts(removerIB);
 
-                    final Set<File> missing = new HashSet<File>();
-                    for (File f : desiredPresent) {
-                        if ( ! f.exists()) {
-                            missing.add(f);
-                        }
-                    }
-                    assertEquals("Unexpected missing files after extraction", Collections.EMPTY_SET, missing);
+//                    listDir("After deletion" , myTargetDir);
 
                     final Set<File> unexpectedlyPresent = new HashSet<File>();
                     for (File f : desiredAbsent) {
@@ -621,17 +598,147 @@ public class PayloadFilesManagerTest {
 
                 @Override
                 protected void cleanup() {
-                    for (File f : desiredPresent) {
+                    for (File f : desiredAbsent) {
                         if (f.exists()) {
                             f.delete();
                         }
                     }
                 }
 
-            }.init(targetDir).run("simplePermanentRecursiveTransferAndRemovalTest");
+            }.init(targetDir).run("simplePermanentDirWithNoSlashRemovalTest");
         } finally {
             if (targetDir != null) {
                 FileUtils.whack(targetDir);
+            }
+        }
+    }
+
+    @Test
+    public void recursiveReplacementTest() throws Exception {
+
+        /*
+         * Populate the target directory with a subdirectory containing a file,
+         * then replace the subdirectory via a replacement request in a Payload.
+         */
+        final String DIR = "x/";
+
+        final String FILE_A_PREFIX = DIR;
+        final String FILE_A_NAME = "fileA.txt";
+
+        final String FILE_B_PREFIX = DIR;
+        final String FILE_B_NAME = "fileB.txt";
+
+        final Set<File> desiredAbsent = new HashSet<File>();
+        final Set<File> desiredPresent = new HashSet<File>();
+
+        final File targetDir = File.createTempFile("tgt", "");
+        targetDir.delete();
+        targetDir.mkdir();
+
+        final File dir = new File(targetDir, DIR);
+        dir.mkdir();
+
+        final File fileA = new File(dir, FILE_A_NAME);
+        writeFile(fileA, "This is FileA", "with two lines of content");
+
+        final File origDir = File.createTempFile("pfm", "");
+        origDir.delete();
+        origDir.mkdir();
+
+        final File origSubDir = new File(origDir, DIR);
+        origSubDir.mkdirs();
+        final File fileB = new File(origSubDir, FILE_B_NAME);
+        writeFile(fileB, "This is FileB", "with yet another", "line of content");
+
+
+        try {
+            desiredPresent.add(new File(targetDir.toURI().resolve(FILE_B_PREFIX + FILE_B_NAME)));
+            desiredAbsent.add(new File(targetDir.toURI().resolve(FILE_A_PREFIX + FILE_A_NAME)));
+
+            new CommonPermTest() {
+
+                @Override
+                protected CommonPermTest init(File targetDir) {
+                    super.init(targetDir);
+
+                    return this;
+                }
+
+                @Override
+                protected void addParts(Outbound ob, PayloadFilesManager instance) throws Exception {
+                    ob.requestFileReplacement(
+                            "application/octet-stream",
+                            URI.create(DIR),
+                            "test-xfer",
+                            null, /* props */
+                            origSubDir,
+                            true /* isRecursive */);
+
+                }
+
+                @Override
+                protected void checkResults(Inbound ib, PayloadFilesManager instance) throws Exception {
+
+                    listDir("After creation, before deletion", myTargetDir);
+
+                    /*
+                     * Process files.
+                     */
+                    instance.processParts(ib);
+
+                    listDir("After deletion" , myTargetDir);
+
+                    final Set<File> unexpectedlyPresent = new HashSet<File>();
+                    for (File f : desiredAbsent) {
+                        if (f.exists()) {
+                            unexpectedlyPresent.add(f);
+                        }
+                    }
+                    assertEquals("Unexpected files remain after replacement request",
+                            Collections.EMPTY_SET, unexpectedlyPresent);
+
+                    final Set<File> unexpectedlyAbsent = new HashSet<File>();
+                    for (File f : desiredPresent) {
+                        if ( ! f.exists()) {
+                            unexpectedlyAbsent.add(f);
+                        }
+                    }
+                    assertEquals("Unexpected files absent after replacement request",
+                            Collections.EMPTY_SET, unexpectedlyAbsent);
+                }
+
+                @Override
+                protected void cleanup() {
+                    for (File f : desiredAbsent) {
+                        if (f.exists()) {
+                            f.delete();
+                        }
+                    }
+                }
+
+            }.init(targetDir).run("replacementTest");
+        } finally {
+            if (targetDir != null) {
+                FileUtils.whack(targetDir);
+            }
+        }
+    }
+
+    private static void listDir(final String title, final File dir) {
+        System.out.println(title);
+        listDir(dir);
+        System.out.println();
+    }
+
+    private static void listDir(final File dir) {
+        if ( ! dir.exists()) {
+            System.out.println("Directory  " + dir.getAbsolutePath() + " does not exist");
+        } else {
+            for (File f : dir.listFiles()) {
+                System.out.println((f.isDirectory() ? "dir " : "    ") + f.getAbsolutePath());
+                if (f.isDirectory()) {
+                    listDir(f);
+                }
             }
         }
     }
@@ -939,7 +1046,7 @@ public class PayloadFilesManagerTest {
         protected File myTargetDir;
 
         protected CommonPermTest init(final File targetDir) {
-            permInstance = new PayloadFilesManager.Perm(targetDir, null, Logger.getAnonymousLogger());
+            permInstance = new PayloadFilesManager.Perm(targetDir, null, debugLogger());
             myTargetDir = targetDir;
             return this;
         }
@@ -948,6 +1055,43 @@ public class PayloadFilesManagerTest {
         protected PayloadFilesManager instance() throws IOException {
             return permInstance;
         }
+    }
+
+    /**
+     * Makes it easy to turn on or off FINE-level logging in the PayloadFilesManager
+     * during the tests.
+     * <p>
+     * Uncomment the comment lines below to turn on FINE logging for the test.
+     *
+     *
+     * @return
+     */
+    private static Logger debugLogger() {
+        final Logger logger = Logger.getAnonymousLogger();
+        logger.setLevel(Level.FINE);
+        logger.addHandler(new Handler() {
+
+                        {
+//                            this.setLevel(Level.INFO);
+                            this.setLevel(Level.FINE);
+                        }
+
+                        @Override
+                        public void publish(LogRecord record) {
+                            System.out.println(record.getMessage());
+                        }
+
+                        @Override
+                        public void flush() {
+                            System.out.flush();
+                        }
+
+                        @Override
+                        public void close() throws SecurityException {
+                            // no-op
+                        }
+                    });
+        return logger;
     }
 
 }

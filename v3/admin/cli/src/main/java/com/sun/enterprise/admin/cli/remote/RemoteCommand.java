@@ -379,7 +379,7 @@ public class RemoteCommand extends CLICommand {
      */
     private void executeRemoteCommand(String uri) throws CommandException {
         doHttpCommand(uri, chooseRequestMethod(), new HttpCommand() {
-            public void doCommand(HttpURLConnection urlConnection)
+            public void doCommand(final HttpURLConnection urlConnection)
                     throws CommandException, IOException {
 
             if (doUpload) {
@@ -403,24 +403,32 @@ public class RemoteCommand extends CLICommand {
             Payload.Inbound inboundPayload =
                 PayloadImpl.Inbound.newInstance(responseContentType, in);
 
-            boolean isReportProcessed = false;
             PayloadFilesManager downloadedFilesMgr =
-                    new PayloadFilesManager.Perm();
-            Iterator<Payload.Part> partIt = inboundPayload.parts();
-            while (partIt.hasNext()) {
-                /*
-                 * The report will always come first among the parts of
-                 * the payload.  Be sure to process the report right away
-                 * so any following data parts will be accessible.
-                 */
-                if (!isReportProcessed) {
-                    handleResponse(options, partIt.next().getInputStream(),
-                            urlConnection.getResponseCode(), userOut);
-                    isReportProcessed = true;
-                } else {
-                    processDataPart(downloadedFilesMgr, partIt.next());
-                }
-            }
+                    new PayloadFilesManager.Perm(
+                        new PayloadFilesManager.ActionReportHandler() {
+
+                    @Override
+                    public void handleReport(InputStream reportStream) throws Exception {
+                        handleResponse(options, reportStream,
+                                urlConnection.getResponseCode(), userOut);
+                    }
+                });
+            downloadedFilesMgr.processParts(inboundPayload);
+//            Iterator<Payload.Part> partIt = inboundPayload.parts();
+//            while (partIt.hasNext()) {
+//                /*
+//                 * The report will always come first among the parts of
+//                 * the payload.  Be sure to process the report right away
+//                 * so any following data parts will be accessible.
+//                 */
+//                if (!isReportProcessed) {
+//                    handleResponse(options, partIt.next().getInputStream(),
+//                            urlConnection.getResponseCode(), userOut);
+//                    isReportProcessed = true;
+//                } else {
+//                    processDataPart(downloadedFilesMgr, partIt.next());
+//                }
+//            }
             }
         });
     }
@@ -659,14 +667,6 @@ public class RemoteCommand extends CLICommand {
                                                 Locale.getDefault(), mcl);
         }
         return null;
-    }
-
-    private void processDataPart(final PayloadFilesManager downloadedFilesMgr,
-            final Payload.Part part) throws IOException {
-        /*
-         * Remaining parts are typically files to be downloaded.
-         */
-        downloadedFilesMgr.processPart(part);
     }
 
     /**

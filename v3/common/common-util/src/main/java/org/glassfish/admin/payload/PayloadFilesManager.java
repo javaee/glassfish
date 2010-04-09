@@ -95,16 +95,26 @@ public abstract class PayloadFilesManager {
     private final File targetDir;
     protected final Logger logger;
     private final ActionReport report;
+    private final ActionReportHandler reportHandler;
 
     protected final Map<File,Long> dirTimestamps = new HashMap<File,Long>();
 
     private PayloadFilesManager(
             final File targetDir,
             final ActionReport report,
-            final Logger logger) {
+            final Logger logger,
+            final ActionReportHandler reportHandler) {
         this.targetDir = targetDir;
         this.report = report;
         this.logger = logger;
+        this.reportHandler = reportHandler;
+    }
+
+    private PayloadFilesManager(
+            final File targetDir,
+            final ActionReport report,
+            final Logger logger) {
+        this(targetDir, report, logger, null);
     }
 
     protected File getTargetDir() {
@@ -147,7 +157,20 @@ public abstract class PayloadFilesManager {
          * @param logger logger to receive messages
          */
         public Perm(final File targetDir, final ActionReport report, final Logger logger) {
-            super(targetDir, report, logger);
+            this(targetDir, report, logger, null);
+        }
+
+        /**
+         * Creates a new PayloadFilesManager for permanent files anchored at
+         * the specified target directory.
+         * @param targetDir directory under which the payload's files should be stored
+         * @param report result report to which extraction results will be appened
+         * @param logger logger to receive messages
+         * @param reportHandler handler to invoke for each ActionReport in the payload
+         */
+        public Perm(final File targetDir, final ActionReport report,
+                final Logger logger, final ActionReportHandler reportHandler) {
+            super(targetDir, report, logger, reportHandler);
         }
 
         /**
@@ -157,7 +180,20 @@ public abstract class PayloadFilesManager {
          * @param logger logger to receive messages
          */
         public Perm(final ActionReport report, final Logger logger) {
-            super(new File(System.getProperty("user.dir")), report, logger);
+            this(report, logger, null);
+        }
+
+
+        /**
+         * Creates a new PayloadFilesManager for permanent files anchored at
+         * the caller's current directory.
+         * @param report result report to which extraction results will be appened
+         * @param logger logger to receive messages
+         * @param reportHandler handler to invoke for each ActionReport in the payload
+         */
+        public Perm(final ActionReport report, final Logger logger,
+                final ActionReportHandler reportHandler) {
+            super(new File(System.getProperty("user.dir")), report, logger, reportHandler);
         }
 
         /**
@@ -174,7 +210,11 @@ public abstract class PayloadFilesManager {
          * the caller's current directory.
          */
         public Perm() {
-            this(null, Logger.getLogger(Perm.class.getName()));
+            this((ActionReportHandler) null);
+        }
+
+        public Perm(final ActionReportHandler reportHandler) {
+            this(null, Logger.getLogger(Perm.class.getName()), reportHandler);
         }
 
         @Override
@@ -194,7 +234,6 @@ public abstract class PayloadFilesManager {
                     parentPathFromPart = parentPathFromPart + "/";
                 }
                 File parentFile = new File(parentPathFromPart);
-                parentFile.mkdirs();
                 parentURI = parentURI.resolve(parentFile.toURI());
             }
             return parentURI;
@@ -345,38 +384,49 @@ public abstract class PayloadFilesManager {
 
     protected abstract URI getOutputFileURI(final Payload.Part part, final String name) throws IOException;
 
-    public File processPart(final Payload.Part part) throws IOException {
-        File result = null;
-        final DataRequestType drt = DataRequestType.getType(part);
-        if (drt != null) {
-            result = drt.processPart(this, part, part.getName());
-        }
+    private File removeFile(final Payload.Part part) throws IOException {
+        final File result = removeFileWithoutConsumingPartBody(part);
+        consumePartBody(part);
         return result;
     }
 
-    private File removeFile(final Payload.Part part) throws IOException {
+    private File removeFileWithoutConsumingPartBody(final Payload.Part part) throws IOException {
         final boolean isFine = logger.isLoggable(Level.FINE);
         File targetFile = new File(getOutputFileURI(part, part.getName()));
-        consumePartBody(targetFile, part);
         if (targetFile.exists()) {
-            if ((targetFile.isDirectory() && part.isRecursive()) ?
+            final boolean isRemovalRecursive = targetFile.isDirectory() && part.isRecursive();
+            if (isRemovalRecursive ?
                     FileUtils.whack(targetFile) : targetFile.delete()) {
                 if (isFine) {
-                    logger.fine("Deleted " + targetFile.getAbsolutePath() + " as requested");
+                    logger.fine("Deleted " + targetFile.getAbsolutePath() + 
+                            (isRemovalRecursive ? " recursively" : "") + " as requested");
                 }
                 reportDeletionSuccess();
             } else {
+                if (isFine) {
+                    logger.fine("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion exists but was not able to be deleted");
+                }
                 reportDeletionFailure(part.getName(),
                         strings.getLocalString("payload.deleteFailedOnFile",
                         "Requested deletion of {0} failed; the file was found but the deletion attempt failed - no reason is available"));
             }
         } else {
+            if (isFine) {
+                logger.fine("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion does not exist.");
+            }
             reportDeletionFailure(part.getName(), new FileNotFoundException(targetFile.getAbsolutePath()));
         }
         return targetFile;
     }
 
-    private void consumePartBody(final File targetFile, final Part part) throws FileNotFoundException, IOException {
+
+    private File replaceFile(final Payload.Part part) throws IOException {
+        final boolean isFine = logger.isLoggable(Level.FINE);
+        removeFileWithoutConsumingPartBody(part);
+        return extractFile(part, part.getName());
+    }
+
+    private void consumePartBody(final Part part) throws FileNotFoundException, IOException {
         InputStream is = null;
         try {
             is = part.getInputStream();
@@ -387,6 +437,14 @@ public abstract class PayloadFilesManager {
             if (is != null) {
                 is.close();
             }
+        }
+    }
+
+    private void processReport(final Payload.Part part) throws Exception {
+        if (reportHandler != null) {
+            reportHandler.handleReport(part.getInputStream());
+        } else {
+            consumePartBody(part);
         }
     }
 
@@ -416,10 +474,7 @@ public abstract class PayloadFilesManager {
             File extractedFile = new File(getOutputFileURI(part, outputName));
 
             /*
-             * Create the required directory tree under the temp directory.
-             * This makes sure that if the command uploaded files with the
-             * same names but in different original directories that they
-             * do not collide in the temp directory.
+             * Create the required directory tree under the target directory.
              */
             File immediateParent = extractedFile.getParentFile();
             immediateParent.mkdirs();
@@ -493,10 +548,12 @@ public abstract class PayloadFilesManager {
      * Returns all Files extracted from the Payload, treating each Part as a
      * separate file.
      * @param inboundPayload Payload containing file data to be extracted
+     * @parma reportHandler invoked for each ActionReport Part in the payload
      * @return the Files corresponding to the content of each extracted file
      * @throws java.io.IOException
      */
-    public List<File> processParts(final Payload.Inbound inboundPayload) throws IOException {
+    public List<File> processParts(
+            final Payload.Inbound inboundPayload) throws IOException {
 
         if (inboundPayload == null) {
             return Collections.EMPTY_LIST;
@@ -506,6 +563,9 @@ public abstract class PayloadFilesManager {
         OutputStream os = null;
         InputStream is = null;
 
+        boolean isReportProcessed = false;
+        Part possibleUnrecognizedReportPart = null;
+
         try {
             StringBuilder uploadedEntryNames = new StringBuilder();
             for (Iterator<Payload.Part> partIt = inboundPayload.parts(); partIt.hasNext();) {
@@ -513,10 +573,19 @@ public abstract class PayloadFilesManager {
                 DataRequestType drt = DataRequestType.getType(part);
                 if (drt != null) {
                     result.add(drt.processPart(this, part, part.getName()));
+                    isReportProcessed |= (drt == DataRequestType.REPORT);
                     uploadedEntryNames.append(part.getName()).append(" ");
+                } else {
+                    if ( (! isReportProcessed) && possibleUnrecognizedReportPart == null) {
+                        possibleUnrecognizedReportPart = part;
+                    }
                 }
             }
-
+            if ( (! isReportProcessed) && possibleUnrecognizedReportPart != null) {
+                DataRequestType.REPORT.processPart(this, possibleUnrecognizedReportPart,
+                        possibleUnrecognizedReportPart.getName());
+                isReportProcessed = true;
+            }
             postProcessParts();
             return result;
         } catch (Exception e) {
@@ -530,6 +599,10 @@ public abstract class PayloadFilesManager {
                 is = null;
             }
         }
+    }
+
+    public static interface ActionReportHandler {
+        public void handleReport(final InputStream reportStream) throws Exception;
     }
 
     protected abstract void postProcessParts();
@@ -640,6 +713,34 @@ public abstract class PayloadFilesManager {
                     final Part part,
                     final String partName) throws IOException {
                 return pfm.removeFile(part);
+            }
+
+        },
+        FILE_REPLACEMENT("file-replace") {
+
+            @Override
+            protected File processPart(
+                    final PayloadFilesManager pfm,
+                    final Part part,
+                    final String partName) throws IOException {
+                return pfm.replaceFile(part);
+            }
+        },
+        REPORT("report") {
+
+            @Override
+            protected File processPart(
+                    final PayloadFilesManager pfm, final
+                    Part part,
+                    final String partName) throws IOException {
+                try {
+                    pfm.processReport(part);
+                } catch (IOException ioe) {
+                    throw ioe;
+                } catch (Exception ex) {
+                    throw new IOException(ex);
+                }
+                return null;
             }
 
         };
