@@ -89,10 +89,10 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     private ASenvPropertyReader asenv;
     private /*almost final*/ String domainName;
     private /*almost final*/ String instanceName;
+    private RuntimeType serverType = RuntimeType.DAS; //set to DAS to avoid null
 
     private final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
     private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-    private static RuntimeType serverType = RuntimeType.DAS;
 
     /**
      * Compute all the values per default.
@@ -334,14 +334,6 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     public boolean isEmbedded() {
         return server!=null;
-    }
-
-    public boolean isDAS() {
-        return serverType == RuntimeType.DAS;
-    }
-
-    public boolean isInstance() {
-        return serverType == RuntimeType.INSTANCE;
     }
 
     @Override

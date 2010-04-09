@@ -55,5 +55,17 @@ public enum RuntimeType {
     /**
      * a single instance or a clustered instance ?need to dissambiguate?
      */
-    INSTANCE
+    INSTANCE;
+
+    public final boolean isInstance() {
+        return this == INSTANCE;
+    }
+
+    public final boolean isDas() {
+        return this == DAS;
+    }
+
+    public final boolean isNodeAgent() {
+        return this == NODE_AGENT;
+    }
 }
