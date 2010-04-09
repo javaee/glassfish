@@ -62,7 +62,7 @@ public class BaseSeleniumTestClass {
             String seleniumPort = getParameter("selenium.port", "4444");
             String baseUrl = "http://localhost:" + port;
 
-            System.out.println("Starting Selenium tests.  The GlassFish Admin console is at " + baseUrl +".  The Selenium server is listening on " + seleniumPort +
+            System.out.println("The GlassFish Admin console is at " + baseUrl +".  The Selenium server is listening on " + seleniumPort +
                     " and will use " + browser + " as the test browser.");
 
             selenium = new DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
