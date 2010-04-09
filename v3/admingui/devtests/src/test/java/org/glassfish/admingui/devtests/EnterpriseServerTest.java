@@ -49,13 +49,6 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_SYSTEM_PROPERTIES = "A system property defines a common value for a setting at the server level. You can refer to a system property in a text field by enclosing it in a dollar sign and curly braces.";
 
     @Test
-    public void testGeneralInformation() throws Exception {
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-
-        assertTrue(selenium.isTextPresent("glassfishv3/glassfish/domains/domain1/config"));
-    }
-
-    @Test
     public void testAdvancedApplicationsConfiguration() {
         final String property = generateRandomString();
         final String value = property + "value";

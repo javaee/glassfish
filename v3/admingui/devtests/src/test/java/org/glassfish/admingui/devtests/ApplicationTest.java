@@ -78,15 +78,15 @@ public class ApplicationTest extends BaseSeleniumTestClass {
 
         // hrm
         clickAndWaitForElement(ELEMENT_DEPLOY_BUTTON, ELEMENT_FILE_FIELD);
-        File war = new File(new File(".."), "war/target/admingui.war");
+        File war = new File("src/test/resources/test.war");
         try {
             selenium.attachFile(ELEMENT_FILE_FIELD, war.toURL().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        assertEquals("admingui", selenium.getValue(ELEMENT_CONTEXT_ROOT));
-        assertEquals("admingui", selenium.getValue(ELEMENT_APP_NAME));
+        assertEquals("test", selenium.getValue(ELEMENT_CONTEXT_ROOT));
+        assertEquals("test", selenium.getValue(ELEMENT_APP_NAME));
 
         selenium.type(ELEMENT_CONTEXT_ROOT, applicationName);
         selenium.type(ELEMENT_APP_NAME, applicationName);
