@@ -75,9 +75,9 @@
         </developer>
     </developers>
     <modules>
+        <module>common</module>
         <module>admin</module>
         <module>cli</module>
-        <module>common</module>
         <!--<module>gms-adapter</module> -->
     </modules>
 </project>
