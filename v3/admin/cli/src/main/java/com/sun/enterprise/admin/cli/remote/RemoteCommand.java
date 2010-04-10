@@ -40,6 +40,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.SSLException;
 
 import org.jvnet.hk2.component.*;
@@ -100,6 +101,7 @@ public class RemoteCommand extends CLICommand {
     private boolean                         doHelp = false;
     private Payload.Outbound                outboundPayload;
     private String                          usage;
+    private File                            fileOutputDir;
 
     /**
      * A class loader for the "modules" directory.
@@ -179,6 +181,14 @@ public class RemoteCommand extends CLICommand {
         this(name, po, env);
         this.responseFormatType = responseFormatType;
         this.userOut = userOut;
+    }
+
+    /**
+     * Set the directory in which any returned files will be stored.
+     * The default is the user's home directory.
+     */
+    public void setFileOutputDirectory(File dir) {
+        fileOutputDir = dir;
     }
 
     @Override
@@ -404,31 +414,17 @@ public class RemoteCommand extends CLICommand {
                 PayloadImpl.Inbound.newInstance(responseContentType, in);
 
             PayloadFilesManager downloadedFilesMgr =
-                    new PayloadFilesManager.Perm(
-                        new PayloadFilesManager.ActionReportHandler() {
-
-                    @Override
-                    public void handleReport(InputStream reportStream) throws Exception {
-                        handleResponse(options, reportStream,
+                new PayloadFilesManager.Perm(fileOutputDir, null,
+                    logger.getLogger(),
+                    new PayloadFilesManager.ActionReportHandler() {
+                        @Override
+                        public void handleReport(InputStream reportStream)
+                                                throws Exception {
+                            handleResponse(options, reportStream,
                                 urlConnection.getResponseCode(), userOut);
-                    }
-                });
+                        }
+                    });
             downloadedFilesMgr.processParts(inboundPayload);
-//            Iterator<Payload.Part> partIt = inboundPayload.parts();
-//            while (partIt.hasNext()) {
-//                /*
-//                 * The report will always come first among the parts of
-//                 * the payload.  Be sure to process the report right away
-//                 * so any following data parts will be accessible.
-//                 */
-//                if (!isReportProcessed) {
-//                    handleResponse(options, partIt.next().getInputStream(),
-//                            urlConnection.getResponseCode(), userOut);
-//                    isReportProcessed = true;
-//                } else {
-//                    processDataPart(downloadedFilesMgr, partIt.next());
-//                }
-//            }
             }
         });
     }
@@ -597,17 +593,6 @@ public class RemoteCommand extends CLICommand {
             throw new CommandException(e);
         }
     }
-
-    /**
-     * Return the name of the command.
-     * 
-     * @return  the command name
-     */
-    /*
-    public String getCommandName() {
-        return name;
-    }
-    */
 
     /**
      * Get the usage text.
