@@ -152,8 +152,8 @@
         <jvm-options>-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/</jvm-options>
         <!-- Time period fileinstaller thread in ms. -->
         <jvm-options>-Dfelix.fileinstall.poll=5000</jvm-options>
-        <!-- debug level -->
-        <jvm-options>-Dfelix.fileinstall.debug=1</jvm-options>
+        <!-- log level: 1 for error, 2 for warning, 3 for info and 4 for debug. -->
+        <jvm-options>-Dfelix.fileinstall.log.level=3</jvm-options>
         <!-- should new bundles be started or installed only? 
              true => start, false => only install 
         -->
