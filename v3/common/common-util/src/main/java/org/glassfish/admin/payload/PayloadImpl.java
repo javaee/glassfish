@@ -169,6 +169,7 @@ public class PayloadImpl implements Payload {
             enhancedProps.setProperty("data-request-type", "file-replace");
             enhancedProps.setProperty("data-request-name", dataRequestName);
             enhancedProps.setProperty("data-request-is-recursive", Boolean.toString(isRecursive));
+	    enhancedProps.setProperty("last-modified", Long.toString(file.lastModified()));
 
             /*
              * Add a part for the recursive replacement of the directory.
@@ -203,10 +204,11 @@ public class PayloadImpl implements Payload {
 
             for (File f : dirFile.listFiles()) {
                 if (f.isDirectory()) {
+                    enhancedProps.setProperty("last-modified", Long.toString(f.lastModified()));
                     attachFilesRecursively(
                             actualBaseDirAbsURI,
                             targetBaseDirRelURI,
-                            actualBaseDirAbsURI.relativize(f.toURI()),
+                            targetBaseDirRelURI.resolve(actualBaseDirAbsURI.relativize(f.toURI())),
                             dataRequestName,
                             enhancedProps,
                             f);
