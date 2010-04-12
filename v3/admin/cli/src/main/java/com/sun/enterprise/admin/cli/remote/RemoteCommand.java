@@ -424,7 +424,13 @@ public class RemoteCommand extends CLICommand {
                                 urlConnection.getResponseCode(), userOut);
                         }
                     });
-            downloadedFilesMgr.processParts(inboundPayload);
+            try {
+                downloadedFilesMgr.processParts(inboundPayload);
+            } catch (CommandException cex) {
+                throw cex;
+            } catch (Exception ex) {
+                throw new CommandException(ex);
+            }
             }
         });
     }

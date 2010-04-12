@@ -555,7 +555,7 @@ public abstract class PayloadFilesManager {
      * @throws java.io.IOException
      */
     public List<File> processParts(
-            final Payload.Inbound inboundPayload) throws IOException {
+            final Payload.Inbound inboundPayload) throws Exception {
 
         if (inboundPayload == null) {
             return Collections.EMPTY_LIST;
@@ -590,11 +590,7 @@ public abstract class PayloadFilesManager {
             }
             postProcessParts();
             return result;
-        } catch (Exception e) {
-            final IOException ioe = new IOException();
-            ioe.initCause(e);
-            throw ioe;
-        }
+        } 
         finally {
             if (is != null) {
                 is.close();
@@ -703,7 +699,7 @@ public abstract class PayloadFilesManager {
             protected File processPart(
                     final PayloadFilesManager pfm,
                     final Part part,
-                    final String partName) throws IOException {
+                    final String partName) throws Exception {
                 return pfm.extractFile(part, partName);
             }
 
@@ -713,7 +709,7 @@ public abstract class PayloadFilesManager {
             protected File processPart(
                     final PayloadFilesManager pfm,
                     final Part part,
-                    final String partName) throws IOException {
+                    final String partName) throws Exception {
                 return pfm.removeFile(part);
             }
 
@@ -724,7 +720,7 @@ public abstract class PayloadFilesManager {
             protected File processPart(
                     final PayloadFilesManager pfm,
                     final Part part,
-                    final String partName) throws IOException {
+                    final String partName) throws Exception {
                 return pfm.replaceFile(part);
             }
         },
@@ -734,14 +730,8 @@ public abstract class PayloadFilesManager {
             protected File processPart(
                     final PayloadFilesManager pfm, final
                     Part part,
-                    final String partName) throws IOException {
-                try {
-                    pfm.processReport(part);
-                } catch (IOException ioe) {
-                    throw ioe;
-                } catch (Exception ex) {
-                    throw new IOException(ex);
-                }
+                    final String partName) throws Exception {
+                pfm.processReport(part);
                 return null;
             }
 
@@ -769,7 +759,7 @@ public abstract class PayloadFilesManager {
          */
         protected abstract File processPart(
                 final PayloadFilesManager pfm, final Part part, final String partName)
-                throws IOException;
+                throws Exception;
 
         /**
          * Finds the DataRequestType enum which matches the data-request-type
