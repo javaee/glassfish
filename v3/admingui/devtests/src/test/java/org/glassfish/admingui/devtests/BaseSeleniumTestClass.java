@@ -50,6 +50,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BaseSeleniumTestClass {
     protected static Selenium selenium;
+    protected static int TIMEOUT = 300;
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Please Register";
@@ -108,7 +109,7 @@ public class BaseSeleniumTestClass {
     protected void openAndWait(String url, String triggerText) {
         selenium.open(url);
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
-        waitForPageLoad(triggerText, 120);
+        waitForPageLoad(triggerText, TIMEOUT);
     }
 
     /**
@@ -117,7 +118,7 @@ public class BaseSeleniumTestClass {
      * @param triggerText
      */
     protected void clickAndWait(String id, String triggerText) {
-        clickAndWait(id, triggerText, 120);
+        clickAndWait(id, triggerText, TIMEOUT);
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
