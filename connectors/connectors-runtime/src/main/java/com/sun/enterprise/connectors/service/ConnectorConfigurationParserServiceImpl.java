@@ -68,13 +68,14 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
      }
 
     /**
-     *  Obtains the Permission string that needs to be added to the
-     *  to the security policy files. These are the security permissions needed
-     *  by the resource adapter implementation classes.
-     *  These strings are obtained by parsing the ra.xml
-     *  @param moduleName rar module Name
-     *  @throws ConnectorRuntimeException If rar.xml parsing fails.
-     *  @return Required policy permissions in server.policy file
+     * Obtains the Permission string that needs to be added to the
+     * to the security policy files. These are the security permissions needed
+     * by the resource adapter implementation classes.
+     * These strings are obtained by parsing the ra.xml
+     *
+     * @param moduleName rar module Name
+     * @return Required policy permissions in server.policy file
+     * @throws ConnectorRuntimeException If rar.xml parsing fails.
      */
     public String getSecurityPermissionSpec(String moduleName)
             throws ConnectorRuntimeException {
@@ -82,36 +83,39 @@ public class ConnectorConfigurationParserServiceImpl extends ConnectorService {
         if (moduleName == null) {
             return null;
         }
-        ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(moduleName);
-        Set securityPermissions = connectorDescriptor.getSecurityPermissions();
-        Iterator it = securityPermissions.iterator();
         String policyString = null;
-        String policyContent = null;
-        SecurityPermission secPerm = null;
-        String permissionString = null;
 
         //check whether the policy file already has required permissions.
-        File policyFile = new File(System.getProperty("java.security.policy"));
-        policyContent = getFileContent(policyFile);
+        String fileName = System.getProperty("java.security.policy");
+        if (fileName != null) {
+            File policyFile = new File(fileName);
+            String policyContent = getFileContent(policyFile);
 
-        while (it.hasNext()) {
-            secPerm = (SecurityPermission) it.next();
-            permissionString = secPerm.getPermission();
-            int intIndex = policyContent.indexOf(permissionString);
-            if (intIndex == -1) {
-                if (permissionString != null) {
-                    if(policyString != null){
-                        policyString = policyString + "\n \n" + permissionString;
-                    }else{
-                        policyString = "\n\n" + permissionString;
+            ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(moduleName);
+            Set securityPermissions = connectorDescriptor.getSecurityPermissions();
+            Iterator it = securityPermissions.iterator();
+            SecurityPermission secPerm = null;
+            String permissionString = null;
+
+            while (it.hasNext()) {
+                secPerm = (SecurityPermission) it.next();
+                permissionString = secPerm.getPermission();
+                int intIndex = policyContent.indexOf(permissionString);
+                if (intIndex == -1) {
+                    if (permissionString != null) {
+                        if (policyString != null) {
+                            policyString = policyString + "\n \n" + permissionString;
+                        } else {
+                            policyString = "\n\n" + permissionString;
+                        }
                     }
                 }
             }
-        }
 
-        //print the missing permissions
-        if (policyString != null) {
-            policyString = CAUTION_MESSAGE + policyString;
+            //print the missing permissions
+            if (policyString != null) {
+                policyString = CAUTION_MESSAGE + policyString;
+            }
         }
         return policyString;
     }
