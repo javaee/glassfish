@@ -210,12 +210,21 @@
        </dependency>   
        
         <!-- clustering modules -->
-	<dependency>
-            <groupId>org.glassfish.cluster</groupId>
-	    <artifactId>cluster</artifactId>
-	    <version>${project.version}</version>
-	    <type>pom</type>
-	</dependency>
+		<dependency>
+			<groupId>org.glassfish.cluster</groupId>
+			<artifactId>cluster-cli</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.cluster</groupId>
+			<artifactId>cluster-admin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.cluster</groupId>
+			<artifactId>cluster-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
         <!-- embedded shell fragment -->
         <dependency>
