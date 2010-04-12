@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.appserv.connectors.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -41,8 +42,27 @@ import javax.resource.spi.work.WorkManager;
 
 @Contract
 public interface WorkManagerFactory {
-	//TODO V3 java-doc
-    WorkManager getWorkManagerProxy(String poolId, String moduleName) throws ConnectorRuntimeException;
+    /**
+     * get the proxy work manager object for the rar
+     * @param threadPoolId thread pool id
+     * @param moduleName resource-adapter-name
+     * @return work-manager proxy
+     * @throws ConnectorRuntimeException when unable to provide a proxy work manager
+     */
+    WorkManager getWorkManagerProxy(String threadPoolId, String moduleName, ClassLoader rarCL) throws ConnectorRuntimeException;
+
+    /**
+     * remove the work manager of the module (rar) from work-manager registry
+     * @param moduleName resource-adapter-name
+     * @return boolean indicating whether the work-manager is removed from registry or not
+     */
     boolean removeWorkManager(String moduleName);
-    WorkManager createWorkManager(String poolName, String raName);
+
+    /**
+     * create a new work manager for the resource-adapter
+     * @param threadPoolId thread-pool-id
+     * @param raName resource-adapter-name
+     * @return WorkManager
+     */
+    WorkManager createWorkManager(String threadPoolId, String raName, ClassLoader rarCL);
 }

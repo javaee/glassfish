@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@ package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
+import com.sun.appserv.connectors.internal.api.WorkContextHandler;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.annotations.Service;
@@ -123,7 +124,8 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
                 if (raConfig != null) {
                     poolId = raConfig.getThreadPoolIds();
                 }
-                this.bootStrapContextImpl = new BootstrapContextImpl(poolId, moduleName_);
+                this.bootStrapContextImpl = new BootstrapContextImpl(poolId, moduleName_, jcl);
+                validateWorkContextSupport(desc);
 
                 startResourceAdapter(bootStrapContextImpl);
 
@@ -146,6 +148,31 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             }
         }
     }
+
+    /**
+     * check whether the <i>required-work-context</i> list mandated by the resource-adapter
+     * is supported by the application server
+     * @param desc ConnectorDescriptor
+     * @throws ConnectorRuntimeException when unable to support any of the requested work-context type.
+     */
+    private void validateWorkContextSupport(ConnectorDescriptor desc) throws ConnectorRuntimeException {
+        Set workContexts = desc.getRequiredWorkContexts();
+        Iterator workContextsIterator = workContexts.iterator();
+
+        WorkContextHandler workContextHandler = connectorRuntime_.getWorkContextHandler();
+        workContextHandler.init(moduleName_, jcl_);
+        while(workContextsIterator.hasNext()){
+            String ic = (String)workContextsIterator.next();
+            boolean supported = workContextHandler.isContextSupported(true, ic );
+            if(!supported){
+                String errorMsg = "Unsupported work context [ "+ ic + " ] ";
+                Object params[] = new Object[]{ic, desc.getName()};
+                _logger.log(Level.WARNING,"unsupported.work.context", params);
+                throw new ConnectorRuntimeException(errorMsg);
+            }
+        }
+    }
+
 
     /**
      * called by connector runtime to start the resource-adapter java bean

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.appserv.connectors.internal.api;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -48,4 +49,12 @@ public interface WorkContextHandler {
      * @return boolean indicating whether the workContextClass is supported or not
      */
     public boolean isContextSupported(boolean strict, String workContextClassName);
+
+
+    /**
+     * initialize the work-context-handler
+     * @param raName resource-adapter name
+     * @param loader class-loader of the resource-adapter
+     */
+    public void init(String raName, ClassLoader loader);
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,34 +98,11 @@ public class ActiveResourceAdapterImpl implements ActiveResourceAdapter {
         jcl_ = jcl;
         connectorRuntime_ = ConnectorRuntime.getRuntime();
         connectionDefs_ = ConnectorDDTransformUtils.getConnectionDefs(desc_);
-        validateWorkContextSupport(desc);
     }
 
     public ActiveResourceAdapterImpl(){
     }
 
-    /**
-     * check whether the <i>required-work-context</i> list mandated by the resource-adapter
-     * is supported by the application server
-     * @param desc ConnectorDescriptor
-     * @throws ConnectorRuntimeException when unable to support any of the requested work-context type.
-     */
-    private void validateWorkContextSupport(ConnectorDescriptor desc) throws ConnectorRuntimeException {
-        Set workContexts = desc.getRequiredWorkContexts();
-        Iterator workContextsIterator = workContexts.iterator();
-
-        WorkContextHandler workContextHandler = connectorRuntime_ .getWorkContextHandler();
-        while(workContextsIterator.hasNext()){
-            String ic = (String)workContextsIterator.next();
-            boolean supported = workContextHandler.isContextSupported(true, ic );
-            if(!supported){
-                String errorMsg = "Unsupported work context [ "+ ic + " ] ";
-                Object params[] = new Object[]{ic, desc.getName()};
-                _logger.log(Level.WARNING,"unsupported.work.context", params);
-                throw new ConnectorRuntimeException(errorMsg);
-            }
-        }
-    }
 
     /**
      * {@inheritDoc}

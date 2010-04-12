@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,7 +66,6 @@ import org.glassfish.enterprise.iiop.util.S1ASThreadPoolManager;
 
 public final class CommonWorkManager implements WorkManager {
 
-    //TODO V3 need to use ee.threadpool
     private static WorkManager wm = null;
 
     private ThreadPoolManager tpm;
@@ -84,6 +83,7 @@ public final class CommonWorkManager implements WorkManager {
 
     private ConnectorRuntime runtime;
 	private String raName ;
+    private ClassLoader rarClassLoader;
 
     /**
      * Private constructor.
@@ -91,12 +91,13 @@ public final class CommonWorkManager implements WorkManager {
      * @param threadPoolId Id of the thread pool.
      * @throws ConnectorRuntimeException if thread pool is not accessible
      */
-    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName)
+    public CommonWorkManager(String threadPoolId, ConnectorRuntime runtime, String raName, ClassLoader cl)
             throws ConnectorRuntimeException {
 
         if (runtime.isServer()) {
             this.runtime = runtime;
             this.raName = raName;
+            this.rarClassLoader = cl;
             tpm = S1ASThreadPoolManager.getThreadPoolManager();
 
             if (threadPoolId == null) {
@@ -286,7 +287,7 @@ public final class CommonWorkManager implements WorkManager {
      * @return work-context-handler
      */
     private WorkContextHandler createWorkContextHandler() {
-        WorkContextHandler contextHandler = new WorkContextHandler(runtime);
+        WorkContextHandler contextHandler = new WorkContextHandler(runtime, raName, rarClassLoader);
         return contextHandler;
     }
 
