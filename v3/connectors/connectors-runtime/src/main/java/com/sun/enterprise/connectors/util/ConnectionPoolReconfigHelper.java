@@ -86,6 +86,10 @@ public final class ConnectionPoolReconfigHelper {
 
         //for all the following properties, we need to recreate pool if they
         //have changed
+        if(newCcp.isPoolingOn() != oldCcp.isPoolingOn()) {
+            return ReconfigAction.RECREATE_POOL;
+        }
+        
         if (newCcp.getTransactionSupport() != oldCcp.getTransactionSupport()) {
             return ReconfigAction.RECREATE_POOL;
         }

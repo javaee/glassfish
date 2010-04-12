@@ -573,7 +573,6 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
                         "cpou.pooling_disabled_assocwiththread_invalid_combination", adminPool.getName());
                 throw new RuntimeException(i18nMsg);
             }
-            //TODO : Throw exception if flush connection pool is set
             
             //Below are useful in pooled environment only.
             //Throw warning for connection validation/validate-atmost-once/
@@ -647,6 +646,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         excludes.add("StatementWrapping");
         excludes.add("StatementTimeout");
         excludes.add("ValidationClassName");
+        excludes.add("StatementCacheSize");
 
 
         try {
