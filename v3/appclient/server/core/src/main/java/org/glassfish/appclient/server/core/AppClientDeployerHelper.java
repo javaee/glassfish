@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.OutputJarArchive;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,12 +48,14 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Logger;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -92,6 +95,8 @@ public abstract class AppClientDeployerHelper {
     private final Application application;
 
     private final Habitat habitat;
+
+    private Logger logger = logger = LogDomains.getLogger(AppClientDeployerHelper.class, LogDomains.ACC_LOGGER);
 
     /**
      * Returns the correct concrete implementation of Helper.
@@ -451,6 +456,10 @@ public abstract class AppClientDeployerHelper {
         facadeArchive.create(facadeServerURI(dc));
         ReadableArchive source = dc.getSource();
         Manifest sourceManifest = source.getManifest();
+        if (sourceManifest == null) {
+            final String msg = logger.getResourceBundle().getString("enterprise.deployment.appclient.noManifest");
+            throw new IOException(MessageFormat.format(msg, source.getURI().toASCIIString()));
+        }
         Manifest facadeManifest = facadeArchive.getManifest();
         initGeneratedManifest(sourceManifest, facadeManifest, 
                 facadeClassPath(), PUScanTargets(), application);
@@ -459,7 +468,12 @@ public abstract class AppClientDeployerHelper {
          * it from the original JAR to the facade so the Java launcher can
          * display it when the app client is launched.
          */
-        String splash = sourceManifest.getMainAttributes().getValue(AppClientDeployer.SPLASH_SCREEN_IMAGE);
+        final Attributes srcMainAttrs = sourceManifest.getMainAttributes();
+        if (srcMainAttrs == null) {
+            final String msg = logger.getResourceBundle().getString("enterprise.deployment.appclient.noMainAttrs");
+            throw new IOException(MessageFormat.format(msg, source.getURI().toASCIIString()));
+        }
+        String splash = srcMainAttrs.getValue(AppClientDeployer.SPLASH_SCREEN_IMAGE);
         if (splash != null) {
             ClientJarMakerUtils.copy(source, facadeArchive, splash);
         }
