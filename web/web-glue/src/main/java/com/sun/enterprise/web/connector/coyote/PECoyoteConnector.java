@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -170,16 +170,6 @@ public class PECoyoteConnector extends Connector {
      * Set the number of <code>Selector</code> used by Grizzly.
      */
     public int selectorReadThreadsCount = 0;
-    
-    /**
-     * The default response-type
-     */
-    protected String defaultResponseType = "text/plain; charset=iso-8859-1";
-
-    /**
-     * The forced request-type
-     */
-    protected String forcedRequestType = "text/plain; charset=iso-8859-1"; 
     
     /**
      * The monitoring classes used to gather stats.
@@ -537,43 +527,6 @@ public class PECoyoteConnector extends Connector {
                      String.valueOf(selectorReadThreadsCount)); 
     }
     
-    
-    /**
-     * Set the default response type used. Specified as a semi-colon
-     * delimited string consisting of content-type, encoding,
-     * language, charset
-     */
-    public void setDefaultResponseType(String defaultResponseType){
-        this.defaultResponseType = defaultResponseType;
-        setProperty("defaultResponseType", defaultResponseType);             
-    }
-
-
-    /**
-     * Return the default response type used
-     */
-    public String getDefaultResponseType(){
-         return defaultResponseType;
-    }
-    
-    
-    /**
-     * Sets the forced request type, which is forced onto requests that
-     * do not already specify any MIME type.
-     */
-    public void setForcedRequestType(String forcedResponseType){
-        forcedRequestType = forcedResponseType;
-        setProperty("forcedRequestType", forcedResponseType);                     
-    }  
-    
-        
-    /**
-     * Return the default request type used
-     */
-    public String getForcedRequestType(){
-        return forcedRequestType;
-    } 
-
     
     public void start() throws LifecycleException {
         super.start();  
@@ -935,8 +888,6 @@ public class PECoyoteConnector extends Connector {
         configureFileCache(http.getFileCache());
         setMaxHttpHeaderSize(Integer.parseInt(http.getSendBufferSizeBytes()));
         setDefaultHost(http.getDefaultVirtualServer());
-        setDefaultResponseType(http.getDefaultResponseType());
-        setForcedRequestType(http.getForcedResponseType());
         setEnableLookups(ConfigBeansUtilities.toBoolean(http.getDnsLookupEnabled()));
         
         setXpoweredBy(Boolean.valueOf(http.getXpoweredBy()));
