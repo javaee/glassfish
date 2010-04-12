@@ -88,6 +88,7 @@ import javax.xml.stream.XMLStreamReader;
  */
 @Create(value="create-cluster", parentType=Clusters.class, resolver= TypeResolver.class, decorator=Cluster.Decorator.class)
 @Delete(value="delete-cluster", parentType=Clusters.class, resolver= TypeAndNameResolver.class)
+@Listing(value="list-clusters", parentType=Clusters.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     @Param(name="name", primary = true)

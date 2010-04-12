@@ -69,6 +69,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     Class<? extends CrudResolver> resolverType;
     CommandModel model;
     String elementName;
+    
     Create create;
 
 
