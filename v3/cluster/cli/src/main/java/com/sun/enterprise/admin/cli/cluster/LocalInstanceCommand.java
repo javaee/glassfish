@@ -175,23 +175,50 @@ public abstract class LocalInstanceCommand extends CLICommand {
                 strings.get("Instance.noInstanceDirs", parent));
     }
 
-    protected void setDasDefaults() {
+    protected void setDasDefaults() throws CommandException {
         dasProperties = new File(new File(new File(nodeAgentDir, "agent"),
                                                 "config"), "das.properties");
 
         if (!dasProperties.exists())
             return;
 
-        // read properties and set them in programOptions
-        // XXX - shouldn't override command line options.
-        // set them in Environment instead?
-
-        // properties are:
-        // agent.das.port
-        // agent.das.host
-        // agent.das.isSecure
-        // XXX - what about the DAS admin password?
-        // get it from the node agent's keystore?
-        // also store agent.das.user and agent.das.password?
+        Properties dasprops = new Properties();
+        FileInputStream fis = null;
+        try {
+            // read properties and set them in programOptions
+            // properties are:
+            // agent.das.port
+            // agent.das.host
+            // agent.das.isSecure
+            // agent.das.user           XXX - not in v2?
+            fis = new FileInputStream(dasProperties);
+            dasprops.load(fis);
+            String p;
+            p = dasprops.getProperty("agent.das.host");
+            if (p != null)
+                programOpts.setHost(p);
+            p = dasprops.getProperty("agent.das.port");
+            if (p != null)
+                programOpts.setPort(Integer.parseInt(p));
+            p = dasprops.getProperty("agent.das.isSecure");
+            if (p != null)
+                programOpts.setSecure(Boolean.parseBoolean(p));
+            p = dasprops.getProperty("agent.das.user");
+            if (p != null)
+                programOpts.setUser(p);
+            // XXX - what about the DAS admin password?
+        } catch (IOException ioex) {
+            throw new CommandException(
+                        strings.get("Instance.cantReadDasProperties",
+                                    dasProperties.getPath()));
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException cex) {
+                    // ignore it
+                }
+            }
+        }
     }
 }
