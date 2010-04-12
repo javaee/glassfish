@@ -110,11 +110,5 @@
             <artifactId>glassfish-ee-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.xml.stream</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
    </dependencies>
 </project>
