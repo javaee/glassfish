@@ -271,7 +271,7 @@ public class ApplicationLifecycle implements Deployment {
                     }
                 }
                 if (sortedEngineInfos ==null || sortedEngineInfos.isEmpty()) {
-                    report.failure(logger, localStrings.getLocalString("unknowncontainertype","There is no installed container capable of handling this application {0}",context.getSource()));                    
+                    report.failure(logger, localStrings.getLocalString("unknowncontainertype","There is no installed container capable of handling this application {0}",context.getSource().getName()));
                     tracker.actOn(logger);
                     return null;
                 }
