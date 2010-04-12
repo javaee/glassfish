@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.connectors.inbound;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
@@ -52,7 +53,6 @@ import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -184,6 +184,11 @@ public final class ConnectorMessageBeanClient
 
         //the resource adapter this MDB client is deployed to
         ResourceAdapter ra = aira.getResourceAdapter();
+
+        if(ra == null){
+            String i18nMsg = localStrings.getString("msg-bean-client.ra.class.not.specified", resourceAdapterMid);
+            throw new ConnectorRuntimeException(i18nMsg);
+        }
 
         ConnectorDescriptor desc = aira.getDescriptor();
 
