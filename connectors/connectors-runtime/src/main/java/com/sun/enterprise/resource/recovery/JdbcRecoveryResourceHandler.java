@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -148,7 +148,6 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
         // If yes, put the mapping in the xaresourcewrappers properties.
         Properties xaresourcewrappers = new Properties();
 
-        //TODO V3 wrapper classes available from ?
         xaresourcewrappers.put(
                 "oracle.jdbc.xa.client.OracleXADataSource",
                 "com.sun.enterprise.transaction.jts.recovery.OracleXAResource");
@@ -211,13 +210,11 @@ public class JdbcRecoveryResourceHandler implements RecoveryResourceHandler {
                         String wrapperclass = (String) xaresourcewrappers.get(
                                 clName);
                         if (wrapperclass != null) {
+                            //need to load wrapper class provided by "transactions" module.
+                            //Using connector-class-loader so as to get access to "transaction" module.
                             XAResourceWrapper xaresWrapper = null;
-                            try {
-                                //TODO V3 Class.forName ?
-                                xaresWrapper = (XAResourceWrapper) Class.forName(wrapperclass).newInstance();
-                            } catch (Exception ex) {
-                                throw ex;
-                            }
+                            xaresWrapper = (XAResourceWrapper) crt.getConnectorClassLoader().loadClass(wrapperclass).
+                                    newInstance();
                             xaresWrapper.init(mc, subject);
                             xaresList.add(xaresWrapper);
                         } else {
