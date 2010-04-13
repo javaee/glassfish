@@ -147,14 +147,14 @@ public class ConnectionLeakDetector {
         synchronized (connectionLeakLock) {
             if (connectionLeakThreadStackHashMap.containsKey(resourceHandle)) {
                 StackTraceElement[] threadStack = connectionLeakThreadStackHashMap.remove(resourceHandle);
-                connectionLeakTimerTaskHashMap.remove(resourceHandle);
                 ConnectionLeakListener connLeakListener = listeners.get(resourceHandle);
+                connLeakListener.potentialConnectionLeakFound();
+                printConnectionLeakTrace(threadStack, connLeakListener);
+                connectionLeakTimerTaskHashMap.remove(resourceHandle);
                 if (connectionLeakReclaim) {
                     resourceHandle.markForReclaim(true);
                     connLeakListener.reclaimConnection(resourceHandle);
                 }
-                connLeakListener.potentialConnectionLeakFound();
-                printConnectionLeakTrace(threadStack, connLeakListener);
                 //Unregister here as the listeners would still be present in the map.
                 unRegisterListener(resourceHandle);
             }
