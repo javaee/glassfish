@@ -251,6 +251,7 @@
         <classpath>
             <pathelement path="${s1as.classpath}"/>
             <pathelement path="${env.JAVA_HOME}/jre/lib/jsse.jar"/>
+            <pathelement path="${env.JAVA_HOME}/bundle/Classes/jsse.jar"/>
         </classpath>
     </java>
 </target>
