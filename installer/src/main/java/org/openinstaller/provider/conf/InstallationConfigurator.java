@@ -1,7 +1,7 @@
 /**
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -77,6 +77,7 @@ private String productError = null;
 
 private final static String GLASSFISH_PRODUCT_NAME = "glassfish";
 private final static String UPDATETOOL_PRODUCT_NAME = "updatetool";
+private final static String JDK_PRODUCT_NAME = "jdk";
 
 private static final Logger LOGGER;
 
@@ -133,6 +134,12 @@ public ResultReport configure (final PropertySheet aSheet, final boolean aValida
 	}
 	}
 
+	if (productName.equals(JDK_PRODUCT_NAME)) {
+            LOGGER.log(Level.INFO, "Configuring JDK");
+            configSuccessful = configureJDK(installDir);
+	}        
+		
+
         if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
             LOGGER.log(Level.INFO, "Configuring Updatetool");
             LOGGER.log(Level.INFO, "Installation directory: " + installDir);
@@ -177,6 +184,11 @@ public ResultReport unConfigure (final PropertySheet aSheet, final boolean aVali
 	if (productName.equals(GLASSFISH_PRODUCT_NAME)) {
             LOGGER.log(Level.INFO, "Unconfiguring GlassFish");
             unconfigureGlassfish(installDir);
+	}
+
+	if (productName.equals(JDK_PRODUCT_NAME)) {
+            LOGGER.log(Level.INFO, "Unconfiguring JDK");
+            unconfigureJDK(installDir);
 	}
         
         if (productName.equals(UPDATETOOL_PRODUCT_NAME)) {
@@ -525,6 +537,32 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 }
 
 /* Returns true if configuration is successful, else false */
+boolean configureJDK(String installDir) throws Exception {
+
+    boolean success = true;
+    boolean isWindows = false;
+    if (System.getProperty("os.name").indexOf("Windows") !=-1 ) {
+        isWindows=true;
+    }
+
+    if (!isWindows) {
+
+        File JDKFiles[] = new File(installDir + "/jdk/bin").listFiles();
+        for (int i = 0; i < JDKFiles.length; i++) {
+            Runtime.getRuntime().exec("/bin/chmod a+x " + JDKFiles[i].getAbsolutePath());
+		}
+	File JREFiles[] = new File(installDir + "/jdk/jre/bin").listFiles();
+        for (int i = 0; i < JREFiles.length; i++) {
+            Runtime.getRuntime().exec("/bin/chmod a+x " + JREFiles[i].getAbsolutePath());
+		}
+	
+    }
+
+    return success;
+
+}
+
+/* Returns true if configuration is successful, else false */
 boolean configureUpdatetool(String installDir, String bootstrap, String allowUpdateCheck,
     String proxyHost, String proxyPort) throws Exception {
 
@@ -647,6 +685,9 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
     //call to updatetoolconfig is being removed
     
        return success;
+}
+
+void unconfigureJDK(String installDir) throws Exception {
 }
 
 void unconfigureUpdatetool(String installDir) throws Exception {
