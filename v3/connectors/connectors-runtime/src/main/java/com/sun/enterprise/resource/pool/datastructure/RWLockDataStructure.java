@@ -69,7 +69,7 @@ public class RWLockDataStructure implements DataStructure {
 
     public RWLockDataStructure(String parameters, int maxSize,
                                               ResourceHandler handler, String strategyClass) {
-        resources = new ArrayList<ResourceHandle>(maxSize);
+        resources = new ArrayList<ResourceHandle>((maxSize > 1000) ? 1000 : maxSize);
         this.maxSize = maxSize;
         this.handler = handler;
         initializeStrategy(strategyClass);
