@@ -76,8 +76,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.AccessController;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.util.Date;
 import java.util.Iterator;
@@ -107,21 +105,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     protected String devRandomSource="/dev/urandom";
 
     /**
-     * The default message digest algorithm to use if we cannot use
-     * the requested one.
-     */
-    protected static final String DEFAULT_ALGORITHM = "MD5";
-
-
-    /**
-     * The message digest algorithm to be used when generating session
-     * identifiers.  This must be an algorithm supported by the
-     * <code>java.security.MessageDigest</code> class on your platform.
-     */
-    protected String algorithm = DEFAULT_ALGORITHM;
-
-
-    /**
      * The Container with which this Manager is associated.
      */
     protected Container container;
@@ -139,13 +122,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     protected DefaultContext defaultContext = null;
     
     
-    /**
-     * Return the MessageDigest implementation to be used when
-     * creating session identifiers.
-     */
-    protected MessageDigest digest = null;
-
-
     /**
      * The distributable flag for Sessions created by this Manager.  If this
      * flag is set to <code>true</code>, any user attributes added to a
@@ -312,25 +288,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
         uuidGenerator = aUuidGenerator;
     }
 
-    /**
-     * Return the message digest algorithm for this Manager.
-     */
-    public String getAlgorithm() {
-        return algorithm;
-    }
-
-
-    /**
-     * Set the message digest algorithm for this Manager.
-     *
-     * @param algorithm The new message digest algorithm
-     */
-    public void setAlgorithm(String algorithm) {
-        String oldAlgorithm = this.algorithm;
-        this.algorithm = algorithm;
-        support.firePropertyChange("algorithm", oldAlgorithm, this.algorithm);
-    }
-
 
     /**
      * Return the Container with which this Manager is associated.
@@ -395,45 +352,6 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
      */
     public String getClassName() {
         return this.getClass().getName();
-    }
-
-
-    /**
-     * Return the MessageDigest object to be used for calculating
-     * session identifiers.  If none has been created yet, initialize
-     * one the first time this method is called.
-     */
-    public synchronized MessageDigest getDigest() {
-
-        if (this.digest == null) {
-            long t1=System.currentTimeMillis();
-            if (log.isLoggable(Level.FINE))
-                log.fine(sm.getString("managerBase.getting", algorithm));
-            try {
-                this.digest = MessageDigest.getInstance(algorithm);
-            } catch (NoSuchAlgorithmException e) {
-                log.log(Level.SEVERE,
-                        sm.getString("managerBase.digest", algorithm),
-                        e);
-                try {
-                    this.digest = MessageDigest.getInstance(DEFAULT_ALGORITHM);
-                } catch (NoSuchAlgorithmException f) {
-                    log.log(Level.SEVERE,
-                            sm.getString("managerBase.digest",
-                                         DEFAULT_ALGORITHM),
-                            e);
-                    this.digest = null;
-                }
-            }
-            if (log.isLoggable(Level.FINE))
-                log.fine(sm.getString("managerBase.gotten"));
-            long t2=System.currentTimeMillis();
-            if (log.isLoggable(Level.FINE))
-                log.fine("getDigest() " + (t2-t1));
-        }
-
-        return (this.digest);
-
     }
 
 
