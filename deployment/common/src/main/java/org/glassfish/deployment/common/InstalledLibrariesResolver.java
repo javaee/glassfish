@@ -210,7 +210,12 @@ public class InstalledLibrariesResolver {
                 for (String libUri : libs) {
                     JarInputStream jis = null;
                     try {
-                        jis = new JarInputStream(archive.getEntry(libUri));
+                        InputStream libIs = archive.getEntry(libUri);
+                        if(libIs == null) {
+                            //libIs can be null if reading an exploded archive where directories are also exploded. See FileArchive.getEntry()  
+                            continue;
+                        }
+                        jis = new JarInputStream(libIs);
                         manifest = jis.getManifest();
                         if (manifest != null) {
                             //we are looking for libraries only in "applibs" directory, hence strict=false

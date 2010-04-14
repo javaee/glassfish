@@ -284,7 +284,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             
         name = name.replace('/', File.separatorChar);
         File input = new File(archive, name);
-        if (!input.exists()) {
+        if (!input.exists() || input.isDirectory() ) { // If name corresponds to directory, return null as it can not be opened
             return null;
         }
         FileInputStream fis = new FileInputStream(input);
@@ -394,12 +394,13 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         
         for (File aList : directory.listFiles()) {
             String fileName = aList.getAbsolutePath().substring(archive.getAbsolutePath().length() + 1);
+            fileName = fileName.replace(File.separatorChar, '/');
             if (!aList.isDirectory()) {
-                fileName = fileName.replace(File.separatorChar, '/');
                 if (!fileName.equals(JarFile.MANIFEST_NAME)) {
                     files.add(fileName);
                 }
             } else {
+                files.add(fileName); // Add entry corresponding to the directory also to the list
                 if (embeddedArchives != null) {
                     if (!embeddedArchives.contains(fileName)) {
                         getListOfFiles(aList, files, null);
