@@ -489,6 +489,7 @@
         <ant dir="httpResponseErrorMessage" target="all"/>
         <ant dir="redirectWithRootWildCardUrlPattern" target="all"/>
         <ant dir="httpCompression" target="all"/>
+        <ant dir="fileDownloadTimeout" target="all"/>
     </target>
 
     <target name="comet">
