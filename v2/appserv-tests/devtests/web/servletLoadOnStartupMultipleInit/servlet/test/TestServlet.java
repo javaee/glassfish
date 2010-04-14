@@ -43,7 +43,7 @@ public class TestServlet extends HttpServlet {
 
     private volatile boolean initialized;
 
-    public void init(ServletConfig config) throws ServletException {
+    public synchronized void init(ServletConfig config) throws ServletException {
         super.init(config);
         if (initialized) {
             throw new IllegalStateException("Trying to initialize Servlet " +
