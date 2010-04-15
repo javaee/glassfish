@@ -255,7 +255,7 @@ public class PackageAnalyser {
 
         @Override
         public String toString() {
-            return name + "; version = " + versionRange;
+            return name + "; version=" + versionRange;
         }
     }
 
