@@ -189,7 +189,10 @@ public class SystemPropertyConstants
     public static final String KILL_SERV_OS     = 
         OS.isWindows() ? KILL_SERV_WIN : KILL_SERV_UNIX;
 
+    @Deprecated
     public static final String DEFAULT_SERVER_INSTANCE_NAME = "server";
+
+    public static final String DAS_SERVER_NAME = "server";
 
     public static final String JDMK_HOME_PROPERTY="com.sun.aas.jdmkHome";
     
