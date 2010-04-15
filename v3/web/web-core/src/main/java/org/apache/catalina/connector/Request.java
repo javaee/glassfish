@@ -3549,10 +3549,6 @@ public class Request
                     // false. 
                     setRequestedSessionIdFromSecureCookie(scookie.getSecure());
                     setRequestedSessionURL(false);
-                    if (log.isLoggable(Level.FINE)) {
-                        log.fine("Requested cookie session id is " +
-                                ((HttpServletRequest) getRequest()).getRequestedSessionId());
-                    }
                 } else {
                     if (!isRequestedSessionIdValid()) {
                         // Replace the session id until one is valid
