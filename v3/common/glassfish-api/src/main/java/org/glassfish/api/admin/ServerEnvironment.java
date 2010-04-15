@@ -124,5 +124,11 @@ public interface ServerEnvironment {
      *
      * @return the instance process type
      */
-    public RuntimeType getRuntimeType();    
+    public RuntimeType getRuntimeType();
+
+    /**
+     * Every server has a name that can be found in the server element in domain.xml
+     * @return the name of this server i.e. "my" name
+     */
+    String getServerName();
 }

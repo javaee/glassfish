@@ -57,6 +57,7 @@ import org.glassfish.api.embedded.Server;
  * This primarily replaces all the system variables in V2.
  *
  * @author Jerome Dochez
+ * @author Byron Nevins
  */
 @Service
 public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
@@ -340,9 +341,16 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     public RuntimeType getRuntimeType() {
         return serverType;
     }
+ /**
+     * Every server has a name that can be found in the server element in domain.xml
+     * @return the name of this server i.e. "my" name
+     */
+    @Override
+    public String getServerName() {
+        return SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    }
 
     private boolean ok(String s) {
         return s != null && s.length() > 0;
     }
 }
-
