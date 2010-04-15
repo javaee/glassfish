@@ -81,6 +81,12 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
          * Writes this node to XML.
          */
         protected abstract void writeTo(XMLStreamWriter w) throws XMLStreamException;
+
+        /**
+         * Returns a deep copy of itself.
+         * @return a deep copy of itself.
+         */
+        protected abstract Child deepCopy();
     }
 
     static final class NodeChild extends Child {
@@ -94,6 +100,12 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         protected void writeTo(XMLStreamWriter w) throws XMLStreamException {
             dom.writeTo(name,w);
         }
+
+        @Override
+        protected Child deepCopy() {
+            return new NodeChild(name, new Dom(dom));
+        }
+
     }
 
     static final class LeafChild extends Child {
@@ -111,6 +123,11 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
             w.writeStartElement(name);
             w.writeCharacters(value);
             w.writeEndElement();
+        }
+
+        @Override
+        protected Child deepCopy() {
+            return new LeafChild(name, value);
         }
     }
 
@@ -155,6 +172,20 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model) {
         this(habitat, document, parent, model, null);
+    }
+
+    /**
+     * Copy constructor, used to get a deep copy of the passed instance
+     * @param source the instance to copy
+     */
+    public Dom(Dom source) {
+        this(source.habitat, source.document, source.parent, source.model);
+        List<Child> newChildren = new ArrayList<Child>();
+        for (Child child : source.children) {
+            newChildren.add(child.deepCopy());
+        }
+        setChildren(newChildren);
+        attributes.putAll(source.attributes);
     }
 
     /**

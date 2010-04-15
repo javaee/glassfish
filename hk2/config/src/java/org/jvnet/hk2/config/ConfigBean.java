@@ -2,7 +2,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -109,6 +109,15 @@ public class ConfigBean extends Dom implements ConfigView {
             public void readValue(ConfigBean source, String xmlName, Object Value) {
             }
         });
+    }
+
+    /**
+     * Copy constructor, used to get a deep copy of the passed instance.
+     *
+     * @param source  the instance to copy 
+     */
+    public ConfigBean(ConfigBean source) {
+        super(source);
     }
 
     /**
