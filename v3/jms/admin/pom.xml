@@ -135,7 +135,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
-            <artifactId>admin-cli</artifactId>
+            <artifactId>admin-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
