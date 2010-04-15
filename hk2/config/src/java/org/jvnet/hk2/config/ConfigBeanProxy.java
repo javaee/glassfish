@@ -92,6 +92,14 @@ public interface ConfigBeanProxy {
     public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure;
 
 
+    /**
+     * Performs a deep copy of this configuration element and returns it.
+     *
+     * @return a deep copy of itself.
+     */
+    @DuckTyped
+    public ConfigBeanProxy deepCopy();
+
     public class Duck {
 
         public static ConfigBeanProxy getParent(ConfigBeanProxy self) {
@@ -114,6 +122,12 @@ public interface ConfigBeanProxy {
                  throw new TransactionFailure("Must use a locked parent config object for instantiating new config object", e);
              }
 
+        }
+
+        public static ConfigBeanProxy deepCopy(ConfigBeanProxy self) {
+            ConfigBean configBean = (ConfigBean) Dom.unwrap(self);
+            ConfigBean copy = new ConfigBean(configBean);
+            return copy.createProxy();
         }
 
     }
