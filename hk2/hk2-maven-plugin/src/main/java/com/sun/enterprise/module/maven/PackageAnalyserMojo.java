@@ -38,6 +38,7 @@
 package com.sun.enterprise.module.maven;
 
 import com.sun.enterprise.tools.verifier.hk2.PackageAnalyser;
+import com.sun.enterprise.module.impl.HK2Factory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -51,10 +52,7 @@ import java.io.IOException;
 import java.io.File;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -108,6 +106,7 @@ public class PackageAnalyserMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         logger.logp(Level.INFO, "PackageAnalyserMojo", "execute", "Analysing modules");
         try {
+            HK2Factory.initialize();
             MavenProjectRepository repo = new MavenProjectRepository(
                     project, artifactResolver, localRepository, artifactFactory);
             repo.initialize();
@@ -123,12 +122,17 @@ public class PackageAnalyserMojo extends AbstractMojo {
             for (PackageAnalyser.SplitPackage p : splitPkgs) sb.append(p+"\n");
             sb.append("Total number of Split Packages = " + splitPkgs.size() + "\n");
 
+            Collection<PackageAnalyser.PackageCapability> unusedPackages = analyser.findUnusedExports();
+            for (PackageAnalyser.PackageCapability p : unusedPackages) sb.append(p + "\n");
+            sb.append("Total number of Unused Packages = " + unusedPackages.size());
+
             sb.append("******** GROSS STATISTICS *********\n");
             sb.append("Total number of bundles in this repository: " + analyser.findAllBundles().size()+"\n");
             sb.append("Total number of wires = " + wires.size() + "\n");
-            Collection<String> exportedPkgs = analyser.findAllExportedPackages();
+            Collection<String> exportedPkgs = analyser.findAllExportedPackageNames();
             sb.append("Total number of exported packages = " + exportedPkgs.size() + "\n");
             sb.append("Total number of split-packages = " + splitPkgs.size()+"\n");
+            sb.append("Total number of unused-packages = " + unusedPackages.size()+"\n");
 
             logger.logp(Level.INFO, "PackageAnalyserMojo", "execute", "{0}", new Object[]{sb});
             String reportFilePath =
