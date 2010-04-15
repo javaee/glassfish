@@ -61,8 +61,9 @@ public class OSGiServletConfig implements ServletConfig {
         if (initParams != null) {
             Enumeration e = initParams.keys();
             while (e.hasMoreElements()) {
-                this.initParams.put((String) e.nextElement(),
-                        (String) initParams.get(e));
+                final Object key = e.nextElement();
+                this.initParams.put((String) key,
+                        (String) initParams.get(key));
             }
         }
     }
