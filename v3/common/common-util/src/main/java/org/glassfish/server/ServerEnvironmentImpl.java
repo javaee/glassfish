@@ -186,10 +186,6 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     // XXX - many of these methods should be on ServerEnvironment
 
-    public String getInstanceName() {
-        return instanceName;
-    }
-
     public String getDomainName() {
         return domainName;
     }
@@ -346,8 +342,8 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
      * @return the name of this server i.e. "my" name
      */
     @Override
-    public String getServerName() {
-        return SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    public String getInstanceName() {
+        return instanceName;
     }
 
     private boolean ok(String s) {

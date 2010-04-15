@@ -36,22 +36,23 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * List System Properties Command
@@ -66,12 +67,15 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="list-system-properties")
 @Scoped(PerLookup.class)
 @I18n("list.system.properties")
-public class ListSystemProperties implements AdminCommand {
+public class ListSystemProperties implements AdminCommand, PostConstruct {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSystemProperties.class);
 
+    @Inject
+    private ServerEnvironment env;
+
     @Param(optional=true, primary=true)
-    String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
+    String target;
 
     @Inject
     Domain domain;
@@ -118,5 +122,15 @@ public class ListSystemProperties implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
+    }
+
+    @Override
+    public void postConstruct() {
+        // bnevins April 2010 -- if this command is run on an instance then
+        // there is no server element with the name="server".  So we make the default
+        // this server's name
+
+        if(target == null || target.length() <= 0)
+            target = env.getInstanceName();
     }
 }

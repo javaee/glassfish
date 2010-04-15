@@ -478,7 +478,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         ObservableBean ob = (ObservableBean)ConfigSupport.getImpl(domain);
         SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
         ob.addListener(ls); //there should be a better way to do this ...
-        Server s = domain.getServerNamed(env.getServerName());
+        Server s = domain.getServerNamed(env.getInstanceName());
         ob = (ObservableBean)ConfigSupport.getImpl(s);
         ob.addListener(ls);
     }
