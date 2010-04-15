@@ -104,11 +104,13 @@ public class EmbeddedSetDocRootTest {
         
         VirtualServer vs = (VirtualServer) embedded.findVirtualServer("server");
         System.out.println("vs "+vs);
-        Context context = (Context) vs.findContext("");
-        Servlet servlet = new HelloWeb();
+        Context context = (Context) embedded.createContext(f, null);
         
+        Servlet servlet = new HelloWeb();
         ServletRegistration reg = context.addServlet("test-servlet", servlet);
         reg.addMapping(new String[] {"/hello"});
+
+        vs.addContext(context, "/test");
 
         embedded.start();
 
@@ -126,7 +128,7 @@ public class EmbeddedSetDocRootTest {
         in.close();
         System.out.println(inputLine);*/
         
-        Thread.sleep(1000000);
+        Thread.sleep(1000);
         
      }
 
