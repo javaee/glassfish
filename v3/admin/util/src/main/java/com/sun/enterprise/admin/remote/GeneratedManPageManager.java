@@ -34,12 +34,12 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.remote;
+package com.sun.enterprise.admin.remote;
 
 import com.sun.enterprise.universal.NameValue;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import java.util.*;
-import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
+
 /**
  *
  * @author bnevins
@@ -161,6 +161,7 @@ class GeneratedManPageManager implements ResponseManager{
     List<NameValue<String,String>> params = new LinkedList<NameValue<String,String>>();
     List<NameValue<String,String>> operands = new LinkedList<NameValue<String,String>>();
     private static final String TAB = "    ";
+    private static final String EOL = System.getProperty("line.separator");
 }
 /*
  --------  RESPONSE DUMP         --------------

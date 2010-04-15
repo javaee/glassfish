@@ -42,6 +42,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import com.sun.enterprise.util.net.NetUtils;
 import static com.sun.enterprise.admin.cli.CLIConstants.*;
 import com.sun.enterprise.admin.launcher.GFLauncher;

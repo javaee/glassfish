@@ -225,6 +225,11 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.admin</groupId>
+            <artifactId>admin-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.admin</groupId>
             <artifactId>launcher</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

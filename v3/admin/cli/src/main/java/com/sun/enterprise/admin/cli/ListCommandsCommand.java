@@ -43,7 +43,7 @@ import java.util.regex.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
-import com.sun.enterprise.admin.cli.util.CLIUtil;
+import org.glassfish.api.admin.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
 

@@ -41,8 +41,9 @@ import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
-import com.sun.enterprise.admin.cli.util.CLIUtil;
+import com.sun.enterprise.admin.util.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -215,18 +216,18 @@ public class MultimodeCommand extends CLICommand {
                 logger.printError(cve.getMessage());
                 logger.printError(cmd.getUsage());
                 rc = ERROR;
+            } catch (InvalidCommandException ice) {
+                // find closest match with local or remote commands
+                logger.printError(ice.getMessage());
+                try {
+                    CLIUtil.displayClosestMatch(command,
+                        CLIUtil.getAllCommands(habitat, po, env),
+                       strings.get("ClosestMatchedLocalAndRemoteCommands"));
+                } catch (InvalidCommandException e) {
+                    // not a big deal if we cannot help
+                }
             } catch (CommandException ce) {
-                if (ce.getCause() instanceof InvalidCommandException) {
-                    // find closest match with local or remote commands
-                    logger.printError(ce.getMessage());
-                    try {
-                        CLIUtil.displayClosestMatch(command,
-                            CLIUtil.getAllCommands(habitat, po, env),
-                           strings.get("ClosestMatchedLocalAndRemoteCommands"));
-                    } catch (InvalidCommandException e) {
-                        // not a big deal if we cannot help
-                    }
-                } else if (ce.getCause() instanceof java.net.ConnectException) {
+                if (ce.getCause() instanceof java.net.ConnectException) {
                     // find closest match with local commands
                     logger.printError(ce.getMessage());
                     try {

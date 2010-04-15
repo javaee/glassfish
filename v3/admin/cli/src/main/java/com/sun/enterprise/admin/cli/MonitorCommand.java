@@ -42,8 +42,8 @@ import java.util.logging.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.admin.cli.util.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**

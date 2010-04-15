@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,41 +34,39 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.remote;
 
-public class CommandException extends Exception {
-
-    /**
-     * Creates new <code>CommandException</code> without detail message.
-     */
-    public CommandException() {
+/**
+ *
+ * @author bnevins
+ */
+class PlainTextManager implements ResponseManager{
+    PlainTextManager(String response) throws RemoteException{
+        this.response = response;
     }
 
 
-    /**
-     * Constructs a <code>CommandException</code> with the specified
-     * detail message.
-     * @param msg the detail message.
-     */
-    public CommandException(String msg) {
-        super(msg);
+    public void process() throws RemoteException {
+        // format:
+        // "PlainTextActionReporterSUCCESS..." 
+        // or
+        // "PlainTextActionReporterFAILURE..." 
+        String good = MAGIC + SUCCESS;
+        String bad  = MAGIC + FAILURE;
+        
+        if(response.startsWith(good)) {
+            throw new RemoteSuccessException(response.substring(good.length()));
+        }
+        else if(response.startsWith(bad)) {
+            throw new RemoteSuccessException(response.substring(bad.length()));
+        }
+        else {
+            throw new RemoteFailureException("unknownFormat", response);
+        }
     }
 
-
-    /**
-     * Constructs a new <code>CommandException</code> exception with the
-     * specified cause.
-     */
-    public CommandException(Throwable cause) {
-	super(cause);
-    }
-
-
-    /**
-     * Constructs a new <code>CommandException</code> exception with the
-     * specified detailed message and cause.
-     */
-    public CommandException(String msg, Throwable cause) {
-	super(msg, cause);
-    }
+    private static final String SUCCESS = "SUCCESS";
+    private static final String FAILURE = "FAILURE";
+    private static final String MAGIC = "PlainTextActionReporter";
+    private final String response;
 }

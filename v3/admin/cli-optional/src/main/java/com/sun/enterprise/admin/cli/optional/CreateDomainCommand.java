@@ -45,9 +45,10 @@ import org.glassfish.api.Param;
 import org.glassfish.api.embedded.*;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.admin.config.*;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.DomainsManager;
 import com.sun.enterprise.admin.servermgmt.DomainException;
@@ -175,11 +176,9 @@ public final class CreateDomainCommand extends CLICommand {
     protected Collection<ParamModel> usageOptions() {
         Collection<ParamModel> opts = commandModel.getParameters();
         Set<ParamModel> uopts = new LinkedHashSet<ParamModel>();
-	ParamModel aPort = new CommandModelData.ParamModelData(ADMIN_PORT,
-	    String.class, true, 
+	ParamModel aPort = new ParamModelData(ADMIN_PORT, String.class, true, 
             Integer.toString(CLIConstants.DEFAULT_ADMIN_PORT));
-	ParamModel iPort = new CommandModelData.ParamModelData(INSTANCE_PORT,
-	    String.class, true, 
+	ParamModel iPort = new ParamModelData(INSTANCE_PORT, String.class, true,
             Integer.toString(DEFAULT_INSTANCE_PORT));
 	for (ParamModel pm : opts) {
 	    if (pm.getName().equals(ADMIN_PORT))

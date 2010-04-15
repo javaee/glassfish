@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.util;
+package com.sun.enterprise.admin.util;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,8 +48,7 @@ import com.sun.enterprise.universal.GFBase64Encoder;
 
 import javax.net.ssl.*;
 
-public final class HttpConnectorAddress
-{
+public final class HttpConnectorAddress {
     static final String HTTP_CONNECTOR = "http";
     static final String HTTPS_CONNECTOR = "https";
     public static final String  AUTHORIZATION_KEY     = "Authorization";
@@ -65,19 +64,19 @@ public final class HttpConnectorAddress
     public HttpConnectorAddress() {
     }
 
-    public HttpConnectorAddress(String host, int port){
+    public HttpConnectorAddress(String host, int port) {
         this(host, port, false);
     }
     
     /**
-	 * construct an address which indicates the host, port and
-	 * security attributes desired.
-	 * @param host a host address
-	 * @param port a port number
-	 * @param secure a boolean indication of whether the connection should be
-         *  secure (i.e. confidential) or not
-	 */
-    public HttpConnectorAddress(String host, int port, boolean secure){
+     * construct an address which indicates the host, port and
+     * security attributes desired.
+     * @param host a host address
+     * @param port a port number
+     * @param secure a boolean indication of whether the connection should be
+     *  secure (i.e. confidential) or not
+     */
+    public HttpConnectorAddress(String host, int port, boolean secure) {
         this(host, port, secure, null);
     }
 
@@ -86,26 +85,26 @@ public final class HttpConnectorAddress
         this.port = port;
         this.secure = secure;
         this.path = path;
-  }
+    }
 
 
     /**
-	 * Open a connection using the reciever and the given path
-	 * @param path the path to the required resource (path here is
-	 * the portion after the <code>hostname:port</code> portion of a URL)
+     * Open a connection using the reciever and the given path
+     * @param path the path to the required resource (path here is
+     * the portion after the <code>hostname:port</code> portion of a URL)
      * @return a connection to the required resource. The
      * connection returned may be a sub-class of
      * <code>URLConnection</code> including
      * <code>HttpsURLConnection</code>. If the sub-class is a
-	 * <code>HttpsURLConnection</code> then this connection will
-	 * accept any certificate from any server where the server's
-	 * name matches the host name of this object. Specifically we
-	 * allows the certificate <em>not</em> to contain the name of
-	 * the server. This is a potential security hole, but is also a
-	 * usability enhancement.
-	 * @throws IOException if there's a problem in connecting to the
-	 * resource
-	 */
+     * <code>HttpsURLConnection</code> then this connection will
+     * accept any certificate from any server where the server's
+     * name matches the host name of this object. Specifically we
+     * allows the certificate <em>not</em> to contain the name of
+     * the server. This is a potential security hole, but is also a
+     * usability enhancement.
+     * @throws IOException if there's a problem in connecting to the
+     * resource
+     */
     public URLConnection openConnection(String path) throws IOException {
         configureSSL();
         if (path == null || path.trim().length() == 0)
@@ -131,11 +130,11 @@ public final class HttpConnectorAddress
 
 
     /**
-	 * get the protocol prefix to be used for a connection for the
-	 * receiver
-	 * @return the protocol prefix - one of <code>http</code> or
-	 *<code>https</code> depending upon the security setting.
-	 */
+     * get the protocol prefix to be used for a connection for the
+     * receiver
+     * @return the protocol prefix - one of <code>http</code> or
+     *<code>https</code> depending upon the security setting.
+     */
     public String getConnectorType() {
         return this.isSecure() ? HTTPS_CONNECTOR : HTTP_CONNECTOR;
     }
@@ -172,18 +171,18 @@ public final class HttpConnectorAddress
         this.authInfo = authInfo;
     }
 
-	  /**
-	   * Set the security attibute
-	   */
-    public void setSecure(boolean secure){
+    /**
+     * Set the security attibute
+     */
+    public void setSecure(boolean secure) {
         this.secure = secure;
     }
   
 
-	/**
-	 * Indicate if the reciever represents a secure address
-	 */
-    public boolean isSecure(){
+    /**
+     * Indicate if the reciever represents a secure address
+     */
+    public boolean isSecure() {
         return secure;
     }
 
@@ -191,32 +190,32 @@ public final class HttpConnectorAddress
         return new URL(this.asURLSpec(path));
     }
   
-    private final String getUser(){
+    private final String getUser() {
         return authInfo != null ? authInfo.getUser() : "";
     }
 
-    private final String getPassword(){
+    private final String getPassword() {
         return authInfo != null ? authInfo.getPassword() : "";
     }
 
-  	  /**
-	   * Return a string which can be used as the specification to
-	   * form an URL.
-	   * @return a string which can be used as the specification to
-	   *form an URL. This string is in the form of
-	   *<code>&gt;protocol>://&gt;host>:&gtport>/</code> with the
-	   *appropriate substitutions
-	   */
-    private final String asURLSpec(String path){
+    /**
+     * Return a string which can be used as the specification to
+     * form an URL.
+     * @return a string which can be used as the specification to
+     * form an URL. This string is in the form of
+     * <code>&gt;protocol>://&gt;host>:&gtport>/</code> with the
+     * appropriate substitutions
+     */
+    private final String asURLSpec(String path) {
         return this.getConnectorType()
         +"://"+this.getAuthority()
         +(path != null? path : "");
     }
 
-	/**
-	 * Return the authority portion of the URL spec
-	 */
-    private final String getAuthority(){
+    /**
+     * Return the authority portion of the URL spec
+     */
+    private final String getAuthority() {
         return this.getHost() + ":" + this.getPort();
     }
 
@@ -237,24 +236,25 @@ public final class HttpConnectorAddress
         return this.setAuthentication(uc);
     }
 
-    private final URLConnection setAuthentication(URLConnection uc){
+    private final URLConnection setAuthentication(URLConnection uc) {
         if (authInfo != null) {
             uc.setRequestProperty(AUTHORIZATION_KEY, this.getBasicAuthString());
         }
         return uc;
     }
 
-    public final String getBasicAuthString(){
-    /* taking care of the descripancies in the Base64Encoder, for very
-       large lengths of passwords and/or usernames.
-       Abhijit did the analysis and as per his suggestion, replacing
-	   a newline in Base64 encoded String by newline followed by a space
-	   should work for any length of password, independent of the
-	   web server buffer length. That investigation is still on, but
-	   in the meanwhile, it was found that the replacement of newline
-	   character with empty string "" works. Hence implementing the same.
-	   Date: 10/10/2003.
-	*/
+    public final String getBasicAuthString() {
+        /*
+         * taking care of the descripancies in the Base64Encoder, for very
+         * large lengths of passwords and/or usernames.
+         * Abhijit did the analysis and as per his suggestion, replacing
+         * a newline in Base64 encoded String by newline followed by a space
+         * should work for any length of password, independent of the
+         * web server buffer length. That investigation is still on, but
+         * in the meanwhile, it was found that the replacement of newline
+         * character with empty string "" works. Hence implementing the same.
+         * Date: 10/10/2003.
+         */
         String cs = null, user = this.getUser(), pass = this.getPassword();
         String up = (user == null) ? "" : user;
         String pp = (pass == null) ? "" : pass;

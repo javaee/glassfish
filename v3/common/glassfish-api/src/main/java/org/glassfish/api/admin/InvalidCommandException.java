@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -32,23 +32,43 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
 
-package org.glassfish.api.admin.cli;
+package org.glassfish.api.admin;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+public class InvalidCommandException extends CommandException {
 
-/** Indicates an operand of a command. When you need multiple operand, you should annotate an array field with this
- *  annotation type. 
- * @author Kedar Mhaswade(km@dev.java.net)
- */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface Operand {
-  OptionType type() default OptionType.STRING;
-  boolean required() default false;
+    /**
+     * Creates new <code>InvalidCommandException</code> without detail message.
+     */
+    public InvalidCommandException() {
+        super();
+    }
+
+    /**
+     * Constructs an <code>InvalidCommandException</code> with the
+     * specified detail message.
+     * @param msg the detail message.
+     */
+    public InvalidCommandException(String cmdName) {
+        super(cmdName);
+    }
+
+
+    /**
+     * Constructs a new <code>InvalidCommandException</code> exception with the
+     * specified cause.
+     */
+    public InvalidCommandException(Throwable cause) {
+        super(cause);
+    }
+
+
+    /**
+     * Constructs a new <code>InvalidCommandException</code> exception with the
+     * specified detailed message and cause.
+     */
+    public InvalidCommandException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

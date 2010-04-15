@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -32,40 +32,14 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ */
+
+package com.sun.enterprise.admin.remote;
+
+/**
  *
+ * @author bnevins
  */
-
-package org.glassfish.api.admin.cli;
-
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-
-/** Indicates that the field is an option for a command. From a command line stand-point, the type of an option is
- *  of essence and it specifies how a particular option should be interpreted. It's use is both in getting syntactical
- *  information and during special handling of the values of options.
- * 
- * @author Kedar Mhaswade (km@dev.java.net)
- */
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface Option {
-
-
-    /* defaults to the field name */
-    String name() default "";
-
-    char symbol() default '\u0000';
-
-    OptionType type() default OptionType.STRING;
-
-    boolean required() default false;
-
-    boolean repeats() default false;
-
-    String defaultValue() default ""; // the value in the field declaration overrides
-
-    String[] legalValues() default {};
-
+public interface ResponseManager {
+    void process() throws RemoteException;
 }

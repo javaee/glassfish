@@ -43,6 +43,7 @@ import javax.xml.bind.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
@@ -177,7 +178,6 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         } catch (IOException ioex) {
         } catch (JAXBException jbex) {
         } catch (CommandException cex) {
-        } catch (CommandValidationException cex) {
         } finally {
             // remove tempFile
             if (tempFile != null)

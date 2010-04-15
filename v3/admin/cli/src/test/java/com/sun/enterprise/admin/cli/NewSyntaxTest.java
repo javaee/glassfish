@@ -38,7 +38,7 @@ package com.sun.enterprise.admin.cli;
 
 import java.util.*;
 
-import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.*;
 
 import static org.junit.Assert.*;
 import org.junit.Test;

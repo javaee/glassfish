@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,22 +34,26 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.remote;
+package com.sun.enterprise.admin.remote;
 
-import com.sun.enterprise.admin.cli.CLILogger;
-import com.sun.enterprise.universal.NameValue;
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+import com.sun.enterprise.universal.NameValue;
+import com.sun.enterprise.universal.StringUtils;
+import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 
 /**
  *
  * @author bnevins
  */
 class ManifestManager implements ResponseManager {
-    ManifestManager(InputStream inStream) throws RemoteException, IOException  {
+    ManifestManager(InputStream inStream, Logger logger)
+                                throws RemoteException, IOException  {
+        this.logger = logger;
         response = new AdminCommandResponse(inStream);
     }
 
@@ -58,7 +62,7 @@ class ManifestManager implements ResponseManager {
     }
     
     public void process() throws RemoteException {
-        Log.finer("PROCESSING MANIFEST...");
+        logger.finer("PROCESSING MANIFEST...");
         
         // remember these are "succeed-fast".  They will throw a 
         // RemoteSuccessException if they succeed...
@@ -104,7 +108,7 @@ class ManifestManager implements ResponseManager {
         if(!response.wasSuccess()) {
             final String cause = response.getCause();
             if(ok(cause)){
-                if(CLILogger.isDebug())
+                if (logger.isLoggable(Level.FINER))
                     sb.append(cause);
                 throw new RemoteFailureException(sb.toString(), cause);                    
             }
@@ -214,6 +218,7 @@ class ManifestManager implements ResponseManager {
         }
     }
     
+    private Logger logger;
     private AdminCommandResponse response;
     private static final String EOL = StringUtils.EOL;
     private static final String TAB = "    ";

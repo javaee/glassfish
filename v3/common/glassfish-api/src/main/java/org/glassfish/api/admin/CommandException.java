@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,43 +34,41 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.remote;
+package org.glassfish.api.admin;
 
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+public class CommandException extends Exception {
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author bnevins
- */
-public abstract class RemoteException extends Exception {
-        //save the cause string from server 
-    private String remoteCause = "";
-    
-    RemoteException(String msg) {
-            super(RemoteUtils.getString(msg));
+    /**
+     * Creates new <code>CommandException</code> without detail message.
+     */
+    public CommandException() {
     }
 
-    RemoteException(String msg, String cause) {
-        super(RemoteUtils.getString(msg));
-        if (cause != null) {
-            remoteCause = cause;
-        }
-    }
-    
-    RemoteException(String msg, Object... objs) {
-            super(RemoteUtils.getString(msg, objs));
-    }
-    
-    RemoteException(Throwable t) {
-            super(t.getMessage(), t);
+
+    /**
+     * Constructs a <code>CommandException</code> with the specified
+     * detail message.
+     * @param msg the detail message.
+     */
+    public CommandException(String msg) {
+        super(msg);
     }
 
-    public String getRemoteCause() {
-        return remoteCause;
+
+    /**
+     * Constructs a new <code>CommandException</code> exception with the
+     * specified cause.
+     */
+    public CommandException(Throwable cause) {
+	super(cause);
+    }
+
+
+    /**
+     * Constructs a new <code>CommandException</code> exception with the
+     * specified detailed message and cause.
+     */
+    public CommandException(String msg, Throwable cause) {
+	super(msg, cause);
     }
 }

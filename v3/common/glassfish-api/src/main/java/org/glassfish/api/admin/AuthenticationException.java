@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,26 +32,23 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ */
+
+package org.glassfish.api.admin;
+
+
+/**
+ * A specialized CommandException that indicates an authentication failure.
  *
+ * @author Bill Shannon
  */
+public class AuthenticationException extends CommandException {
 
-package org.glassfish.api.admin.cli;
+    public AuthenticationException(String msg) {
+        super(msg);
+    }
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
-
-
-/** Indicates the overriding type for a particular option as a function of values of other options. 
- * @author Kedar Mhaswade (km@dev.java.net)
- */
-
-@Retention(RUNTIME)
-@Target(FIELD)
-public @interface TypeOverride {
-  OptionType type();
-  String[] options();
-  String[] values();
-  Condition condition() default Condition.OR;
+    public AuthenticationException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

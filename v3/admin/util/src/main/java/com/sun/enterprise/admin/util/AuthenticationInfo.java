@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,42 +34,40 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.util;
 
-public class CommandValidationException extends Exception {
+/**
+ * A class that holds the user and password for the connection to the server.
+ * Used by the HttpConnectorAddress class.
+ * Instances of this class are immutable.
+ */
+public final class AuthenticationInfo {
+    private final String user;
+    private final String password;
 
     /**
-     * Creates a new <code>CommandValidationException</code> without
-     * detail message.
+     * The only way to construct the instances of this class.
+     * @param user      the user name for the connection
+     * @param password  the clear text password for the connection
      */
-    public CommandValidationException() {
+    public AuthenticationInfo(String user, String password) {
+        this.user = user;
+        this.password = password;
     }
 
-
     /**
-     * Constructs a <code>CommandValidationException</code> with the specified
-     * detail message.
-     * @param msg the detail message.
+     * Returns the user name.
+     * @return String
      */
-    public CommandValidationException(String msg) {
-        super(msg);
+    public String getUser() {
+        return user;
     }
 
-
     /**
-     * Constructs a new <code>CommandValidationException</code> exception with
-     * the specified cause.
+     * Returns the password in clear text.
+     * @return String
      */
-    public CommandValidationException(Throwable cause) {
-	super(cause);
-    }
-
-
-    /**
-     * Constructs a new <code>CommandValidationException</code> exception with
-     * the specified detailed message and cause.
-     */
-    public CommandValidationException(String msg, Throwable cause) {
-	super(msg, cause);
+    public String getPassword() {
+        return password;
     }
 }

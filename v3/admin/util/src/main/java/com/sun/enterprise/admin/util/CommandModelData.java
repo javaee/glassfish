@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli;
+package com.sun.enterprise.admin.util;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;

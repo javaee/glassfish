@@ -37,12 +37,11 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import org.glassfish.api.Param;
-import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
+import org.glassfish.api.admin.*;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.cli.LocalDomainCommand;
 import com.sun.enterprise.admin.servermgmt.DomainConfig;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.admin.cli.CommandException;
-import com.sun.enterprise.admin.cli.CommandValidationException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import java.util.Collections;

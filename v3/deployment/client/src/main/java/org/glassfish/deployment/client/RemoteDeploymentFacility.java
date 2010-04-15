@@ -45,7 +45,7 @@ package org.glassfish.deployment.client;
 import com.sun.enterprise.admin.cli.ProgramOptions;
 import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.admin.cli.CommandException;
+import org.glassfish.api.admin.CommandException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

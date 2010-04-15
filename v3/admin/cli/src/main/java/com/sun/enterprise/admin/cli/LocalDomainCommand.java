@@ -42,6 +42,7 @@ import java.net.Socket;
 import java.security.KeyStore;
 
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;

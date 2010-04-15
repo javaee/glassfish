@@ -40,6 +40,7 @@ import java.io.*;
 import java.util.*;
 
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;

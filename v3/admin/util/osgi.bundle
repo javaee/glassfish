@@ -1,4 +1,5 @@
 -exportcontents: \
+                        com.sun.enterprise.admin.remote; \
                         com.sun.enterprise.admin.util; \
                         com.sun.enterprise.admin.util.jmx; \
                         com.sun.enterprise.admin.util.proxy; \

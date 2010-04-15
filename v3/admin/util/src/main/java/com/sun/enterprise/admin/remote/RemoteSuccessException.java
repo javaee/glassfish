@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2008 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,7 +34,7 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.remote;
+package com.sun.enterprise.admin.remote;
 
 /*
  * To change this template, choose Tools | Templates
@@ -45,19 +45,13 @@ package com.sun.enterprise.admin.cli.remote;
  *
  * @author bnevins
  */
-public class RemoteFailureException extends RemoteException {
-    RemoteFailureException(String msg) {
+public class RemoteSuccessException extends RemoteException {
+     RemoteSuccessException(String msg) {
             super(msg);
     }
-    RemoteFailureException(String msg, String cause) {
-        super(msg, cause);
-    }
     
-    RemoteFailureException(String msg, Object... objs) {
+    RemoteSuccessException(String msg, Object... objs) {
             super(msg, objs);
     }
 
-    RemoteFailureException(Exception e) {
-        super(e);
-    }
 }

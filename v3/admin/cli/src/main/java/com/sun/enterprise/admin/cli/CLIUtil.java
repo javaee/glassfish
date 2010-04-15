@@ -34,13 +34,13 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.util;
+package com.sun.enterprise.admin.cli;
 
 import java.io.*;
 import java.util.*;
 import java.text.*;
 import org.jvnet.hk2.component.*;
-import com.sun.enterprise.admin.cli.*;
+import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 

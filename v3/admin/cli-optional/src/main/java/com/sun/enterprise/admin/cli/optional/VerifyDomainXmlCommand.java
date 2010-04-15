@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.embedded.Server;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.*;

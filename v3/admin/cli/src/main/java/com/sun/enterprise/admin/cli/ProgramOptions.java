@@ -40,12 +40,12 @@ import java.io.File;
 import java.util.*;
 
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 
-import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
-import com.sun.enterprise.admin.cli.CommandModelData.ParamData;
+import com.sun.enterprise.admin.util.*;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
+import com.sun.enterprise.admin.util.CommandModelData.ParamData;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 

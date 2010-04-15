@@ -41,6 +41,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.servermgmt.services.ServiceFactory;
 import com.sun.enterprise.admin.servermgmt.services.Service;
@@ -98,10 +99,10 @@ public final class CreateServiceCommand extends CLICommand {
             validateName();
             validateAsadmin();
         }
-        catch(CommandException e) {
+        catch(CommandValidationException e) {
             throw e;
         }
-        catch(CommandValidationException e) {
+        catch(CommandException e) {
             throw e;
         }
         catch(Exception e) {

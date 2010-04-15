@@ -42,12 +42,11 @@ import java.util.*;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.*;
-import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.*;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 import com.sun.enterprise.admin.cli.remote.*;
-import com.sun.enterprise.admin.cli.util.CLIUtil;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
@@ -228,21 +227,26 @@ public class AsadminMain {
             habitat.addComponent("program-options", po);
             cmd = CLICommand.getCommand(habitat, command);
             return cmd.execute(argv);
+        } catch (CommandValidationException cve) {
+            CLILogger.getInstance().printError(cve.getMessage());
+            if (cmd == null)    // error parsing program options
+                printUsage();
+            else
+                CLILogger.getInstance().printError(cmd.getUsage());
+            return ERROR;
+        } catch (InvalidCommandException ice) {
+            // find closest match with local or remote commands
+            CLILogger.getInstance().printError(ice.getMessage());
+            try {
+                CLIUtil.displayClosestMatch(command,
+                    CLIUtil.getAllCommands(habitat, po, env),
+                    strings.get("ClosestMatchedLocalAndRemoteCommands"));
+            } catch (InvalidCommandException e) {
+                // not a big deal if we cannot help
+            }
+            return ERROR;
         } catch (CommandException ce) {
-            if (ce.getCause() instanceof InvalidCommandException) {
-                // find closest match with local or remote commands
-                CLILogger.getInstance().printError(ce.getMessage());
-                String cause = ce.getCause().getMessage();
-                if (ok(cause))
-                    CLILogger.getInstance().printError(cause);
-                try {
-                    CLIUtil.displayClosestMatch(command,
-                        CLIUtil.getAllCommands(habitat, po, env),
-                        strings.get("ClosestMatchedLocalAndRemoteCommands"));
-                } catch (InvalidCommandException e) {
-                    // not a big deal if we cannot help
-                }
-            } else if (ce.getCause() instanceof java.net.ConnectException) {
+            if (ce.getCause() instanceof java.net.ConnectException) {
                 // find closest match with local commands
                 CLILogger.getInstance().printError(ce.getMessage());
                 try {
@@ -255,13 +259,6 @@ public class AsadminMain {
                 }
             } else
                 CLILogger.getInstance().printError(ce.getMessage());
-            return ERROR;
-        } catch (CommandValidationException cve) {
-            CLILogger.getInstance().printError(cve.getMessage());
-            if (cmd == null)    // error parsing program options
-                printUsage();
-            else
-                CLILogger.getInstance().printError(cmd.getUsage());
             return ERROR;
         }
     }

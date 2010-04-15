@@ -40,8 +40,8 @@ import java.io.Console;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import org.glassfish.api.admin.CommandModel;
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import org.glassfish.api.admin.*;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
@@ -56,29 +56,11 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  */
 @Service(name = "change-admin-password")
 @Scoped(PerLookup.class)
-public class ChangeAdminPasswordCommand extends RemoteCommand {
-    private CommandModel savedCommandModel;
+public class ChangeAdminPasswordCommand extends CLICommand {
+    private ParameterMap params;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
-
-    public ChangeAdminPasswordCommand() throws CommandException {
-        super();
-    }
-
-    @Override
-    protected void fetchCommandMetadata() throws CommandException {
-        /*
-         * Fetch information from the server and save it,
-         * then replace it with our own metadata.
-         * The options the server requires are different
-         * than the options presented to the user; the
-         * user specifes no command options.
-         */
-        super.fetchCommandMetadata();
-        savedCommandModel = commandModel;
-        commandModel = new CommandModelData();
-    }
 
     /**
      * Require the user to actually type the passwords.
@@ -120,24 +102,28 @@ public class ChangeAdminPasswordCommand extends RemoteCommand {
         }
 
         /*
-         * No more prompting at this point.  If the remote command
-         * fails authentication, for example, don't prompt for the
-         * password because it was already entered above.
-         */
-        programOpts.setInteractive(false);
-
-        /*
          * Now that the user-supplied parameters have been validated,
-         * we restore the metadata required by the server command and
-         * set the parameter values.
+         * we set the parameter values for the remote command.
          */
-        commandModel = savedCommandModel;
-        operands = new ArrayList<String>();
-        operands.add(programOpts.getUser());
-        options.set(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
+        params = new ParameterMap();
+        params.set("DEFAULT", programOpts.getUser());
+        params.set(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD",
                 passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD"));
-        options.set(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
+        params.set(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD",
                 passwords.get(Environment.AS_ADMIN_ENV_PREFIX + "NEWPASSWORD"));
+    }
+
+    /**
+     * Execute the remote command using the parameters we've collected.
+     */
+    @Override
+    protected int executeCommand() throws CommandException {
+        RemoteAdminCommand rac = new RemoteAdminCommand(name,
+            programOpts.getHost(), programOpts.getPort(),
+            programOpts.isSecure(), programOpts.getUser(),
+            programOpts.getPassword(), logger.getLogger());
+        rac.executeCommand(params);
+        return SUCCESS;
     }
 
     /**

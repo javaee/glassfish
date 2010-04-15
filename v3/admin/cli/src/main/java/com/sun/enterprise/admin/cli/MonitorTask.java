@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,12 +36,12 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.io.File;
 
+import org.glassfish.api.admin.*;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 import java.awt.Robot;

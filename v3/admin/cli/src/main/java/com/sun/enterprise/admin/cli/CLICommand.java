@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,14 +45,12 @@ import org.jvnet.hk2.component.*;
 import com.sun.hk2.component.InjectionResolver;
 
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.common.util.admin.MapInjectionResolver;
 
-import com.sun.enterprise.admin.cli.util.*;
-import com.sun.enterprise.admin.cli.CommandModelData.ParamModelData;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;

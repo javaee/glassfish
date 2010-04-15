@@ -34,13 +34,16 @@
  * holder.
  */
 
-package com.sun.enterprise.admin.cli.remote;
+package com.sun.enterprise.admin.remote;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.io.FileUtils;
 import java.io.*;
 import java.util.*;
 import java.util.jar.*;
+import java.util.logging.Logger;
+
+import com.sun.enterprise.universal.StringUtils;
+import com.sun.enterprise.universal.io.FileUtils;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
  * This class is responsible for handling the Remote Server response.
@@ -57,8 +60,13 @@ import java.util.jar.*;
  * @author bnevins
  */
 public class RemoteResponseManager implements ResponseManager {
-    public RemoteResponseManager(InputStream in, int code)  throws RemoteException, IOException  {
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(RemoteResponseManager.class);
+
+    public RemoteResponseManager(InputStream in, int code, Logger logger)
+                                throws RemoteException, IOException {
         this.code = code;
+        this.logger = logger;
 
         // make a copy of the stream.  O/w if Manifest.read() blows up -- the
         // data would be gone!
@@ -71,9 +79,9 @@ public class RemoteResponseManager implements ResponseManager {
         if(!StringUtils.ok(response))
             throw new RemoteFailureException("emptyResponse");
         
-        Log.finer("------- RAW RESPONSE  ---------");
-        Log.finer(response);
-        Log.finer("------- RAW RESPONSE  ---------");
+        logger.finer("------- RAW RESPONSE  ---------");
+        logger.finer(response);
+        logger.finer("------- RAW RESPONSE  ---------");
     }
 
     public void process() throws RemoteException {
@@ -90,7 +98,8 @@ public class RemoteResponseManager implements ResponseManager {
         }
         // put a try around this if another type of response is added...
         handlePlainText();
-        throw new RemoteFailureException(get("internal", get("unknownResponse", response)));
+        throw new RemoteFailureException("internal",
+                                    strings.get("unknownResponse", response));
     }
 
     public Map<String,String> getMainAtts() {
@@ -103,7 +112,7 @@ public class RemoteResponseManager implements ResponseManager {
     }
     
     private void handleManifest() throws RemoteException, IOException{
-        ManifestManager mgr = new ManifestManager(responseStream);
+        ManifestManager mgr = new ManifestManager(responseStream, logger);
         mainAtts = mgr.getMainAtts();
         mgr.process();
     }
@@ -113,16 +122,8 @@ public class RemoteResponseManager implements ResponseManager {
         mgr.process();
     }
 
-    // these methods are here just to save typing & for neatness
-    private String get(String s) {
-        return RemoteUtils.getString(s);
-    }
-
-    private String get(String s, Object... objs) {
-        return RemoteUtils.getString(s, objs);
-    }
-
     private int                     code;
+    private Logger                  logger;
     final InputStream               responseStream;
     final String                    response;
     private static final int        HTTP_SUCCESS_CODE = 200;

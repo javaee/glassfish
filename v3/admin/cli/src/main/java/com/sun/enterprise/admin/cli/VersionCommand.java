@@ -40,6 +40,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.*;
 import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.admin.cli.remote.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
