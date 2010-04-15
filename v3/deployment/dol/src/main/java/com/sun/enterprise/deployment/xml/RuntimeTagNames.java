@@ -241,6 +241,9 @@ public interface RuntimeTagNames extends TagNames {
     public final static String ARCHIVE_NAME = "archive-name";
     public final static String COMPATIBILITY = "compatibility";
     public final static String APPLICATION_PARAM = "application-param";
+    public final static String MODULE = "module";
+    public final static String TYPE = "type";
+    public final static String PATH = "path";
 
     // Web
     public static final String CACHE_MAPPING = "cache-mapping";

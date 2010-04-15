@@ -47,6 +47,7 @@ import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.deployment.node.ApplicationNode;
 import com.sun.enterprise.deployment.runtime.common.SecurityRoleMapping;
 import com.sun.enterprise.deployment.runtime.ApplicationParameter;
+import com.sun.enterprise.deployment.runtime.WLModuleDescriptor;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -201,6 +202,9 @@ public class Application extends BundleDescriptor
 
     private Set<ApplicationParameter> applicationParams = 
             new HashSet<ApplicationParameter>();
+
+    private Set<WLModuleDescriptor> wlModules =
+            new HashSet<WLModuleDescriptor>();
 
     public Application(Habitat habitat) {
         super("", localStrings.getLocalString(
@@ -1912,4 +1916,17 @@ public class Application extends BundleDescriptor
         applicationParams.add(appParam);
     }
 
+    /**
+     * @return the Set of weblogic modules.
+     */
+    public Set<WLModuleDescriptor> getWLModules() {
+        return wlModules;
+    }
+
+   /**
+     * Adds a new context parameter to my list.
+     */
+    public void addWLModule(WLModuleDescriptor wlModule) {
+        wlModules.add(wlModule);
+    }
 }

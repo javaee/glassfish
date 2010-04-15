@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.node.runtime.application;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.runtime.ApplicationParameter;
+import com.sun.enterprise.deployment.runtime.WLModuleDescriptor;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.web.InitParamNode;
@@ -91,6 +92,8 @@ public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
         super.Init();
         registerElementHandler(new XMLElement(
                 RuntimeTagNames.APPLICATION_PARAM), InitParamNode.class);
+        registerElementHandler(new XMLElement(
+                RuntimeTagNames.MODULE), WLModuleNode.class);
     }
 
     /**
@@ -137,6 +140,8 @@ public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     public void addDescriptor(Object newDescriptor) {
         if (newDescriptor instanceof EnvironmentProperty) {
             descriptor.addApplicationParam((ApplicationParameter)newDescriptor);
+        } else if (newDescriptor instanceof WLModuleDescriptor) {
+            descriptor.addWLModule((WLModuleDescriptor)newDescriptor);
         } else super.addDescriptor(newDescriptor);
     }
 
@@ -162,6 +167,12 @@ public class WLApplicationRuntimeNode extends RuntimeBundleNode<Application> {
                         RuntimeTagNames.APPLICATION_PARAM,
                         (EnvironmentProperty)appParam);
             }
+        }
+
+        // module*
+        WLModuleNode moduleNode = new WLModuleNode();
+        for (WLModuleDescriptor md :  application.getWLModules()) {
+            moduleNode.writeDescriptor(root, RuntimeTagNames.MODULE, md);
         }
 
         return root;

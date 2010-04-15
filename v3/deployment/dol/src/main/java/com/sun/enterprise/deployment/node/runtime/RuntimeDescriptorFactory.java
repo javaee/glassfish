@@ -39,6 +39,7 @@ package com.sun.enterprise.deployment.node.runtime;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.IASPersistenceManagerDescriptor;
 import com.sun.enterprise.deployment.runtime.PersistenceManagerInUse;
+import com.sun.enterprise.deployment.runtime.WLModuleDescriptor;
 import com.sun.enterprise.deployment.runtime.common.*;
 import com.sun.enterprise.deployment.runtime.connector.MapElement;
 import com.sun.enterprise.deployment.runtime.connector.Principal;
@@ -71,7 +72,8 @@ public class RuntimeDescriptorFactory {
 
     private static void initMapping() {
         descriptorClasses = new HashMap();    
-	
+	// Application
+        register(new XMLElement(RuntimeTagNames.MODULE), WLModuleDescriptor.class);
 	// WEB
         register(new XMLElement(RuntimeTagNames.PROPERTY), WebProperty.class);
 	register(new XMLElement(RuntimeTagNames.COOKIE_PROPERTIES), CookieProperties.class);
