@@ -98,4 +98,9 @@ public class WLModuleDescriptor extends RuntimeDescriptor {
 
         return false;
     }
+
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
 }
