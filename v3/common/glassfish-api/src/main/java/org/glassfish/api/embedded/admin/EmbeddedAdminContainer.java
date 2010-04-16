@@ -66,11 +66,4 @@ public interface EmbeddedAdminContainer extends EmbeddedContainer {
      */
     public void bind(Port port);
 
-    /**
-     * Makes the server bind the MBeanServer to an initialized port
-     *
-     * @param port the jmx port                             `
-     * @throws BindException
-     */
-    public void bindJmxTo(Port port) throws BindException;
 }

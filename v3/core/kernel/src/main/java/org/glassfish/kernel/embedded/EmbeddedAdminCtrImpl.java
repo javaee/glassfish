@@ -113,7 +113,4 @@ public class EmbeddedAdminCtrImpl implements EmbeddedAdminContainer {
 
     }
 
-    public void bindJmxTo(Port port) throws BindException {
-
-    }
 }
