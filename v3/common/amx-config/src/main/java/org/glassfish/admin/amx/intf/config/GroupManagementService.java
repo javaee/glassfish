@@ -53,36 +53,36 @@ public interface GroupManagementService
      *  @return positive integer specifying the number of such attempts
      */
     
-    public String getFDProtocolMaxTries();
+    public String getFdProtocolMaxTries();
 
     /** Set the FD protocol tries to the specified positive integer value.
      * Must be a positive integer.
      * @param tries a positive integer specifying the number of attempts
      */
-    public void setFDProtocolMaxTries(final String tries);
+    public void setFdProtocolMaxTries(final String tries);
 
     
-    public String getFDProtocolTimeoutMillis();
+    public String getFdProtocolTimeoutInMillis();
 
-    public void setFDProtocolTimeoutMillis(final String duration);
-
-    
-    public String getMergeProtocolMaxIntervalMillis();
-
-    public void setMergeProtocolMaxIntervalMillis(final String duration);
+    public void setFdProtocolTimeoutInMillis(final String duration);
 
     
-    public String getMergeProtocolMinIntervalMillis();
+    public String getMergeProtocolMaxIntervalInMillis();
 
-    public void setMergeProtocolMinIntervalMillis(final String duration);
-
-    
-    public String getPingProtocolTimeoutMillis();
-
-    public void setPingProtocolTimeoutMillis(final String duration);
+    public void setMergeProtocolMaxIntervalInMillis(final String duration);
 
     
-    public String getVSProtocolTimeoutMillis();
+    public String getMergeProtocolMinIntervalInMillis();
 
-    public void setVSProtocolTimeoutMillis(final String duration);
+    public void setMergeProtocolMinIntervalInMillis(final String duration);
+
+    
+    public String getPingProtocolTimeoutInMillis();
+
+    public void setPingProtocolTimeoutInMillis(final String duration);
+
+    
+    public String getVsProtocolTimeoutInMillis();
+
+    public void setVsProtocolTimeoutInMillis(final String duration);
 }

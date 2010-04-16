@@ -75,10 +75,10 @@ public interface JmsAvailability extends ConfigElement, PropertiesAccess
     It will default to value of store-pool-name under
     availability-service (ultimately "jdbc/hastore").
      */
-    public String getMQStorePoolName();
+    public String getMqStorePoolName();
 
     /**
     @see #getMQStorePoolName
      */
-    public void setMQStorePoolName(String name);
+    public void setMqStorePoolName(String name);
 }

@@ -46,27 +46,27 @@ public interface EjbContainerAvailability extends ConfigElement, PropertiesAcces
 
     public void setAvailabilityEnabled(final String value);
 
-    public String getSFSBHAPersistenceType();
+    public String getSfsbHaPersistenceType();
 
     /**
     Legal values are those defined in {@link SFSBPersistenceTypeValues}.
      */
-    public void setSFSBHAPersistenceType(final String value);
+    public void setSfsbHaPersistenceType(final String value);
 
-    public String getSFSBPersistenceType();
+    public String getSfsbPersistenceType();
 
     /**
     Legal values are those defined in {@link SFSBPersistenceTypeValues}.
      */
-    public void setSFSBPersistenceType(final String value);
+    public void setSfsbPersistenceType(final String value);
 
-    public String getSFSBStorePoolName();
+    public String getSfsbStorePoolName();
 
-    public void setSFSBStorePoolName(final String value);
-
-    /** @deprecated do not use */
-    public String getSFSBQuickCheckpointEnabled();
+    public void setSfsbStorePoolName(final String value);
 
     /** @deprecated do not use */
-    public String getSFSBCheckpointEnabled();
+    public String getSfsbQuickCheckpointEnabled();
+
+    /** @deprecated do not use */
+    public String getSfsbCheckpointEnabled();
 }

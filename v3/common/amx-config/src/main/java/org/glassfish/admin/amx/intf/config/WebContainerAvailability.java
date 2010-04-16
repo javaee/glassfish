@@ -45,9 +45,9 @@ public interface WebContainerAvailability extends ConfigElement, PropertiesAcces
 
     public void setAvailabilityEnabled(final String value);
 
-    public String getHTTPSessionStorePoolName();
+    public String getHttpSessionStorePoolName();
 
-    public void setHTTPSessionStorePoolName(final String value);
+    public void setHttpSessionStorePoolName(final String value);
 
     
     public String getPersistenceFrequency();
@@ -80,7 +80,7 @@ public interface WebContainerAvailability extends ConfigElement, PropertiesAcces
     public void setPersistenceType(final String value);
 
     
-    public String getSSOFailoverEnabled();
+    public String getSsoFailoverEnabled();
 
-    public void setSSOFailoverEnabled(final String value);
+    public void setSsoFailoverEnabled(final String value);
 }

@@ -70,7 +70,7 @@ public interface AvailabilityService
      * @since AppServer 9.0
      */
     
-    String getAutoManageHAStore();
+    String getAutoManageHaStore();
 
     /**
      * If set to true, the lifecycle of the highly available store   
@@ -82,7 +82,7 @@ public interface AvailabilityService
      * @param enabled sets the value of auto-manage-ha-store
      * @since AppServer 9.0
      */
-    void setAutoManageHAStore(String enabled);
+    void setAutoManageHaStore(String enabled);
 
     /**
      * This is the jndi-name for the JDBC Connection Pool used       
@@ -132,7 +132,7 @@ public interface AvailabilityService
      * @return the stored hostnames or IP addresses 
      * @since AppServer 9.0
      */
-    String getHAAgentHosts();
+    String getHaAgentHosts();
 
     /**
      * comma-delimited list of server host names or IP addresses     
@@ -141,7 +141,7 @@ public interface AvailabilityService
      * @param value the stored hostnames or IP addresses 
      * @since AppServer 9.0
      */
-    void setHAAgentHosts(String value);
+    void setHaAgentHosts(String value);
 
     /**
      * port number where highly available store management agents    
@@ -150,7 +150,7 @@ public interface AvailabilityService
      * @since AppServer 9.0
      */
     
-    String getHAAgentPort();
+    String getHaAgentPort();
 
     /**
      * port number where highly available store management agents    
@@ -158,17 +158,17 @@ public interface AvailabilityService
      * @param value the port number 
      * @since AppServer 9.0
      */
-    void setHAAgentPort(String value);
+    void setHaAgentPort(String value);
 
     /**
      * @since AppServer 9.0
      */
-    String getHAAgentPassword();
+    String getHaAgentPassword();
 
     /**
      * @since AppServer 9.0
      */
-    void setHAAgentPassword(String password);
+    void setHaAgentPassword(String password);
 
     /**
      * The periodicity at which store health is checked.
@@ -176,14 +176,14 @@ public interface AvailabilityService
      * @since AppServer 9.0
      */
     
-    String getHAStoreHealthcheckIntervalSeconds();
+    String getHaStoreHealthcheckIntervalInSeconds();
 
     /**
      * The periodicity at which store health is checked.
      * @param value the interval time in seconds 
      * @since AppServer 9.0
      */
-    void setHAStoreHealthcheckIntervalSeconds(String value);
+    void setHaStoreHealthcheckIntervalInSeconds(String value);
 
     /**
      * Name of the session store.  In HADB this corresponds to the name of 
@@ -191,7 +191,7 @@ public interface AvailabilityService
      * @return the store name
      * @since AppServer 9.0
      */
-    String getHAStoreName();
+    String getHaStoreName();
 
     /**
      * Name of the session store.  In HADB this corresponds to the name of 
@@ -199,7 +199,7 @@ public interface AvailabilityService
      * @param value the new store name 
      * @since AppServer 9.0
      */
-    void setHAStoreName(String value);
+    void setHaStoreName(String value);
 
     /**
      * Application server stops saving session state when the store  
@@ -211,9 +211,9 @@ public interface AvailabilityService
      * @return the value of the flag 
      * @since AppServer 9.0
      */
-    String getHAStoreHealthcheckEnabled();
+    String getHaStoreHealthcheckEnabled();
 
-    void setHAStoreHealthcheckEnabled(String value);
+    void setHaStoreHealthcheckEnabled(String value);
 
     public JmsAvailability getJmsAvailability();
 }
