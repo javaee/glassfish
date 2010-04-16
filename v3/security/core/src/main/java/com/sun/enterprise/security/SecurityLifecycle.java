@@ -126,15 +126,23 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
 	new LocalStringManagerImpl(SecurityLifecycle.class);
 
     private EventListener listener = null;
+
+    private static final String SYS_PROP_LOGIN_CONF = "java.security.auth.login.config";
+    private static final String SYS_PROP_JAVA_SEC_POLICY =  "java.security.policy";
  
     private static final Logger _logger = LogDomains.getLogger(SecurityLifecycle.class, LogDomains.SECURITY_LOGGER);
 
     public SecurityLifecycle() {
 	try {
-            
+
             if (Util.isEmbeddedServer()) {
-                System.setProperty("java.security.auth.login.config", Util.writeConfigFileToTempDir("login.conf").getAbsolutePath());
-                System.setProperty("java.security.policy", Util.writeConfigFileToTempDir("server.policy").getAbsolutePath());
+                //If the user-defined login.conf/server.policy are set as system properties, then they are given priority
+                if (System.getProperty(SYS_PROP_LOGIN_CONF) == null) {
+                    System.setProperty(SYS_PROP_LOGIN_CONF, Util.writeConfigFileToTempDir("login.conf").getAbsolutePath());
+                }
+                if (System.getProperty(SYS_PROP_JAVA_SEC_POLICY) == null) {
+                    System.setProperty(SYS_PROP_JAVA_SEC_POLICY, Util.writeConfigFileToTempDir("server.policy").getAbsolutePath());
+                }
             }
             
             // security manager is set here so that it can be accessed from
