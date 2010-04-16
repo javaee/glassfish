@@ -145,7 +145,29 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         return resource instanceof DataSourceDefinitionDescriptor;
     }
 
-    class DataSourceProperty implements Property {
+    abstract class FakeConfigBean implements ConfigBeanProxy {
+        @Override
+        public ConfigBeanProxy deepCopy() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ConfigBeanProxy getParent() {
+            return null;
+        }
+
+        @Override
+        public <T extends ConfigBeanProxy> T getParent(Class<T> tClass) {
+            return null;
+        }
+
+        @Override
+        public <T extends ConfigBeanProxy> T createChild(Class<T> tClass) throws TransactionFailure {
+            return null;
+        }        
+    }
+
+    class DataSourceProperty extends FakeConfigBean implements Property {
 
         private String name;
         private String value;
@@ -180,24 +202,12 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
             this.description = value;
         }
 
-        public ConfigBeanProxy getParent() {
-            return null;
-        }
-
-        public <T extends ConfigBeanProxy> T getParent(Class<T> tClass) {
-            return null;
-        }
-
-        public <T extends ConfigBeanProxy> T createChild(Class<T> tClass) throws TransactionFailure {
-            return null;
-        }
-
         public void injectedInto(Object o) {
             //do nothing
         }
     }
 
-    class MyJdbcResource implements JdbcResource {
+    class MyJdbcResource extends FakeConfigBean implements JdbcResource {
 
         private String poolName;
         private String jndiName;
@@ -252,18 +262,6 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
             return null;
         }
 
-        public ConfigBeanProxy getParent() {
-            return null;
-        }
-
-        public <T extends ConfigBeanProxy> T getParent(Class<T> tClass) {
-            return null;
-        }
-
-        public <T extends ConfigBeanProxy> T createChild(Class<T> tClass) throws TransactionFailure {
-            return null;
-        }
-
         public void injectedInto(Object o) {
         }
 
@@ -276,7 +274,7 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         }
     }
 
-    class MyJdbcConnectionPool implements JdbcConnectionPool {
+    class MyJdbcConnectionPool extends FakeConfigBean implements JdbcConnectionPool {
 
         private DataSourceDefinitionDescriptor desc;
         private String name;
@@ -660,18 +658,6 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
             } else {
                 return defaultValue;
             }
-        }
-
-        public ConfigBeanProxy getParent() {
-            return null;
-        }
-
-        public <T extends ConfigBeanProxy> T getParent(Class<T> tClass) {
-            return null;
-        }
-
-        public <T extends ConfigBeanProxy> T createChild(Class<T> tClass) throws TransactionFailure {
-            return null;
         }
 
         public void injectedInto(Object o) {

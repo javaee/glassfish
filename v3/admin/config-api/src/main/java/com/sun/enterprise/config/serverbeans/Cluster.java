@@ -36,7 +36,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
-import com.sun.enterprise.module.bootstrap.Populator;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -51,10 +52,8 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.api.admin.config.PropertiesDesc;
@@ -292,54 +291,41 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         
         @Override
         public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
+            Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
             if (configRef==null) {
-                ConfigParser configParser = new ConfigParser(habitat);
+                Config config = habitat.getComponent(Config.class, "default-config");
+                if (config==null) {
+                    config = habitat.getAllByContract(Config.class).iterator().next();
+                    logger.warning(localStrings.getLocalString(Cluster.class,
+                    "Cluster.no_default_config_found",
+                    "No default config found, using config {0} as the default config for the cluster {1}",
+                    config.getName(), instance.getName()));
+                }
+                final Config configCopy;
+                try {
+                    configCopy = (Config) config.deepCopy();
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, localStrings.getLocalString(Cluster.class,
+                    "Cluster.error_while_copying",
+                    "Error while copying the default configuration {0)",
+                    e.toString(), e));
+                    throw new TransactionFailure(e.toString(),e);
+                }
 
-                (new Populator() {
 
-                    public void run(ConfigParser parser) {
-                        long now = System.currentTimeMillis();
-                        File f = new File(env.getConfigDirPath(), "default-config.xml");
-                        if (!f.exists()) {
-                            Logger.getAnonymousLogger().severe("Cannot find default-config.xml at " + f.getAbsolutePath());
-                            return;
-                        }
-                        URL url = null;
-                        try {
-                            url = f.toURI().toURL();
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            return;
-                        }
-                        if (url != null) {
-                            try {
-                                DomDocument document = parser.parse(url,  new DomDocument(habitat) {
-                                    @Override
-                                    public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
-                                        return new ConfigBean(habitat, this, parent, model, in);
-                                    }
-                                }, Dom.unwrap(domain.getConfigs()));
-                                final Config defaultConfig = document.getRoot().createProxy(Config.class);
-                                final String configName = "config-"+instance.getName();
-                                instance.setConfigRef(configName);
+                final String configName = "config-"+instance.getName();
+                instance.setConfigRef(configName);
 
-                                // needs to be changed to join the transaction of instance
-                                ConfigSupport.apply(new ConfigCode() {
-                                    @Override
-                                    public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
-                                        ((Configs) w[0]).getConfig().add(defaultConfig);
-                                        ((Config) w[1]).setName(configName);
-                                        return null;
-                                    }
-                                }, domain.getConfigs(), defaultConfig);
-
-                            } catch(Exception e) {
-                                e.printStackTrace();
-                            }
-                            Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
-                        }
+                // needs to be changed to join the transaction of instance
+                ConfigSupport.apply(new ConfigCode() {
+                    @Override
+                    public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
+                        ((Configs) w[0]).getConfig().add(configCopy);
+                        ((Config) w[1]).setName(configName);
+                        return null;
                     }
-                }).run(configParser);
+                }, domain.getConfigs(), configCopy);
             }
 
             if (hosts!=null ||

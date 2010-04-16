@@ -118,7 +118,7 @@ public class ListComponentsCommandTest {
         lcc = new ListComponentsCommand();
     }
 
-    public class RandomConfig {
+    public class RandomConfig implements ConfigBeanProxy {
 
         @DuckTyped
         public ConfigBeanProxy getParent() {
@@ -153,6 +153,10 @@ public class ListComponentsCommandTest {
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public ConfigBeanProxy deepCopy() {
+            throw new UnsupportedOperationException();
+        }
 
         //hk2's Injectable class
         public void injectedInto(Object target){}

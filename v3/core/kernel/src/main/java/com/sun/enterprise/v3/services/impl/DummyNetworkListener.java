@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2007-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2007-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -135,38 +135,43 @@ public class DummyNetworkListener implements NetworkListener {
 
     public void injectedInto(Object target){}
 
-    @DuckTyped
+    @Override
     public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure {
         throw new UnsupportedOperationException();
     }
 
-    @DuckTyped
+    @Override
     public Protocol findProtocol() {
         return null;
     }
 
-    @DuckTyped
+    @Override
     public Protocol findHttpProtocol() {
         return null;
     }
 
-    @DuckTyped
+    @Override
     public ThreadPool findThreadPool() {
         throw new UnsupportedOperationException();
     }
 
-    @DuckTyped
+    @Override
     public Transport findTransport() {
         throw new UnsupportedOperationException();
     }
 
-    @DuckTyped
+    @Override
     public ConfigBeanProxy getParent() {
         throw new UnsupportedOperationException();
     }
 
-    @DuckTyped
+    @Override
     public <T extends ConfigBeanProxy> T getParent(Class<T> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ConfigBeanProxy deepCopy() {
         throw new UnsupportedOperationException();
     }
 
