@@ -48,7 +48,6 @@ import java.lang.reflect.*;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.jdo.api.persistence.model.RuntimeModel;
-import com.sun.jdo.api.persistence.model.Model;
 import com.sun.jdo.spi.persistence.support.ejb.model.util.NameMapper;
 import com.sun.jdo.api.persistence.model.jdo.RelationshipElement;
 import com.sun.jdo.api.persistence.model.jdo.PersistenceFieldElement;
@@ -261,7 +260,7 @@ public class DeploymentDescriptorModel extends RuntimeModel
 
 		if ((NameMapper.PRIMARY_KEY_FIELD == 
 			getPersistenceKeyClassType(className)) && 
-			argTypeNames.equals(NO_ARGS))
+			Arrays.equals(argTypeNames, NO_ARGS))
 		{
 			returnObject = new MemberWrapper(className, null, Modifier.PUBLIC, 
 				(Class)getClass(className));
