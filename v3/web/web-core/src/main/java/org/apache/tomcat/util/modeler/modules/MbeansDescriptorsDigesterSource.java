@@ -75,9 +75,7 @@ public class MbeansDescriptorsDigesterSource extends ModelerSource
             Logger.getLogger(MbeansDescriptorsDigesterSource.class.getName());
 
     Registry registry;
-    String location;
     String type;
-    Object source;
     List<ObjectName> mbeans = new ArrayList<ObjectName>();
     protected static Digester digester = null;
     

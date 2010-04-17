@@ -72,9 +72,7 @@ public class MbeansDescriptorsDOMSource extends ModelerSource
     private static Logger log = Logger.getLogger(MbeansDescriptorsDOMSource.class.getName());
 
     Registry registry;
-    String location;
     String type;
-    Object source;
     List<ObjectName> mbeans=new ArrayList<ObjectName>();
 
     public void setRegistry(Registry reg) {

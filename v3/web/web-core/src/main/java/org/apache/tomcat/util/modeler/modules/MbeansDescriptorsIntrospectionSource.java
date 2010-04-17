@@ -75,9 +75,7 @@ public class MbeansDescriptorsIntrospectionSource extends ModelerSource
     private static Logger log = Logger.getLogger(MbeansDescriptorsIntrospectionSource.class.getName());
 
     Registry registry;
-    String location;
     String type;
-    Object source;
     List<ObjectName> mbeans = new ArrayList<ObjectName>();
 
     public void setRegistry(Registry reg) {
