@@ -94,7 +94,7 @@ public final class Timer {
     
     public Timer()
     {
-        this.out = out;
+        
     }
 
     public Timer(PrintWriter out)
