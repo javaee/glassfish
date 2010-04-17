@@ -68,6 +68,7 @@ import java.text.MessageFormat;
 public class CaptureSchema {
     /** Required filename extension. */
     private static final String OUTPUTFILE_EXTENSION = ".dbschema"; // NOI18N
+    private static final String PASSWORD_MASK_STRING = "Protected value, not to be logged"; // NOI18N
     
     /** Creates new CaptureSchema */
     public CaptureSchema() {
@@ -152,7 +153,7 @@ public class CaptureSchema {
         try {
             System.err.println(bundle.getString("MESSAGE_USING_URL")+ dburl); //NOI18N
             System.err.println(bundle.getString("MESSAGE_USING_USERNAME")+ username); //NOI18N
-            System.err.println(bundle.getString("MESSAGE_USING_PASSWORD")+ password); //NOI18N
+            System.err.println(bundle.getString("MESSAGE_USING_PASSWORD")+ PASSWORD_MASK_STRING); //NOI18N
             System.err.println(bundle.getString("MESSAGE_USING_DRIVER")+ driver); //NOI18N
             System.err.println(bundle.getString("MESSAGE_USING_SCHEMANAME")+ dbschemaname); //NOI18N
             System.err.println(bundle.getString("MESSAGE_USING_OUTFILENAME")+ outfile); //NOI18N
