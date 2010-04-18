@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -67,7 +68,7 @@ import org.jvnet.hk2.component.PostConstruct;
 @Service(name="list-system-properties")
 @Scoped(PerLookup.class)
 @I18n("list.system.properties")
-public class ListSystemProperties implements AdminCommand, PostConstruct {
+public class ListSystemProperties implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListSystemProperties.class);
 
@@ -80,19 +81,27 @@ public class ListSystemProperties implements AdminCommand, PostConstruct {
     @Inject
     Domain domain;
 
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
      *
      * @param context information
      */
+    @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         SystemPropertyBag spb;
-        if ("domain".equals(target))
+
+        if(target == null || target.length() <= 0)
+            spb = server;
+        else if ("domain".equals(target))
             spb = domain;
         else
             spb = domain.getServerNamed(target); //this is ok for now  (config is not a target as far as v3 FCS is concerned -- take it up later)
+
         if (spb == null) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             String msg = localStrings.getLocalString("invalid.target.sys.props",
@@ -122,15 +131,5 @@ public class ListSystemProperties implements AdminCommand, PostConstruct {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
-    }
-
-    @Override
-    public void postConstruct() {
-        // bnevins April 2010 -- if this command is run on an instance then
-        // there is no server element with the name="server".  So we make the default
-        // this server's name
-
-        if(target == null || target.length() <= 0)
-            target = env.getInstanceName();
     }
 }

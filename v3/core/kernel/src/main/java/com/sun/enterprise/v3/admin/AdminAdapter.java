@@ -114,7 +114,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     @Inject
     Events events;
     
-    @Inject(name="server-config")
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     private AdminEndpointDecider epd = null;
@@ -130,6 +130,9 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     @Inject
     volatile Domain domain;
+
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private volatile Server server;
 
     @Inject
     GenericJavaConfigListener listener;
@@ -478,8 +481,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         ObservableBean ob = (ObservableBean)ConfigSupport.getImpl(domain);
         SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
         ob.addListener(ls); //there should be a better way to do this ...
-        Server s = domain.getServerNamed(env.getInstanceName());
-        ob = (ObservableBean)ConfigSupport.getImpl(s);
+        ob = (ObservableBean)ConfigSupport.getImpl(server);
         ob.addListener(ls);
     }
     private void registerDynamicReconfigListeners() {

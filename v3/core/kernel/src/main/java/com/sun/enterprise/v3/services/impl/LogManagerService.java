@@ -111,9 +111,6 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
     @Inject
     FileMonitoring fileMonitoring;
 
-    @Inject ( name="server-config")
-    Config config;
-
     @Inject
     LoggingConfigImpl loggingConfig;
 
