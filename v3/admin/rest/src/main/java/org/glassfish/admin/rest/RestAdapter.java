@@ -51,6 +51,7 @@ import com.sun.logging.LogDomains;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.event.EventListener;
@@ -94,7 +95,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     @Inject
     Habitat habitat;
 
-    @Inject(name="server-config")
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     CountDownLatch latch = new CountDownLatch(1);

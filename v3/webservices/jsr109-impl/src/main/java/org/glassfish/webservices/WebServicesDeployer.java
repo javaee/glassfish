@@ -80,7 +80,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * Webservices module deployer. This is loaded from WebservicesContainer
@@ -104,7 +104,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     @Inject
     private RequestDispatcher dispatcher;
 
-    @Inject(name="server-config")
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
 
     @Inject

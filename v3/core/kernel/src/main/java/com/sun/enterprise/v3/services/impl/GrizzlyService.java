@@ -64,6 +64,7 @@ import com.sun.grizzly.util.http.mapper.Mapper;
 import com.sun.hk2.component.ConstructorWomb;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
@@ -94,7 +95,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public static final int ALL_PORTS = Integer.MAX_VALUE;
 
     
-    @Inject(name="server-config") // for now
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     @Inject

@@ -109,7 +109,7 @@ public class JWSAdapterManager implements PostConstruct {
     @Inject
     private ASJarSigner jarSigner;
 
-    @Inject(name="server-config") // for now
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
 
     @Inject

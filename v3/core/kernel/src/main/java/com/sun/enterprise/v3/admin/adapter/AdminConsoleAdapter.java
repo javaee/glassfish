@@ -49,6 +49,7 @@ import com.sun.logging.LogDomains;
 import com.sun.pkg.client.Image;
 import com.sun.pkg.client.Version;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -159,7 +160,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject
     Events events;
 
-    @Inject(name = "server-config")
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config serverConfig;
 
     AdminEndpointDecider epd;

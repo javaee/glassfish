@@ -66,7 +66,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-
+import org.glassfish.api.admin.ServerEnvironment;
 /**
  * AppClient module deployer.
  * <p>
@@ -177,7 +177,7 @@ public class AppClientDeployer
     @Inject
     private ASJarSigner jarSigner;
 
-    @Inject(name="server-config") // for now
+	@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     /**
