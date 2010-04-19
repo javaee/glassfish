@@ -178,7 +178,7 @@ public final class Timer {
                                              - ((MethodDescriptor)o1).total);
                             }
                             public boolean equals(Object obj) {
-                                return (compare(this, obj) == 0);
+                                return (obj != null && compare(this, obj) == 0);
                             }
                         });
         
