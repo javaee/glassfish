@@ -138,7 +138,7 @@ public class GetHostAndPortCommand implements AdminCommand {
             target, moduleId); 
 
         if (appRef == null) {
-            throw new Exception("Application : " + appRef.getRef() + 
+            throw new Exception("Application : " + moduleId + 
                 " does not exist on target " + target);
         }
         
