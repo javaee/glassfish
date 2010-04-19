@@ -96,11 +96,11 @@ public class InterceptorImpl extends org.omg.CORBA.LocalObject
     public static final int NO_REPLY_SLOT = 0;
     public static final int NULL_CTX_SLOT = 1;
 
-    public static final Object PROPER_CTX = new Integer(0);
-    public static final Object NULL_CTX = new Integer(1);
+    public static final Object PROPER_CTX = new Object();
+    public static final Object NULL_CTX = new Object();
 
-    public static final Object REPLY = new Integer(0);
-    public static final Object NO_REPLY = new Integer(1);
+    public static final Object REPLY = new Object();
+    public static final Object NO_REPLY = new Object();
 
     public static final String CLIENT_POLICY_CHECKING =
         "com.sun.jts.pi.CLIENT_POLICY_CHECKING";
