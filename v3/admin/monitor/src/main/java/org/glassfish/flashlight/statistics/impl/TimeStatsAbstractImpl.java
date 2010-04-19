@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,10 +35,6 @@
  *
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.glassfish.flashlight.statistics.impl;
 
 import org.glassfish.flashlight.datatree.impl.AbstractTreeNode;
@@ -59,9 +55,11 @@ public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
     private AtomicLong lastSampleTime = new AtomicLong(0);
     protected long startTime = 0;
 
-    private ThreadLocal<TimeStatData> individualData = new ThreadLocal<TimeStatData> (){
+    private ThreadLocalTimeStatData individualData = new ThreadLocalTimeStatData();
 
-        TimeStatData tsd;
+    private static class ThreadLocalTimeStatData extends ThreadLocal<TimeStatData> {
+
+        private TimeStatData tsd;
 
         protected TimeStatData initialValue (){
             tsd = new TimeStatData ();
@@ -73,11 +71,11 @@ public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
             return tsd;
         }
         
-    } ;
-    
+    }
+
     protected static final String NEWLINE = System.getProperty("line.separator");
 
-   public double getTime() {
+    public double getTime() {
         return average.getAverage();
     }
 
@@ -151,7 +149,7 @@ public abstract class TimeStatsAbstractImpl extends AbstractTreeNode
         this.lastSampleTime.set(time);
     }
 
-    private class TimeStatData {
+    private static class TimeStatData {
         private long entryTime = 0;
         private long exitTime = 0;
         private long totalTime = 0;
