@@ -120,8 +120,13 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
             File lib = new File(webinf, "lib");
             if (lib.exists()) {
                 File jarFile = new File(lib, webFragmentDesc.getJarName());
-                if (jarFile.exists() && (!jarFile.isDirectory())) {
-                    addScanJar(jarFile);
+                if (jarFile.exists()) {
+                    // support exploded jar file
+                    if (jarFile.isDirectory()) {
+                        addScanDirectory(jarFile);
+                    } else {
+                        addScanJar(jarFile);
+                    }
                 }
             }
         } else {

@@ -214,8 +214,13 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                     }))
             {
                 try {
-                    cloader.addJar(file.getPath().substring(baseFileLen),
-                                   new JarFile(file), file);
+                    if (file.isDirectory()) {
+                        // support exploded jar file
+                        cloader.addRepository("WEB-INF/lib/" + file.getName() + "/", file);
+                    } else {
+                        cloader.addJar(file.getPath().substring(baseFileLen),
+                                new JarFile(file), file);
+                    }
                 } catch (Exception e) {
                     // Catch and ignore any exception in case the JAR file
                     // is empty.
