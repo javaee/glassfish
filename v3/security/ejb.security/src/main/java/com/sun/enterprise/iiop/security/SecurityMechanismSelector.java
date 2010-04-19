@@ -124,7 +124,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
     public static final String CLIENT_CONNECTION_CONTEXT = "ClientConnContext";
     public static final String SERVER_CONNECTION_CONTEXT = "ServerConnContext";
 
-    private  Set corbaIORDescSet = null;
+    private  Set<EjbIORConfigurationDescriptor> corbaIORDescSet = null;
     private  boolean sslRequired = false;
 
     // List of hosts trusted by the client for sending passwords to.
@@ -162,19 +162,19 @@ public final class SecurityMechanismSelector implements PostConstruct {
             invMgr = habitat.getComponent(InvocationManager.class);
 	    // Initialize client security config
 	    String s = 
-		(String)(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED);
+		(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED);
 	    if ( s != null && s.equals("true") ) {
 		sslRequired = true;
 	    }
 
 	    // initialize corbaIORDescSet with security config for CORBA objects
-	    corbaIORDescSet = new HashSet();
+	    corbaIORDescSet = new HashSet<EjbIORConfigurationDescriptor>();
 	    EjbIORConfigurationDescriptor iorDesc = 
 					    new EjbIORConfigurationDescriptor();
 	    EjbIORConfigurationDescriptor iorDesc2 = 
 					    new EjbIORConfigurationDescriptor();
 	    String serverSslReqd =
-                    (String)(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_SSL_SERVER_REQUIRED);
+                    (orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_SSL_SERVER_REQUIRED);
 	    if ( serverSslReqd != null && serverSslReqd.equals("true") ) {
 		iorDesc.setIntegrity(EjbIORConfigurationDescriptor.REQUIRED);
 		iorDesc.setConfidentiality(
@@ -184,7 +184,7 @@ public final class SecurityMechanismSelector implements PostConstruct {
 					EjbIORConfigurationDescriptor.REQUIRED);
 	    }
 	    String clientAuthReq = 
-		(String)(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_CLIENT_AUTH_REQUIRED);
+		(orbHelper.getCSIv2Props()).getProperty(GlassFishORBHelper.ORB_CLIENT_AUTH_REQUIRED);
 	    if ( clientAuthReq != null && clientAuthReq.equals("true") ) {
 		// Need auth either by SSL or username-password.
 		// This sets SSL clientauth to required.
@@ -835,11 +835,12 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
             ctx.subject = s;
             // determining if run-as has been used
             Set privateCredSet = 
-                (Set) AccessController.doPrivileged(new PrivilegedAction() {
-                    public java.lang.Object run() {
-                        return sub.getPrivateCredentials();
-                    }
-                });
+                AccessController.doPrivileged(new PrivilegedAction<Set>() {
+
+                public Set run() {
+                    return sub.getPrivateCredentials();
+                }
+            });
             if (privateCredSet.isEmpty()) { // this is runas case dont set
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log(Level.FINE, "no private credential run as mode");
@@ -862,7 +863,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
                 final String realm_name = new String(_realm);
                 final Iterator it = privateCredSet.iterator();
                 for(;it.hasNext();){
-                    AccessController.doPrivileged(new PrivilegedAction(){
+                    AccessController.doPrivileged(new PrivilegedAction<Object>(){
                         public java.lang.Object run(){
                             PasswordCredential pc = (PasswordCredential) it.next();
                             pc.setRealm(realm_name);
@@ -902,7 +903,7 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
             // a default guest/guest123 was created
             sCtx.identcls = AnonCredential.class;
             
-            AccessController.doPrivileged(new PrivilegedAction() {
+            AccessController.doPrivileged(new PrivilegedAction<Object>() {
                 public java.lang.Object run(){
                     // remove all the public and private credentials 
                     Subject sub = new Subject();
@@ -920,17 +921,17 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
         // Figure out the credential class
         final Subject sub = s;
         Set credSet = 
-            (Set) AccessController.doPrivileged(new PrivilegedAction() {
-                public java.lang.Object run() {
+            AccessController.doPrivileged(new PrivilegedAction<Set>() {
+                public Set run() {
                     return sub.getPrivateCredentials(PasswordCredential.class);
                 }
             });
         if(credSet.size() == 1) {
             ctx.identcls = GSSUPName.class;
             final Set cs = credSet;
-            Subject subj = (Subject) AccessController.doPrivileged(new
-            PrivilegedAction() { 
-                public java.lang.Object run() {    
+            Subject subj = AccessController.doPrivileged(new
+            PrivilegedAction<Subject>() {
+                public Subject run() {
                     Subject ss = new Subject();
                     Iterator iter = cs.iterator();
                     PasswordCredential pc = (PasswordCredential) iter.next();
@@ -1048,14 +1049,14 @@ localStrings.getLocalString("securitymechansimselector.runas_cannot_propagate_us
 
         final Subject sub = subj;
         final Set credset = 
-            (Set) AccessController.doPrivileged(new PrivilegedAction() {
-                public java.lang.Object run() {
+            AccessController.doPrivileged(new PrivilegedAction<Set>() {
+                public Set run() {
                     return sub.getPrivateCredentials(PasswordCredential.class);
                 }
             });
         if(credset.size() == 1) {
-            tgt_name = (byte[]) AccessController.doPrivileged(new PrivilegedAction() { 
-                public java.lang.Object run() {    
+            tgt_name = AccessController.doPrivileged(new PrivilegedAction<byte[] >() {
+                public byte[] run() {
                     Iterator iter = credset.iterator();
                     PasswordCredential pc = (PasswordCredential) iter.next();
                     return pc.getTargetName();
@@ -1511,7 +1512,7 @@ as_context_mech
             msg = msg + "client does not conform to configured security policies";
             throw new SecurityMechanismException(msg);
         }            
- 
+
         if ( ctx == null ) {
             if ( socket == null || !ssl_used || certChain == null )  {
                 // Transport info is null and security context is null.
@@ -1538,8 +1539,7 @@ as_context_mech
 
         Class authCls = ctx.authcls;
         Class identCls = ctx.identcls;
-        ssc.subject = ctx.subject;
-
+        
         ssc.authcls = null;
         ssc.identcls = null;
 
@@ -1560,7 +1560,7 @@ as_context_mech
         return false;
     }
 
-    public Set getCorbaIORDescSet() {
+    private Set<EjbIORConfigurationDescriptor> getCorbaIORDescSet() {
         return corbaIORDescSet;
     }
 
