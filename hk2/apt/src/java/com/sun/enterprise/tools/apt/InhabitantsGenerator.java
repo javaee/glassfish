@@ -243,39 +243,63 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             if (debug) {
                 env.getMessager().printWarning("Visiting " + d.getSimpleName());
             }
-            InhabitantAnnotation ia=null;
-            AnnotationMirror a=null;
             for (AnnotationMirror am : d.getAnnotationMirrors()) {
-                ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
+                InhabitantAnnotation ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
                 if (ia!=null) {
-                    a=am;
+                    generateInhabitantEntry(d, am, ia);
                 }
             }
-            if (a==null)
-                return;
+        }
+
+
+        private void generateInhabitantEntry(MethodDeclaration d, AnnotationMirror a, InhabitantAnnotation ia) {
+
             InhabitantsDescriptor descriptor = list.get(ia.value());
 
             String service=null;
+            ServiceProvider sp = a.getAnnotationType().getDeclaration().getAnnotation(ServiceProvider.class);
+            if (sp!=null) {
+                try {
+                    sp.value();
+                } catch (MirroredTypeException e) {
+                    service = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
+                }
+            }
+
+/*            String service=null;
             // I cannot use a.getAnnotationType().getDeclaration().getAnnotation() because the value() is a class
             // which cannot be loaded by the classloader at compile time.
+
             for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
                 if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ServiceProvider.class.getSimpleName())) {
                     for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
-                        service = entry.getValue().toString();
+                        service = entry.getValue()toString();
+                        service = ((DeclaredType)entry.).getDeclaration().getQualifiedName()
                     }
                 }
             }
+            */
             if (service!=null) {
                 String name = getIndexValue(a);
-                String contract="";
-                // we should support gettting the @ContractProvided from the ServiceProvider
+
+               String contract=null;
+                ContractProvided cp = a.getAnnotationType().getDeclaration().getAnnotation(ContractProvided.class);
+                if (cp!=null) {
+                    try {
+                        cp.value();
+                    } catch (MirroredTypeException e) {
+                        contract = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
+                    }
+                }
+                /*String contract="";
+                // we should support getting the @ContractProvided from the ServiceProvider
                 for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
                     if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ContractProvided.class.getSimpleName())) {
                         for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
                             contract = entry.getValue().toString();
                         }
                     }
-                }
+                } */
 
                 StringBuilder buf = new StringBuilder();
                 buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
@@ -300,7 +324,6 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                         getInhabitantDeclaration(a, (ClassDeclaration) d.getDeclaringType()));
             }
         }
-
 
         /**
          * Computes the metadata line for the given class declaration. 
