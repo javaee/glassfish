@@ -330,7 +330,8 @@ public class JDBCConnectionPoolManager implements ResourceManager{
             // if cascade=false don't delete this connection pool if a resource is referencing it
             Object obj = deleteAssociatedResources(servers, resources, 
                     Boolean.parseBoolean(cascade), jdbcconnectionpoolid);
-            if (obj == Integer.valueOf(ResourceStatus.FAILURE)) {
+            if (obj instanceof Integer &&
+                    ((Integer)obj).intValue() == ResourceStatus.FAILURE) {
                 String msg = localStrings.getLocalString(
                     "delete.jdbc.connection.pool.pool_in_use", 
                     "JDBC Connection pool {0} delete failed ", jdbcconnectionpoolid);
