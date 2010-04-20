@@ -41,6 +41,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 class SlowClient extends Thread {
 
@@ -63,13 +64,12 @@ class SlowClient extends Thread {
                 s.getOutputStream().write(0);
                 try {
                     System.out.println(getName() + " waiting");
-                    Thread.sleep(30000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException i) {
                     i.printStackTrace();
                 }
             }
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch(IOException e) {
             test.count++;
         }
     }

@@ -33,48 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.lang.*;
-import java.io.*;
-import java.net.*;
 
-import com.sun.ejte.ccl.reporter.*;
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 public class WebTest extends Thread{
-    
-    private static int EXPECTED_COUNT = 1;
+	private static String TEST_NAME = "dos-slow-client";
 
-    public static int count;
-    
-    static SimpleReporterAdapter stat=
-        new SimpleReporterAdapter("appserv-tests");
+	public static int count;
 
-    public static void main(String args[]) {
+	static SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
 
-        // The stat reporter writes out the test info and results
-        // into the top-level quicklook directory during a run.
-      
-        stat.addDescription("Slow client bytes write");
+	public static void main(String args[]) throws InterruptedException {
 
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
-        int num = Integer.parseInt(args[2]);
-        
-        try {
-           for (int i=0; i < num; i++){
-               new SlowClient(host,port,new WebTest()); 
-           }
-           Thread.sleep(60 * 3000);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        } 
+		// The stat reporter writes out the test info and results
+		// into the top-level quicklook directory during a run.
 
-        System.out.println("count: " + count);
-        if ( count != num ) {
-            stat.addStatus("dosSlowClient", stat.FAIL);
-        } else {
-            stat.addStatus("dosSlowClient", stat.PASS);
-        }
-        stat.printSummary("web/dosSlowClient");
-    }
+		stat.addDescription("Slow client bytes write");
+
+		String host = args[0];
+		int port = Integer.parseInt(args[1]);
+		int num = Integer.parseInt(args[2]);
+
+		for (int i=0; i < num; i++){
+			new SlowClient(host,port,new WebTest()); 
+		}
+		Thread.sleep(30000);
+
+		stat.addStatus(TEST_NAME, count == num ? stat.PASS : stat.FAIL);
+		stat.printSummary(TEST_NAME);
+	}
 
 }

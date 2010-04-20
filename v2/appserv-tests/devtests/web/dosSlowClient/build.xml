@@ -69,19 +69,18 @@
 
     <target name="setup" depends="init-common">
         <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="create-jvm-options" />
+            <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="-Dcom.sun.enterprise.web.connector.grizzly.byteBufferInputStream.readTimeout=5000"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=5"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
+		  
     </target>
 
     <target name="restore" depends="init-common">
         <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="delete-jvm-options" />
+            <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="-Dcom.sun.enterprise.web.connector.grizzly.byteBufferInputStream.readTimeout=5000"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds="/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 </project>
