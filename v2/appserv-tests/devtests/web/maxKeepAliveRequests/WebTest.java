@@ -44,7 +44,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "maxKeppAliveRequests";
+    private static final String TEST_NAME = "maxKeepAliveRequests";
 
     private String host;
     private String port;
@@ -57,7 +57,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("maxKeppAliveRequests");
+        stat.addDescription(TEST_NAME);
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
