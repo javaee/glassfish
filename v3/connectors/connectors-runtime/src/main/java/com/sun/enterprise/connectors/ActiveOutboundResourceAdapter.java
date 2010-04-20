@@ -81,8 +81,6 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
 
     protected ResourceAdapter resourceadapter_; //runtime instance
 
-    protected String moduleName_;
-
     protected static final Logger _logger = LogDomains.getLogger(ActiveOutboundResourceAdapter.class, LogDomains.RSR_LOGGER);
 
     private StringManager localStrings =
@@ -109,7 +107,6 @@ public class ActiveOutboundResourceAdapter extends ActiveResourceAdapterImpl {
             ClassLoader jcl) throws ConnectorRuntimeException {
         super.init(ra, desc, moduleName, jcl);
         this.resourceadapter_ = ra;
-        this.moduleName_ = moduleName;
         if (resourceadapter_ != null) {
             try {
                 loadRAConfiguration();
