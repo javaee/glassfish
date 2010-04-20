@@ -61,7 +61,7 @@ public class WebTest {
 		try {
 			URL url = new URL("http://" + host + ":" + port + contextPath);
 			url.getContent();
-			stat.addStatus("web-thread-timeout", noTimeout ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
+			stat.addStatus("web-thread-timeout" + (noTimeout ? "-debug" : ""), noTimeout ? SimpleReporterAdapter.PASS : SimpleReporterAdapter.FAIL);
 		} catch( IOException ex){
 			stat.addStatus("web-thread-timeout", noTimeout ? SimpleReporterAdapter.FAIL : SimpleReporterAdapter.PASS);
 		} catch( Exception ex){
