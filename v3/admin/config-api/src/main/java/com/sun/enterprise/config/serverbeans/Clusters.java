@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -45,36 +46,20 @@ import java.util.List;
 
 
 /**
- *
+ * Clusters configuration. Maintain a list of {@link Cluster}
+ * active configurations.
  */
-
-/* @XmlType(name = "", propOrder = {
-    "cluster"
-}) */
-
 @Configured
 public interface Clusters extends ConfigBeanProxy, Injectable {
 
      /**
-     * Gets the value of the cluster property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the cluster property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getCluster().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Cluster }
-     */
+      * Return the list of clusters currently configured
+      *
+      * @return list of {@link Cluster }
+      */
     @Element
+    @Create(value="create-cluster", decorator=Cluster.Decorator.class)
+    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class)
+    @Listing(value="list-clusters")
     public List<Cluster> getCluster();
 }

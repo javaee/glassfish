@@ -52,7 +52,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
-@Service
+@Service(name="type")
 public class TypeResolver implements CrudResolver {
 
     @Inject

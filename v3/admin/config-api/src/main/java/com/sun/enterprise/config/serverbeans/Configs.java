@@ -38,6 +38,8 @@ package com.sun.enterprise.config.serverbeans;
 
 import java.util.List;
 
+import org.glassfish.config.support.Create;
+import org.glassfish.config.support.Delete;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -57,6 +59,8 @@ public interface Configs extends ConfigBeanProxy, Injectable {
      * </pre>
      * <p/> <p/> <p/> Objects of the following type(s) are allowed in the list {@link Config }
      */
+    @Create("create-config")
+    @Delete("delete-config")
     @Element(required=true)
     List<Config> getConfig();
 

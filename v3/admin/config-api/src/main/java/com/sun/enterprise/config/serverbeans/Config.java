@@ -98,7 +98,6 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
-@Delete(value="delete-config", parentType=Clusters.class, resolver= TypeAndNameResolver.class)
 public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag {
 
     /**

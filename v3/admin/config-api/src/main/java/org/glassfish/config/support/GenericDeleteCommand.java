@@ -72,31 +72,14 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     public void postConstruct() {
 
         super.postConstruct();
-        delete = targetType.getAnnotation(Delete.class);
+        delete = targetMethod.getAnnotation(Delete.class);
         resolverType = delete.resolver();
         try {
-            elementName = elementName(document, delete.parentType(), targetType);
-        } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Cannot load child type", e);
-            String msg = localStrings.getLocalString(GenericCrudCommand.class,
-                    "GenericCrudCommand.configbean_not_found",
-                    "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
-                    delete.parentType(), e.getMessage());
-            logger.severe(msg);
-            throw new ComponentException(msg, e);         
-        }
-
-        if (logger.isLoggable(level)) {
-            logger.log(level, "Generic Command configured for deleting " + targetType.getName() + " instances stored in " +
-               delete.parentType().getName() + " under " + elementName);
-        }        
-
-        try {
-            model = new GenericCommandModel(null, document, commandName, delete.resolver());
+            model = new GenericCommandModel(targetType, habitat.getComponent(DomDocument.class), commandName, delete.resolver(), null);
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
-                    logger.log(level, "I take " + param.getName() + " parameters");
+                    logger.fine("I take " + param.getName() + " parameters");
                 }
             }
         } catch(Exception e) {
@@ -106,7 +89,9 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
                     commandName, e.getMessage());
             logger.severe(msg);
             throw new ComponentException(msg, e);
+
         }
+
     }
 
     @Override
@@ -125,7 +110,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericDeleteCommand.target_object_not_found",
                     "The CrudResolver {0} could not find the configuration object of type {1} where instances of {2} should be removed",
-                    resolver.getClass().toString(), delete.parentType(), targetType);
+                    resolver.getClass().toString(), parentType, targetType);
             result.failure(logger, msg);
             return;
         }
@@ -138,7 +123,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
                     "GenericDeleteCommand.transaction_exception",
                     "Exception while deleting the configuration {0} :{1}",
                     child.typeName(), e.getMessage());
-            result.failure(logger, msg);
+            result.failure(logger, msg, e);
         }
 
     }

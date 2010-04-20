@@ -39,16 +39,56 @@ package org.glassfish.config.support;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Create command annotation.
  *
+ * Methods annotated with this annotation delegates to the framework
+ * to provide a generic administrative command that create configured
+ * instances.
+ *
+ * A Create annotation is used on a method of a configured interface.
+ * The method identifies the setter of a type that can be added to the
+ * configured interface.
+ *
+ * The annotated method must follow one of the two pattern :
+ *    List<X> getXs();
+ * or
+ *    void setX(X x);
+ *
+ * the name of the method is immaterial, only the generic type of the
+ * returned List or the single parameter of the setter method are used
+ * to determine the type of configured instance the command will create.
+ *
+ * the resolver is used to find which instance of the parent type should
+ * be used to add the newly created child. The resolver can also
+ * be annotated with {@link org.glassfish.api.Param} to get parameters
+ * passed to the command invocation (like a name or a target parameter).
+ *
+ * The generic command implementation will use the parameters passed to
+ * the command invocation with the {@link org.glassfish.api.Param}
+ * annotations on the child type to match command parameters to
+ * configuration attributes.
+ *
+ * Sometimes, the creation of a new configuration will require more
+ * work or more attributes/elements creation than what can be provided
+ * or specified during the command invocation. In such a case, the
+ * Create annotation can specify a decorator that will be called during
+ * the generic command execution, with the newly created instance.
+ *
+ * The {@link CreationDecorator} will be looked up by its type and
+ * normal injection or parameter injection can happen. 
+ *
  * @author Jerome Dochez
  */
 @Contract
 @Retention(RUNTIME)
+@Target(ElementType.METHOD)
 @InhabitantAnnotation("default")
 @ContractProvided(AdminCommand.class)
 @ServiceProvider(GenericCreateCommand.class)
@@ -63,29 +103,13 @@ public @interface Create {
     String value();
 
     /**
-     * Type of the parent the new configuration object will be stored to when using that command
-     * name. 
-     * @return parent type.
-     */
-    @InhabitantMetadata
-    Class parentType() default Void.class;
-
-    /**
-     * name of the getter or setter method that will be used to mutate the parent
-     * configuration object with the newly created instance.
-     * 
-     * @return the accessor method name.
-     */
-    String parentAccessor() default "";
-
-    /**
      * Returns the instance of the parent that should be used to add the newly created
      * instance under. The implementation of that interface can use the command parameters
      * to make a determination about which instance should be used.
      *
      * @return the parent instance. 
      */
-    Class<? extends CrudResolver> resolver() default TypeResolver.class;
+    Class<? extends CrudResolver> resolver() default CrudResolver.DefaultResolver.class;
 
     /**
      * Returns a decorator type that should be looked up and called when a new

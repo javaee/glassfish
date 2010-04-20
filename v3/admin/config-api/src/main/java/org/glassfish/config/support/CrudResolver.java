@@ -38,6 +38,8 @@
 package org.glassfish.config.support;
 
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.glassfish.api.admin.AdminCommandContext;
 
@@ -58,9 +60,24 @@ public interface CrudResolver {
     /**
      * Retrieves the existing configuration object a command invocation is intented to mutate.
      *
-     * @param context the command invcation context
+     * @param context the command invocation context
      * @param type the type of the expected instance
      * @return the instance or null if not found 
      */
     <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type);
+
+    @Service
+    public static final class DefaultResolver implements CrudResolver {
+        
+        @Inject(name="type", optional=true)
+        CrudResolver defaultResolver=null;
+
+        @Override
+        public <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type) {
+            if (defaultResolver!=null) {
+                return defaultResolver.resolve(context, type);
+            }
+            return null;
+        }
+    }
 }

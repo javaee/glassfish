@@ -39,16 +39,27 @@ package org.glassfish.config.support;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * List command annotation.
  *
+ * Follow the same pattern as {@link Create} or {@link Delete} annotations
+ * to generate a command implementation to list elements.
+ *
+ * Types of elements are listed are infered from the annotated method and
+ * parent instance to get the list of elements from must be returned by
+ * the resolver.
+ *
  * @author Jerome Dochez
  */
 @Contract
 @Retention(RUNTIME)
+@Target(ElementType.METHOD)
 @InhabitantAnnotation("default")
 @ContractProvided(AdminCommand.class)
 @ServiceProvider(GenericListCommand.class)
@@ -63,27 +74,9 @@ public @interface Listing {
     String value();
 
     /**
-     * Type of the parent the new configuration object will be stored to when using that command
-     * name.
-     * @return parent type.
-     */
-    @InhabitantMetadata
-    Class parentType() default Void.class;
-
-    /**
-     * name of the getter or setter method that will be used to mutate the parent
-     * configuration object with the newly created instance.
-     *
-     * @return the accessor method name.
-     */
-    String parentAccessor() default "";
-
-    /**
-     * Returns the instance of the parent that should be used to add the newly created
-     * instance under. The implementation of that interface can use the command parameters
-     * to make a determination about which instance should be used.
+     * Returns the instance of the parent that should be used get the list of children.
      *
      * @return the parent instance.
      */
-    Class<? extends CrudResolver> resolver() default TypeResolver.class;
+    Class<? extends CrudResolver> resolver() default CrudResolver.DefaultResolver.class;
 }

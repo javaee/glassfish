@@ -67,7 +67,6 @@ import javax.validation.constraints.NotNull;
 }) */
 
 @Configured
-@Create(value="new-create-jdbc-resource", parentType=Resources.class)
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-resource"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-resource")

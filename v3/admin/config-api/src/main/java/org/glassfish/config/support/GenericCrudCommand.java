@@ -82,8 +82,11 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     final protected static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GenericCrudCommand.class);
 
     String commandName;
+    Class<ConfigBeanProxy> parentType=null;
     Class<ConfigBeanProxy> targetType=null;
-    protected final Level level = Level.INFO;
+    Method targetMethod;
+    // default level of noise, useful for just swithching these classes in debugging.
+    protected final Level level = Level.FINE;
 
     public void postConstruct() {
         List<String> indexes = myself.metadata().get(InhabitantsFile.INDEX_KEY);
@@ -109,22 +112,48 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
             throw new ComponentException(msg);            
         }
         commandName = index.substring(index.indexOf(":")+1);
-        String targetTypeName = myself.metadata().get(InhabitantsFile.TARGET_TYPE).get(0);
+        String parentTypeName = myself.metadata().get(InhabitantsFile.TARGET_TYPE).get(0);
         if (logger.isLoggable(level)) {
-            logger.log(level,"Generic method targeted type is " + targetTypeName);
+            logger.log(level,"Generic method parent targeted type is " + parentTypeName);
         }
 
         try {
-            targetType = loadClass(targetTypeName);
+            parentType = (Class<ConfigBeanProxy>) loadClass(parentTypeName);
         } catch(ClassNotFoundException e) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCrudCommand.configbean_not_found",
                     "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
-                    targetTypeName, e.getMessage());
+                    parentTypeName, e.getMessage());
             logger.severe(msg);
             throw new ComponentException(msg, e);
         }
 
+        // find now the accessor method.
+        String methodName = myself.metadata().get("method-name").get(0);
+        targetMethod=null;
+        for (Method m : parentType.getMethods()) {
+            if (m.getName().equals(methodName)) {
+                targetMethod=m;
+                break;
+            }
+        }
+
+        if (targetMethod==null) {
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCrudCommand.configbean_not_found",
+                    "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
+                    parentTypeName, methodName);
+            logger.severe(msg);
+            throw new ComponentException(msg);
+        }
+
+        if (targetMethod.getParameterTypes().length==0) {
+            // return type matters.
+            targetType = Types.erasure(Types.getTypeArgument(
+                            targetMethod.getGenericReturnType(),0));
+        } else {
+            targetType = (Class<ConfigBeanProxy>) targetMethod.getParameterTypes()[0];
+        }
     }
 
     /**

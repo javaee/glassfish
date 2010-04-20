@@ -79,8 +79,6 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
-@Create(value="create-instance", parentType=Servers.class, resolver= TypeResolver.class, decorator=Server.Decorator.class)
-@Delete(value="delete-instance", parentType=Servers.class, resolver= TypeAndNameResolver.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     @Param(name="name", primary = true)

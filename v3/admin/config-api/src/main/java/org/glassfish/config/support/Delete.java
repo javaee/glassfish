@@ -39,25 +39,73 @@ package org.glassfish.config.support;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Delete command annotation
+ *
+ * A method annotated with the Delete annotation will generate a generic
+ * implementation of a delete administrative command responsible for
+ * delete instances of the type as referenced by the annotated method.
+ *
+ * The deleted type is determine by the annotated method which must
+ * follow one of the two following patterns :
+ *      List<X> getXs();
+ * or
+ *      void setX(X x);
+ *
+ * X is the type of instance that will be deleted, the name of the
+ * method is actually immaterial. So for example, the following
+ * <pre><code>
+ * @Delete
+ * public List<Foo> getAllMyFoos();
+ * @Delete
+ * public void setMySuperFoo(Foo foo);
+ * @Delete
+ * public List<Foo> getFoos();
+ * @Delete
+ * public List<Foo> getFoo();
+ * </code></pre>
+ *
+ * will all be valid annotated methods.
+ *
+ * The instance to be removed from the parent must be resolved by the
+ * resolver attribute. The resolver can use injection or the command
+ * invocation parameters (using the {@link org.glassfish.api.Param}
+ * annotation) to get enough information to look up or retrieve the
+ * instance to be deleted.
+ *
+ * Usually, most instances can be looked up by using the instance type
+ * and its key (provided by the --name or --target parameters for instance).
+ *
+ * @author Jerome Dochez
  */
 @Contract
 @Retention(RUNTIME)
+@Target(ElementType.METHOD)
 @InhabitantAnnotation("default")
 @ContractProvided(AdminCommand.class)
 @ServiceProvider(GenericDeleteCommand.class)
 public @interface Delete {
 
+    /**
+     * Name of the command that will be used to register this generic command implementation under.
+     *
+     * @return the command name as the user types it.
+     */    
     @Index
     String value();
 
-    @InhabitantMetadata
-    Class parentType() default Void.class;
-
-    Class<? extends CrudResolver> resolver() default TypeResolver.class;
+   /**
+     * Returns the instance of the configured object that should be deleted.
+     * The implementation of that interface can use the command parameters
+     * to make a determination about which instance should be used.
+     *
+     * @return the instance targeted for deletion.
+     */
+    Class<? extends CrudResolver> resolver() default CrudResolver.DefaultResolver.class;
 }

@@ -49,6 +49,8 @@ import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +66,6 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
 
     Class<? extends CrudResolver> resolverType;
     CommandModel model;
-    String elementName;
     Listing listing;
 
 
@@ -74,29 +75,11 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
 
         super.postConstruct();
 
-        listing = targetType.getAnnotation(Listing.class);
+        listing = targetMethod.getAnnotation(Listing.class);
         resolverType = listing.resolver();
         try {
-            elementName = elementName(document, listing.parentType(), targetType);
-        } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Cannot load child type", e);
-            String msg = localStrings.getLocalString(GenericCrudCommand.class,
-                    "GenericCrudCommand.configbean_not_found",
-                    "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
-                    listing.parentType(), e.getMessage());
-            logger.severe(msg);
-            throw new ComponentException(msg, e);
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Generic Command configured for creating " + targetType.getName() + " instances which gets added to " +
-                listing.parentType().getName() + " under " + elementName);
-        }
-
-        try {
-            // we only use the resolver parameter as the command parameters.
-            model = new GenericCommandModel(null, habitat.getComponent(DomDocument.class), commandName, listing.resolver());
-            if (logger.isLoggable(Level.FINE)) {
+            model = new GenericCommandModel(null, habitat.getComponent(DomDocument.class), commandName, listing.resolver(), null);
+            if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
                     logger.fine("I take " + param.getName() + " parameters");
@@ -109,7 +92,9 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
                     commandName, e.getMessage());
             logger.severe(msg);
             throw new ComponentException(msg, e);
+
         }
+
     }
 
     public void execute(final AdminCommandContext context) {
@@ -123,29 +108,38 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy parentBean = resolver.resolve(context, listing.parentType());
+        final ConfigBeanProxy parentBean = resolver.resolve(context, parentType);
         if (parentBean==null) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.target_object_not_found",
                     "The CrudResolver {0} could not find the configuration object of type {1} where instances of {2} should be added",
-                    resolver.getClass().toString(), listing.parentType(), targetType);
+                    resolver.getClass().toString(), parentType, targetType);
             result.failure(logger, msg);
             return;
         }
 
-        Dom parentDom = Dom.unwrap(parentBean);
-        for (Dom child : parentDom.nodeElements(elementName)) {
-            String key = child.getKey();
-            if (key==null) {
-                String msg = localStrings.getLocalString(GenericCrudCommand.class,
-                        "GenericListCommand.element_has_no_key",
-                        "The element {0} has not key attribute",
-                        targetType);
-                result.failure(logger, msg);
-                return;
+        try {
+            List<ConfigBeanProxy> children = (List<ConfigBeanProxy>) targetMethod.invoke(parentBean);
+            for (ConfigBeanProxy child : children) {
+                Dom childDom = Dom.unwrap(child);
+                String key = childDom.getKey();
+                if (key==null) {
+                    String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                            "GenericListCommand.element_has_no_key",
+                            "The element {0} has not key attribute",
+                            targetType);
+                    result.failure(logger, msg);
+                    return;
 
+                }
+                context.getActionReport().addSubActionsReport().setMessage(key);
             }
-            context.getActionReport().addSubActionsReport().setMessage(key);
+        } catch (Exception e) {
+            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                    "GenericCrudCommand.method_invocation_exception",
+                    "Exception while invoking {0} method : {1}",
+                    targetMethod.toString(), e.toString());
+            result.failure(logger, msg, e);
         }
     }
 

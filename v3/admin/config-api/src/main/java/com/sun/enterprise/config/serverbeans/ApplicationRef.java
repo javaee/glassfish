@@ -37,10 +37,6 @@
 package com.sun.enterprise.config.serverbeans;
 
 import org.glassfish.api.Param;
-import org.glassfish.config.support.Create;
-import org.glassfish.config.support.Delete;
-import org.glassfish.config.support.TargetAndNameBasedResolver;
-import org.glassfish.config.support.TargetBasedResolver;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -58,8 +54,6 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "") */
 
 @Configured
-@Create(value="create-application-ref", parentType=RefContainer.class, resolver = TargetBasedResolver.class)
-@Delete(value="delete-application-ref", parentType=RefContainer.class, resolver = TargetAndNameBasedResolver.class)
 public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
 
     /**

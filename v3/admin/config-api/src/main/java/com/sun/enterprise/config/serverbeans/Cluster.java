@@ -68,26 +68,10 @@ import javax.validation.constraints.NotNull;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- *
+ * A cluster defines a homogeneous set of server instances that share the same
+ * applications, resources, and configuration.
  */
-
-/* @XmlType(name = "", propOrder = {
-    "serverRef",
-    "resourceRef",
-    "applicationRef",
-    "systemProperty",
-    "property"
-}) */
-
 @Configured
-/**
- * SE/EE Cluster configuration. A cluster defines a homogeneous set of server
- * instances that share the same applications, resources, and configuration.                                                
- *
- */
-@Create(value="create-cluster", parentType=Clusters.class, resolver= TypeResolver.class, decorator=Cluster.Decorator.class)
-@Delete(value="delete-cluster", parentType=Clusters.class, resolver= TypeAndNameResolver.class)
-@Listing(value="list-clusters", parentType=Clusters.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     @Param(name="name", primary = true)
@@ -95,13 +79,10 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     
 
     /**
-     * Gets the value of the configRef property.
+     * points to a named config. All server instances in the cluster
+     * will share this config.
      *
-     * Points to a named config. All server instances in the cluster will
-     * share this config.
-     *
-     * @return possible object is
-     *         {@link String }
+     * @return a named config name
      */
     @Attribute
     @NotNull
@@ -125,8 +106,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * started and its services will be unavailable. Clusters should function
      * albeit with reduced functionality.
      * 
-     * @return possible object is
-     *         {@link String }
+     * @return true | false as a string, null means false
      */
     @Attribute (defaultValue="true",dataType=Boolean.class)
     String getHeartbeatEnabled();

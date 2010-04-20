@@ -45,6 +45,8 @@ import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import com.sun.logging.LogDomains;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.beans.PropertyVetoException;
@@ -56,7 +58,7 @@ import java.beans.PropertyVetoException;
  * invocation parameters.
  *
  * So far, such POJO must be ConfigBeanProxy subclasses and be annotated with the
- * {@see Param} annotation to property function. 
+ * {@link org.glassfish.api.Param} annotation to property function. 
  *
  * @author Jerome Dochez
  */
@@ -68,10 +70,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     
     Class<? extends CrudResolver> resolverType;
     CommandModel model;
-    String elementName;
-    
     Create create;
-
 
     final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
 
@@ -79,28 +78,11 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         super.postConstruct();
 
-        create = targetType.getAnnotation(Create.class);
+        create = targetMethod.getAnnotation(Create.class);
         resolverType = create.resolver();
         try {
-            elementName = elementName(document, create.parentType(), targetType);
-        } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Cannot load child type", e);
-            String msg = localStrings.getLocalString(GenericCrudCommand.class,
-                    "GenericCrudCommand.configbean_not_found",
-                    "The Config Bean {0} cannot be loaded by the generic command implementation : {1}",
-                    create.parentType(), e.getMessage());
-            logger.severe(msg);
-            throw new ComponentException(msg, e);            
-        }
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Generic Command configured for creating " + targetType.getName() + " instances which gets added to " +
-                create.parentType().getName() + " under " + elementName);
-        }
-
-        try {
             model = new GenericCommandModel(targetType, habitat.getComponent(DomDocument.class), commandName, create.resolver(), create.decorator());
-            if (logger.isLoggable(Level.FINE)) {
+            if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
                     logger.fine("I take " + param.getName() + " parameters");
@@ -114,7 +96,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
             logger.severe(msg);
             throw new ComponentException(msg, e);
 
-        }        
+        }
 
     }
 
@@ -132,22 +114,22 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         manager.inject(resolver, getInjectionResolver());
 
-        final ConfigBeanProxy parentBean = resolver.resolve(context, create.parentType());
+        final ConfigBeanProxy parentBean = resolver.resolve(context, parentType);
         if (parentBean==null) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.target_object_not_found",
                     "The CrudResolver {0} could not find the configuration object of type {1} where instances of {2} should be added",
-                    resolver.getClass().toString(), create.parentType(), targetType);
+                    resolver.getClass().toString(), parentType, targetType);
             result.failure(logger, msg);
             return;
         }
         
         try {
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy> () {
-                public Object run(ConfigBeanProxy writeableParentBean) throws PropertyVetoException, TransactionFailure {
+                public Object run(ConfigBeanProxy writableParent) throws PropertyVetoException, TransactionFailure {
 
 
-                    ConfigBeanProxy childBean = writeableParentBean.createChild(targetType);
+                    ConfigBeanProxy childBean = writableParent.createChild(targetType);
                     manager.inject(childBean, targetType, getInjectionResolver());
 
                     String name = null;
@@ -169,8 +151,23 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                         }
                     }
 
-                    Dom parentDom = Dom.unwrap(writeableParentBean);
-                    parentDom.insertAfter(null, elementName, Dom.unwrap(childBean));
+                    try {
+                        if (targetMethod.getParameterTypes().length==0) {
+                            // return type must be a list to which we add our child.
+                            List<ConfigBeanProxy> children = (List<ConfigBeanProxy>) targetMethod.invoke(writableParent);
+                            children.add(childBean);
+                        } else {
+                            targetMethod.invoke(writableParent, childBean);
+                        }
+                    } catch (Exception e) {
+                        String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                                "GenericCrudCommand.method_invocation_exception",
+                                "Exception while invoking {0} method : {1}",
+                                targetMethod.toString(), e.toString());
+                        result.failure(logger, msg, e);
+                        throw new TransactionFailure(msg,e);
+                    }
+
                     CreationDecorator<ConfigBeanProxy> decorator = habitat.getComponent(create.decorator());
                     if (decorator==null) {
                         String msg = localStrings.getLocalString(GenericCrudCommand.class,
@@ -196,7 +193,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                     "Exception while adding the new configuration {0}",
                     e.toString());
             logger.log(Level.SEVERE, msg, e);
-            result.failure(logger, msg);
+            result.failure(logger, msg,e);
         }
     }
 

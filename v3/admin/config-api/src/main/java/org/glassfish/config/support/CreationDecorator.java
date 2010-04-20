@@ -36,7 +36,9 @@
 package org.glassfish.config.support;
 
 import org.glassfish.api.admin.AdminCommandContext;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
@@ -47,6 +49,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
+@Scoped(PerLookup.class)
 public interface CreationDecorator<T> {
 
     /**
@@ -61,6 +64,11 @@ public interface CreationDecorator<T> {
      */
     public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException;
 
+    /**
+     * Default implementation of a decorator that does nothing.
+     * 
+     * @param <T> the decorated type
+     */
     @Service
     public class NoDecoration<T> implements CreationDecorator<T> {
         @Override

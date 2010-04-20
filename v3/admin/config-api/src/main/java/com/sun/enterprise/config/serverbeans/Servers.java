@@ -36,6 +36,10 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.config.support.Create;
+import org.glassfish.config.support.Delete;
+import org.glassfish.config.support.TypeAndNameResolver;
+import org.glassfish.config.support.TypeResolver;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
@@ -76,6 +80,8 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
      * {@link Server }
      */
     @Element
+    @Create(value="create-instance", resolver= TypeResolver.class, decorator=Server.Decorator.class)
+    @Delete(value="delete-instance", resolver= TypeAndNameResolver.class)
     public List<Server> getServer();
 
 

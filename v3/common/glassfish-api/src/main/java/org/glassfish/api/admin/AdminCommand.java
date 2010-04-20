@@ -49,7 +49,7 @@ public interface AdminCommand {
     
     /**
      * Executes the command with the command parameters passed as Properties 
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values are the parameter values
      * @param context information 
      */
     public void execute(AdminCommandContext context);
