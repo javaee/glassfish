@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.security.ssl;
 
+import com.sun.enterprise.security.common.Util;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -66,6 +67,10 @@ import com.sun.enterprise.server.pluggable.SecuritySupport;
 import com.sun.enterprise.security.integration.AppClientSSL;
 import java.util.logging.*;
 import com.sun.logging.*;
+import java.security.AccessControlException;
+import java.security.AccessController;
+import java.security.Permission;
+import java.util.PropertyPermission;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PostConstruct;
@@ -102,6 +107,7 @@ public final class SSLUtils implements PostConstruct {
     private KeyStore mergedTrustStore = null;
     private Date initDate;
     private AppClientSSL appclientSsl = null;
+    private SSLContext ctx = null;
     
     public void postConstruct() {
         try {
@@ -143,7 +149,7 @@ public final class SSLUtils implements PostConstruct {
 
             // Creating a default SSLContext and HttpsURLConnection for clients
             // that use Https
-            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx = SSLContext.getInstance("TLS");
             String keyAlias = System.getProperty(HTTPS_OUTBOUND_KEY_ALIAS);
             KeyManager[] kMgrs = getKeyManagers();
             if (keyAlias != null && keyAlias.length() > 0 && kMgrs != null) {
@@ -157,6 +163,10 @@ public final class SSLUtils implements PostConstruct {
         } catch (Exception e) {
             throw new Error(e);
         }
+    }
+
+    SSLContext getSSLContext() {
+        return ctx;
     }
 
     public KeyStore[] getKeyStores() throws Exception{
@@ -261,6 +271,7 @@ public final class SSLUtils implements PostConstruct {
      */ 
     public PrivateKeyEntry getPrivateKeyEntryFromTokenAlias(
             String certNickname) throws Exception {
+        checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
         PrivateKeyEntry privKeyEntry = null;
         if (certNickname != null) {
             int ind = certNickname.indexOf(':');
@@ -304,8 +315,23 @@ public final class SSLUtils implements PostConstruct {
         return privKeyEntry;
     }
 
-    public SecuritySupport getSecuritySupport() {
-        return secSupp;
+    public static void checkPermission(String key) {
+        try {
+            // Checking a random permission to check if it is server.
+            if(Util.isEmbeddedServer() || Util.getDefaultHabitat() == null
+                    || Util.getInstance().isACC() || Util.getInstance().isNotServerORACC()){
+                return;
+            }
+            Permission perm = new RuntimePermission("SSLPassword");
+            AccessController.checkPermission(perm);
+        } catch (AccessControlException e) {
+            String message = e.getMessage();
+            Permission perm = new PropertyPermission(key, "read");
+            if (message != null) {
+                message = message.replace(e.getPermission().toString(), perm.toString());
+            }
+            throw new AccessControlException(message, perm);
+        }
     }
     
     public String[] getSupportedCipherSuites() {

@@ -36,13 +36,11 @@
 
 package com.sun.enterprise.security;
 
+import com.sun.enterprise.security.ssl.SSLUtils;
 import java.net.SocketPermission;
-import java.util.PropertyPermission;
 
 import java.util.*;
 // IASRI 4660742 START
-import java.util.logging.*;
-import com.sun.logging.*;
 // IASRI 4660742 END
 
 /**
@@ -140,6 +138,9 @@ public class J2EESecurityManager extends java.rmi.RMISecurityManager {
     }
 
     private boolean checkProperty(String key) {
+        if(key.equals("javax.net.ssl.keyStorePassword") || key.equals("javax.net.ssl.trustStorePassword")){
+            SSLUtils.checkPermission(key);
+        }
 	if (cacheEnabled()) {
 	    return cache.checkPermission(new PropertyPermission(key, "read"));
 	} 

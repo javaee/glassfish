@@ -84,6 +84,7 @@ public class SecuritySupportImpl implements SecuritySupport {
     protected static final List<String> tokenNames = new ArrayList<String>();
 
     private MasterPasswordImpl masterPasswordHelper = null;
+    private static boolean instantiated = false;
 
     public SecuritySupportImpl() {
         this(true);
@@ -113,12 +114,14 @@ public class SecuritySupportImpl implements SecuritySupport {
 
         char[] keyStorePass = null;
         char[] trustStorePass = null;
-        if (masterPasswordHelper == null && Globals.getDefaultHabitat() != null) {
-            masterPasswordHelper = Globals.getDefaultHabitat().getByType(MasterPasswordImpl.class);
-        }
-        if (masterPasswordHelper instanceof MasterPasswordImpl) {
-            keyStorePass = masterPasswordHelper.getMasterPassword();
-            trustStorePass = keyStorePass;
+        if (!isInstantiated()) {
+            if (masterPasswordHelper == null && Globals.getDefaultHabitat() != null) {
+                masterPasswordHelper = Globals.getDefaultHabitat().getByType(MasterPasswordImpl.class);
+            }
+            if (masterPasswordHelper instanceof MasterPasswordImpl) {
+                keyStorePass = masterPasswordHelper.getMasterPassword();
+                trustStorePass = keyStorePass;
+            }
         }
         if (keyStorePass == null) {
             keyStorePass = System.getProperty(SSLUtils.KEYSTORE_PASS_PROP, SSLUtils.DEFAULT_KEYSTORE_PASS).toCharArray();
@@ -139,6 +142,14 @@ public class SecuritySupportImpl implements SecuritySupport {
             Arrays.fill(trustStorePass, ' ');
             initialized = true;
         }
+    }
+    
+    private static synchronized boolean isInstantiated() {
+        if (!instantiated) {
+            instantiated = true;
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -250,6 +261,7 @@ public class SecuritySupportImpl implements SecuritySupport {
      * array of keystores.
      */
     public String[] getKeyStorePasswords() {
+        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
         return keyStorePasswords.toArray(new String[keyStorePasswords.size()]);
     }
 
@@ -302,6 +314,7 @@ public class SecuritySupportImpl implements SecuritySupport {
      * @return the password for this token
      */
     public String getKeyStorePassword(String token) {
+        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
         int idx = getTokenIndex(token);
         if (idx < 0) {
             return null;
@@ -328,6 +341,7 @@ public class SecuritySupportImpl implements SecuritySupport {
     }
 
     public PrivateKey getPrivateKeyForAlias(String alias, int keystoreIndex) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        SSLUtils.checkPermission(SSLUtils.KEYSTORE_PASS_PROP);
         Key key = keyStores.get(keystoreIndex).getKey(alias, keyStorePasswords.get(keystoreIndex).toCharArray());
         if (key instanceof PrivateKey) {
             return (PrivateKey) key;
