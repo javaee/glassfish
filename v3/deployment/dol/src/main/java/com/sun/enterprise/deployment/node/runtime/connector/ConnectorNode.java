@@ -57,17 +57,17 @@ import java.util.Map;
  */
 public class ConnectorNode extends RuntimeBundleNode<ConnectorDescriptor> {
 
-    protected SunConnector descriptor=null;
-    protected ConnectorDescriptor connector=null;
+    protected SunConnector connector=null;
+    protected ConnectorDescriptor descriptor=null;
     /**
      * Initialize the child handlers
      */
-    public ConnectorNode(ConnectorDescriptor connector) {
+    public ConnectorNode(ConnectorDescriptor descriptor) {
         
         // we do not care about our standard DDS handles
         handlers = null;
         
-	this.connector = connector;
+	this.descriptor = descriptor;
 	
         registerElementHandler(new XMLElement(RuntimeTagNames.RESOURCE_ADAPTER), 
                                ResourceAdapterNode.class);
@@ -89,7 +89,7 @@ public class ConnectorNode extends RuntimeBundleNode<ConnectorDescriptor> {
             getSunConnectorDescriptor().setRoleMap(
                 (RoleMap)newDescriptor);
         } else {
-            super.addDescriptor(descriptor);
+            super.addDescriptor(newDescriptor);
         }
     }
 
@@ -134,15 +134,15 @@ public class ConnectorNode extends RuntimeBundleNode<ConnectorDescriptor> {
     * @return the descriptor instance to associate with this XMLNode
     */    
     public SunConnector getSunConnectorDescriptor() {
-        if (descriptor==null) {
-	    descriptor = new SunConnector();
-            connector.setSunDescriptor(descriptor);
+        if (connector==null) {
+	    connector = new SunConnector();
+            descriptor.setSunDescriptor(connector);
 	}
-        return descriptor;
+        return connector;
     }
 
     public ConnectorDescriptor getDescriptor() {
-        return connector;
+        return descriptor;
     }
 
     /**
