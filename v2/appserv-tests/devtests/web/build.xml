@@ -519,6 +519,23 @@
         <echo message="#################################################"/>
     </target>
 
+    <target name="pick" depends="init" if="target">
+        <record name="web.output" action="start" />
+        <antcall target="stopDomain"/>
+        <antcall target="startDomain"/>
+		  <echo>calling ${target}</echo>
+		  <ant dir="${target}" target="all"/>
+        <antcall target="stopDomain"/>
+        <record name="web.output" action="stop" />
+
+        <antcall target="dev-report"/>
+
+        <echo message="Detailed results available under appserv-tests/test_result.html"/>
+        <echo message="#################################################"/>
+        <echo message="javaxServletErrorRequestUriDynamicResource and javaxServletErrorRequestUriStaticResource will fail on Linux if you don't change appserv-tests/config.properties localhost to localhost.localdomain"/>
+        <echo message="#################################################"/>
+    </target>
+
     <target name="init">
         <delete>
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>

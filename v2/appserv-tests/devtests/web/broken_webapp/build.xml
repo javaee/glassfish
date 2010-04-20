@@ -48,7 +48,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,restart-server-instance-common,run,undeploy"/>
+    <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
