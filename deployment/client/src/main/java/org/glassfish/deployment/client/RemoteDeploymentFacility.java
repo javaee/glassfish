@@ -66,36 +66,15 @@ import java.util.Properties;
  * @author tjquinn
  */
 public class RemoteDeploymentFacility extends AbstractDeploymentFacility implements DeploymentFacility, TargetOwner {
-    private File passwordFile;
     
     protected boolean doConnect() {
-        passwordFile = preparePasswordFile();
         return true;
     }
 
     public boolean doDisconnect() {
-        passwordFile.delete();
         return true;
     }
     
-    private File preparePasswordFile() {
-        File pwFile = null;
-        try {
-            pwFile = File.createTempFile("rdf", ".dat");
-            PrintStream ps = new PrintStream(pwFile);
-            ps.println("AS_ADMIN_PASSWORD=" + getTargetDAS().getPassword());
-            ps.close();
-            return pwFile;
-        } catch (IOException ex) {
-            if (pwFile != null) {
-                pwFile.delete();
-            }
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-
     @Override
     protected DFCommandRunner getDFCommandRunner(
             String commandName, 
@@ -182,7 +161,7 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
         po.setPort(targetDAS.getHostPort());
         po.setUser(targetDAS.getUserName());
         po.setSecure(targetDAS.isSecure());
-        po.setPasswordFile(passwordFile.getAbsolutePath());
+        po.setPassword(targetDAS.getPassword(), ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
         po.setOptionsSet(true);
         return po;
     }
