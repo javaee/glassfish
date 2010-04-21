@@ -49,7 +49,7 @@ public class PersistenceStrategyBuilderFactory {
             PersistenceStrategyBuilderFactory.class, LogDomains.WEB_LOGGER);
 
     private static final String COHERENCE_WEB_PACKAGE =
-        "com.tangosol.coherence.glassfish";
+        "com.tangosol.coherence.servlet.glassfish";
 
     // The path where ee builders reside
     private String _eeBuilderPath = null;
