@@ -82,7 +82,7 @@
         <repository>
             <uniqueVersion>false</uniqueVersion>
             <id>rator.sfbay</id>
-            <url>dav:http://rator.sfbay/maven/repositories/glassfish/</url> 
+            <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
         </repository>
     </distributionManagement>
     <repositories>
@@ -97,17 +97,9 @@
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>glassfish-repository</id>
+            <id>glassfish-maven-repository</id>
             <name>Glassfish repository</name>
-            <url>http://download.java.net/maven/glassfish/</url>
-            <snapshots>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>jvnet-maven2-repository</id>
-            <name>Java.net maven2 repository</name>
-            <url>http://download.java.net/maven/2/</url>
+            <url>http://maven.glassfish.org/content/groups/glassfish-group/</url>
             <snapshots>
                 <updatePolicy>never</updatePolicy>
             </snapshots>

@@ -51,7 +51,7 @@
    </profile>
  </profiles>
  
- 
+ <!--
     <repositories>
         <repository>
             <id>codehaus</id>
@@ -59,4 +59,5 @@
             <url>http://repository.codehaus.org/</url>
         </repository>
     </repositories>
+-->
 </project>
