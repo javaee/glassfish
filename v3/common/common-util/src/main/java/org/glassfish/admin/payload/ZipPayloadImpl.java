@@ -147,7 +147,6 @@ class ZipPayloadImpl extends PayloadImpl {
 
         private ZipEntry nextEntry = null;
         private boolean isNextEntryPrefetched = false;
-        private ZipEntryInputStream currentWrapperStream = null;
 
         private Inbound(final InputStream is) throws IOException {
             zis = new ZipInputStream(new BufferedInputStream(is));
@@ -155,10 +154,8 @@ class ZipPayloadImpl extends PayloadImpl {
         }
 
         private void invalidateCurrentWrapperStream() {
-            if (currentWrapperStream != null) {
-                currentWrapperStream.invalidate();
-            }
         }
+        
         private void prefetchNextEntry() throws IOException {
             invalidateCurrentWrapperStream();
             nextEntry = zis.getNextEntry();

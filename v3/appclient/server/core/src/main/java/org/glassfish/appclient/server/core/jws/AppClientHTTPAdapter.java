@@ -78,9 +78,9 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
 
-    private final String LINE_SEP = System.getProperty("line.separator");
+    private final static String LINE_SEP = System.getProperty("line.separator");
 
-    private final Logger logger = LogDomains.getLogger(getClass(),
+    private final static Logger logger = LogDomains.getLogger(AppClientHTTPAdapter.class,
             LogDomains.ACC_LOGGER);
 
     private final Map<String,DynamicContent> dynamicContent;

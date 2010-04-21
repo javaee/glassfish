@@ -76,7 +76,7 @@ public class ACCClassLoader extends URLClassLoader {
             Collections.synchronizedList(
                 new ArrayList<ClassFileTransformer>());
 
-    public static ACCClassLoader newInstance(ClassLoader parent,
+    public static synchronized ACCClassLoader newInstance(ClassLoader parent,
             final boolean shouldTransform) {
         if (instance != null) {
             throw new IllegalStateException("already set");

@@ -357,41 +357,6 @@ public abstract class AppClientInfo {
         }
     } // end of class ApplicationInfoImpl
 
-    private ClassLoader createClassLoader(ReadableArchive archive, URL[] persistenceURLs)
-        throws IOException {
-        List<String> paths = getClassPaths(archive);
-        ClassLoader parent = Thread.currentThread().getContextClassLoader();
-        ASURLClassLoader loader = new ASURLClassLoader(parent);
-
-        final int LIST_SZ = paths.size();
-        for (int i=0; i<LIST_SZ; i++) {
-            String path = paths.get(i);
-            loader.appendURL(new File(path));
-        }
-        
-        if (_logger.isLoggable(Level.FINE)) {
-            for (int i = 0; i < paths.size(); i++) {
-                _logger.fine("Added path to classloader ==> " + paths.get(i));
-            }
-        }
-        
-        for (URL url : persistenceURLs) {
-            loader.appendURL(url);
-            _logger.fine("Added path to classloader ==> " + url);
-        }
-
-        return loader;
-    }
-
-    private void deleteFile(File f) {
-        if (f.isDirectory()) {
-            for (File subFile : f.listFiles()) {
-                deleteFile(subFile);
-            }
-        }
-        f.delete();
-    }
-
     /**
      *Reports whether the app client's descriptor shows a dependence on a
      *persistence unit.

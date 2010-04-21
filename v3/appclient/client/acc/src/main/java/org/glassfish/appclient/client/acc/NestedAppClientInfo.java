@@ -71,8 +71,6 @@ import org.glassfish.deployment.common.ModuleExploder;
  */
 public class NestedAppClientInfo extends AppClientInfo {
 
-    private Application appDesc = null;
-    
     /** which of possibly several app clients in the app the user chose */
     private ApplicationClientDescriptor selectedAppClientDescriptor = null;
 
@@ -311,70 +309,6 @@ public class NestedAppClientInfo extends AppClientInfo {
         List<String> paths = new ArrayList();
         String appRoot = archive.getURI().toASCIIString();
         paths.add(appRoot);
-
-        if (appDesc != null) {
-            //add all module roots
-            for (ModuleDescriptor bundle : appDesc.getModules()) {
-                String moduleRoot = appRoot + File.separator +
-                    FileUtils.makeFriendlyFilename(bundle.getArchiveUri());
-                paths.add(moduleRoot);
-                
-                // Because the app client submodule - like any submodule - is
-                // expanded into a directory, the normal manifest processing
-                // done for JARs will not be applied to it when this directory is added to
-                // the class path of the ASURLClassLoader.  So we need to explicitly
-                // add the Class-Path elements from the manifest to the class path now.
-                File manifestFile = new File(moduleRoot, JarFile.MANIFEST_NAME);
-                if ( ! manifestFile.exists()) {
-                    continue;
-                }
-                Manifest mf = null;
-                InputStream manifestIS = null;
-                try {
-                    manifestIS = new FileInputStream(manifestFile);
-                    mf = new Manifest(manifestIS);
-                    Attributes mainAttrs = mf.getMainAttributes();
-                    if (mainAttrs != null) {
-                        String classPathString = mainAttrs.getValue(Attributes.Name.CLASS_PATH);
-                        if (classPathString != null) {
-                            URI appRootURI = new File(appRoot).toURI();
-                            String bundleURIString = bundle.getArchiveUri();
-                            int lastSlash = bundleURIString.lastIndexOf("/");
-                            String parentURIString;
-                            if (lastSlash >=0) {
-                                parentURIString = bundleURIString.substring(0, lastSlash);
-                            } else {
-                                parentURIString = "";
-                            }
-                            String parentDirPath = new File(appRootURI.resolve(parentURIString)).getAbsolutePath();
-                            for (String classPathElement : classPathString.split(" ")) {
-                                paths.add(parentDirPath + File.separator + classPathElement.replace("/",File.separator));
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(getLocalString(
-                            "appclient.cannotOpenModuleManifest",
-                            "Error opening manifest for module {0}",
-                            bundle.getArchiveUri()), e);
-                } finally {
-                    if (manifestIS != null) {
-                        try {
-                            manifestIS.close();
-                        } catch (IOException ioe) {
-                            throw new RuntimeException(getLocalString(
-                                "appclient.cannotCloseModuleManifest",
-                                "Error closing manifest for module {0}",
-                                bundle.getArchiveUri()), ioe);
-                        }
-                    }
-                }
-            }
-        } else {
-            //@@@ read it from the archive
-            //shouldn't ever be here though since the appDesc should have been
-            //initialized when expand() is called.
-        }
 
         //add all jar files
         for (Enumeration en = archive.entries(); en.hasMoreElements(); ) {
