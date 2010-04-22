@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.util.io.DomainDirs;
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
@@ -73,7 +72,6 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     private File   domainRootDir;
     private String localPassword;
 
-    //DomainDirs domainDirs;
 
     // the key for the Domain Root in the main attributes of the
     // manifest returned by the __locations command
