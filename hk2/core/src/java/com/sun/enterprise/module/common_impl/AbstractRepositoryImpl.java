@@ -226,7 +226,7 @@ public abstract class AbstractRepositoryImpl implements Repository {
         if (listeners==null) {
             return false;
         }
-        return listeners.remove(listeners);
+        return listeners.remove(listener);
     }
 
     /**
