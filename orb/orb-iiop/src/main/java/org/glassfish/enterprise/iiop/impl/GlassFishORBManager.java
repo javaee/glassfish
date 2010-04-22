@@ -800,7 +800,10 @@ public final class GlassFishORBManager {
                 int fsize = ((Integer.parseInt(orbBean.getMessageFragmentSize().trim())) / 8) * 8;
                 if (fsize < 32) {
                     fragmentSize = "32";
-                    logger.log(Level.INFO, "Setting ORB Message Fragment size to " + fragmentSize);
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.log(Level.FINE, 
+                            "Setting ORB Message Fragment size to " + fragmentSize);
+                    }
                 } else {
                     fragmentSize = String.valueOf(fsize);
                 }
@@ -857,7 +860,9 @@ public final class GlassFishORBManager {
 
         String[] list = (String[]) endpoints.split(",");
         String corbalocURL = getCorbalocURL(list);
-        logger.fine("GlassFishORBManager.getORBInitRef = " + corbalocURL);
+        if (logger.isLoggable( Level.FINE )) {
+            logger.fine("GlassFishORBManager.getORBInitRef = " + corbalocURL);
+        }
 
         // Add -ORBInitRef NameService=....
         // This ensures that INS will be used to talk with the NameService.
@@ -881,7 +886,9 @@ public final class GlassFishORBManager {
         String corbalocURL = "";
         //convert list into corbaloc url
         for (int i = 0; i < list.length; i++) {
-            logger.info("list[i] ==> " + list[i]);
+            if (logger.isLoggable( Level.FINE )) {
+                logger.fine("list[i] ==> " + list[i]);
+            }
             if (corbalocURL.equals("")) {
                 corbalocURL = IIOP_URL + ((String) list[i]).trim();
             } else {
@@ -889,7 +896,11 @@ public final class GlassFishORBManager {
                         IIOP_URL + ((String) list[i]).trim();
             }
         }
-        logger.info("corbaloc url ==> " + corbalocURL);
+
+        if (logger.isLoggable( Level.FINE )) {
+            logger.fine("corbaloc url ==> " + corbalocURL);
+        }
+
         return corbalocURL;
     }
 }
