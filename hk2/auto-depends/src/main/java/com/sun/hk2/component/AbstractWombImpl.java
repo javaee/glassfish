@@ -113,7 +113,7 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
                  * Obtains the value to inject, based on the type and {@link Inject} annotation.
                  */
                 @SuppressWarnings("unchecked")
-                public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+                public <V> V getValue(Object component, AnnotatedElement target, Class<V> type) throws ComponentException {
                     if (type.isArray()) {
                         Class<?> ct = type.getComponentType();
 
@@ -122,21 +122,21 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
                             instances = habitat.getAllByContract(ct);
                         else
                             instances = habitat.getAllByType(ct);
-                        return instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
+                        return type.cast(instances.toArray((Object[]) Array.newInstance(ct, instances.size())));
                     } else if (Types.isSubClassOf(type, Holder.class)){
                         Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
                         Class finalType = Types.erasure(t);
                         if (habitat.isContract(finalType)) {
-                            return habitat.getInhabitants(finalType, target.getAnnotation(Inject.class).name());
+                            return type.cast(habitat.getInhabitants(finalType, target.getAnnotation(Inject.class).name()));
                         }
                         try {
                             if (finalType.cast(component)!=null) {
-                                return onBehalfOf;
+                                return type.cast(onBehalfOf);
                             }
                         } catch(ClassCastException e) {
                             // ignore
                         }
-                        return habitat.getInhabitantByType(finalType);
+                        return type.cast(habitat.getInhabitantByType(finalType));
 
                     } else {
                         if(habitat.isContract(type))
@@ -152,18 +152,18 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
             }) ,
 
             (new InjectionResolver<Lead>(Lead.class) {
-                public Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+                public <V> V getValue(Object component, AnnotatedElement target, Class<V> type) throws ComponentException {
                     Inhabitant lead = onBehalfOf.lead();
                     if(lead==null)
                         // TODO: we should be able to check this error at APT, too.
                         throw new ComponentException(component.getClass()+" requested @Lead injection but this is not a companion");
 
                     if(type==Inhabitant.class) {
-                        return lead;
+                        return type.cast(lead);
                     }
 
                     // otherwise inject the target object
-                    return lead.get();
+                    return type.cast(lead.get());
                 }
             })
         };

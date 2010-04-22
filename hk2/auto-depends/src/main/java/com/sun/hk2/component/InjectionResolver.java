@@ -46,9 +46,16 @@ import java.lang.reflect.Method;
  * Implementation of this abstract class are handling injection resolution
  * for a particular injection annotation {@see Inject}
  *
+ * Injection targets are identified by the generic parameter and the constructor
+ * of this class. Potential injection targets are fields and methods of the
+ * injected type.
+ *
+ * @param <U> U is the annotation used to identify the injection targets.
+ *
  * @author Jerome Dochez
  */
 public abstract class InjectionResolver<U extends Annotation> {
+    
     public final Class<U> type;
 
     /**
@@ -63,13 +70,13 @@ public abstract class InjectionResolver<U extends Annotation> {
      * Returns the setter method responsible for setting the resource identified by the
      * passed annotation on the passed annotated method.
      *
-     * This is useful when the annotation is specified on the getter for instance (like
-     * Attribute in the config module for instance) while the setter should be used if
+     * This is useful when the annotation is specified on the getter for instance (due
+     * to external specification requirements for instance) while the setter should be used if
      * values must be set using this injection resolver.
      *
      * By default, the setter method is the annotated method.
      *
-     * @param annotated the annotated method
+     * @param annotated is the annotated {@link java.lang.reflect.Method}
      * @param annotation the annotation on the method
      * @return the setter method to use for injecting the annotation identified resource
      */
@@ -80,6 +87,8 @@ public abstract class InjectionResolver<U extends Annotation> {
     /**
      * Returns true if the resolution of this injection identified by the
      * passed annotation instance is optional
+     * @param annotated is the annotated java element {@link java.lang.reflect.Method}
+     * or {@link java.lang.reflect.Field}
      * @param annotation the injection metadata
      * @return true if the {@see getValue()} can return null without generating a
      * faulty injection operation
@@ -92,11 +101,12 @@ public abstract class InjectionResolver<U extends Annotation> {
      * Returns the value to inject in the field or method of component annotated with
      * the annotated annotation.
      *
-     * @param component injection target
-     * @param annotated field of method to inject
+     * @param component injection target instance
+     * @param annotated is the annotated java element {@link java.lang.reflect.Method}
+     * or {@link java.lang.reflect.Field}
      * @param type type of the expected return
-     * @return the injectable resource
+     * @return the resource to be injected
      * @throws ComponentException if the resource cannot be located.
      */
-    public abstract Object getValue(Object component, AnnotatedElement annotated, Class type) throws ComponentException;
+    public abstract <V> V getValue(Object component, AnnotatedElement annotated, Class<V> type) throws ComponentException;
 }
