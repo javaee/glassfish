@@ -62,7 +62,7 @@ public interface Womb<T> extends Inhabitant<T> {
     /**
      * Creates a new instance.
      *
-     * The caller is supposed to call the {@link #initialize(T, Inhabitant)}
+     * The caller is supposed to call the {@link Womb#initialize(Object, Inhabitant)}
      * right away. This 2-phase initialization allows us to handle
      * cycle references correctly.
      * @param onBehalfOf
