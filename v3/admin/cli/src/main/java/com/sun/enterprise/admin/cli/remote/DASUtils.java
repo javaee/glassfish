@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.remote;
 
 import java.io.*;
@@ -46,8 +45,9 @@ import com.sun.enterprise.admin.cli.*;
  * Domain Admin Server utility method.
  */
 public class DASUtils {
-
-    public enum Error { NONE, AUTHENTICATION, CONNECTION, IO, UNKNOWN };
+    public enum Error {
+        NONE, AUTHENTICATION, CONNECTION, IO, UNKNOWN
+    };
 
     private DASUtils() {
         // can't instantiate
@@ -64,23 +64,27 @@ public class DASUtils {
             Environment env) {
         try {
             RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
-            cmd.executeAndReturnOutput(new String[] { "version" });
+            cmd.executeAndReturnOutput(new String[]{"version"});
             return true;
-        } catch (AuthenticationException aex) {
+        }
+        catch (AuthenticationException aex) {
             return true;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
-            if (ea.getFirstInstanceOf(ConnectException.class) != null) {
+            if(ea.getFirstInstanceOf(ConnectException.class) != null) {
                 CLILogger.getInstance().printDebugMessage(
-                                        "Got java.net.ConnectException");
+                        "Got java.net.ConnectException");
                 return false; // this definitely means server is not up
-            } else if (ea.getFirstInstanceOf(IOException.class) != null) {
+            }
+            else if(ea.getFirstInstanceOf(IOException.class) != null) {
                 CLILogger.getInstance().printDebugMessage(
-                        "It appears that server has started, but for" +
-                        " some reason the exception is thrown: " +
-                        ex.getMessage());
+                        "It appears that server has started, but for"
+                        + " some reason the exception is thrown: "
+                        + ex.getMessage());
                 return true;
-            } else {
+            }
+            else {
                 return false; // unknown error, shouldn't really happen
             }
         }
@@ -96,22 +100,26 @@ public class DASUtils {
             Environment env) throws CommandException {
         try {
             RemoteCommand cmd = new RemoteCommand("version", programOpts, env);
-            cmd.executeAndReturnOutput(new String[] { "version" });
-        } catch (AuthenticationException aex) {
+            cmd.executeAndReturnOutput(new String[]{"version"});
+        }
+        catch (AuthenticationException aex) {
             return Error.AUTHENTICATION;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             ExceptionAnalyzer ea = new ExceptionAnalyzer(ex);
-            if (ea.getFirstInstanceOf(ConnectException.class) != null) {
+            if(ea.getFirstInstanceOf(ConnectException.class) != null) {
                 CLILogger.getInstance().printDebugMessage(
-                                        "Got java.net.ConnectException");
+                        "Got java.net.ConnectException");
                 return Error.CONNECTION;
-            } else if (ea.getFirstInstanceOf(IOException.class) != null) {
+            }
+            else if(ea.getFirstInstanceOf(IOException.class) != null) {
                 CLILogger.getInstance().printDebugMessage(
-                        "It appears that server has started, but for" +
-                        " some reason the exception is thrown: " +
-                        ex.getMessage());
+                        "It appears that server has started, but for"
+                        + " some reason the exception is thrown: "
+                        + ex.getMessage());
                 return Error.IO;
-            } else {
+            }
+            else {
                 return Error.UNKNOWN;
             }
         }
