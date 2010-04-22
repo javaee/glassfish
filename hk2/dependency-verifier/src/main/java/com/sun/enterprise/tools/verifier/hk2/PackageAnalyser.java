@@ -81,7 +81,7 @@ import org.osgi.framework.Constants;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class PackageAnalyser {
-    private Set<Bundle> bundles;
+    public Set<Bundle> bundles;
     private Logger logger;
 
     final static char QUOTE = '\"';
@@ -294,7 +294,7 @@ public class PackageAnalyser {
         }
 
         public Set<PackageCapability> getExportedPkgs() {
-            return exportedPkgs;
+            return Collections.unmodifiableSet(exportedPkgs);
         }
 
         public void setExportedPkgs(Set<PackageCapability> exportedPkgs) {
@@ -305,7 +305,7 @@ public class PackageAnalyser {
         }
 
         public Set<PackageRequirement> getImportedPkgs() {
-            return importedPkgs;
+            return Collections.unmodifiableSet(importedPkgs);
         }
 
         public void setImportedPkgs(Set<PackageRequirement> importedPkgs) {
@@ -313,7 +313,7 @@ public class PackageAnalyser {
         }
 
         public Set<String> getRequiredPkgs() {
-            return requiredPkgs;
+            return Collections.unmodifiableSet(requiredPkgs);
         }
 
         public void setRequiredPkgs(Set<String> requiredPkgs) {
@@ -321,7 +321,7 @@ public class PackageAnalyser {
         }
 
         public Set<Bundle> getRequiredBundles() {
-            return requiredBundles;
+            return Collections.unmodifiableSet(requiredBundles);
         }
 
         public void setRequiredBundles(Set<Bundle> requiredBundles) {
@@ -606,7 +606,7 @@ public class PackageAnalyser {
         }
 
         public static Token createToken(String s, TYPE type) {
-            System.out.println("createToken(" + s + ", " + type+ ")");
+//            System.out.println("createToken(" + s + ", " + type+ ")");
             return new Token(s, type);
         }
 
@@ -787,13 +787,13 @@ public class PackageAnalyser {
     }
 
     /**
-     * Inspects bundles and reports spli-packages.
+     * Inspects bundles and reports duplicate packages.
      * Before calling this method, you must call {@link this#analyseWirings()}
      * The colection is already sorted.
      *
      * @return set of split-packages, en empty set if none is found.
      */
-    public Collection<SplitPackage> findSplitPackages() {
+    public Collection<SplitPackage> findDuplicatePackages() {
         assert (bundles != null);
         Map<String, Set<Bundle>> packages = new HashMap<String, Set<Bundle>>();
         for (Bundle b : bundles) {
@@ -806,14 +806,14 @@ public class PackageAnalyser {
                 exporters.add(b);
             }
         }
-        Set<SplitPackage> splitPkgs = new HashSet<SplitPackage>();
+        Set<SplitPackage> duplicatePkgs = new HashSet<SplitPackage>();
         for (Map.Entry<String, Set<Bundle>> entry : packages.entrySet()) {
             if (entry.getValue().size() > 1) {
-                splitPkgs.add(new SplitPackage(entry.getKey(), entry.getValue()));
+                duplicatePkgs.add(new SplitPackage(entry.getKey(), entry.getValue()));
             }
         }
-        List<SplitPackage> sortedSplitPkgs = new ArrayList<SplitPackage>(splitPkgs);
-        Collections.sort(sortedSplitPkgs, new Comparator<SplitPackage>() {
+        List<SplitPackage> sortedDuplicatePkgs = new ArrayList<SplitPackage>(duplicatePkgs);
+        Collections.sort(sortedDuplicatePkgs, new Comparator<SplitPackage>() {
             Collator collator = Collator.getInstance();
 
             public int compare(SplitPackage o1, SplitPackage o2) {
@@ -821,7 +821,7 @@ public class PackageAnalyser {
             }
         });
 
-        return sortedSplitPkgs;
+        return sortedDuplicatePkgs;
     }
 
     public Collection<PackageCapability> findAllExportedPackages() {
@@ -858,20 +858,33 @@ public class PackageAnalyser {
     public Collection<PackageCapability> findUnusedExports() {
         List<PackageCapability> unusedPackages = new ArrayList<PackageCapability>();
         for (Bundle exporter : bundles) {
-            for (PackageCapability p : exporter.getExportedPkgs()) {
-                boolean used = false;
-                for (Bundle importer : bundles) {
-                    if (importer != exporter && importer.requires(p)) {
-                        used = true;
-                        break;
-                    }
-                }
-                if (!used) unusedPackages.add(p);
-            } 
+            unusedPackages.addAll(findUnusedExports(exporter));
         }
         Collections.sort(unusedPackages);
         return unusedPackages;
     }
+
+    /**
+     * Find unused exported packages for a given bundle
+     * @param exporter
+     * @return
+     */
+    public Collection<PackageCapability> findUnusedExports(Bundle exporter) {
+        List<PackageCapability> unusedPackages = new ArrayList<PackageCapability>();
+        for (PackageCapability p : exporter.getExportedPkgs()) {
+            boolean used = false;
+            for (Bundle importer : bundles) {
+                if (importer != exporter && importer.requires(p)) {
+                    used = true;
+                    break;
+                }
+            }
+            if (!used) unusedPackages.add(p);
+        }
+        Collections.sort(unusedPackages);
+        return unusedPackages;
+    }
+
 
     public void generateWiringReport(Collection<String> exportedPkgs, Collection<PackageAnalyser.Wire> wires, PrintStream out) {
         out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
@@ -910,18 +923,34 @@ public class PackageAnalyser {
         out.println("<Bundles>");
         for (Bundle b : bundles) {
             StringBuilder sb = new StringBuilder();
-            sb.append("\t<Bundle name = \"" + b.getName() + "\">\n");
+            final Set<PackageCapability> allpcs = b.getExportedPkgs();
+            final Collection<PackageCapability> unusedpcs = findUnusedExports(b);
+            final Collection<PackageCapability> usedpcs = new HashSet<PackageCapability>(allpcs);
+            usedpcs.removeAll(unusedpcs);
+            sb.append("\t<Bundle name = \"" + b.getName() + "\", file = \"" + getBundleLocation(b) + "\", "
+                      + " total-exports = " + allpcs.size() + ", used = " + usedpcs.size() + ", unused = " + unusedpcs.size() + ", "
+                      + "total-imports = " + b.getImportedPkgs().size() + ">\n");
             sb.append("\t\t<Exports>\n");
-            List<PackageCapability> pcs = new ArrayList<PackageCapability>(b.getExportedPkgs());
-            Collections.sort(pcs);
+            sb.append("\t\t\t<Used>\n");
             int i = 0;
-            for (PackageCapability pc : pcs) {
-                sb.append("\t\t\t" + pc);
-                if (++i < pcs.size()) {
+            for (PackageCapability pc : usedpcs) {
+                sb.append("\t\t\t\t" + pc);
+                if (++i < usedpcs.size()) {
                     sb.append(",\\");
                 }
                 sb.append("\n");
             }
+            sb.append("\t\t\t</Used>\n");
+            sb.append("\t\t\t<Unused>\n");
+            i = 0;
+            for (PackageCapability pc : unusedpcs) {
+                sb.append("\t\t\t\t" + pc);
+                if (++i < unusedpcs.size()) {
+                    sb.append(",\\");
+                }
+                sb.append("\n");
+            }
+            sb.append("\t\t\t</Unused>\n");
             sb.append("\t\t</Exports>\n");
             sb.append("\t\t<Imports>\n");
             List<PackageRequirement> prs = new ArrayList<PackageRequirement>(b.getImportedPkgs());
@@ -941,16 +970,20 @@ public class PackageAnalyser {
         out.println("</Bundles>");
     }
 
+    private String getBundleLocation(Bundle b) {
+         return new File(b.getMd().getLocations()[0]).getName();
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length != 5) {
             System.out.println("Usage: java " + PackageAnalyser.class.getName() +
                     " <Repository Dir Path> <output file name for bundle details>" +
-                    " <output file name for wiring details> <output file name for split-packages> <output file name for unused packages>");
+                    " <output file name for wiring details> <output file name for duplicate-packages> <output file name for unused packages>");
 
             System.out.println("Example(s):\n" +
                     "Following command analyses all modules in the specified repository:\n" +
                     " java " + PackageAnalyser.class.getName() +
-                    " /tmp/glassfish/modules/ bundles.xml wires.xml sp.txt unused.txt\n\n");
+                    " /tmp/glassfish/modules/ bundles.xml wires.xml duplicate.txt unused.xml\n\n");
             return;
         }
         String repoPath = args[0];
@@ -985,21 +1018,32 @@ public class PackageAnalyser {
         Collection<String> exportedPkgs = analyser.findAllExportedPackageNames();
         analyser.generateBundleReport(bundleOut);
         analyser.generateWiringReport(exportedPkgs, wires, wireOut);
-        Collection<SplitPackage> splitPkgs = analyser.findSplitPackages();
+        Collection<SplitPackage> splitPkgs = analyser.findDuplicatePackages();
 
         for (SplitPackage p : splitPkgs) spOut.println(p + "\n");
-        spOut.println("Total number of Split Packages = " + splitPkgs.size());
+        spOut.println("Total number of Duplicate Packages = " + splitPkgs.size());
+        int totalUnusedPkgs = 0;
+        {
+            for (Bundle b : analyser.bundles) {
+                Collection<PackageCapability> unusedPackages = analyser.findUnusedExports(b);
+                if (!unusedPackages.isEmpty()) {
+                    unusedPkgOut.println("<Bundle name=" + b.getName()+", totalUnusedPkgs = " + unusedPackages.size() + "> \n" );
+                    for (PackageCapability p : unusedPackages) unusedPkgOut.println("\t" + p + "\n");
+                    unusedPkgOut.println("</Bundle>\n");
+                }
+                totalUnusedPkgs += unusedPackages.size();
+            }
+            unusedPkgOut.println("Total number of Unused Packages = " + totalUnusedPkgs);
+        }
 
-        Collection<PackageCapability> unusedPackages = analyser.findUnusedExports();
-        for (PackageCapability p : unusedPackages) unusedPkgOut.println(p + "\n");
-        unusedPkgOut.println("Total number of Unused Packages = " + unusedPackages.size());
-
-        System.out.println("******** GROSS STATISTICS *********");
-        System.out.println("Total number of bundles in this repository: " + analyser.findAllBundles().size());
-        System.out.println("Total number of wires = " + wires.size());
-        System.out.println("Total number of exported packages = " + exportedPkgs.size());
-        System.out.println("Total number of split-packages = " + splitPkgs.size());
-        System.out.println("Total number of unused-packages = " + unusedPackages.size());
+        {
+            System.out.println("******** GROSS STATISTICS *********");
+            System.out.println("Total number of bundles in this repository: " + analyser.findAllBundles().size());
+            System.out.println("Total number of wires = " + wires.size());
+            System.out.println("Total number of exported packages = " + exportedPkgs.size());
+            System.out.println("Total number of duplicate-packages = " + splitPkgs.size());
+            System.out.println("Total number of unused-packages = " + totalUnusedPkgs);
+        }
     }
 
 }

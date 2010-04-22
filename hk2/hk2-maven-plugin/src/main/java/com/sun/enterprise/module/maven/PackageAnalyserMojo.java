@@ -118,13 +118,21 @@ public class PackageAnalyserMojo extends AbstractMojo {
             }
             sb.append("Total number of wires = " + wires.size() + "\n");
             sb.append("Split-Package details are given below:\n");
-            Collection<PackageAnalyser.SplitPackage> splitPkgs = analyser.findSplitPackages();
+            Collection<PackageAnalyser.SplitPackage> splitPkgs = analyser.findDuplicatePackages();
             for (PackageAnalyser.SplitPackage p : splitPkgs) sb.append(p+"\n");
             sb.append("Total number of Split Packages = " + splitPkgs.size() + "\n");
 
-            Collection<PackageAnalyser.PackageCapability> unusedPackages = analyser.findUnusedExports();
-            for (PackageAnalyser.PackageCapability p : unusedPackages) sb.append(p + "\n");
-            sb.append("Total number of Unused Packages = " + unusedPackages.size());
+            int totalUnusedPkgs = 0;
+            for (PackageAnalyser.Bundle b : analyser.bundles) {
+                Collection<PackageAnalyser.PackageCapability> unusedPackages = analyser.findUnusedExports(b);
+                if (!unusedPackages.isEmpty()) {
+                    sb.append("<Bundle name=" + b.getName()+", totalUnusedPkgs = " + unusedPackages.size() + "> \n" );
+                    for (PackageAnalyser.PackageCapability p : unusedPackages) sb.append("\t" + p + "\n");
+                    sb.append("</Bundle>\n");
+                }
+                totalUnusedPkgs += unusedPackages.size();
+            }
+            sb.append("Total number of Unused Packages = " + totalUnusedPkgs);
 
             sb.append("******** GROSS STATISTICS *********\n");
             sb.append("Total number of bundles in this repository: " + analyser.findAllBundles().size()+"\n");
@@ -132,7 +140,7 @@ public class PackageAnalyserMojo extends AbstractMojo {
             Collection<String> exportedPkgs = analyser.findAllExportedPackageNames();
             sb.append("Total number of exported packages = " + exportedPkgs.size() + "\n");
             sb.append("Total number of split-packages = " + splitPkgs.size()+"\n");
-            sb.append("Total number of unused-packages = " + unusedPackages.size()+"\n");
+            sb.append("Total number of unused-packages = " + totalUnusedPkgs +"\n");
 
             logger.logp(Level.INFO, "PackageAnalyserMojo", "execute", "{0}", new Object[]{sb});
             String reportFilePath =
