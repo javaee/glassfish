@@ -52,12 +52,22 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author bnevins
  * @author Bill Shannon
  */
+
+/* things that are in LocalDomainCommand
+ * domainName
+    localPassword
+    domainRootDir
+ * getDomainXml()
+ * initDomain()
+isRunning(port)
+
+ */
 @Service(name = "stop-domain")
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
 
     @Param(name = "domain_name", primary = true, optional = true)
-    private String domainName0;
+    private String domainName;
 
     private File pidFile;
 
@@ -69,7 +79,7 @@ public class StopDomainCommand extends LocalDomainCommand {
     @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
-        domainName = domainName0;
+        setDomainName(domainName);
         super.validate();
     }
 
@@ -89,7 +99,7 @@ public class StopDomainCommand extends LocalDomainCommand {
 
         if (domainName != null) {
             // local case, initialize pidFile
-            pidFile = new File(new File(domainRootDir, "config"), "pid");
+            pidFile = new File(new File(getDomainRootDir(), "config"), "pid");
         }
     }
 
@@ -100,7 +110,7 @@ public class StopDomainCommand extends LocalDomainCommand {
         if (domainName != null) {
             // if the local password isn't available, the domain isn't running
             // (localPassword is set by initDomain)
-            if (localPassword == null)
+            if (getLocalPassword() == null)
                 return dasNotRunning();
 
             int adminPort = getAdminPort(getDomainXml());
@@ -118,7 +128,7 @@ public class StopDomainCommand extends LocalDomainCommand {
 
         // in the local case, make sure we're talking to the correct DAS
         if (domainName != null) {
-            if (!isThisDAS(domainRootDir))
+            if (!isThisDAS(getDomainRootDir()))
                 return dasNotRunning();
             logger.printDebugMessage("It's the correct DAS");
         } else {

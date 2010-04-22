@@ -72,7 +72,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException  {
-        domainName = domainName0;
+        setDomainName(domainName0);
         super.validate();
         adminPort = super.getAdminPort(super.getDomainXml());
     }
@@ -85,7 +85,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
 
         try {            
             DomainConfig domainConfig =
-                new DomainConfig(domainName, domainsDir.getPath());
+                new DomainConfig(getDomainName(), getDomainsDir().getPath());
             checkRunning();
             DomainsManager manager = new PEDomainsManager();
             manager.deleteDomain(domainConfig);
@@ -96,14 +96,14 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
 	        throw new CommandException(e.getLocalizedMessage());
         }
 
-	logger.printDetailMessage(strings.get("DomainDeleted", domainName));
+	logger.printDetailMessage(strings.get("DomainDeleted", getDomainName()));
         return 0;
     }
 
     private void checkRunning() throws CommandException {
         if (super.isRunning(adminPort)) {
-            String msg = strings.get("domain.is.running", domainName,
-                                        domainRootDir);
+            String msg = strings.get("domain.is.running", getDomainName(),
+                                        getDomainRootDir());
             throw new IllegalStateException(msg);
         }
     }

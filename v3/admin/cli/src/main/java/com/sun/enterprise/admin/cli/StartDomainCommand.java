@@ -90,15 +90,15 @@ public class StartDomainCommand extends LocalDomainCommand {
     @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
-        domainName = domainName0;
+        setDomainName(domainName0);
         super.validate();
     }
 
     @Override
     protected int executeCommand() throws CommandException {
-        if (domainName != null) {
+        if (getDomainName() != null) {
             // local case, initialize pidFile
-            pidFile = new File(new File(domainRootDir, "config"), "pid");
+            pidFile = new File(new File(getDomainRootDir(), "config"), "pid");
         }
 
         String gfejar = System.getenv("GFE_JAR");
@@ -217,8 +217,8 @@ public class StartDomainCommand extends LocalDomainCommand {
             launcher = GFLauncherFactory.getInstance(type);
             info = launcher.getInfo();
 
-            info.setDomainName(domainName);
-            info.setDomainParentDir(domainsDir.getPath());
+            info.setDomainName(getDomainName());
+            info.setDomainParentDir(getDomainsDir().getPath());
             info.setVerbose(verbose || upgrade);
             info.setDebug(debug);
             info.setUpgrade(upgrade);

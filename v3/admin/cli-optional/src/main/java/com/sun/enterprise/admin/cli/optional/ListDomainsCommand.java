@@ -100,15 +100,16 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     }
 
     protected String getDomainsRoot() throws CommandException {
-        if (domainDir == null) {
-            domainDir = getSystemProperty(
-                            SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
-        }
-        if (domainDir == null) {
+        File dd = getDomainsDir();
+        
+        if (dd == null)
+            dd = new File(getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
+
+        if (!dd.isDirectory()) {
             throw new CommandException(
-                            strings.get("InvalidDomainPath", domainDir));
+                            strings.get("InvalidDomainPath", dd));
         }
-        return domainDir;
+        return SmartFile.sanitize(dd.getAbsolutePath());
     }
 
     // Implementation note: This has to be redone - km@dev.java.net (Aug 2008)
@@ -117,9 +118,15 @@ public final class ListDomainsCommand extends LocalDomainCommand {
             GFLauncher launcher = GFLauncherFactory.getInstance(
                 GFLauncherFactory.ServerType.domain);
             GFLauncherInfo li = launcher.getInfo();
-            String parent = domainDir;
+            File parentFile = getDomainsDir();
+            String parent = null;
+            
+            if(parentFile != null && parentFile.isDirectory())
+                parent = parentFile.getPath();
+
             if (parent != null)
                 li.setDomainParentDir(parent);            
+
             li.setDomainName(dn);
             launcher.setup(); //admin ports are not available otherwise
             initializeLocalPassword(li.getInstanceRootDir());

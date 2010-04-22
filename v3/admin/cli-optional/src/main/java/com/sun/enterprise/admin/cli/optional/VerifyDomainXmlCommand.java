@@ -75,7 +75,7 @@ public final class VerifyDomainXmlCommand extends LocalDomainCommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException  {
-        domainName = domainName0;
+        setDomainName(domainName0);
         super.validate();
     }
 

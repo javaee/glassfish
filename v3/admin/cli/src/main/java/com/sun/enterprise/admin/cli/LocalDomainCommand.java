@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.util.io.DomainDirs;
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
@@ -57,20 +58,23 @@ import com.sun.enterprise.security.store.PasswordAdapter;
  * on a "local" domain.  It's supposed to act as the abstract base class that
  * provides more functionality to the commands that operate on a local domain.
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * @author Byron Nevins  (bnevins@dev.java.net)
  */
-public abstract class LocalDomainCommand extends CLICommand {
+public abstract class LocalDomainCommand extends LocalServerCommand {
 
     @Param(name = "domaindir", optional = true)
-    protected String domainDir;
+    private String domainDirParam = null;
 
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "domain_name", primary = true, optional = true)
-    protected String domainName;
+    private String domainName;
 
-    protected File   domainsDir;
-    protected File   domainRootDir;
-    protected String localPassword;
-    
+    private File   domainsDir;
+    private File   domainRootDir;
+    private String localPassword;
+
+    //DomainDirs domainDirs;
+
     // the key for the Domain Root in the main attributes of the
     // manifest returned by the __locations command
     private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
@@ -83,10 +87,37 @@ public abstract class LocalDomainCommand extends CLICommand {
                         throws CommandException, CommandValidationException {
         initDomain();
     }
- 
+    
+    protected final File getDomainsDir() {
+        if(domainsDir != null)
+            return domainsDir;
+
+       if(domainDirParam != null)
+            return new File(domainDirParam);
+
+        else
+            return null;
+    }
+
+    protected final String getLocalPassword() {
+        return localPassword;
+    }
+
+    protected final File getDomainRootDir() {
+        return domainRootDir;
+    }
+
+    protected final String getDomainName() {
+        return domainName;
+    }
+
+    protected final void setDomainName(String name) {
+        domainName = name;
+    }
+
     protected void initDomain() throws CommandException {
-        if (ok(domainDir)) {
-            domainsDir = new File(domainDir);
+        if (ok(domainDirParam)) {
+            domainsDir = new File(domainDirParam);
         } else {
             domainsDir = new File(getSystemProperty(
                             SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));

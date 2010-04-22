@@ -71,7 +71,7 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     @Override
     protected void validate()
             throws CommandException, CommandValidationException  {
-        domainName = domainName0;
+        setDomainName(domainName0);
         super.validate();
     }
 
@@ -81,9 +81,9 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
         try {
             if (super.isRunning(super.getAdminPort(super.getDomainXml())))
                 throw new CommandException(strings.get("domain.is.running",
-                                                    domainName, domainRootDir));
-            DomainConfig domainConfig = new DomainConfig(domainName,
-                domainsDir.getAbsolutePath());
+                                                    getDomainName(), getDomainRootDir()));
+            DomainConfig domainConfig = new DomainConfig(getDomainName(),
+                getDomainsDir().getAbsolutePath());
             PEDomainsManager manager = new PEDomainsManager();
             String mp = super.readFromMasterPasswordFile();
             if (mp == null) {
