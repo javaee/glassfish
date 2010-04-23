@@ -136,13 +136,11 @@ public class ProviderSubClassImplGenerator {
 
         String superClassName;
         String token;
-        ClassVisitor cv;
         String id;
 
         ProbeProviderSubClassGenerator(ClassVisitor cv, String token, String id) {
             super(cv);
             this.id = id;
-            this.cv = cv;
             this.token = token;
         }
 
