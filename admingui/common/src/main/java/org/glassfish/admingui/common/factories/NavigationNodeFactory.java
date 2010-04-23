@@ -126,7 +126,7 @@ public class NavigationNodeFactory extends ComponentFactoryBase {
 		// NOTE: contextPath (which is directly accessible via the
 		// NOTE: ExternalContext) is not needed for WS Hyperlink
 		// NOTE: components this is automatically added.
-                url = "/commonUtil/" + "pluginPage.jsf?id=" + comp.getClientId(context);
+                url = "/common/" + "pluginPage.jsf?id=" + comp.getClientId(context);
             }
             setOption(context, comp, descriptor, "url", url);
             if (icon != null) {
