@@ -917,8 +917,8 @@ public class CommandRunnerImpl implements CommandRunner {
         }
 
         @Override
-        public Object getValue(Object component, AnnotatedElement target,
-                                        Class type) throws ComponentException {
+        public <V> V getValue(Object component, AnnotatedElement target,
+                                        Class<V> type) throws ComponentException {
 
             // look for the name in the list of parameters passed.
             if (target instanceof Field) {
@@ -939,7 +939,7 @@ public class CommandRunnerImpl implements CommandRunner {
                         checkAgainstAcceptableValues(target,
                                                     paramValue.toString());
                     }
-                    return paramValue;
+                    return type.cast(paramValue);
                 } catch (IllegalAccessException e) {
                 } catch (NoSuchFieldException e) {
                 }

@@ -73,9 +73,6 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     private InjectionResolver<Param> injector;
 
     @Inject
-    DomDocument document;
-
-    @Inject
     Inhabitant<?> myself;    
 
     final protected static Logger logger = LogDomains.getLogger(GenericCrudCommand.class, LogDomains.ADMIN_LOGGER);
@@ -169,7 +166,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         final InjectionResolver<Param> delegate = injector;
         return new InjectionResolver<Param>(Param.class) {
             @Override
-            public Object getValue(Object component, AnnotatedElement annotated, Class type) throws ComponentException {
+            public <V> V getValue(Object component, AnnotatedElement annotated, Class<V> type) throws ComponentException {
                 if (type.isAssignableFrom(List.class)) {
                     final List<ConfigBeanProxy> values;
                     try {
@@ -273,7 +270,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
 
 
                                 @Override
-                                public Object getValue(Object component, AnnotatedElement annotated, Class type) throws ComponentException {
+                                public <V> V getValue(Object component, AnnotatedElement annotated, Class<V> type) throws ComponentException {
                                     String name = annotated.getAnnotation(Attribute.class).value();
                                     if (name==null || name.length()==0) {
 
@@ -281,18 +278,23 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                                         name = ((Method) annotated).getName().substring(3);
 
                                         if (name.equalsIgnoreCase("name") || name.equalsIgnoreCase("key")) {
-                                            return entry.getKey();
+                                            return type.cast(entry.getKey());
                                         }
                                         if (name.equalsIgnoreCase("value")) {
-                                            return entry.getValue();
+                                            return type.cast(entry.getValue());
                                         }
                                     }
                                     return null;
-                                };
+                                }
                             });
                             values.add(cc);
                         } catch (TransactionFailure transactionFailure) {
-
+                            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                                "GenericCrudCommand.transactionException",
+                                "Transaction exception {0} while injecting {1}",
+                                transactionFailure.getMessage(), itemType);
+                            logger.severe(msg);
+                            throw new ComponentException(msg, transactionFailure);
                         }
 
                     }
@@ -313,10 +315,6 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         // by default I use the inhabitant class loader
         return myself.type().getClassLoader().loadClass(type);
     }    
-
-    private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
-    
-
 
     /**
      * Convert a String with the following format to Properties:
