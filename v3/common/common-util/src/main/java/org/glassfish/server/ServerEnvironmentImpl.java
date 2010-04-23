@@ -111,6 +111,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     /**
      * This is where the real initialization happens.
      */
+    @Override
     public void postConstruct() {
 
         // todo : dochez : this will need to be reworked...
@@ -191,8 +192,13 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
     }
 
     @Override
-    public File getDomainRoot() {
+    public File getInstanceRoot() {
         return root;
+    }
+
+    @Override
+    public File getDomainRoot() {
+        return getInstanceRoot();
     }
 
 

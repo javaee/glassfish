@@ -61,5 +61,6 @@ public class LocationsCommand implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.getTopMessagePart().addProperty("Base-Root", StartupContextUtil.getInstallRoot(env.getStartupContext()).getAbsolutePath());
         report.getTopMessagePart().addProperty("Domain-Root", env.getDomainRoot().getAbsolutePath());
+        report.getTopMessagePart().addProperty("Instance-Root", env.getInstanceRoot().getAbsolutePath());
     }
 }

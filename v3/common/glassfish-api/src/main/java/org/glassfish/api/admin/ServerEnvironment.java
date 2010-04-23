@@ -59,7 +59,8 @@ public interface ServerEnvironment {
     public static final String kCompileJspDirName = "jsp";
     String DEFAULT_INSTANCE_NAME = "default-instance-name";
 
-    public File getDomainRoot();    
+    public File getDomainRoot();
+    public File getInstanceRoot();
 
     /**
      * return the startup context used to initialize this runtime
