@@ -304,10 +304,9 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
      *
      * @return boolean indicating whether the server is running
      */
-    protected boolean isRunning(int port) {
+    protected boolean isRunning(String host, int port) {
         Socket server = null;
         try {
-            String host = null;
             server = new Socket(host, port);
             return true;
         } catch (Exception ex) {
@@ -321,6 +320,14 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
             }
         }
     }
+
+	/**
+	 * convenience method for the local machine
+	 */
+    protected final boolean isRunning(int port) {
+		return isRunning(null, port);
+	}
+
 
     /**
      * See if DAS is alive and is the one at the specified domain directory.

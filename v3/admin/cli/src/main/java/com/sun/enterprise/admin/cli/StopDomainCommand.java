@@ -219,6 +219,8 @@ public class StopDomainCommand extends LocalDomainCommand {
         if (domainName != null)
             return pidFile.exists();                    // local case
         else
-            return isRunning(programOpts.getPort());    // remote case
+            return isRunning(programOpts.getHost(),     // remote case
+            		programOpts.getPort());      		
+
     }
 }
