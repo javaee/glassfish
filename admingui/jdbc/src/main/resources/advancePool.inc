@@ -38,8 +38,8 @@
 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">			 
         <sun:propertySheetSection id="generalPropertySheet">
-            <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
-                <sun:staticText id="Jndi" text="#{pageSession.Name}"/>
+            <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}">
+                <sun:staticText id="poolName" text="#{pageSession.Name}"/>
             </sun:property>
 
         <sun:property id="p2"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.statementTimeoutInSeconds}" helpText="$resource{i18njdbc.jdbcPool.statementTimeoutInSecondsHelp}">
