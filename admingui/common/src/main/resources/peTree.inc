@@ -101,6 +101,9 @@ update tool    updatetool 800
 	      url="/common/commonTask.jsf"
 	      imageURL="/resource/images/common_tasks.gif"
 	      clientSide="#{true}">
+	<!facet image>
+	    <gf:image url="/resource/images/common_tasks.gif" href="/common/commonTask.jsf" />
+	</facet>
 	      <!facet content>
 		// Doing this avoids the JS which highlights the entire tree.
 		<sun:hyperlink id="ct" url="/common/commonTask.jsf" text="$resource{i18n.tree.commonTasks}" />
@@ -116,8 +119,7 @@ update tool    updatetool 800
             url="/common/sysnet/registration.jsf"
             >
             <!facet image>
-                <sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"
-                    alt="$resource{i18n.tree.registration}" border="0" immediate="true" />
+                <gf:image url="/resource/images/registration.gif" href="/common/sysnet/registration.jsf" alt="$resource{i18n.tree.registration}" />
             </facet>
         </sun:treeNode>
 
@@ -126,8 +128,7 @@ update tool    updatetool 800
                 url="/common/sysnet/support.jsf"
                 >
                 <!facet image>
-                    <sun:imageHyperlink imageURL="/resource/images/support.gif" url="/common/sysnet/support.jsf"  
-                        border="0" immediate="true" alt="$resource{i18n.tree.support}"/>
+                    <gf:image url="/resource/images/support.gif" href="/common/sysnet/support.jsf"  alt="$resource{i18n.tree.support}"/>
                 </facet>
         </sun:treeNode>
 
@@ -138,10 +139,8 @@ update tool    updatetool 800
                       imageURL="/resource/images/instance.gif"
                       >
             <!facet image>
-                <sun:imageHyperlink imageURL="/resource/images/instance.gif" url="/common/appServer/serverInstGeneralPe.jsf?instanceName=server"
-                    border="0" immediate="true" alt="$resource{i18n.tree.appServer}"/>
+                <gf:image url="/resource/images/instance.gif" href="/common/appServer/serverInstGeneralPe.jsf?instanceName=server" alt="$resource{i18n.tree.appServer}" />
             </facet>
-
         </sun:treeNode>
 
         <!--  ===================================== Applications ======================  -->
@@ -158,8 +157,7 @@ update tool    updatetool 800
             childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}"
         >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/applications.jsf" alt="$resource{i18n.tree.applications}"
-                    border="$int{0}" immediate="$boolean{true}" />
+                <gf:image icon="TREE_FOLDER" href="/common/applications/applications.jsf" alt="$resource{i18n.tree.applications}" />
             </facet>
             <!filterTree filterOutLifecycle() />
         </dynamicTreeNode>
@@ -177,8 +175,7 @@ update tool    updatetool 800
             childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}"
         >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
-                    alt="$resource{i18n.tree.lifecycle}" border="$int{0}" immediate="$boolean{true}" />
+                <gf:image icon="TREE_FOLDER" href="/common/applications/lifecycles.jsf" alt="$resource{i18n.tree.lifecycle}" />
             </facet>
             <!filterTree filterOutNonLifecycle() />
         </dynamicTreeNode>
@@ -187,20 +184,26 @@ update tool    updatetool 800
         <!--  ===================================== Resources ======================  -->
 
         <sun:treeNode  id="resources"
-            text="$resource{i18n.tree.resources}"
-            url="/common/resourceNode/resources.jsf"
-            imageURL="/resource/images/resources.gif"
-            expanded="$boolean{true}"
-        />
+		text="$resource{i18n.tree.resources}"
+		url="/common/resourceNode/resources.jsf"
+		imageURL="/resource/images/resources.gif"
+		expanded="$boolean{true}">
+            <!facet image>
+                <gf:image url="/resource/images/resources.gif" href="/common/resourceNode/resources.jsf" />
+            </facet>
+	</sun:treeNode>
 
          <!--  ===================================== Configurations ======================  -->
 
          <sun:treeNode id="configuration"
-            text="$resource{i18n.tree.configuration}"
-            url="/common/configuration/configuration.jsf?configName=server-config"
-            imageURL="/resource/images/configurations.gif"
-            expanded="$boolean{true}"
-        />
+		text="$resource{i18n.tree.configuration}"
+		url="/common/configuration/configuration.jsf?configName=server-config"
+		imageURL="/resource/images/configurations.gif"
+		expanded="$boolean{true}">
+            <!facet image>
+                <gf:image url="/resource/images/configurations.gif" href="/common/configuration/configuration.jsf?configName=server-config" />
+            </facet>
+	</sun:treeNode>
     </sun:tree>
     <event>
 	<!afterCreate

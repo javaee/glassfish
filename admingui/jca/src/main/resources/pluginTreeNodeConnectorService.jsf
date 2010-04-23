@@ -39,10 +39,11 @@
 <sun:treeNode id="connectorService"
     text="$resource{i18njca.tree.connectorService}"
     url="/jca/connectorService.jsf?configName=#{configName}"
-    imageURL="/resource/jca/images/connector.png"
-    >
-    <!beforeCreate
-        setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
-    />
+    imageURL="/resource/jca/images/connector.png">
+	<!facet image>
+	    <gf:image url="/resource/jca/images/connector.png" href="/jca/connectorService.jsf?configName=#{configName}" />
+	</facet>
+	<!beforeCreate
+	    setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
+	/>
 </sun:treeNode>
-

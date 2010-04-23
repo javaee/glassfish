@@ -351,13 +351,14 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
                 setProperty(props, "targetConfigName", tt);
             }
             String check = (String) desc.getOption("checkAdminServer");
-            if (!GuiUtil.isEmpty(check)){
+            if (!GuiUtil.isEmpty(check)) {
                 String serverName = (String) props.get("text");
-                if (serverName.equals("server")){
+                if (serverName.equals("server")) {
                     setProperty(props, "text", "server (Admin Server)");
                     setProperty(props, "serverName", "server");
-                }else
+                } else {
                     setProperty(props, "serverName", serverName);
+		}
             }
             setProperty(props, "encodedText", GuiUtil.encode((String)props.get("text"), null, null));
 // We are using "childActionListener" for the hyperlink, not the TreeNode
@@ -458,12 +459,8 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	ComponentUtil compUtil = ComponentUtil.getInstance(ctx);
 	UIComponent imageLink = compUtil.getChild(
 	    comp, "imagelink",
-	    "com.sun.jsftemplating.component.factory.sun.ImageHyperlinkFactory",
+	    "com.sun.jsftemplating.component.factory.sun.ImageComponentFactory",
 	    props, "image");
-
-	// Force HTML renderer so we can use dynafaces safely.
-	imageLink.setRendererType("com.sun.webui.jsf.ImageHyperlink");
-
 	// We don't want the imageHyperlink to have the following property, so
 	// set it after creating it
 	setProperty(props, "text", comp.getAttributes().get("text"));
@@ -472,23 +469,35 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	    "com.sun.jsftemplating.component.factory.sun.HyperlinkFactory",
 	    props, "content");
 
-	// Force HTML renderer so we can use dynafaces safely.
-	link.setRendererType("com.sun.webui.jsf.Hyperlink");
-
 	// Check to see if we have a childURL, evalute it here (after component
 	// is created, before rendered) so we can use the link itself to define
 	// the URL.  This has proven to be useful...
 	Object val = desc.getOption("childURL");
-	if (val != null) {
+	Map<String, Object> imageAtts = imageLink.getAttributes();
+	List handlers = desc.getHandlers("childCommand");
+	if ((val != null) && (handlers == null)) {
+	    // If we have childCommand Handlers... do not do this.  This code
+	    // is not smart enough to submit the form properly in order to
+	    // work with command handlers.
 	    val = desc.resolveValue(ctx, link, val);
 	    link.getAttributes().put("url", val);
-	    imageLink.getAttributes().put("url", val);
+
+	    // The following makes the image a link as well, but we will do
+	    // this via onClick to prevent 508 screen readers from tabbing to
+	    // it.  This special feature is added because an image a link sit
+	    // next to each other.  In this case, a screen reader should only
+	    // read 1 of these.  By making the image not tabbable, we resolve
+	    // this.
+	    imageAtts.put("onClick", "admingui.ajax.loadPage({url: '" + val + "'});");
+	    imageAtts.put("onMouseOver", "this.oldStatus=window.status; window.status='" + val + "';");
+	    imageAtts.put("onMouseOut", "window.status=this.oldStatus;");
+	    imageAtts.put("style", "cursor:pointer;");
 	}
 
 	// Set the image URL
 	val = desc.getOption("childImageURL");
 	if (val != null) {
-	    imageLink.getAttributes().put("imageURL", desc.
+	    imageAtts.put("url", desc.
 		resolveValue(ctx, link, val));
 	}
 
@@ -497,18 +506,20 @@ FIXME:	 should be handled via WebServiceTreeAdaptor (to be written).
 	// recognize this as a property, it requires it to be defined in the
 	// LayoutComponent as a handler.  So we must do this manually like
 	// this.
-	List handlers = desc.getHandlers("childCommand");
 	if (handlers != null) {
 	    link.getAttributes().put("command", handlers);
-	    imageLink.getAttributes().put("command", handlers);
+	    imageAtts.put("command", handlers);
 	    // This adds the required action listener to proces the commands
 	    // This is needed here b/c the factory has already executed -- the
 	    // factory is normally the place where this is added (iff there is
 	    // at least one command handler).
 	    ((ActionSource) link).addActionListener(
 		    CommandActionListener.getInstance());
-	    ((ActionSource) imageLink).addActionListener(
-		    CommandActionListener.getInstance());
+	    // NOTE: I removed the imageLink b/c it is no longer an
+	    //	     ActionSource, the image cannot perform this
+	    //	     operation. - Ken
+	    //((ActionSource) imageLink).addActionListener(
+	    //	    CommandActionListener.getInstance());
 	}
 
 	// We already added the facet, return null...

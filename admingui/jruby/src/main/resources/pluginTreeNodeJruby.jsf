@@ -38,9 +38,11 @@
     id="jruby"
     text="$resource{i18n_jruby.tree.jrubyContainer}"
     url="/jruby/jrubyContainer.jsf?configName=#{configName}"
-    imageURL="/resource/jruby/images/jruby.gif"
-    >
-    <!beforeCreate
-        setResourceBundle(key="i18n_jruby" bundle="org.glassfish.jruby.admingui.Strings");
-    />
+    imageURL="/resource/jruby/images/jruby.gif">
+	<!beforeCreate
+	    setResourceBundle(key="i18n_jruby" bundle="org.glassfish.jruby.admingui.Strings");
+	/>
+	<!facet image>
+	    <gf:image url="/resource/jruby/images/jruby.gif" href="/jruby/jrubyContainer.jsf?configName=#{configName}" />
+	</facet>
 </sun:treeNode>

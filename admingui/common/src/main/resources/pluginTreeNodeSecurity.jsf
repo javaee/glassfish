@@ -39,14 +39,10 @@
 
     <sun:treeNode id="security"
         text="$resource{i18n.tree.security}"
-        url="#{request.contextPath}/common/security/security.jsf?configName=#{configName}"
-        >
-        <!facet image>
-            <sun:imageHyperlink imageURL="/resource/common/security/images/security.gif" url="#{request.contextPath}/common/security/security.jsf?configName=#{configName}" 
-                alt="$resource{i18n.tree.security}" border="0" immediate="true" />
-        </facet>
-
-
+        url="/common/security/security.jsf?configName=#{configName}">
+	    <!facet image>
+		<gf:image url="/resource/common/security/images/security.gif" alt="$resource{i18n.tree.security}" href="/common/security/security.jsf?configName=#{configName}" />
+	    </facet>
         <dynamicTreeNode id="realms"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
             objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
@@ -56,15 +52,11 @@
             childExpanded="$boolean{false}"
             childURL="#{request.contextPath}/common/security/realms/realmEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
             text="$resource{i18n.tree.realms}"
-            url="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{configName}" 
-                    alt="$resource{i18n.tree.realms}" border="$int{0}" immediate="$boolean{true}" />
-            </facet>
+            url="#{request.contextPath}/common/security/realms/realms.jsf?configName=#{configName}">
+		<!facet image>
+		    <gf:image icon="TREE_FOLDER" alt="$resource{i18n.tree.realms}" href="/common/security/realms/realms.jsf?configName=#{configName}" />
+		</facet>
         </dynamicTreeNode>
-
-
         <dynamicTreeNode id="auditModules"
             treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
             objectName="amx:pp=/domain/configs/config[$pageSession{configName}],type=security-service"
@@ -77,8 +69,7 @@
             url="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{configName}"
             >
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{configName}" 
-                    alt="$resource{i18n.tree.auditModules}" border="$int{0}" immediate="$boolean{true}" />
+		<gf:image icon="TREE_FOLDER" alt="$resource{i18n.tree.auditModules}" href="/common/security/auditModules/auditModules.jsf?configName=#{configName}" />
             </facet>
         </dynamicTreeNode>
 
@@ -91,12 +82,10 @@
             childExpanded="$boolean{false}"
             childURL="#{request.contextPath}/common/security/jacc/jaccProviderEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
             text="$resource{i18n.tree.jaccProviders}"
-            url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}" 
-                    alt="$resource{i18n.tree.jaccProviders}" border="$int{0}" immediate="$boolean{true}" />
-            </facet>
+            url="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{configName}">
+		<!facet image>
+		    <gf:image icon="TREE_FOLDER" alt="$resource{i18n.tree.jaccProviders}" href="/common/security/jacc/jaccProviders.jsf?configName=#{configName}" />
+		</facet>
         </dynamicTreeNode>
 
         <dynamicTreeNode id="messageSecurity"
@@ -108,11 +97,9 @@
             childExpanded="$boolean{false}"
             childURL="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf?name=#{$this{valueBinding}.text}&configName=#{configName}"
             text="$resource{i18n.tree.msgSecurityConfigs}"
-            url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"
-            >
-            <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}"  
-                    alt="$resource{i18n.tree.msgSecurityConfigs}" border="$int{0}" immediate="$boolean{true}" />
-            </facet>
+            url="#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}">
+		<!facet image>
+		    <gf:image icon="TREE_FOLDER" alt="$resource{i18n.tree.msgSecurityConfigs}" href="/common/security/msgSecurity/msgSecurity.jsf?configName=#{configName}" />
+		</facet>
         </dynamicTreeNode>
-    </sun:treeNode>
+</sun:treeNode>

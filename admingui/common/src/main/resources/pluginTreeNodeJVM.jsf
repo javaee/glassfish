@@ -41,6 +41,9 @@
 <sun:treeNode id="jvmSettings"
     text="$resource{i18n.tree.jvmSettings}"
     url="/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}"
-    imageURL="/resource/images/jvm.gif"
-/>
+    imageURL="/resource/images/jvm.gif">
+	<!facet image>
+	    <gf:image url="/resource/images/jvm.gif" href="/common/javaConfig/serverInstJvmGeneral.jsf?configName=#{configName}" />
+	</facet>
+</sun:treeNode>
 

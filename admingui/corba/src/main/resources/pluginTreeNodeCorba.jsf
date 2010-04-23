@@ -38,8 +38,10 @@
     id="orb"
     text="$resource{i18n_corba.tree.orb}"
     url="/corba/orb.jsf?configName=#{configName}"
-    imageURL="/resource/corba/images/orb.gif"
-    >
+    imageURL="/resource/corba/images/orb.gif">
+    <!facet image>
+	<gf:image url="/resource/corba/images/orb.gif" href="/corba/orb.jsf?configName=#{configName}" />
+    </facet>
     <dynamicTreeNode id="iiopListeners"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:pp=/domain/configs/config[server-config],type=iiop-service"
@@ -52,7 +54,7 @@
         url="/corba/iiopListeners.jsf"
         >
         <!facet image>
-            <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.iiopListeners}"/>
+	    <gf:image icon="TREE_FOLDER" href="/corba/iiopListeners.jsf" alt="$resource{i18n.tree.applications}" />
         </facet>
     </dynamicTreeNode>
     <!beforeCreate

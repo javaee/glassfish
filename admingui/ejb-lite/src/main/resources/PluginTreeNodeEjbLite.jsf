@@ -39,6 +39,8 @@
     id="ejbContainer" 
     text="$resource{i18n.tree.ejbContainer}"
     url="/ejb-lite/configuration/ejbContainerGeneral.jsf?#{configName}"
-    imageURL="/resource/ejb-lite/images/container.gif"
-/>
-
+    imageURL="/resource/ejb-lite/images/container.gif">
+	<!facet image>
+	    <gf:image url="/resource/ejb-lite/images/container.gif" href="/ejb-lite/configuration/ejbContainerGeneral.jsf?#{configName}" />
+	</facet>
+</sun:treeNode>

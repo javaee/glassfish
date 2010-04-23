@@ -42,7 +42,9 @@
 <sun:treeNode id="updateCenterPlugIN"
                 text="$resource{i18n.tree.updateCenter}"
                 url="/updateCenter/addOn.jsf"
-                imageURL="/resource/updateCenter/images/updateCenter.gif"
-                >
+                imageURL="/resource/updateCenter/images/updateCenter.gif" >
+	<!facet image>
+	    <gf:image url="/resource/updateCenter/images/updateCenter.gif" href="/updateCenter/addOn.jsf" />
+	</facet>
 </sun:treeNode>
 

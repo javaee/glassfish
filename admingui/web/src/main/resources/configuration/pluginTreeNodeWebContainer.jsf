@@ -39,9 +39,11 @@
     id="webContainer"
     text="$resource{i18n_web.tree.webContainer}"
     url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
-    imageURL="/resource/web/images/container.gif"
->
-    <!beforeCreate
-        setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-    />
+    imageURL="/resource/web/images/container.gif">
+	<!facet image>
+	    <gf:image url="/resource/web/images/container.gif" href="/web/configuration/webContainerGeneral.jsf?configName=server-config" />
+	</facet>
+	<!beforeCreate
+	    setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
+	/>
 </sun:treeNode>

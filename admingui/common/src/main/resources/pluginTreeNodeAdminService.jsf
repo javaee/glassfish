@@ -39,6 +39,8 @@
 <sun:treeNode id="adminService"
     text="$resource{i18n.tree.adminService}"
     url="/common/configuration/jmxConnectorEdit.jsf?configName=#{configName}"
-    imageURL="/resource/images/connector.png"
-/>
-
+    imageURL="/resource/images/connector.png">
+	<!facet image>
+	    <gf:image url="/resource/images/connector.png" href="/common/configuration/jmxConnectorEdit.jsf?configName=#{configName}" />
+	</facet>
+</sun:treeNode>

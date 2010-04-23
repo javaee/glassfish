@@ -1,7 +1,11 @@
 <gf:navNode id="jmsResources"
 	    label="$resource{i18n.tree.jmsResources}"
-	    icon="#{request.contextPath}/resource/images/jms.gif"
-            url="#{request.contextPath}/jms/jmsResources.jsf">
+	    imageURL="/resource/images/jms.gif"
+            url="/jms/jmsResources.jsf">
+    <!facet image>
+	<gf:image url="/resource/images/jms.gif" href="/jms/jmsResources.jsf" />
+    </facet>
+
     <dynamicTreeNode id="jmsConnectionFactories"
         treeAdaptorClass="org.glassfish.admingui.common.tree.MBeanTreeAdaptor"
         objectName="amx:pp=/domain,type=resources"
@@ -11,11 +15,10 @@
         childExpanded="$boolean{false}"
         childURL="/jms/jmsConnectionEdit.jsf?name=#{$this{valueBinding}.text}"
         text="$resource{i18n.tree.connectionFactories}"
-        url="#{request.contextPath}/jms/jmsConnections.jsf"
-        >
-        <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsConnections.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.connectionFactories}"/>
-        </facet>
+        url="#{request.contextPath}/jms/jmsConnections.jsf">
+	    <!facet image>
+                <gf:image icon="TREE_FOLDER" href="/jms/jmsConnections.jsf" alt="$resource{i18n.tree.connectionFactories}" />
+	    </facet>
         <!filterTree filterOutNonJms(); />
     </dynamicTreeNode>
 
@@ -28,10 +31,9 @@
         childExpanded="$boolean{false}"
         childURL="/jms/jmsDestinationEdit.jsf?name=#{$this{valueBinding}.text}"
         text="$resource{i18n.tree.destinationResources}"
-        url="#{request.contextPath}/jms/jmsDestinations.jsf"
-        >
-        <!facet image>
-            <sun:iconHyperlink icon="TREE_FOLDER" url="/jms/jmsDestinations.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18n.tree.destinationResources}"/>
-        </facet>
+        url="#{request.contextPath}/jms/jmsDestinations.jsf">
+	    <!facet image>
+                <gf:image icon="TREE_FOLDER" href="/jms/jmsDestinations.jsf" alt="$resource{i18n.tree.destinationResources}" />
+	    </facet>
     </dynamicTreeNode>
 </gf:navNode>
