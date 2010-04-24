@@ -11,7 +11,7 @@
 
 <html>
   <head>
-    <title>hk2 - hk2:analyse-dependency</title>
+    <title>hk2 - hk2-maven-plugin - hk2:analyse-dependency</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -26,100 +26,117 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2><a name="hk2:analyse-dependency"></a>hk2:analyse-dependency</h2>
+        <div class="section"><h2><a name="hk2:analyse-dependency"></a>
+hk2:analyse-dependency</h2>
 <p><strong>Full name</strong>:</p>
-<p>com.sun.enterprise:hk2-maven-plugin:1.0.6-SNAPSHOT:analyse-dependency</p>
+<p>com.sun.enterprise:hk2-maven-plugin:1.0.11-SNAPSHOT:analyse-dependency</p>
 <p><strong>Description</strong>:</p>
-<div>Does static analysis of classes in a module to ensure that module
-dependency is correctly set up.</div><p><strong>Attributes</strong>:</p>
+<p>Does static analysis of classes in a module to ensure that module
+dependency is correctly set up.</p>
+<p><strong>Attributes</strong>:</p>
 <ul><li>Requires a Maven 2.0 project to be executed.</li>
 <li>Requires dependency resolution of artifacts in scope: <code>compile</code>.</li>
 <li>Binds by default to the lifecycle phase: <code>verify</code>.</li>
 </ul>
-<div class="section"><h3><a name="Required_Parameters"></a>Required Parameters</h3>
+<div class="section"><h3><a name="Required_Parameters"></a>
+Required Parameters</h3>
 <table class="bodyTable"><tr class="a"><th>Name</th>
 <th>Type</th>
 <th>Since</th>
 <th>Description</th>
 </tr>
-<tr class="b"><td><strong><a href="#finalName">finalName</a></strong></td>
+<tr class="b"><td><strong><a href="#finalName">finalName</a>
+</strong></td>
 <td><code>String</code></td>
 <td><code>-</code></td>
-<td>Name of the generated JAR.<br />
-</td>
+<td>Name of the generated JAR. </td>
 </tr>
-<tr class="a"><td><strong><a href="#outputDirectory">outputDirectory</a></strong></td>
+<tr class="a"><td><strong><a href="#outputDirectory">outputDirectory</a>
+</strong></td>
 <td><code>File</code></td>
 <td><code>-</code></td>
-<td>Directory containing the generated JAR.<br />
-</td>
+<td>Directory containing the generated JAR. </td>
 </tr>
 </table>
 </div>
-<div class="section"><h3><a name="Optional_Parameters"></a>Optional Parameters</h3>
+<div class="section"><h3><a name="Optional_Parameters"></a>
+Optional Parameters</h3>
 <table class="bodyTable"><tr class="b"><th>Name</th>
 <th>Type</th>
 <th>Since</th>
 <th>Description</th>
 </tr>
-<tr class="a"><td><strong><a href="#analyseDependency">analyseDependency</a></strong></td>
+<tr class="a"><td><strong><a href="#analyseDependency">analyseDependency</a>
+</strong></td>
 <td><code>boolean</code></td>
 <td><code>-</code></td>
-<td>Flag that controls whether we analyse dependency or not.<br />
-<strong>Default value is</strong>: <code>false</code>.</td>
+<td>Flag that controls whether we analyse dependency or not. Default value is: <code>false</code>.</td>
 </tr>
-<tr class="b"><td><strong><a href="#excludedPatterns">excludedPatterns</a></strong></td>
+<tr class="b"><td><strong><a href="#excludedPatterns">excludedPatterns</a>
+</strong></td>
 <td><code>HashSet</code></td>
 <td><code>-</code></td>
-<td>Patterns excluded from dependency computation.<br />
-</td>
+<td>Patterns excluded from dependency computation. </td>
 </tr>
-<tr class="a"><td><strong><a href="#failOnVerificationError">failOnVerificationError</a></strong></td>
+<tr class="a"><td><strong><a href="#failOnVerificationError">failOnVerificationError</a>
+</strong></td>
 <td><code>boolean</code></td>
 <td><code>-</code></td>
-<td>By default, we just print a warning and proceed.<br />
-<strong>Default value is</strong>: <code>false</code>.</td>
+<td>By default, we just print a warning and proceed. Default value is: <code>false</code>.</td>
 </tr>
-<tr class="b"><td><strong><a href="#localRepository">localRepository</a></strong></td>
+<tr class="b"><td><strong><a href="#localRepository">localRepository</a>
+</strong></td>
 <td><code>ArtifactRepository</code></td>
 <td><code>-</code></td>
-<td>(no description)<br />
-</td>
+<td>(no description) </td>
 </tr>
 </table>
 </div>
-<div class="section"><h3><a name="Parameter_Details"></a>Parameter Details</h3>
-<p><strong><a name="analyseDependency">analyseDependency</a>:</strong></p>
-<div>Flag that controls whether we analyse dependency or not.</div><ul><li><strong>Type</strong>: <code>boolean</code></li>
+<div class="section"><h3><a name="Parameter_Details"></a>
+Parameter Details</h3>
+<p><strong><a name="analyseDependency">analyseDependency</a>
+:</strong></p>
+<p>Flag that controls whether we analyse dependency or not.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
 <li><strong>Required</strong>: <code>No</code></li>
 <li><strong>Default</strong>: <code>false</code></li>
 </ul>
 <hr />
-<p><strong><a name="excludedPatterns">excludedPatterns</a>:</strong></p>
-<div>Patterns excluded from dependency computation.</div><ul><li><strong>Type</strong>: <code>java.util.HashSet</code></li>
+<p><strong><a name="excludedPatterns">excludedPatterns</a>
+:</strong></p>
+<p>Patterns excluded from dependency computation.</p>
+<ul><li><strong>Type</strong>: <code>java.util.HashSet</code></li>
 <li><strong>Required</strong>: <code>No</code></li>
 </ul>
 <hr />
-<p><strong><a name="failOnVerificationError">failOnVerificationError</a>:</strong></p>
-<div>By default, we just print a warning and proceed.</div><ul><li><strong>Type</strong>: <code>boolean</code></li>
+<p><strong><a name="failOnVerificationError">failOnVerificationError</a>
+:</strong></p>
+<p>By default, we just print a warning and proceed.</p>
+<ul><li><strong>Type</strong>: <code>boolean</code></li>
 <li><strong>Required</strong>: <code>No</code></li>
 <li><strong>Default</strong>: <code>false</code></li>
 </ul>
 <hr />
-<p><strong><a name="finalName">finalName</a>:</strong></p>
-<div>Name of the generated JAR.</div><ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
+<p><strong><a name="finalName">finalName</a>
+:</strong></p>
+<p>Name of the generated JAR.</p>
+<ul><li><strong>Type</strong>: <code>java.lang.String</code></li>
 <li><strong>Required</strong>: <code>Yes</code></li>
 <li><strong>Expression</strong>: <code>${project.build.finalName}</code></li>
 </ul>
 <hr />
-<p><strong><a name="localRepository">localRepository</a>:</strong></p>
-<div>(no description)</div><ul><li><strong>Type</strong>: <code>org.apache.maven.artifact.repository.ArtifactRepository</code></li>
+<p><strong><a name="localRepository">localRepository</a>
+:</strong></p>
+<p>(no description)</p>
+<ul><li><strong>Type</strong>: <code>org.apache.maven.artifact.repository.ArtifactRepository</code></li>
 <li><strong>Required</strong>: <code>No</code></li>
 <li><strong>Expression</strong>: <code>${localRepository}</code></li>
 </ul>
 <hr />
-<p><strong><a name="outputDirectory">outputDirectory</a>:</strong></p>
-<div>Directory containing the generated JAR.</div><ul><li><strong>Type</strong>: <code>java.io.File</code></li>
+<p><strong><a name="outputDirectory">outputDirectory</a>
+:</strong></p>
+<p>Directory containing the generated JAR.</p>
+<ul><li><strong>Type</strong>: <code>java.io.File</code></li>
 <li><strong>Required</strong>: <code>Yes</code></li>
 <li><strong>Expression</strong>: <code>${project.build.directory}</code></li>
 </ul>
@@ -135,14 +152,14 @@ dependency is correctly set up.</div><p><strong>Attributes</strong>:</p>
       <div class="xright">&#169;  
           2010
     
-          Sun Microsystems, Inc.
+          Oracle Corporation
           
   
 
   
   
-  &nbsp;| Last Published: 03/24/2010
-  &nbsp;| Version: 1.0.6-SNAPSHOT
+  &nbsp;| Last Published: 04/24/2010
+  &nbsp;| Version: 1.0.11-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
