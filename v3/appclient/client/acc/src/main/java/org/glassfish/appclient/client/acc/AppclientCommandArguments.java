@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -66,6 +67,9 @@ public class AppclientCommandArguments {
 
     private final static Logger logger = Logger.getLogger(AppclientCommandArguments.class.getName());
     private final static String LINE_SEP = System.getProperty("line.separator");
+    private final static Logger accLogger = LogDomains.getLogger(
+            AppclientCommandArguments.class,
+            LogDomains.ACC_LOGGER);
 
     /*
      * names of appclient options.
@@ -102,6 +106,7 @@ public class AppclientCommandArguments {
     private List<String> unrecognizedArgs = new ArrayList<String>();
 
     private char[] password = null;
+    private boolean isPasswordOptionUsed = false;
 
     private String configPathToUse = null;
 
@@ -268,6 +273,7 @@ public class AppclientCommandArguments {
                          }
                          if (arg.equals(PASSWORD)) {
                              password = value.toCharArray();
+                             isPasswordOptionUsed = true;
                              if (isConfig) {
                                  sb.append(LINE_SEP).append("  ").append(arg).append("=???");
                              }
@@ -336,6 +342,7 @@ public class AppclientCommandArguments {
 
     private void validateOptions() throws UserError {
         ensureAtMostOneOfNameAndMainClass();
+        warnAboutPasswordUsage();
     }
     /**
      * Makes sure that at most one of the -name and -mainclass arguments
@@ -348,6 +355,17 @@ public class AppclientCommandArguments {
                     getClass(), 
                     "appclient.mainclassOrNameNotBoth",
                     "Specify either -mainclass or -name but not both to identify the app client to be run"));
+        }
+    }
+
+    /**
+     * Logs a warning if the user specified the -password command line
+     * option, which is discouraged and deprecated.
+     */
+    private void warnAboutPasswordUsage() {
+        if (isPasswordOptionUsed) {
+            final String msg = accLogger.getResourceBundle().getString("appclient.password.deprecated");
+            logger.warning(msg);
         }
     }
 
