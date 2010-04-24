@@ -33,13 +33,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import java.io.*;
 import java.io.File;
+import com.sun.enterprise.util.io.ServerDirs;
+import java.security.KeyStore;
 import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.CommandValidationException;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * A class that's supposed to capture all the behavior common to operation
@@ -47,10 +49,138 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Byron Nevins
  */
 public abstract class LocalServerCommand extends CLICommand {
-
-    protected final File getServerDir() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected final void setServerDirs(ServerDirs sd) {
+        serverDirs = sd;
     }
+
+    protected final File getMasterPasswordFile() {
+
+        if(serverDirs == null)
+            return null;
+
+        File mp = new File(serverDirs.getServerDir(), "master-password");
+        if(!mp.canRead())
+            return null;
+
+        return mp;
+    }
+
+    /**
+     * Checks if the create-domain was created using --savemasterpassword flag
+     * which obtains security by obfuscation! Returns null in case of failure
+     * of any kind.
+     * @return String representing the password from the JCEKS store named
+     *          master-password in domain folder
+     */
+    protected final  String readFromMasterPasswordFile() {
+        File mpf = getMasterPasswordFile();
+        if(mpf == null)
+            return null;   // no master password  saved
+        try {
+            PasswordAdapter pw = new PasswordAdapter(mpf.getAbsolutePath(),
+                    "master-password".toCharArray()); // fixed key
+            return pw.getPasswordForAlias("master-password");
+        }
+        catch (Exception e) {
+            logger.printDebugMessage("master password file reading error: "
+                    + e.getMessage());
+            return null;
+        }
+    }
+
+    protected final  boolean verifyMasterPassword(String mpv) {
+        // only tries to open the keystore
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(getJKS());
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(fis, mpv.toCharArray());
+            return true;
+        }
+        catch (Exception e) {
+            logger.printDebugMessage(e.getMessage());
+            return false;
+        }
+        finally {
+            try {
+                if(fis != null)
+                    fis.close();
+            }
+            catch (IOException ioe) {
+                // ignore, I know ...
+            }
+        }
+    }
+
+    protected final File getJKS() {
+        if(serverDirs == null)
+            return null;
+
+        File mp = new File(new File(serverDirs.getServerDir(), "config"), "keystore.jks");
+        if (!mp.canRead())
+            return null;
+        return mp;
+    }
+
+    /**
+     * Get the master password, either from a password file or
+     * by asking the user.
+     */
+    protected final String getMasterPassword() throws CommandException {
+        // Sets the password into the launcher info.
+        // Yes, returning master password as a string is not right ...
+        final int RETRIES = 3;
+        long t0 = System.currentTimeMillis();
+        String mpv  = passwords.get(CLIConstants.MASTER_PASSWORD);
+        if (mpv == null) { //not specified in the password file
+            mpv = "changeit";  //optimization for the default case -- see 9592
+            if (!verifyMasterPassword(mpv)) {
+                mpv = readFromMasterPasswordFile();
+                if (!verifyMasterPassword(mpv)) {
+                    mpv = retry(RETRIES);
+                }
+            }
+        } else { // the passwordfile contains AS_ADMIN_MASTERPASSWORD, use it
+            if (!verifyMasterPassword(mpv))
+                mpv = retry(RETRIES);
+        }
+        long t1 = System.currentTimeMillis();
+        logger.printDebugMessage("Time spent in master password extraction: " +
+                                    (t1-t0) + " msec");       //TODO
+        return mpv;
+    }
+
+
+    private String retry(int times) throws CommandException {
+        String mpv;
+        // prompt times times
+        for (int i = 0 ; i < times; i++) {
+            // XXX - I18N
+            String prompt = strings.get("mp.prompt", (times-i));
+            mpv = super.readPassword(prompt);
+            if (mpv == null)
+                throw new CommandException(strings.get("no.console"));
+                // ignore retries :)
+            if (verifyMasterPassword(mpv))
+                return mpv;
+            if (i < (times-1))
+                logger.printMessage(strings.get("retry.mp"));
+            // make them pay for typos?
+            //Thread.currentThread().sleep((i+1)*10000);
+        }
+        throw new CommandException(strings.get("mp.giveup", times));
+    }
+
+    protected final LocalStringsImpl getStrings() {
+        return strings;
+    }
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(LocalDomainCommand.class);
+    private ServerDirs serverDirs;
+
+
+
+
 }
 
 

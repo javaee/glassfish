@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.util.io.DomainDirs;
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
@@ -46,7 +47,6 @@ import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
@@ -76,9 +76,6 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     // the key for the Domain Root in the main attributes of the
     // manifest returned by the __locations command
     private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
-
-    private static final LocalStringsImpl strings =
-            new LocalStringsImpl(LocalDomainCommand.class);
 
     @Override
     protected void validate()
@@ -123,7 +120,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
         if (!domainsDir.isDirectory()) {
             throw new CommandException(
-                    strings.get("Domain.badDomainsDir", domainsDir));
+                    getStrings().get("Domain.badDomainsDir", domainsDir));
         }
 
         if (domainName != null) {
@@ -135,11 +132,18 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
         if (!domainRootDir.isDirectory()) {
             throw new CommandException(
-                    strings.get("Domain.badDomainDir", domainRootDir));
+                    getStrings().get("Domain.badDomainDir", domainRootDir));
         }
         domainRootDir = SmartFile.sanitize(domainRootDir);
         domainsDir    = SmartFile.sanitize(domainsDir);
 
+        try {
+            DomainDirs dd = new DomainDirs(domainRootDir);
+            setServerDirs(dd.getServerDirs());
+        }
+        catch(Exception e) {
+            throw new CommandException(e);
+        }
         // make sure the domain.xml file exists
         getDomainXml();
 
@@ -157,12 +161,12 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
         if (files == null || files.length == 0) {
             throw new CommandException(
-                    strings.get("Domain.noDomainDirs", parent));
+                    getStrings().get("Domain.noDomainDirs", parent));
         }
 
         if (files.length > 1) {
             throw new CommandException(
-                    strings.get("Domain.tooManyDomainDirs", parent));
+                    getStrings().get("Domain.tooManyDomainDirs", parent));
         }
         return files[0];
     }
@@ -174,16 +178,9 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
         if (!domainXml.canRead()) {
             throw new CommandException(
-                    strings.get("Domain.noDomainXml", domainXml));
+                    getStrings().get("Domain.noDomainXml", domainXml));
         }
         return domainXml;
-    }
-
-    protected File getMasterPasswordFile() {
-        File mp = new File(domainRootDir, "master-password");
-        if (!mp.canRead())
-            return null;
-        return mp;
     }
 
     /**
@@ -217,56 +214,8 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         }
     }
     
-    protected File getJKS() {
-        File mp = new File(new File(domainRootDir, "config"), "keystore.jks");
-        if (!mp.canRead())
-            return null;
-        return mp;
-    }
 
-    protected boolean verifyMasterPassword(String mpv) {
-        // only tries to open the keystore
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(getJKS());
-            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(fis, mpv.toCharArray());
-            return true;
-        } catch (Exception e) {
-            logger.printDebugMessage(e.getMessage());
-            return false;
-        } finally {
-            try {
-                if (fis != null)
-                    fis.close();
-            } catch (IOException ioe) {
-                // ignore, I know ...
-            }
-        }
-    }
-
-    /**
-     * Checks if the create-domain was created using --savemasterpassword flag
-     * which obtains security by obfuscation! Returns null in case of failure
-     * of any kind.
-     * @return String representing the password from the JCEKS store named
-     *          master-password in domain folder
-     */
-    protected String readFromMasterPasswordFile() {
-        File mpf = getMasterPasswordFile();
-        if (mpf == null)
-            return null;   // no master password  saved
-        try {
-            PasswordAdapter pw = new PasswordAdapter(mpf.getAbsolutePath(),
-                                "master-password".toCharArray()); // fixed key
-            return pw.getPasswordForAlias("master-password");
-        } catch (Exception e) {
-            logger.printDebugMessage("master password file reading error: " +
-                                        e.getMessage());
-            return null;
-        }
-    }
-
+    
     /**
      * Returns the admin port of the local domain. Note that this method should
      * be called only when you own the domain that is available on accessible

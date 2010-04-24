@@ -43,9 +43,9 @@ import java.io.File;
  * @since 3.1
  * Created: April 19, 2010
  */
-// NOT public!
-class ServerDirs {
-    ServerDirs(File leaf) throws IOException {
+
+public class ServerDirs {
+    public ServerDirs(File leaf) throws IOException {
         if(leaf == null)
             throw new IllegalArgumentException(strings.get("ServerDirs.nullArg", "ServerDirs.ServerDirs()"));
 
@@ -67,26 +67,26 @@ class ServerDirs {
         valid = true;
     }
 
-    final String getServerName() {
+    public final String getServerName() {
         if(!valid)
             return null;
 
         return serverName;
     }
 
-    final File getServerDir() {
+    public final File getServerDir() {
         if(!valid)
             return null;
         return serverDir;
     }
 
-    final File getServerParentDir() {
+    public final File getServerParentDir() {
         if(!valid)
             return null;
         return parentDir;
     }
 
-    final File getServerGrandParentDir() {
+    public final File getServerGrandParentDir() {
         if(!valid)
             return null;
         return grandParentDir;

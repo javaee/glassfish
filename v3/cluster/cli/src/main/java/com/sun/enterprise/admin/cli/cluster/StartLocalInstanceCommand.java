@@ -246,12 +246,6 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
         }
     }
 
-    protected File getMasterPasswordFile() {
-        File mp = new File(instanceDir, "master-password");
-        if (!mp.canRead())
-            return null;
-        return mp;
-    }
 
     public String toString() {
         return ObjectAnalyzer.toStringWithSuper(this);

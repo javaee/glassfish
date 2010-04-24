@@ -50,7 +50,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 /**
  * A base class for local commands that manage a local server instance.
  */
-public abstract class LocalInstanceCommand extends CLICommand {
+public abstract class LocalInstanceCommand extends LocalServerCommand {
 
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;

@@ -55,6 +55,7 @@ public class CLIConstants {
     public static final String  WALL_CLOCK_START_PROP           = "WALL_CLOCK_START";
     public static final boolean debugMode;
     public static final String  CLI_RECORD_ALL_COMMANDS_PROP    = "AS_LOGFILE";
+    public static final String MASTER_PASSWORD                 = "AS_ADMIN_MASTERPASSWORD";
 
     ////////////////////////////////////////////////////////////////////////////
     ///////       private                   ////////////////////////////////////

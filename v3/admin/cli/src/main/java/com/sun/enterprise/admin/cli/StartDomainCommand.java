@@ -85,7 +85,6 @@ public class StartDomainCommand extends LocalDomainCommand {
     // 5 minute timeout should be plenty!
     private static final int DEATH_TIMEOUT_MS = 5 * 60 * 1000;
     // the name of the master password option
-    private static final String MASTER_PASSWORD = "AS_ADMIN_MASTERPASSWORD";
 
     @Override
     protected void validate()
@@ -141,7 +140,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             // this can be slow, 500 msec,
             // with --passwordfile option it is ~~ 18 msec
             String mpv = getMasterPassword();
-            info.addSecurityToken(MASTER_PASSWORD, mpv);
+            info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
 
             /*
              * If this domain needs to be upgraded and --upgrade wasn't
@@ -176,7 +175,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
                 // need a new launcher to start the domain for real
                 createLauncher(GFLauncherFactory.ServerType.domain);
-                info.addSecurityToken(MASTER_PASSWORD, mpv);
+                info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
                 // continue with normal start...
             }
 
@@ -228,54 +227,6 @@ public class StartDomainCommand extends LocalDomainCommand {
                             programOpts.getProgramArguments());
 
             launcher.setup();
-    }
-
-    /**
-     * Get the master password, either from a password file or
-     * by asking the user.
-     */
-    private String getMasterPassword() throws CommandException {
-        // Sets the password into the launcher info.
-        // Yes, returning master password as a string is not right ...
-        final int RETRIES = 3;
-        long t0 = System.currentTimeMillis();
-        String mpv  = passwords.get(MASTER_PASSWORD);
-        if (mpv == null) { //not specified in the password file
-            mpv = "changeit";  //optimization for the default case -- see 9592
-            if (!verifyMasterPassword(mpv)) {
-                mpv = readFromMasterPasswordFile();
-                if (!verifyMasterPassword(mpv)) {
-                    mpv = retry(RETRIES);
-                }
-            }
-        } else { // the passwordfile contains AS_ADMIN_MASTERPASSWORD, use it
-            if (!verifyMasterPassword(mpv))
-                mpv = retry(RETRIES);
-        }
-        long t1 = System.currentTimeMillis();
-        logger.printDebugMessage("Time spent in master password extraction: " +
-                                    (t1-t0) + " msec");       //TODO
-        return mpv;
-    }
-
-    private String retry(int times) throws CommandException {
-        String mpv;
-        // prompt times times
-        for (int i = 0 ; i < times; i++) {
-            // XXX - I18N
-            String prompt = strings.get("mp.prompt", (times-i));
-            mpv = super.readPassword(prompt);
-            if (mpv == null)
-                throw new CommandException(strings.get("no.console"));
-                // ignore retries :)
-            if (verifyMasterPassword(mpv))
-                return mpv;
-            if (i < (times-1))
-                logger.printMessage(strings.get("retry.mp"));
-            // make them pay for typos?
-            //Thread.currentThread().sleep((i+1)*10000);
-        }
-        throw new CommandException(strings.get("mp.giveup", times));
     }
 
 
