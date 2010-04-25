@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.util.io.InstanceDirs;
 import java.io.*;
 import java.util.*;
 
@@ -67,6 +68,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File instanceDir;         // the specific instance dir
     protected File dasProperties;       // the das.properties file
 
+    private InstanceDirs instanceDirs;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalInstanceCommand.class);
 
@@ -75,7 +78,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                         throws CommandException, CommandValidationException {
         initInstance();
     }
- 
+
     protected void initInstance() throws CommandException {
         if (ok(agentDir)) {
             agentsDir = new File(agentDir);
@@ -94,7 +97,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
 
         agentsDir.mkdirs();
-        
+
         if (!agentsDir.isDirectory()) {
             throw new CommandException(
                     strings.get("Instance.badAgentDir", agentsDir));
@@ -120,10 +123,23 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
         nodeAgentDir = SmartFile.sanitize(nodeAgentDir);
         instanceDir = SmartFile.sanitize(instanceDir);
+
+        try {
+           instanceDirs = new InstanceDirs(instanceDir);
+           setServerDirs(instanceDirs.getServerDirs());
+        }
+        catch(IOException e) {
+            throw new CommandException(e);
+        }
+
         setDasDefaults();
         logger.printDebugMessage("nodeAgentDir: " + nodeAgentDir);
         logger.printDebugMessage("instanceDir: " + instanceDir);
         logger.printDebugMessage("dasProperties: " + dasProperties);
+    }
+
+    protected final InstanceDirs getInstanceDirs() {
+        return instanceDirs;
     }
 
     private File getTheOneAndOnlyAgent(File parent) throws CommandException {
@@ -177,7 +193,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
 
     protected void setDasDefaults() throws CommandException {
-        dasProperties = new File(new File(new File(nodeAgentDir, "agent"),
+        dasProperties = new File(new File(new File(instanceDirs.getNodeAgentDir(), "agent"),
                                                 "config"), "das.properties");
 
         if (!dasProperties.exists())

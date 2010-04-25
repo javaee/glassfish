@@ -53,6 +53,14 @@ public abstract class LocalServerCommand extends CLICommand {
         serverDirs = sd;
     }
 
+    protected final ServerDirs getServerDirs() {
+        return serverDirs;
+    }
+
+    protected File getDomainXml() {
+        return serverDirs.getDomainXml();
+    }
+    
     protected final File getMasterPasswordFile() {
 
         if(serverDirs == null)

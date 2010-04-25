@@ -3,9 +3,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.sun.enterprise.util.io;
 
+import com.sun.enterprise.util.ObjectAnalyzer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
  * @author bnevins
  */
 public class ServerDirsTest {
-
     public ServerDirsTest() {
     }
 
@@ -38,13 +37,18 @@ public class ServerDirsTest {
         assertTrue(grandParentFile.isDirectory());
         assertTrue(userNextToTopLevelFile.isDirectory());
         assertTrue(userTopLevelFile.isDirectory());
+        System.out.println(childFile);
+        System.out.println(parentFile);
+        System.out.println(grandParentFile);
+        System.out.println("Top legal directory: " + userTopLevelFile);
+        System.out.println("Next to top legal directory: " + userNextToTopLevelFile);
     }
 
     /**
      * It is not allowed to use a dir that has no parent...
      * @throws Exception
      */
-    @Test(expected=IOException.class)
+    @Test(expected = IOException.class)
     public void testNoParent() throws Exception {
         assertNotNull(userTopLevelFile);
         assertTrue(userTopLevelFile.isDirectory());
@@ -53,12 +57,16 @@ public class ServerDirsTest {
         try {
             ServerDirs sd = new ServerDirs(userTopLevelFile);
         }
-        catch(IOException e) {
+        catch (IOException e) {
             System.out.println("Got expected IOException.  Here is the message string: " + e.getLocalizedMessage());
             throw e;
         }
     }
 
+    /**
+     * Test is no good anymore -- the ServerDirs now always look for "config" dir
+     * and domain name.
+     *
     @Test
     public void testNoGrandParent() throws Exception {
         assertNotNull(userNextToTopLevelFile);
@@ -70,24 +78,33 @@ public class ServerDirsTest {
 
         ServerDirs sd = new ServerDirs(userNextToTopLevelFile);
     }
-
+**/
+    @Test
+    public void testSpecialFiles() throws IOException {
+        ServerDirs sd = new ServerDirs(childFile);
+        assertTrue(sd.getConfigDir() != null);
+        assertTrue(sd.getDomainXml() != null);
+    }
     private static void initUserDirs() {
         // this is totally developer-environment dependent!
         // very inefficient but who cares -- this is a unit test.
+        // we need this info to simulate an illegal condition like
+        // specifying a directory that has no parent and/or grandparent
+
         Stack<File> stack = new Stack<File>();
         File f = childFile;  // guaranteed to have a valid parent and grandparent
 
         do {
             stack.push(f);
             f = f.getParentFile();
-        } while(f != null);
+        }
+        while(f != null);
 
         // the first pop has the top-level
         // the next pop has the next-to-top-level
         userTopLevelFile = stack.pop();
         userNextToTopLevelFile = stack.pop();
     }
-
     private static File childFile;
     private static File parentFile;
     private static File grandParentFile;

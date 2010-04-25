@@ -79,7 +79,7 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     protected int executeCommand()
                     throws CommandException, CommandValidationException {
         try {
-            if (super.isRunning(super.getAdminPort(super.getDomainXml())))
+            if (super.isRunning(super.getAdminPort()))
                 throw new CommandException(strings.get("domain.is.running",
                                                     getDomainName(), getDomainRootDir()));
             DomainConfig domainConfig = new DomainConfig(getDomainName(),

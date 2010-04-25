@@ -67,15 +67,13 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "domain_name", primary = true, optional = true)
     private String domainName;
-
-    private File   domainsDir;
-    private File   domainRootDir;
     private String localPassword;
 
 
     // the key for the Domain Root in the main attributes of the
     // manifest returned by the __locations command
     private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
+    private DomainDirs dd = null;
 
     @Override
     protected void validate()
@@ -84,14 +82,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     }
     
     protected final File getDomainsDir() {
-        if(domainsDir != null)
-            return domainsDir;
-
-       if(domainDirParam != null)
-            return new File(domainDirParam);
-
-        else
-            return null;
+        return dd.getDomainsDir();
     }
 
     protected final String getLocalPassword() {
@@ -99,11 +90,16 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     }
 
     protected final File getDomainRootDir() {
-        return domainRootDir;
+        return dd.getDomainDir();
     }
 
     protected final String getDomainName() {
-        return domainName;
+        // can't just use "dd" since it may be half-baked right now!
+
+        if(dd != null && dd.isValid())
+            return dd.getDomainName();
+        else // too early!
+            return domainName;
     }
 
     protected final void setDomainName(String name) {
@@ -111,78 +107,21 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     }
 
     protected void initDomain() throws CommandException {
-        if (ok(domainDirParam)) {
-            domainsDir = new File(domainDirParam);
-        } else {
-            domainsDir = new File(getSystemProperty(
-                            SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
-        }
-
-        if (!domainsDir.isDirectory()) {
-            throw new CommandException(
-                    getStrings().get("Domain.badDomainsDir", domainsDir));
-        }
-
-        if (domainName != null) {
-            domainRootDir = new File(domainsDir, domainName);
-        } else {
-            domainRootDir = getTheOneAndOnlyDomain(domainsDir);
-            domainName    = domainRootDir.getName();
-        }
-
-        if (!domainRootDir.isDirectory()) {
-            throw new CommandException(
-                    getStrings().get("Domain.badDomainDir", domainRootDir));
-        }
-        domainRootDir = SmartFile.sanitize(domainRootDir);
-        domainsDir    = SmartFile.sanitize(domainsDir);
-
         try {
-            DomainDirs dd = new DomainDirs(domainRootDir);
+            File domainsDirFile = null;
+
+            if(ok(domainDirParam))
+                domainsDirFile = new File(domainDirParam);
+
+            dd = new DomainDirs(domainsDirFile, getDomainName());
             setServerDirs(dd.getServerDirs());
+            initializeLocalPassword(dd.getDomainDir());
         }
         catch(Exception e) {
             throw new CommandException(e);
         }
-        // make sure the domain.xml file exists
-        getDomainXml();
-
-        initializeLocalPassword(domainRootDir);
     }
     
-    private File getTheOneAndOnlyDomain(File parent) throws CommandException {
-        // look for subdirs in the parent dir -- there must be one and only one
-
-        File[] files = parent.listFiles(new FileFilter() {
-            public boolean accept(File f) {
-                return f.isDirectory();
-            }
-        });
-
-        if (files == null || files.length == 0) {
-            throw new CommandException(
-                    getStrings().get("Domain.noDomainDirs", parent));
-        }
-
-        if (files.length > 1) {
-            throw new CommandException(
-                    getStrings().get("Domain.tooManyDomainDirs", parent));
-        }
-        return files[0];
-    }
-    
-    protected File getDomainXml() throws CommandException {
-        // root-dir/config/domain.xml
-        File domainXml = new File(new File(domainRootDir, "config"),
-                                    "domain.xml");
-
-        if (!domainXml.canRead()) {
-            throw new CommandException(
-                    getStrings().get("Domain.noDomainXml", domainXml));
-        }
-        return domainXml;
-    }
-
     /**
      * If there's a local-password file, use the local password so the
      * user never has to enter a password.
@@ -221,16 +160,15 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
      * be called only when you own the domain that is available on accessible
      * file system.
      *
-     * @param domainXml the domain.xml file
      * @return an integer that represents admin port
      * @throws CommandException in case of parsing errors
      */
-    protected int getAdminPort(File domainXml)
+    protected int getAdminPort()
                         throws CommandException {
         Integer[] ports;
 
         try {
-            MiniXmlParser parser = new MiniXmlParser(domainXml);
+            MiniXmlParser parser = new MiniXmlParser(getDomainXml());
             Set<Integer> portsSet = parser.getAdminPorts();
             ports = portsSet.toArray(new Integer[portsSet.size()]);
             return ports[0];

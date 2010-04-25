@@ -53,15 +53,6 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 
-/* things that are in LocalDomainCommand
- * domainName
-    localPassword
-    domainRootDir
- * getDomainXml()
- * initDomain()
-isRunning(port)
-
- */
 @Service(name = "stop-domain")
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
@@ -113,7 +104,7 @@ public class StopDomainCommand extends LocalDomainCommand {
             if (getLocalPassword() == null)
                 return dasNotRunning();
 
-            int adminPort = getAdminPort(getDomainXml());
+            int adminPort = getAdminPort();
             programOpts.setPort(adminPort);
             logger.printDebugMessage("Stopping local domain on port " +
                                                                 adminPort);

@@ -20,6 +20,14 @@ import java.util.*;
  */
 public final class DomainDirs {
     /**
+     * This convenience constructor is used when nothing is known about the
+     * domain-dir
+     */
+    public DomainDirs() throws IOException {
+        this(null, null);
+    }
+
+    /**
      * This constructor is used when both the name of the domain is known and
      * the domains-dir is known.
      */
@@ -71,6 +79,16 @@ public final class DomainDirs {
         dirs = new ServerDirs(domainDir);
     }
 
+    /**
+     * Create a DomainDir from the more general ServerDirs instance.
+     * along with getServerDirs() you can convert freely back and forth
+     *
+     * @param aServerDir
+     */
+    public DomainDirs(ServerDirs sd) {
+        dirs = sd;
+    }
+
     @Override
     public String toString() {
         return dirs.toString();
@@ -91,7 +109,17 @@ public final class DomainDirs {
     public final ServerDirs getServerDirs() {
         return dirs;
     }
-    
+
+    public final boolean isValid() {
+        try {
+            return dirs.isValid();
+        }
+        catch(Exception e) {
+            return false;
+        }
+    }
+
+
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
     ///////////////////////////////////////////////////////////////////////////

@@ -74,7 +74,7 @@ public final class DeleteDomainCommand extends LocalDomainCommand {
             throws CommandException, CommandValidationException  {
         setDomainName(domainName0);
         super.validate();
-        adminPort = super.getAdminPort(super.getDomainXml());
+        adminPort = super.getAdminPort();
     }
  
     /**

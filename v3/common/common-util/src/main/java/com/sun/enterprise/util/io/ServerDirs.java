@@ -43,7 +43,6 @@ import java.io.File;
  * @since 3.1
  * Created: April 19, 2010
  */
-
 public class ServerDirs {
     public ServerDirs(File leaf) throws IOException {
         if(leaf == null)
@@ -64,6 +63,17 @@ public class ServerDirs {
 
         // grandparent dir is optional.  It can be null for DAS for instance...
         grandParentDir = parentDir.getParentFile();
+        configDir = new File(serverDir, "config");
+        domainXml = new File(configDir, "domain.xml");
+
+        if(!configDir.isDirectory())
+            throw new IOException("Bad config directory.  It should be here: "
+                    + configDir );
+
+        if (!domainXml.canRead())
+            throw new IOException("No domain.xml.  It should be here: "
+                    +domainXml);
+
         valid = true;
     }
 
@@ -91,6 +101,25 @@ public class ServerDirs {
             return null;
         return grandParentDir;
     }
+
+    public final File getDomainXml() {
+        if(!valid)
+            return null;
+
+        return domainXml;
+    }
+
+    public final File getConfigDir() {
+        if(!valid)
+            return null;
+
+        return configDir;
+    }
+
+    public final boolean isValid() {
+        return valid;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -98,7 +127,14 @@ public class ServerDirs {
     private final File serverDir;
     private final File parentDir;
     private final File grandParentDir;
-    private boolean valid;
+    private final File configDir;
+    private final File domainXml;
+    private final boolean valid;
+
+
     // Can be shared among classes in the package
     static final LocalStringsImpl strings = new LocalStringsImpl(ServerDirs.class);
+                // root-dir/config/domain.xml
+
+
 }

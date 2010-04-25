@@ -40,6 +40,16 @@ public final class InstanceDirs {
         }
     }
 
+    /**
+     * Create a InstanceDir from the more general ServerDirs instance.
+     * along with getServerDirs() you can convert freely back and forth
+     *
+     * @param aServerDir
+     */
+    public InstanceDirs(ServerDirs sd) {
+        dirs = sd;
+    }
+
     public final String getInstanceName() {
         return dirs.getServerName();
     }
@@ -54,6 +64,10 @@ public final class InstanceDirs {
 
     public final File getNodeAgentsDir() {
         return dirs.getServerGrandParentDir();
+    }
+
+    public final ServerDirs getServerDirs() {
+        return dirs;
     }
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
