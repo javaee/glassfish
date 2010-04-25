@@ -50,7 +50,8 @@ public @interface Service {
 ...
 }</pre>
 </div>
-<p>see <a href="auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html">Service</a> for complete reference</p>
+<p>see <a href="auto-depends/apidocs/org/jvnet/hk2/annotations/Service.html">Service</a>
+ for complete reference</p>
 </li>
 </ul>
 <div class="section"><h3>Runtime</h3>
@@ -62,7 +63,8 @@ public abstract class Scope {
     public abstract ScopeInstance current();
 }</pre>
 </div>
-<p>Example of scoping for service to the predefined <a href="org.jvnet.hk2.component.Singleton.html">Singleton</a> Scope</p>
+<p>Example of scoping for service to the predefined <a href="org.jvnet.hk2.component.Singleton.html">Singleton</a>
+ Scope</p>
 <div class="source"><pre>@Service
 public Singleton implements Scope {
 ...
@@ -78,7 +80,9 @@ public class SingletonService implements RandomContract {
 </div>
 <div class="section"><h4>Instantiation</h4>
 <p>Instantiation of components</p>
-<p>In the IoC world, components are not instantiated using a new () method call. Components are retrieved using the ComponentManager instance. The simplest way is to do that is through a getComponent(Class<i>T</i> contract) call although there are more APIs available at <a href="auto-depends/apidocs/org/jvnet/hk2/compinent/ComponentManager.html">ComponentManager</a></p>
+<p>In the IoC world, components are not instantiated using a new () method call. Components are retrieved using the ComponentManager instance. The simplest way is to do that is through a getComponent(Class<i>T</i>
+ contract) call although there are more APIs available at <a href="auto-depends/apidocs/org/jvnet/hk2/compinent/ComponentManager.html">ComponentManager</a>
+</p>
 <div class="source"><pre>    /**
      * Obtains a reference to the component inside the manager.
      *
@@ -100,13 +104,16 @@ public class SingletonService implements RandomContract {
 </div>
 </div>
 <div class="section"><h4>Lifecycle</h4>
-<p>Components can attach behaviours to their construction and destruction events by implementing the <a href="auto-depends/apidocs/org/jvnet/hk2/component/PostContruct.html">PostConstruct</a> and/or the <a href="auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html">PreDestroy</a> interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using reflection on all methods to find if they are annotated.</p>
+<p>Components can attach behaviours to their construction and destruction events by implementing the <a href="auto-depends/apidocs/org/jvnet/hk2/component/PostContruct.html">PostConstruct</a>
+ and/or the <a href="auto-depends/apidocs/org/jvnet/hk2/component/PreDestroy.html">PreDestroy</a>
+ interfaces. Interfaces have been used rather than annotations for performance as it is faster to cast component instance to any of these interfaces to check if the component has implemented one of them rather than using reflection on all methods to find if they are annotated.</p>
 </div>
 </div>
 </div>
 <div class="section"><h2>Inversion of Control</h2>
 <div class="section"><h3>Injection</h3>
-<p>Services usually rely of other services to perform their tasks and the model described above can easily be extended to have the HK2 runtime identify the @Contract implementations required by a service. This call for a new annotation <a href="auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html">Inject</a> which can be placed on fields or setter methods of any Service instantiated by the HK2 runtime and have that Service retrieved and injected during the service's instantiation by the component manager.</p>
+<p>Services usually rely of other services to perform their tasks and the model described above can easily be extended to have the HK2 runtime identify the @Contract implementations required by a service. This call for a new annotation <a href="auto-depends/apidocs/org/jvnet/hk2/annotations/Inject.html">Inject</a>
+ which can be placed on fields or setter methods of any Service instantiated by the HK2 runtime and have that Service retrieved and injected during the service's instantiation by the component manager.</p>
 <div class="source"><pre>Field :
 @Inject
 ConfigService config;
@@ -121,7 +128,8 @@ AdminCommand deployCommand;</pre>
 </div>
 </div>
 <div class="section"><h3>Extraction</h3>
-<p>Although all Services are automatically placed into the Scope for later retrieval, it is conceivable that a component want to extract more than itself. One pratical way of doing so is to use a Factory service, however, for simplicity, the HK2 runtime will also extract all fields or getter methods annotated with <a href="auto-depends/apidocs/org/jvnet/hk2/annotations/Extract.html">Extract</a></p>
+<p>Although all Services are automatically placed into the Scope for later retrieval, it is conceivable that a component want to extract more than itself. One pratical way of doing so is to use a Factory service, however, for simplicity, the HK2 runtime will also extract all fields or getter methods annotated with <a href="auto-depends/apidocs/org/jvnet/hk2/annotations/Extract.html">Extract</a>
+</p>
 <div class="source"><pre>Field :
 @Extract
 ConfigService config;
@@ -164,14 +172,14 @@ public Class ConfigService implements ... {...}
       <div class="xright">&#169;  
           2010
     
-          Sun Microsystems, Inc.
+          Oracle Corporation
           
   
 
   
   
-  &nbsp;| Last Published: 03/24/2010
-  &nbsp;| Version: 1.0.6-SNAPSHOT
+  &nbsp;| Last Published: 04/24/2010
+  &nbsp;| Version: 1.0.11-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
