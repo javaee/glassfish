@@ -48,7 +48,6 @@ public final class DomainDirs {
         }
         else {
             domainDir = getTheOneAndOnlyDir(domainsDir);
-            domainName = domainDir.getName();
         }
 
         if(!domainDir.isDirectory()) {
