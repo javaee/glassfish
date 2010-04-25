@@ -122,7 +122,7 @@
 <a name="113" href="#113">113</a> <em>                 * Obtains the value to inject, based on the type and {@link Inject} annotation.</em>
 <a name="114" href="#114">114</a> <em>                 */</em>
 <a name="115" href="#115">115</a>                 @SuppressWarnings(<span class="string">"unchecked"</span>)
-<a name="116" href="#116">116</a>                 <strong>public</strong> Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+<a name="116" href="#116">116</a>                 <strong>public</strong> &lt;V> V getValue(Object component, AnnotatedElement target, Class&lt;V> type) throws ComponentException {
 <a name="117" href="#117">117</a>                     <strong>if</strong> (type.isArray()) {
 <a name="118" href="#118">118</a>                         Class&lt;?> ct = type.getComponentType();
 <a name="119" href="#119">119</a> 
@@ -131,21 +131,21 @@
 <a name="122" href="#122">122</a>                             instances = habitat.getAllByContract(ct);
 <a name="123" href="#123">123</a>                         <strong>else</strong>
 <a name="124" href="#124">124</a>                             instances = habitat.getAllByType(ct);
-<a name="125" href="#125">125</a>                         <strong>return</strong> instances.toArray((Object[]) Array.newInstance(ct, instances.size()));
+<a name="125" href="#125">125</a>                         <strong>return</strong> type.<strong>cast</strong>(instances.toArray((Object[]) Array.newInstance(ct, instances.size())));
 <a name="126" href="#126">126</a>                     } <strong>else</strong> <strong>if</strong> (Types.isSubClassOf(type, Holder.<strong>class</strong>)){
 <a name="127" href="#127">127</a>                         Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
 <a name="128" href="#128">128</a>                         Class finalType = Types.erasure(t);
 <a name="129" href="#129">129</a>                         <strong>if</strong> (habitat.isContract(finalType)) {
-<a name="130" href="#130">130</a>                             <strong>return</strong> habitat.getInhabitants(finalType, target.getAnnotation(Inject.<strong>class</strong>).name());
+<a name="130" href="#130">130</a>                             <strong>return</strong> type.<strong>cast</strong>(habitat.getInhabitants(finalType, target.getAnnotation(Inject.<strong>class</strong>).name()));
 <a name="131" href="#131">131</a>                         }
 <a name="132" href="#132">132</a>                         <strong>try</strong> {
 <a name="133" href="#133">133</a>                             <strong>if</strong> (finalType.<strong>cast</strong>(component)!=<strong>null</strong>) {
-<a name="134" href="#134">134</a>                                 <strong>return</strong> onBehalfOf;
+<a name="134" href="#134">134</a>                                 <strong>return</strong> type.<strong>cast</strong>(onBehalfOf);
 <a name="135" href="#135">135</a>                             }
 <a name="136" href="#136">136</a>                         } <strong>catch</strong>(ClassCastException e) {
 <a name="137" href="#137">137</a>                             <em class="comment">// ignore</em>
 <a name="138" href="#138">138</a>                         }
-<a name="139" href="#139">139</a>                         <strong>return</strong> habitat.getInhabitantByType(finalType);
+<a name="139" href="#139">139</a>                         <strong>return</strong> type.<strong>cast</strong>(habitat.getInhabitantByType(finalType));
 <a name="140" href="#140">140</a> 
 <a name="141" href="#141">141</a>                     } <strong>else</strong> {
 <a name="142" href="#142">142</a>                         <strong>if</strong>(habitat.isContract(type))
@@ -161,18 +161,18 @@
 <a name="152" href="#152">152</a>             }) ,
 <a name="153" href="#153">153</a> 
 <a name="154" href="#154">154</a>             (<strong>new</strong> InjectionResolver&lt;Lead>(Lead.<strong>class</strong>) {
-<a name="155" href="#155">155</a>                 <strong>public</strong> Object getValue(Object component, AnnotatedElement target, Class type) throws ComponentException {
+<a name="155" href="#155">155</a>                 <strong>public</strong> &lt;V> V getValue(Object component, AnnotatedElement target, Class&lt;V> type) throws ComponentException {
 <a name="156" href="#156">156</a>                     <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> lead = onBehalfOf.lead();
 <a name="157" href="#157">157</a>                     <strong>if</strong>(lead==<strong>null</strong>)
 <a name="158" href="#158">158</a>                         <em class="comment">// TODO: we should be able to check this error at APT, too.</em>
 <a name="159" href="#159">159</a>                         <strong>throw</strong> <strong>new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(component.getClass()+<span class="string">" requested @Lead injection but this is not a companion"</span>);
 <a name="160" href="#160">160</a> 
 <a name="161" href="#161">161</a>                     <strong>if</strong>(type==Inhabitant.<strong>class</strong>) {
-<a name="162" href="#162">162</a>                         <strong>return</strong> lead;
+<a name="162" href="#162">162</a>                         <strong>return</strong> type.<strong>cast</strong>(lead);
 <a name="163" href="#163">163</a>                     }
 <a name="164" href="#164">164</a> 
 <a name="165" href="#165">165</a>                     <em class="comment">// otherwise inject the target object</em>
-<a name="166" href="#166">166</a>                     <strong>return</strong> lead.get();
+<a name="166" href="#166">166</a>                     <strong>return</strong> type.<strong>cast</strong>(lead.get());
 <a name="167" href="#167">167</a>                 }
 <a name="168" href="#168">168</a>             })
 <a name="169" href="#169">169</a>         };

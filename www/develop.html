@@ -57,11 +57,15 @@
 &lt;/project&gt;</pre>
 </div>
 <p>The plugin is marked as &quot;extension&quot; because this plugin adds a custom packaging &quot;hk2-jar&quot;. Once installed, this plugin can be accessible with the &quot;hk2&quot; prefix. This packaging forces relevant build phases to use the right mojo, which performs additional HK2-specific processing, such as:</p>
-<ul><li>Produce proper manifest entries from POM * Generating necessary <tt>META-INF/services</tt> files for @Service and @Contract.<p>Modules can be built and installed with usual <tt>mvn install</tt> and <tt>mvn deploy</tt>.</p>
+<ul><li>Produce proper manifest entries from POM * Generating necessary <tt>META-INF/services</tt>
+ files for @Service and @Contract.<p>Modules can be built and installed with usual <tt>mvn install</tt>
+ and <tt>mvn deploy</tt>
+.</p>
 </li>
 </ul>
 <div class="section"><h3>Running HK2 application</h3>
-<p>You can run the HK2 module you created by using the <a href="/hk2-maven-plugin/run-mojo.html">hk2:run</a> goal.</p>
+<p>You can run the HK2 module you created by using the <a href="/hk2-maven-plugin/run-mojo.html">hk2:run</a>
+ goal.</p>
 </div>
 </div>
 <div class="section"><h2>Developing a mulit-module project</h2>
@@ -79,14 +83,14 @@
       <div class="xright">&#169;  
           2010
     
-          Sun Microsystems, Inc.
+          Oracle Corporation
           
   
 
   
   
-  &nbsp;| Last Published: 03/24/2010
-  &nbsp;| Version: 1.0.6-SNAPSHOT
+  &nbsp;| Last Published: 04/24/2010
+  &nbsp;| Version: 1.0.11-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
