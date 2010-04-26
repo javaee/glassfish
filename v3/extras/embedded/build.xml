@@ -70,12 +70,6 @@ own identifying information: Portions Copyright [yyyy]
 	<delete file="${modulesdir}/console-jts-plugin.jar"/>
 	<delete file="${modulesdir}/console-web-plugin.jar"/>
 	<delete file="${modulesdir}/web-gui-plugin-common.jar"/>
-	<delete file="${modulesdir}/org.eclipse.persistence.antlr.jar"/>
-	<delete file="${modulesdir}/org.eclipse.persistence.asm.jar"/>
-	<delete file="${modulesdir}/org.eclipse.persistence.core.jar"/>
-	<delete file="${modulesdir}/org.eclipse.persistence.jpa.jar"/>
-	<delete file="${modulesdir}/org.eclipse.persistence.jpa.modelen.jar"/>
-	<delete file="${modulesdir}/org.eclipse.persistence.oracle.jar"/>
      </target>
 
 
