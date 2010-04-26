@@ -60,7 +60,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-<sun:title id="propertyContentPage" title="$resource{i18nc.lifecycleModule.editPageTitle}" helpText="$resource{$resource{i18nc.lifecycleModule.editPageTitleHelp}}">
+<sun:title id="propertyContentPage" title="$resource{i18nc.lifecycleModule.editPageTitle}" helpText="$resource{i18nc.lifecycleModule.editPageTitleHelp}">
 #include "/common/applications/lifecycleButtons.inc"
 </sun:title>
         "<br><br>

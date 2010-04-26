@@ -59,7 +59,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.NewPageTitle}" helpText="$resource{$resource{i18nc.msgSecProvider.NewPageTitleHelp}}">
+        <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.NewPageTitle}" helpText="$resource{i18nc.msgSecProvider.NewPageTitleHelp}">
 #include "providerButtons.inc"
         </sun:title>
         "<br><br>
