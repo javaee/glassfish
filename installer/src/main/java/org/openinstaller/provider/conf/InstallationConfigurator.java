@@ -398,7 +398,19 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
     String jdkHome;
    	try {
-   		jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
+		//check for bundled JDK first, set jdk home to relative value
+		File bundledJDKDir = new File (installDir, "jdk");
+		if (bundledJDKDir.exists()) {
+			if (isWindows) {
+				jdkHome="..\\..\\jdk";
+			}
+			else {
+				jdkHome="../../jdk";
+			}
+		}
+		else {
+   		    jdkHome = ConfigHelper.getStringValue("JDKSelection.directory.SELECTED_JDK");
+		}
         }catch(Exception e) {
     	LOGGER.log(Level.INFO, "JDKHome Couldnt be found ");
     	jdkHome = new File(javaHome).getParent();
