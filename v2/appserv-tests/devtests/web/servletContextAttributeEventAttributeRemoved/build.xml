@@ -67,7 +67,7 @@
         <jar destfile="shared.jar" basedir="shared"/>
         <copy file="shared.jar" 
               todir="${env.S1AS_HOME}/lib"/>
-        <antcall target="restart-server-instance-common"/>        
+        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="build" depends="compile">
@@ -96,6 +96,8 @@
 
     <target name="erase" depends="init-common">
         <antcall target="undeploy-war-common"/>
+        <delete file="${env.S1AS_HOME}/lib/shared.jar"/>
+        <antcall target="restart-server-instance-common"/>
     </target>
     
     <target name="run" depends="init-common">

@@ -80,7 +80,6 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />
@@ -112,7 +111,6 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="usage">

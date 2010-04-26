@@ -87,7 +87,6 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.alternatedocroot_3=&quot;from=/config/* dir=${env.S1AS_HOME}/domains/${admin.domain}&quot;"/>
         </antcall> 
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="build-publish-war" depends="build, publish-war-common" />
@@ -132,7 +131,6 @@
             <param name="operand.props"
                    value="${appserver.instance.name}.http-service.virtual-server.server.property.alternatedocroot_3="/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="usage">

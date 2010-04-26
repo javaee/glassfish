@@ -87,7 +87,6 @@
             <param name="groups" value="${testgroup}"/>
         </antcall>
 
-        <antcall target="restart-server-instance-common"/>
     </target>
     
     <target name="build-publish-war" depends="build, publish-war-common" />
@@ -125,7 +124,6 @@
             <param name="user" value="${testuser}"/>
         </antcall>
 
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="usage">

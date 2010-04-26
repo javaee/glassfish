@@ -61,31 +61,29 @@
     </target>
 
     <target name="setup" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
+        <antcall target="asadmin-common">
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads=2"/>
         </antcall>
-        <antcall target="asadmin-common-ignore-fail">
+        <antcall target="asadmin-common">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size-bytes=0"/>
+                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size=0"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="unsetup" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
+        <antcall target="asadmin-common">
             <param name="admin.command" value="set" />
             <param name="operand.props"
                    value="configs.config.server-config.network-config.transports.transport.tcp.acceptor-threads="/>
         </antcall>
-        <antcall target="asadmin-common-ignore-fail">
+        <antcall target="asadmin-common">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size-bytes=4096"/>
+                   value="configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-queue-size="/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="build" depends="compile">

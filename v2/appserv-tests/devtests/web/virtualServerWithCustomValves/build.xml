@@ -73,7 +73,6 @@
     
     <target name="setup" depends="init-common">
         <antcall target="copyJarToDomainLib"/>
-        <antcall target="restart-server-instance-common"/>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"

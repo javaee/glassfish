@@ -46,7 +46,7 @@ public abstract class BaseDevTest {
      */
     public boolean asadmin(final String... args) {
         List<String> command = new ArrayList<String>();
-        command.add("asadmin");
+        command.add(System.getenv().get("S1AS_HOME") + "/bin/asadmin");
         command.add("--echo=" + DEBUG);
         command.add("--terse=" + !DEBUG);
         command.addAll(Arrays.asList(args));

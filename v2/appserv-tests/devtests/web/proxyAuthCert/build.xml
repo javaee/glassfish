@@ -79,7 +79,6 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.auth-pass-through-enabled=true"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="re-deploy" depends="init-common">
@@ -112,7 +111,6 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.auth-pass-through-enabled="/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="usage">

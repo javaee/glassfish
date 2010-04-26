@@ -110,7 +110,6 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.protocols.protocol.http-listener-2.ssl.client-auth-enabled=true"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="restore" depends="init-common">
@@ -129,7 +128,6 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"/>
         </antcall>
-        <antcall target="restart-server-instance-common"/>
     </target>
 
     <target name="usage">
