@@ -68,7 +68,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18nc.auditModule.EditPageTitle}" helpText="$resource{$resource{i18nc.auditModule.EditPageTitleHelp}}">
+        <sun:title id="propertyContentPage" title="$resource{i18nc.auditModule.EditPageTitle}" helpText="$resource{i18nc.auditModule.EditPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
         "<br><br>
