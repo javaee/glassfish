@@ -244,7 +244,8 @@ public class ContextRuleSet extends RuleSetBase {
         digester.addSetProperties(prefix + "Context/Valve");
         digester.addSetNext(prefix + "Context/Valve",
                             "addValve",
-                            "org.apache.catalina.Valve");
+                            "org.glassfish.web.valve.GlassFishValve");
+
         digester.addCallMethod(prefix + "Context/WatchedResource",
                                "addWatchedResource", 0);
 
