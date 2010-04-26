@@ -326,6 +326,14 @@ public interface Manager {
     public void addPropertyChangeListener(PropertyChangeListener listener);
 
     /**
+     * Change the session ID of the current session to a new randomly generated
+     * session ID.
+     * 
+     * @param session   The session to change the session ID for
+     */
+    public void changeSessionId(Session session);
+
+    /**
      * Get a session from the recycled ones or create a new empty one.
      * The PersistentManager manager does not need to create session data
      * because it reads it from the Store.

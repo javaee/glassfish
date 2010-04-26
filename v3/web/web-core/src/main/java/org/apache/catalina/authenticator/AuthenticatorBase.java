@@ -152,7 +152,13 @@ public abstract class AuthenticatorBase
      */
     protected boolean cache = true;
     
-    
+    /**
+     * Should the session ID, if any, be changed upon a successful
+     * authentication to prevent a session fixation attack?
+     */
+    protected boolean changeSessionIdOnAuthentication = false;
+
+
     /**
      * The Context to which this Valve is attached.
      */
@@ -395,6 +401,32 @@ public abstract class AuthenticatorBase
     public void setSecurePagesWithPragma(boolean securePagesWithPragma) {
         this.securePagesWithPragma = securePagesWithPragma;
     }    
+
+    /**
+     * Return the flag that states if we should change the session ID of an
+     * existing session upon successful authentication.
+     * 
+     * @return <code>true</code> to change session ID upon successful
+     *         authentication, <code>false</code> to do not perform the change.
+     */
+    public boolean isChangeSessionIdOnAuthentication() {
+        return changeSessionIdOnAuthentication;
+    }
+
+    /**
+     * Set the value of the flag that states if we should change the session ID
+     * of an existing session upon successful authentication.
+     * 
+     * @param changeSessionIdOnAuthentication
+     *            <code>true</code> to change session ID upon successful
+     *            authentication, <code>false</code> to do not perform the
+     *            change.
+     */
+    public void setChangeSessionIdOnAuthentication(
+            boolean changeSessionIdOnAuthentication) {
+        this.changeSessionIdOnAuthentication = changeSessionIdOnAuthentication;
+    }
+
     // --------------------------------------------------------- Public Methods
     
     
@@ -855,10 +887,16 @@ public abstract class AuthenticatorBase
         // Cache the authentication information in our request
         request.setAuthType(authType);
         request.setUserPrincipal(principal);
+
+        Session session = getSession(request, false);
+        if (session != null && changeSessionIdOnAuthentication) {
+            Manager manager = request.getContext().getManager();
+            manager.changeSessionId(session);
+            request.changeSessionId(session.getId());
+        }
         
         // Cache the authentication information in our session, if any
         if (cache) {
-            Session session = getSession(request, false);
             if (session != null) {
                 session.setAuthType(authType);
                 session.setPrincipal(principal);

@@ -415,6 +415,17 @@ public interface Request {
      */
     public Session getSessionInternal(boolean create);
 
+
+    /**
+     * Change the ID of the session that this request is associated with. There
+     * are several things that may trigger an ID change. These include moving
+     * between nodes in a cluster and session fixation prevention during the
+     * authentication process.
+     * 
+     * @param session   The session to change the session ID for
+     */
+    public void changeSessionId(String newSessionId);
+
     public Session lockSession();
 
     public void unlockSession();
