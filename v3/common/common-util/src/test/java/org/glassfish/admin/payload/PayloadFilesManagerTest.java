@@ -779,12 +779,12 @@ public class PayloadFilesManagerTest {
             final URI dirURI = URI.create(DIR);
             final File dir = new File(origDir, DIR);
             dir.mkdirs();
-            final long dirCreationTime = dir.lastModified();
             desiredResults.add(dir);
 
             final File file = new File(dir, FILE_NAME);
             desiredResults.add(new File(targetDir.toURI().resolve(FILE_PREFIX + FILE_NAME)));
             writeFile(file, "Here is the File", "which has an", "additional line");
+            final long dirCreationTime = dir.lastModified();
 
 
             new CommonPermTest() {
