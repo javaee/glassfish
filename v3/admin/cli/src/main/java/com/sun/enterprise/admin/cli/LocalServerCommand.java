@@ -184,11 +184,8 @@ public abstract class LocalServerCommand extends CLICommand {
     }
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
+
     private ServerDirs serverDirs;
-
-
-
-
 }
 
 

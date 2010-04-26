@@ -78,8 +78,6 @@ public class StartDomainCommand extends LocalDomainCommand {
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName0;
 
-    private File pidFile;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
     // 5 minute timeout should be plenty!
@@ -95,10 +93,6 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     @Override
     protected int executeCommand() throws CommandException {
-        if (getDomainName() != null) {
-            // local case, initialize pidFile
-            pidFile = new File(new File(getDomainRootDir(), "config"), "pid");
-        }
 
         String gfejar = System.getenv("GFE_JAR");
         if (gfejar != null && gfejar.length() > 0)
@@ -126,6 +120,7 @@ public class StartDomainCommand extends LocalDomainCommand {
                  * declare the server up, make sure it doesn't exist
                  * before we start.
                  */
+                File pidFile = getServerDirs().getPidFile();
                 if (pidFile != null && pidFile.exists()) {
                     logger.printDebugMessage("pid file " + pidFile +
                                                 " exists, removing it");
@@ -277,6 +272,7 @@ public class StartDomainCommand extends LocalDomainCommand {
 
         pinged:
         while (!timedOut(startWait)) {
+            File pidFile = getServerDirs().getPidFile();
             if (pidFile != null) {
                 logger.printDebugMessage("Check for pid file: " + pidFile);
                 if (pidFile.exists()) {

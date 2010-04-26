@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.util.io.DomainDirs;
+import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
 import java.util.*;
 import java.net.Socket;
@@ -76,8 +77,25 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     private DomainDirs dd = null;
 
     @Override
+    /*
+     * The prepare method must ensure that the superclass' implementation of
+     * the method is called.  
+     * The reason we override here is that we can get into trouble with layers 
+     * of NPE possibilities.  So here the ServerDirs object is initialized
+     * right away.  It will return null for all non-boolean method calls.  But we
+     * never have to do a null-check on the ServerDirs object itself.
+     * ServerDirs is 100% immutable.  A new one will be made later if needed.
+     */
+    protected void prepare()
+            throws CommandException, CommandValidationException {
+        super.prepare();
+        setServerDirs(new ServerDirs()); // do-nothing ServerDirs object...
+    }
+
+        @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
+
         initDomain();
     }
     

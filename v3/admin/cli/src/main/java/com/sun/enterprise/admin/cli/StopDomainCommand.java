@@ -60,8 +60,6 @@ public class StopDomainCommand extends LocalDomainCommand {
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName;
 
-    private File pidFile;
-
     private static final long WAIT_FOR_DAS_TIME_MS = 60000; // 1 minute
 
     private static final LocalStringsImpl strings =
@@ -87,11 +85,6 @@ public class StopDomainCommand extends LocalDomainCommand {
         else if (domainName != null)   // remote case
             throw new CommandException(
                 strings.get("StopDomain.noDomainNameAllowed"));
-
-        if (domainName != null) {
-            // local case, initialize pidFile
-            pidFile = new File(new File(getDomainRootDir(), "config"), "pid");
-        }
     }
 
     @Override
@@ -207,11 +200,16 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Is the server still running?
      */
     private boolean isRunning() {
-        if (domainName != null)
-            return pidFile.exists();                    // local case
+        if (domainName != null) {
+            File pf = getServerDirs().getPidFile();
+
+            if(pf == null)
+                return false;
+
+            return pf.exists();
+        }
         else
             return isRunning(programOpts.getHost(),     // remote case
             		programOpts.getPort());      		
-
     }
 }

@@ -103,7 +103,6 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
         System.out.println("" + this);
 
         try {
-            pidFile = new File(new File(instanceDir, "config"), "pid");
             createLauncher();
             // this can be slow, 500 msec,
             // with --passwordfile option it is ~~ 18 msec
@@ -162,5 +161,4 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
     private static final String MASTER_PASSWORD = "AS_ADMIN_MASTERPASSWORD";
     private GFLauncherInfo info;
     private GFLauncher launcher;
-    private   File pidFile;
 }

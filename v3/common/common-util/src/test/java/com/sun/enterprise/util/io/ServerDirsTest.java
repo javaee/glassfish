@@ -69,22 +69,32 @@ public class ServerDirsTest {
      *
     @Test
     public void testNoGrandParent() throws Exception {
-        assertNotNull(userNextToTopLevelFile);
-        assertTrue(userNextToTopLevelFile.isDirectory());
-        File parent = userNextToTopLevelFile.getParentFile();
-        assertNotNull(parent);
-        assertNull(parent.getParentFile());
-        assertEquals(parent, userTopLevelFile);
+    assertNotNull(userNextToTopLevelFile);
+    assertTrue(userNextToTopLevelFile.isDirectory());
+    File parent = userNextToTopLevelFile.getParentFile();
+    assertNotNull(parent);
+    assertNull(parent.getParentFile());
+    assertEquals(parent, userTopLevelFile);
 
-        ServerDirs sd = new ServerDirs(userNextToTopLevelFile);
+    ServerDirs sd = new ServerDirs(userNextToTopLevelFile);
     }
-**/
+     **/
     @Test
     public void testSpecialFiles() throws IOException {
         ServerDirs sd = new ServerDirs(childFile);
         assertTrue(sd.getConfigDir() != null);
         assertTrue(sd.getDomainXml() != null);
     }
+
+    @Test
+    public void testNoArgConstructor() {
+        ServerDirs sd = new ServerDirs();
+        // check 3 volunteers for nullness...
+        assertNull(sd.getPidFile());
+        assertNull(sd.getServerGrandParentDir());
+        assertFalse(sd.isValid());
+    }
+
     private static void initUserDirs() {
         // this is totally developer-environment dependent!
         // very inefficient but who cares -- this is a unit test.

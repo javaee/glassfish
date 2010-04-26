@@ -31,6 +31,7 @@ import java.io.File;
  * by our definition.
  *
  * THIS CLASS IS GUARANTEED THREAD SAFE
+ * THIS CLASS IS GUARANTEED IMMUTABLE
  *
  * Contract:  Caller is supposed to NOT call methods on an instance of this class.
  * It's "advanced java" to be able to do that anyway.
@@ -44,6 +45,22 @@ import java.io.File;
  * Created: April 19, 2010
  */
 public class ServerDirs {
+
+    // do-nothing constructor
+/**
+ *
+ */
+    public ServerDirs() {
+        serverName = null;
+        serverDir = null;
+        parentDir = null;
+        grandParentDir = null;
+        configDir = null;
+        domainXml = null;
+        pidFile = null;
+        valid = false;
+    }
+
     public ServerDirs(File leaf) throws IOException {
         if(leaf == null)
             throw new IllegalArgumentException(strings.get("ServerDirs.nullArg", "ServerDirs.ServerDirs()"));
@@ -65,6 +82,7 @@ public class ServerDirs {
         grandParentDir = parentDir.getParentFile();
         configDir = new File(serverDir, "config");
         domainXml = new File(configDir, "domain.xml");
+        pidFile   = new File(configDir, "pid");
 
         if(!configDir.isDirectory())
             throw new IOException("Bad config directory.  It should be here: "
@@ -116,6 +134,13 @@ public class ServerDirs {
         return configDir;
     }
 
+    public final File getPidFile() {
+        if(!valid)
+            return null;
+
+        return pidFile;
+    }
+
     public final boolean isValid() {
         return valid;
     }
@@ -129,12 +154,11 @@ public class ServerDirs {
     private final File grandParentDir;
     private final File configDir;
     private final File domainXml;
+    private final File pidFile;
     private final boolean valid;
 
 
     // Can be shared among classes in the package
     static final LocalStringsImpl strings = new LocalStringsImpl(ServerDirs.class);
                 // root-dir/config/domain.xml
-
-
 }
