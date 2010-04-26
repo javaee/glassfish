@@ -175,6 +175,8 @@ public final class PersistenceType {
                 pType = HA;
             else if (type.equalsIgnoreCase(REPLICATED.getType()))
                 pType = REPLICATED;    
+            else if (type.equalsIgnoreCase(COHERENCE_WEB.getType()))
+                pType = COHERENCE_WEB;
         }
         return pType;
     }    
