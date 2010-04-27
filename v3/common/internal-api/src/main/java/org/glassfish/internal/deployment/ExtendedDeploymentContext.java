@@ -36,6 +36,7 @@
 
 package org.glassfish.internal.deployment;
 
+import java.io.File;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -134,6 +135,13 @@ public interface ExtendedDeploymentContext extends DeploymentContext {
      */
     public void setClassLoader(ClassLoader cloader);
 
+    /**
+     * Returns the internal directory for the application (used for holding
+     * the uploaded archive, for example).
+     *
+     * @return location of the internal directory for the application
+     */
+    public File getAppInternalDir();
 
 
 }

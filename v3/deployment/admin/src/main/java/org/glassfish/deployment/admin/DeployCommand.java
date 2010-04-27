@@ -312,6 +312,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 retrieveArtifacts(context, name, retrieve, downloadableArtifacts,
                         false);
             }
+
+            saveUploadedFiles(deploymentContext);
         } catch(Throwable e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             report.failure(logger,localStrings.getLocalString(
@@ -351,6 +353,21 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
               payloadFilesMgr.cleanup();
           }
       }
+    }
+
+    private void saveUploadedFiles(final ExtendedDeploymentContext deploymentContext) {
+        /*
+         * Move uploaded archives from the temp location to a permanent
+         * place for use in cluster synchronization.
+         */
+        if (payloadFiles.size() > 0) {
+            for (File f : payloadFiles) {
+                final File savedArchiveFile = new File(deploymentContext.getAppInternalDir(),
+                        f.getName());
+                deploymentContext.getAppInternalDir().mkdirs();
+                FileUtils.renameFile(f, savedArchiveFile);
+            }
+        }
     }
 
     private File choosePathFile(AdminCommandContext context) {

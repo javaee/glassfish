@@ -68,6 +68,7 @@ import com.sun.enterprise.util.io.FileUtils;
  */
 public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDestroy {
 
+    private static final String INTERNAL_DIR_NAME = "__internal";
 
     ReadableArchive source;
     ReadableArchive originalSource;
@@ -471,5 +472,9 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
      */
     public ActionReport getActionReport() {
         return actionReport;
+    }
+
+    public File getAppInternalDir() {
+        return new File(getSourceDir(), INTERNAL_DIR_NAME);
     }
 }
