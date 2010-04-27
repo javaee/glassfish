@@ -26,7 +26,6 @@ own identifying information: Portions Copyright [yyyy]
     <property name="jardir" value="${rootdir}/packager_jars"/>
     <property name="modulesdir" value="${jardir}/glassfishv3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
-<!--    <property name="finaljar" value="${rootdir}/glassfish-embedded-all.jar"/> -->
  
 
     <target name="create.distribution">
@@ -34,9 +33,11 @@ own identifying information: Portions Copyright [yyyy]
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
         <antcall target="rejar"/>
-        <antcall target="addRars"/>
-
-        <attachArtifact file="${finaljar}"/>
+	<antcall target="unjar"/>
+        <antcall target="jar"/>
+        
+    	<antcall target="addRars"/>
+	<attachArtifact file="${finaljar}"/>
      </target>
 
      <target name="makeJarDir">
@@ -82,6 +83,23 @@ own identifying information: Portions Copyright [yyyy]
             </manifest>
         </rejar>
     </target>
+
+
+    <target name="unjar">
+	<unjar src="${finaljar}" dest="${rootdir}/temp" />
+        <delete>
+		<fileset dir="${rootdir}/temp/META-INF/">
+			<include name="*.inf"/>
+			<include name="*.RSA"/>
+			<include name="*.SF"/>
+		</fileset>
+	</delete>
+     </target>
+
+    <target name="jar">
+	<jar destfile="${finaljar}" basedir="${rootdir}/temp" />
+    </target>
+
     <target name="addRars" if="includeRars">
         <echo message="adding rars"/>
         <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfishv3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
