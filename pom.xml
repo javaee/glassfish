@@ -100,8 +100,7 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.5</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.9.18-m</grizzly.version>
-        <grizzly-config.version>1.9.18-m</grizzly-config.version>
+        <grizzly.version>1.9.18-o</grizzly.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jaxws-api.version>2.1</jaxws-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
@@ -782,7 +781,7 @@
             <dependency>
                 <groupId>com.sun.grizzly</groupId>
                 <artifactId>grizzly-config</artifactId>
-                <version>${grizzly-config.version}</version>
+                <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
