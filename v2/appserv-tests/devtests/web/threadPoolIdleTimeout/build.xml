@@ -65,7 +65,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=5"/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.request-timeout-seconds=5"/>
         </antcall>
     </target>
 
@@ -73,7 +73,7 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set"/>
             <param name="operand.props"
-                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds="/>
+                   value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.request-timeout-seconds="/>
         </antcall>
     </target>
 
