@@ -302,6 +302,9 @@ public final class J2EEInstanceListener implements InstanceListener {
         } else {
             instance = event.getServlet();
         }
+        if (instance == null) {
+            return;
+        }
 
         // Emit monitoring probe event
         if (instance instanceof Servlet) {
