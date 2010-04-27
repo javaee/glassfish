@@ -118,7 +118,7 @@ public final class InvokerServlet
     /**
      * Return the Wrapper with which we are associated.
      */
-    public Wrapper getWrapper() {
+    public synchronized Wrapper getWrapper() {
 
         return (this.wrapper);
 
