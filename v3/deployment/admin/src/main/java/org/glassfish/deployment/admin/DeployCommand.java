@@ -355,7 +355,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
       }
     }
 
-    private void saveUploadedFiles(final ExtendedDeploymentContext deploymentContext) {
+    private void saveUploadedFiles(final ExtendedDeploymentContext deploymentContext) throws IOException {
         /*
          * Move uploaded archives from the temp location to a permanent
          * place for use in cluster synchronization.
@@ -365,7 +365,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 final File savedArchiveFile = new File(deploymentContext.getAppInternalDir(),
                         f.getName());
                 deploymentContext.getAppInternalDir().mkdirs();
-                FileUtils.renameFile(f, savedArchiveFile);
+                /*
+                 * Copy the file.  This avoids potential problems with
+                 * File.renameTo being unable to work across different file
+                 * systems.  Because the original uploaded file is managed
+                 * by PayloadFilesManager.Temp, it'll be deleted as part of
+                 * clean-up.
+                 */
+                FileUtils.copyFile(f, savedArchiveFile);
             }
         }
     }
