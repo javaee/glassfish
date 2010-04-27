@@ -51,6 +51,7 @@ import java.io.Serializable;
  * Order is significant among values, and null values are allowed, although null keys are not.
  * 
  * @author Kohsuke Kawaguchi
+ * @author Jerome Dochez
  */
 public class MultiMap<K,V> implements Serializable {
     private final Map<K,List<V>> store;
@@ -61,12 +62,12 @@ public class MultiMap<K,V> implements Serializable {
         final String newline = System.getProperty( "line.separator" );
         builder.append( "{" );
         for ( final K key : store.keySet() ) {
-            builder.append( key  + ": {" );
+            builder.append( key).append(": {" );
             for( final V value : store.get(key) ) {
-                builder.append( value.toString() + "," );
+                builder.append( value.toString()).append("," );
             }
             // trailing comma is OK
-            builder.append( "}" + newline );
+            builder.append( "}").append(newline);
         }
         builder.append( "}" );
         return builder.toString();
@@ -81,6 +82,7 @@ public class MultiMap<K,V> implements Serializable {
 
     /**
      * Creates a multi-map backed by the given store.
+     * @param store map to copy
      */
     private MultiMap(Map<K,List<V>> store) {
         this.store = store;
@@ -88,6 +90,7 @@ public class MultiMap<K,V> implements Serializable {
 
     /**
      * Copy constructor.
+     * @param base map to copy
      */
     public MultiMap(MultiMap<K,V> base) {
         this();
@@ -96,7 +99,9 @@ public class MultiMap<K,V> implements Serializable {
     }
 
     /**
-     * Adds one more value.
+     * Adds one more key-value pair.
+     * @param k key to store the entry under
+     * @param v value to store in the k's values.
      */
     public final void add(K k,V v) {
         List<V> l = store.get(k);
@@ -111,6 +116,7 @@ public class MultiMap<K,V> implements Serializable {
      * Replaces all the existing values associated with the key
      * by the given value.
      *
+     * @param k key for the values
      * @param v
      *      Can be null or empty.
      */
@@ -122,6 +128,8 @@ public class MultiMap<K,V> implements Serializable {
      * Replaces all the existing values associated wit hthe key
      * by the given single value.
      *
+     * @param k key for the values
+     * @param v singleton value for k key
      * <p>
      * This is short for <tt>set(k,Collections.singleton(v))</tt>
      */
@@ -132,6 +140,8 @@ public class MultiMap<K,V> implements Serializable {
     }
 
     /**
+     * Returns the elements indexed by the provided key
+     * @param k key for the values
      * @return
      *      Can be empty but never null. Read-only.
      */
@@ -143,9 +153,20 @@ public class MultiMap<K,V> implements Serializable {
 
     /**
      * Checks if the map contains the given key.
+     * @param k key to test
+     * @return true if the map contains at least one element for this key
      */
-    public boolean containsKey(K key) {
-        return !get(key).isEmpty();
+    public boolean containsKey(K k) {
+        return !get(k).isEmpty();
+    }
+
+    /**
+     * Removes an key value pair from the map
+     * @param key key to be removed
+     * @return the value stored under this key or null if there was none
+     */
+    public List<V> remove(K key) {
+        return store.remove(key);
     }
 
     /**
@@ -154,6 +175,7 @@ public class MultiMap<K,V> implements Serializable {
      * This is useful when you know the given key only has one value and you'd like
      * to get to that value.
      *
+     * @param k key for the values
      * @return
      *      null if the key has no values or it has a value but the value is null.
      */
@@ -166,13 +188,14 @@ public class MultiMap<K,V> implements Serializable {
 
     /**
      * Lists up all entries.
+     * @return a {@link java.util.Set} of {@link java.util.Map.Entry} of entries
      */
     public Set<Entry<K,List<V>>> entrySet() {
         return store.entrySet();
     }
 
     /**
-     * Format the map as "key=value1,key=value2,...."
+     * @return the map as "key=value1,key=value2,...."
      */
     public String toCommaSeparatedString() {
         StringBuilder buf = new StringBuilder();
@@ -201,11 +224,12 @@ public class MultiMap<K,V> implements Serializable {
         return store.size();
     }
 
-    private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());
+    private static final  MultiMap EMPTY = new MultiMap(Collections.emptyMap());
 
     /**
      * Gets the singleton read-only empty multi-map.
      *
+     * @return an empty map
      * @see Collections#emptyMap()
      */
     public static <K,V> MultiMap<K,V> emptyMap() {
