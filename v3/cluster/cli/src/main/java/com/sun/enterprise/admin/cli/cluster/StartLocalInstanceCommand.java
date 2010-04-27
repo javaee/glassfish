@@ -40,13 +40,7 @@ import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
-import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
-import java.io.*;
-import java.security.KeyStore;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -56,13 +50,13 @@ import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.ObjectAnalyzer;
-
+import com.sun.enterprise.admin.cli.StartServerCommand;
 /**
  * Start a local server instance.
  */
 @Service(name = "start-local-instance")
 @Scoped(PerLookup.class)
-public class StartLocalInstanceCommand extends LocalInstanceCommand {
+public class StartLocalInstanceCommand extends LocalInstanceCommand implements StartServerCommand {
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
 
@@ -78,6 +72,11 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartLocalInstanceCommand.class);
+
+    @Override
+    public GFLauncherFactory.ServerType getType() {
+         return GFLauncherFactory.ServerType.instance;
+    }
 
     @Override
     protected void validate()
@@ -138,9 +137,9 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand {
      * this command.  The launcher is for a server of the specified type.
      * Sets the launcher and info fields.
      */
-    private void createLauncher()
+    public void createLauncher()
                         throws GFLauncherException, MiniXmlParserException {
-            launcher = GFLauncherFactory.getInstance(GFLauncherFactory.ServerType.instance);
+            launcher = GFLauncherFactory.getInstance(getType());
             info = launcher.getInfo();
             info.setInstanceName(instanceName);
             info.setInstanceRootDir(instanceDir);

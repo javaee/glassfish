@@ -45,11 +45,10 @@ import java.io.File;
  * Created: April 19, 2010
  */
 public class ServerDirs {
-
     // do-nothing constructor
-/**
- *
- */
+    /**
+     *
+     */
     public ServerDirs() {
         serverName = null;
         serverDir = null;
@@ -82,15 +81,15 @@ public class ServerDirs {
         grandParentDir = parentDir.getParentFile();
         configDir = new File(serverDir, "config");
         domainXml = new File(configDir, "domain.xml");
-        pidFile   = new File(configDir, "pid");
+        pidFile = new File(configDir, "pid");
 
         if(!configDir.isDirectory())
             throw new IOException("Bad config directory.  It should be here: "
-                    + configDir );
+                    + configDir);
 
-        if (!domainXml.canRead())
+        if(!domainXml.canRead())
             throw new IOException("No domain.xml.  It should be here: "
-                    +domainXml);
+                    + domainXml);
 
         valid = true;
     }
@@ -100,6 +99,27 @@ public class ServerDirs {
             return null;
 
         return serverName;
+    }
+
+    /**
+     * Return a message suitable for printing, not just for errors.
+     * @return
+     */
+    public final String deletePidFile() {
+        if(!valid)
+            return "Internal Error: ServerDirs is in an invalid state";
+
+        if(!pidFile.isFile())
+            return null;
+
+        String message = "pid file " + pidFile + " exists, removing it.";
+
+        if(!pidFile.delete()) {
+            // Hmmm... can't delete it, don't use it
+            // TODO -- try to go inside it and delete the contents
+            return message + "  Couldn't remove pid file";
+        }
+        return message;
     }
 
     public final File getServerDir() {
@@ -144,7 +164,6 @@ public class ServerDirs {
     public final boolean isValid() {
         return valid;
     }
-
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -156,9 +175,7 @@ public class ServerDirs {
     private final File domainXml;
     private final File pidFile;
     private final boolean valid;
-
-
     // Can be shared among classes in the package
     static final LocalStringsImpl strings = new LocalStringsImpl(ServerDirs.class);
-                // root-dir/config/domain.xml
+    // root-dir/config/domain.xml
 }

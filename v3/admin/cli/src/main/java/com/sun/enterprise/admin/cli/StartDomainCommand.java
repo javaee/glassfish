@@ -61,7 +61,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParserException;
  */
 @Service(name = "start-domain")
 @Scoped(PerLookup.class)
-public class StartDomainCommand extends LocalDomainCommand {
+public class StartDomainCommand extends LocalDomainCommand implements StartServerCommand {
 
     private GFLauncherInfo info;
     private GFLauncher launcher;
@@ -85,6 +85,11 @@ public class StartDomainCommand extends LocalDomainCommand {
     // the name of the master password option
 
     @Override
+    public GFLauncherFactory.ServerType getType() {
+         return GFLauncherFactory.ServerType.domain;
+    }
+
+    @Override
     protected void validate()
                         throws CommandException, CommandValidationException {
         setDomainName(domainName0);
@@ -93,17 +98,8 @@ public class StartDomainCommand extends LocalDomainCommand {
 
     @Override
     protected int executeCommand() throws CommandException {
-
-        String gfejar = System.getenv("GFE_JAR");
-        if (gfejar != null && gfejar.length() > 0)
-            return runCommandEmbedded();
-        else
-            return runCommandNotEmbedded();
-    }
-
-    private int runCommandNotEmbedded() throws CommandException {
         try {
-            createLauncher(GFLauncherFactory.ServerType.domain);
+            createLauncher();
 
             if (Boolean.getBoolean(RESTART_FLAG)) {
                 new DeathWaiter();
@@ -115,21 +111,10 @@ public class StartDomainCommand extends LocalDomainCommand {
                     return ERROR;
                 }
 
-                /*
-                 * If we're going to wait for the pid file to exist to
-                 * declare the server up, make sure it doesn't exist
-                 * before we start.
-                 */
-                File pidFile = getServerDirs().getPidFile();
-                if (pidFile != null && pidFile.exists()) {
-                    logger.printDebugMessage("pid file " + pidFile +
-                                                " exists, removing it");
-                    if (!pidFile.delete()) {
-                        // Hmmm... can't delete it, don't use it
-                        logger.printDebugMessage("Couldn't remove pid file");
-                        pidFile = null;
-                    }
-                }
+                String msg = getServerDirs().deletePidFile();
+
+                if(msg != null)
+                    logger.printDebugMessage(msg);
             }
 
             // this can be slow, 500 msec,
@@ -137,42 +122,7 @@ public class StartDomainCommand extends LocalDomainCommand {
             String mpv = getMasterPassword();
             info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
 
-            /*
-             * If this domain needs to be upgraded and --upgrade wasn't
-             * specified, first start the domain to do the upgrade and
-             * then start the domain again for real.
-             */
-            if (!upgrade && launcher.needsUpgrade()) {
-                logger.printMessage(strings.get("upgradeNeeded"));
-                info.setUpgrade(true);
-                launcher.setup();
-                launcher.launch();
-                Process p = launcher.getProcess();
-                int exitCode = -1;
-                try {
-                    exitCode = p.waitFor();
-                } catch (InterruptedException ex) {
-                    // should never happen
-                }
-                if (exitCode != SUCCESS) {
-                    ProcessStreamDrainer psd =
-                        launcher.getProcessStreamDrainer();
-                    String output = psd.getOutErrString();
-                    if (ok(output))
-                        throw new CommandException(
-                                strings.get("upgradeFailedOutput",
-                                    info.getDomainName(), exitCode, output));
-                    else
-                        throw new CommandException(strings.get("upgradeFailed",
-                                    info.getDomainName(), exitCode));
-                }
-                logger.printMessage(strings.get("upgradeSuccessful"));
-
-                // need a new launcher to start the domain for real
-                createLauncher(GFLauncherFactory.ServerType.domain);
-                info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
-                // continue with normal start...
-            }
+            doUpgrade(mpv);
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
@@ -212,10 +162,13 @@ public class StartDomainCommand extends LocalDomainCommand {
      * Create a launcher for the domain specified by arguments to
      * this command.  The launcher is for a server of the specified type.
      * Sets the launcher and info fields.
+     * It has to be public because it is part of an interface
      */
-    private void createLauncher(GFLauncherFactory.ServerType type)
+    
+    @Override
+    public void createLauncher()
                         throws GFLauncherException, MiniXmlParserException {
-            launcher = GFLauncherFactory.getInstance(type);
+            launcher = GFLauncherFactory.getInstance(getType());
             info = launcher.getInfo();
 
             info.setDomainName(getDomainName());
@@ -230,43 +183,6 @@ public class StartDomainCommand extends LocalDomainCommand {
 
             launcher.setup();
     }
-
-
-
-    private int runCommandEmbedded() throws CommandException {
-        try {
-            createLauncher(GFLauncherFactory.ServerType.embedded);
-
-            // now admin ports are set.
-            Set<Integer> ports = info.getAdminPorts();
-
-            for(int port : ports) {
-                if (NetUtils.isRunning(port)) {
-                    throw new CommandException("The Admin port " + port + " is already taken");
-                }
-            }
-
-            launcher.launch();
-
-            // if we are in verbose mode, we definitely do NOT want to wait for
-            // DAS, since it already ran and is now dead!!
-            //if(!verbose) {
-                StartServerHelper helper = new StartServerHelper(
-                        logger,
-                        programOpts.isTerse(),
-                        getServerDirs().getPidFile(),
-                        launcher);
-                helper.waitForServer();
-                report();
-            //}
-            return SUCCESS;
-        } catch (GFLauncherException gfle) {
-            throw new CommandException(gfle.getMessage());
-        } catch (MiniXmlParserException me) {
-            throw new CommandException(me);
-        }
-    }
-
  
     private void report() {
         String logfile;
@@ -327,6 +243,46 @@ public class StartDomainCommand extends LocalDomainCommand {
         } catch (FileNotFoundException ex) {
             //
         }
+    }
+
+    /*
+     * If this domain needs to be upgraded and --upgrade wasn't
+     * specified, first start the domain to do the upgrade and
+     * then start the domain again for real.
+     */
+    private void doUpgrade(String mpv) throws GFLauncherException, MiniXmlParserException, CommandException {
+        if(upgrade || !launcher.needsUpgrade())
+            return;
+
+        logger.printMessage(strings.get("upgradeNeeded"));
+        info.setUpgrade(true);
+        launcher.setup();
+        launcher.launch();
+        Process p = launcher.getProcess();
+        int exitCode = -1;
+        try {
+            exitCode = p.waitFor();
+        } catch (InterruptedException ex) {
+            // should never happen
+        }
+        if (exitCode != SUCCESS) {
+            ProcessStreamDrainer psd =
+                launcher.getProcessStreamDrainer();
+            String output = psd.getOutErrString();
+            if (ok(output))
+                throw new CommandException(
+                        strings.get("upgradeFailedOutput",
+                            info.getDomainName(), exitCode, output));
+            else
+                throw new CommandException(strings.get("upgradeFailed",
+                            info.getDomainName(), exitCode));
+        }
+        logger.printMessage(strings.get("upgradeSuccessful"));
+
+        // need a new launcher to start the domain for real
+        createLauncher();
+        info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
+        // continue with normal start...
     }
 
     private class DeathWaiter implements Runnable{
