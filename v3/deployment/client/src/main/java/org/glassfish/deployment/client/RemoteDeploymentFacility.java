@@ -111,7 +111,7 @@ public class RemoteDeploymentFacility extends AbstractDeploymentFacility impleme
                 ProgramOptions po = prepareRemoteCommandProgramOptions(env);
                 RemoteCommand rc =
                     new RemoteCommand(commandName, po, env, "jsr-88/xml", baos);
-                rc.execute(commandArgs);
+                rc.executeAndReturnOutput(commandArgs);
                 DFDeploymentStatus status = CommandXMLResultParser.parse(new ByteArrayInputStream(baos.toByteArray()));
                 return status;
             } catch (Exception ex) {
