@@ -98,7 +98,7 @@
         <jsf-api.version>2.0.2-b10</jsf-api.version>
         <jsf-impl.version>2.0.2-b10</jsf-impl.version>
         <jsf-ext.version>0.2</jsf-ext.version>
-        <woodstock.version>4.0.2.3</woodstock.version>
+        <woodstock.version>4.0.2.5</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>1.9.18-m</grizzly.version>
         <grizzly-config.version>1.9.18-m</grizzly-config.version>
