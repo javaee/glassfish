@@ -35,7 +35,7 @@
  */
 
 /*
- * Copyright 2004-2005 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright 2004-2010 Sun Microsystems, Inc.  All rights reserved.
  * Use is subject to license terms.
  */
 
@@ -520,6 +520,44 @@ public class NetUtils {
         }
         return isSecure;
     }
+
+    /**
+     * There is sometimes a need for subclasses to know if a
+     * <code> local domain </code> is running. An example of such a command is
+     * change-master-password command. The stop-domain command also needs to
+     * know if a domain is running <i> without </i> having to provide user
+     * name and password on command line (this is the case when I own a domain
+     * that has non-default admin user and password) and want to stop it
+     * without providing it.
+     * <p>
+     * In such cases, we need to know if the domain is running and this method
+     * provides a way to do that.
+     *
+     * @return boolean indicating whether the server is running
+     */
+    public static boolean isRunning(String host, int port) {
+        Socket server = null;
+        try {
+            server = new Socket(host, port);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        } finally {
+            if (server != null) {
+                try {
+                    server.close();
+                } catch (IOException ex) { }
+            }
+        }
+    }
+
+	/**
+	 * convenience method for the local machine
+	 */
+    public static final boolean isRunning(int port) {
+		return isRunning(null, port);
+	}
+
     ///////////////////////////////////////////////////////////////////////////
     private static final String LOCALHOST_IP = "127.0.0.1";
 
@@ -545,6 +583,7 @@ public class NetUtils {
 
         return false;
     }
+
 
     ///////////////////////////////////////////////////////////////////////////
     public static void main(String[] args) {

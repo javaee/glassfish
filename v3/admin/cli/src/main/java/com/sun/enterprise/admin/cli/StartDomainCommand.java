@@ -190,7 +190,14 @@ public class StartDomainCommand extends LocalDomainCommand {
                 }
                 return launcher.getExitValue();
             } else {
-                waitForDAS(info.getAdminPorts());
+                //todo -- maybe --wrap these args into a class for easier 
+                // maintenance and usage...
+                StartServerHelper helper = new StartServerHelper(
+                        logger,
+                        programOpts.isTerse(),
+                        getServerDirs().getPidFile(),
+                        launcher);
+                helper.waitForServer();
                 report();
                 return SUCCESS;
             }
@@ -233,9 +240,10 @@ public class StartDomainCommand extends LocalDomainCommand {
             // now admin ports are set.
             Set<Integer> ports = info.getAdminPorts();
 
-            if (isServerAlive(ports)) {
-                // todo add the port number to the message
-                throw new CommandException("The Admin port is already taken: ");
+            for(int port : ports) {
+                if (NetUtils.isRunning(port)) {
+                    throw new CommandException("The Admin port " + port + " is already taken");
+                }
             }
 
             launcher.launch();
@@ -243,7 +251,12 @@ public class StartDomainCommand extends LocalDomainCommand {
             // if we are in verbose mode, we definitely do NOT want to wait for
             // DAS, since it already ran and is now dead!!
             //if(!verbose) {
-                waitForDAS(ports);
+                StartServerHelper helper = new StartServerHelper(
+                        logger,
+                        programOpts.isTerse(),
+                        getServerDirs().getPidFile(),
+                        launcher);
+                helper.waitForServer();
                 report();
             //}
             return SUCCESS;
@@ -254,96 +267,6 @@ public class StartDomainCommand extends LocalDomainCommand {
         }
     }
 
-    private void waitForDAS(Set<Integer> ports) throws CommandException {
-        if (ports == null || ports.size() <= 0) {
-            String msg = strings.get("noPorts");
-            throw new CommandException(
-                    strings.get("CommandUnSuccessfulWithArg", name, msg));
-        }
-
-        long startWait = System.currentTimeMillis();
-        if (!programOpts.isTerse()) {
-            // use stdout because logger always appends a newline
-            System.out.print(strings.get("WaitDAS") + " ");
-        }
-
-        boolean alive = false;
-        int count = 0;
-
-        pinged:
-        while (!timedOut(startWait)) {
-            File pidFile = getServerDirs().getPidFile();
-            if (pidFile != null) {
-                logger.printDebugMessage("Check for pid file: " + pidFile);
-                if (pidFile.exists()) {
-                    alive = true;
-                    break pinged;
-                }
-            } else {
-                // first, see if the admin port is responding
-                // if it is, the DAS is up
-                for (int port : ports) {
-                    if (isServerAlive(port)) {
-                        alive = true;
-                        break pinged;
-                    }
-                }
-            }
-
-            // check to make sure the DAS process is still running
-            // if it isn't, startup failed
-            try {
-                Process p = launcher.getProcess();
-                int exitCode = p.exitValue();
-                // uh oh, DAS died
-                ProcessStreamDrainer psd = launcher.getProcessStreamDrainer();
-                String output = psd.getOutErrString();
-                if (ok(output))
-                    throw new CommandException(strings.get("dasDiedOutput",
-                                    info.getDomainName(), exitCode, output));
-                else
-                    throw new CommandException(strings.get("dasDied",
-                                    info.getDomainName(), exitCode));
-            } catch (GFLauncherException ex) {
-                // should never happen
-            } catch (IllegalThreadStateException ex) {
-                // process is still alive
-            }
-
-            // wait before checking again
-            try {
-                Thread.sleep(100);
-                if (!programOpts.isTerse() && count++ % 10 == 0)
-                    System.out.print(".");
-            } catch (InterruptedException ex) {
-                // don't care
-            }
-        }
-
-        if (!programOpts.isTerse())
-            System.out.println();
-
-        if (!alive) {
-            String msg = strings.get("dasNoStart", 
-                info.getDomainName(), (WAIT_FOR_DAS_TIME_MS / 1000));
-            throw new CommandException(msg);
-        }
-    }
- 
-    private boolean isServerAlive(int port) {
-        logger.printDebugMessage("Check if server is alive on port " + port);
-        return isRunning(port);
-    }
- 
-    private boolean isServerAlive(Set<Integer> ports) {
-        if (ports == null || ports.size() == 0)
-            return false;
-        return isServerAlive(ports.iterator().next());
-    }
-
-    private boolean timedOut(long startTime) {
-        return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
-    }
  
     private void report() {
         String logfile;
