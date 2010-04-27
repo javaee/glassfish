@@ -1,7 +1,8 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +37,56 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-public interface Constants {
-    public static final String DEFAULT_SERVER_ID = "EmbeddedServer";
-    public static final int DEFAULT_HTTP_PORT = 8080;
+import java.io.*;
+
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.EmbeddedFileSystem;
+
+import java.io.File;
+
+
+public  class Util {
+
+    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile, 
+            Boolean autoDelete) throws IOException {
+
+        Server server = Server.getServer(serverID);
+        if (server != null)
+            return server;
+
+        Server.Builder builder = new Server.Builder(serverID);
+
+        EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile, autoDelete);
+        server = builder.embeddedFileSystem(efs).build();
+        return server;
+    }
+
+    public static EmbeddedFileSystem getFileSystem(String installRoot, String instanceRoot, String configFile, Boolean autoDelete) {
+
+        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
+        if (installRoot != null)
+            efsb.installRoot(new File(installRoot), true);
+        if (instanceRoot != null) {
+            // this property is normally used as a token in a regular glassfish domain.xml
+            System.setProperty("com.sun.aas.instanceRootURI", "file:" + instanceRoot);
+            efsb.instanceRoot(new File(instanceRoot));
+        }
+        
+        if (configFile != null)
+            efsb.configurationFile(new File(configFile));
+        if (autoDelete != null)
+            efsb.autoDelete(autoDelete.booleanValue());
+
+        return efsb.build();
+    }
+
+    public static void createPort(Server server, String configFile, int port)
+        throws java.io.IOException {
+        if (configFile == null && port == -1) {
+            server.createPort(Constants.DEFAULT_HTTP_PORT);
+        }
+        else if (port != -1)
+            server.createPort(port);
+    }
+
 }

@@ -60,10 +60,13 @@ public class UndeployTask extends Task {
     public void execute() throws BuildException {
         log("undeploying");
         if (name == null) {
-            log("Name of application to be undeployed must be specified", Project.MSG_WARN);
-            return;
+            throw new BuildException("Name of application to be undeployed not specified");
         }
+
         Server server = Server.getServer(serverID);
+        if (server == null) {
+           throw new BuildException("Embedded Server [" + serverID + "] not running");
+        }
         EmbeddedDeployer deployer = server.getDeployer();
         deployer.undeploy(name, null);
 

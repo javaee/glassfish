@@ -36,25 +36,19 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import java.util.*;
-
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-import java.io.File;
-
 
 public class StartServerTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
     int port = -1;
     String installRoot = null, instanceRoot = null, configFile = null;
-    ContainerBuilder.Type type = ContainerBuilder.Type.all;
+    Boolean autoDelete;
+    ContainerBuilder.Type containerType = ContainerBuilder.Type.all;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
@@ -76,62 +70,32 @@ public class StartServerTask extends Task {
         this.configFile = configFile;
     }
 
+    public void setAutoDelete(Boolean autoDelete) {
+        this.autoDelete = autoDelete;
+    }
+
     public void execute() throws BuildException {
         log ("Starting server");
 
         try {
-            Server.Builder builder = new Server.Builder(serverID);
-            Server server;
-            EmbeddedFileSystem efs = getFileSystem();
-            if (efs != null) {
-                // port ignored in this case...
-                log("Using the install root : " + efs.installRoot);
-                server = builder.embeddedFileSystem(getFileSystem()).build();
-            }
-            else {
-                server = builder.build();
-            }
-            if (port != -1)
-                server.createPort(port);
+            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
 
-            server.addContainer(type);
+            Util.createPort(server, configFile, port);
 
-            ArrayList<Sniffer> sniffers = new ArrayList<Sniffer>();
-            for (EmbeddedContainer c : server.getContainers()) {
-                sniffers.addAll(c.getSniffers());
-            }
+            server.addContainer(getContainerType());
+            server.start();
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-
-    EmbeddedFileSystem getFileSystem() {
-        if (installRoot == null && instanceRoot == null && configFile == null)
-            return null;
-
-        if (instanceRoot == null && installRoot != null) {
-            instanceRoot = installRoot + "/domains/domain1";
-        }
-
-        if (configFile == null && instanceRoot != null) {
-            configFile = instanceRoot + "/config/domain.xml";
-        }
-
-        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        if (installRoot != null)
-            efsb.installRoot(new File(installRoot), true);
-        if (instanceRoot != null)
-            efsb.instanceRoot(new File(instanceRoot));
-        if (configFile != null)
-            efsb.configurationFile(new File(configFile));
-
-        return efsb.build();
+    ContainerBuilder.Type getContainerType() {
+        return containerType;
     }
 
     void setContainerType(ContainerBuilder.Type type) {
-        this.type = type;
+        this.containerType = type;
     }
 
 }

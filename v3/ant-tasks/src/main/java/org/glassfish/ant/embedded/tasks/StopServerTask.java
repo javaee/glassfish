@@ -54,6 +54,9 @@ public class StopServerTask extends Task{
     public void execute() throws BuildException {
         log ("Stopping server");
         Server server = Server.getServer(serverID);
+        if (server ==  null) {
+            throw new BuildException("Embedded Server [" + serverID + "] not running" );
+        }
         try {
             server.stop();
         } catch (Exception ex) {

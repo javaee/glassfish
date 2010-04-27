@@ -49,22 +49,20 @@ import java.io.*;
 public class DeployTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
-    String file = null; // a default value?
+    String app = null; // a default value?
 
     DeployCommandParameters cmdParams = new DeployCommandParameters();
 
 
     public DeployTask() {
-        setName("test");
-        setContextroot("test");
     }
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
     }
 
-    public void setFile(String file) {
-        this.file = file;
+    public void setApp(String app) {
+        this.app = app;
     }
 
     public void setName(String name) {
@@ -138,10 +136,22 @@ public class DeployTask extends Task {
 
 
     public void execute() throws BuildException {
-        log("deploying " + file);
+        if (app == null) {
+            throw new BuildException("app not specified");
+        }
+        log("deploying " + app);
 
+        File f = new File(app);
+        if (!f.exists()) {
+            throw new BuildException(app + " not found");
+        }
         Server server = Server.getServer(serverID);
+
+        if (server == null) {
+           throw new BuildException("Embedded Server [" + serverID + "] not running");
+        }
+        System.out.println("server = " + server);
         EmbeddedDeployer deployer = server.getDeployer();
-        deployer.deploy(new File(file), cmdParams);
+        deployer.deploy(new File(app), cmdParams);
     }
 }
