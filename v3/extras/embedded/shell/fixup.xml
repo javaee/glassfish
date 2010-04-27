@@ -50,6 +50,7 @@ own identifying information: Portions Copyright [yyyy]
         <sleep seconds="3"/>
         <manifest mode="update" file="${stage.dir}/META-INF/MANIFEST.MF">
             <attribute name="Class-Path" value="${classpath} ${classpath.additions}"/>
+	    <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
         </manifest>
         <touch file="${stage.dir}/META-INF/MANIFEST.MF"/>
 

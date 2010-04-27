@@ -120,6 +120,7 @@
                               <property name="output.dir" value="${project.build.directory}"/>
                               <property name="stage.dir" value="${project.build.directory}/stage"/>
                               <property name="classpath.file" value="${classpath.file}"/>
+		              <property name="bundlename" value="org.glassfish.embedded.shell"/>
                               <ant antfile="../fixup.xml"/>
                           </tasks>
                       </configuration>
