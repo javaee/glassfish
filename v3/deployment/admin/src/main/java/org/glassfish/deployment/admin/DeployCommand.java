@@ -373,6 +373,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                  * clean-up.
                  */
                 FileUtils.copyFile(f, savedArchiveFile);
+                savedArchiveFile.setLastModified(f.lastModified());
             }
         }
     }
