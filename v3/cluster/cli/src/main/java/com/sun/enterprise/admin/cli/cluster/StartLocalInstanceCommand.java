@@ -70,6 +70,8 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
     @Param(name = "instance_name", primary = true, optional = false)
     private String instanceName0;
 
+    private StartServerHelper helper;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartLocalInstanceCommand.class);
 
@@ -102,14 +104,20 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
         logger.printDebugMessage(toString());
 
         try {
+                 // createLauncher needs to go before the helper is created!!
             createLauncher();
-            // this can be slow, 500 msec,
-            // with --passwordfile option it is ~~ 18 msec
-            String mpv = getMasterPassword();
-            info.addSecurityToken(MASTER_PASSWORD, mpv);
+            final String mpv = getMasterPassword();
 
-            // launch returns very quickly if verbose is not set
-            // if verbose is set then it returns after the domain dies
+            helper = new StartServerHelper(
+                        logger,
+                        programOpts.isTerse(),
+                        getServerDirs(),
+                        launcher,
+                        mpv);
+
+            if(!helper.prepareForLaunch())
+                return ERROR;
+
             launcher.launch();
 
             if (verbose || upgrade) { // we can potentially loop forever here...
@@ -123,8 +131,9 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
                 }
                 return launcher.getExitValue();
             } else {
-                //waitForDAS(info.getAdminPorts());
+                helper.waitForServer();
                 //report();
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 return SUCCESS;
             }
         } catch (GFLauncherException gfle) {

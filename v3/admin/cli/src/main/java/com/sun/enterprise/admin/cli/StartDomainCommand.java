@@ -80,9 +80,10 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartDomainCommand.class);
-    // 5 minute timeout should be plenty!
-    private static final int DEATH_TIMEOUT_MS = 5 * 60 * 1000;
+
     // the name of the master password option
+
+    private StartServerHelper helper;
 
     @Override
     public RuntimeType getType() {
@@ -99,28 +100,19 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     @Override
     protected int executeCommand() throws CommandException {
         try {
+            // createLauncher needs to go before the helper is created!!
             createLauncher();
+            final String mpv = getMasterPassword();
 
-            if (Boolean.getBoolean(RESTART_FLAG)) {
-                new DeathWaiter();
-            } else { // plain start-domain
-                String err = adminPortInUse();
+            helper = new StartServerHelper(
+                        logger,
+                        programOpts.isTerse(),
+                        getServerDirs(),
+                        launcher,
+                        mpv);
 
-                if (err != null) {
-                    logger.printWarning(err);
+            if(helper.prepareForLaunch() == false)
                     return ERROR;
-                }
-
-                String msg = getServerDirs().deletePidFile();
-
-                if(msg != null)
-                    logger.printDebugMessage(msg);
-            }
-
-            // this can be slow, 500 msec,
-            // with --passwordfile option it is ~~ 18 msec
-            String mpv = getMasterPassword();
-            info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
 
             doUpgrade(mpv);
 
@@ -140,13 +132,6 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
                 }
                 return launcher.getExitValue();
             } else {
-                //todo -- maybe --wrap these args into a class for easier 
-                // maintenance and usage...
-                StartServerHelper helper = new StartServerHelper(
-                        logger,
-                        programOpts.isTerse(),
-                        getServerDirs().getPidFile(),
-                        launcher);
                 helper.waitForServer();
                 report();
                 return SUCCESS;
@@ -214,20 +199,6 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
         }
     }
 
-    private String adminPortInUse() {
-        Set<Integer> adminPorts = info.getAdminPorts();
-        return adminPortInUse(adminPorts);
-    }
-
-    private String adminPortInUse(Set<Integer> adminPorts) {
-        // it returns a String for logging --- if desired
-        for (Integer port : adminPorts)
-            if (!NetUtils.isPortFree(port))
-                return strings.get("ServerRunning", port.toString());
-
-        return null;
-    }
-
     /*
      * This is useful for debugging restart-domain problems.
      * In that case the Server process will run this class and it is fairly
@@ -281,46 +252,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
 
         // need a new launcher to start the domain for real
         createLauncher();
-        info.addSecurityToken(CLIConstants.MASTER_PASSWORD, mpv);
         // continue with normal start...
     }
 
-    private class DeathWaiter implements Runnable{
-        @Override
-        public void run() {
-            try {
-                // When parent process is almost dead, in.read returns -1 (EOF)
-                // as the pipe breaks.
-
-                while (System.in.read() >= 0)
-                    ;
-            } catch (IOException ex) {
-                // ignore
-            }
-
-            // The port may take some time to become free after the pipe breaks
-            Set<Integer> adminPorts = info.getAdminPorts();
-
-            while(adminPortInUse(adminPorts) != null)
-                ;
-
-            success = true;
-        }
-
-        public DeathWaiter() throws CommandException{
-            try {
-                Thread t = new Thread(this);
-                t.start();
-                t.join(DEATH_TIMEOUT_MS);
-            }
-            catch(Exception e) {
-                // ignore!
-            }
-
-            if (!success)
-                throw new CommandException(
-                    strings.get("deathwait_timeout", DEATH_TIMEOUT_MS));
-        }
-        boolean success = false;
-    }
 }

@@ -78,7 +78,7 @@ import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 @Contract
 @Scoped(PerLookup.class)
 public abstract class CLICommand implements PostConstruct {
-    public static final int ERROR = 1;
+    public static final int ERROR = CLIConstants.ERROR;
     public static final int CONNECTION_ERROR = 2;
     public static final int INVALID_COMMAND_ERROR = 3;
     public static final int SUCCESS = 0;
