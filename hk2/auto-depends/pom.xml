@@ -52,6 +52,16 @@
             <artifactId>tiger-types-osgi</artifactId>
             <version>${project.version}</version>
         </dependency>
+   		<dependency>
+        	<groupId>org.glassfish.hk2</groupId>
+            <artifactId>class-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+   		<dependency>
+        	<groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>

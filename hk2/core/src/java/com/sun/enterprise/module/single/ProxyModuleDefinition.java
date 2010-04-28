@@ -39,6 +39,7 @@ package com.sun.enterprise.module.single;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
 import java.util.jar.Manifest;
@@ -81,37 +82,29 @@ public class ProxyModuleDefinition implements ModuleDefinition {
                 while (inhabitants.hasMoreElements()) {
                     URL url = inhabitants.nextElement();
                     metadata.addHabitat(habitatName,
-                        new ModuleMetadata.InhabitantsDescriptor(url, readFully(url))
+                        new ByteArrayInhabitantsDescriptor(url, readFully(url))
                     );
                 }
             }
         }
 
         private static byte[] readFully(URL url) throws IOException {
+            DataInputStream dis=null;
             try {
                 URLConnection con = url.openConnection();
                 int len = con.getContentLength();
                 InputStream in = con.getInputStream();
-                try {
-                    if(len<0) {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        byte[] buf = new byte[1024];
-                        int sz;
-                        while((sz=in.read(buf))>=0)
-                            baos.write(buf,0,sz);
-                        return baos.toByteArray();
-                    } else {
-                        byte[] r = new byte[len];
-                        new DataInputStream(in).readFully(r);
-                        return r;
-                    }
-                } finally {
-                    in.close();
-                }
+                dis = new DataInputStream(in);
+                byte[] bytes = new byte[len];
+                dis.readFully(bytes);
+                return bytes;
             } catch (IOException e) {
                 IOException x = new IOException("Failed to read " + url);
                 x.initCause(e);
                 throw x;
+            } finally {
+                if (dis!=null)
+                    dis.close();
             }
         }
 

@@ -46,7 +46,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleLifecycleListener;
 import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
+import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.LogHelper;

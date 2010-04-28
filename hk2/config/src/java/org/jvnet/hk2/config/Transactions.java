@@ -431,7 +431,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
     }
         
     /**
-     * Notification of a new transation completion
+     * Notification of a new transaction completion
      *
      * @param events accumulated list of changes
      * @param waitTillCleared  synchronous semantics; wait until all change events are sent

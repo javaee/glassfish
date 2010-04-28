@@ -1,10 +1,7 @@
 package com.sun.enterprise.module.single;
 
+import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ResolveError;
-import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.Holder;
 
@@ -84,7 +81,7 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
             }
         };
 
-        for (ModuleMetadata.InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
+        for (InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
             inhabitantsParser.parse(d.createScanner(), holder);
     }
 

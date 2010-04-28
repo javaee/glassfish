@@ -37,7 +37,8 @@
 package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
+import com.sun.enterprise.module.InhabitantsDescriptor;
+import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantsFile;
 
 import java.io.*;
@@ -110,13 +111,18 @@ public abstract class Jar {
         }
 
         public void loadMetadata(ModuleMetadata result) {
+            File inhabitantFileLocation = new File(dir, InhabitantsFile.PATH);
+            if (!inhabitantFileLocation.exists()) {
+                // rely on introspection...
+                result.addHabitat("default", new IntrospectionInhabitantsDescriptor(dir));
+            }
             for( File svc : fixNull(new File(dir, InhabitantsFile.PATH).listFiles())) {
                 if(svc.isDirectory())
                     continue;
 
                 try {
                     result.addHabitat(svc.getName(),
-                        new InhabitantsDescriptor(svc.getPath(), readFully(svc))
+                        new ByteArrayInhabitantsDescriptor(svc.getPath(), readFully(svc))
                     );
                 } catch(IOException e) {
                     LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading habitats file from " + svc, e);
@@ -184,7 +190,7 @@ public abstract class Jar {
                     String habitatName = entry.getName().substring(InhabitantsFile.PATH.length()+1);
 
                     try {
-                        result.addHabitat(habitatName,new InhabitantsDescriptor(
+                        result.addHabitat(habitatName,new ByteArrayInhabitantsDescriptor(
                             "jar:"+file.toURL()+"!/"+entry.getName(),
                             loadFully(entry)
                         ));

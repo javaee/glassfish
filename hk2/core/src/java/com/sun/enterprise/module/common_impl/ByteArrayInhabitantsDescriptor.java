@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,34 +34,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package cagedby;
+package com.sun.enterprise.module.common_impl;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import test1.Test;
+import com.sun.enterprise.module.InhabitantsDescriptor;
+import com.sun.hk2.component.InhabitantsScanner;
+import com.sun.hk2.component.KeyValuePairParser;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.URL;
 
 /**
- * Main test testing direct @Service annotation with @CagedBy and @Contract annotation with @CagedBy
+ * Implementation of {@link InhabitantsDescriptor} that loads the inhabitants
+ * meta-data from a byte array (usually coming from a inhabitant file).
  *
  * @author Jerome Dochez
  */
-@Service
-public class CagedByTest extends Test {
+public class ByteArrayInhabitantsDescriptor implements InhabitantsDescriptor, Serializable {
 
-    @Inject
-    Bird bird;
+    public final String systemId;
+    private final byte[] data;
 
-    @Inject
-    Animal[] animals;
+    public ByteArrayInhabitantsDescriptor(String systemId, byte[] data) {
+        this.systemId = systemId;
+        this.data = data;
+    }
 
+    public ByteArrayInhabitantsDescriptor(URL systemId, byte[] data) {
+        this(systemId.toExternalForm(), data);
+    }
 
-    public void run() {
-        System.out.println("birdie " + bird.getName());
-        assertTrue(bird.getName().startsWith("Caged "));
-        for (Animal a : animals) {
-            System.out.println("Expecting caged animal, got " + a.getName());
-            assertTrue(a.getName().startsWith("Caged"));
-        }
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public Iterable<KeyValuePairParser> createScanner() throws IOException {
+        return new InhabitantsScanner(new ByteArrayInputStream(data), systemId);
     }
 
 }
