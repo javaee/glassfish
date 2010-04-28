@@ -82,6 +82,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
 
+
 /**
  * Webservices module deployer. This is loaded from WebservicesContainer
  *
@@ -808,7 +809,17 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 String name = (String) entries.nextElement();
                 String wsdlName = stripWsdlDir(name,bundle) ;
                 URI clientwsdl = new File(parent, wsdlName).toURI();
-                alist.add(new DownloadableArtifacts.FullAndPartURIs(new File(sourceDir,name).toURI(),clientwsdl));
+                //Fix for issue 6945894
+                // The web services logic does not need a directory be included in the downloadable artifacts
+                // for the application.  The download mechanism deals with non-directory files
+                // (creating any required directories automatically) so only non-directory files need to be
+                // flagged for download.
+
+                File fulluriFile = new File(sourceDir,name);
+                if (! fulluriFile.isDirectory()) {
+                     alist.add(new DownloadableArtifacts.FullAndPartURIs(fulluriFile.toURI(),clientwsdl));
+
+                }
             }
             downloadableArtifacts.addArtifacts(moduleName,alist);
 
