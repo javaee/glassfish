@@ -73,7 +73,7 @@ public class KeystoreManager {
     private static String CERTIFICATE_DN_PREFIX = "CN=";
     
     private static String CERTIFICATE_DN_SUFFIX = 
-        ",OU=GlassFish,O=Sun Microsystems,L=Santa Clara,ST=California,C=US";
+        ",OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US";
         
     public static final String CERTIFICATE_ALIAS = "s1as";
     public static final String DEFAULT_MASTER_PASSWORD = "changeit";
