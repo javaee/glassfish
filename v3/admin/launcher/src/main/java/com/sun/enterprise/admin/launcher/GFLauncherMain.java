@@ -38,6 +38,7 @@ package com.sun.enterprise.admin.launcher;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.RuntimeType;
 
 /**
  *
