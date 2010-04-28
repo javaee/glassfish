@@ -369,7 +369,7 @@ public final class OSGiModuleImpl implements Module {
             }
         };
 
-        for (ModuleMetadata.InhabitantsDescriptor d : md.getMetadata().getHabitats(name))
+        for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name))
             parser.parse(d.createScanner(),holder);
     }
 

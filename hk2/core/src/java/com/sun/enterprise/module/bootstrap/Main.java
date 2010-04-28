@@ -46,7 +46,7 @@
 package com.sun.enterprise.module.bootstrap;
 
 import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.ModuleMetadata.InhabitantsDescriptor;
+import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.impl.HK2Factory;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ModulesRegistry;
@@ -478,7 +478,7 @@ public class Main {
                     }
                 }
             } catch (IOException e) {
-                throw new BootException("Failed to parse "+d.systemId,e);
+                throw new BootException("Failed to parse "+d.getSystemId(),e);
             }
         }
 

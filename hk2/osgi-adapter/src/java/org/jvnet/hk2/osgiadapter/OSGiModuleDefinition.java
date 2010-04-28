@@ -41,6 +41,7 @@ import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.InhabitantsFile;
@@ -256,7 +257,7 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
             if (url==null) return;
             try {
                 result.addHabitat("default",
-                        new ModuleMetadata.InhabitantsDescriptor(
+                        new ByteArrayInhabitantsDescriptor(
                                 url, loadFully(url)
                         ));
             } catch (IOException e) {

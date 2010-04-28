@@ -114,7 +114,7 @@ public class InhabitantsParser {
      * <p>
      * All the earlier drop/replace commands will be honored during this process.
      */
-    public void parse(InhabitantsScanner scanner, Holder<ClassLoader> classLoader) throws IOException {
+    public void parse(Iterable<KeyValuePairParser> scanner, Holder<ClassLoader> classLoader) throws IOException {
         for( KeyValuePairParser kvpp : scanner) {
             MultiMap<String,String> metadata=buildMetadata(kvpp);
             String typeName = metadata.getOne(CLASS_KEY);

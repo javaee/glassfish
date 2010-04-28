@@ -52,5 +52,13 @@ public interface Types {
      * @return list of types
      */
     public Collection<Type> getAllTypes();
+
+    /**
+     * Returns a Type instance given a name
+     *
+     * @param name the requested type name
+     * @return a type instance
+     */
+    public Type getByName(String name);
     
 }

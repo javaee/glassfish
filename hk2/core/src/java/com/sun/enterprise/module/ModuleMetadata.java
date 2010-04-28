@@ -73,24 +73,6 @@ public final class ModuleMetadata implements Serializable {
      */
     private final MultiMap<String, InhabitantsDescriptor> inhabitants = new MultiMap<String, InhabitantsDescriptor>();
 
-    public static final class InhabitantsDescriptor implements Serializable {
-        public final String systemId;
-        private final byte[] data;
-
-        public InhabitantsDescriptor(String systemId, byte[] data) {
-            this.systemId = systemId;
-            this.data = data;
-        }
-
-        public InhabitantsDescriptor(URL systemId, byte[] data) {
-            this(systemId.toExternalForm(),data);
-        }
-
-        public InhabitantsScanner createScanner() throws IOException {
-            return new InhabitantsScanner(new ByteArrayInputStream(data),systemId);
-        }
-    }
-
     public static final class Entry implements Serializable {
         public final List<String> providerNames = new ArrayList<String>();
         public final List<URL> resources = new ArrayList<URL>();

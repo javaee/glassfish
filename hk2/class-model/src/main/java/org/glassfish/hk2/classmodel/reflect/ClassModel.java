@@ -58,5 +58,5 @@ public interface ClassModel extends ExtensibleType<ClassModel> {
      * @return collection of declared fields 
      */
     public Collection<FieldModel> getFields();
-   
+
 }

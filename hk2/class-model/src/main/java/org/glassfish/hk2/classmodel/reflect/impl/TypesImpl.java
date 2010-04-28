@@ -60,6 +60,12 @@ public class TypesImpl implements Types, TypeBuilder {
         return allTypes;
     }
 
+    @Override
+    public Type getByName(String name) {
+        TypeProxy proxy = map.get(name);
+        return (proxy!=null?proxy.get():null);
+    }
+
     public ModelBuilder getModelBuilder(String name, String parentName) {
         ModelBuilder mb = new ModelBuilder(name, getHolder(name));
         mb.parent = getHolder(parentName);

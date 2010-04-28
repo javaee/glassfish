@@ -1,9 +1,9 @@
 /*
- * 
+ *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,34 +34,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package cagedby;
+package com.sun.enterprise.module;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import test1.Test;
+import com.sun.hk2.component.KeyValuePairParser;
+
+import java.io.IOException;
 
 /**
- * Main test testing direct @Service annotation with @CagedBy and @Contract annotation with @CagedBy
+ * Inhabitants Descriptor is an abstraction on how the inhabitants are
+ * represented in a module. It might be a file, or it might rely on some
+ * other mechanism like introspection to get the list of inhabitant.
  *
  * @author Jerome Dochez
  */
-@Service
-public class CagedByTest extends Test {
+public interface InhabitantsDescriptor {
 
-    @Inject
-    Bird bird;
+    /**
+     * Return the unique identifier
+     * @return unique id
+     */
+    String getSystemId();
 
-    @Inject
-    Animal[] animals;
-
-
-    public void run() {
-        System.out.println("birdie " + bird.getName());
-        assertTrue(bird.getName().startsWith("Caged "));
-        for (Animal a : animals) {
-            System.out.println("Expecting caged animal, got " + a.getName());
-            assertTrue(a.getName().startsWith("Caged"));
-        }
-    }
-
+    /**
+     * Creates an {@see InhabitantsScanner} instance capable of returning the
+     * metadata for all inhabitant.
+     *
+     * @return the scanner for inhabitant metadata
+     * @throws IOException if the scanner create fails initialization
+     */
+    Iterable<KeyValuePairParser> createScanner() throws IOException;
 }

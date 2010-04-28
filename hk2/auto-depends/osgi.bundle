@@ -3,3 +3,9 @@
                             org.jvnet.hk2.annotations; \
                             com.sun.hk2.component; version=${project.osgi.version}
 
+Import-Package: \
+                        org.junit;resolution:=optional, \
+                        org.junit.runner;resolution:=optional, \
+                        org.junit.runner.notification;resolution:=optional, \
+                        org.glassfish.hk2.classmodel.reflect;resolution:=optional, \
+                        *
