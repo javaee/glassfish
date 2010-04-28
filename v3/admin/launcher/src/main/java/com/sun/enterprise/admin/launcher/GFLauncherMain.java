@@ -52,7 +52,7 @@ public class GFLauncherMain {
     public static void main(String[] args)
     {
         try {
-            GFLauncher launcher = GFLauncherFactory.getInstance(GFLauncherFactory.ServerType.domain);
+            GFLauncher launcher = GFLauncherFactory.getInstance(RuntimeType.DAS);
             launcher.getInfo().addArgs(args);
             launcher.launch();
         }
