@@ -55,7 +55,13 @@ public enum RuntimeType {
     /**
      * a single instance or a clustered instance ?need to dissambiguate?
      */
-    INSTANCE;
+    INSTANCE,
+
+    /**
+     * Embedded
+     */
+
+    EMBEDDED;
 
     public final boolean isInstance() {
         return this == INSTANCE;
@@ -67,5 +73,8 @@ public enum RuntimeType {
 
     public final boolean isNodeAgent() {
         return this == NODE_AGENT;
+    }
+    public final boolean isEmbedded() {
+        return this == EMBEDDED;
     }
 }

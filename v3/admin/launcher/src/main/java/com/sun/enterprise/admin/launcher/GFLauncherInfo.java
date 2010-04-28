@@ -36,11 +36,11 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.admin.launcher.GFLauncherFactory.ServerType;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.util.*;
+import org.glassfish.api.admin.RuntimeType;
 
 /**
  * @author bnevins
@@ -112,11 +112,11 @@ public class GFLauncherInfo {
         instanceRootDir = f;
     }
     public final boolean isDomain() {
-        return type == ServerType.domain;
+        return type == RuntimeType.DAS;
     }
 
     public final boolean isInstance() {
-        return type == ServerType.instance;
+        return type == RuntimeType.INSTANCE;
     }
 
     /**
@@ -166,7 +166,7 @@ public class GFLauncherInfo {
     public Set<Integer> getAdminPorts() {
         return adminPorts;
     }
-    public GFLauncherFactory.ServerType getType() {
+    public RuntimeType getType() {
         return type;
     }
 
@@ -281,7 +281,7 @@ public class GFLauncherInfo {
         securityTokens.add(name + "=" + value);
     }
     
-    GFLauncherInfo(GFLauncherFactory.ServerType type) {
+    GFLauncherInfo(RuntimeType type) {
         this.type = type;
     }
 
@@ -501,7 +501,7 @@ public class GFLauncherInfo {
         return null;
     }
 
-    private ServerType type;
+    private RuntimeType type;
     private boolean verbose = false;
     private boolean debug = false;
     private boolean upgrade = false;

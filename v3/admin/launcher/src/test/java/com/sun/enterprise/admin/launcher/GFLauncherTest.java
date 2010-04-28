@@ -45,6 +45,7 @@ package com.sun.enterprise.admin.launcher;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.util.*;
+import org.glassfish.api.admin.RuntimeType;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -82,7 +83,7 @@ public class GFLauncherTest {
 
     @Before
     public void setUp() throws GFLauncherException {
-        launcher = GFLauncherFactory.getInstance(GFLauncherFactory.ServerType.domain);
+        launcher = GFLauncherFactory.getInstance(RuntimeType.DAS);
         info = launcher.getInfo();
         info.setInstallDir(installDir);
         launcher.setMode(GFLauncher.LaunchType.fake);

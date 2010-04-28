@@ -85,8 +85,8 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     // the name of the master password option
 
     @Override
-    public GFLauncherFactory.ServerType getType() {
-         return GFLauncherFactory.ServerType.domain;
+    public RuntimeType getType() {
+         return RuntimeType.DAS;
     }
 
     @Override

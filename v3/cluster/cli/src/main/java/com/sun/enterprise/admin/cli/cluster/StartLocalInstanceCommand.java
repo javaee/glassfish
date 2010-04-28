@@ -74,8 +74,8 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
             new LocalStringsImpl(StartLocalInstanceCommand.class);
 
     @Override
-    public GFLauncherFactory.ServerType getType() {
-         return GFLauncherFactory.ServerType.instance;
+    public RuntimeType getType() {
+         return RuntimeType.INSTANCE;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
-        System.out.println("" + this);
+        logger.printDebugMessage(toString());
 
         try {
             createLauncher();
@@ -132,11 +132,14 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
         } catch (MiniXmlParserException me) {
             throw new CommandException(me);
         }
-    }    /**
+    }
+
+    /**
      * Create a launcher for the instance specified by arguments to
      * this command.  The launcher is for a server of the specified type.
      * Sets the launcher and info fields.
      */
+    @Override
     public void createLauncher()
                         throws GFLauncherException, MiniXmlParserException {
             launcher = GFLauncherFactory.getInstance(getType());

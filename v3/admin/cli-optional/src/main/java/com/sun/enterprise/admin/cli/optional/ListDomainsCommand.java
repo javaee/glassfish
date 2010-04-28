@@ -116,7 +116,7 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     private String getStatus(String dn) {
         try {
             GFLauncher launcher = GFLauncherFactory.getInstance(
-                GFLauncherFactory.ServerType.domain);
+                RuntimeType.DAS);
             GFLauncherInfo li = launcher.getInfo();
             File parentFile = getDomainsDir();
             String parent = null;

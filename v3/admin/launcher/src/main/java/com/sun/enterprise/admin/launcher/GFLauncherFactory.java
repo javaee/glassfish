@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.admin.launcher;
 
+import org.glassfish.api.admin.RuntimeType;
+
 /**
  *
  * @author bnevins
@@ -43,33 +45,26 @@ package com.sun.enterprise.admin.launcher;
 public class GFLauncherFactory {
 
     /**
-     * An enum for specifying the three kinds of servers.
-     */
-    public enum ServerType
-    {
-        domain, nodeAgent, instance, embedded
-    }; 
-    /**
      * 
      * @param type The type of server to launch.
      * @return A launcher instance that can be used for launching the specified 
      * server type.
      * @throws com.sun.enterprise.admin.launcher.GFLauncherException 
      */
-    public static GFLauncher getInstance(ServerType type) throws GFLauncherException
+    public static GFLauncher getInstance(RuntimeType type) throws GFLauncherException
     {
         switch(type)
         {
-            case domain:  
+            case DAS:
                 return new GFDomainLauncher(
-                        new GFLauncherInfo(GFLauncherFactory.ServerType.domain));
-            case embedded:
+                        new GFLauncherInfo(RuntimeType.DAS));
+            case EMBEDDED:
                 return new GFEmbeddedLauncher(
-                        new GFLauncherInfo(GFLauncherFactory.ServerType.embedded));
+                        new GFLauncherInfo(RuntimeType.EMBEDDED));
 
-            case instance:
+            case INSTANCE:
                 return new GFInstanceLauncher(
-                        new GFLauncherInfo(GFLauncherFactory.ServerType.instance));
+                        new GFLauncherInfo(RuntimeType.INSTANCE));
 
             default:
                 throw new GFLauncherException("Only domain, instance and embedded launching are currently supported.");
