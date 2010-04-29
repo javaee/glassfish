@@ -214,7 +214,8 @@ public class SessionManagerConfigurationHelper {
         }
         
         // If availability-enabled is false, reset to "memory"
-        if (!isAvailabilityEnabled && persistence != PersistenceType.FILE) {
+        if (!isAvailabilityEnabled && persistence != PersistenceType.FILE &&
+                persistence != PersistenceType.COHERENCE_WEB) {
             // Set back to memory option
             persistence = PersistenceType.MEMORY;
             frequency = null;
