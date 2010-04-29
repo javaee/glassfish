@@ -185,6 +185,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     ComponentEnvManager componentEnvManager;
 
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config currentServerConfig;
+
     @Inject(optional=true)
     DasConfig dasConfig;
 
@@ -512,14 +515,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         grizzlyService.addMapperUpdateListener(configListener);
 
-        List<Config> configs = domain.getConfigs().getConfig();
-        for (Config aConfig : configs) {
-
-            HttpService httpService = aConfig.getHttpService();
-            NetworkConfig networkConfig = aConfig.getNetworkConfig();
-            if (networkConfig==null)
-                continue;
-            securityService = aConfig.getSecurityService();
+        HttpService httpService = currentServerConfig.getHttpService();
+        NetworkConfig networkConfig = currentServerConfig.getNetworkConfig();
+        if (networkConfig != null) {
+            //continue;
+            securityService = currentServerConfig.getSecurityService();
 
             // Configure HTTP listeners
             NetworkListeners networkListeners = networkConfig.getNetworkListeners();
@@ -2822,7 +2822,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * Need to update connector and mapper restart is required when
          * virtual-server.http-listeners is changed dynamically
          */
-        Collection<NetworkListener> httpListeners = habitat.getAllByContract(NetworkListener.class);
+        List<NetworkListener> httpListeners = currentServerConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
         if (httpListeners != null) {
             for (NetworkListener httpListener : httpListeners) {
                 updateConnector(httpListener, habitat.getByType(HttpService.class));
