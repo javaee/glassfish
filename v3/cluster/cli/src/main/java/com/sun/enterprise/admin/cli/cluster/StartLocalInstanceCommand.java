@@ -113,7 +113,8 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
                         programOpts.isTerse(),
                         getServerDirs(),
                         launcher,
-                        mpv);
+                        mpv,
+                        debug);
 
             if(!helper.prepareForLaunch())
                 return ERROR;
@@ -132,8 +133,7 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
                 return launcher.getExitValue();
             } else {
                 helper.waitForServer();
-                //report();
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                helper.report();
                 return SUCCESS;
             }
         } catch (GFLauncherException gfle) {

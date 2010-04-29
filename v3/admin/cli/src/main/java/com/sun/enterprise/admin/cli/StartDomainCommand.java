@@ -109,7 +109,8 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
                         programOpts.isTerse(),
                         getServerDirs(),
                         launcher,
-                        mpv);
+                        mpv,
+						debug);
 
             if(helper.prepareForLaunch() == false)
                     return ERROR;
@@ -133,7 +134,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
                 return launcher.getExitValue();
             } else {
                 helper.waitForServer();
-                report();
+                helper.report();
                 return SUCCESS;
             }
         } catch (GFLauncherException gfle) {
@@ -169,36 +170,6 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
             launcher.setup();
     }
  
-    private void report() {
-        String logfile;
-        try {
-            logfile = launcher.getLogFilename();
-        } catch (GFLauncherException ex) {
-            logfile = "UNKNOWN";        // should never happen
-        }
-        logger.printMessage(strings.get("DomainLocation", info.getDomainName(),
-                            info.getDomainRootDir().getAbsolutePath(),
-                            logfile));
-        Integer ap = -1;
-        try {
-            ap = info.getAdminPorts().iterator().next();
-        } catch (Exception e) {
-            //ignore
-        }
-        logger.printMessage(strings.get("DomainAdminPort",
-                                        Integer.toString(ap)));
-
-        if (debug) {
-            int debugPort = launcher.getDebugPort();
-            if (debugPort > 0)
-                logger.printMessage(strings.get("DomainDebugPort",
-                                                Integer.toString(debugPort)));
-            else
-                logger.printMessage(strings.get("DomainDebugPort",
-                                                "UNKNOWN"));
-        }
-    }
-
     /*
      * This is useful for debugging restart-domain problems.
      * In that case the Server process will run this class and it is fairly

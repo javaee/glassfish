@@ -30,7 +30,8 @@ import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
  */
 public class StartServerHelper {
     public StartServerHelper(CLILogger logger0, boolean terse0,
-            ServerDirs serverDirs0, GFLauncher launcher0, String masterPassword0) {
+            ServerDirs serverDirs0, GFLauncher launcher0, 
+            String masterPassword0, boolean debug0) {
         logger = logger0;
         terse = terse0;
         launcher = launcher0;
@@ -39,7 +40,9 @@ public class StartServerHelper {
         serverDirs = serverDirs0;
         pidFile = serverDirs.getPidFile();
         masterPassword = masterPassword0;
+        debug = debug0;
     }
+
     public void waitForServer() throws CommandException {
         long startWait = System.currentTimeMillis();
         if(!terse) {
@@ -130,6 +133,65 @@ public class StartServerHelper {
         return true;
     }
 
+    public void report() {
+        String logfile;
+
+        try {
+            logfile = launcher.getLogFilename();
+        }
+        catch (GFLauncherException ex) {
+            logfile = "UNKNOWN";        // should never happen
+        }
+
+
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // todo add getAdminPort() to GFInfo and return first one in list
+        // add logfile path to ServerDirs
+        // TODO IMPORTANT have the enum itself return the strings "domain"  "instance" etc.
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+        // TODO  TODO  TODO  TODO  Todo  todo
+
+        int adminPort = -1;
+        String adminPortString = "-1";
+
+        try {
+            adminPort = info.getAdminPorts().iterator().next();
+            // To avoid having the logger do this: port = 4,848
+            // so we do the conversion to a string ourselves
+            adminPortString = "" + adminPort;
+        }
+        catch (Exception e) {
+            //ignore
+        }
+
+        int debugPort = -1;
+        String debugPortString = "-1";
+
+        if(debug) {
+            debugPort = launcher.getDebugPort();
+            debugPortString = "" + debugPort;
+        }
+
+        logger.printMessage(strings.get(
+                    "ServerStart.SuccessMessage",
+                    info.isDomain() ? "domain " : "instance",
+                    serverDirs.getServerName(),
+                    serverDirs.getServerDir(),
+                    logfile,
+                    adminPortString)
+                );
+
+        if(debugPort >= 0)
+            logger.printMessage(strings.get("ServerStart.DebuggerMessage", debugPortString));
+    }
+
     /**
      * If the parent is a GF server -- then wait for it to die.  This is part
      * of the Client-Server Restart Dance!
@@ -140,7 +202,6 @@ public class StartServerHelper {
         if(Boolean.getBoolean(CLIConstants.RESTART_FLAG))
             new ParentDeathWaiter();
     }
-
 
     private boolean checkPorts() {
         String err = adminPortInUse();
@@ -163,7 +224,6 @@ public class StartServerHelper {
     private void setSecurity() {
         info.addSecurityToken(CLIConstants.MASTER_PASSWORD, masterPassword);
     }
-
 
     private String adminPortInUse() {
         Set<Integer> adminPorts = info.getAdminPorts();
@@ -190,6 +250,7 @@ public class StartServerHelper {
     private final Set<Integer> ports;
     private final ServerDirs serverDirs;
     private final String masterPassword;
+    private final boolean debug;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartServerHelper.class);
 
@@ -223,7 +284,7 @@ public class StartServerHelper {
             success = true;
         }
 
-        public ParentDeathWaiter() throws CommandException {
+        private ParentDeathWaiter() throws CommandException {
             try {
                 Thread t = new Thread(this);
                 t.start();
