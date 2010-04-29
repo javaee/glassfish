@@ -45,7 +45,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gms</artifactId>
+    <artifactId>gms-adapter</artifactId>
     <packaging>hk2-jar</packaging>
     <name>Glassfish GMS Module</name>
     <dependencies>
