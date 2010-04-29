@@ -72,7 +72,7 @@ import java.util.Set;
  */
 public class WebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescriptor> {
 
-    WebBundleDescriptor descriptor=null;
+    protected WebBundleDescriptor descriptor=null;
         
     /** Creates new WebBundleRuntimeNode */
     public WebBundleRuntimeNode(WebBundleDescriptor descriptor) {

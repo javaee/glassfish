@@ -272,6 +272,11 @@ public final class DTDRegistry {
         "-//Sun Microsystems, Inc.//DTD Application Server 8.1 OR Mapping//EN";
     public static final String SUN_CMP_MAPPING_810_DTD_SYSTEM_ID =
         "http://www.sun.com/software/appserver/dtds/sun-cmp-mapping_1_2.dtd";
+
+    public static final String GF_WEBAPP_300_DTD_PUBLIC_ID = 
+        "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN";
+    public static final String GF_WEBAPP_300_DTD_SYSTEM_ID = 
+        "http://glassfish.org/dtds/gf-web-app_3_0-0.dtd";
 }
 
 // END OF IASRI 4661135

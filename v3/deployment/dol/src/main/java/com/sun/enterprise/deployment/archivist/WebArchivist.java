@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.WebRuntimeDDFile;
 import com.sun.enterprise.deployment.io.runtime.WLWebRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.GFWebRuntimeDDFile;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.Archive;
@@ -147,6 +148,15 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile() {
+        return new GFWebRuntimeDDFile();
+    }
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     * handling the Sun configuration deployment descriptors
+     */
+    @Override
+    public DeploymentDescriptorFile getSunConfigurationDDFile() {
         return new WebRuntimeDDFile();
     }
 

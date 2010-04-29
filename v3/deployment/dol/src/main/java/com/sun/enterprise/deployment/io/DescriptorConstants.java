@@ -67,7 +67,10 @@ public interface DescriptorConstants {
 
     /** Prefix used for WebLogic xmls */
     String WL_PREFIX = "weblogic-";
-    
+
+    /** Prefix used for GF xmls */
+    String GF_PREFIX = "gf-";
+
     /** The name of the deployment descriptor entry in the application ear. */
     String APPLICATION_DD_ENTRY = "META-INF"+File.separator+"application.xml";
 
@@ -133,8 +136,21 @@ public interface DescriptorConstants {
     /** The name of the WebLogic deployment descriptor entry in the rar */
     String WL_RAR_JAR_ENTRY = "META-INF/"+ WL_PREFIX + "ra.xml";
 
-    /** The name of the deployment descriptor entry in the client jar. */
+    /** The name of the weblogic deployment descriptor entry in the client jar. */
     String WL_APP_CLIENT_JAR_ENTRY = "META-INF/"+ WL_PREFIX + "application-client.xml";
+
+    /** The name of the glassfish deployment descriptor entry inside the ear. */
+    String GF_APPLICATION_JAR_ENTRY = "META-INF/" + GF_PREFIX +
+        "application.xml";
+
+    /** The name of the glassfish deployment descriptor entry in web jar. */
+    String GF_WEB_JAR_ENTRY = "WEB-INF/" + GF_PREFIX + "web.xml";
+
+    /** The name of the glassfish deployment descriptor entry in the ejb jar. */
+    String GF_EJB_JAR_ENTRY = "META-INF/" + GF_PREFIX + "ejb-jar.xml";
+
+    /** The name of the glassfish deployment descriptor entry in the client jar. */
+    String GF_APP_CLIENT_JAR_ENTRY = "META-INF/"+ WL_PREFIX + "application-client.xml";
 
 
     /** The name of the WEB-INF entry in a war. */

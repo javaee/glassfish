@@ -643,13 +643,14 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor)
             throws IOException, SAXParseException {
 
-        // if we are not supposed to handle runtime info, just pass
         String ddFileEntryName = getRuntimeDeploymentDescriptorPath();
+        // if we are not supposed to handle runtime info, just pass
         if (!isHandlingRuntimeInfo() || ddFileEntryName == null) {
             return;
         }
 
         InputStream is = null;
+        InputStream is2 = null;
         try {
             // apply the runtime settings if any
             is = archive.getEntry(ddFileEntryName);
@@ -658,15 +659,50 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 confDD.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
             }
 
+            DeploymentDescriptorFile sunConfDD = getSunConfigurationDDFile();
+            if (sunConfDD != null) {
+                is2 = archive.getEntry(sunConfDD.getDeploymentDescriptorPath());
+            }
+
             if (is != null && confDD != null) {
+                if (is2 != null) {
+                    logger.log(Level.WARNING, "gf.counterpart.configdd.exists",
+                        new Object[] {
+                        sunConfDD.getDeploymentDescriptorPath(),
+                        archive.getURI().getSchemeSpecificPart(),
+                        ddFileEntryName});
+                }
                 confDD.setXMLValidation(getRuntimeXMLValidation());
                 confDD.setXMLValidationLevel(runtimeValidationLevel);
                 confDD.read(descriptor, is);
+            } else {
+                // try to read from the legacy sun deployment descriptor
+                if (is2 != null && sunConfDD != null) {
+                    logger.log(Level.WARNING, "sun.configdd.deprecate",
+                        new Object[] { 
+                        sunConfDD.getDeploymentDescriptorPath(),
+                        archive.getURI().getSchemeSpecificPart(),
+                        ddFileEntryName});
+
+                    if (archive.getURI() != null) {
+                        sunConfDD.setErrorReportingString(
+                            archive.getURI().getSchemeSpecificPart());
+                    }
+                    sunConfDD.setXMLValidation(getRuntimeXMLValidation());
+                    sunConfDD.setXMLValidationLevel(runtimeValidationLevel);
+                    sunConfDD.read(descriptor, is2);
+                }
             }
         } finally {
             if (is != null) {
                 try {
                     is.close();
+                } catch (IOException ioe) {
+                }
+            }
+            if (is2 != null) {
+                try {
+                    is2.close();
                 } catch (IOException ioe) {
                 }
             }
@@ -920,8 +956,16 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 confDD.write(desc, os);
                 out.closeEntry();
             }
-        }
 
+            // Legacy Sun Runtime DDs
+            DeploymentDescriptorFile sunConfDD = getSunConfigurationDDFile();
+            if (sunConfDD != null) {
+                OutputStream os = out.putNextEntry(
+                        sunConfDD.getDeploymentDescriptorPath());
+                sunConfDD.write(desc, os);
+                out.closeEntry();
+            }
+        }
     }
 
     /**
@@ -944,7 +988,6 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
         }
     }
-
 
     /**
      * write all extra deployment descriptors (like cmp related and runtime dds)
@@ -1112,6 +1155,14 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      *         handling the WL configuration deployment descriptors
      */
     public DeploymentDescriptorFile getWLConfigurationDDFile() {
+        return null;
+    }
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     *         handling the Sun configuration deployment descriptors
+     */
+    public DeploymentDescriptorFile getSunConfigurationDDFile() {
         return null;
     }
 

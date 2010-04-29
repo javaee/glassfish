@@ -38,6 +38,7 @@
 package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
+import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
@@ -82,6 +83,10 @@ public abstract class ExtensionsArchivist  {
     }
 
     public DeploymentDescriptorFile getGFCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
+        return null;
+    }
+
+    public DeploymentDescriptorFile getSunCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
         return null;
     }
 
@@ -138,8 +143,10 @@ public abstract class ExtensionsArchivist  {
         }
         InputStream is = null;
         InputStream is2 = null;
+        InputStream is3 = null;
         try {
-            is = archive.getEntry(confDD.getDeploymentDescriptorPath());
+            String confDDPath = confDD.getDeploymentDescriptorPath();
+            is = archive.getEntry(confDDPath);
             if (is != null) {
                 DeploymentDescriptorFile gfConfDD = 
                     getGFCounterPartConfigurationDDFile(descriptor);
@@ -149,14 +156,34 @@ public abstract class ExtensionsArchivist  {
                    // when Glassfish counterpart configuration file is present
                    // we should ignore this extension configuration file
                    if (is2 != null) {
-                       logger.log(Level.WARNING, "counterpart.configdd.exists",
+                       logger.log(Level.WARNING, 
+                           "gf.counterpart.configdd.exists",
                            new Object[] {
-                               confDD.getDeploymentDescriptorPath(),      
+                               confDDPath,      
                                archive.getURI().getSchemeSpecificPart(), 
                                gfConfDD.getDeploymentDescriptorPath()});
                        return null;
                    }
                 }
+
+                DeploymentDescriptorFile sunConfDD =
+                    getSunCounterPartConfigurationDDFile(descriptor);
+                if (sunConfDD != null) {
+                   is3 = archive.getEntry(
+                       sunConfDD.getDeploymentDescriptorPath());
+                   // when Sun counterpart configuration file is present
+                   // we should ignore this extension configuration file
+                   if (is3 != null) {
+                       logger.log(Level.WARNING, 
+                           "sun.counterpart.configdd.exists",
+                           new Object[] {
+                               confDDPath,
+                               archive.getURI().getSchemeSpecificPart(),
+                               sunConfDD.getDeploymentDescriptorPath()});
+                       return null;
+                   }
+                }
+
                 confDD.setXMLValidation(main.getRuntimeXMLValidation());
                 confDD.setXMLValidationLevel(main.getRuntimeXMLValidationLevel());
                 return confDD.read(descriptor, is);
@@ -167,6 +194,9 @@ public abstract class ExtensionsArchivist  {
             }
             if (is2 != null) {
                 is2.close();
+            }
+            if (is3 != null) {
+                is3.close();
             }
         }
         return null;
