@@ -95,7 +95,7 @@ import org.glassfish.deployment.common.DownloadableArtifacts;
 public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
-
+    final private static String COPY_IN_PLACE_ARCHIVE_PROP_NAME = "copy.inplace.archive";
     private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
     private static final String INTERNAL_DIR_NAME = "__internal";
 
@@ -308,7 +308,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 try {
                     moveAppFilesToPermanentLocation(uniqueSubdirUnderApplications,
-                            deploymentContext);
+                            deploymentContext, logger);
                     recordFileLocations(appProps);
 
                     // register application information in domain.xml
@@ -419,23 +419,26 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      */
     private void moveAppFilesToPermanentLocation(
             final File uniqueSubdirUnderApplications,
-            final ExtendedDeploymentContext deploymentContext) throws IOException {
+            final ExtendedDeploymentContext deploymentContext,
+            final Logger logger) throws IOException {
         final File finalUploadDir = deploymentContext.getAppInternalDir();
         finalUploadDir.mkdirs();
         safeCopyOfApp = renameUploadedFileOrCopyInPlaceFile(
-                finalUploadDir, uploadedApp, path);
+                finalUploadDir, uploadedApp, path, logger);
         safeCopyOfDeploymentPlan = renameUploadedFileOrCopyInPlaceFile(
-                finalUploadDir, uploadedDeploymentPlan, deploymentplan);
+                finalUploadDir, uploadedDeploymentPlan, deploymentplan, logger);
         uniqueSubdirUnderApplications.delete();
     }
 
     private File renameUploadedFileOrCopyInPlaceFile(
             final File finalUploadDir,
             final File uploadedFile,
-            final File inPlaceFile) throws IOException {
+            final File inPlaceFile,
+            final Logger logger) throws IOException {
         /*
          * The default answer is the in-place file, to handle the
-         * directory-deployment case.
+         * directory-deployment case or the in-place archive case if we ae
+         * not copying the in-place archive.
          */
         File result = inPlaceFile;
         if (uploadedFile != null) {
@@ -446,14 +449,22 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             FileUtils.renameFile(uploadedFile, result);
             result.setLastModified(uploadedFile.lastModified());
         } else if (inPlaceFile != null) {
-            if ( ! inPlaceFile.isDirectory()) {
+            final boolean copyInPlaceArchive = Boolean.valueOf(
+                    System.getProperty(COPY_IN_PLACE_ARCHIVE_PROP_NAME, "true"));
+            if ( ! inPlaceFile.isDirectory() && copyInPlaceArchive) {
                 /*
                  * The file was not uploaded and the in-place file is not a directory,
                  * so copy the archive to the permanent location.
                  */
+                final long startTime = System.currentTimeMillis();
                 result = new File(finalUploadDir, inPlaceFile.getName());
                 FileUtils.copy(inPlaceFile, result);
                 result.setLastModified(inPlaceFile.lastModified());
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.fine("*** In-place archive copy of " +
+                            inPlaceFile.getAbsolutePath() + " took " +
+                            (System.currentTimeMillis() - startTime) + " ms");
+                }
             }
         }
         return result;
