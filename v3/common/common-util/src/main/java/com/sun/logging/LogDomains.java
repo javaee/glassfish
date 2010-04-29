@@ -308,38 +308,8 @@ public class LogDomains
                     private final int offValue = Level.OFF.intValue();
 
                     public  void log (LogRecord record) {
-                        int levelValue = Level.INFO.intValue();
-                        Filter filter = super.getFilter();
-
-                        if (record.getLevel().intValue() < levelValue || levelValue == offValue) {
-                            return;
-                        }
-                        synchronized (this) {
-                            if (filter != null && !filter.isLoggable(record)) {
-                                return;
-                            }
-                        }
-
                         record.setThreadID((int)Thread.currentThread().getId());
-                        // Post the LogRecord to all our Handlers, and then to
-                        // our parents' handlers, all the way up the tree.
-
-                        Logger logger = this;
-                        while (logger != null) {
-                            Handler targets[] = logger.getHandlers();
-
-                            if (targets != null) {
-                                for (int i = 0; i < targets.length; i++) {
-                                    targets[i].publish(record);
-                                }
-                            }
-
-                            if (!logger.getUseParentHandlers()) {
-                                break;
-                            }
-
-                            logger = logger.getParent();
-                        }
+                        super.log(record);                        
                     }
                     
 
