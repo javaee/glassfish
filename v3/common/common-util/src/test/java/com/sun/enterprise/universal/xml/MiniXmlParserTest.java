@@ -91,7 +91,13 @@ public class MiniXmlParserTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        wrongOrder = new File(MiniXmlParserTest.class.getClassLoader().getResource("wrongorder.xml").getPath());
+        String wrongOrderString = MiniXmlParserTest.class.getClassLoader().getResource("wrongorder.xml").getPath();
+        wrongOrder = new File(wrongOrderString);
+
+        if(!wrongOrder.exists() && wrongOrderString.indexOf("%20")  >=  0)
+           throw new RuntimeException("You can not run unit tests if " +
+                       "your workspace has a space in its path.");
+
         rightOrder = new File(MiniXmlParserTest.class.getClassLoader().getResource("rightorder.xml").getPath());
         noconfig = new File(MiniXmlParserTest.class.getClassLoader().getResource("noconfig.xml").getPath());
         hasProfiler = new File(MiniXmlParserTest.class.getClassLoader().getResource("hasprofiler.xml").getPath());
