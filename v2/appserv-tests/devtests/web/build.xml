@@ -55,6 +55,7 @@
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
 
     <target name="jsp">
+        <ant dir="jspTagHandlerPreDestroyAnnotation" target="all"/>
         <ant dir="jspAnonymousClass" target="all"/>
         <ant dir="emptyServletPathJspInclude" target="all"/>
         <ant dir="jspUseBean" target="all"/>
@@ -102,7 +103,6 @@
         <ant dir="jspErrorPageClassCastException" target="all"/>
         <ant dir="jspTemplateTextEscapedEL" target="all"/>
         <ant dir="jspResourceInjectionTagHandler" target="all"/>
-        <ant dir="jspTagHandlerPostConstructAnnotation" target="all"/>
         <ant dir="jspTagHandlerPostConstructElement" target="all"/>
         <ant dir="jspTagHandlerPreDestroyAnnotation" target="all"/>
         <ant dir="jspResourceInjectionSimpleTagHandler" target="all"/>
