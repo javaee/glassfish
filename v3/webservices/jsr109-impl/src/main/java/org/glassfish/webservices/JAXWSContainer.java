@@ -39,12 +39,15 @@ package org.glassfish.webservices;
 import com.sun.xml.ws.api.server.Container;
 import com.sun.xml.ws.api.server.ResourceInjector;
 import com.sun.xml.ws.api.server.WSEndpoint;
+import com.sun.xml.ws.api.server.Module;
+
 import javax.servlet.ServletContext;
 import com.sun.xml.ws.transport.http.servlet.ServletModule;
 import com.sun.xml.ws.transport.http.servlet.ServletAdapter;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
+import com.sun.xml.ws.api.server.ServerPipelineHook;
 
 public class JAXWSContainer extends Container {
     
@@ -76,23 +79,25 @@ public class JAXWSContainer extends Container {
     }
 
     public <T> T getSPI(Class<T> spiType) {
-        if (spiType == ServletContext.class) {
+        if (ServletContext.class.isAssignableFrom( spiType)) {
             return (T)servletContext;
         }
-        if((spiType == com.sun.xml.ws.api.server.ServerPipelineHook.class) ||
-           (spiType == com.sun.xml.ws.assembler.ServerPipelineHook.class)){
+        
+        if (ServerPipelineHook.class.isAssignableFrom(spiType)){
             Habitat h = Globals.getDefaultHabitat();
             ServerPipeCreator s = h.getByContract(ServerPipeCreator.class);
             s.init(endpoint);
             return((T)s);
         }
-        if(spiType == ResourceInjector.class) {
+
+        if (ResourceInjector.class.isAssignableFrom(spiType)) {
             // Give control of injection time only for servlet endpoints
             if(endpoint.implementedByWebComponent()) {
                 return (T) new ResourceInjectorImpl(endpoint);
             }
         }
-        if (spiType.isAssignableFrom(ServletModule.class)) {
+
+        if (Module.class.isAssignableFrom(spiType)) {
             
             if (module != null) {
                 return ((T)spiType.cast(module));
