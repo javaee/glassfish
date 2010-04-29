@@ -607,7 +607,7 @@ public class RemoteAdminCommand {
         // attach the file to the payload
         if (doUpload)
             outboundPayload.attachFile(FILE_PAYLOAD_MIME_TYPE,
-                f.toURI(),
+                URI.create(f.getName()),
                 optionName,
                 null,
                 f);

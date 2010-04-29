@@ -37,6 +37,7 @@
 
 package org.glassfish.deployment.admin;
 
+import java.io.File;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Before;
@@ -233,7 +234,11 @@ public class ListComponentsCommandTest {
             public DeployCommandParameters getDeployParameters(ApplicationRef appRef) {
                 return new DeployCommandParameters();
             }
-        }
+        
+        public File application() {return null;}
+        public File deploymentPlan() {return null;}
+        public void recordFileLocations(File appFile, File deploymentPlanFile) {}
+    }
 
             //mock-up Engine object
     public class EngineTest extends RandomConfig implements Engine {

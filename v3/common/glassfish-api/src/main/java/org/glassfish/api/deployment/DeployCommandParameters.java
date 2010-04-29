@@ -150,7 +150,7 @@ public class DeployCommandParameters extends OpsParams {
         }
     }
 
-    private static class ParameterNames {
+    public static class ParameterNames {
 
         public static final String COMPONENT = "component";
         public static final String VIRTUAL_SERVERS = "virtualservers";

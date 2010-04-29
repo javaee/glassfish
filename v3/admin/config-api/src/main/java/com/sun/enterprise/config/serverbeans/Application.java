@@ -68,6 +68,9 @@ import org.jvnet.hk2.config.Element;
 )
 public interface Application extends Injectable, ApplicationName, PropertyBag {
 
+    public static final String APP_LOCATION_PROP_NAME = "appLocation";
+    public static final String DEPLOYMENT_PLAN_LOCATION_PROP_NAME = "deploymentPlanLocation";
+
     /**
      * Gets the value of the contextRoot property.
      *
@@ -273,6 +276,15 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
     @DuckTyped
     boolean containsSnifferType(String snifferType);
 
+    @DuckTyped
+    void recordFileLocations(File app, File plan);
+    
+    @DuckTyped
+    File application();
+    
+    @DuckTyped
+    File deploymentPlan();
+    
     class Duck {
         public static Module getModule(Application instance, String name) {
             for (Module module : instance.getModule()) {
@@ -369,7 +381,25 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
             }
             return false;
         }
-
+        
+        public static File application(final Application instance) {
+            return fileForProp(instance, APP_LOCATION_PROP_NAME);
+            
+        }
+        
+        public static File deploymentPlan(final Application instance) {
+            return fileForProp(instance, DEPLOYMENT_PLAN_LOCATION_PROP_NAME);
+        }
+        
+        private static File fileForProp(final Application instance,
+                final String propName) {
+            for (Property p : instance.getProperty()) {
+                if (p.getName().equals(propName)) {
+                    return new File(p.getValue());
+                }
+            }
+            return null;
+        }
     }
     
     /**

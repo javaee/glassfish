@@ -36,6 +36,7 @@
 
 package org.glassfish.deployment.admin;
 
+import java.net.URISyntaxException;
 import org.glassfish.admin.payload.PayloadFilesManager;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -96,6 +97,8 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
 
     private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
+    private static final String INTERNAL_DIR_NAME = "__internal";
+
 
     @Inject
     Applications apps;
@@ -127,8 +130,17 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     @Inject
     Events events;
 
-    private PayloadFilesManager.Temp payloadFilesMgr = null;
-    private List<File> payloadFiles = null;
+    private PayloadFilesManager.Perm payloadFilesMgr = null;
+    private Map<File,Properties> payloadFiles = null;
+
+    private File uploadedApp = null;
+    private File uploadedDeploymentPlan = null;
+    
+    private File safeCopyOfApp = null;
+    private File safeCopyOfDeploymentPlan = null;
+
+    /* the JAR or directory from which to deploy the app */
+    private File fileToDeployFrom = null;
 
     public DeployCommand() {
         origin = Origin.deploy;
@@ -148,11 +160,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
+        final File uniqueSubdirUnderApplications;
+        
         try {
-            payloadFilesMgr = new PayloadFilesManager.Temp(
-                    context.getActionReport(),
-                    logger);
-            payloadFiles = payloadFilesMgr.processParts(context.getInboundPayload());
+            uniqueSubdirUnderApplications = saveUploadedFiles(context, logger);
         } catch (Exception e) {
             report.setFailureCause(e);
             report.failure(logger, localStrings.getLocalString(
@@ -161,9 +172,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             return;
         }
 
-        File file = choosePathFile(context);
-        if (!file.exists()) {
-            report.setMessage(localStrings.getLocalString("fnf","File not found", file.getAbsolutePath()));
+        fileToDeployFrom = choosePathFile(context);
+        if (!fileToDeployFrom.exists()) {
+            report.setMessage(localStrings.getLocalString("fnf","File not found", fileToDeployFrom.getAbsolutePath()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
@@ -178,14 +189,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
         ReadableArchive archive;
         try {
-            archive = archiveFactory.openArchive(file, this);
+            archive = archiveFactory.openArchive(fileToDeployFrom, this);
         } catch (IOException e) {
             final String msg = localStrings.getLocalString("deploy.errOpeningArtifact",
-                    "deploy.errOpeningArtifact", file.getAbsolutePath());
+                    "deploy.errOpeningArtifact", fileToDeployFrom.getAbsolutePath());
             if (logReportedErrors) {
                 report.failure(logger, msg, e);
             } else {
-                report.setMessage(msg + file.getAbsolutePath() + e.toString());
+                report.setMessage(msg + fileToDeployFrom.getAbsolutePath() + e.toString());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
             return;
@@ -195,7 +206,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
             if (archiveHandler==null) {
-                report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",file.getName()));
+                report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",fileToDeployFrom.getName()));
                 return;
             }
 
@@ -223,7 +234,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (!source.isDirectory()) {
                 isDirectoryDeployed = false;
                 expansionDir = new File(domain.getApplicationRoot(), name);
-                file = expansionDir;
+                fileToDeployFrom = expansionDir;
             }
 
             // create the parent class loader
@@ -255,11 +266,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
              * to modify the app locations.  Leave the location alone if
              * it does not fall within the domain directory.
              */
-            URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
-            URI appURI = instanceRootURI.relativize(deploymentContext.getSource().getURI());
-            String appLocation = (appURI.isAbsolute()) ?
-                appURI.toString() :
-                "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
+            String appLocation = relativizeWithinDomainIfPossible(
+                    deploymentContext.getSource().getURI());
+            
             appProps.setProperty(ServerTags.LOCATION, appLocation);
             // set to default "user", deployers can override it
             // during processing
@@ -298,6 +307,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 try {
+                    moveAppFilesToPermanentLocation(uniqueSubdirUnderApplications,
+                            deploymentContext);
+                    recordFileLocations(appProps);
+
                     // register application information in domain.xml
                     deployment.registerAppInDomainXML(appInfo, deploymentContext);
                 } catch (Exception e) {
@@ -312,8 +325,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 retrieveArtifacts(context, name, retrieve, downloadableArtifacts,
                         false);
             }
-
-            saveUploadedFiles(deploymentContext);
         } catch(Throwable e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             report.failure(logger,localStrings.getLocalString(
@@ -326,7 +337,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 logger.log(Level.INFO, localStrings.getLocalString(
                         "errClosingArtifact", 
                         "Error while closing deployable artifact : ",
-                        file.getAbsolutePath()), e);
+                        fileToDeployFrom.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                 if (report.hasWarnings()) {
@@ -348,53 +359,142 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         }
       } finally {
           events.unregister(this);
-
-          if (payloadFilesMgr != null) {
-              payloadFilesMgr.cleanup();
-          }
       }
     }
 
-    private void saveUploadedFiles(final ExtendedDeploymentContext deploymentContext) throws IOException {
-        /*
-         * Move uploaded archives from the temp location to a permanent
-         * place for use in cluster synchronization.
-         */
-        if (payloadFiles.size() > 0) {
-            for (File f : payloadFiles) {
-                final File savedArchiveFile = new File(deploymentContext.getAppInternalDir(),
-                        f.getName());
-                deploymentContext.getAppInternalDir().mkdirs();
-                /*
-                 * Copy the file.  This avoids potential problems with
-                 * File.renameTo being unable to work across different file
-                 * systems.  Because the original uploaded file is managed
-                 * by PayloadFilesManager.Temp, it'll be deleted as part of
-                 * clean-up.
-                 */
-                FileUtils.copyFile(f, savedArchiveFile);
-                savedArchiveFile.setLastModified(f.lastModified());
+    private String relativizeWithinDomainIfPossible(
+            final URI absURI) throws URISyntaxException {
+        URI instanceRootURI = new URI(System.getProperty(INSTANCE_ROOT_URI_PROPERTY_NAME));
+        URI appURI = instanceRootURI.relativize(absURI);
+        String appLocation = (appURI.isAbsolute()) ?
+            appURI.toString() :
+            "${" + INSTANCE_ROOT_URI_PROPERTY_NAME + "}/" + appURI.toString();
+        return appLocation;
+    }
+
+    /**
+     * Saves any uploaded files into a temporary directory under the
+     * applications directory.  Placing them there allows us to rename them
+     * later, if needed, instead of copying them.
+     * @param context
+     * @param logger
+     * @return temp directory containing the saved, uploaded files
+     * @throws IOException
+     * @throws Exception
+     */
+    private File saveUploadedFiles(final AdminCommandContext context,
+            final Logger logger) throws IOException, Exception {
+        final File uniqueSubdirUnderApplications = File.createTempFile("upload", "dir",
+                    new File(domain.getApplicationRoot()));
+        uniqueSubdirUnderApplications.delete();
+        uniqueSubdirUnderApplications.mkdir();
+        payloadFilesMgr = new PayloadFilesManager.Perm(
+                uniqueSubdirUnderApplications,
+                context.getActionReport(),
+                logger);
+        payloadFiles = payloadFilesMgr.processPartsExtended(context.getInboundPayload());
+        for (Map.Entry<File,Properties> entry : payloadFiles.entrySet()) {
+            if (entry.getValue().getProperty("data-request-name").equals("DEFAULT")) {
+                uploadedApp = entry.getKey();
+            } else if (entry.getValue().getProperty("data-request-name").equals(
+                    ParameterNames.DEPLOYMENT_PLAN)) {
+                uploadedDeploymentPlan = entry.getKey();
             }
+        }
+        return uniqueSubdirUnderApplications;
+    }
+
+    /**
+     * Makes safe copies of the archive and deployment plan for later use
+     * during instance sync activity.
+     * <p>
+     * We rename any uploaded files from the temp directory to the permanent
+     * place, and we copy any archive files that were not uploaded.  This
+     * prevents any confusion that could result if the developer modified the
+     * archive file - changing its lastModified value - before redeploying it.
+     *
+     * @param uniqueSubdirUnderApplications
+     * @param deploymentContext
+     * @throws IOException
+     */
+    private void moveAppFilesToPermanentLocation(
+            final File uniqueSubdirUnderApplications,
+            final ExtendedDeploymentContext deploymentContext) throws IOException {
+        final File finalUploadDir = deploymentContext.getAppInternalDir();
+        finalUploadDir.mkdirs();
+        safeCopyOfApp = renameUploadedFileOrCopyInPlaceFile(
+                finalUploadDir, uploadedApp, path);
+        safeCopyOfDeploymentPlan = renameUploadedFileOrCopyInPlaceFile(
+                finalUploadDir, uploadedDeploymentPlan, deploymentplan);
+        uniqueSubdirUnderApplications.delete();
+    }
+
+    private File renameUploadedFileOrCopyInPlaceFile(
+            final File finalUploadDir,
+            final File uploadedFile,
+            final File inPlaceFile) throws IOException {
+        /*
+         * The default answer is the in-place file, to handle the
+         * directory-deployment case.
+         */
+        File result = inPlaceFile;
+        if (uploadedFile != null) {
+            /*
+             * The uploaded file exists, so rename it to the permanent location.
+             */
+            result = new File(finalUploadDir, uploadedFile.getName());
+            FileUtils.renameFile(uploadedFile, result);
+            result.setLastModified(uploadedFile.lastModified());
+        } else if (inPlaceFile != null) {
+            if ( ! inPlaceFile.isDirectory()) {
+                /*
+                 * The file was not uploaded and the in-place file is not a directory,
+                 * so copy the archive to the permanent location.
+                 */
+                result = new File(finalUploadDir, inPlaceFile.getName());
+                FileUtils.copy(inPlaceFile, result);
+                result.setLastModified(inPlaceFile.lastModified());
+            }
+        }
+        return result;
+    }
+
+    private void recordFileLocations(
+            final Properties appProps) throws URISyntaxException {
+        /*
+         * Setting the properties in the appProps now will cause them to be
+         * stored in the domain.xml elements along with other properties when
+         * the entire config is saved.
+         */
+        if (safeCopyOfApp != null) {
+            appProps.setProperty(Application.APP_LOCATION_PROP_NAME,
+                    relativizeWithinDomainIfPossible(
+                    safeCopyOfApp.toURI()));
+        }
+        if (safeCopyOfDeploymentPlan != null) {
+                appProps.setProperty(Application.DEPLOYMENT_PLAN_LOCATION_PROP_NAME,
+                        relativizeWithinDomainIfPossible(
+                        safeCopyOfDeploymentPlan.toURI()));
         }
     }
 
     private File choosePathFile(AdminCommandContext context) {
-        if (payloadFiles.size() >= 1) {
+        if (uploadedApp != null) {
             /*
              * Use the uploaded file rather than the one specified by --path.
              */
-            return payloadFiles.get(0);
+            return uploadedApp;
         }
         return path;
     }
 
     private File chooseDeploymentPlanFile(AdminCommandContext context) {
-        if (payloadFiles.size() >= 2) {
+        if (uploadedDeploymentPlan != null) {
             /*
              * Use the uploaded file rather than the one specified by
              * --deploymentplan.
              */
-            return payloadFiles.get(1);
+            return uploadedDeploymentPlan;
         }
         return deploymentplan;
     }

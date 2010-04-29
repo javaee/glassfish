@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -547,20 +548,21 @@ public abstract class PayloadFilesManager {
 
     /**
      * Returns all Files extracted from the Payload, treating each Part as a
-     * separate file.
+     * separate file, via a Map from each File to its associated Properties.
+     *
      * @param inboundPayload Payload containing file data to be extracted
-     * @parma reportHandler invoked for each ActionReport Part in the payload
-     * @return the Files corresponding to the content of each extracted file
+     * @return map from each extracted File to its corresponding Properties
      * @throws java.io.IOException
      */
-    public List<File> processParts(
+    public Map<File,Properties> processPartsExtended(
             final Payload.Inbound inboundPayload) throws Exception {
 
         if (inboundPayload == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_MAP;
         }
 
-        ArrayList<File> result = new ArrayList<File>();
+        final Map<File,Properties> result = new LinkedHashMap<File,Properties>();
+
         OutputStream os = null;
         InputStream is = null;
 
@@ -573,7 +575,7 @@ public abstract class PayloadFilesManager {
                 Payload.Part part = partIt.next();
                 DataRequestType drt = DataRequestType.getType(part);
                 if (drt != null) {
-                    result.add(drt.processPart(this, part, part.getName()));
+                    result.put(drt.processPart(this, part, part.getName()), part.getProperties());
                     isReportProcessed |= (drt == DataRequestType.REPORT);
                     uploadedEntryNames.append(part.getName()).append(" ");
                 } else {
@@ -589,13 +591,27 @@ public abstract class PayloadFilesManager {
             }
             postProcessParts();
             return result;
-        } 
+        }
         finally {
             if (is != null) {
                 is.close();
                 is = null;
             }
         }
+    }
+
+    /**
+     * Returns all Files extracted from the Payload, treating each Part as a
+     * separate file.
+     * @param inboundPayload Payload containing file data to be extracted
+     * @parma reportHandler invoked for each ActionReport Part in the payload
+     * @return the Files corresponding to the content of each extracted file
+     * @throws java.io.IOException
+     */
+    public List<File> processParts(
+            final Payload.Inbound inboundPayload) throws Exception {
+
+        return new ArrayList<File>(processPartsExtended(inboundPayload).keySet());
     }
 
     public static interface ActionReportHandler {

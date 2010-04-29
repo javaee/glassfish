@@ -414,6 +414,10 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         File generatedJspRoot = getScratchDir("jsp");
         // recursively delete...
         FileUtils.whack(generatedJspRoot);
+        
+        // remove the internal archive directory which holds the original
+        // archive (and possibly deployment plan) that cluster sync can use
+        FileUtils.whack(getAppInternalDir());
 
     }
 
@@ -475,6 +479,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     }
 
     public File getAppInternalDir() {
-        return new File(getSourceDir(), INTERNAL_DIR_NAME);
+        final File internalDir = new File(env.getApplicationRepositoryPath(), INTERNAL_DIR_NAME);
+        return new File(internalDir, parameters.name());
     }
 }
