@@ -1588,6 +1588,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 
     <target name="restart-server">
         <antcall target="stop-server"/>
+        <sleep seconds="5"/>
         <antcall target="start-server"/>
 
     </target>
