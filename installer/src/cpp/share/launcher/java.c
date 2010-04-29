@@ -134,6 +134,9 @@ main(int argc, char **argv)
 	/* reference to Open Installer Framework zip File */
 	char oiZipFile[MAXPATHLEN];
 
+	/* reference to jdk zip File */
+	char jdkZipFile[MAXPATHLEN];
+
     
 
         char classPath[2048];
@@ -369,30 +372,21 @@ main(int argc, char **argv)
                 fprintf(stderr, message, javahome);
                 free(message);
                 message = NULL;
-                ret = 1;
+	            return 1;				
         }
     }
+	/* if javahome is not explicitly passed, then check public JREs on the machine. */
     else
     {
-        if ((jrepath = GetPublicJREPath()) == NULL)
+	    if ((jrepath = GetPublicJREPath()) == NULL)
         {
-            char *message = GetLocalizedMessage("no_find_java");
-            fprintf(stderr, message);
-            free(message);
-            message = NULL;
-            ret = 1;
-        }
-    }
-
-    if (ret)
-    {
-        char *message = GetLocalizedMessage("no_find_java_usage");
-        fprintf(stderr, message, MINIMUM_SUPPORTED_VM_VERSION, SUPPORTED_VM_URL, progname);
-        free(message);
-        message = NULL;
-        return ret;
-    }
-
+			/* If no JDK/JRE is found on the machine, then do not quit yet. 
+			Look at the installer bundled to see if there is a bundled JDK. 
+			Prior to this the installer bundle itself has to be unzipped 
+			in temp dir. */
+			ret = 1;
+		}
+	}
 
     if ((zipFile = zipOpen(execname, &zipError)) != NULL)
     {
@@ -410,6 +404,51 @@ main(int argc, char **argv)
         }
         zipClose(zipFile);
     }
+
+	/* Check to see if there is a bundled jdk.zip in the installer bundle. */
+	/* If Java is not found in the environment, then check to see if there is a jdk.zip
+	   in package directory. If found one, then unzip it and use it to launch installer.
+	   This will only be valid in case of Java EE SDK bundles that includes a jdk in them. */
+
+	if (!javahome && ret == 1) {
+			sprintf(jdkZipFile, "%s" JDK_ZIP_PATH, workdir);
+			if ((zipFile = zipOpen(jdkZipFile, &zipError)) != NULL)
+			{
+				char *message = GetLocalizedMessage("unzipping_files_jdk_zip");
+				char bundledJavaHome[MAXPATHLEN];
+				statusf(message);
+				free(message);
+				message = NULL;
+				if (!UnzipFiles(zipFile, workdir, NULL))
+				{
+					char *message = GetLocalizedMessage("corrupted_zip_file");
+					fprintf(stderr, message, execname);
+					free(message);
+					message = NULL;
+					return 1;
+				}
+				zipClose(zipFile);
+				/* Now check to make sure that the bundled version is okay. */
+				/* Make sure version is OK */
+				sprintf(bundledJavaHome,"%s\\jdk",workdir);
+				if ((jrepath = GetJREPath(bundledJavaHome)) == NULL || !CheckJavaVersion(jrepath))
+				{
+					char *message = GetLocalizedMessage("no_find_specified_java");
+					fprintf(stderr, message, javahome);
+					free(message);
+					message = NULL;
+					ret = 1;
+				}
+			}
+			else 
+			{
+				char *message = GetLocalizedMessage("no_find_java_usage");
+				fprintf(stderr, message, MINIMUM_SUPPORTED_VM_VERSION, SUPPORTED_VM_URL, progname);
+				free(message);
+				message = NULL;
+				return ret;
+			}
+        }
 
 	/* Could have wrapped this repeated piece of code in a method, but too many arguments to pass, 
 	Moreover this is a temp. fix */
@@ -562,7 +601,7 @@ main(int argc, char **argv)
 
     /* Setup INSTALL_RESOURCE */
    s = (char *)MemAlloc(strlen(INSTALL_RESOURCE_OPTION) + strlen(workdir) + 19 + 1);
-    sprintf(s, INSTALL_RESOURCE_OPTION "%s" FILE_SEPARATOR "metadata",workdir);
+    sprintf(s, INSTALL_RESOURCE_OPTION "%s" FILE_SEPARATOR "install" FILE_SEPARATOR "metadata",workdir);
     AddOption(s);
     s = NULL;
 
