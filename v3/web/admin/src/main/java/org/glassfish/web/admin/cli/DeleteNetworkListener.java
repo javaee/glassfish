@@ -33,114 +33,93 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
-import com.sun.enterprise.config.serverbeans.Configs;
+import java.beans.PropertyVetoException;
+import java.util.List;
+
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Protocol;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.grizzly.config.dom.NetworkListeners;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
-
-import java.util.List;
 
 /**
  * Delete Network Listener command
- * 
  */
-@Service(name="delete-network-listener")
+@Service(name = "delete-network-listener")
 @Scoped(PerLookup.class)
 @I18n("delete.network.listener")
 public class DeleteNetworkListener implements AdminCommand {
-    
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(DeleteNetworkListener.class);
-
-    @Param(name="networkListenerName", primary=true)
+    @Param(name = "networkListenerName", primary = true)
     String networkListenerName;
-
     NetworkListener listenerToBeRemoved = null;
-    
     @Inject
     Configs configs;
     @Inject
     Habitat habitat;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
-        NetworkConfig networkConfig = config.getNetworkConfig();
-        NetworkListeners networkListeners = networkConfig.getNetworkListeners();
-
+        List<Config> configList = configs.getConfig();
+        NetworkListeners networkListeners = configList.get(0).getNetworkConfig().getNetworkListeners();
         try {
-            for (NetworkListener nl : networkListeners.getNetworkListener()) {
-                if (networkListenerName.equalsIgnoreCase(nl.getName())) {
-                    listenerToBeRemoved = nl;
-                }
-            }
+            if (findListener(report)) {
+                final VirtualServer virtualServer = habitat.getComponent(VirtualServer.class,
+                    listenerToBeRemoved.findHttpProtocol().getHttp().getDefaultVirtualServer());
 
-            if (listenerToBeRemoved == null) {
-                report.setMessage(localStrings.getLocalString("delete.network.listener.notexists",
-                    "{0} Network Listener doesn't exist", networkListenerName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
+                ConfigSupport.apply(new ConfigCode() {
+                    public Object run(ConfigBeanProxy... params) throws PropertyVetoException {
+                        final NetworkListeners listeners = (NetworkListeners) params[0];
+                        final VirtualServer server = (VirtualServer) params[1];
+                        listeners.getNetworkListener().remove(listenerToBeRemoved);
+                        server.removeNetworkListener(listenerToBeRemoved.getName());
+                        return listenerToBeRemoved;
+                    }
+                }, networkListeners, virtualServer);
 
-            ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-                public Object run(NetworkListeners param) throws PropertyVetoException, TransactionFailure {
-                    param.getNetworkListener().remove(listenerToBeRemoved);
-                    updateVirtualServer(listenerToBeRemoved);
-                    return listenerToBeRemoved;
-                }
-            }, networkListeners);
-            
-        } catch(TransactionFailure e) {
+            }
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        } catch (TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("delete.networkListener.fail",
                 "Deletion of NetworkListener {0} failed", networkListenerName) + "  " + e.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
-            return;
         }
-
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private void updateVirtualServer(final NetworkListener listener) throws TransactionFailure {
-        final Protocol prot = listener.findHttpProtocol();
-        if (prot != null) {
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(final VirtualServer param) throws PropertyVetoException, TransactionFailure {
-                    param.removeNetworkListener(listener.getName());
-                    return null;
-                }
-            }, habitat.getComponent(VirtualServer.class, prot.getHttp().getDefaultVirtualServer()));
+    private boolean findListener(ActionReport report) {
+        listenerToBeRemoved = habitat.getComponent(NetworkListener.class, networkListenerName);
+        if (listenerToBeRemoved == null) {
+            report.setMessage(localStrings.getLocalString("delete.network.listener.notexists",
+                "{0} Network Listener doesn't exist", networkListenerName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return false;
         }
+        return true;
     }
 
 }

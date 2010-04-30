@@ -57,8 +57,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -136,9 +137,10 @@ public class CreateNetworkListener implements AdminCommand {
         }
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-                public Object run(NetworkListeners param) throws TransactionFailure {
-                    NetworkListener newNetworkListener = param.createChild(NetworkListener.class);
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy... params) throws TransactionFailure, PropertyVetoException {
+                    NetworkListeners listeners = (NetworkListeners) params[0];
+                    NetworkListener newNetworkListener = listeners.createChild(NetworkListener.class);
                     newNetworkListener.setProtocol(protocol);
                     newNetworkListener.setTransport(transport);
                     newNetworkListener.setEnabled(enabled.toString());
@@ -147,11 +149,12 @@ public class CreateNetworkListener implements AdminCommand {
                     newNetworkListener.setThreadPool(threadPool);
                     newNetworkListener.setName(listenerName);
                     newNetworkListener.setAddress(address);
-                    param.getNetworkListener().add(newNetworkListener);
+                    listeners.getNetworkListener().add(newNetworkListener);
+                    ((VirtualServer)params[1]).addNetworkListener(listenerName);
+
                     return newNetworkListener;
                 }
-            }, nls);
-            updateVirtualServer(prot);
+            }, nls, habitat.getComponent(VirtualServer.class, prot.getHttp().getDefaultVirtualServer()));
         } catch (TransactionFailure e) {
             e.printStackTrace();
             report.setMessage(
@@ -162,18 +165,6 @@ public class CreateNetworkListener implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-    }
-
-    private void updateVirtualServer(final Protocol prot) throws TransactionFailure {
-        //final Protocol prot = listener.findHttpProtocol();
-        if(prot != null) {
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(final VirtualServer param) throws PropertyVetoException {
-                    param.addNetworkListener(listenerName);
-                    return null;
-                }
-            }, habitat.getComponent(VirtualServer.class, prot.getHttp().getDefaultVirtualServer()));
-        }
     }
 
     private boolean verifyUniquePort(NetworkConfig networkConfig) {
