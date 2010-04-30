@@ -36,12 +36,10 @@
  */
 package com.sun.hk2.component;
 
-import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
-import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.Inhabitants;
-import org.jvnet.hk2.component.MultiMap;
+
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -55,6 +53,7 @@ import java.util.Map;
  * for ignoring some components.
  *
  * @author Kohsuke Kawaguchi
+ * @author Jerome Dochez
  */
 public class InhabitantsParser {
     public final Habitat habitat;
@@ -114,23 +113,22 @@ public class InhabitantsParser {
      * <p>
      * All the earlier drop/replace commands will be honored during this process.
      */
-    public void parse(Iterable<KeyValuePairParser> scanner, Holder<ClassLoader> classLoader) throws IOException {
-        for( KeyValuePairParser kvpp : scanner) {
-            MultiMap<String,String> metadata=buildMetadata(kvpp);
-            String typeName = metadata.getOne(CLASS_KEY);
+    public void parse(Iterable<InhabitantParser> scanner, Holder<ClassLoader> classLoader) throws IOException {
+        for( InhabitantParser inhabitantParser : scanner) {
+            String typeName = inhabitantParser.getImplName();
             if(replacements.containsKey(typeName)) {
                 // create a replacement instead
                 Class<?> target = replacements.get(typeName);
                 if(target!=null) {
-                    metadata.set(CLASS_KEY,target.getName());
-                    Inhabitant i = Inhabitants.create(target,habitat,metadata);
-                    add(i, kvpp);
+                    inhabitantParser.setImplName(target.getName());
+                    Inhabitant i = Inhabitants.create(target,habitat,inhabitantParser.getMetaData());
+                    add(i, inhabitantParser);
                     // add index so that the new component can be looked up by the name of the old component.
                     habitat.addIndex(i,typeName,null);
                 }
             } else {
-                Inhabitant i = new LazyInhabitant(habitat, classLoader, typeName, metadata);
-                add(i, kvpp);
+                Inhabitant i = new LazyInhabitant(habitat, classLoader, typeName, inhabitantParser.getMetaData());
+                add(i, inhabitantParser);
             }
         }
     }
@@ -138,10 +136,10 @@ public class InhabitantsParser {
     /**
      * Adds the given inhabitant to the habitat, with all its indices.
      */
-    protected void add(Inhabitant i, KeyValuePairParser kvpp) {
+    protected void add(Inhabitant i, InhabitantParser parser) {
         habitat.add(i);
 
-        for (String v : kvpp.findAll(INDEX_KEY)) {
+        for (String v : parser.getIndexes()) {
             // register inhabitant to the index
             int idx = v.indexOf(':');
             if(idx==-1) {
@@ -154,27 +152,5 @@ public class InhabitantsParser {
                 habitat.addIndex(i, contract, name);
             }
         }
-    }
-
-    public static MultiMap<String,String> buildMetadata(KeyValuePairParser kvpp) {
-        MultiMap<String,String> metadata=new MultiMap<String, String>();
-
-        while(kvpp.hasNext()) {
-            kvpp.parseNext();
-
-            if(kvpp.getKey().equals(INDEX_KEY)) {
-                String v = kvpp.getValue();
-                int idx = v.indexOf(':');
-                if(idx!=-1) {
-                    // v=contract:name
-                    String contract = v.substring(0, idx);
-                    String name = v.substring(idx + 1);
-                    metadata.add(contract,name);
-                }
-            }
-            metadata.add(kvpp.getKey(),kvpp.getValue());
-        }
-
-        return metadata;
     }
 }

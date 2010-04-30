@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.tools.apt;
 
+import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
 import com.sun.hk2.component.InhabitantsScanner;
 import com.sun.hk2.component.KeyValuePairParser;
@@ -67,8 +68,8 @@ final class InhabitantsDescriptor extends HashMap<String,String> {
      */
     public void load(File f) throws IOException {
         InhabitantsScanner scanner = new InhabitantsScanner(new FileInputStream(f),f.getPath());
-        for (KeyValuePairParser kvpp : scanner)
-            put(kvpp.find(InhabitantsFile.CLASS_KEY),kvpp.getLine());
+        for (InhabitantParser kvpp : scanner)
+            put(kvpp.getImplName(),kvpp.getLine());
     }
 
 
