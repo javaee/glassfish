@@ -3,7 +3,7 @@
 /*
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 *
-* Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+* Copyright 2009,2010 Sun Microsystems, Inc. All rights reserved.
 *
 * The contents of this file are subject to the terms of either the GNU
 * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,7 +62,7 @@
                             <mainClass>com.sun.enterprise.tools.upgrade.UpgradeToolMain</mainClass>
                         </manifest>
                         <manifestEntries> 
-                        <Class-Path>common-util.jar javahelp.jar upgrade-tool-l10n.jar</Class-Path>
+                        <Class-Path>common-util.jar javahelp.jar upgrade-branding.jar upgrade-tool-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>

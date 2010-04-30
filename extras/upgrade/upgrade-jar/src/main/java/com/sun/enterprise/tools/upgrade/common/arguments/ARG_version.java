@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
+import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 
 /**
@@ -47,8 +48,11 @@ public class ARG_version extends ArgumentHandler {
     /** Creates a new instance of ARG_version */
 	public ARG_version() {
         super();
-        logger.info(sm.getString("enterprise.tools.upgrade.cli.arg_version.versionMessage",
-                        CommonInfoModel.getInstance().getTarget().getVersion()));
+        String versionMessage = Branding.getString(
+            "enterprise.tools.upgrade.cli.arg_version.versionMessage",
+            sm,
+            CommonInfoModel.getInstance().getTarget().getVersion());
+        System.out.println(versionMessage);
         System.exit(0);
     }
 }
