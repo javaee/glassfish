@@ -61,6 +61,7 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
+import org.glassfish.api.admin.RuntimeType;
 
 
 /**
@@ -154,7 +155,17 @@ public abstract class DomainXml implements Populator {
             // wbn: March 17, 2010 -- we use this constructor which adds ALL config
             // elements to the habitat and checks that every server element has its
             // config element available
-            DomainXmlReader xsr = new DomainXmlReader(domainXml, xif, logger);
+
+            DomainXmlReader xsr = null;
+
+            if(env.getRuntimeType() == RuntimeType.DAS)
+                xsr = new DomainXmlReader(domainXml, xif, logger);
+            else if(env.getRuntimeType() == RuntimeType.INSTANCE)
+                xsr = new DomainXmlReader(domainXml, env.getInstanceName(), 
+                        xif, logger);
+            else
+                throw new RuntimeException("Internal Error: Unknown server type: "
+                        + env.getRuntimeType());
 
             parser.parse(xsr, getDomDocument());
             xsr.close();

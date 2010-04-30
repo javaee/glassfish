@@ -178,11 +178,15 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
         // bnevins Apr 2010 adding clustering support...
         String typeString = args.getProperty("-type");
+        serverType = RuntimeType.getDefault();
 
-        if(typeString != null && typeString.equals("instance"))
-            serverType = RuntimeType.INSTANCE;
-        else
-            serverType = RuntimeType.DAS;
+        try {
+            if(typeString != null)
+                serverType = RuntimeType.valueOf(typeString);
+        }
+        catch(Exception e) {
+            // already handled above...
+        }
     }
 
     // XXX - many of these methods should be on ServerEnvironment

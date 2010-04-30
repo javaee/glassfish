@@ -74,7 +74,12 @@ public enum RuntimeType {
     public final boolean isNodeAgent() {
         return this == NODE_AGENT;
     }
+
     public final boolean isEmbedded() {
         return this == EMBEDDED;
+    }
+    
+    public final static RuntimeType getDefault() {
+        return DAS;
     }
 }

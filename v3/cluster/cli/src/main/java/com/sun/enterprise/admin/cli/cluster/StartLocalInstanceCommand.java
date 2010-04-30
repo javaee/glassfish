@@ -41,6 +41,9 @@ import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -72,6 +75,8 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
 
     private StartServerHelper helper;
 
+    private String localPassword;
+    
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StartLocalInstanceCommand.class);
 
@@ -93,6 +98,8 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
         // will use instanceName.
 
         super.validate(); // sets all the dirs
+
+        initializeLocalPassword();
     }
 
     /**
@@ -102,7 +109,7 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
             throws CommandException, CommandValidationException {
 
         logger.printDebugMessage(toString());
-
+        initializeLocalPassword();
         try {
                  // createLauncher needs to go before the helper is created!!
             createLauncher();
@@ -165,6 +172,44 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
 
             launcher.setup();
     }
+
+
+    // TODO TODO TODO
+    // TODO TODO TODO
+    // TODO TODO TODO
+    // TODO TODO TODO
+    // TODO share with domain code
+    /**
+     * If there's a local-password file, use the local password so the
+     * user never has to enter a password.
+     */
+    protected void initializeLocalPassword() {
+        // root-dir/config/local-password
+        File localPasswordFile = new File(getServerDirs().getConfigDir(), "local-password");
+
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(localPasswordFile));
+            String pwd = r.readLine();
+            if (ok(pwd)) {
+                // use the local password
+                logger.printDebugMessage("Using local password");
+                programOpts.setPassword(pwd,
+                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+                localPassword = pwd;
+            }
+        } catch (IOException ex) {
+            logger.printDebugMessage(
+                "IOException reading local password: " + ex);
+        } finally {
+            if (r != null) {
+                try {
+                    r.close();
+                } catch (IOException ex) { }
+            }
+        }
+    }
+
 
     public String toString() {
         return ObjectAnalyzer.toStringWithSuper(this);
