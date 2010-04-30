@@ -49,33 +49,6 @@ public class ResourcePrincipal extends  PrincipalImpl {
 
     static private final int NULL_HASH_CODE = Integer.valueOf(1).hashCode();
 
-    // start IASRI 4676199
-    // Mods:
-    // - Adding support for default principal cases where a principal
-    //          is not needed to acquire a resource. Ex: when username and
-    //          password are set on a jdbc datasource, no principal is need
-    //          to call getConnection()
-
-    //used for hashCode()
-    private static final String DEFAULT_USERNAME = "__default__user__name__";
-    //used for hashCode()
-    private static final String DEFAULT_PASSWORD = "__default__password__";
-
-    private boolean defaultPrincipal = false;
-
-    /**
-     * This constructor is used to construct a default principal. a default
-     * principal is used when username and password are not required to 
-     * acquire a resource.
-     */
-    public ResourcePrincipal() {
-        super(DEFAULT_USERNAME);
-        this.password = DEFAULT_PASSWORD;
-        defaultPrincipal = true;
-    }
-
-    // end IASRI 4676199
-
     public ResourcePrincipal(String name, String password) {
         super(name);
         this.password = password;
@@ -85,31 +58,11 @@ public class ResourcePrincipal extends  PrincipalImpl {
         return password;
     }
 
-    // start IASRI 4676199
-    /**
-     * @return true if this principal is a default principal
-     * @see ResourcePrincipal()
-     */
-    public boolean isDefault() {
-        return defaultPrincipal;
-    }
-    // end IASRI 4676199
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
         if (o instanceof ResourcePrincipal) {
             ResourcePrincipal other = (ResourcePrincipal) o;
-
-            // start IASRI 4676199
-            // handle the default principal case
-            if (isDefault()) {
-                return other.isDefault();
-            } else if (other.isDefault()) {
-                return false;
-            }
-            // end IASRI 4676199
-
             return ((isEqual(getName(), other.getName())) &&
                     (isEqual(this.password, other.password)));
         }
