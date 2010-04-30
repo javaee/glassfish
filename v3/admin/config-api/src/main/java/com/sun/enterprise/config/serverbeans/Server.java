@@ -63,22 +63,15 @@ import java.util.List;
 import javax.validation.constraints.Min;
 /**
  *
- * J2EE Application Server Configuration
+ * Java EE Application Server Configuration
  *
- * Each Application Server instance is a J2EEv1.4 compliant container. One
+ * Each Application Server instance is a Java EE compliant container. One
  * server instance is specially designated as the Administration Server in SE/EE
  *
  * User applications cannot be deployed to an Administration Server instance
  */
-
-/* @XmlType(name = "", propOrder = {
-    "applicationRef",
-    "resourceRef",
-    "systemProperty",
-    "property"
-}) */
-
 @Configured
+@SuppressWarnings("unused")
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
     @Param(name="name", primary = true)
@@ -103,6 +96,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name = "config", optional=true)
     void setConfigRef(String value) throws PropertyVetoException;
@@ -123,6 +117,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name = "nodeagent")
     void setNodeAgentRef(String value) throws PropertyVetoException;
@@ -149,6 +144,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setLbWeight(String value) throws PropertyVetoException;
 

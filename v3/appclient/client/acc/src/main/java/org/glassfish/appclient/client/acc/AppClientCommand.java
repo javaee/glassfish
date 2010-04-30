@@ -36,7 +36,6 @@
 package org.glassfish.appclient.client.acc;
 
 import com.sun.enterprise.glassfish.bootstrap.ProxyModule;
-import com.sun.enterprise.glassfish.bootstrap.ProxyModuleDefinition;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleMetadata;

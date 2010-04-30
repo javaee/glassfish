@@ -45,22 +45,16 @@ import java.beans.PropertyVetoException;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
-/**
- *
- */
 
-/* @XmlType(name = "") */
-@Configured
 /**
  * Defines the action MBean associated with the event.
  */
+@Configured
 public interface Action extends ConfigBeanProxy, Injectable {
 
     /**
-     * Gets the value of the actionMbeanName property.
      * Identifies the name of the action MBean.
-     * @return possible object is
-     *         {@link String }
+     * @return action name
      */
     @Attribute(key=true)
     @NotNull
@@ -68,7 +62,7 @@ public interface Action extends ConfigBeanProxy, Injectable {
     public String getActionMbeanName();
 
     /**
-     * Sets the value of the actionMbeanName property.
+     * Sets the name of the action MBean
      *
      * @param value allowed object is
      *              {@link String }

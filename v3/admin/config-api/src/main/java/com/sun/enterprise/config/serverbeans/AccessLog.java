@@ -47,10 +47,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
-/* @XmlType(name = "") */
-
+/**
+ * Access log configuration
+ */
 @Configured
-
+@SuppressWarnings("unused")
 public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
 
     /**
@@ -68,6 +69,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setFormat(String value) throws PropertyVetoException;
 
@@ -85,6 +87,8 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     * 
      */
     void setRotationPolicy(String value) throws PropertyVetoException;
 
@@ -105,6 +109,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setRotationIntervalInMinutes(String value) throws PropertyVetoException;
 
@@ -125,6 +130,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setRotationSuffix(String value) throws PropertyVetoException;
 
@@ -142,12 +148,14 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setRotationEnabled(String value) throws PropertyVetoException;
 
     /**
      * Size in bytes of the buffer where access log calls are stored. If the value is less than 5120, a warning
      *  message is issued, and the value is set to 5120
+     * @return the buffer-size
      */
     @Attribute(defaultValue = "32768")
     String getBufferSizeBytes();
@@ -158,7 +166,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      * Number of seconds before the log is written to the disk. The access log is written when the buffer is
      * full or when the interval expires. If the value is 0, the buffer is always written even if it is not full.
      * This means that each time the server is accessed, the log message is stored directly to the file
-     * @return
+     * @return   the write interval in seconds
      */
     @Attribute(defaultValue = "300")
     String getWriteIntervalSeconds();
@@ -171,6 +179,7 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
      * kept.
      * 
      * <p>A negative value must be interpreted as no limit.
+     * @return the max number of log files
      */
     @NotNull
     @Attribute(defaultValue = "-1", dataType=Integer.class)
@@ -179,8 +188,11 @@ public interface AccessLog extends ConfigBeanProxy, Injectable, PropertyBag {
     /**
      * Sets the maximum number of rotated access log files that are to be
      * kept.
-     */    
-    void setMaxHistoryFiles(String value);
+     *
+     * @param value the maximum number of log files
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    void setMaxHistoryFiles(String value) throws PropertyVetoException;
 
 }
 

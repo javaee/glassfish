@@ -65,19 +65,23 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.xml.stream.XMLStreamReader;
 
 /**
  * A cluster defines a homogeneous set of server instances that share the same
  * applications, resources, and configuration.
  */
 @Configured
+@SuppressWarnings("unused")
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
 
+    /**
+     * Sets the cluster name
+     * @param value cluster name
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
     @Param(name="name", primary = true)
     public void setName(String value) throws PropertyVetoException;
     
-
     /**
      * points to a named config. All server instances in the cluster
      * will share this config.
@@ -93,6 +97,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name="config-ref", optional=true)
     void setConfigRef(String value) throws PropertyVetoException;
@@ -116,6 +121,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setHeartbeatEnabled(String value) throws PropertyVetoException;
 
@@ -138,6 +144,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setHeartbeatPort(String value) throws PropertyVetoException;
 
@@ -158,6 +165,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * @param value allowed object is
      *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
     void setHeartbeatAddress(String value) throws PropertyVetoException;
 
@@ -166,23 +174,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * List of servers in the cluster
      * 
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the serverRef property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getServerRef().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ServerRef }
+     * @return list of configured {@link ServerRef }
      */
     @Element
     List<ServerRef> getServerRef();
@@ -213,14 +205,18 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     List<SystemProperty> getSystemProperty();
 
     /**
-    	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
+     *	Properties as per {@link org.jvnet.hk2.config.types.PropertyBag}
      */
     @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
     @PropertiesDesc(props={})
     @Element
     @Param(name="properties", optional=true)
     List<Property> getProperty();
-    
+
+    /**
+     * Returns the cluster configuration reference
+     * @return the config-ref attribute
+     */
     @DuckTyped
     String getReference();
 
@@ -268,7 +264,20 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
 
         @Inject
         Domain domain;
-        
+
+        /**
+         * Decorates the newly CRUD created cluster configuration instance.
+         * tasks :
+         *      - ensures that it references an existing configuration
+         *      - creates a new config from the default-config if no config-ref
+         *        was provided.
+         *      - check for deprecated parameters.
+         *  
+         * @param context administration command context
+         * @param instance newly created configuration element
+         * @throws TransactionFailure
+         * @throws PropertyVetoException
+         */
         @Override
         public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);

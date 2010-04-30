@@ -58,12 +58,6 @@ import javax.validation.constraints.NotNull;
 /**
  *
  */
-
-/* @XmlType(name = "", propOrder = {
-    "description",
-    "property"
-}) */
-
 @Configured
 @RestRedirects({
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-admin-object"),
@@ -77,18 +71,15 @@ public interface AdminObjectResource extends ConfigBeanProxy, Injectable, Bindab
     PropertyBag {
 
     /**
-     * Gets the value of the resType property.
      * Interface definition for the administered object
-     * 
-     * @return possible object is
-     *         {@link String }
+     * @return the interface definition
      */
     @Attribute
     @NotNull
     String getResType();
 
     /**
-     * Sets the value of the resType property.
+     * Sets the Interface definition for the administered object
      *
      * @param value allowed object is
      *              {@link String }

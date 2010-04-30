@@ -47,37 +47,18 @@ import org.jvnet.hk2.config.Element;
 
 import java.util.List;
 
-
 /**
- *
+ * List of configured servers.
  */
-
-/* @XmlType(name = "", propOrder = {
-    "server"
-}) */
-
 @Configured
 public interface Servers extends ConfigBeanProxy, Injectable  {
 
     /**
-     * Gets the value of the server property.
-     * <p/>
-     * <p/>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the server property.
-     * <p/>
-     * <p/>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getServer().add(newItem);
-     * </pre>
-     * <p/>
-     * <p/>
-     * <p/>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Server }
+     * Return the list of currently configured server. Servers can
+     * be added or removed by using the returned {@link java.util.List}
+     * instance
+     * 
+     * @return the list of configured {@link Server}
      */
     @Element
     @Create(value="create-instance", resolver= TypeResolver.class, decorator=Server.Decorator.class)
