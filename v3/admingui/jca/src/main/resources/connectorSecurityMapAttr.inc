@@ -1,9 +1,9 @@
 
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
- 
+
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -44,7 +44,7 @@
         />
         <sun:property id="poolName" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.poolName}">
             <sun:staticText id="poolName" text="#{pageSession.Name}"/>
-        </sun:property>  
+        </sun:property>
 
         <sun:property id="mapName" rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}">
             <sun:staticText id="mapName" text="#{pageSession.mapName}"/>
@@ -52,13 +52,13 @@
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
             <sun:textField id="mapName"   styleClass="required" text="#{pageSession.valueMap['Name']}" required="#{true}"/>
-        </sun:property> 
+        </sun:property>
 
         <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.userGroups}"  helpText="$resource{i18njca.connectorSecurityMap.userGroupsHelp}">
             <sun:radioButton id="optA"  name="usersOption" selected="#{requestScope.usersOptionU}" selectedValue="users"
                 onClick="enableSecurityMapFields('users'); "
             />
-            <sun:textField id="group" columns="$int{55}" text="#{pageSession.valueMap['UserGroup']}" >
+            <sun:textField id="group" columns="$int{55}" text="#{pageSession.valueMap['UserGroupCommaStr']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{userGroupsId});
                     />
@@ -71,8 +71,8 @@
         <sun:property id="principalsProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.principals}"  helpText="$resource{i18njca.connectorSecurityMap.principalsHelp}">
                    <sun:radioButton id="optB"  name="usersOption" selected="#{requestScope.usersOptionP}" selectedValue="principals"
                     onClick="javascript: enableSecurityMapFields('principals');"
-                />      
-            <sun:textField id="principals" columns="$int{55}" text="#{pageSession.valueMap['Principal']}" >
+                />
+            <sun:textField id="principals" columns="$int{55}" text="#{pageSession.valueMap['PrincipalCommaStr']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{principalsId});
                     />
@@ -93,6 +93,6 @@
         </sun:property>
     </sun:propertySheetSection>
 
-</sun:propertySheet>    
+</sun:propertySheet>
 
-            
+

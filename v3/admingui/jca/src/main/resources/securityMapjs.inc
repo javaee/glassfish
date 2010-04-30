@@ -1,8 +1,8 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- 
+
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
  and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  language governing permissions and limitations under the License.
- 
+
  When distributing the software, include this License Header Notice in each
  file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  Header, with the fields enclosed by brackets [] replaced by your own
  identifying information: "Portions Copyrighted [year]
  [name of copyright owner]"
- 
+
  Contributor(s):
- 
+
  If you wish your version of this file to be governed by only the CDDL or
  only the GPL Version 2, indicate your decision by adding "[Contributor]
  elects to include this software in this distribution under the [CDDL or GPL
@@ -34,35 +34,59 @@
  holder.
 -->
 
+<f:verbatim>
+    <script type="text/javascript">
 
-"<SCRIPT language = "Javascript" >
-" function enableSecurityMapFields(opt){	\
-    var selectedOption = getSelectedValueFromForm(document.forms['propertyForm'], 'usersOptionGrp'); \
-    if(opt == 'principals') {\
- 	enableComponent('#{principalsId}', 'text');  \
-        getTextElement('#{userGroupsId}').value='';  \
-        disableComponent('#{userGroupsId}', 'text'); \
-	getTextElement('#{principalsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true); \
-    }else{ \
-        getTextElement('#{principalsId}').value='';  \
-	disableComponent('#{principalsId}', 'text'); \
-        enableComponent('#{userGroupsId}', 'text');  \
-        getTextElement('#{userGroupsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);  \
-    }\
+function enableSecurityMapFields(opt){
+    if(opt == 'principals') {
+ 	enableComponent('#{principalsId}', 'text');
+        getTextElement('#{userGroupsId}').value='';
+        disableComponent('#{userGroupsId}', 'text');
+	getTextElement('#{principalsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true);
+    }else{
+        getTextElement('#{principalsId}').value='';
+	disableComponent('#{principalsId}', 'text');
+        enableComponent('#{userGroupsId}', 'text');
+        getTextElement('#{userGroupsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);
+    }
  }
-" function enableWorkSecurityMapFields(opt){	\
-    if(opt == 'principals') {\
-        disableComponent('#{eisuserGroupsId}', 'text'); \
- 	enableComponent('#{eisprincipalsId}', 'text');  \
-	getTextElement('#{eisprincipalsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true); \
-    }else{ \
-	disableComponent('#{eisprincipalsId}', 'text'); \
-        enableComponent('#{eisuserGroupsId}', 'text');  \
-        getTextElement('#{eisuserGroupsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);  \
-    }\
+
+
+function checkClassname(){
+    //alert('in checkClassname');
+    var opt = getSelectedValueFromForm(document.forms['propertyForm'], 'usersOption');
+    //alert('opt='+opt);
+    if (opt == 'users'){
+        if(checkForSelectedValue('#{userGroupsId}')){
+	    return true;
+	}else{
+            return showAlert('$resource{i18njca.msg.JS.securityMap.enterUserGroups}')
+	}
+    }
+    if(opt == 'principals' ){
+	if(checkForSelectedValue('#{principalsId}')){
+	    return true;
+	}else{
+            return showAlert('$resource{i18njca.msg.JS.securityMap.enterPrincipals}')
+	}
+    }
+}
+
+function enableWorkSecurityMapFields(opt){
+    if(opt == 'principals') {
+        disableComponent('#{eisuserGroupsId}', 'text');
+ 	enableComponent('#{eisprincipalsId}', 'text');
+	getTextElement('#{eisprincipalsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true);
+    }else{
+	disableComponent('#{eisprincipalsId}', 'text');
+        enableComponent('#{eisuserGroupsId}', 'text');
+        getTextElement('#{eisuserGroupsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);
+    }
  }
-"</SCRIPT>
+
+</script>
+</f:verbatim>
