@@ -99,7 +99,8 @@ public class ServicesUtils {
         }
         finally {
             try {
-                pw.close();
+                if(pw != null)
+                    pw.close();
             }
             catch (Exception e) {
                 // ignore
