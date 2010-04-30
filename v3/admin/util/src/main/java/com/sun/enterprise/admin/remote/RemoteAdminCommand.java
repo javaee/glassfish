@@ -140,6 +140,8 @@ public class RemoteAdminCommand {
     private CommandModel        commandModel;
     private StringBuilder       metadataErrors; // XXX
 
+    private List<Header>        requestHeaders = new ArrayList<Header>();
+
     /*
      * Set a default read timeout for URL connections.
      */
@@ -258,6 +260,13 @@ public class RemoteAdminCommand {
      */
     public void setFileOutputDirectory(File dir) {
         fileOutputDir = dir;
+    }
+
+    /**
+     * Return a modifiable list of headers to be added to the request.
+     */
+    public List<Header> headers() {
+        return requestHeaders;
     }
 
     /**
@@ -416,6 +425,11 @@ public class RemoteAdminCommand {
                 urlConnection.setRequestProperty("Content-Type",
                         outboundPayload.getContentType());
             }
+
+            // add any user-specified headers
+            for (Header h : requestHeaders)
+                urlConnection.addRequestProperty(h.getName(), h.getValue());
+
             urlConnection.connect();
             if (doUpload) {
                 outboundPayload.writeTo(urlConnection.getOutputStream());
