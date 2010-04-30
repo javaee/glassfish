@@ -357,7 +357,9 @@ public class EjbRuntimeEndpointInfo {
             this.adapterList = list;
             aInfo = (AdapterInvocationInfo)prepareInvocation(true);
         } finally {
-            releaseImplementor(aInfo.getInv())       ;
+            if (aInfo != null) {
+                releaseImplementor(aInfo.getInv())       ;
+            }    
         }
 
     }
