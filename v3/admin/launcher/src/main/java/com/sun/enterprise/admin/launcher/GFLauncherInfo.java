@@ -163,6 +163,17 @@ public class GFLauncherInfo {
         return instanceName;
     }
 
+    /**
+     * Picks out an admin port and returns it.  Normally there is just one port.
+     * returns -1 in case there are no ports at all.
+     * @return
+     */
+    public int getAdminPort() {
+        if(adminPorts != null && adminPorts.size() > 0)
+            return adminPorts.iterator().next();
+        return -1;
+    }
+
     public Set<Integer> getAdminPorts() {
         return adminPorts;
     }
