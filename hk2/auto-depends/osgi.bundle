@@ -8,4 +8,5 @@ Import-Package: \
                         org.junit.runner;resolution:=optional, \
                         org.junit.runner.notification;resolution:=optional, \
                         org.glassfish.hk2.classmodel.reflect;resolution:=optional, \
+                        org.glassfish.hk2.classmodel.reflect.util;resolution:=optional, \
                         *

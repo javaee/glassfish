@@ -37,6 +37,7 @@
 package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.InhabitantsDescriptor;
+import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsScanner;
 import com.sun.hk2.component.KeyValuePairParser;
 
@@ -69,7 +70,7 @@ public class ByteArrayInhabitantsDescriptor implements InhabitantsDescriptor, Se
         return systemId;
     }
 
-    public Iterable<KeyValuePairParser> createScanner() throws IOException {
+    public Iterable<InhabitantParser> createScanner() throws IOException {
         return new InhabitantsScanner(new ByteArrayInputStream(data), systemId);
     }
 

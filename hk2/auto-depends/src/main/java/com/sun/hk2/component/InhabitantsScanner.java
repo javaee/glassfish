@@ -53,7 +53,7 @@ import java.util.Iterator;
  *
  * @author Kohsuke Kawaguchi
  */
-public class InhabitantsScanner implements Iterable<KeyValuePairParser> {
+public class InhabitantsScanner implements Iterable<InhabitantParser> {
     private int lineNumber = 0;
     private final String systemId;
     private final BufferedReader r;
@@ -72,8 +72,8 @@ public class InhabitantsScanner implements Iterable<KeyValuePairParser> {
         return lineNumber;
     }
 
-    public Iterator<KeyValuePairParser> iterator() {
-        return new Iterator<KeyValuePairParser>() {
+    public Iterator<InhabitantParser> iterator() {
+        return new Iterator<InhabitantParser>() {
             private String nextLine;
 
             public boolean hasNext() {
@@ -97,11 +97,11 @@ public class InhabitantsScanner implements Iterable<KeyValuePairParser> {
                 }
             }
 
-            public KeyValuePairParser next() {
+            public InhabitantParser next() {
                 fetch();
                 kvpp.set(nextLine);
                 nextLine=null;
-                return kvpp;
+                return new InhabitantFileBasedParser(kvpp);
             }
 
             public void remove() {

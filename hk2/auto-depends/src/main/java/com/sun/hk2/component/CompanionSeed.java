@@ -134,7 +134,7 @@ public @interface CompanionSeed {
             if(metadataLine==null)
                 metadata = MultiMap.emptyMap();
             else
-                metadata = InhabitantsParser.buildMetadata(new KeyValuePairParser(metadataLine));
+                metadata = InhabitantFileBasedParser.buildMetadata(new KeyValuePairParser(metadataLine));
 
             LazyInhabitant ci = new LazyInhabitant(habitat, cl, fqcn, metadata) {
                 public Inhabitant lead() {

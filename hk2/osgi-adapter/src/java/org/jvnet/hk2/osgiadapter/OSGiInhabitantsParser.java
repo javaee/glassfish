@@ -41,6 +41,8 @@ package org.jvnet.hk2.osgiadapter;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+
+import com.sun.hk2.component.*;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.Inhabitant;
@@ -48,10 +50,6 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.BundleContext;
-import com.sun.hk2.component.InhabitantsScanner;
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.KeyValuePairParser;
-import com.sun.hk2.component.LazyInhabitant;
 
 import java.io.IOException;
 import java.util.List;
@@ -68,10 +66,6 @@ import java.util.logging.Level;
  */
 public class OSGiInhabitantsParser extends com.sun.hk2.component.InhabitantsParser {
 
-    /*
-     * TODO (Sahoo): Refactor this to be a subclass of hk2.InhabitantsParser
-     */
-
     /**
      * When an HK2 service is defined with a name (using the name attribute
      * of {@link org.jvnet.hk2.annotations.Service} annotation, then
@@ -81,67 +75,11 @@ public class OSGiInhabitantsParser extends com.sun.hk2.component.InhabitantsPars
      */
     public static final String SERVICE_NAME = "ServiceName";
 
-    private final Habitat habitat;
     private BundleContext osgiCtx;
 
     public OSGiInhabitantsParser(Habitat habitat, BundleContext ctx) {
         super(habitat);
-        this.habitat = habitat;
         this.osgiCtx = ctx;
-    }
-
-    public void parse(InhabitantsScanner scanner, Holder<ClassLoader> classLoader) throws IOException {
-        for( KeyValuePairParser kvpp : scanner) {
-            String className=null;
-            List<String> contractNames = new ArrayList<String>();
-            String serviceName = null;
-            MultiMap<String,String> metadata=null;
-
-            while(kvpp.hasNext()) {
-                kvpp.parseNext();
-
-                if(kvpp.getKey().equals(CLASS_KEY)) {
-                    className = kvpp.getValue();
-                    continue;
-                }
-                if(kvpp.getKey().equals(INDEX_KEY))
-                    continue; // will process this after creating Inhabitant
-
-                if(metadata==null)
-                    metadata = new MultiMap<String,String>();
-                metadata.add(kvpp.getKey(),kvpp.getValue());
-            }
-
-            Inhabitant i = new LazyInhabitant(habitat, classLoader, className,metadata);
-            habitat.add(i);
-
-            for (String v : kvpp.findAll(INDEX_KEY)) {
-                // store index information to metadata
-                if(metadata==null)
-                    metadata = new MultiMap<String,String>();
-                metadata.add(INDEX_KEY,v);
-
-                // register inhabitant to the index
-                int idx = v.indexOf(':');
-                if(idx==-1) {
-                    // no name
-                    habitat.addIndex(i,v,null);
-                    contractNames.add(v);
-                } else {
-                    // v=contract:name
-                    String contract = v.substring(0, idx);
-                    String name = v.substring(idx + 1);
-                    habitat.addIndex(i, contract, name);
-                    contractNames.add(name);
-                    metadata.add(contract,name);
-                    if (serviceName!=null) {
-                        assert(serviceName.equals(name));
-                    }
-                    serviceName = name;
-                }
-            }
-            registerOSGiService(i, contractNames, serviceName, metadata);
-        }
     }
 
     /**
@@ -149,28 +87,39 @@ public class OSGiInhabitantsParser extends com.sun.hk2.component.InhabitantsPars
      * The registered service would be registered with HK2 Service class name
      * in addition to all the contractNames.
      * @param i Inhabitant which is being exposed as service object
-     * @param contractNames FQCN of all contract names of this service
-     * @param serviceName Any additional name the service is known as. Used
-     * to set {@link SERVICE_NAME} property in OSGi Service Registration.
-     * @param metadata Additional metadata used to populate properties of
-     * OSGi service registration. (not used for the moment)
-     */
-    private void registerOSGiService(
-            Inhabitant i, List<String> contractNames, String serviceName,
-            MultiMap<String, String> metadata) {
-        contractNames.add(i.typeName());
-        Properties props = new Properties();
-        if (serviceName!=null) {
-            props.setProperty(SERVICE_NAME, serviceName);
+     * @param parser the inhabitant metadata information
+     */    
+    @Override
+    protected void add(Inhabitant i, InhabitantParser parser) {
+        super.add(i, parser);
+        List<String> fqcnContractNames = new ArrayList<String>();
+
+        for (String contract : parser.getIndexes()) {
+            int idx = contract.indexOf(':');
+            if(idx==-1) {
+                // no name
+                fqcnContractNames.add(contract);
+            } else {
+                // v=contract:name
+                fqcnContractNames.add(contract.substring(0, idx));
+            }
         }
+        fqcnContractNames.add(i.typeName());
+        Properties props = new Properties();
+        // todo : check what service name should be applied, watch out index can have
+        // difference service name like for companionOf
+        /**if (parser.getServiceName()!=null) {
+            props.setProperty(SERVICE_NAME, parser.getServiceName());
+        }  */
         // TODO: Map metadata to properties
         ServiceRegistration reg = osgiCtx.registerService(
-                contractNames.toArray(new String[0]),
+                fqcnContractNames.toArray(new String[0]),
                 new InhabitantServiceFactory(i),
                 props);
         logger.logp(Level.INFO, "InhabitantsParser", "registerOSGiService",
                 "reg = {0}", reg);
     }
+
 
     static class InhabitantServiceFactory implements ServiceFactory {
         private Inhabitant i;

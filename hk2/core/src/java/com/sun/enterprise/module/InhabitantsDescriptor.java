@@ -36,6 +36,7 @@
  */
 package com.sun.enterprise.module;
 
+import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.KeyValuePairParser;
 
 import java.io.IOException;
@@ -62,5 +63,5 @@ public interface InhabitantsDescriptor {
      * @return the scanner for inhabitant metadata
      * @throws IOException if the scanner create fails initialization
      */
-    Iterable<KeyValuePairParser> createScanner() throws IOException;
+    Iterable<InhabitantParser> createScanner() throws IOException;
 }

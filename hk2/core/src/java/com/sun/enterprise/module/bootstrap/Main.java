@@ -57,6 +57,8 @@ import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+
+import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.KeyValuePairParser;
 import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.*;
@@ -469,11 +471,11 @@ public class Main {
         String index = (serviceName==null || serviceName.isEmpty()?ModuleStartup.class.getName():ModuleStartup.class.getName()+":"+serviceName);
         for(InhabitantsDescriptor d : mainModule.getMetadata().getHabitats(habitatName)) {
             try {
-                for (KeyValuePairParser kvpp : d.createScanner()) {
-                    for (String v : kvpp.findAll(INDEX_KEY)) {
+                for (InhabitantParser parser : d.createScanner()) {
+                    for (String v : parser.getIndexes()) {
                         if(v.equals(index)) {
-                            kvpp.rewind();
-                            return kvpp.find(CLASS_KEY);
+                            parser.rewind();
+                            return parser.getImplName();
                         }
                     }
                 }

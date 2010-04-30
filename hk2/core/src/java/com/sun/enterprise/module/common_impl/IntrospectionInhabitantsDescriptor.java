@@ -37,6 +37,7 @@
 package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.InhabitantsDescriptor;
+import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsScanner;
 import com.sun.hk2.component.KeyValuePairParser;
 
@@ -58,7 +59,7 @@ public class IntrospectionInhabitantsDescriptor  implements InhabitantsDescripto
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Iterable<KeyValuePairParser> createScanner() throws IOException {
+    public Iterable<InhabitantParser> createScanner() throws IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
