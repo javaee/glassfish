@@ -34,35 +34,60 @@
  holder.
 -->
 
+<f:verbatim>
+    <script type="text/javascript">
 
-"<SCRIPT language = "Javascript" >
-" function enableSecurityMapFields(opt){	\
-    var selectedOption = getSelectedValueFromForm(document.forms['propertyForm'], 'usersOptionGrp'); \
-    if(opt == 'principals') {\
- 	enableComponent('#{principalsId}', 'text');  \
-        getTextElement('#{userGroupsId}').value='';  \
-        disableComponent('#{userGroupsId}', 'text'); \
-	getTextElement('#{principalsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true); \
-    }else{ \
-        getTextElement('#{principalsId}').value='';  \
-	disableComponent('#{principalsId}', 'text'); \
-        enableComponent('#{userGroupsId}', 'text');  \
-        getTextElement('#{userGroupsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);  \
-    }\
+function enableSecurityMapFields(opt){
+    if(opt == 'principals') {
+ 	enableComponent('#{principalsId}', 'text');
+        getTextElement('#{userGroupsId}').value='';
+        disableComponent('#{userGroupsId}', 'text');
+	getTextElement('#{principalsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true);
+    }else{
+        getTextElement('#{principalsId}').value='';
+	disableComponent('#{principalsId}', 'text');
+        enableComponent('#{userGroupsId}', 'text');
+        getTextElement('#{userGroupsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);
+    }
  }
-" function enableWorkSecurityMapFields(opt){	\
-    if(opt == 'principals') {\
-        disableComponent('#{eisuserGroupsId}', 'text'); \
- 	enableComponent('#{eisprincipalsId}', 'text');  \
-	getTextElement('#{eisprincipalsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true); \
-    }else{ \
-	disableComponent('#{eisprincipalsId}', 'text'); \
-        enableComponent('#{eisuserGroupsId}', 'text');  \
-        getTextElement('#{eisuserGroupsId}').focus();  \
-        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);  \
-    }\
+
+
+function checkClassname(){
+    //alert('in checkClassname');
+    var opt = getSelectedValueFromForm(document.forms['propertyForm'], 'usersOption');
+    //alert('opt='+opt);
+    if (opt == 'users'){
+        if(checkForSelectedValue('#{userGroupsId}')){
+	    return true;
+	}else{
+            return showAlert('$resource{i18njca.msg.JS.securityMap.enterUserGroups}')
+	}
+    }
+    if(opt == 'principals' ){
+	if(checkForSelectedValue('#{principalsId}')){
+	    return true;
+	}else{
+	    return showAlert('Enter Principals');
+            return showAlert('$resource{i18njca.msg.JS.securityMap.enterPrincipals}')
+	}
+    }
+}
+
+function enableWorkSecurityMapFields(opt){
+    if(opt == 'principals') {
+        disableComponent('#{eisuserGroupsId}', 'text');
+ 	enableComponent('#{eisprincipalsId}', 'text');
+	getTextElement('#{eisprincipalsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true);
+    }else{
+	disableComponent('#{eisprincipalsId}', 'text');
+        enableComponent('#{eisuserGroupsId}', 'text');
+        getTextElement('#{eisuserGroupsId}').focus();
+        #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);
+    }
  }
-"</SCRIPT>
+
+</script>
+</f:verbatim>

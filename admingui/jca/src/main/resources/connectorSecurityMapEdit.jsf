@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -56,24 +56,24 @@
         setPageSessionAttribute(key="childType" value="security-map");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr}" valueMap="#{pageSession.valueMap}");
         getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="UserGroup", value="#{pageSession.tempAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempAttr}"  commaString="#{requestScope.tmpUG}");
-        mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="$attribute{tmpUG}");
+        convertArrayToCommaString(array="#{pageSession.tempAttr}"  commaString="#{pageSession.valueMap['UserGroupCommaStr']}");
         getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="Principal", value="#{pageSession.tempPAttr}");
-        convertArrayToCommaString(array="#{pageSession.tempPAttr}"  commaString="#{requestScope.tmpP}");
-        mapPut(map="#{pageSession.valueMap}" key="Principal" value="$attribute{tmpP}");
+        convertArrayToCommaString(array="#{pageSession.tempPAttr}"  commaString="#{pageSession.valueMap['PrincipalCommaStr']}");
         getProxyAttribute(objectNameStr="#{pageSession.objectNameStr}", attrName="BackendPrincipal", value="#{pageSession.tempAttrBE}");
         setPageSessionAttribute(key="has2Objects" value="#{true}" );  //for editPageButtons.inc
         setPageSessionAttribute(key="objectNameStr2", value="#{pageSession.tempAttrBE}");
         getProxyAttrs(objectNameStr="#{pageSession.objectNameStr2}" valueMap="#{pageSession.valueMap2}");
-       if(#{tmpP}) {
+       if(#{pageSession.valueMap['PrincipalCommaStr']}) {
            setAttribute(key="usersOptionP" value="principals" );
            setPageSessionAttribute(key="myOption" value="principals");
 
         }
-        if(#{tmpUG}) {
+        if(#{pageSession.valueMap['UserGroupCommaStr']}) {
             setAttribute(key="usersOptionU" value="users" );
             setPageSessionAttribute(key="myOption" value="users");
         }
+        setPageSessionAttribute(key="skipAttrsList", value={"UserGroupCommaStr" , "PrincipalCommaStr"});
+
          //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
         setPageSessionAttribute(key="showDefaultButton" value="#{false}" );

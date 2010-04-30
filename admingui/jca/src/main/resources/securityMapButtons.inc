@@ -1,7 +1,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -38,9 +38,9 @@
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkClassname()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
+                convertSecurityMapPropsToStringArray(edit="true", userGroups="#{pageSession.valueMap['UserGroupCommaStr']}", principals="#{pageSession.valueMap['PrincipalCommaStr']}", usersOptions="#{usersOptionU}", principalsSA =>$attribute{principalsSA}  usersSA =>$attribute{usersSA});
                 mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
                 mapPut(map="#{pageSession.valueMap}" key="Principal" value="#{principalsSA}")
                 if(#{pageSession.hasPropertySheet}){
@@ -61,9 +61,9 @@
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') &&  checkClassname() ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['UserGroup']}", principals="#{pageSession.valueMap['Principal']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
+                convertSecurityMapPropsToStringArray(edit="false", userGroups="#{pageSession.valueMap['UserGroupCommaStr']}", principals="#{pageSession.valueMap['PrincipalCommaStr']}", usersOptions="#{usersOptionU}",  principalsSA =>$attribute{principalsSA} usersSA =>$attribute{usersSA});
                 if($attribute{usersSA}){
                    mapPut(map="#{pageSession.valueMap}" key="UserGroup" value="#{usersSA}")
                 }
@@ -73,6 +73,7 @@
                    createProxy(parentObjectNameStr="#{pageSession.parentObjectNameStr}" childType="#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse="#{pageSession.convertToFalseList}"
+                        skipAttrs="#{pageSession.skipAttrsList}"
                         result => $attribute{objStr});
                     setPageSessionAttribute(key="parentObjectNameStr2", value="$attribute{objStr}");
                     if(#{pageSession.has2Objects}){

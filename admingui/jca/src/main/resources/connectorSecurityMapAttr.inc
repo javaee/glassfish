@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
- Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,7 @@
             <sun:radioButton id="optA"  name="usersOption" selected="#{requestScope.usersOptionU}" selectedValue="users"
                 onClick="enableSecurityMapFields('users'); "
             />
-            <sun:textField id="group" columns="$int{55}" text="#{pageSession.valueMap['UserGroup']}" >
+            <sun:textField id="group" columns="$int{55}" text="#{pageSession.valueMap['UserGroupCommaStr']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{userGroupsId});
                     />
@@ -72,7 +72,7 @@
                    <sun:radioButton id="optB"  name="usersOption" selected="#{requestScope.usersOptionP}" selectedValue="principals"
                     onClick="javascript: enableSecurityMapFields('principals');"
                 />      
-            <sun:textField id="principals" columns="$int{55}" text="#{pageSession.valueMap['Principal']}" >
+            <sun:textField id="principals" columns="$int{55}" text="#{pageSession.valueMap['PrincipalCommaStr']}" >
                     <!afterCreate
                         getClientId(component="$this{component}" clientId=>$page{principalsId});
                     />
