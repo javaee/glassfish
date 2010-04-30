@@ -67,7 +67,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "domain_name", primary = true, optional = true)
-    private String domainName;
+    private String userArgDomainName;
     private String localPassword;
 
 
@@ -117,11 +117,16 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         if(dd != null && dd.isValid())
             return dd.getDomainName();
         else // too early!
-            return domainName;
+            return userArgDomainName;  // might be and is ok to be null
     }
 
+    /**
+     * We need this so that @Param values for domainname can be remembered later
+     * when the ServerDirs object is made.
+     * @param name the user-specified domain name.
+     */
     protected final void setDomainName(String name) {
-        domainName = name;
+        userArgDomainName = name;
     }
 
     protected void initDomain() throws CommandException {
@@ -132,7 +137,6 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
                 domainsDirFile = new File(domainDirParam);
 
             dd = new DomainDirs(domainsDirFile, getDomainName());
-            domainName = dd.getDomainName();
             setServerDirs(dd.getServerDirs());
             initializeLocalPassword(dd.getDomainDir());
         }

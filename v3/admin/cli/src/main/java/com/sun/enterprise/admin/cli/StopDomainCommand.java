@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
 import java.io.*;
@@ -52,24 +51,20 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author bnevins
  * @author Bill Shannon
  */
-
 @Service(name = "stop-domain")
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
-
     @Param(name = "domain_name", primary = true, optional = true)
-    private String domainName;
-
+    private String userArgDomainName;
     private static final long WAIT_FOR_DAS_TIME_MS = 60000; // 1 minute
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopDomainCommand.class);
 
     @Override
     protected void validate()
-                        throws CommandException, CommandValidationException {
-        setDomainName(domainName);
-        super.validate();
+            throws CommandException, CommandValidationException {
+        setDomainName(userArgDomainName);
+        super.validate(); // which calls initDomain()
     }
 
     /**
@@ -80,27 +75,29 @@ public class StopDomainCommand extends LocalDomainCommand {
     @Override
     protected void initDomain() throws CommandException {
         // only initialize local domain information if it's a local operation
-        if (programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
+        if(programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME))
             super.initDomain();
-        else if (domainName != null)   // remote case
+        else if(userArgDomainName != null)   // remote case
             throw new CommandException(
-                strings.get("StopDomain.noDomainNameAllowed"));
+                    strings.get("StopDomain.noDomainNameAllowed"));
     }
 
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-        // if a domain name has been set by initDomain, this is a local request
-        if (domainName != null) {
+
+        boolean isLocal = getServerDirs().getServerName() != null;
+
+        if(isLocal) {
             // if the local password isn't available, the domain isn't running
             // (localPassword is set by initDomain)
-            if (getLocalPassword() == null)
+            if(getLocalPassword() == null)
                 return dasNotRunning();
 
             int adminPort = getAdminPort();
             programOpts.setPort(adminPort);
-            logger.printDebugMessage("Stopping local domain on port " +
-                                                                adminPort);
+            logger.printDebugMessage("Stopping local domain on port "
+                    + adminPort);
 
             /*
              * If we're using the local password, we don't want to prompt
@@ -108,18 +105,19 @@ public class StopDomainCommand extends LocalDomainCommand {
              * most likely means we're talking to the wrong server.
              */
             programOpts.setInteractive(false);
-        }
+            // in the local case, make sure we're talking to the correct DAS
 
-        // in the local case, make sure we're talking to the correct DAS
-        if (domainName != null) {
-            if (!isThisDAS(getDomainRootDir()))
+            if(!isThisDAS(getDomainRootDir()))
                 return dasNotRunning();
             logger.printDebugMessage("It's the correct DAS");
-        } else {
+        }
+        else { // remote
             // Verify that the DAS is running and reachable
-            if (!DASUtils.pingDASQuietly(programOpts, env))
+            if(!DASUtils.pingDASQuietly(programOpts, env))
                 return dasNotRunning();
+
             logger.printDebugMessage("DAS is running");
+            programOpts.setInteractive(false);
         }
 
         /*
@@ -128,7 +126,6 @@ public class StopDomainCommand extends LocalDomainCommand {
          * so even if the password is wrong we don't want any more
          * prompting here.
          */
-        programOpts.setInteractive(false);
 
         doCommand();
         return 0;
@@ -161,7 +158,7 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Wait for the server to die.
      */
     protected void waitForDeath() throws CommandException {
-        if (!programOpts.isTerse()) {
+        if(!programOpts.isTerse()) {
             // use stdout because logger always appends a newline
             System.out.print(strings.get("StopDomain.WaitDASDeath") + " ");
         }
@@ -169,24 +166,25 @@ public class StopDomainCommand extends LocalDomainCommand {
         boolean alive = true;
         int count = 0;
 
-        while (!timedOut(startWait)) {
-            if (!isRunning()) {
+        while(!timedOut(startWait)) {
+            if(!isRunning()) {
                 alive = false;
                 break;
             }
             try {
                 Thread.sleep(100);
-                if (!programOpts.isTerse() && count++ % 10 == 0)
+                if(!programOpts.isTerse() && count++ % 10 == 0)
                     System.out.print(".");
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
                 // don't care
             }
         }
 
-        if (!programOpts.isTerse())
+        if(!programOpts.isTerse())
             System.out.println();
 
-        if (alive) {
+        if(alive) {
             throw new CommandException(strings.get("StopDomain.DASNotDead",
                     (WAIT_FOR_DAS_TIME_MS / 1000)));
         }
@@ -198,18 +196,16 @@ public class StopDomainCommand extends LocalDomainCommand {
 
     /**
      * Is the server still running?
+     * This is only called when we're hanging around waiting for the server to die.
      */
     private boolean isRunning() {
-        if (domainName != null) {
-            File pf = getServerDirs().getPidFile();
+        File pf = getServerDirs().getPidFile();
 
-            if(pf == null)
-                return false;
-
+        if(pf != null) {
             return pf.exists();
         }
         else
-            return isRunning(programOpts.getHost(),     // remote case
-            		programOpts.getPort());      		
+            return isRunning(programOpts.getHost(), // remote case
+                    programOpts.getPort());
     }
 }
