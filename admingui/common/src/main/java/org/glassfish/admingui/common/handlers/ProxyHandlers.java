@@ -558,8 +558,12 @@ public class ProxyHandlers {
                     iter.remove();
                 }
             }
-
             AMXConfigProxy child = amx.createChild(childType, attrs);
+            if (child == null){
+                GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + parentObjectNameStr + "; childType=" + childType + "; attrs =" + attrs);
+                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                return;
+            }
             handlerCtx.setOutputValue("result", child.objectName().toString());
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + parentObjectNameStr + "; childType=" + childType + "; attrs =" + attrs);
