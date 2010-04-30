@@ -233,9 +233,12 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
     }
 
     public DFProgressObject deploy(Target[] targets, ReadableArchive source, ReadableArchive deploymentPlan, Map deploymentOptions) throws IOException {
+        if (source == null) {
+            throw new IllegalArgumentException();
+        }
         File tempSourceFile = null; 
         File tempPlanFile = null;
-        if (source != null && source instanceof MemoryMappedArchive) {
+        if (source instanceof MemoryMappedArchive) {
             try {
                 String type = (String)deploymentOptions.remove("type");
                 tempSourceFile = writeMemoryMappedArchiveToTempFile((MemoryMappedArchive)source, getSuffixFromType(type));
