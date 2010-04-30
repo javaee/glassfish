@@ -132,6 +132,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
                 domainsDirFile = new File(domainDirParam);
 
             dd = new DomainDirs(domainsDirFile, getDomainName());
+            domainName = dd.getDomainName();
             setServerDirs(dd.getServerDirs());
             initializeLocalPassword(dd.getDomainDir());
         }
