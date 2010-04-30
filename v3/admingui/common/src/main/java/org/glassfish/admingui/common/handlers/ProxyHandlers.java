@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
+ *
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- * 
+ *
  * Contributor(s):
- * 
+ *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.common.handlers;
 
 import java.util.Map;
@@ -83,7 +82,7 @@ public class ProxyHandlers {
         AMXProxy amx = V3AMX.objectNameToProxy(objectNameStr);
         handlerCtx.setOutputValue("result", amx);
     }
-    
+
     @Handler(id = "getChildrenTable",
         input = {
             @HandlerInput(name = "objectNameStr", type = String.class, required = true),
@@ -175,7 +174,7 @@ public class ProxyHandlers {
 /*  deleteCascade handles delete for jdbc connection pool and connector connection pool
  *  The dependent resources jdbc resource and connector resource are deleted on deleting
  *  the pools
- *  
+ *
  */
   @Handler(id = "deleteCascade",
       input = {
@@ -188,21 +187,21 @@ public class ProxyHandlers {
             String objectNameStr = (String) handlerCtx.getInputValue("objectNameStr");
             String type = (String) handlerCtx.getInputValue("type");
             String dependentType = (String) handlerCtx.getInputValue("dependentType");
-            
+
             String dependentNameKey = "Name";
             if (type.equals(JDBC_CONNECTION_POOL)) {
                 dependentNameKey = "JndiName";
             }
-            
+
             if (dependentType != null) {
                 AMXConfigProxy amx = (AMXConfigProxy) V3AMX.objectNameToProxy(objectNameStr);
                 List<Map> selectedRows = (List) handlerCtx.getInputValue("selectedRows");
-                
+
                 for (Map oneRow : selectedRows) {
                     String name = (String) oneRow.get("Name");
                     Map<String, AMXProxy> childrenMap = amx.childrenMap(dependentType);
                     Iterator itr = childrenMap.values().iterator();
-                    
+
                     List dependencies = new ArrayList();
                     while (itr.hasNext()) {
                         AMXProxy obj = (AMXProxy) itr.next();
@@ -298,7 +297,7 @@ public class ProxyHandlers {
 
 
     /*
-     * Get the value of an attribute.  
+     * Get the value of an attribute.
      * If the attribute is an array, specifying an index will return an element in the array, otherwise, the entire array will be returned.
      */
     @Handler(id = "getProxyAttribute",
@@ -316,7 +315,7 @@ public class ProxyHandlers {
             AMXProxy amx = (AMXProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(objectNameStr));
             Object val = amx.attributesMap().get(attrName);
             if (val instanceof Object[]) {
-                
+
                 String index = (String) handlerCtx.getInputValue("index");
                 if (index == null) {
                     result = val;
@@ -396,7 +395,7 @@ public class ProxyHandlers {
     }
 
     /*
-     * Save the attributes of the proxy.  
+     * Save the attributes of the proxy.
      */
     @Handler(id = "saveBeanAttributes",
         input = {
@@ -501,7 +500,7 @@ public class ProxyHandlers {
         output = {
             @HandlerOutput(name = "result", type = String.class)})
     public static void createProxy(HandlerContext handlerCtx) {
-        
+
             final String childType = (String) handlerCtx.getInputValue("childType");
             Map<String, Object> attrs = (Map) handlerCtx.getInputValue("attrs");
             if (attrs == null){
@@ -510,7 +509,7 @@ public class ProxyHandlers {
             String parentObjectNameStr = (String) handlerCtx.getInputValue("parentObjectNameStr");
         try {
             AMXConfigProxy amx = (AMXConfigProxy) V3AMX.getInstance().getProxyFactory().getProxy(new ObjectName(parentObjectNameStr));
-        
+
             List<String> convertToFalse = (List) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalse != null) {
                 for (String sk : convertToFalse) {
@@ -559,8 +558,12 @@ public class ProxyHandlers {
                     iter.remove();
                 }
             }
-
             AMXConfigProxy child = amx.createChild(childType, attrs);
+            if (child == null){
+                GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + parentObjectNameStr + "; childType=" + childType + "; attrs =" + attrs);
+                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+                return;
+            }
             handlerCtx.setOutputValue("result", child.objectName().toString());
         } catch (Exception ex) {
             GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + parentObjectNameStr + "; childType=" + childType + "; attrs =" + attrs);
@@ -976,7 +979,7 @@ public class ProxyHandlers {
         }
     }
 
-    
+
     public static boolean doesProxyExist(String objectNameStr) {
         try {
             final ObjectName objName = new ObjectName(objectNameStr);
