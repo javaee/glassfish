@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -175,7 +175,7 @@ public class UpdateCenterHandlers {
             }
             String state= (String)handlerCtx.getInputValue("state");
             if (state.equals("update")){
-                handlerCtx.setOutputValue("result", getUpdateDisplayList(img));
+                handlerCtx.setOutputValue("result", getUpdateDisplayList(img, false));
                 return;
             }
             
@@ -343,8 +343,12 @@ public class UpdateCenterHandlers {
         }
         return result;
     }
-   
-    private static List getUpdateDisplayList(Image image){
+
+    //If countOnly is set to true,  return a List that contains only one Integer that specifies the # of updates.
+    //This is for displaying in the masthead
+    //If countOnly is set to false, it will go through each package that has update available and return a list
+    //suitable for displaying as a table row.
+    private static List getUpdateDisplayList(Image image, boolean countOnly){
         List<Image.FmriState> installed = image.getInventory(null, false);
         Map<String, Fmri> updateListMap = new HashMap();
         List<String> nameList = new ArrayList();
@@ -360,6 +364,10 @@ public class UpdateCenterHandlers {
         try{
             Image.ImagePlan ip = image.makeInstallPlan(pkgsName);
             Fmri[] proposed = ip.getProposedFmris();
+            if (countOnly){
+                result.add(new Integer(proposed.length));
+                return result;
+            }
             for( Fmri newPkg : proposed){
                 Map oneRow = new HashMap();
                 try{
@@ -388,6 +396,11 @@ public class UpdateCenterHandlers {
             }
         }catch(Exception ex){
             ex.printStackTrace();
+            if (countOnly){
+                List tmpL = new ArrayList();
+                tmpL.add(new Integer(-1));
+                return tmpL;
+            }
         }
        return result;
     }
@@ -489,22 +502,10 @@ public class UpdateCenterHandlers {
 
      
      private static Integer updateCountInSession(Image image){
-         int count = 0;
-         try{
-            List<Image.FmriState> installed = image.getInventory(null, false);
-            for(Image.FmriState fs: installed){
-                if (fs.upgradable){
-                    count++;
-                }
-            }
-         }catch(Exception ex){
-            count = -1;
-            GuiUtil.getLogger().warning("error in getting update component list");
-            GuiUtil.getLogger().warning(ex.getMessage());
-         }
-         Integer countInt = Integer.valueOf(count);
+         List list = getUpdateDisplayList(image, true);
+         Integer countInt = (Integer) list.get(0);
          GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
-         return countInt ;
+         return countInt;
      }
         
      
@@ -572,7 +573,7 @@ public class UpdateCenterHandlers {
             image = new Image (new File (ucDir));
             refreshCatalog(image);
         }catch(Exception ex){
-             GuiUtil.getLogger().warning("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
+            GuiUtil.getLogger().warning("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
         }
         return image;
     }
