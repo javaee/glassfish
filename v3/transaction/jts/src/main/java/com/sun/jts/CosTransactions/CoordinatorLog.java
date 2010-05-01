@@ -125,6 +125,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
    **/
     private static int keypointTrigger    = 100;
     private static Hashtable logStateHoldertable = new Hashtable();
+    private static final java.lang.Object NULL_ENTRY = new java.lang.Object();
 
     private Hashtable sectionMapping = null;
     private boolean rewriteRequired  = false;
@@ -1437,7 +1438,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
                 // map and replace the value with a NULL entry.
 
                 if( logStateHolder.keypointInProgress && logStateHolder.keypointLogs != null )
-                    logStateHolder.keypointLogs.put(localTID,null);
+                    logStateHolder.keypointLogs.put(localTID,NULL_ENTRY);
             }
 
             // If the transaction is read-only, then do not increment the transaction count.
@@ -1484,7 +1485,7 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
                 // map and replace the value with a NULL entry.
 
                 if( logStateHolder.keypointInProgress && logStateHolder.keypointLogs != null )
-                    logStateHolder.keypointLogs.put(localTID,null);
+                    logStateHolder.keypointLogs.put(localTID,NULL_ENTRY);
             }
 
             // If the transaction is read-only, then do not increment the transaction count.
@@ -1575,9 +1576,9 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
                 synchronized( logStateHolder.keypointStateLock ) {
                     CoordinatorLog currentLog = (CoordinatorLog)logStateHolder.keypointLogs.get(keypointLocalTIDs.nextElement());
 
-                    // Get the value out of the map, and if not NULL, tell it to rewrite itself.
+                    // Get the value out of the map, and if not NULL entry, tell it to rewrite itself.
 
-                    if( currentLog != null )
+                    if( currentLog != NULL_ENTRY )
                         currentLog.rewrite();
                 }
         }
@@ -1657,9 +1658,9 @@ class CoordinatorLog extends java.lang.Object implements LogUpcallTarget {
                 synchronized( logStateHolder.keypointStateLock ) {
                     CoordinatorLog currentLog = (CoordinatorLog)logStateHolder.keypointLogs.get(keypointLocalTIDs.nextElement());
 
-                    // Get the value out of the map, and if not NULL, tell it to rewrite itself.
+                    // Get the value out of the map, and if not NULL entry, tell it to rewrite itself.
 
-                    if( currentLog != null )
+                    if( currentLog != NULL_ENTRY )
                         currentLog.rewrite();
                 }
         }

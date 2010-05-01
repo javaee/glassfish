@@ -1889,6 +1889,7 @@ public class TopCoordinator extends CoordinatorImpl {
                 if (exc instanceof HeuristicMixed ||
                         exc instanceof HeuristicHazard) {
 
+                    heuristicExc = exc;
                     if (!tranState.
                             setState(TransactionState.STATE_ROLLED_BACK)) {
                         // empty
