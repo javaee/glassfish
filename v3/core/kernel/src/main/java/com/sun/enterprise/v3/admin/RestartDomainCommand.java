@@ -125,7 +125,7 @@ public class RestartDomainCommand implements AdminCommand {
 
     private void init(AdminCommandContext context) throws IOException {
         logger = context.getLogger();
-        String s = System.getProperty("hk2.startup.context.args");
+        String s = System.getProperty(com.sun.enterprise.glassfish.bootstrap.Constants.ARGS_PROP);
         Reader reader = new StringReader(s);
         props = new Properties();
         props.load(reader);

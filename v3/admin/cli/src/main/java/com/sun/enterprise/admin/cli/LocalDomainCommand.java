@@ -66,7 +66,6 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "domain_name", primary = true, optional = true)
     private String userArgDomainName;
-    private String localPassword;
     // the key for the Domain Root in the main attributes of the
     // manifest returned by the __locations command
     private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
@@ -105,10 +104,6 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
     protected final File getDomainsDir() {
         return dd.getDomainsDir();
-    }
-
-    protected final String getLocalPassword() {
-        return localPassword;
     }
 
     protected final File getDomainRootDir() {
