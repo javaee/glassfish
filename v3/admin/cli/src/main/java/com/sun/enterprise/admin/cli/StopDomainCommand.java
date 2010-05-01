@@ -91,7 +91,7 @@ public class StopDomainCommand extends LocalDomainCommand {
         if(isLocal) {
             // if the local password isn't available, the domain isn't running
             // (localPassword is set by initDomain)
-            if(getLocalPassword() == null)
+            if(getServerDirs().getLocalPassword() == null)
                 return dasNotRunning();
 
             int adminPort = getAdminPort();
