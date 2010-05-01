@@ -36,7 +36,9 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
+import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -113,7 +115,7 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     }
 
     // Implementation note: This has to be redone - km@dev.java.net (Aug 2008)
-    private String getStatus(String dn) {
+    private String getStatus(String dn) throws IOException {
         try {
             GFLauncher launcher = GFLauncherFactory.getInstance(
                 RuntimeType.DAS);
@@ -129,9 +131,9 @@ public final class ListDomainsCommand extends LocalDomainCommand {
 
             li.setDomainName(dn);
             launcher.setup(); //admin ports are not available otherwise
-            initializeLocalPassword(li.getInstanceRootDir());
-            Set<Integer> adminPorts = li.getAdminPorts();
-            programOpts.setPort(adminPorts.iterator().next());
+            setServerDirs(new ServerDirs(li.getInstanceRootDir()));
+
+            programOpts.setPort(li.getAnAdminPort());
             boolean status =
                 isThisDAS(SmartFile.sanitize(li.getInstanceRootDir()));
             if (status) {

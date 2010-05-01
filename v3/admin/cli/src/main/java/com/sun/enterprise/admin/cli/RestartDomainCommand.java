@@ -154,14 +154,16 @@ public class RestartDomainCommand extends StopDomainCommand {
         while (System.currentTimeMillis() < end) {
             try {
                 Thread.sleep(300);
-                if (getDomainName() != null) {
-                    // local password will change when server restarts
-                    initializeLocalPassword(getDomainRootDir());
-                }
                 long up = getUptime();
 
-                if (up > 0 && up < uptimeOldServer)
+                if (up > 0 && up < uptimeOldServer) {
+                    // local password will change when server restarts
+                    if(getDomainName() != null)
+                        resetServerDirs();
+                    
+                    // return here!!!!
                     return;
+                }
             } catch (Exception e) {
                 // continue
             }

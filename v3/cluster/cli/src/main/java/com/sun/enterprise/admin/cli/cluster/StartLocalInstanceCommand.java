@@ -98,8 +98,6 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
         // will use instanceName.
 
         super.validate(); // sets all the dirs
-
-        initializeLocalPassword();
     }
 
     /**
@@ -109,7 +107,6 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
             throws CommandException, CommandValidationException {
 
         logger.printDebugMessage(toString());
-        initializeLocalPassword();
         try {
                  // createLauncher needs to go before the helper is created!!
             createLauncher();
@@ -172,44 +169,6 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
 
             launcher.setup();
     }
-
-
-    // TODO TODO TODO
-    // TODO TODO TODO
-    // TODO TODO TODO
-    // TODO TODO TODO
-    // TODO share with domain code
-    /**
-     * If there's a local-password file, use the local password so the
-     * user never has to enter a password.
-     */
-    protected void initializeLocalPassword() {
-        // root-dir/config/local-password
-        File localPasswordFile = new File(getServerDirs().getConfigDir(), "local-password");
-
-        BufferedReader r = null;
-        try {
-            r = new BufferedReader(new FileReader(localPasswordFile));
-            String pwd = r.readLine();
-            if (ok(pwd)) {
-                // use the local password
-                logger.printDebugMessage("Using local password");
-                programOpts.setPassword(pwd,
-                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
-                localPassword = pwd;
-            }
-        } catch (IOException ex) {
-            logger.printDebugMessage(
-                "IOException reading local password: " + ex);
-        } finally {
-            if (r != null) {
-                try {
-                    r.close();
-                } catch (IOException ex) { }
-            }
-        }
-    }
-
 
     public String toString() {
         return ObjectAnalyzer.toStringWithSuper(this);

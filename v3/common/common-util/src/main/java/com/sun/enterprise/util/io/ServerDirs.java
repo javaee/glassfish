@@ -4,6 +4,7 @@
  */
 package com.sun.enterprise.util.io;
 
+import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
@@ -58,6 +59,8 @@ public class ServerDirs {
         domainXml = null;
         pidFile = null;
         valid = false;
+        localPassword = null;
+        localPasswordFile = null;
     }
 
     public ServerDirs(File leaf) throws IOException {
@@ -91,6 +94,27 @@ public class ServerDirs {
             throw new IOException("No domain.xml.  It should be here: "
                     + domainXml);
 
+        localPasswordFile = new File(configDir, "local-password");
+
+        String localPasswordBuffer = null;  // need an atomic assign tor localPassword
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(localPasswordFile));
+            localPasswordBuffer = r.readLine();
+        }
+        catch(Exception e) {
+            // needs no handling
+        } finally {
+            localPassword = localPasswordBuffer;
+            if (r != null) {
+                try {
+                    r.close();
+                } catch (IOException ex) {
+                // ignore
+                }
+            }
+        }
+
         valid = true;
     }
 
@@ -122,6 +146,12 @@ public class ServerDirs {
         return message;
     }
 
+    public ServerDirs refresh
+            () throws IOException {
+        return new ServerDirs(serverDir);
+    }
+
+    // getters & setters section below
     public final File getServerDir() {
         if(!valid)
             return null;
@@ -161,6 +191,10 @@ public class ServerDirs {
         return pidFile;
     }
 
+    public String getLocalPassword() {
+        return localPassword;
+    }
+    
     public final boolean isValid() {
         return valid;
     }
@@ -175,6 +209,8 @@ public class ServerDirs {
     private final File domainXml;
     private final File pidFile;
     private final boolean valid;
+    private final String localPassword;
+    private final File localPasswordFile;
     // Can be shared among classes in the package
     static final LocalStringsImpl strings = new LocalStringsImpl(ServerDirs.class);
     // root-dir/config/domain.xml

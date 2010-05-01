@@ -53,6 +53,10 @@ public abstract class LocalServerCommand extends CLICommand {
         serverDirs = sd;
     }
 
+    protected final void resetServerDirs() throws IOException {
+        serverDirs = serverDirs.refresh();
+    }
+
     protected final ServerDirs getServerDirs() {
         return serverDirs;
     }

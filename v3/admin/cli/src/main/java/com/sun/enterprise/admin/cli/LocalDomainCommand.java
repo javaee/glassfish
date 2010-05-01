@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.util.io.DomainDirs;
@@ -52,6 +51,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.universal.StringUtils;
 
 /**
  * A class that's supposed to capture all the behavior common to operation
@@ -61,16 +61,12 @@ import com.sun.enterprise.security.store.PasswordAdapter;
  * @author Byron Nevins  (bnevins@dev.java.net)
  */
 public abstract class LocalDomainCommand extends LocalServerCommand {
-
     @Param(name = "domaindir", optional = true)
     private String domainDirParam = null;
-
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "domain_name", primary = true, optional = true)
     private String userArgDomainName;
     private String localPassword;
-
-
     // the key for the Domain Root in the main attributes of the
     // manifest returned by the __locations command
     private static final String DOMAIN_ROOT_KEY = "Domain-Root_value";
@@ -90,15 +86,23 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
             throws CommandException, CommandValidationException {
         super.prepare();
         setServerDirs(new ServerDirs()); // do-nothing ServerDirs object...
+        String pw = getServerDirs().getLocalPassword();
+
+        if(StringUtils.ok(pw)) {
+            programOpts.setPassword(pw, ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+            logger.printDebugMessage("Using local password");
+        }
+        else
+            logger.printDebugMessage("Not using local password");
     }
 
-        @Override
+    @Override
     protected void validate()
-                        throws CommandException, CommandValidationException {
+            throws CommandException, CommandValidationException {
 
         initDomain();
     }
-    
+
     protected final File getDomainsDir() {
         return dd.getDomainsDir();
     }
@@ -138,46 +142,12 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
 
             dd = new DomainDirs(domainsDirFile, getDomainName());
             setServerDirs(dd.getServerDirs());
-            initializeLocalPassword(dd.getDomainDir());
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new CommandException(e);
         }
     }
-    
-    /**
-     * If there's a local-password file, use the local password so the
-     * user never has to enter a password.
-     */
-    protected void initializeLocalPassword(File domainRootDir) {
-        // root-dir/config/local-password
-        File localPasswordFile = new File(new File(domainRootDir, "config"),
-                                    "local-password");
-        BufferedReader r = null;
-        try {
-            r = new BufferedReader(new FileReader(localPasswordFile));
-            String pwd = r.readLine();
-            if (ok(pwd)) {
-                // use the local password
-                logger.printDebugMessage("Using local password");
-                programOpts.setPassword(pwd,
-                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
-                localPassword = pwd;
-            }
-        } catch (IOException ex) {
-            logger.printDebugMessage(
-                "IOException reading local password: " + ex);
-        } finally {
-            if (r != null) {
-                try {
-                    r.close();
-                } catch (IOException ex) { }
-            }
-        }
-    }
-    
 
-    
     /**
      * Returns the admin port of the local domain. Note that this method should
      * be called only when you own the domain that is available on accessible
@@ -187,15 +157,18 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
      * @throws CommandException in case of parsing errors
      */
     protected int getAdminPort()
-                        throws CommandException {
-        Integer[] ports;
+            throws CommandException {
 
         try {
             MiniXmlParser parser = new MiniXmlParser(getDomainXml());
             Set<Integer> portsSet = parser.getAdminPorts();
-            ports = portsSet.toArray(new Integer[portsSet.size()]);
-            return ports[0];
-        } catch (MiniXmlParserException ex) {
+
+            if(portsSet.size() > 0)
+                return portsSet.iterator().next();
+            else
+                throw new CommandException("admin port not found");
+        }
+        catch (MiniXmlParserException ex) {
             throw new CommandException("admin port not found", ex);
         }
     }
@@ -219,25 +192,28 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         try {
             server = new Socket(host, port);
             return true;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             logger.printDebugMessage("\nisRunning got exception: " + ex);
             return false;
-        } finally {
-            if (server != null) {
+        }
+        finally {
+            if(server != null) {
                 try {
                     server.close();
-                } catch (IOException ex) { }
+                }
+                catch (IOException ex) {
+                }
             }
         }
     }
 
-	/**
-	 * convenience method for the local machine
-	 */
+    /**
+     * convenience method for the local machine
+     */
     protected final boolean isRunning(int port) {
-		return isRunning(null, port);
-	}
-
+        return isRunning(null, port);
+    }
 
     /**
      * See if DAS is alive and is the one at the specified domain directory.
@@ -247,23 +223,25 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     protected boolean isThisDAS(File domainDir) {
         try {
             domainDir = SmartFile.sanitize(domainDir).getCanonicalFile();
-        } catch (IOException ioex) {
+        }
+        catch (IOException ioex) {
             // should never happen
         }
         logger.printDebugMessage("Check if server is at location " + domainDir);
         try {
             RemoteCommand cmd =
-                new RemoteCommand("__locations", programOpts, env);
+                    new RemoteCommand("__locations", programOpts, env);
             Map<String, String> attrs =
-                cmd.executeAndReturnAttributes(new String[] { "__locations" });
+                    cmd.executeAndReturnAttributes(new String[]{"__locations"});
             String rdr = attrs.get(DOMAIN_ROOT_KEY);
             logger.printDebugMessage("Remote server has domain root " + rdr);
-            if (rdr != null) {
+            if(rdr != null) {
                 File rf = SmartFile.sanitize(new File(rdr));
                 return rf.equals(domainDir);
             }
             return false;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             return false;
         }
     }
