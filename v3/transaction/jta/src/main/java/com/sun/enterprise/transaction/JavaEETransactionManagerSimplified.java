@@ -1433,7 +1433,8 @@ public class JavaEETransactionManagerSimplified
         }
 
         if (delegate != null && _logger.isLoggable(Level.INFO))
-                _logger.log(Level.INFO,"Using " + delegate.getClass().getName() + " as the delegate");
+        	_logger.log(Level.INFO, "enterprise_used_delegate_name", delegate.getClass().getName());
+                
     }
 
     public synchronized void setDelegate(JavaEETransactionManagerDelegate d) {
