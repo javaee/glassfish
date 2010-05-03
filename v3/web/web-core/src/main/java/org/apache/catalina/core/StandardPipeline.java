@@ -763,13 +763,15 @@ public class StandardPipeline
         org.apache.catalina.Logger logger = null;
         if (container != null) {
             logger = container.getLogger();
-        }
-        if (logger != null) {
-            logger.log("StandardPipeline[" + container.getName() + "]: " +
-                       message);
+            if (logger != null) {
+                logger.log("StandardPipeline[" + container.getName() + "]: " +
+                        message);
+            } else {
+                log.info("StandardPipeline[" + container.getName() +
+                        "]: " + message);
+            }
         } else {
-            log.info("StandardPipeline[" + container.getName() +
-                     "]: " + message);
+            log.info("StandardPipeline[null]: " + message);
         }
     }
 
@@ -785,15 +787,17 @@ public class StandardPipeline
         org.apache.catalina.Logger logger = null;
         if (container != null) {
             logger = container.getLogger();
-        }
-        if (logger != null) {
-            logger.log("StandardPipeline[" + container.getName() + "]: " +
-                message, t, org.apache.catalina.Logger.WARNING);
+            if (logger != null) {
+                logger.log("StandardPipeline[" + container.getName() + "]: " +
+                        message, t, org.apache.catalina.Logger.WARNING);
+            } else {
+                log.log(Level.WARNING, "StandardPipeline[" + container.getName() +
+                        "]: " + message, t);
+            }
         } else {
-            log.log(Level.WARNING, "StandardPipeline[" + container.getName() +
-                "]: " + message, t);
-        }
-    }
+            log.log(Level.WARNING, "StandardPipeline[null]: " + message, t);
+        }      
+    }                                                                     
 
     // ------------------------------------------------------ Private Methods
 

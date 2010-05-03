@@ -349,11 +349,13 @@ public final class UserConfig
         Logger logger = null;
         if (host != null) {
             logger = host.getLogger();
-        }
-        if (logger != null) {
-            logger.log("UserConfig[" + host.getName() + "]: " + message);
+            if (logger != null) {
+                logger.log("UserConfig[" + host.getName() + "]: " + message);
+            } else {
+                log.info("UserConfig[" + host.getName() + "]: " + message);
+            }
         } else {
-            log.info("UserConfig[" + host.getName() + "]: " + message);
+            log.info("UserConfig[null]: " + message);
         }
     }
 
@@ -368,13 +370,16 @@ public final class UserConfig
         Logger logger = null;
         if (host != null) {
             logger = host.getLogger();
-        }
-        if (logger != null) {
-            logger.log("UserConfig[" + host.getName() + "] "
-                       + message, t, Logger.WARNING);
+            if (logger != null) {
+                logger.log("UserConfig[" + host.getName() + "] "
+                        + message, t, Logger.WARNING);
+            } else {
+                log.log(java.util.logging.Level.WARNING,
+                        "UserConfig[" + host.getName() + "]: " + message, t);
+            }
         } else {
             log.log(java.util.logging.Level.WARNING,
-                "UserConfig[" + host.getName() + "]: " + message, t);
+                        "UserConfig[null]: " + message, t);
         }
     }
 
