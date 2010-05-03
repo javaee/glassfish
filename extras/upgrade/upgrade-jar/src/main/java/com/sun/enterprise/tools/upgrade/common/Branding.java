@@ -131,4 +131,10 @@ public final class Branding {
         return ClassLoader.getSystemClassLoader().getResource(brandedURLString);
     }
 
+    // again, just return default if there is no external branding
+    public static String getHSString(String defaultHSString) {
+        return (sm == null ? defaultHSString :
+            "com/sun/enterprise/tools/upgrade/branding/javahelp/UpgradeToolHelp.hs");
+    }
+
 }

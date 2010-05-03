@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@ package com.sun.enterprise.tools.upgrade.gui.util;
  *
  * @author  prakash
  */
+import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import java.net.URL;
 import java.util.logging.Logger;
@@ -56,8 +57,8 @@ public class Utils {
 
     public static HelpBroker getHelpBroker() {
         if (helpBroker == null) {
-            String helpHSString =
-                "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs";
+            String helpHSString = Branding.getHSString(
+                "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs");
             HelpSet helpHS = null;
             ClassLoader cl = Utils.class.getClassLoader();
             try {
