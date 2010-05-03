@@ -57,13 +57,21 @@ public class RuntimeSecurityMap {
         this.groupMap = (HashMap) groupMap.clone();
     }
 
-    public boolean equals(RuntimeSecurityMap map) {
-        if (!(map.userMap.equals(this.userMap)))
-            return false;
-        else if (!(map.groupMap.equals(this.groupMap)))
-            return false;
-        else
-            return true;
+    public boolean equals(Object map) {
+        if (map instanceof RuntimeSecurityMap) {
+            RuntimeSecurityMap rsm = (RuntimeSecurityMap) map;
+            if (!(rsm.userMap.equals(this.userMap)))
+                return false;
+            else if (!(rsm.groupMap.equals(this.groupMap)))
+                return false;
+            else
+                return true;
+        }
+        return false;
+    }
+
+    public int hashCode(){
+        return this.userMap.hashCode() + this.groupMap.hashCode();
     }
 
     public String toString() {
