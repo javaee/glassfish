@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -136,9 +136,9 @@ public class EjbServicesImpl implements EjbServices
 
         if( sessionDesc.isLocalBean() ) {
             clientView = sessionDesc.getEjbClassName();
-        } else if( sessionDesc.getLocalBusinessClassNames().size() == 1) {
+        } else if( sessionDesc.getLocalBusinessClassNames().size() >= 1) {
             clientView = sessionDesc.getLocalBusinessClassNames().iterator().next();
-        } else if( sessionDesc.getRemoteBusinessClassNames().size() == 1) {
+        } else if( sessionDesc.getRemoteBusinessClassNames().size() >= 1) {
             clientView = sessionDesc.getRemoteBusinessClassNames().iterator().next();
         }
 
