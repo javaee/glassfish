@@ -186,7 +186,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     ComponentEnvManager componentEnvManager;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config currentServerConfig;
+    Config serverConfig;
 
     @Inject(optional=true)
     DasConfig dasConfig;
@@ -494,11 +494,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         configListener = womb.get(null);
 
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(
-                configListener.httpService);
+                serverConfig.getHttpService());
         bean.addListener(configListener);
-        
+
         bean = (ObservableBean) ConfigSupport.getImpl(
-                cfg.getNetworkConfig().getNetworkListeners());
+                serverConfig.getNetworkConfig().getNetworkListeners());
         bean.addListener(configListener);
          
         // embedded mode does not have manager-propertie in domain.xml
@@ -515,11 +515,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         grizzlyService.addMapperUpdateListener(configListener);
 
-        HttpService httpService = currentServerConfig.getHttpService();
-        NetworkConfig networkConfig = currentServerConfig.getNetworkConfig();
+        HttpService httpService = serverConfig.getHttpService();
+        NetworkConfig networkConfig = serverConfig.getNetworkConfig();
         if (networkConfig != null) {
             //continue;
-            securityService = currentServerConfig.getSecurityService();
+            securityService = serverConfig.getSecurityService();
 
             // Configure HTTP listeners
             NetworkListeners networkListeners = networkConfig.getNetworkListeners();
@@ -1215,7 +1215,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         HashSet<NetworkListener> httpListeners = new HashSet<NetworkListener>();
         for (String listener : listeners) {
             boolean found = false;
-            for (NetworkListener httpListener : habitat.getAllByContract(NetworkListener.class)) {
+            for (NetworkListener httpListener :
+                    serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
                 if (httpListener.getName().equals(listener)) {
                     httpListeners.add(httpListener);
                     found = true;
@@ -2704,7 +2705,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             HashSet<NetworkListener> networkListeners = new HashSet<NetworkListener>();
             for (String listener : listeners) {
                 boolean found = false;
-                for (NetworkListener httpListener : habitat.getAllByContract(NetworkListener.class)) {
+                for (NetworkListener httpListener :
+                        serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
                     if (httpListener.getName().equals(listener)) {
                         networkListeners.add(httpListener);
                         found = true;
@@ -2822,7 +2824,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
          * Need to update connector and mapper restart is required when
          * virtual-server.http-listeners is changed dynamically
          */
-        List<NetworkListener> httpListeners = currentServerConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
+        List<NetworkListener> httpListeners = serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
         if (httpListeners != null) {
             for (NetworkListener httpListener : httpListeners) {
                 updateConnector(httpListener, habitat.getByType(HttpService.class));
@@ -2924,7 +2926,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        Collection<NetworkListener> listeners = habitat.getAllByContract(NetworkListener.class);
+        List<NetworkListener> listeners = serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
         if (listeners != null) {
             for (NetworkListener httpListener : listeners) {
                 updateConnector(httpListener, httpService);
