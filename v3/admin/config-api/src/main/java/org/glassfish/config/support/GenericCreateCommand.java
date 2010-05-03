@@ -36,6 +36,7 @@
 package org.glassfish.config.support;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.Named;
@@ -112,7 +113,9 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
 
         CrudResolver resolver = habitat.getComponent(resolverType);
 
-        manager.inject(resolver, getInjectionResolver());
+        final InjectionResolver paramResolver = getInjectionResolver();
+
+        manager.inject(resolver, paramResolver);
 
         final ConfigBeanProxy parentBean = resolver.resolve(context, parentType);
         if (parentBean==null) {
@@ -177,6 +180,10 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                         result.failure(logger, msg);
                         throw new TransactionFailure(msg);
                     } else {
+                        // inject the decorator with any parameters from the initial CLI invocation
+                        manager.inject(decorator, paramResolver);
+
+                        // invoke the decorator
                         decorator.decorate(context, childBean);
                     }
 
