@@ -95,7 +95,10 @@ public class XMLElement extends java.lang.Object {
         }
     }
    
-    public boolean equals(XMLElement other ) {
-        return qName.equals(other.getQName());
+    public boolean equals(Object other ) {
+        if (other instanceof XMLElement) {
+            return qName.equals(((XMLElement) other).getQName());
+        }
+        return false;
     }
 }
