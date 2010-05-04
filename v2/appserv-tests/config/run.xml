@@ -112,3 +112,14 @@
 </exec>
 
 </target>
+
+<macrodef name="run-test">
+    <attribute name="classname"/>
+    <attribute name="classpath"/>
+    <sequential>
+        <java classname="@{classname}" classpath="@{classpath}" fork="true">
+            <jvmarg value="-Das.props=${as.props}"/>
+        </java>
+    </sequential>
+</macrodef>
+
