@@ -62,24 +62,25 @@ public class HttpCompressionTest extends BaseDevTest {
 
     public void run() {
         try {
-            get("localhost", 8080, "", false, "compressed-output-off");
-
-            report("set-compression-on", asadmin("set",
-                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=on"));
-            get("localhost", 8080, "", true, "compressed-output-on");
-
-            report("set-compression-force", asadmin("set",
-                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=force"));
-            get("localhost", 8080, "", true, "compressed-output-force");
-
-            report("set-compression-false", !asadmin("set",
-                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=false"));
-            report("set-compression-true", !asadmin("set",
-                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=true"));
-            report("set-compression-off", asadmin("set",
-                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=off"));
-            report("set-compression-1024", asadmin("set",
-                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=1024"));
+            final String[] schemes = {"gzip", "lzma"};
+            for (String scheme : schemes) {
+                String header = scheme + "-";
+                get("localhost", 8080, "", false, "compressed-output-off", scheme);
+                report(header + "set-compression-on", asadmin("set",
+                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=on"));
+                get("localhost", 8080, "", true, "compressed-output-on", scheme);
+                report(header + "set-compression-force", asadmin("set",
+                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=force"));
+                get("localhost", 8080, "", true, "compressed-output-force", scheme);
+                report(header + "set-compression-false", !asadmin("set",
+                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=false"));
+                report(header + "set-compression-true", !asadmin("set",
+                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=true"));
+                report(header + "set-compression-off", asadmin("set",
+                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=off"));
+                report(header + "set-compression-1024", asadmin("set",
+                    "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=1024"));
+            }
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         } finally {
@@ -87,13 +88,14 @@ public class HttpCompressionTest extends BaseDevTest {
         }
     }
 
-    private void get(String host, int port, String result, boolean zipped, final String test) throws Exception {
+    private void get(String host, int port, String result, boolean zipped, final String test, final String compScheme)
+        throws Exception {
         Socket s = new Socket(host, port);
         OutputStream os = s.getOutputStream();
         send(os, "GET /index.html HTTP/1.1");
         send(os, "Host: localhost:8080");
         if (zipped) {
-            send(os, "Accept-Encoding: gzip");
+            send(os, "Accept-Encoding: " + compScheme);
         }
         send(os, "\n");
         InputStream is = s.getInputStream();
@@ -104,7 +106,7 @@ public class HttpCompressionTest extends BaseDevTest {
         try {
             while ((line = bis.readLine()) != null && !"".equals(line.trim())) {
                 write("from server: " + line);
-                found |= line.contains("Content-Encoding: gzip");
+                found |= line.contains("Content-Encoding: " + compScheme);
             }
         } finally {
             s.close();
