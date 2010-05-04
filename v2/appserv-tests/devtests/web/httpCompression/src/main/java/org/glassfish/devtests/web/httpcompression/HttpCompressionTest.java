@@ -62,7 +62,7 @@ public class HttpCompressionTest extends BaseDevTest {
 
     public void run() {
         try {
-            final String[] schemes = {"gzip", "lzma"};
+            final String[] schemes = {"gzip"/*, "lzma"*/};
             for (String scheme : schemes) {
                 String header = scheme + "-";
                 get("localhost", 8080, "", false, "compressed-output-off", scheme);
