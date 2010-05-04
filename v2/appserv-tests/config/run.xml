@@ -39,19 +39,46 @@
         <arg line="start-domain"/>
     </exec>
     <echo message="run.xml:doing wait for ${http.host}:${http.port}..."/>
-    <waitfor>
+    <waitfor timeoutproperty="unableToStart">
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
     <echo message="run.xml:DONE doing wait for ${http.host}:${http.port}..."/>
+    <antcall target="dumpThreadStack"/>
 </target>
 
 <target name="startDomainWindows" depends="init-common" if="isWindows">
     <exec executable="${ASADMIN}" spawn="true">
         <arg line="start-domain"/>
     </exec>
-    <waitfor>
+    <waitfor timeoutproperty="unableToStart">
       <http url="http://${http.host}:${http.port}"/>
     </waitfor>
+    <antcall target="dumpThreadStack"/>
+</target>
+
+<target name="dumpThreadStack" if="unableToStart">
+    <exec executable="${env.JAVA_HOME}/bin/jps" output="pid.out.file">
+       <arg value="-v"/>
+    </exec>
+    <loadfile srcfile="pid.out.file" property="pid.out">
+        <filterchain>
+            <linecontains>
+              <contains value="ASMain"/>
+	      <contains value="${env.S1AS_HOME}"/>
+            </linecontains>
+            <tokenfilter>
+                <replaceregex pattern="^(\d+) ASMain (.*)" replace="\1"/>
+                <trim/>
+                <ignoreblank/>
+            </tokenfilter>
+            <striplinebreaks/>
+        </filterchain>
+    </loadfile>
+    <echo>Dumping the thread stack for Appserver instance with PID - "${pid.out}"</echo>
+    <exec executable="${env.JAVA_HOME}/bin/jstack">
+        <arg value="${pid.out}"/>
+    </exec>
+    <delete file="pid.out.file"/>
 </target>
 
 <target name="stopDomain" depends="init-common">
