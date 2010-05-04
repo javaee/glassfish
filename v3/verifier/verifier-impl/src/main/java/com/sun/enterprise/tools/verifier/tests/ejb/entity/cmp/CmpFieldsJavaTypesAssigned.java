@@ -115,8 +115,8 @@ public class CmpFieldsJavaTypesAssigned extends EjbTest implements EjbCheck {
 				    (descriptor.getRemoteClassName().equals(fc.getName())) ||
 				    (descriptor.getHomeClassName().equals(fc.getName())) ||
 				    (EjbUtils.isValidSerializableType(fc))||
-				    (descriptor.getLocalClassName().equals(fc.getName())) ||
-				    (descriptor.getLocalHomeClassName().equals(fc.getName()))) {
+				    (fc.getName().equals(descriptor.getLocalClassName())) ||
+				    (fc.getName().equals(descriptor.getLocalHomeClassName()))) {
 				    continue;
 				} else {
 				    if (!oneFailed) {
