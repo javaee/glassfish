@@ -53,5 +53,5 @@ public interface LoginDialog {
     /**
      *@return The password of the user in plain text...
      */
-    public String getPassword();
+    public char[] getPassword();
 }

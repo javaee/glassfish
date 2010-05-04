@@ -190,16 +190,13 @@ public class CommonServerSecurityPipe extends AbstractFilterPipeImpl {
 
 		// only do doAdPriv if SecurityManager is in effect
 		if (System.getSecurityManager() == null) {
-		    try {
-			// proceed to invoke the endpoint
-			response = next.process(validatedRequest);
-		    } catch (Exception e) {
-			if (e instanceof AuthException){
-			    _logger.log(Level.SEVERE,"ws.error_next_pipe", e);
-			}
-			response = helper.getFaultResponse
-			    (validatedRequest,info.getResponsePacket(),e);
-		    }
+		                  try {
+                        // proceed to invoke the endpoint
+                        response = next.process(validatedRequest);
+                    } catch (Exception e) {
+                        _logger.log(Level.SEVERE, "ws.error_next_pipe", e);
+                        response = helper.getFaultResponse(validatedRequest, info.getResponsePacket(), e);
+                    }
 		} else {
 		    try {
 			response = (Packet)Subject.doAsPrivileged
@@ -211,9 +208,7 @@ public class CommonServerSecurityPipe extends AbstractFilterPipeImpl {
 			    }, null);
 		    } catch (PrivilegedActionException pae) {
 		        Throwable cause = pae.getCause();
-			if (cause instanceof AuthException){
-			    _logger.log(Level.SEVERE,"ws.error_next_pipe", cause);
-			}
+			_logger.log(Level.SEVERE,"ws.error_next_pipe", cause);
 			response = helper.getFaultResponse
 			    (validatedRequest,info.getResponsePacket(),cause);
 		    }

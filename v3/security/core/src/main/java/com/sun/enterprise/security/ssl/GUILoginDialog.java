@@ -104,8 +104,9 @@ public final class GUILoginDialog implements LoginDialog  {
     /**
      *@return The password of the user in plain text...
      */
-    public String getPassword() {
-	return passphraseDialog.passphrase;
+    public final char[] getPassword() {
+        char[] temp = passphraseDialog.passphrase;
+        return (temp == null) ? null : Arrays.copyOf(temp, temp.length);
     }
 }
 
@@ -131,7 +132,7 @@ class PassphraseDialog extends JDialog
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(PassphraseDialog.class);
     String username = "";
-    String passphrase = "";
+    char[] passphrase = null;
 
     private JPasswordField keystorePassword;
     private JLabel lbl;
@@ -320,10 +321,10 @@ class PassphraseDialog extends JDialog
 		if(username.trim().length() > 0)
 		    nameCallback.setName(username);
 		if(passwordCallback != null) {
-		    passphrase = new String(passField.getPassword());
-		    if(passphrase.trim().length() > 0) {
-			passwordCallback.setPassword(passphrase.toCharArray());
-		    }
+                    char[] pass = passField.getPassword();
+		    //if(passphrase.trim().length() > 0) {
+		    passwordCallback.setPassword(passphrase);
+		    //}
 		}
 		if(choiceCallback != null) {
 		    int idx = choiceList.getSelectedIndex();
@@ -346,7 +347,7 @@ class PassphraseDialog extends JDialog
 		    choiceCallback.setSelectedIndex (-1);
 		} else {
 		    username = null;
-		    passphrase = null;
+		    Arrays.fill(passphrase, ' ');
 		    frame.dispose();
 		}
 	    }
@@ -414,7 +415,7 @@ class CertificateDialog extends JDialog
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(CertificateDialog.class);
     String username = "";
-    String passphrase = "";
+    char[] passphrase = new char[0];
 
     /**
      * Create a dialog box with a frame and title.
@@ -491,7 +492,7 @@ class CertificateDialog extends JDialog
 		//int index = certList.getSelectedIndex();
 
 		if((username.trim().length() > 0) &&
-		   (passphrase.trim().length() > 0)) {
+		   (passphrase.length > 0)) {
 		    setVisible(false);
 		}
 	    }

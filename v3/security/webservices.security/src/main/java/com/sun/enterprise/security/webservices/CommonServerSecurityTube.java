@@ -171,9 +171,7 @@ public class CommonServerSecurityTube extends AbstractFilterTubeImpl {
                             // proceed to invoke the endpoint
                             return doInvoke(super.next, validatedRequest);
                         } catch (Exception e) {
-                            if (e instanceof AuthException) {
-                                _logger.log(Level.SEVERE, "ws.error_next_pipe", e);
-                            }
+                            _logger.log(Level.SEVERE, "ws.error_next_pipe", e);
                             response = helper.getFaultResponse(validatedRequest, info.getResponsePacket(), e);
                             return doReturnWith(response);
                         }
@@ -190,9 +188,7 @@ public class CommonServerSecurityTube extends AbstractFilterTubeImpl {
                             return action;
                         } catch (PrivilegedActionException pae) {
                             Throwable cause = pae.getCause();
-                            if (cause instanceof AuthException) {
-                                _logger.log(Level.SEVERE, "ws.error_next_pipe", cause);
-                            }
+                            _logger.log(Level.SEVERE, "ws.error_next_pipe", cause);                           
                             response = helper.getFaultResponse(validatedRequest, info.getResponsePacket(), cause);
                             return doReturnWith(response);
                         }

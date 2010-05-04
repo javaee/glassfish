@@ -38,12 +38,9 @@ package com.sun.enterprise.security.common;
 
 import com.sun.enterprise.security.integration.AppServSecurityContext;
 import com.sun.enterprise.security.*;
-import com.sun.enterprise.security.common.AbstractSecurityContext;
 import java.security.Principal;
-import java.security.PrivilegedAction;
 import javax.security.auth.Subject;
 
-import com.sun.enterprise.security.auth.login.common.PasswordCredential;
 import org.glassfish.security.common.PrincipalImpl;
 //V3:Comment import com.sun.enterprise.ServerConfiguration;
 
@@ -93,7 +90,7 @@ public final class ClientSecurityContext extends AbstractSecurityContext {
     /**
      * Initialize the SecurityContext & handle the unauthenticated
      * principal case
-     */
+     
     public static ClientSecurityContext init() {
 	ClientSecurityContext sc = getCurrent();
 	if (sc == null) { // there is no current security context
@@ -101,17 +98,18 @@ public final class ClientSecurityContext extends AbstractSecurityContext {
 	    sc = generateDefaultSecurityContext();
         }
 	return sc;
-    }
+    }*/
     
+   /*
     private static ClientSecurityContext generateDefaultSecurityContext() {
 	final String PRINCIPAL_NAME = "auth.default.principal.name";
 	final String PRINCIPAL_PASS = "auth.default.principal.password";
-	//TODO:V3 not sure how to get ServerConfiguration
-        /*V3:Comment
-	ServerConfiguration config = ServerConfiguration.getConfiguration();
-	String username = config.getProperty(PRINCIPAL_NAME, "guest");
-	String password = config.getProperty(PRINCIPAL_PASS, "guest123");
-	*/
+	
+        
+	//ServerConfiguration config = ServerConfiguration.getConfiguration();
+	//String username = config.getProperty(PRINCIPAL_NAME, "guest");
+	//String password = config.getProperty(PRINCIPAL_PASS, "guest123");
+	
         //Temporary hardcoding to make V3 code for WebProfile compile
         String username ="guest";
         char[] password = new char[]{'g','e','t','s','t','1','2','3'};
@@ -140,6 +138,7 @@ public final class ClientSecurityContext extends AbstractSecurityContext {
             }
         }
     }
+    */
 
     /**
      * This method gets the SecurityContext stored here.  If using a

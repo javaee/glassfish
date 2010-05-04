@@ -159,7 +159,7 @@ public class GSSUtils
         if (externalName[1] != 0x01)
 	    throw e;
 
-	int mechoidlen = (((int)externalName[2]) << 8)+ externalName[3];
+	int mechoidlen = (((int)externalName[2]) << 8)+ (externalName[3] & 0xff);
 
         if(_logger.isLoggable(Level.FINE)) 
 		_logger.log(Level.FINE,"Mech OID length = " + mechoidlen);
@@ -216,7 +216,7 @@ public class GSSUtils
         if (externalName[1] != 0x01)
 	    throw e;
 
-	int mechoidlen = (((int)externalName[2]) << 8)+ externalName[3];
+	int mechoidlen = (((int)externalName[2]) << 8)+ (externalName[3] & 0xff);
 
 	    if(_logger.isLoggable(Level.FINE)) {
 		_logger.log(Level.FINE,"Mech OID length = " + mechoidlen);

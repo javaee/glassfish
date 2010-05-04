@@ -49,13 +49,13 @@ import javax.security.auth.callback.*;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.*;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 import org.glassfish.internal.api.Globals;
 
 
 /**
- * This implementation of LoginDialog, first looks at the environment
- * variables "login.username" and "login.password". If these are set it 
- * uses these for username & password respectively.
+ * This implementation of LoginDialog
  * If these are not set, then it queries the user in the command window.
  *
  * @author Harish Prabandham
@@ -68,44 +68,9 @@ public final class TextLoginDialog implements LoginDialog {
     }
 
     private String username = null;
-    private String password = null;
+    private char[] password = null;
     private static LocalStringManagerImpl localStrings =
 	new LocalStringManagerImpl(TextLoginDialog.class);
-
-    public TextLoginDialog() {
-        BufferedReader d = 
-            new BufferedReader(new InputStreamReader(System.in));
-        String defaultUname = System.getProperty("user.name");
-        do {
-            System.err.print
-                (localStrings.getLocalString
-                    ("enterprise.security.login.username",
-                    "User Name"));
-            if(defaultUname != null){
-                System.err.print("[" + defaultUname + "]: ");
-            }else{
-                System.err.print(": ");
-            }
-            try {
-                username = d.readLine();
-                if((defaultUname != null) && ((username == null) || (username.trim().length() == 0))){
-                    username = defaultUname;
-                }
-            } catch(IOException e) {
-            }
-        } while ((username == null) || (username.trim().length() == 0));
-            
-        do {
-            System.err.print
-                (localStrings.getLocalString
-                    ("enterprise.security.login.password",
-                    "Password: "));
-            try {
-                password = d.readLine();
-            }catch (IOException e) {
-            }
-        } while ((password == null) || (password.trim().length() == 0));
-    }
 
     public TextLoginDialog(Callback[] callbacks) 
     {
@@ -151,13 +116,7 @@ public final class TextLoginDialog implements LoginDialog {
                     } else {
 		        System.err.print(pc.getPrompt());
 		        System.err.flush();
-		    
-		        String psswd = 
-			    new BufferedReader
-			    (new InputStreamReader(System.in)).readLine();
-                        if (psswd != null) {
-                            passwd = psswd.toCharArray();
-                        }
+		        passwd = readPassword(System.in);
                     }
                     if (passwd != null) {
 		        pc.setPassword(passwd);
@@ -227,7 +186,58 @@ public final class TextLoginDialog implements LoginDialog {
     /**
      *@return The password of the user in plain text...
      */
-    public String getPassword() {
-	return password;
+    public final char[] getPassword() {
+        return (password == null) ? null : Arrays.copyOf(password, password.length);
     }
+
+    private static char[] readPassword(InputStream in) throws IOException {
+    char[] lineBuffer;
+    char[] buf;
+    int i;
+
+    buf = lineBuffer = new char[128];
+    int room = buf.length;
+    int offset = 0;
+    int c;
+
+  loop:
+    while (true) {
+      switch (c = in.read()) {
+         case -1:
+         case '\n':
+            break loop;
+
+         case '\r':
+             int c2 = in.read();
+             if ((c2 != '\n') && (c2 != -1)) {
+                 if (!(in instanceof PushbackInputStream)) {
+                     in = new PushbackInputStream(in);
+                 }
+                 ((PushbackInputStream)in).unread(c2);
+             } else
+                 break loop;
+
+         default:
+             if (--room < 0) {
+                 buf = new char[offset + 128];
+                 room = buf.length - offset - 1;
+                 System.arraycopy(lineBuffer, 0, buf, 0, offset);
+                 Arrays.fill(lineBuffer, ' ');
+                 lineBuffer = buf;
+             }
+             buf[offset++] = (char) c;
+             break;
+        }
+    }
+
+    if (offset == 0) {
+        return null;
+    }
+
+    char[] ret = new char[offset];
+    System.arraycopy(buf, 0, ret, 0, offset);
+    Arrays.fill(buf, ' ');
+
+    return ret;
+  }
 }

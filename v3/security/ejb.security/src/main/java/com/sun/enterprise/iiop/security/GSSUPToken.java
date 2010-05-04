@@ -180,7 +180,8 @@ public class GSSUPToken {
 
         if(_logger.isLoggable(Level.FINE)){
             _logger.fine("Username (UTF8) " + GSSUtils.dumpHex(name_utf8));
-            _logger.fine("Password (UTF8) " + GSSUtils.dumpHex(password_utf8));
+            //_logger.fine("Password (UTF8) " + GSSUtils.dumpHex(password_utf8));
+            _logger.fine("Password (UTF8) " + "########");
             _logger.fine("Targetname      " + GSSUtils.dumpHex(target_name));
         }
  
@@ -247,11 +248,11 @@ public class GSSUPToken {
 
         if(_logger.isLoggable(Level.FINE)){
             _logger.fine("IIOP:Username (UTF8) " + GSSUtils.dumpHex(name_utf8));
-            _logger.fine("IIOP:Password (UTF8) " + GSSUtils.dumpHex(password_utf8));
+            //_logger.fine("IIOP:Password (UTF8) " + GSSUtils.dumpHex(password_utf8));
+            _logger.fine("IIOP:Password (UTF8) " + "########");
             _logger.fine("IIOP:Targetname      " + GSSUtils.dumpHex(target_name));
         }
         /* Construct a PasswordCredential */
-
         try {
             username  = new String(name_utf8, "UTF8");
             userpwd   = new String(password_utf8, "UTF8");
