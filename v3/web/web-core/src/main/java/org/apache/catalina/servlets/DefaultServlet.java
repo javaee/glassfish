@@ -62,6 +62,7 @@ import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.URLEncoder;
 import org.apache.naming.resources.CacheEntry;
+import org.apache.naming.resources.FileDirContext;
 import org.apache.naming.resources.ProxyDirContext;
 import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.ResourceAttributes;
@@ -706,9 +707,10 @@ public class DefaultServlet
         }
 
         CacheEntry cacheEntry = null;
+        ProxyDirContext proxyDirContext = resources;
         if (alternateDocBases == null
                 || alternateDocBases.size() == 0) {
-            cacheEntry = resources.lookupCache(path);
+            cacheEntry = proxyDirContext.lookupCache(path);
         } else {
             AlternateDocBase match = AlternateDocBase.findMatch(
                                             path, alternateDocBases);
@@ -716,7 +718,7 @@ public class DefaultServlet
                 cacheEntry = ((ProxyDirContext) match.getResources()).lookupCache(path);
             } else {
                 // None of the url patterns for alternate docbases matched
-                cacheEntry = resources.lookupCache(path);
+                cacheEntry = proxyDirContext.lookupCache(path);
             }
         }
 
@@ -724,19 +726,50 @@ public class DefaultServlet
             // Try looking up resource in
             // WEB-INF/lib/[*.jar]/META-INF/resources
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            URL resourceUrl = cl.getResource(Globals.META_INF_RESOURCES + path);
+            String metaInfResPath = Globals.META_INF_RESOURCES + path;
+            final URL resourceUrl = cl.getResource(metaInfResPath);
             if (resourceUrl != null) {
                 if (cl instanceof WebappClassLoader) {
                     // XXX Remove dependency on WebappClassLoader
                     ConcurrentHashMap<String, ResourceEntry> resourceEntries =
                         ((WebappClassLoader)cl).getResourceEntries();
-                    ResourceEntry resourceEntry = resourceEntries.get(
-                        Globals.META_INF_RESOURCES + path);
+                    ResourceEntry resourceEntry = resourceEntries.get(metaInfResPath);
                     if (resourceEntry != null) {
-                        response.setHeader("content-length",
-                            "" + resourceEntry.binaryContent.length);
-                        copy(response, resourceUrl);
-                        return;
+                        // create a CacheEntry to continue the processing
+                        cacheEntry = new CacheEntry();
+                        try {
+                            if ((new File(resourceUrl.toURI())).isDirectory()) {
+                                if (!path.endsWith("/")) {
+                                    response.sendRedirect(
+                                        response.encodeRedirectUrl(
+                                            request.getContextPath() + path + "/"));
+                                    return;
+                                }
+
+                                FileDirContext fileDirContext = new FileDirContext();
+                                String base = resourceUrl.getPath();
+                                int index = base.lastIndexOf(path);
+                                if (index != -1) {
+                                    base = base.substring(0, index);
+                                }
+                                fileDirContext.setDocBase(base);
+                                proxyDirContext = new ProxyDirContext(new Hashtable(), fileDirContext);
+
+                                cacheEntry.context = proxyDirContext;
+                            } else {
+                                cacheEntry.resource = new Resource() {
+                                        public InputStream streamContent() throws IOException {
+                                            return resourceUrl.openStream();
+                                        }
+                                    };
+                            }
+                        } catch(Exception ex) {
+                            throw new IOException(ex);
+                        }
+
+                        cacheEntry.name = path;
+                        cacheEntry.attributes = new ResourceAttributes();
+                        cacheEntry.exists = true;
                     }
                 }
             }
@@ -912,7 +945,7 @@ public class DefaultServlet
                 if (content) {
                     // Serve the directory browser
                     renderResult =
-                        render(request.getContextPath(), cacheEntry);
+                        render(request.getContextPath(), cacheEntry, proxyDirContext);
                 }
 
             }
@@ -1208,15 +1241,20 @@ public class DefaultServlet
      *  Decide which way to render. HTML or XML.
      */
     protected InputStream render(String contextPath, CacheEntry cacheEntry)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
+        return render(contextPath, cacheEntry, resources);
+    }
 
+    private InputStream render(String contextPath, CacheEntry cacheEntry,
+            ProxyDirContext proxyDirContext)
+            throws IOException, ServletException {
         InputStream xsltInputStream =
             findXsltInputStream(cacheEntry.context);
 
         if (xsltInputStream==null) {
-            return renderHtml(contextPath, cacheEntry);
+            return renderHtml(contextPath, cacheEntry, proxyDirContext);
         } else {
-            return renderXml(contextPath, cacheEntry, xsltInputStream);
+            return renderXml(contextPath, cacheEntry, xsltInputStream, proxyDirContext);
         }
 
     }
@@ -1231,7 +1269,15 @@ public class DefaultServlet
     protected InputStream renderXml(String contextPath,
                                     CacheEntry cacheEntry,
                                     InputStream xsltInputStream)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
+        return renderXml(contextPath, cacheEntry, xsltInputStream, resources);
+    }
+
+    private InputStream renderXml(String contextPath,
+                                    CacheEntry cacheEntry,
+                                    InputStream xsltInputStream,
+                                    ProxyDirContext proxyDirContext)
+            throws IOException, ServletException {
 
         StringBuffer sb = new StringBuffer();
 
@@ -1252,19 +1298,19 @@ public class DefaultServlet
 
             // Render the directory entries within this directory
             Enumeration<NameClassPair> enumeration =
-                resources.list(cacheEntry.name);
+                proxyDirContext.list(cacheEntry.name);
             if (sortedBy.equals(SortedBy.LAST_MODIFIED)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
                 Comparator c = new LastModifiedComparator(
-                    resources, cacheEntry.name);
+                    proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
             } else if (sortedBy.equals(SortedBy.SIZE)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
                 Comparator c = new SizeComparator(
-                    resources, cacheEntry.name);
+                    proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
             }
@@ -1283,7 +1329,7 @@ public class DefaultServlet
                     continue;
 
                 CacheEntry childCacheEntry =
-                    resources.lookupCache(cacheEntry.name + resourceName);
+                    proxyDirContext.lookupCache(cacheEntry.name + resourceName);
                 if (!childCacheEntry.exists) {
                     continue;
                 }
@@ -1359,8 +1405,13 @@ public class DefaultServlet
      *  relative
      */
     protected InputStream renderHtml (String contextPath, CacheEntry cacheEntry)
-        throws IOException, ServletException {
+            throws IOException, ServletException {
+        return renderHtml(contextPath, cacheEntry, resources);
+    }
 
+    private InputStream renderHtml (String contextPath, CacheEntry cacheEntry,
+            ProxyDirContext proxyDirContext)
+            throws IOException, ServletException {
         String name = cacheEntry.name;
 
         // Number of characters to trim from the beginnings of filenames
@@ -1446,19 +1497,19 @@ public class DefaultServlet
 
             // Render the directory entries within this directory
             Enumeration<NameClassPair> enumeration =
-                resources.list(cacheEntry.name);
+                proxyDirContext.list(cacheEntry.name);
             if (sortedBy.equals(SortedBy.LAST_MODIFIED)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
                 Comparator c = new LastModifiedComparator(
-                    resources, cacheEntry.name);
+                    proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
             } else if (sortedBy.equals(SortedBy.SIZE)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
                 Comparator c = new SizeComparator(
-                    resources, cacheEntry.name);
+                    proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
             }
@@ -1474,7 +1525,7 @@ public class DefaultServlet
                     continue;
 
                 CacheEntry childCacheEntry =
-                    resources.lookupCache(cacheEntry.name + resourceName);
+                    proxyDirContext.lookupCache(cacheEntry.name + resourceName);
                 if (!childCacheEntry.exists) {
                     continue;
                 }
