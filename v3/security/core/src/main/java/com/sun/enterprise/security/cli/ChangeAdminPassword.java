@@ -186,7 +186,7 @@ public class ChangeAdminPassword implements AdminCommand {
             for (int i = 0; i < size; i++) {
                 groups[i] = (String) en.nextElement();
             }
-            fr.updateUser(userName, newpassword, groups);
+            fr.updateUser(userName, newpassword.toCharArray(), groups);
             fr.writeKeyFile(keyFile);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);            
         } catch (Exception e) {

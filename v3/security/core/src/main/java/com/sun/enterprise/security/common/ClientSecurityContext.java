@@ -114,7 +114,7 @@ public final class ClientSecurityContext extends AbstractSecurityContext {
 	*/
         //Temporary hardcoding to make V3 code for WebProfile compile
         String username ="guest";
-        String password ="getst123";
+        char[] password = new char[]{'g','e','t','s','t','1','2','3'};
         synchronized (ClientSecurityContext.class) {
             // login & all that stuff..
             try {

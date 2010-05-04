@@ -128,7 +128,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 Inhabitant<SecurityLifecycle> sl = habitat.getInhabitantByType(SecurityLifecycle.class);
                 sl.get();
                 snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
-                LoginContextDriver.login(user, password, realm);
+                LoginContextDriver.login(user, password.toCharArray(), realm);
                 authenticated = true;
                 if (as.getAssociatedAuthRealm().getGroupMapping() != null)
                     return ensureGroupMembership(user, realm);
@@ -189,7 +189,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 FileRealmUser fru = (FileRealmUser)fr.getUser(user);
                 for (String group : fru.getGroups()) {
                     if (group.equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
-                        return fr.authenticate(user, password) != null; //this is indirect as all admin-keyfile users are in group "asadmin"
+                        return fr.authenticate(user, password.toCharArray()) != null; //this is indirect as all admin-keyfile users are in group "asadmin"
                 }
                 return false;
             }

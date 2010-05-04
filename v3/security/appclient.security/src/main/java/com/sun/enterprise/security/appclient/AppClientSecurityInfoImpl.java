@@ -94,13 +94,12 @@ public class AppClientSecurityInfoImpl implements AppClientSecurityInfo {
     private Util util;
     @Inject
     private IIOPSSLUtil appClientSSLUtil;
-    
-    
+
     public void initializeSecurity(
             List<TargetServer> tServers,
             List<MessageSecurityConfig> configs, CallbackHandler handler, 
             CredentialType credType, String username, 
-            String password, boolean isJWS, boolean useGUIAuth) {
+            char[] password, boolean isJWS, boolean useGUIAuth) {
        
            /* security init */
         this.isJWS = isJWS;

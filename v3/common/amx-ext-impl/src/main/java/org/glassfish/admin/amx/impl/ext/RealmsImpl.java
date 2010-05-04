@@ -244,7 +244,7 @@ public final class RealmsImpl extends AMXImplBase
         try
         {
             final Realm realm = getRealm(realmName);
-            realm.addUser(user, password, groupList);
+            realm.addUser(user, password.toCharArray(), groupList);
             realm.persist();
         }
         catch( final Exception e )
@@ -265,7 +265,7 @@ public final class RealmsImpl extends AMXImplBase
         try
         {
             final Realm realm = getRealm(realmName);
-            realm.updateUser(existingUser, newUser, password, groupList);
+            realm.updateUser(existingUser, newUser, password.toCharArray(), groupList);
             realm.persist();
         }
         catch( final Exception e )
@@ -423,7 +423,7 @@ public final class RealmsImpl extends AMXImplBase
             try
             {
                 InjectedValues.getInstance().getHabitat().getByType(com.sun.enterprise.security.SecurityLifecycle.class);
-                LoginContextDriver.login( usernames[0], "", ADMIN_REALM);
+                LoginContextDriver.login( usernames[0], new char[0], ADMIN_REALM);
                 user = usernames[0];
             }
             catch( final Exception e )

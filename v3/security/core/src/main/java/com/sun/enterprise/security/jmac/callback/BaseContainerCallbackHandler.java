@@ -305,11 +305,9 @@ abstract class BaseContainerCallbackHandler
             return;
         }
         String username = pwdCallback.getUsername();
-        String password = null;
+
         char[] passwd = pwdCallback.getPassword();
-        if(passwd != null){
-            password = new String(passwd);
-        }
+
         
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "JMAC: In PasswordValidationCallback Processor");
@@ -320,7 +318,7 @@ abstract class BaseContainerCallbackHandler
                 realmName = handlerContext.getRealmName();
             }
             Subject s = LoginContextDriver.jmacLogin(pwdCallback.getSubject(),
-                    username, password, realmName);
+                    username, passwd, realmName);
             GFServerConfigProvider.setValidateRequestSubject(s);
             if(_logger.isLoggable(Level.FINE)){
                 _logger.log(Level.FINE, 
@@ -328,7 +326,7 @@ abstract class BaseContainerCallbackHandler
                     username);
             }
             // explicitly ditch the password
-            password = null;
+            passwd = null;
             pwdCallback.setResult(true);
         } catch(LoginException le) {
             // login failed

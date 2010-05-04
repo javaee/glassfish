@@ -407,7 +407,7 @@ public final class LDAPRealm extends IASRealm
      * Supports mode=find-bind. See class documentation.
      *
      */
-    public String[] findAndBind(String _username, String _password)
+    public String[] findAndBind(String _username, char[] _password)
         throws LoginException
     {
         // do search for user, substituting %s for username
@@ -544,14 +544,14 @@ public final class LDAPRealm extends IASRealm
      * Attempt to bind as a specific DN.
      *
      */
-    private boolean bindAsUser(String bindDN, String password)
+    private boolean bindAsUser(String bindDN, char[] password)
     {
         boolean bindSuccessful=false;
 
         Properties p = getLdapBindProps();
         
         p.put(Context.SECURITY_PRINCIPAL, bindDN);
-        p.put(Context.SECURITY_CREDENTIALS, password);
+        p.put(Context.SECURITY_CREDENTIALS, new String(password));
         
         DirContext ctx = null;
         try {

@@ -93,7 +93,7 @@ public class LDAPLoginModule extends PasswordLoginModule
         
                        // enforce that password cannot be empty.
                        // ldap may grant login on empty password!
-        if (_password == null || _password.length() == 0) {
+        if (getPasswordChar() == null || getPasswordChar().length == 0) {
             String msg = sm.getString("ldaplm.emptypassword", _username);
             throw new LoginException(msg);
         }
@@ -101,14 +101,9 @@ public class LDAPLoginModule extends PasswordLoginModule
         String mode = _currentRealm.getProperty(LDAPRealm.PARAM_MODE);
 
         if (LDAPRealm.MODE_FIND_BIND.equals(mode)) {
-            String[] grpList = _ldapRealm.findAndBind(_username, _password);
-            String[] groupListToForward = new String[grpList.length];
-            for (int i = 0; i< grpList.length; i++){
-                groupListToForward[i] = grpList[i];
-            }
-
-            commitAuthentication(_username, _password,
-                    _currentRealm, groupListToForward);
+            String[] grpList = _ldapRealm.findAndBind(_username, getPasswordChar());
+            commitAuthentication(_username, getPasswordChar(),
+                    _currentRealm, grpList);
         } else {
             String msg = sm.getString("ldaplm.badmode", mode);
             throw new LoginException(msg);

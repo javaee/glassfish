@@ -75,7 +75,9 @@ import com.sun.enterprise.security.jmac.provider.ServerAuthConfig;
 import com.sun.enterprise.web.WebModule;
 import com.sun.xml.rpc.spi.runtime.StreamingHandler;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.soap.SOAPMessage;
 import org.jvnet.hk2.annotations.Inject;
@@ -150,10 +152,10 @@ public class SecurityServiceImpl implements SecurityService {
                     return false;
                 }
 
-                String[] usernamePassword =
+                List<Object> usernamePassword =
                         parseUsernameAndPassword(rawAuthInfo);
                 if (usernamePassword != null) {
-                    webPrincipal = new WebPrincipal(usernamePassword[0], usernamePassword[1], SecurityContext.init());
+                    webPrincipal = new WebPrincipal((String)usernamePassword.get(0), (char[])usernamePassword.get(1), SecurityContext.init());
                 } else {
                     _logger.log(Level.WARNING, "BASIC AUTH username/password " + "http header parsing error for " + endpointName);
                 }
@@ -205,9 +207,9 @@ public class SecurityServiceImpl implements SecurityService {
         return authenticated;
     }
 
-    private String[] parseUsernameAndPassword(String rawAuthInfo) {
+    private List<Object> parseUsernameAndPassword(String rawAuthInfo) {
 
-        String[] usernamePassword = null;
+        List usernamePassword = null;
         if ( (rawAuthInfo != null) && 
              (rawAuthInfo.startsWith("Basic ")) ) {
             String authString = rawAuthInfo.substring(6).trim();
@@ -216,9 +218,9 @@ public class SecurityServiceImpl implements SecurityService {
                 new String(Base64.decode(authString.getBytes()));
             int colon = unencoded.indexOf(':');
             if (colon > 0) {
-                usernamePassword = new String[2];
-                usernamePassword[0] = unencoded.substring(0, colon).trim();
-                usernamePassword[1] = unencoded.substring(colon + 1).trim();
+                usernamePassword = new ArrayList();
+                usernamePassword.add(unencoded.substring(0, colon).trim());
+                usernamePassword.add(unencoded.substring(colon + 1).trim().toCharArray());
             }
         }
         return usernamePassword;

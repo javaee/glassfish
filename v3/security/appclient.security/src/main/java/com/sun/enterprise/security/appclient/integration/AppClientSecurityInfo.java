@@ -55,6 +55,7 @@ public interface AppClientSecurityInfo {
     public enum CredentialType { 
         USERNAME_PASSWORD, CERTIFICATE, ALL
     };
+
     
     /**
      * Initialize Security Runtime for the AppContainerr (Stores, SecurityManager, JSR 196 etc)
@@ -72,7 +73,7 @@ public interface AppClientSecurityInfo {
             List<MessageSecurityConfig> msgSecConfigs,
             CallbackHandler handler,
             CredentialType appclientCredType,
-            String username, String password, 
+            String username, char[] password,
             boolean isJWS, boolean useGUIAuth);
 
     

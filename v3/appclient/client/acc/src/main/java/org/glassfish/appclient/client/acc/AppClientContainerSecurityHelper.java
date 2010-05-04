@@ -118,7 +118,7 @@ public class AppClientContainerSecurityHelper {
                 (clientCredential == null || 
                     clientCredential.getPassword() == null ||
                     clientCredential.getPassword().get() == null 
-                        ? null : new String(clientCredential.getPassword().get())),
+                        ? null : clientCredential.getPassword().get()),
                 false /* isJWS */, ! isTextAuth /*useGUIAuth*/);
 
         initHttpAuthenticator(AppClientSecurityInfo.CredentialType.USERNAME_PASSWORD);

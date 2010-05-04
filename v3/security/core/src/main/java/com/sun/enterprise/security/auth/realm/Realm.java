@@ -688,7 +688,7 @@ public abstract class Realm implements Comparable {
      * @throws BadRealmException If there are problems adding user.
      *
      */
-    public abstract void addUser(String name, String password, String[] groupList)
+    public abstract void addUser(String name, char[] password, String[] groupList)
         throws BadRealmException, IASSecurityException;
     
     /**
@@ -716,7 +716,7 @@ public abstract class Realm implements Comparable {
      * @throws NoSuchUserException If user does not exist.
      *
      */
-    public abstract void updateUser(String name, String newName, String password,
+    public abstract void updateUser(String name, String newName, char[] password,
                            String[] groups)
         throws NoSuchUserException, BadRealmException,
                                IASSecurityException;

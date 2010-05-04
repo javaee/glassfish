@@ -76,7 +76,6 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
     private static Logger logger =
         LogDomains.getLogger(WebProgrammaticLoginImpl.class, LogDomains.SECURITY_LOGGER);
 
-
     /** 
      * Login and set up principal in request and session. This implements
      * programmatic login for servlets. 
@@ -107,7 +106,7 @@ public class WebProgrammaticLoginImpl implements WebProgrammaticLogin {
      * @throws Exception on login failure.
      *
      */
-    public  Boolean login(String user, String password, String realm,
+    public  Boolean login(String user, char[] password, String realm,
                                 HttpServletRequest request,
                                 HttpServletResponse response)
     {

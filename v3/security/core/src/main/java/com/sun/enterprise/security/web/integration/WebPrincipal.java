@@ -45,7 +45,7 @@ import com.sun.enterprise.security.SecurityContext;
 public class WebPrincipal extends PrincipalImpl {
 
 
-    private String password;
+    private char[] password;
 
     private X509Certificate[] certs;
 
@@ -64,12 +64,24 @@ public class WebPrincipal extends PrincipalImpl {
         this.secCtx = context;
     }
 
-    public WebPrincipal(String user, String password,
+    public WebPrincipal(String user, char[] password,
                         SecurityContext context) {
         super(user);
-        this.password = password;
+        //Copy the password to another reference before storing it to the
+        //instance field.
+        char[] passwordCopy = new char[password.length];
+        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+	this.password = passwordCopy;
+
         this.useCertificate = false;
         this.secCtx = context;
+    }
+
+    @Deprecated
+    public WebPrincipal(String user, String password,
+                        SecurityContext context) {
+        this(user, password.toCharArray(),context);
+
     }
 
     public WebPrincipal(X509Certificate[] certs,
@@ -80,8 +92,12 @@ public class WebPrincipal extends PrincipalImpl {
         this.secCtx = context;
     }
 
-    public String getPassword() {
-        return password;
+    public char[] getPassword() {
+        //Copy the password to another reference and return the reference
+        char[] passwordCopy = new char[password.length];
+        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+
+        return passwordCopy;
     }
 
     public X509Certificate[] getCertificates() {

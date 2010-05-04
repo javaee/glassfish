@@ -204,7 +204,7 @@ public class UpdateFileUser implements AdminCommand {
         try {
             CreateFileUser.handleAdminGroup(authRealmName, groups);
             String[] groups1 = groups.toArray(new String[groups.size()]); 
-            fr.updateUser(userName, password, groups1);
+            fr.updateUser(userName, password.toCharArray(), groups1);
             fr.writeKeyFile(keyFile);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (Exception e) {

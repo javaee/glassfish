@@ -66,7 +66,7 @@ public final class UsernamePasswordStore {
     private static UsernamePasswordStore sharedUpc;
 
     private final String username;
-    private final String password;
+    private final char[] password;
 
     /**
      * This creates a new UsernamePasswordStore object.
@@ -75,9 +75,14 @@ public final class UsernamePasswordStore {
      * @param username
      * @param password
      */
-    private UsernamePasswordStore(String username, String password) {
+    private UsernamePasswordStore(String username, char[] password) {
+        //Copy the password to another reference before storing it to the
+        //instance field.
+        char[] passwordCopy = new char[password.length];
+        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+	this.password = passwordCopy;
         this.username = username;
-        this.password = password;
+        
     }
 
     /**
@@ -104,7 +109,7 @@ public final class UsernamePasswordStore {
      * @param username 
      * @param password
      */
-    public static void set(String username, String password) {
+    public static void set(String username, char[] password) {
         if (isPerThreadAuth) {
             localUpc.set(new UsernamePasswordStore(username, password));
         } else {
@@ -157,10 +162,14 @@ public final class UsernamePasswordStore {
      *
      * @return The password set previously or null if not set
      */
-    public static String getPassword() {
+    public static char[] getPassword() {
         UsernamePasswordStore ups = UsernamePasswordStore.get();
-        if( ups != null )
-            return ups.password;
+        if( ups != null ) {
+             //Copy the password to another reference before returning it
+            char[] passwordCopy = new char[ups.password.length];
+            System.arraycopy(ups.password, 0, passwordCopy, 0, ups.password.length);
+            return passwordCopy;
+        }
         else 
             return null;
     }

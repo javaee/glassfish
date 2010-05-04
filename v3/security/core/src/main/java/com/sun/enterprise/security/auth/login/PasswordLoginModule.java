@@ -47,6 +47,7 @@ import javax.security.auth.login.LoginException;
  * backward compatibility and is a candidate for deprecation.
  *
  */
+@Deprecated
 public abstract class PasswordLoginModule extends AppservPasswordLoginModule
 {
 
@@ -74,8 +75,30 @@ public abstract class PasswordLoginModule extends AppservPasswordLoginModule
      * @returns void
      *
      */
+    @Deprecated
     public final void commitAuthentication(String username,
                                         String password,
+                                        Realm theRealm,
+                                        String[] groups)
+    {
+        commitUserAuthentication(groups);
+    }
+
+   /**
+     * Since the passwords are to be stored as to have char[]
+     * BT: 6946553.
+     * Retaining the other method for backward compatability
+     *
+     * @param username Name of authenticated user.
+     * @param password Password of this user in char[].
+     * @param theRealm Current Realm object for this authentication.
+     * @param groups String array of group memberships for user (could be
+     *     empty).
+     * @returns void
+     *
+     */
+    public final void commitAuthentication(String username,
+                                        char[] password,
                                         Realm theRealm,
                                         String[] groups)
     {

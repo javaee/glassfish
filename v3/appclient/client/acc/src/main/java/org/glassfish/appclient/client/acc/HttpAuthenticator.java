@@ -81,7 +81,7 @@ public class HttpAuthenticator extends Authenticator
     protected PasswordAuthentication getPasswordAuthentication() 
     {
 	String user = null;
-	String password = null;
+	char[] password = null;
 	Subject subject = null;
 
 	String scheme = getRequestingScheme();
@@ -115,7 +115,7 @@ public class HttpAuthenticator extends Authenticator
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Username:" + user);
         }
-	return new PasswordAuthentication(user, password.toCharArray());
+	return new PasswordAuthentication(user, password);
     }
 
     /**
@@ -137,8 +137,8 @@ public class HttpAuthenticator extends Authenticator
     /**
      * Return the password for the subject.
      */
-    private String getPassword(Subject s) {
-	String password = null;
+    private char[] getPassword(Subject s) {
+	char[] password = null;
 	if(s == null)
 	    return null;
 	Set credentials = s.getPrivateCredentials();

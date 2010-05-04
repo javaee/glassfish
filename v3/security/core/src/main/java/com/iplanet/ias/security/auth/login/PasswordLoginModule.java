@@ -63,11 +63,20 @@ public abstract class PasswordLoginModule extends AppservPasswordLoginModule
             throw new LoginException();
         }
     }
+
+    @Deprecated
+     public final AuthenticationStatus commitAuthentication(String username,
+                                        String password,
+                                        Realm theRealm,
+                                        String[] groups)
+    {
+        return commitAuthentication(username, password.toCharArray(), theRealm, groups);
+    }
     /** Called at the end of the authenticate method by the user
      * @return AuthenticationStatus indicating success/failure
      */
     public final AuthenticationStatus commitAuthentication(String username,
-                                        String password,
+                                        char[] password,
                                         Realm theRealm,
                                         String[] groups)
     {

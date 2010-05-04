@@ -137,7 +137,7 @@ public class ClientPasswordLoginModule implements LoginModule {
 
         // Get the username from the exchange mechanism
         String uname = UsernamePasswordStore.getUsername();
-        String pswd = UsernamePasswordStore.getPassword();
+        char[] pswd = UsernamePasswordStore.getPassword();
         boolean doSet = false;
         
         // bugfix# 6412539
@@ -146,7 +146,7 @@ public class ClientPasswordLoginModule implements LoginModule {
             doSet = true;
         }
         if (pswd == null) {
-            pswd = System.getProperty(LOGIN_PASSWORD);
+            pswd = System.getProperty(LOGIN_PASSWORD).toCharArray();
             doSet = true;
         }
 
@@ -157,11 +157,9 @@ public class ClientPasswordLoginModule implements LoginModule {
         if (uname != null && pswd != null) {
             username = uname;
 
-            int length = pswd.length();
-            char[] dest = new char[length];
-            pswd.getChars(0, length, dest, 0 );
+            int length = pswd.length;
             password = new char[length];
-            System.arraycopy (dest, 0, password, 0, dest.length);
+            System.arraycopy (pswd, 0, password, 0,length);
 	} else{ 
 	    Callback[] callbacks = new Callback[2];
             NameCallback nameCB = new NameCallback(localStrings.getLocalString("login.username", "ClientPasswordModule username"));
@@ -249,7 +247,7 @@ public class ClientPasswordLoginModule implements LoginModule {
 	    String realm = DEFAULT_REALMNAME;
 
 	    PasswordCredential pc = 
-		new PasswordCredential(username, new String(password), realm);
+		new PasswordCredential(username, password, realm);
 	    if(!subject.getPrivateCredentials().contains(pc)) {
 		subject.getPrivateCredentials().add(pc);
             }

@@ -194,9 +194,9 @@ public final class SolarisRealm extends IASRealm
      * @returns true of false, indicating authentication status.
      *
      */
-    public String[] authenticate(String username, String password)
+    public String[] authenticate(String username, char[] password)
     {
-        String[] grps = nativeAuthenticate(username, password);
+        String[] grps = nativeAuthenticate(username, password.toString());
         if(grps != null){
             grps = addAssignGroups(grps);
         }
@@ -231,7 +231,7 @@ public final class SolarisRealm extends IASRealm
      *
      */
     private static native String[] nativeAuthenticate(String user,
-                                                      String password);
+                                                     String password);
     
     /**
      * Native method. Retrieve Solaris groups for user.

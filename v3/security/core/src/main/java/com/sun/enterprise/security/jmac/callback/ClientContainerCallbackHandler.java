@@ -93,14 +93,14 @@ final class ClientContainerCallbackHandler
                         (callbacks[i] instanceof ChoiceCallback)) {
 
                     String loginName = UsernamePasswordStore.getUsername();
-                    String password = UsernamePasswordStore.getPassword();
+                    char[] password = UsernamePasswordStore.getPassword();
                     boolean doSet = false;
                     if (loginName == null) {
                         loginName = System.getProperty(LOGIN_NAME);
                         doSet = true;
                     }
                     if (password == null) {
-                        password = System.getProperty(LOGIN_PASSWORD);
+                        password = System.getProperty(LOGIN_PASSWORD).toCharArray();
                         doSet = true;
                     }
                     if (doSet) {
@@ -116,7 +116,7 @@ final class ClientContainerCallbackHandler
                                 nc.setName(loginName);
                             } else if (callback instanceof PasswordCallback) {
                                 PasswordCallback pc = (PasswordCallback) callback;
-                                pc.setPassword(password.toCharArray());
+                                pc.setPassword(password);
                             }
                         }
                     } else{

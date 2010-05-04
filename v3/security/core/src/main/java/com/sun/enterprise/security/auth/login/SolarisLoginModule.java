@@ -92,7 +92,7 @@ public class SolarisLoginModule extends PasswordLoginModule
             throw new LoginException(msg);
         }
         
-        String[] grpList = solarisRealm.authenticate(_username, _password);
+        String[] grpList = solarisRealm.authenticate(_username, getPasswordChar());
 
         if (grpList == null) {  // JAAS behavior
             String msg = sm.getString("solarislm.loginfail", _username);
@@ -103,16 +103,8 @@ public class SolarisLoginModule extends PasswordLoginModule
             _logger.finest("Solaris login succeeded for: " + _username);
         }
 
-        //make a copy of groupList to pass to LoginModule. This copy is the one
-        // that will be made null there. DO NOT PASS the grpList as is - as 
-        // it will get overwritten. Resulting in logins passing only once.
-        String[] groupListToForward = new String[grpList.length];
-        for (int i = 0; i< grpList.length; i++){
-            groupListToForward[i] = grpList[i];
-        }
-
-        commitAuthentication(_username, _password,
-                             _currentRealm, groupListToForward);
+        commitAuthentication(_username, getPasswordChar(),
+                             _currentRealm, grpList);
     }
 
 }

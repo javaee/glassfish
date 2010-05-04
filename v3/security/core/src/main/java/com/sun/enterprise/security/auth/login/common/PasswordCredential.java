@@ -44,7 +44,8 @@ package com.sun.enterprise.security.auth.login.common;
 
 public class PasswordCredential {
     private String username;
-    private String password;
+ //   private String password;
+    private char[] password;
     private String realm;
     private boolean readOnly = false;
     // target_name is filled in by the SecSecurityServer interceptor
@@ -57,14 +58,18 @@ public class PasswordCredential {
      * @param the password.
      * @param the realm name. The only value supported for now is "default".
      */
-    public PasswordCredential(String user, String password, String realm)
+    public PasswordCredential(String user, char[] password, String realm)
     {
 	this.username = user;
-	this.password = password;
+        //Copy the password to another reference before storing it to the
+        //instance field.
+        char[] passwordCopy = new char[password.length];
+        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+	this.password = passwordCopy;
 	this.realm = realm;
 
         if (this.username == null ) { this.username = ""; }
-        if (this.password == null ) { this.password = ""; }
+        if (this.password == null ) { this.password = new char[]{}; }
         if (this.realm == null ) { this.realm = ""; }
     }
 
@@ -73,7 +78,7 @@ public class PasswordCredential {
      * called by SecServerRequestInterceptor 
      * The object if created on the server side is readonly
      */
-    public PasswordCredential(String user, String password,
+    public PasswordCredential(String user, char[] password,
                               String realm, byte[] target_name)
     {
         this(user, password, realm);
@@ -109,8 +114,11 @@ public class PasswordCredential {
      * Return the password.
      * @return the password.
      */
-    public String getPassword() {
-	return password;
+    public char[] getPassword() {
+       //Copy the password to another reference before returning it
+        char[] passwordCopy = new char[password.length];
+        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+	return passwordCopy;
     }
 
     

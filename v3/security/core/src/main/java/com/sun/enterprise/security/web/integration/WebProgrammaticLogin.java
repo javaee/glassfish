@@ -84,9 +84,11 @@ public interface WebProgrammaticLogin {
      * @throws Exception on login failure.
      *
      */
-     public Boolean login(String user, String password, String realm,
+     public Boolean login(String user, char[] password, String realm,
                                 HttpServletRequest request,
                                 HttpServletResponse response);
+
+
      /** 
      * Logout and remove principal in request and session.
      *

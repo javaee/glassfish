@@ -73,7 +73,7 @@ public class FileLoginModule extends PasswordLoginModule
         }
         FileRealm fileRealm = (FileRealm)_currentRealm;
 
-        String[] grpList = fileRealm.authenticate(_username, _password);
+        String[] grpList = fileRealm.authenticate(_username, getPasswordChar());
 
         if (grpList == null) {  // JAAS behavior
             String msg = sm.getString("filelm.faillogin", _username);
@@ -83,14 +83,8 @@ public class FileLoginModule extends PasswordLoginModule
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "File login succeeded for: " + _username);
         }
-        //make a copy of groupList to pass to LoginModule. This copy is the one
-        // that will be made null there. DO NOT PASS the grpList as is - as 
-        // it will get overwritten. Resulting in logins passing only once.
-        String[] groupListToForward = new String[grpList.length];
-        for (int i = 0; i< grpList.length; i++){
-            groupListToForward[i] = grpList[i];
-        }
-        commitAuthentication(_username, _password,
-                             _currentRealm, groupListToForward);
+
+        commitAuthentication(_username, getPasswordChar(),
+                             _currentRealm, grpList);
     }
 }

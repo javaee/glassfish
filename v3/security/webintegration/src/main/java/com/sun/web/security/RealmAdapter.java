@@ -385,7 +385,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
            DigestCredentials creds = new DigestCredentials(_realmName,key.getUsername(), params);     
            LoginContextDriver.login(creds);
            SecurityContext secCtx = SecurityContext.getCurrent();
-           return new WebPrincipal(creds.getUserName(), null, secCtx);
+           return new WebPrincipal(creds.getUserName(),(char[])null, secCtx);
 
        } catch (Exception le) {
            if (_logger.isLoggable(Level.WARNING)) {
@@ -420,7 +420,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (authenticate(username, password, null)) {
             SecurityContext secCtx = SecurityContext.getCurrent();
             assert (secCtx != null); // or auth should've failed
-            return new WebPrincipal(username, password, secCtx);
+            return new WebPrincipal(username, password.toCharArray(), secCtx);
             
         } else {
             return null;
@@ -446,7 +446,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (prin.isUsingCertificate()) {
             return authenticate(null, null, prin.getCertificates());
         } else {
-            return authenticate(prin.getName(), prin.getPassword(), null);
+            return authenticate(prin.getName(), prin.getPassword().toString(), null);
         }
     }
 
@@ -481,7 +481,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 /*V3:Comment Switch.getSwitch().getCallFlowAgent().addRequestInfo(
                 RequestInfo.REMOTE_USER, username);*/
                 realm_name = _realmName;
-                LoginContextDriver.login(username, password, realm_name);
+                LoginContextDriver.login(username, password.toCharArray(), realm_name);
             }
             success = true;
         } catch (Exception le) {
@@ -682,7 +682,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         SecurityContext secCtx = SecurityContext.getCurrent();
         _logger.log(Level.FINE, "Security context is " + secCtx);
         assert (secCtx != null);
-        Principal principal = new WebPrincipal(username, null, secCtx);
+        Principal principal = new WebPrincipal(username, (char[])null, secCtx);
         _logger.log(Level.INFO, "Principal created for FailOvered user " + principal);
         return principal;
     }

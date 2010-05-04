@@ -69,7 +69,7 @@ public class JDBCLoginModule extends PasswordLoginModule {
             throw new LoginException(msg);
         }
         
-        String[] grpList = jdbcRealm.authenticate(_username, _password);
+        String[] grpList = jdbcRealm.authenticate(_username, getPasswordChar());
 
         if (grpList == null) {  // JAAS behavior
             String msg = sm.getString("jdbclm.loginfail", _username);
@@ -81,13 +81,7 @@ public class JDBCLoginModule extends PasswordLoginModule {
                 + " groups:" + Arrays.toString(grpList));
         }
 
-        //make a copy of groupList to pass to LoginModule. This copy is the one
-        // that will be made null there. DO NOT PASS the grpList as is - as 
-        // it will get overwritten. Resulting in logins passing only once.
-        final String[] groupListToForward = new String[grpList.length];
-        System.arraycopy(grpList, 0, groupListToForward, 0, grpList.length);
-
-        commitAuthentication(_username, _password,
-                             _currentRealm, groupListToForward);
+        commitAuthentication(_username, getPasswordChar(),
+                             _currentRealm, grpList);
     }
 }

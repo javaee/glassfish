@@ -154,8 +154,8 @@ public abstract class AppservRealm extends Realm
         String msg = sm.getString("iasrealm.notsupported");
         throw new BadRealmException(msg);
     }
-    
-    /**
+
+     /**
      * Adds new user to file realm. User cannot exist already.
      *
      * @param name User name.
@@ -164,13 +164,25 @@ public abstract class AppservRealm extends Realm
      * @throws BadRealmException If there are problems adding user.
      *
      */
-    public  void addUser(String name, String password, String[] groupList)
+    public  void addUser(String name, char[] password, String[] groupList)
         throws BadRealmException, IASSecurityException  {
         String msg = sm.getString("iasrealm.notsupported");
         throw new BadRealmException(msg);
     }
+    
+    /**
+     * Adds new user to file realm. User cannot exist already.
+     *
+     * Deprecated - User of the overloaded method with char[] password is encouraged
+     */
+    @Deprecated
+    public  void addUser(String name, String password, String[] groupList)
+        throws BadRealmException, IASSecurityException  {
+        addUser(name, password.toCharArray(), groupList);
         
-        
+    }
+
+      
     
     /**
      * Remove user from file realm. User must exist.
@@ -184,6 +196,20 @@ public abstract class AppservRealm extends Realm
         String msg = sm.getString("iasrealm.notsupported");
         throw new BadRealmException(msg);
      }
+
+     /**
+     * Update data for an existing user. User must exist.
+     * Deprecated - User of the overloaded method with char[] password is encouraged
+     *
+     */
+     @Deprecated
+    public void updateUser(String name, String newName, String password,
+                           String[] groups)
+        throws NoSuchUserException, BadRealmException,
+                               IASSecurityException {
+        updateUser(name, newName, password.toCharArray(), groups);
+
+    }
      
      /**
      * Update data for an existing user. User must exist.
@@ -200,7 +226,7 @@ public abstract class AppservRealm extends Realm
      * @throws NoSuchUserException If user does not exist.
      *
      */
-    public void updateUser(String name, String newName, String password,
+    public void updateUser(String name, String newName, char[] password,
                            String[] groups)
         throws NoSuchUserException, BadRealmException,
                                IASSecurityException {

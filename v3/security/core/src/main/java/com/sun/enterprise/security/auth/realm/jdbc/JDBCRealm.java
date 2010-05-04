@@ -67,6 +67,10 @@ import com.sun.enterprise.security.auth.digest.api.DigestAlgorithmParameter;
 import com.sun.enterprise.security.auth.digest.api.Password;
 import com.sun.enterprise.security.auth.realm.DigestRealmBase;
 import com.sun.enterprise.security.common.Util;
+import java.io.CharArrayReader;
+import java.io.Reader;
+import java.nio.CharBuffer;
+import java.util.Arrays;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -306,7 +310,7 @@ public final class JDBCRealm extends DigestRealmBase {
      * @returns true of false, indicating authentication status.
      *
      */
-    public String[] authenticate(String username, String password) {
+    public String[] authenticate(String username, char[] password) {
         String[] groups = null;
         if (isUserValid(username, password)) {
             groups = findGroups(username);
@@ -382,25 +386,40 @@ public final class JDBCRealm extends DigestRealmBase {
      * @param password user's password
      * @return true if valid
      */
-    private boolean isUserValid(String user, String password) {
+    private boolean isUserValid(String user, char[] password) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet rs = null;
         boolean valid = false;
 
         try {
-            String hpwd = hashPassword(password);
+            char[] hpwd = hashPassword(password);
             connection = getConnection();
             statement =  connection.prepareStatement(passwordQuery);
             statement.setString(1, user);
             rs = statement.executeQuery();
-            String pwd = null;
             if (rs.next()) {
-                pwd = rs.getString(1);
+                //Obtain the password as a char[] with a  max size of 50
+                CharArrayReader reader =  (CharArrayReader)rs.getCharacterStream(1);
+                char[] pwd = new char[1024];
+                int noOfChars = reader.read(pwd);
+
+                /*Since pwd contains 1024 elements arbitrarily initialized,
+                    construct a new char[] that has the right no of char elements
+                    to be used for equal comparison*/
+
+                char[] passwd = new char[noOfChars];
+                System.arraycopy(pwd, 0, passwd, 0, noOfChars);
                 if (HEX.equalsIgnoreCase(getProperty(PARAM_ENCODING))) {
-                    valid = pwd.equalsIgnoreCase(hpwd);
+                    //Do a case-insensitive equals
+                    for(int i = 0; i < noOfChars; i ++) {
+                        if (!(Character.toLowerCase(passwd[i]) == Character.toLowerCase(hpwd[i]))) {
+                            valid = false;
+                            break;
+                        }
+                    }
                 } else {
-                    valid = pwd.equals(hpwd);
+                    valid = Arrays.equals(passwd, hpwd);
                 }
             }
         } catch(SQLException ex) {
@@ -420,16 +439,13 @@ public final class JDBCRealm extends DigestRealmBase {
         return valid;
     }
 
-    private String hashPassword(String password) 
+    private char[] hashPassword( char[] password)
             throws UnsupportedEncodingException{
-        String result = null;
         byte[] bytes = null;
-        String charSet = getProperty(PARAM_CHARSET);
-        if (charSet != null) {
-            bytes = password.getBytes(charSet);
-        } else {
-            bytes = password.getBytes();
-        }
+        char[] result = null;
+        String charSet = getProperty(PARAM_CHARSET);        
+        bytes = Util.convertCharArrayToByteArray(charSet, password);
+        
         if (md != null) {
             synchronized(md) {
                 md.reset();
@@ -441,14 +457,14 @@ public final class JDBCRealm extends DigestRealmBase {
         if (HEX.equalsIgnoreCase(encoding)) {
             result = hexEncode(bytes);
         } else if (BASE64.equalsIgnoreCase(encoding)) {
-            result = base64Encode(bytes);
+            result = base64Encode(bytes).toCharArray();
         } else { // no encoding specified
-            result = new String(bytes);
+            result = Util.convertByteArrayToCharArray(charSet, bytes);
         }
         return result;
     }
 
-    private String hexEncode(byte[] bytes) {
+    private char[] hexEncode(byte[] bytes) {
         StringBuilder sb = new StringBuilder(2 * bytes.length);
         for (int i = 0; i < bytes.length; i++) {
             int low = (int)(bytes[i] & 0x0f);
@@ -456,12 +472,16 @@ public final class JDBCRealm extends DigestRealmBase {
             sb.append(HEXADECIMAL[high]);
             sb.append(HEXADECIMAL[low]);
         }
-        return sb.toString();
+        char[] result = new char[sb.length()];
+        sb.getChars(0, sb.length(), result, 0);
+        return result;
     }
 
     private String base64Encode(byte[] bytes) {
         GFBase64Encoder encoder = new GFBase64Encoder();
         return encoder.encode(bytes);
+
+        
     }
 
     /**

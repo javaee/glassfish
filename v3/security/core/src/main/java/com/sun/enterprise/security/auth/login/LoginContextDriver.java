@@ -130,7 +130,7 @@ public class LoginContextDriver  {
      * is null, we login into the default realm	 
      */
     
-    public static void login(String username, String password, String realmName){
+    public static void login(String username, char[] password, String realmName){
 
         if(realmName == null || !(Realm.isValidRealm(realmName))){    
             realmName = Realm.getDefaultRealm();
@@ -349,7 +349,7 @@ public class LoginContextDriver  {
         
         PasswordCredential p = (PasswordCredential) obj;
         String user = p.getUser();
-        String pwd = p.getPassword();
+        char[] pwd = p.getPassword();
         String realm = p.getRealm();
         String jaasCtx = null;
         try {
@@ -418,7 +418,7 @@ public class LoginContextDriver  {
      * @throws LoginException
      */
     public static Subject jmacLogin(Subject subject,
-            String username, String password, String realmName)
+            String username, char[] password, String realmName)
             throws LoginException {
 
         if(realmName == null || !(Realm.isValidRealm(realmName))){

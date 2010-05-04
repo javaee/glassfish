@@ -345,7 +345,7 @@ public final class FileRealm extends IASRealm
      * @throws LoginException If there are errors during authentication.
      *
      */
-    public String[] authenticate(String user, String password)
+    public String[] authenticate(String user, char[] password)
     {
         FileRealmUser ud = userTable.get(user);
         if (ud == null) {
@@ -356,8 +356,10 @@ public final class FileRealm extends IASRealm
         }
 
         boolean ok = false;
+
         try {
-            ok = SSHA.verify(ud.getSalt(), ud.getHash(), password.getBytes());
+            
+            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Util.convertCharArrayToByteArray(null, password));
 
         } catch (Exception e) {
             _logger.fine("File authentication failed: "+e.toString());
@@ -461,17 +463,18 @@ public final class FileRealm extends IASRealm
      * @throws IASSecurityException Thrown if the value is not valid.
      *
      */
-    public static void validatePassword(String pwd)
+    public static void validatePassword(char[] pwd)
         throws IASSecurityException
     {
-        if (pwd == null) {
+        if (Arrays.equals(null, pwd)) {
             String msg = sm.getString("filerealm.emptypwd");
             throw new IASSecurityException(msg);
         }
-
-        if (!pwd.equals(pwd.trim())) {
-            String msg = sm.getString("filerealm.badspacespwd");
-            throw new IASSecurityException(msg);
+        for(char c:pwd) {
+            if (Character.isSpaceChar(c)) {
+                String msg = sm.getString("filerealm.badspacespwd");
+                throw new IASSecurityException(msg);
+            }
         }
     }
 
@@ -546,7 +549,7 @@ public final class FileRealm extends IASRealm
      * @throws BadRealmException If there are problems adding user.
      *
      */
-    public synchronized void addUser(String name, String password,
+    public synchronized void addUser(String name, char[] password,
                         String[] groupList)
         throws BadRealmException, IASSecurityException
     {
@@ -598,7 +601,7 @@ public final class FileRealm extends IASRealm
      * @deprecated
      *
      */
-    public synchronized void updateUser(String name, String password,
+    public synchronized void updateUser(String name, char[] password,
                            String[] groups)
         throws NoSuchUserException, BadRealmException,
                                IASSecurityException
@@ -622,7 +625,7 @@ public final class FileRealm extends IASRealm
      * @throws NoSuchUserException If user does not exist.
      *
      */
-    public synchronized void updateUser(String name, String newName, String password,
+    public synchronized void updateUser(String name, String newName, char[] password,
                            String[] groups)
         throws NoSuchUserException, BadRealmException,
                                IASSecurityException
@@ -940,7 +943,7 @@ public final class FileRealm extends IASRealm
      * @throws IASSecurityException Thrown on failure.
      *
      */
-    private static FileRealmUser createNewUser(String name, String pwd,
+    private static FileRealmUser createNewUser(String name, char[] pwd,
                                                String[] groups)
         throws IASSecurityException
     {
@@ -963,11 +966,15 @@ public final class FileRealm extends IASRealm
      * values are stored in the user object provided.
      *
      */
-    private static void setPassword(FileRealmUser user, String pwd)
+    private static void setPassword(FileRealmUser user, char[] pwd)
         throws IASSecurityException
     {
         assert (user != null);
-        byte[] pwdBytes = pwd.getBytes();
+        //Copy the password to another reference before storing it to the
+        //instance field.
+        char[] passwordCopy = new char[pwd.length];
+        System.arraycopy(pwd, 0, passwordCopy, 0, pwd.length);
+        byte[] pwdBytes = Util.convertCharArrayToByteArray(null, passwordCopy);
         
         SecureRandom rng=SharedSecureRandom.get();
         byte[] salt=new byte[SALT_SIZE];
@@ -999,7 +1006,7 @@ public final class FileRealm extends IASRealm
                         groups[i-3]=args[i];
                     }
                 }
-                FileRealmUser ud = createNewUser(args[1], args[2], groups);
+                FileRealmUser ud = createNewUser(args[1], args[2].toCharArray(), groups);
                 String out=encodeUser(args[1], ud);
                 System.out.println(out);
                 

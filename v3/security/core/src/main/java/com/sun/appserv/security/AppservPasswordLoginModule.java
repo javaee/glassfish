@@ -79,7 +79,9 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
     protected Map _sharedState;
     protected Map _options;
     protected String _username;
+    @Deprecated
     protected String _password;
+    protected char[] _passwd;
     protected Realm _currentRealm;
     
     // the authentication status
@@ -192,6 +194,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         _groupsList = null;
         setUsername(null);
         setPassword(null);
+        setPasswordChar(null);
         _commitSucceeded = true;
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE,"JAAS authentication committed.");
@@ -217,6 +220,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
             _succeeded = false;
             setUsername(null);
             setPassword(null);
+            setPasswordChar(null);
             _userPrincipal = null;
             for(int i = 0; i < _groupsList.length; i++){
                 _groupsList[i] = null;
@@ -274,7 +278,11 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
      */
     public final void commitUserAuthentication (final String[] groups)
     {
-        _groupsList = groups;
+        //Copy the groups into a new array before storing it in the instance
+        String[] groupsListCopy = new String[groups.length];
+        System.arraycopy(groups, 0, groupsListCopy, 0, groups.length);
+
+        _groupsList = groupsListCopy;
         _succeeded = true;
     }
 
@@ -347,7 +355,8 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
         // Get username and password data from credential (ignore callback)
 
         setUsername(pwdCred.getUser());
-        setPassword(pwdCred.getPassword());
+        setPasswordChar(pwdCred.getPassword());
+        setPassword(new String(pwdCred.getPassword()));
     }
 
     
@@ -390,22 +399,45 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
 
     
     /**
-     * @return the password sent by container - is made available to the custom 
-     * login module using the protected _password field.
-     * Use Case: A custom login module could use the password to validate against
-     * a custom realm of usernames and passwords
+     * Deprecated - password is preferred to be a char[]
      */
+    @Deprecated
     public String getPassword() {
         return _password;
     }
 
-   /**
-    * Used for setting the password obtained from the container internally, to 
-    * be made available to the custom login module implementation
-    * @param username
-    */ 
+    /**
+     * Deprecated - password is preferred to be a char[]
+     */
+    @Deprecated
     private void setPassword(String password) {
         this._password = password;
+    }
+
+
+
+    
+    /**
+     * @return the password sent by container - is made available to the custom
+     * login module using the protected _password field.
+     * Use Case: A custom login module could use the password to validate against
+     * a custom realm of usernames and passwords
+     * Password is preferred to be a char[] instead of a string
+     */
+
+
+    public char[] getPasswordChar() {
+        return _passwd;
+    }
+    
+  /**
+    * Used for setting the password obtained from the container internally, to
+    * be made available to the custom login module implementation
+   *  Password is preferred to be a char[] instead of a string
+    * @param password
+    */
+    private void setPasswordChar(char[] password) {
+        this._passwd = password;
     }
     
     /**

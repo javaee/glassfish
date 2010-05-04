@@ -112,6 +112,17 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
             resolveWebProgrammaticLogin();
         }
     }
+
+    /**
+     * Password should be used as a char[]
+     */
+
+    @Deprecated
+    public Boolean login(final String user, final String password,
+        final String realm, boolean errors) throws Exception
+    {
+        return login(user, password.toCharArray(),realm, errors);
+    }
     /**
      * Attempt to login.
      *
@@ -138,7 +149,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
      *     failure of login.
      * @throws Exception any exception encountered during Login.
      */
-    public Boolean login(final String user, final String password, 
+    public Boolean login(final String user, final char[] password,
         final String realm, boolean errors) throws Exception
     {
         Boolean authenticated = null;
@@ -187,6 +198,15 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
         return authenticated;
     }
 
+    /*
+     * Use of the char[] as password is encouraged
+     */
+    @Deprecated
+    public Boolean login(final String user, final String password)
+    {
+        return login(user, password.toCharArray());
+    }
+
     /** Attempt to login.
      *
      * <P>Upon successful return from this method the SecurityContext will
@@ -207,7 +227,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
      * @return Boolean containing true or false to indicate success or
      *     failure of login.
      */
-    public Boolean login(final String user, final String password)
+    public Boolean login(final String user, final char[] password)
     {
         // call login with realm-name = null and request for errors = false
         Boolean authenticated = null;
@@ -218,7 +238,20 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
             authenticated = Boolean.valueOf(false); 
         }
         return authenticated;
-    }    
+    }
+
+
+    /*
+     * Use of the char[] as password is encouraged
+     */
+    @Deprecated
+    public Boolean login(final String user, final String password,
+                         final String realm,
+                         final HttpServletRequest request,
+                         final HttpServletResponse response, boolean errors)
+                         throws Exception {
+        return login(user, password.toCharArray(), realm, request, response, errors);
+    }
     /** Attempt to login. This method is specific to servlets (and JSPs).
      *
      * <P>Upon successful return from this method the SecurityContext will
@@ -239,7 +272,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
      * @throws Exception any exceptions encountered during login
      * @return Boolean indicating true for successful login and false otherwise
      */
-    public Boolean login(final String user, final String password, 
+    public Boolean login(final String user, final char[] password,
                          final String realm, 
                          final HttpServletRequest request,
                          final HttpServletResponse response, boolean errors)
@@ -268,6 +301,17 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
         return authenticated;
     }
 
+    /*
+     * Use of char[] as password is encouraged
+     */
+    @Deprecated
+    public Boolean login(final String user, final String password,
+                     final HttpServletRequest request,
+                     final HttpServletResponse response) {
+        return login(user, password, request, response);
+
+    }
+
     /**
      * Attempt to login. This method is specific to servlets (and JSPs).
      *
@@ -286,7 +330,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
      *     failure of login.
      *
      */
-    public Boolean login(final String user, final String password, 
+    public Boolean login(final String user, final char[] password,
                          final HttpServletRequest request,
                          final HttpServletResponse response)
     {
