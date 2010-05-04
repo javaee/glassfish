@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,8 @@ import com.sun.ejte.ccl.reporter.*;
  * (by the JspServlet) and
  *   WEB-INF/lib/nested.jar!META-INF/resources/abc.txt
  * (by the DefaultServlet), respectively.
+ *
+ * Add unit test for IT 11835.
  */
 public class WebTest {
 
@@ -58,6 +60,7 @@ public class WebTest {
     private static final String TEST_NAME =
         "serve-jsp-and-static-resource-from-local-jar";
     private static final String EXPECTED_RESPONSE = "Hello World!";
+    private static final String EXPECTED_RESPONSE_2 = "Hello World folder!";
 
     private String host;
     private String port;
@@ -79,7 +82,10 @@ public class WebTest {
     public void doTest() {
         try { 
             invokeJspServlet();
-            invokeDefaultServlet();
+            invokeDefaultServlet("/abc.txt", 200, EXPECTED_RESPONSE);
+            invokeDefaultServlet("/folder", 302, contextRoot + "/folder/");
+            invokeDefaultServlet("/folder/", 404, null);
+            invokeDefaultServlet("/folder/def.txt", 200, EXPECTED_RESPONSE_2);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -94,7 +100,7 @@ public class WebTest {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
+        if (responseCode != HttpURLConnection.HTTP_OK) {
             throw new Exception("Unexpected response code: " + responseCode);
         }
         InputStream is = conn.getInputStream();
@@ -106,22 +112,36 @@ public class WebTest {
         }
     }
 
-    private void invokeDefaultServlet() throws Exception {
+    private void invokeDefaultServlet(String path, int expectedStatus,
+            String expectedResponse) throws Exception {
         URL url = new URL("http://" + host  + ":" +
-                          port + contextRoot + "/abc.txt");
+                          port + contextRoot + path);
         System.out.println("Invoking URL: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setInstanceFollowRedirects(false);
         conn.connect();
         int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
+        if (responseCode != expectedStatus) {
             throw new Exception("Unexpected response code: " + responseCode);
         }
-        InputStream is = conn.getInputStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(is));
-        String response = input.readLine();
-        if (!EXPECTED_RESPONSE.equals(response)) {
-            throw new Exception("Wrong response, expected: " +
-                EXPECTED_RESPONSE + ", received: " + response);
+
+        if (responseCode == HttpURLConnection.HTTP_OK && expectedResponse != null) {
+            InputStream is = conn.getInputStream();
+            BufferedReader input = new BufferedReader(new InputStreamReader(is));
+            String response = input.readLine();
+            if (!expectedResponse.equals(response)) {
+                throw new Exception("Wrong response, expected: " +
+                    expectedResponse + ", received: " + response);
+            }
+        }
+
+        if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP && expectedResponse != null) {
+            String location = conn.getHeaderField("Location");
+            System.out.println("Location: " + location);
+            if (location == null || !location.endsWith(expectedResponse)) {
+                throw new Exception("Wrong location: " + location +
+                    " does not end with " + expectedResponse);
+            }
         }
     }
 }

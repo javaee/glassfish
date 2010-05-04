@@ -49,7 +49,11 @@
     <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
-      <antcall target="clean-common"/>
+        <antcall target="clean-common"/>
+        <delete>
+            <fileset dir="." includes="*.class"/>
+        </delete>
+        <delete dir="lib"/>
     </target>
        
     <target name="compile" depends="clean">
@@ -59,6 +63,15 @@
     </target>
 
     <target name="build" depends="compile">
+        <mkdir dir="lib"/>
+        <mkdir dir="${build.classes.dir}/META-INF/resources/folder"/>
+        <copy file="resources/abc.jsp" todir="${build.classes.dir}/META-INF/resources"/>
+        <copy file="resources/abc.txt" todir="${build.classes.dir}/META-INF/resources"/>
+        <copy file="resources/def.txt" todir="${build.classes.dir}/META-INF/resources/folder"/>
+        <jar destfile="lib/nest.jar" basedir="${build.classes.dir}"
+            includes="META-INF/**"/>
+        <delete dir="${build.classes.dir}/META-INF/resources"/>
+
         <property name="hasWebclient" value="yes"/> 
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
