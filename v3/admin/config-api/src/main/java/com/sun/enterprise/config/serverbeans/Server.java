@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.config.support.*;
@@ -50,6 +52,7 @@ import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
@@ -59,6 +62,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.validation.constraints.Min;
 /**
@@ -82,8 +87,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * Gets the value of the configRef property.
      *
      * Points to a named config. Needed for stand-alone servers. If server
-     * instance is part of a cluster, then it must not be present, 
-     * and will be ignored.
+     * instance is part of a cluster, then it points to the cluster config
      *
      * @return possible object is
      *         {@link String }
@@ -260,11 +264,81 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     @Service
     class Decorator implements CreationDecorator<Server> {
+        @Param(name="cluster", optional=true)
+        String clusterName = null;
+
         @Inject
         Domain domain;
         
         @Override
         public void decorate(AdminCommandContext context, Server instance) throws TransactionFailure, PropertyVetoException {
+            Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
+            String configRef = instance.getConfigRef();
+
+            // cluster instance using cluster config
+            if (clusterName != null) {
+                if (configRef != null) {
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "Server.cannotSpecifyBothConfigAndCluster",
+                            "A configuration name and cluster name cannot both be specified."));
+                }
+                boolean clusterExists = false;
+                Clusters clusters = domain.getClusters();
+                if (clusters != null) {
+                    for (Cluster cluster : clusters.getCluster()) {
+                        if (clusterName.equals(cluster.getName())) {
+                            instance.setConfigRef(cluster.getConfigRef());
+                            clusterExists = true;
+                            break;
+                        }
+                    }
+                }
+                clusterName = null; // workaround - initialize to null, otherwise it keeps the name value
+                if (!clusterExists) {
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noSuchCluster", "Cluster {0} does not exist.", clusterName));
+                }
+            }
+
+            // instance using specified config
+            if (configRef != null) {
+                Config specifiedConfig = domain.getConfigs().getConfigByName(configRef);
+                if (specifiedConfig == null) {
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noSuchConfig", "Configuration {0} does not exist.", configRef));
+                }
+            }
+
+            //stand-alone instance using default-config if config not specified
+            if (configRef == null && clusterName == null) {
+                Config defaultConfig = domain.getConfigs().getConfigByName("default-config");
+
+                final Config configCopy;
+                try {
+                    configCopy = (Config) defaultConfig.deepCopy();
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, localStrings.getLocalString(Server.class,
+                    "Cluster.error_while_copying",
+                    "Error while copying the default configuration {0)",
+                    e.toString(), e));
+                    throw new TransactionFailure(e.toString(),e);
+                }
+
+
+                final String configName = instance.getName()+"-config";
+                instance.setConfigRef(configName);
+
+                ConfigSupport.apply(new ConfigCode() {
+                    @Override
+                    public Object run(ConfigBeanProxy[] w ) throws PropertyVetoException, TransactionFailure {
+                        ((Configs) w[0]).getConfig().add(configCopy);
+                        ((Config) w[1]).setName(configName);
+                        return null;
+                    }
+                }, domain.getConfigs(), configCopy);
+            }
+
             for (Resource resource : domain.getResources().getResources()) {
                 if (resource.getObjectType().equals("system-all")) {
                     String name=null;
