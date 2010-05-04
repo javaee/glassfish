@@ -114,9 +114,8 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             throw new Exception(sb.toString());
         }
 
-        logger.info("Loading application " + wmInfo.getDescriptor().getName() +
-                    " at " + wmInfo.getDescriptor().getContextRoot());
-
+        logger.log(Level.INFO, "webApplication.loadingApplication", new Object[] {wmInfo.getDescriptor().getName(), wmInfo.getDescriptor().getContextRoot()});
+        
         return true;
     }
 

@@ -835,9 +835,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         connector.setMapper(mapper);
        
-
-        _logger.info("Created HTTP listener " + listener.getName() +
-                     " on port " + listener.getPort());
+        _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[] {listener.getName(), listener.getPort()});
         
         connector.setName(listener.getName());
         connector.setInstanceName(instanceName);
@@ -936,9 +934,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             connectorMap.put(listener.getName(), jkConnector);
         }
         
-        _logger.log(Level.INFO, "Apache mod_jk/jk2 attached to virtual-server "
-                                + defaultHost + " listening on port: "
-                                + port);
+        _logger.log(Level.INFO, "webContainer.virtualServer.hostAndPort", new Object[] {defaultHost, port});
+
+        
         for (Mapper m : habitat.getAllByContract(Mapper.class)) {
             if (m.getPort() == port){
                 jkConnector.setMapper(m);
@@ -1102,7 +1100,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
         for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
             createHost(vs, httpService, securityService);
-            _logger.info("Created virtual server " + vs.getId());
+            _logger.log(Level.INFO, "webContainer.virtualServer.created", vs.getId());
+
         }
     }
 
@@ -1391,8 +1390,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     defaultPath = wmInfo.getContextPath();
                     loadStandaloneWebModule(vs, wmInfo);
                 }
-                _logger.info("Virtual server " + vs.getName() +
-                                " loaded system default web module"); 
+                _logger.log(Level.INFO,
+                        "webContainer.virtualServer.loadedDefaultWebModule",
+                        new Object[] { vs.getName(), defaultPath });
+                
             }
         }
         
@@ -1436,8 +1437,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             vs.getName());
                         _logger.log(Level.SEVERE, msg, le);
                     }
-                    _logger.info("Virtual server " + vs.getName() + 
-                        " loaded default web module " + defaultPath);
+                    _logger.log(Level.INFO, "webContainer.virtual-server.loadedDefaultWebModule", new Object[] {vs.getName(), defaultPath});
+
                 } else {
                     // No need to create default web module off of virtual
                     // server's docroot since system web modules are already
@@ -1495,9 +1496,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 loadStandaloneWebModule(vs, wmInfo);
             }
         }
-        
-        _logger.info("Virtual server " + vs.getName() +
-                        " loaded default web module " + defaultPath);
+
+        _logger.log(Level.INFO, "webContainer.virtual-server.loadedDefaultWebModule", new Object[] {vs.getName(), defaultPath});
     }
 
 
