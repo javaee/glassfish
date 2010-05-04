@@ -41,11 +41,14 @@
  */
 package org.glassfish.web.admin.monitor;
 
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 import org.jvnet.hk2.annotations.Inject;
@@ -53,6 +56,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.ConfigurationException;
+
 
 /**
  *
@@ -62,17 +67,23 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class HttpServiceStatsProviderBootstrap implements PostConstruct {
 
-    @Inject
-    private static Domain domain;
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
+
+    private static final Logger logger = LogDomains.getLogger(
+        HttpServiceStatsProviderBootstrap.class, LogDomains.WEB_LOGGER);
+    private final LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(HttpServiceStatsProviderBootstrap.class);
     
     public void postConstruct() {
-        List<Config> lc = domain.getConfigs().getConfig();
-        Config config = null;
-        for (Config cf : lc) {
-            if (cf.getName().equals("server-config")) {
-                config = cf;
-                break;
-            }
+
+        if (config == null) {
+            Object[] params = {VirtualServerInfoStatsProvider.class.getName(),
+                    HttpServiceStatsProvider.class.getName(),
+                    "http service", "virtual server"};
+            logger.log(Level.SEVERE, "unableToRegisterStatsProviders", params);
+            throw new ConfigurationException(localStrings.getLocalString(
+                    "nullConfig", "Current server config is null."));
         }
 
         HttpService httpService = config.getHttpService();

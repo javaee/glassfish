@@ -42,40 +42,21 @@
 
 package org.glassfish.web.admin.monitor;
 
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.Module;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
-import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.logging.LogDomains;
-import java.beans.PropertyChangeEvent;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
-import org.glassfish.flashlight.datatree.TreeNode;
-import org.glassfish.flashlight.datatree.factory.TreeNodeFactory;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.config.ConfigListener;
-import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  *
@@ -93,11 +74,6 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     @Inject
     private static Domain domain;
 
-    private static HttpService httpService = null;
-    private static NetworkConfig networkConfig = null;
-
-    private Server server;
-
     // Map of apps and its StatsProvider list
     private ConcurrentMap<String, ConcurrentMap<String, Queue>> vsNameToStatsProviderMap =
             new ConcurrentHashMap<String, ConcurrentMap<String, Queue>>();
@@ -108,26 +84,6 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     }
 
     public void postConstruct(){
-        List<Config> lc = domain.getConfigs().getConfig();
-        Config config = null;
-        for (Config cf : lc) {
-            if (cf.getName().equals("server-config")) {
-                config = cf;
-                break;
-            }
-        }
-        httpService = config.getHttpService();
-        networkConfig = config.getNetworkConfig();
-
-        server = null;
-        List<Server> ls = domain.getServers().getServer();
-        for (Server sr : ls) {
-            if ("server".equals(sr.getName())) {
-                server = sr;
-                break;
-            }
-        }
-
         //Register the Web stats providers
         registerWebStatsProviders();
     }
