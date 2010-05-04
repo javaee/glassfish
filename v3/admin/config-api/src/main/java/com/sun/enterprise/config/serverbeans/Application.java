@@ -395,7 +395,7 @@ public interface Application extends Injectable, ApplicationName, PropertyBag {
                 final String propName) {
             for (Property p : instance.getProperty()) {
                 if (p.getName().equals(propName)) {
-                    return new File(p.getValue());
+                    return new File(URI.create(p.getValue()));
                 }
             }
             return null;
