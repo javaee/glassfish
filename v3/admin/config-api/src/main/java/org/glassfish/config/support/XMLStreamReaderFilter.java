@@ -34,7 +34,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.config.support;
 
 import javax.xml.stream.XMLStreamConstants;
@@ -58,7 +57,7 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
     public int next() throws XMLStreamException {
         while(true) {
             int r = super.next();
-            if(r!=START_ELEMENT || !filterOut())
+            if(r != START_ELEMENT || !filterOut())
                 return r;
             skipTree();
         }
@@ -69,7 +68,7 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
             // Fix for issue 9127
             // The following call to super.nextTag() is replaced with thisNextTag() 
             int r = thisNextTag();
-            if(r!=START_ELEMENT || !filterOut())
+            if(r != START_ELEMENT || !filterOut())
                 return r;
             skipTree();
         }
@@ -82,17 +81,16 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
     private int thisNextTag() throws XMLStreamException {
         int eventType = super.next();
         while((eventType == XMLStreamConstants.CHARACTERS && isWhiteSpace()) // skip whitespace
-        || (eventType == XMLStreamConstants.CDATA && isWhiteSpace())
-        // skip whitespace
-        || eventType == XMLStreamConstants.SPACE
-        || eventType == XMLStreamConstants.PROCESSING_INSTRUCTION
-        || eventType == XMLStreamConstants.COMMENT
-        || eventType == XMLStreamConstants.DTD
-        ) {
+                || (eventType == XMLStreamConstants.CDATA && isWhiteSpace())
+                // skip whitespace
+                || eventType == XMLStreamConstants.SPACE
+                || eventType == XMLStreamConstants.PROCESSING_INSTRUCTION
+                || eventType == XMLStreamConstants.COMMENT
+                || eventType == XMLStreamConstants.DTD) {
             eventType = super.next();
         }
 
-        if (eventType != XMLStreamConstants.START_ELEMENT && eventType != XMLStreamConstants.END_ELEMENT) {
+        if(eventType != XMLStreamConstants.START_ELEMENT && eventType != XMLStreamConstants.END_ELEMENT) {
             throw new XMLStreamException(
                     "found: " + getEventTypeString(eventType)
                     + ", expected " + getEventTypeString(XMLStreamConstants.START_ELEMENT)
@@ -104,7 +102,7 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
     }
 
     final static String getEventTypeString(int eventType) {
-        switch (eventType){
+        switch (eventType) {
             case XMLEvent.START_ELEMENT:
                 return "START_ELEMENT";
             case XMLEvent.END_ELEMENT:
@@ -138,11 +136,13 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
      * of the skipped subtree.
      */
     private void skipTree() throws XMLStreamException {
-        int depth=1;
-        while(depth>0) {
+        int depth = 1;
+        while(depth > 0) {
             int r = super.nextTag();
-            if(r==START_ELEMENT)    depth++;
-            else                    depth--;
+            if(r == START_ELEMENT)
+                depth++;
+            else
+                depth--;
         }
     }
 
