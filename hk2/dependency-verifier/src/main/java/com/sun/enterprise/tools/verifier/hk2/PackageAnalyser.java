@@ -716,9 +716,6 @@ public class PackageAnalyser {
         if (!pkgNames.isEmpty()) {
             // Add parsed package details
             pkgGroups.add(new PackageGroup(pkgNames, pkgAttributes, pkgDirectives));
-            pkgNames.clear();
-            pkgAttributes.clear();
-            pkgDirectives.clear();
         }
         return pkgGroups;
     }
