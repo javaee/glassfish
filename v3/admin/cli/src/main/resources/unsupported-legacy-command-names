@@ -37,7 +37,6 @@ create-node-agent-config R
 delete-node-agent-config R
 list-instances R
 start-instance R
-stop-instance R
 start-cluster R
 stop-cluster R
 copy-config R
