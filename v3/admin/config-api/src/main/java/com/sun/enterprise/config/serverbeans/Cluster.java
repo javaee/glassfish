@@ -101,7 +101,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="config-ref", optional=true)
+    @Param(name="config", optional=true)
     void setConfigRef(String value) throws PropertyVetoException;
 
     /**
@@ -232,7 +232,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Scoped(PerLookup.class)    
     class Decorator implements CreationDecorator<Cluster> {
 
-        @Param(name="config-ref", optional=true)
+        @Param(name="config", optional=true)
         String configRef=null;
 
         @Param(optional = true)
@@ -306,7 +306,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
 
 
-                final String configName = "config-"+instance.getName();
+                final String configName = instance.getName() + "-config";
                 instance.setConfigRef(configName);
 
                 // needs to be changed to join the transaction of instance
