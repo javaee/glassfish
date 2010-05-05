@@ -542,10 +542,8 @@ public class PackageAnalyser {
                     pkgNames.add(t.value);
                     break;
                 case DIRECTIVE:
-                    nextPkgGroup = true;
                     break;
                 case ATTRIBUTE:
-                    nextPkgGroup = true;
                     int idx = t.value.indexOf(EQUALS);
                     assert(idx != -1);
                     String attrName = t.value.substring(0, idx);
@@ -553,6 +551,9 @@ public class PackageAnalyser {
                         String versionRangeStr = t.value.substring(idx +1);
                         versionRange = VersionRange.valueOf(versionRangeStr);
                     }
+                    break;
+                case PKG_GROUP_SEP:
+                    nextPkgGroup = true;
                     break;
                 default:
                     throw new RuntimeException("Unknown token type. Fix the program.");
@@ -594,7 +595,7 @@ public class PackageAnalyser {
 
     static class Token {
         enum TYPE {
-            PKG, ATTRIBUTE, DIRECTIVE
+            PKG, ATTRIBUTE, DIRECTIVE, PKG_GROUP_SEP
         }
 
         final String value;
@@ -643,6 +644,12 @@ public class PackageAnalyser {
                     token.append(c);
                     break;
                 case COMMA :
+                    tokens.add(Token.createToken(token.toString(), type));
+                    // Add a special token as PKG GROUP SEPARATOR.
+                    tokens.add(Token.createToken(",", Token.TYPE.PKG_GROUP_SEP));
+                    token.delete(0, token.length());
+                    type = PKG;
+                    break;
                 case SEMICOLON:
                     tokens.add(Token.createToken(token.toString(), type));
                     token.delete(0, token.length());
@@ -694,12 +701,13 @@ public class PackageAnalyser {
                     pkgNames.add(t.value);
                     break;
                 case ATTRIBUTE:
-                    nextPkgGroup = true;
                     pkgAttributes.add(t.value);
                     break;
                 case DIRECTIVE:
-                    nextPkgGroup = true;
                     pkgDirectives.add(t.value);
+                    break;
+                case PKG_GROUP_SEP:
+                    nextPkgGroup = true;
                     break;
                 default:
                     throw new RuntimeException("Unknown token type. Fix the program");
