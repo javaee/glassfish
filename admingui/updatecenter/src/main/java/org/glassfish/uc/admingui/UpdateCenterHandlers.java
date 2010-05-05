@@ -473,6 +473,7 @@ public class UpdateCenterHandlers {
         @HandlerOutput(name = "count", type = Integer.class)
     })
     public static void getUpdateComponentCount(HandlerContext handlerCtx) {
+	GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
         Boolean userOK = (Boolean) GuiUtil.getSessionValue(USER_OK);
         if (userOK == null){
             UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
@@ -502,8 +503,13 @@ public class UpdateCenterHandlers {
 
      
      private static Integer updateCountInSession(Image image){
-         List list = getUpdateDisplayList(image, true);
-         Integer countInt = (Integer) list.get(0);
+	 Integer countInt = new Integer(-1);
+	 if (image != null){
+	    List list = getUpdateDisplayList(image, true);
+	    countInt = (Integer) list.get(0);
+	 }else{
+	    GuiUtil.getLogger().warning("Error in getting update component list, cannot get image.");
+	 }
          GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
          return countInt;
      }
