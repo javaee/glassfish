@@ -446,7 +446,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (prin.isUsingCertificate()) {
             return authenticate(null, null, prin.getCertificates());
         } else {
-            return authenticate(prin.getName(), prin.getPassword().toString(), null);
+            return authenticate(prin.getName(), new String(prin.getPassword()), null);
         }
     }
 

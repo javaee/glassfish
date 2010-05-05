@@ -196,7 +196,7 @@ public final class SolarisRealm extends IASRealm
      */
     public String[] authenticate(String username, char[] password)
     {
-        String[] grps = nativeAuthenticate(username, password.toString());
+        String[] grps = nativeAuthenticate(username, new String(password));
         if(grps != null){
             grps = addAssignGroups(grps);
         }

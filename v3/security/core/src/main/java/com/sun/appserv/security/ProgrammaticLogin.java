@@ -308,7 +308,7 @@ public class ProgrammaticLogin implements ProgrammaticLoginInterface
     public Boolean login(final String user, final String password,
                      final HttpServletRequest request,
                      final HttpServletResponse response) {
-        return login(user, password, request, response);
+        return login(user, password.toCharArray(), request, response);
 
     }
 
