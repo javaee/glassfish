@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -195,21 +195,19 @@ public class Commands {
     private static class StreamWatcher extends Thread {
 
         /*
-         * This is the pattern to match lines that start with
-         * SEVERE:
+         * This is the pattern to match lines that include
+         * |SEVERE|
          */
         private static final Pattern pattern;
         static {
             StringBuilder sb = new StringBuilder();
+            sb.append(".*\\|");
             sb.append(Level.SEVERE.getLocalizedName());
-            sb.append(":.*");
+            sb.append("\\|.*");
             pattern = Pattern.compile(sb.toString());
         }
 
         private final BufferedReader reader;
-
-        // don't send the message more than once (or keep parsing the lines)
-        private boolean sentError = false;
 
         public StreamWatcher(InputStream stream, String name) {
             super(name);
@@ -225,12 +223,14 @@ public class Commands {
                     matcher = pattern.matcher(line);
                     while (line != null) {
                         logger.finer(getName() + ": " + line);
-                        if (!sentError) {
-                            matcher.reset(line);
-                            if (matcher.matches()) {
-                                Commands.foundError();
-                                sentError = true;
+                        matcher.reset(line);
+                        if (matcher.matches()) {
+                            if (logger.isLoggable(Level.FINE)) {
+                                logger.fine(String.format(
+                                    "Line in %s possible error: '%s'",
+                                    getName(), line));
                             }
+                            Commands.foundError();
                         }
                         line = reader.readLine();
                         Thread.sleep(2);
