@@ -78,8 +78,9 @@ public class RemoteCommand extends CLICommand {
 
     private String                      responseFormatType;
     private OutputStream                userOut;
+    private File                        outputDir;
 
-    private CLIRemoteAdminCommand           rac;
+    private CLIRemoteAdminCommand       rac;
 
     /**
      * A special RemoteAdminCommand that overrides methods so that
@@ -251,7 +252,7 @@ public class RemoteCommand extends CLICommand {
      * The default is the user's home directory.
      */
     public void setFileOutputDirectory(File dir) {
-        rac.setFileOutputDirectory(dir);
+        outputDir = dir;
     }
 
     @Override
@@ -460,11 +461,13 @@ public class RemoteCommand extends CLICommand {
     }
 
     private void initializeRemoteAdminCommand() throws CommandException {
-        if (rac == null)
+        if (rac == null) {
             rac = new CLIRemoteAdminCommand(name,
                 programOpts.getHost(), programOpts.getPort(),
                 programOpts.isSecure(), programOpts.getUser(),
                 programOpts.getPassword(), logger.getLogger());
+            rac.setFileOutputDirectory(outputDir);
+        }
     }
 
     private void initializeAuth() throws CommandException {
