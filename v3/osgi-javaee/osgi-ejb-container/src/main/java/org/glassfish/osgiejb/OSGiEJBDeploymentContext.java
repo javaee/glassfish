@@ -90,11 +90,18 @@ public class OSGiEJBDeploymentContext extends OSGiDeploymentContext {
 
         @Override
         protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            try {
-                return delegate1.loadClass(name, resolve);
-            } catch (ClassNotFoundException cnfe) {
-                return delegate2.loadClass(name);
+            Class c = findLoadedClass(name);
+            if (c == null) {
+                try {
+                    return delegate1.loadClass(name, resolve);
+                } catch (ClassNotFoundException cnfe) {
+                    return delegate2.loadClass(name);
+                }
             }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
         }
 
         @Override
