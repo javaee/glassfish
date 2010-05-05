@@ -318,6 +318,14 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                         return null;
                     }
                 }, domain.getConfigs(), configCopy);
+            }  else {
+
+                // cluster using specified config
+                Config specifiedConfig = domain.getConfigs().getConfigByName(configRef);
+                if (specifiedConfig == null) {
+                    throw new TransactionFailure(localStrings.getLocalString(
+                            "noSuchConfig", "Configuration {0} does not exist.", configRef));
+                }
             }
 
             if (hosts!=null ||
