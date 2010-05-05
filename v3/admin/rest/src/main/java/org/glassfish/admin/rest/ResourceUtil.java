@@ -306,16 +306,14 @@ public class ResourceUtil extends Util {
      *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public MethodMetaData getMethodMetaData(ConfigBean configBean,
-            int pamameterType) {
+    public MethodMetaData getMethodMetaData(ConfigBean configBean, int parameterType) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         if (configBean != null) {
             Class<? extends ConfigBeanProxy> configBeanProxy = null;
              try {
                 configBeanProxy = (Class<? extends ConfigBeanProxy>)
-                    configBean.model.classLoaderHolder.get().loadClass(
-                        configBean.model.targetTypeName);
+                    configBean.model.classLoaderHolder.get().loadClass(configBean.model.targetTypeName);
 
                 Set<String> attributeNames = configBean.model.getAttributeNames();
                 for (String attributeName : attributeNames) {
@@ -324,16 +322,13 @@ public class ResourceUtil extends Util {
                         Method method = configBeanProxy.getMethod(methodName);
                         Attribute attribute = method.getAnnotation(Attribute.class);
                         if (attribute != null) {
-                            ParameterMetaData parameterMetaData =
-                                getParameterMetaData(attribute);
+                            ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
 
-                            if (pamameterType == Constants.QUERY_PARAMETER) {
-                                methodMetaData.putQureyParamMetaData(attributeName,
-                                    parameterMetaData);
+                            if (parameterType == Constants.QUERY_PARAMETER) {
+                                methodMetaData.putQureyParamMetaData(attributeName, parameterMetaData);
                             } else {
                                 //message parameter
-                                methodMetaData.putParameterMetaData(attributeName,
-                                    parameterMetaData);
+                                methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
                             }
                         }
                     } catch (NoSuchMethodException e) {
@@ -479,9 +474,6 @@ public class ResourceUtil extends Util {
         parameterMetaData.putAttribute(Constants.OPTIONAL, Boolean.toString(param.optional()));
         parameterMetaData.putAttribute(Constants.DEFAULT_VALUE, param.defaultValue());
         parameterMetaData.putAttribute(Constants.ACCEPTABLE_VALUES, param.acceptableValues());
-        //parameterMetaData.putAttribute("name1", paramModel.getName());
-        //parameterMetaData.putAttribute("Name", param.name());
-        //parameterMetaData.putAttribute("I18n", paramModel.getI18n().value());
 
         return parameterMetaData;
     }
