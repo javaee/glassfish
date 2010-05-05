@@ -43,6 +43,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
@@ -50,15 +51,6 @@ import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigCode;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.DuckTyped;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -178,6 +170,15 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Param(name="systemproperties", optional = true)
     List<SystemProperty> getSystemProperty();
 
+    /**
+    	Properties as per {@link PropertyBag}
+     */
+    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
+    @PropertiesDesc(props={})
+    @Element
+    @Param(name="properties", optional = true)
+    List<Property> getProperty();    
+
     @DuckTyped
     String getReference();
 
@@ -196,8 +197,34 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @DuckTyped
     ApplicationRef getApplicationRef(String appName);
 
+    /**
+     * Returns the cluster instance this instance is referenced in or null
+     * if there is no cluster referencing this server instance.
+     *
+     * @return the cluster owning this instance or null if this is a standalone
+     * instance
+     */
+    @DuckTyped
+    Cluster getCluster();
+
 
     class Duck {
+
+        public static Cluster getCluster(Server server) {
+            Dom serverDom = Dom.unwrap(server);
+            Clusters clusters = serverDom.getHabitat().getComponent(Clusters.class);
+            if (clusters!=null) {
+                for (Cluster cluster : clusters.getCluster()) {
+                    for (ServerRef serverRef : cluster.getServerRef()) {
+                        if (serverRef.equals(server.getName())) {
+                            return cluster;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public static String getReference(Server server) {
             return server.getConfigRef();
         }
@@ -253,14 +280,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         }
     }
     
-    /**
-    	Properties as per {@link PropertyBag}
-     */
-    @ToDo(priority=ToDo.Priority.IMPORTANT, details="Provide PropertyDesc for legal props" )
-    @PropertiesDesc(props={})
-    @Element
-    @Param(name="properties", optional = true)
-    List<Property> getProperty();
+
 
     @Service
     class Decorator implements CreationDecorator<Server> {
