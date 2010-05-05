@@ -36,9 +36,9 @@
 
 package com.sun.enterprise.security.web.integration;
 
-import com.sun.enterprise.security.*;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import org.glassfish.security.common.PrincipalImpl;
 import com.sun.enterprise.security.SecurityContext;
 
@@ -64,14 +64,12 @@ public class WebPrincipal extends PrincipalImpl {
         this.secCtx = context;
     }
 
-    public WebPrincipal(String user, char[] password,
+    public WebPrincipal(String user, char[] pwd,
                         SecurityContext context) {
         super(user);
         //Copy the password to another reference before storing it to the
         //instance field.
-        char[] passwordCopy = new char[password.length];
-        System.arraycopy(password, 0, passwordCopy, 0, password.length);
-	this.password = passwordCopy;
+        this.password = (pwd == null) ? null : Arrays.copyOf(pwd, pwd.length);	
 
         this.useCertificate = false;
         this.secCtx = context;

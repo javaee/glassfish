@@ -69,6 +69,7 @@ import com.sun.enterprise.security.auth.realm.DigestRealmBase;
 import com.sun.enterprise.security.common.Util;
 import java.io.CharArrayReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import org.jvnet.hk2.annotations.Service;
@@ -400,7 +401,7 @@ public final class JDBCRealm extends DigestRealmBase {
             rs = statement.executeQuery();
             if (rs.next()) {
                 //Obtain the password as a char[] with a  max size of 50
-                CharArrayReader reader =  (CharArrayReader)rs.getCharacterStream(1);
+                Reader reader =  rs.getCharacterStream(1);
                 char[] pwd = new char[1024];
                 int noOfChars = reader.read(pwd);
 
