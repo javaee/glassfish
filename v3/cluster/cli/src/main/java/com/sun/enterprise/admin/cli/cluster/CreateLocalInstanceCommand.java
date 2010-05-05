@@ -38,7 +38,12 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.File;
 import java.io.Console;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
@@ -47,9 +52,25 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.logging.LogDomains;
+
 
 /**
  *  This is a local command that creates a local instance.
+ *  Create the local directory structure
+ *  nodeagents/<host-name>/
+ *   || ---- agent
+ *             || ---- config
+ *                     | ---- das.properties
+ *   || ---- <server-instance-1>
+ *             ||---- config
+ *             ||---- applications
+ *             ||---- java-web-start
+ *             ||---- generated
+ *             ||---- lib
+ *             ||---- docroot
+ *   || ---- <server-instance-2>
+ *
  */
 @Service(name = "create-local-instance")
 @Scoped(PerLookup.class)
@@ -88,6 +109,12 @@ public final class CreateLocalInstanceCommand extends CLICommand {
     private File agentsDir;           // the parent dir of all node agents
     private File nodeAgentDir;        // the specific node agent dir
     private File instanceDir;         // the specific instance dir
+    private File agentConfigDir;
+    private File applicationsDir;
+    private File configDir;
+    private File generatedDir;
+    private File libDir;
+    private File docrootDir;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceCommand.class);
@@ -102,6 +129,7 @@ public final class CreateLocalInstanceCommand extends CLICommand {
                                         strings.get("ConfigClusterConflict"));
         // XXX - is there a default for config_name?
 
+        // nodeagents
         if (ok(agentDir)) {
             agentsDir = new File(agentDir);
         } else {
@@ -116,26 +144,53 @@ public final class CreateLocalInstanceCommand extends CLICommand {
                                 "nodeagents");
         }
 
-        if (!agentsDir.isDirectory()) {
-            throw new CommandException(
-                    strings.get("Instance.badAgentDir", agentsDir));
-        }
+        //if (!agentsDir.isDirectory()) {
+        //    throw new CommandException(
+        //            strings.get("Instance.badAgentDir", agentsDir));
+        //}
 
+        // nodeagents\<hostname>
         if (nodeAgent != null) {
             nodeAgentDir = new File(agentsDir, nodeAgent);
         } else {
             // XXX - find the existing agent, if it exists,
             // or create a default agent if none exists
             //nodeAgentDir = getTheOneAndOnlyAgent(agentsDir);
+            String hostName = "hostname";
+            try {
+                hostName = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(CreateLocalInstanceCommand.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            nodeAgentDir = new File(agentsDir, hostName);
+           
             nodeAgent = nodeAgentDir.getName();
         }
 
-        instanceDir = new File(nodeAgentDir, instanceName);
+        // nodeagents\<host name>\agent\config
+        String agentPath = "agent" + File.separator + "config";
+        agentConfigDir = new File(nodeAgentDir, agentPath);
 
+        // nodeagents\<host name>\<server instance>
+        instanceDir = new File(nodeAgentDir, instanceName);
+        applicationsDir = new File(instanceDir, "applications");
+        configDir = new File(instanceDir, "config");
+        generatedDir = new File(instanceDir, "generated");
+        libDir = new File(instanceDir, "lib");
+        docrootDir = new File(instanceDir, "docroot");
+
+
+        agentsDir = SmartFile.sanitize(agentsDir);
         nodeAgentDir = SmartFile.sanitize(nodeAgentDir);
         instanceDir = SmartFile.sanitize(instanceDir);
+        applicationsDir = SmartFile.sanitize(applicationsDir);
+        configDir = SmartFile.sanitize(configDir);
+        generatedDir = SmartFile.sanitize(generatedDir);
+        libDir = SmartFile.sanitize(libDir);
+        docrootDir = SmartFile.sanitize(docrootDir);
 
         // XXX - validate lots more...
+        
     }
 
     /**
@@ -143,7 +198,86 @@ public final class CreateLocalInstanceCommand extends CLICommand {
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
+        
+            int exitCode = 1;
 
-        throw new CommandException("Not implemented");
+            if (!this.filesystemOnly) {
+                registerToDAS();
+            }
+            exitCode = createDirectories()? 0 : 1;
+
+            return exitCode;        
+    }
+
+    private void registerToDAS() {
+        //TODO
+    }
+
+    private boolean createDirectories() throws CommandException {
+        boolean createDirsSuccess = true;
+        boolean createDirsComplete = false;
+        File badfile = null;
+        while (badfile == null && !createDirsComplete) {
+            if (!agentsDir.isDirectory()) {
+                if (!agentsDir.mkdir()) {
+                    badfile = agentsDir;
+                }
+            }
+            if (!nodeAgentDir.isDirectory()) {
+                if (!nodeAgentDir.mkdir()) {
+                    badfile = nodeAgentDir;
+                }
+            }
+            if (!agentConfigDir.isDirectory()) {
+                if (!agentConfigDir.mkdirs()) {
+                    badfile = agentConfigDir;
+                }
+            }
+            if (!instanceDir.isDirectory()) {
+                if (!instanceDir.mkdir())
+                    badfile = instanceDir;
+                if (!applicationsDir.mkdir())
+                    badfile = applicationsDir;
+                if (!configDir.mkdir())
+                    badfile = configDir;
+                if (!generatedDir.mkdir())
+                    badfile = generatedDir;
+                if (!libDir.mkdir())
+                    badfile = libDir;
+                if (!docrootDir.mkdir())
+                    badfile = docrootDir;
+            } else {
+                if (!instanceDir.isDirectory()) {
+                    if (!instanceDir.mkdir())
+                        badfile = instanceDir;
+                }
+                if (!applicationsDir.isDirectory()) {
+                    if (!applicationsDir.mkdir())
+                        badfile = applicationsDir;
+                }
+                if (!configDir.isDirectory()) {
+                    if (!configDir.mkdir())
+                        badfile = configDir;
+                }
+                if (!generatedDir.isDirectory()) {
+                    if (!generatedDir.mkdir())
+                        badfile = generatedDir;
+                }
+                if (!libDir.isDirectory()) {
+                    if (!libDir.mkdir())
+                        badfile = libDir;
+                }
+                if (!docrootDir.isDirectory()) {
+                    if (!docrootDir.mkdir())
+                        badfile = docrootDir;
+                }
+            }
+            createDirsComplete = true;
+        }
+        if (badfile != null) {
+            createDirsSuccess = false;
+            throw new CommandException(strings.get("Instance.cannotMkDir", badfile));
+        }
+        return createDirsSuccess;
     }
 }
