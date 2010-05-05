@@ -588,7 +588,10 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         try {
             Payload.Outbound outboundPayload = context.getOutboundPayload();
             Properties props = new Properties();
-            props.setProperty("file-xfer-root", targetLocalDir);
+            /*
+             * file-xfer-root is used as a URI, so convert backslashes.
+             */
+            props.setProperty("file-xfer-root", targetLocalDir.replace('\\', '/'));
             for (DownloadableArtifacts.FullAndPartURIs uriPair : downloadableArtifacts.getArtifacts(appName)) {
                 if(logger.isLoggable(Level.FINE)) {
                     logger.log(Level.FINE, "About to download artifact " + uriPair.getFull());
