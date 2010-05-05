@@ -51,6 +51,7 @@ public abstract class BaseDevTest {
         command.addAll(Arrays.asList(args));
 
         ProcessBuilder builder = new ProcessBuilder(command);
+		  write("command = " + builder.command());
         Process process = null;
         boolean success = false;
         try {
@@ -90,7 +91,7 @@ public abstract class BaseDevTest {
     }
 
     private String antProp(final String key) {
- System.out.println("looking for ant property:  " + key);
+ write("looking for ant property:  " + key);
         return System.getProperty(key);
     }
 
