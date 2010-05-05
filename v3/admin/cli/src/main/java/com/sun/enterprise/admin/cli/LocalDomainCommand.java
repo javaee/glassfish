@@ -144,31 +144,6 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
     }
 
     /**
-     * Returns the admin port of the local domain. Note that this method should
-     * be called only when you own the domain that is available on accessible
-     * file system.
-     *
-     * @return an integer that represents admin port
-     * @throws CommandException in case of parsing errors
-     */
-    protected int getAdminPort()
-            throws CommandException {
-
-        try {
-            MiniXmlParser parser = new MiniXmlParser(getDomainXml());
-            Set<Integer> portsSet = parser.getAdminPorts();
-
-            if(portsSet.size() > 0)
-                return portsSet.iterator().next();
-            else
-                throw new CommandException("admin port not found");
-        }
-        catch (MiniXmlParserException ex) {
-            throw new CommandException("admin port not found", ex);
-        }
-    }
-
-    /**
      * There is sometimes a need for subclasses to know if a
      * <code> local domain </code> is running. An example of such a command is
      * change-master-password command. The stop-domain command also needs to

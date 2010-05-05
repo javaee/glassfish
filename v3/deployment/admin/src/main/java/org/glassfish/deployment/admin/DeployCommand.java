@@ -384,8 +384,16 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      */
     private File saveUploadedFiles(final AdminCommandContext context,
             final Logger logger) throws IOException, Exception {
-        final File uniqueSubdirUnderApplications = File.createTempFile("upload", "dir",
-                    new File(domain.getApplicationRoot()));
+        // bnevins May 2009
+        // An Exception is thrown out by createTempFile if appRoot doesn't
+        // exist -- so I added a mkdirs() call -- we should at least try...
+
+        File appRoot = new File(domain.getApplicationRoot());
+
+        if(!appRoot.isDirectory())
+            appRoot.mkdirs();
+
+        final File uniqueSubdirUnderApplications = File.createTempFile("upload", "dir", appRoot);
         uniqueSubdirUnderApplications.delete();
         uniqueSubdirUnderApplications.mkdir();
         payloadFilesMgr = new PayloadFilesManager.Perm(

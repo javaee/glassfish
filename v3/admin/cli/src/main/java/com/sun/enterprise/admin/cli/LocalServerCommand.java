@@ -37,10 +37,13 @@ package com.sun.enterprise.admin.cli;
 
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.xml.MiniXmlParser;
+import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
 import java.io.File;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.security.KeyStore;
+import java.util.Set;
 import org.glassfish.api.admin.CommandException;
 
 /**
@@ -49,6 +52,32 @@ import org.glassfish.api.admin.CommandException;
  * @author Byron Nevins
  */
 public abstract class LocalServerCommand extends CLICommand {
+
+    /**
+     * Returns the admin port of the local domain. Note that this method should
+     * be called only when you own the domain that is available on accessible
+     * file system.
+     *
+     * @return an integer that represents admin port
+     * @throws CommandException in case of parsing errors
+     */
+    protected int getAdminPort()
+            throws CommandException {
+
+        try {
+            MiniXmlParser parser = new MiniXmlParser(getDomainXml());
+            Set<Integer> portsSet = parser.getAdminPorts();
+
+            if(portsSet.size() > 0)
+                return portsSet.iterator().next();
+            else
+                throw new CommandException("admin port not found");
+        }
+        catch (MiniXmlParserException ex) {
+            throw new CommandException("admin port not found", ex);
+        }
+    }
+
     protected final void setServerDirs(ServerDirs sd) {
         serverDirs = sd;
     }
@@ -65,7 +94,7 @@ public abstract class LocalServerCommand extends CLICommand {
         return serverDirs.getDomainXml();
     }
     
-    protected final File getMasterPasswordFile() {
+    private final File getMasterPasswordFile() {
 
         if(serverDirs == null)
             return null;
@@ -124,7 +153,7 @@ public abstract class LocalServerCommand extends CLICommand {
         }
     }
 
-    protected final File getJKS() {
+    private final File getJKS() {
         if(serverDirs == null)
             return null;
 
@@ -186,10 +215,15 @@ public abstract class LocalServerCommand extends CLICommand {
     protected final LocalStringsImpl getStrings() {
         return strings;
     }
+
+    /////////////////////// private variables ////////////////////
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
 
     private ServerDirs serverDirs;
+
+
 }
 
 
