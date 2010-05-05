@@ -43,8 +43,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeSupport;
-import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

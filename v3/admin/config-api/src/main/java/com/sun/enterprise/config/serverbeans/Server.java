@@ -216,7 +216,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (clusters!=null) {
                 for (Cluster cluster : clusters.getCluster()) {
                     for (ServerRef serverRef : cluster.getServerRef()) {
-                        if (serverRef.equals(server.getName())) {
+                        if (serverRef.getRef().equals(server.getName())) {
                             return cluster;
                         }
                     }
