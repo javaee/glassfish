@@ -924,7 +924,7 @@ public class PackageAnalyser {
 
     public void generateBundleReport(PrintStream out) {
         out.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
-        out.println("<?xml-stylesheet type=\"text/xsl\" href=\"bundles.xsl\"?>");
+//        out.println("<?xml-stylesheet type=\"text/xsl\" href=\"bundles.xsl\"?>");
         out.println("<Bundles>");
         for (Bundle b : bundles) {
             StringBuilder sb = new StringBuilder();
@@ -932,9 +932,9 @@ public class PackageAnalyser {
             final Collection<PackageCapability> unusedpcs = findUnusedExports(b);
             final Collection<PackageCapability> usedpcs = new HashSet<PackageCapability>(allpcs);
             usedpcs.removeAll(unusedpcs);
-            sb.append("\t<Bundle name = \"" + b.getName() + "\", file = \"" + getBundleLocation(b) + "\", "
-                      + " total-exports = " + allpcs.size() + ", used = " + usedpcs.size() + ", unused = " + unusedpcs.size() + ", "
-                      + "total-imports = " + b.getImportedPkgs().size() + ">\n");
+            sb.append("\t<Bundle name=\"" + b.getName() + "\" file=\"" + getBundleLocation(b) + "\" "
+                      + " total-exports=\"" + allpcs.size() + "\" used=\"" + usedpcs.size() + "\" unused=\"" + unusedpcs.size() + "\" "
+                      + "total-imports=\"" + b.getImportedPkgs().size() + "\">\n");
             sb.append("\t\t<Exports>\n");
             sb.append("\t\t\t<Used>\n");
             int i = 0;
