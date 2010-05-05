@@ -1,7 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
@@ -258,7 +255,7 @@ public abstract class PayloadFilesManager {
             for (Map.Entry<File,Long> entry : dirTimestamps.entrySet()) {
                 if (isFine) {
                     final Date when = new Date(entry.getValue());
-                    logger.fine("Setting lastModified for " +
+                    logger.finer("Setting lastModified for " +
                             entry.getKey().getAbsolutePath() +
                             " explicitly to " + when);
                 }
@@ -400,13 +397,13 @@ public abstract class PayloadFilesManager {
             if (isRemovalRecursive ?
                     FileUtils.whack(targetFile) : targetFile.delete()) {
                 if (isFine) {
-                    logger.fine("Deleted " + targetFile.getAbsolutePath() + 
+                    logger.finer("Deleted " + targetFile.getAbsolutePath() + 
                             (isRemovalRecursive ? " recursively" : "") + " as requested");
                 }
                 reportDeletionSuccess();
             } else {
                 if (isFine) {
-                    logger.fine("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion exists but was not able to be deleted");
+                    logger.finer("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion exists but was not able to be deleted");
                 }
                 reportDeletionFailure(part.getName(),
                         strings.getLocalString("payload.deleteFailedOnFile",
@@ -414,7 +411,7 @@ public abstract class PayloadFilesManager {
             }
         } else {
             if (isFine) {
-                logger.fine("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion does not exist.");
+                logger.finer("File " + part.getName() + " (" + targetFile.getAbsolutePath() + ") requested for deletion does not exist.");
             }
             reportDeletionFailure(part.getName(), new FileNotFoundException(targetFile.getAbsolutePath()));
         }
@@ -491,7 +488,7 @@ public abstract class PayloadFilesManager {
                             "Overwriting previously-uploaded file because the attempt to delete it failed: {0}",
                             extractedFile.getAbsolutePath()));
                 } else if (isFine) {
-                    logger.fine("Deleted pre-existing file " + extractedFile.getAbsolutePath() + " before extracting transferred file");
+                    logger.finer("Deleted pre-existing file " + extractedFile.getAbsolutePath() + " before extracting transferred file");
                 }
             }
 
@@ -528,7 +525,7 @@ public abstract class PayloadFilesManager {
                 dirTimestamps.put(extractedFile, lastModified);
             }
             postExtract(extractedFile);
-            logger.fine("Extracted transferred entry " + part.getName() + " to " +
+            logger.finer("Extracted transferred entry " + part.getName() + " to " +
                     extractedFile.getAbsolutePath());
             reportExtractionSuccess();
             return extractedFile;
@@ -685,7 +682,7 @@ public abstract class PayloadFilesManager {
                             "Unknown error creating directory {0}",
                             result.getAbsolutePath()));
             }
-            logger.fine("Created temporary upload folder " + result.getAbsolutePath());
+            logger.finer("Created temporary upload folder " + result.getAbsolutePath());
             return result;
         } catch (Exception e) {
             IOException ioe = new IOException(strings.getLocalString(
