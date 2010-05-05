@@ -37,6 +37,7 @@
 
 package org.glassfish.ant.embedded.tasks;
 
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
@@ -55,7 +56,8 @@ public class StopServerTask extends Task{
         log ("Stopping server");
         Server server = Server.getServer(serverID);
         if (server ==  null) {
-            throw new BuildException("Embedded Server [" + serverID + "] not running" );
+            log("Embedded Server [" + serverID + "] not running", Project.MSG_WARN );
+            return;
         }
         try {
             server.stop();
