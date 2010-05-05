@@ -144,6 +144,8 @@
     <attribute name="classname"/>
     <attribute name="classpath"/>
     <sequential>
+        <echo>classname = @{classname}</echo>
+        <echo>classpath = @{classpath}</echo>
         <java classname="@{classname}" classpath="@{classpath}" fork="true">
             <jvmarg value="-Das.props=${as.props}"/>
         </java>
