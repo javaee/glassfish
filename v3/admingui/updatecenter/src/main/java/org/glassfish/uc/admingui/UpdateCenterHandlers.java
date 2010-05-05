@@ -502,12 +502,16 @@ public class UpdateCenterHandlers {
 
      
      private static Integer updateCountInSession(Image image){
-         List list = getUpdateDisplayList(image, true);
-         Integer countInt = (Integer) list.get(0);
+	 Integer countInt = new Integer(-1);
+	 if (image != null){
+	    List list = getUpdateDisplayList(image, true);
+	    countInt = (Integer) list.get(0);
+	 }else{
+	    GuiUtil.getLogger().warning("Error in getting update component list, cannot get image.");
+	 }
          GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
          return countInt;
      }
-        
      
     private static String getLicense(Image img, Fmri fmri){
         StringBuffer licenseText = new StringBuffer();
