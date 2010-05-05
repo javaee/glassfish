@@ -91,6 +91,7 @@ import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
+import org.glassfish.internal.grizzly.ContextMapper;
 import org.glassfish.web.admin.monitor.*;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
@@ -771,9 +772,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         if (mapper == null) {
             for (Mapper m : habitat.getAllByContract(Mapper.class)) {
-                if (m.getPort() == port) {
-                    mapper = m;
-                    break;
+                if (m.getPort() == port && m instanceof ContextMapper) {
+                    ContextMapper cm = (ContextMapper)m;
+                    if (listener.getName().equals(cm.getId())) {
+                        mapper = m;
+                        break;
+                    }
                 }
             }
         }
@@ -938,9 +942,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         
         for (Mapper m : habitat.getAllByContract(Mapper.class)) {
-            if (m.getPort() == port){
-                jkConnector.setMapper(m);
-                break;
+            if (m.getPort() == port && m instanceof ContextMapper) {
+                ContextMapper cm = (ContextMapper)m;
+                if (listener.getName().equals(cm.getId())) {
+                    jkConnector.setMapper(m);
+                    break;
+                }
             }
         }
 
@@ -3079,9 +3086,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             Mapper mapper = null;
             for (Mapper m : habitat.getAllByContract(Mapper.class)) {
-                if (m.getPort() == port) {
-                    mapper = m;
-                    break;
+                if (m.getPort() == port && m instanceof ContextMapper) {
+                    ContextMapper cm = (ContextMapper)m;
+                    if (httpListener.getName().equals(cm.getId())) {
+                        mapper = m;
+                        break;
+                    }
                 }
             }           
                     

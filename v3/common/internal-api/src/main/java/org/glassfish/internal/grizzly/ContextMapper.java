@@ -53,8 +53,8 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 @ContractProvided(Mapper.class)
 public class ContextMapper extends Mapper {
-    private final Logger logger;
-    private Adapter adapter;
+    protected final Logger logger;
+    protected Adapter adapter;
     // The id of the associated network-listener
     protected String id;
 
@@ -139,5 +139,9 @@ public class ContextMapper extends Mapper {
      */
     public void setId(final String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 }

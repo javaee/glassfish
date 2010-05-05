@@ -57,21 +57,14 @@ public class V3Mapper extends ContextMapper {
     private static final String ADMIN_LISTENER = "admin-listener";
     private static final String ADMIN_VS = "__asadmin";
 
-    private final Logger logger;
-
-    private Adapter adapter;
-
-    // The id of the associated network-listener
-    private String id;
-    
 
     public V3Mapper() {
-        this(Logger.getAnonymousLogger());
+        super();
     }   
     
     
     public V3Mapper(Logger logger) {
-        this.logger = logger;
+        super(logger);
     }
 
     
@@ -104,10 +97,6 @@ public class V3Mapper extends ContextMapper {
         }
 
         super.addHost(name, aliases, host);
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Host-Host: " + name + " aliases " + aliases 
-                    + " host " + host);
-        }
     }
 
     
@@ -140,35 +129,5 @@ public class V3Mapper extends ContextMapper {
         }
         
         super.addContext(hostName, path, context, welcomeResources, resources);
-    }
-
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized void removeHost(String name) {
-        // Do let the WebContainer deconfigire us.
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Faking removal of host: " + name);
-        }
-    }
-
-
-    public void setAdapter(Adapter adapter) {
-        this.adapter = adapter;
-    }
-
-
-    public Adapter getAdapter() {
-        return adapter;
-    }
-
-
-    /**
-     * Sets the id of the associated network-listener on this mapper.
-     */
-    public void setId(String id) {
-        this.id = id;
     }
 }
