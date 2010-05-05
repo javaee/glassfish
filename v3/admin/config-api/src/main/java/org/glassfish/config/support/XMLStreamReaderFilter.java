@@ -137,12 +137,19 @@ abstract class XMLStreamReaderFilter extends StreamReaderDelegate {
      */
     private void skipTree() throws XMLStreamException {
         int depth = 1;
+
         while(depth > 0) {
-            int r = super.nextTag();
-            if(r == START_ELEMENT)
+            // nextTag may cause problems.  We are just throwing it all away so
+            // next() is fine...
+            int r = super.next();
+
+            if(r == START_ELEMENT) {
                 depth++;
-            else
+            }
+            else if(r == END_ELEMENT) {
                 depth--;
+            }
+            // else ignore everything else...
         }
     }
 
