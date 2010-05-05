@@ -44,8 +44,10 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
@@ -227,6 +229,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     }
 
     @Service
+    @Scoped(PerLookup.class)    
     class Decorator implements CreationDecorator<Cluster> {
 
         @Param(name="config-ref", optional=true)
