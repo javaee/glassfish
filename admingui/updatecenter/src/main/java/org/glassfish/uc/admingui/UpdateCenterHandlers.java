@@ -473,7 +473,6 @@ public class UpdateCenterHandlers {
         @HandlerOutput(name = "count", type = Integer.class)
     })
     public static void getUpdateComponentCount(HandlerContext handlerCtx) {
-	GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
         Boolean userOK = (Boolean) GuiUtil.getSessionValue(USER_OK);
         if (userOK == null){
             UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
