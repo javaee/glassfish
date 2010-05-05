@@ -90,6 +90,7 @@ public abstract class BaseDevTest {
     }
 
     private String antProp(final String key) {
+ System.out.println("looking for ant property:  " + key);
         return System.getProperty(key);
     }
 
