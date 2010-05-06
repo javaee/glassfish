@@ -63,7 +63,7 @@ public class WebTest extends BaseDevTest {
             report("set-content-type-value", asadmin("set",
                 "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http."
                     + "default-response-type=" + EXPECTED_CONTENT_TYPE));
-            report("default-response-type", invoke(EXPECTED_CONTENT_TYPE));
+            report("default-content-type", invoke(EXPECTED_CONTENT_TYPE));
             report("set-content-type-value", asadmin("set",
                 "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http."
                     + "default-response-type="));
