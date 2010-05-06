@@ -146,7 +146,9 @@ public class ClientPasswordLoginModule implements LoginModule {
             doSet = true;
         }
         if (pswd == null) {
-            pswd = System.getProperty(LOGIN_PASSWORD).toCharArray();
+            if(System.getProperty(LOGIN_PASSWORD) != null) {
+                pswd = System.getProperty(LOGIN_PASSWORD).toCharArray();
+            }
             doSet = true;
         }
 

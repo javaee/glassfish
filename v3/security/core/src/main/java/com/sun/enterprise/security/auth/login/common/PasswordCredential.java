@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.security.auth.login.common;
 
+import java.util.Arrays;
+
 /**
  * This class holds the user password for the shared password realm and the
  * realm name. This credential is added as a private credential to the
@@ -63,8 +65,7 @@ public class PasswordCredential {
 	this.username = user;
         //Copy the password to another reference before storing it to the
         //instance field.
-        char[] passwordCopy = new char[password.length];
-        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+        char[] passwordCopy = (password == null) ? null : Arrays.copyOf(password, password.length);
 	this.password = passwordCopy;
 	this.realm = realm;
 
@@ -116,8 +117,7 @@ public class PasswordCredential {
      */
     public char[] getPassword() {
        //Copy the password to another reference before returning it
-        char[] passwordCopy = new char[password.length];
-        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+        char[] passwordCopy = (password == null) ? null : Arrays.copyOf(password, password.length);
 	return passwordCopy;
     }
 

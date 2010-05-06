@@ -39,6 +39,7 @@ package com.sun.enterprise.security;
 import com.sun.enterprise.security.common.ClientSecurityContext;
 import java.util.logging.*;
 import com.sun.logging.*;
+import java.util.Arrays;
 
 
 /**
@@ -78,8 +79,7 @@ public final class UsernamePasswordStore {
     private UsernamePasswordStore(String username, char[] password) {
         //Copy the password to another reference before storing it to the
         //instance field.
-        char[] passwordCopy = new char[password.length];
-        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+        char[] passwordCopy = (password == null) ? null : Arrays.copyOf(password, password.length);
 	this.password = passwordCopy;
         this.username = username;
         
@@ -166,8 +166,7 @@ public final class UsernamePasswordStore {
         UsernamePasswordStore ups = UsernamePasswordStore.get();
         if( ups != null ) {
              //Copy the password to another reference before returning it
-            char[] passwordCopy = new char[ups.password.length];
-            System.arraycopy(ups.password, 0, passwordCopy, 0, ups.password.length);
+            char[] passwordCopy = (ups.password == null) ? null : Arrays.copyOf(ups.password, ups.password.length);
             return passwordCopy;
         }
         else 

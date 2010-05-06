@@ -279,8 +279,7 @@ public  class AppservPasswordLoginModule implements AppservPasswordLoginModuleIn
     public final void commitUserAuthentication (final String[] groups)
     {
         //Copy the groups into a new array before storing it in the instance
-        String[] groupsListCopy = new String[groups.length];
-        System.arraycopy(groups, 0, groupsListCopy, 0, groups.length);
+        String[] groupsListCopy =  (groups == null) ? null : Arrays.copyOf(groups, groups.length);
 
         _groupsList = groupsListCopy;
         _succeeded = true;

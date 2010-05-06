@@ -972,8 +972,7 @@ public final class FileRealm extends IASRealm
         assert (user != null);
         //Copy the password to another reference before storing it to the
         //instance field.
-        char[] passwordCopy = new char[pwd.length];
-        System.arraycopy(pwd, 0, passwordCopy, 0, pwd.length);
+        char[] passwordCopy = (pwd == null) ? null : Arrays.copyOf(pwd, pwd.length);
         byte[] pwdBytes = Util.convertCharArrayToByteArray(null, passwordCopy);
         
         SecureRandom rng=SharedSecureRandom.get();

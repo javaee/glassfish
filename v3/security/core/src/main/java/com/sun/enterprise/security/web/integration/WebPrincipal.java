@@ -92,8 +92,7 @@ public class WebPrincipal extends PrincipalImpl {
 
     public char[] getPassword() {
         //Copy the password to another reference and return the reference
-        char[] passwordCopy = new char[password.length];
-        System.arraycopy(password, 0, passwordCopy, 0, password.length);
+        char[] passwordCopy = (password == null) ? null : Arrays.copyOf(password, password.length);
 
         return passwordCopy;
     }
