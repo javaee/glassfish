@@ -86,6 +86,7 @@ public class ServerDirs {
         domainXml = new File(configDir, "domain.xml");
         pidFile = new File(configDir, "pid");
 
+		/*
         if(!configDir.isDirectory())
             throw new IOException("Bad config directory.  It should be here: "
                     + configDir);
@@ -93,6 +94,7 @@ public class ServerDirs {
         if(!domainXml.canRead())
             throw new IOException("No domain.xml.  It should be here: "
                     + domainXml);
+         */
 
         localPasswordFile = new File(configDir, "local-password");
 
