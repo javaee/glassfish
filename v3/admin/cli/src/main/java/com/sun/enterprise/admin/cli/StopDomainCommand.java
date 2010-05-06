@@ -193,19 +193,4 @@ public class StopDomainCommand extends LocalDomainCommand {
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > WAIT_FOR_DAS_TIME_MS;
     }
-
-    /**
-     * Is the server still running?
-     * This is only called when we're hanging around waiting for the server to die.
-     */
-    private boolean isRunning() {
-        File pf = getServerDirs().getPidFile();
-
-        if(pf != null) {
-            return pf.exists();
-        }
-        else
-            return isRunning(programOpts.getHost(), // remote case
-                    programOpts.getPort());
-    }
 }

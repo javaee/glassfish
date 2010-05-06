@@ -143,76 +143,8 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         }
     }
 
-    /**
-     * There is sometimes a need for subclasses to know if a
-     * <code> local domain </code> is running. An example of such a command is
-     * change-master-password command. The stop-domain command also needs to
-     * know if a domain is running <i> without </i> having to provide user
-     * name and password on command line (this is the case when I own a domain
-     * that has non-default admin user and password) and want to stop it
-     * without providing it.
-     * <p>
-     * In such cases, we need to know if the domain is running and this method
-     * provides a way to do that.
-     *
-     * @return boolean indicating whether the server is running
-     */
-    protected boolean isRunning(String host, int port) {
-        Socket server = null;
-        try {
-            server = new Socket(host, port);
-            return true;
-        }
-        catch (Exception ex) {
-            logger.printDebugMessage("\nisRunning got exception: " + ex);
-            return false;
-        }
-        finally {
-            if(server != null) {
-                try {
-                    server.close();
-                }
-                catch (IOException ex) {
-                }
-            }
-        }
+    protected boolean isThisDAS(File ourDir) {
+        return isThisServer(ourDir, DOMAIN_ROOT_KEY);
     }
 
-    /**
-     * convenience method for the local machine
-     */
-    protected final boolean isRunning(int port) {
-        return isRunning(null, port);
-    }
-
-    /**
-     * See if DAS is alive and is the one at the specified domain directory.
-     *
-     * @return true if it's the DAS at this domain directory
-     */
-    protected boolean isThisDAS(File domainDir) {
-        try {
-            domainDir = SmartFile.sanitize(domainDir).getCanonicalFile();
-        }
-        catch (IOException ioex) {
-            // should never happen
-        }
-        logger.printDebugMessage("Check if server is at location " + domainDir);
-        try {
-            RemoteCommand cmd =
-                    new RemoteCommand("__locations", programOpts, env);
-            Map<String, String> attrs =
-                    cmd.executeAndReturnAttributes(new String[]{"__locations"});
-            String rdr = attrs.get(DOMAIN_ROOT_KEY);
-            logger.printDebugMessage("Remote server has domain root " + rdr);
-            if(rdr != null) {
-                File rf = SmartFile.sanitize(new File(rdr));
-                return rf.equals(domainDir);
-            }
-            return false;
-        }
-        catch (Exception ex) {
-            return false;
-        }
-    }
 }

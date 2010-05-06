@@ -33,9 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.admin.cli.remote.DASUtils;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import java.io.*;
 import java.util.*;
 
@@ -46,25 +47,42 @@ import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.ObjectAnalyzer;
 
 /**
  * Stop a local server instance.
+ * @author Bill Shannon
+ * @author Byron Nevins
+ *
  */
-@Service(name = "stop-local-instance")
+@Service(name = "stop-instance")
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
-
     @Param(name = "instance_name", primary = true, optional = true)
-    private String instanceName0;
-
+    private String userArgInstanceName;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(StopLocalInstanceCommand.class);
 
     @Override
     protected void validate()
-                        throws CommandException, CommandValidationException {
-        instanceName = instanceName0;
+            throws CommandException, CommandValidationException {
+        instanceName = userArgInstanceName;
         super.validate();
+    }
+
+    /**
+     * Override initInstance in LocalInstanceCommand to only initialize
+     * the local instance information (name, directory) in the local
+     * case, when no --host has been specified.
+     */
+    @Override
+    protected void initInstance() throws CommandException {
+        // only initialize instance domain information if it's a local operation
+        if(isLocalInstance())
+            super.initInstance();
+        else if(userArgInstanceName != null)   // remote case
+            throw new CommandException(
+                    strings.get("StopInstance.noInstanceNameAllowed"));
     }
 
     /**
@@ -73,6 +91,111 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
-        throw new CommandException("Not implemented");
+        String serverName = getServerDirs().getServerName();
+        boolean isLocal = ok(serverName);
+
+        if(isLocal) {
+            // if the local password isn't available, the instance isn't running
+            // (localPassword is set by initInstance)
+            if(getServerDirs().getLocalPassword() == null)
+                return instanceNotRunning();
+
+            int adminPort = getAdminPort(serverName);
+            programOpts.setPort(adminPort);
+            logger.printDebugMessage("StopInstance.stoppingMessage" +  adminPort);
+
+            /*
+             * If we're using the local password, we don't want to prompt
+             * for a new password.  If the local password doesn't work it
+             * most likely means we're talking to the wrong server.
+             */
+            programOpts.setInteractive(false);
+
+
+            // in the local case, make sure we're talking to the correct DAS
+            File serverDir = getServerDirs().getServerDir();
+
+            if(!isThisServer(serverDir, "Instance-Root_value"))
+                return instanceNotRunning();
+
+            logger.printDebugMessage("It's the correct Instance");
+        }
+        else { // remote
+            if(!DASUtils.pingDASQuietly(programOpts, env))
+                return instanceNotRunning();
+
+            logger.printDebugMessage("Instance is running remotely");
+            programOpts.setInteractive(false);
+        }
+        return doRemoteCommand();
+    }
+
+    /**
+     * Print message and return exit code when
+     * we detect that the DAS is not running.
+     */
+    private int instanceNotRunning()
+            throws CommandException, CommandValidationException {
+        // by definition this is not an error
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
+
+        logger.printWarning(strings.get("StopInstance.instanceNotRunning"));
+        return 0;
+    }
+
+    private boolean isLocalInstance() {
+        return programOpts.getHost().equals(CLIConstants.DEFAULT_HOSTNAME);
+    }
+
+    /**
+     * Execute the actual stop-domain command.
+     */
+    private final int doRemoteCommand()
+            throws CommandException, CommandValidationException {
+        // run the remote stop-domain command and throw away the output
+        RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
+        cmd.executeAndReturnOutput("stop-domain");
+        waitForDeath();
+        return 0;
+    }
+
+    /**
+     * Wait for the server to die.
+     */
+    private void waitForDeath() throws CommandException {
+        if(!programOpts.isTerse()) {
+            // use stdout because logger always appends a newline
+            System.out.print(strings.get("StopInstance.waitForDeath") + " ");
+        }
+        long startWait = System.currentTimeMillis();
+        boolean alive = true;
+        int count = 0;
+
+        while(!timedOut(startWait)) {
+            if(!isRunning()) {
+                alive = false;
+                break;
+            }
+            try {
+                Thread.sleep(100);
+                if(!programOpts.isTerse() && count++ % 10 == 0)
+                    System.out.print(".");
+            }
+            catch (InterruptedException ex) {
+                // don't care
+            }
+        }
+
+        if(!programOpts.isTerse())
+            System.out.println();
+
+        if(alive) {
+            throw new CommandException(strings.get("StopInstance.instanceNotDead",
+                    (CLIConstants.DEATH_TIMEOUT_MS / 1000)));
+        }
+    }
+
+    private boolean timedOut(long startTime) {
+        return (System.currentTimeMillis() - startTime) > CLIConstants.DEATH_TIMEOUT_MS;
     }
 }

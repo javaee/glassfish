@@ -43,6 +43,7 @@ import java.util.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
+import com.sun.enterprise.admin.cli.LocalServerCommand;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -51,7 +52,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 /**
  * A base class for local commands that manage a local server instance.
  */
-public abstract class LocalInstanceCommand extends LocalServerCommand {
+public abstract class LocalInstanceCommand extends LocalServerCommand{
 
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;
@@ -193,6 +194,9 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     }
 
     protected void setDasDefaults() throws CommandException {
+        // TODO
+        // TODO
+        // make sure this works!
         dasProperties = new File(new File(new File(instanceDirs.getNodeAgentDir(), "agent"),
                                                 "config"), "das.properties");
 
