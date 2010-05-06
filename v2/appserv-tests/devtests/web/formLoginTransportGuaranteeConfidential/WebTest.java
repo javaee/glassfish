@@ -93,6 +93,10 @@ public class WebTest {
                           + "/protected.jsp");
         System.out.println(url.toString());
         URLConnection conn = url.openConnection();
+        java.util.Map fields = conn.getHeaderFields();
+        for (Object header: fields.keySet().toArray()) {
+            System.out.println("Header: "+header+" : "+conn.getHeaderField((String)header));
+        }
         String redirectLocation = conn.getHeaderField("Location");
         System.out.println("Location: " + redirectLocation);
         
