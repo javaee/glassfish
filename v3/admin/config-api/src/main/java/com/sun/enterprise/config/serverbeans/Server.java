@@ -42,7 +42,10 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
@@ -50,7 +53,6 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.quality.ToDo;
-import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -283,9 +285,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
 
     @Service
+    @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<Server> {
         @Param(name="cluster", optional=true)
-        String clusterName = null;
+        String clusterName;
 
         @Inject
         Domain domain;
@@ -307,14 +310,14 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 Clusters clusters = domain.getClusters();
                 if (clusters != null) {
                     for (Cluster cluster : clusters.getCluster()) {
-                        if (clusterName.equals(cluster.getName())) {
+                        if (cluster != null && clusterName.equals(cluster.getName())) {
                             instance.setConfigRef(cluster.getConfigRef());
                             clusterExists = true;
                             break;
                         }
                     }
                 }
-                clusterName = null; // workaround - initialize to null, otherwise it keeps the name value
+                
                 if (!clusterExists) {
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchCluster", "Cluster {0} does not exist.", clusterName));
