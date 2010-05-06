@@ -128,6 +128,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
         try {
            instanceDirs = new InstanceDirs(instanceDir);
            setServerDirs(instanceDirs.getServerDirs());
+           //setServerDirs(instanceDirs.getServerDirs(), checkForSpecialFiles());
         }
         catch(IOException e) {
             throw new CommandException(e);
