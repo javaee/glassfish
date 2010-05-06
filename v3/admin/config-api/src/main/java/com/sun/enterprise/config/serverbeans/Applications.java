@@ -87,6 +87,16 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
     @DuckTyped
     List<Application> getApplications();
 
+    /**
+     * Return the application with the given module ID (name), or null if
+     * no such application exists.
+     *
+     * @param   moduleID        the module ID of the application
+     * @return                  the Application object, or null if no such app
+     */
+    @DuckTyped
+    Application getApplication(String moduleID);
+
     @DuckTyped
     List<Application> getApplicationsWithSnifferType(String snifferType);
 
@@ -121,6 +131,18 @@ public interface Applications extends ConfigBeanProxy, Injectable  {
 
         public static List<Application> getApplications(Applications apps) {
             return getModules(apps, Application.class);
+        }
+
+        public static Application getApplication(Applications apps, String moduleID) {
+            if (moduleID == null) {
+                return null;
+            }
+
+            for (ApplicationName module : apps.getModules())
+                if (module instanceof Application && module.getName().equals(moduleID))
+                    return (Application)module;
+
+            return null;
         }
 
         public static List<Application> getApplicationsWithSnifferType(

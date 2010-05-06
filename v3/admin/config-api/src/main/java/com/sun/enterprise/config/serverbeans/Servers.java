@@ -44,6 +44,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.DuckTyped;
 
 import java.util.List;
 
@@ -65,6 +66,23 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
     @Delete(value="delete-instance", resolver= TypeAndNameResolver.class)
     public List<Server> getServer();
 
+    /**
+     * Return the server with the given name, or null if no such server exists.
+     *
+     * @param   name    the name of the server
+     * @return          the Server object, or null if no such server
+     */
+    @DuckTyped
+    public Server getServer(String name);
 
-
+    class Duck {
+        public static Server getServer(Servers instance, String name) {
+            for (Server server : instance.getServer()) {
+                if (server.getName().equals(name)) {
+                    return server;
+                }
+            }
+            return null;
+        }
+    }
 }

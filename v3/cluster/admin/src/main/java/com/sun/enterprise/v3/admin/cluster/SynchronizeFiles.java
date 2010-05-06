@@ -40,6 +40,8 @@ import java.io.*;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import javax.xml.bind.*;
 
 import org.jvnet.hk2.annotations.Service;
@@ -54,8 +56,14 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.config.ApplicationName;
-import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.ServerRef;
+import com.sun.enterprise.config.serverbeans.Clusters;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.cluster.SyncRequest;
 import com.sun.enterprise.util.cluster.SyncRequest.ModTime;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -74,19 +82,41 @@ public class SynchronizeFiles implements AdminCommand {
     @Param(name = "file_list", primary = true)
     private File fileList;
 
+    @Param(name = "syncarchive", optional = true, defaultValue = "true")
+    private boolean syncArchive = true;
+
+    @Param(name = "allapps", optional = true, defaultValue = "true")
+    private boolean allApps = true;
+
     @Inject
     private ServerEnvironment env;
 
-    @Inject
+    @Inject(optional = true)
     private Applications applications;
 
+    @Inject(optional = true)
+    private Clusters clusters;
+
+    @Inject(optional = true)
+    private Servers servers;
+
     private URI domainRootUri;  // URI of the domain's root directory
+
+    private Logger logger;
+
+    /*
+    private static final boolean syncArchive = Boolean.parseBoolean(
+                        System.getProperty("copy.inplace.archive", "true"));
+    */
 
     private final static LocalStringManagerImpl strings =
         new LocalStringManagerImpl(SynchronizeFiles.class);
 
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+        logger = context.getLogger();
+System.out.println("SynchronizeFiles: logger " + logger.getName());
+logger.setLevel(Level.FINEST);
         domainRootUri = env.getDomainRoot().toURI();
         try {
             /*
@@ -105,20 +135,42 @@ public class SynchronizeFiles implements AdminCommand {
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             unmarshaller.setSchema(null);       // XXX - needed?
             SyncRequest sr = (SyncRequest)unmarshaller.unmarshal(fileList);
-System.out.println("synchronize dir " + sr.dir);
+            logger.finer("SynchronizeFiles: synchronize dir " + sr.dir);
+
+            // verify the server instance is valid
+            Server server = null;
+            if (servers != null)
+                server = servers.getServer(sr.instance);
+            if (server == null) {
+                // XXX - switch this once create-instance is working
+                /*
+                report.setActionExitCode(ExitCode.FAILURE);
+                report.setMessage("Unknown server instance: " + sr.instance); // XXX I18N
+                return;
+                */
+                logger.fine("SynchronizeFiles: instance unknown: " + sr.instance);
+                server = servers.getServer("server");
+            }
 
             // handle the request appropriately based on the directory
             if (sr.dir.equals("config"))
                 synchronizeConfig(context, sr);
             else if (sr.dir.equals("applications"))
-                synchronizeApplications(context, sr);
+                synchronizeApplications(context, server, sr);
+            /*
+            else if (sr.dir.equals("lib"))
+                ; // XXX
+            else if (sr.dir.equals("docroot"))
+                ; // XXX
+            */
             else {
                 report.setActionExitCode(ExitCode.FAILURE);
                 report.setMessage("Unknown directory: " + sr.dir); // XXX I18N
                 return;
             }
         } catch (JAXBException jex) {
-System.out.println(jex);
+            logger.fine("SynchronizeFiles: JAXBException reading request");
+            logger.fine(jex.toString());
             // ignore for now
         }
         report.setActionExitCode(ExitCode.SUCCESS);
@@ -148,7 +200,7 @@ System.out.println(jex);
      */
     private void synchronizeConfig(AdminCommandContext context,
                                     SyncRequest sr) {
-System.out.println("synchronize config");
+        logger.finer("SynchronizeFiles: synchronize config");
         // find the domain.xml entry
         ModTime domainXmlMT = null;
         for (ModTime mt : sr.files) {
@@ -163,7 +215,7 @@ System.out.println("synchronize config");
         File configDir = env.getConfigDirPath();
         Payload.Outbound outboundPayload = context.getOutboundPayload();
         if (!syncFile(configDir, domainXmlMT, outboundPayload)) {
-System.out.println("domain.xml HAS NOT CHANGED");
+            logger.finer("SynchronizeFiles: domain.xml HAS NOT CHANGED");
             return;
         }
 
@@ -210,7 +262,8 @@ System.out.println("domain.xml HAS NOT CHANGED");
                 files.add(line.trim());
             }
         } catch (IOException ex) {
-            // XXX - log error
+            logger.fine("SynchronizeFiles: IOException in getConfigFileNames");
+            logger.fine(ex.toString());
         } finally {
             try {
                 if (in != null)
@@ -229,13 +282,16 @@ System.out.println("domain.xml HAS NOT CHANGED");
         File f = new File(base, mt.name);
         if (mt.time != 0 && f.lastModified() == mt.time)
             return false;     // success, nothing to do
-System.out.println("file " + mt.name + " out of date, time " + f.lastModified());
+        if (logger.isLoggable(Level.FINEST))
+            logger.finest("SynchronizeFiles: file " + mt.name +
+                            " out of date, time " + f.lastModified());
         try {
             outboundPayload.attachFile("application/octet-stream",
                 domainRootUri.relativize(f.toURI()),
                 "configChange", f);
         } catch (IOException ioex) {
-System.out.println(ioex);
+            logger.fine("SynchronizeFiles: IOException attaching file: " + f);
+            logger.fine(ioex.toString());
         }
         return true;
     }
@@ -246,60 +302,90 @@ System.out.println(ioex);
     private void removeFile(File base, ModTime mt,
                             Payload.Outbound outboundPayload) {
         File f = new File(base, mt.name);
-System.out.println("file " + mt.name + " removed from client");
+        if (logger.isLoggable(Level.FINEST))
+            logger.finest("SynchronizeFiles: file " + mt.name +
+                            " removed from client");
         try {
             outboundPayload.requestFileRemoval(
                 domainRootUri.relativize(f.toURI()),
                 "configChange", null);
         } catch (IOException ioex) {
-System.out.println(ioex);
+            logger.fine("SynchronizeFiles: IOException removing file: " + f);
+            logger.fine(ioex.toString());
         }
     }
 
     /**
      * Synchronize all the applications in the applications directory.
-     * We use the mode time of the application directory to decide if
+     * We use the mod time of the application directory to decide if
      * the application has changed.  If it has changed, we also send
      * any of the generated content.
      */
     private void synchronizeApplications(AdminCommandContext context,
-                                    SyncRequest sr) {
-System.out.println("synchronize applications instance " + sr.instance);
-        Set<String> apps = getAppNames(sr.instance);
+                                    Server server, SyncRequest sr) {
+        logger.finer("SynchronizeFiles: synchronize application instance " +
+                                                                sr.instance);
+        Map<String, Application> apps = getApps(server);
         Payload.Outbound outboundPayload = context.getOutboundPayload();
         File appsDir = env.getApplicationRepositoryPath();
 
         for (ModTime mt : sr.files) {
-            if (apps.contains(mt.name)) {
+            if (apps.containsKey(mt.name)) {
+                syncApp(apps.get(mt.name), appsDir, mt, outboundPayload);
                 // if client has app, remove it from set
                 apps.remove(mt.name);
-                syncApp(appsDir, mt, outboundPayload);
             } else
-                removeApp(appsDir, mt, outboundPayload);
+                removeApp(apps.get(mt.name), appsDir, mt, outboundPayload);
         }
 
         // now do all the remaining apps the client doesn't have
-        for (String name : apps)
-            syncApp(appsDir, new ModTime(name, 0), outboundPayload);
+        for (Map.Entry<String, Application> e : apps.entrySet())
+            syncApp(e.getValue(), appsDir, new ModTime(e.getKey(), 0),
+                                                        outboundPayload);
     }
 
     /**
-     * Get the names of all the applications that should be
-     * available to the specified instance.
-     * XXX - handle instance
+     * Get the applications that should be
+     * available to the specified server instance.
      */
-    private Set<String> getAppNames(String instance) {
-        Set<String> apps = new HashSet<String>();
+    private Map<String, Application> getApps(Server server) {
+        if (allApps)
+            return getAllApps();
+
+        Map<String, Application> apps = new HashMap<String, Application>();
+        if (applications == null)
+            return apps;        // no apps
+
+        Cluster cluster = server.getCluster();
+        List<ApplicationRef> appRefs;
+        if (cluster != null)
+            appRefs = cluster.getApplicationRef();
+        else
+            appRefs = server.getApplicationRef();
+        for (ApplicationRef ref : appRefs)
+            apps.put(ref.getRef(), applications.getApplication(ref.getRef()));
+        return apps;
+    }
+
+    private Map<String, Application> getAllApps() {
+        Map<String, Application> apps = new HashMap<String, Application>();
+        if (applications == null)
+            return apps;        // no apps
 
         for (ApplicationName module : applications.getModules()) {
-System.out.println("found module " + module.getName());
+            logger.finest("SynchronizeFiles: found module " + module.getName());
             if (module instanceof Application) {
                 final Application app = (Application)module;
                 if (app.getObjectType().equals("user")) {
-System.out.println("found app " + app.getName());
-                    apps.add(app.getName());
-                }
-else System.out.println("found wrong app " + app.getName() + ", type " + app.getObjectType());
+                    logger.finest("SynchronizeFiles: got app " + app.getName());
+                    if (Boolean.parseBoolean(app.getDirectoryDeployed()))
+                        logger.finest("SynchronizeFiles: skipping directory " +
+                                        "deployed app: " + app.getName());
+                    else
+                        apps.put(app.getName(), app);
+                } else
+                    logger.finest("SynchronizeFiles: found wrong app " +
+                            app.getName() + ", type " + app.getObjectType());
             }
         }
         return apps;
@@ -311,20 +397,38 @@ else System.out.println("found wrong app " + app.getName() + ", type " + app.get
      * add the application files to the payload, including
      * the generated files.
      */
-    private boolean syncApp(File base, ModTime mt,
+    private boolean syncApp(Application app, File base, ModTime mt,
                             Payload.Outbound outboundPayload) {
-System.out.println("sync app " + mt.name);
-        File appDir = new File(base, mt.name);
-        if (mt.time != 0 && appDir.lastModified() == mt.time)
-            return false;     // success, nothing to do
-
-        /*
-         * Recursively attach the application directory and
-         * all the generated directories.  The client will
-         * remove the old versions before installing the new ones.
-         */
+        logger.finer("SynchronizeFiles: sync app " + mt.name);
         try {
-            attachDir(appDir, outboundPayload);
+            File appDir = new File(base, mt.name);
+            if (syncArchive) {
+                File archive = app.application();
+                logger.finest("SynchronizeFiles: check archive " + archive);
+                if (mt.time != 0 && archive.lastModified() == mt.time)
+                    return false;     // success, nothing to do
+
+                // attach the archive file
+                attachFile(archive, outboundPayload);
+                /*
+                 * Note that we don't need the deployment plan because
+                 * we're not going to actually deploy it on the server
+                 * instance, we're just going to unzip it.
+                 */
+            } else {
+                logger.finest("SynchronizeFiles: check app dir " + appDir);
+                if (mt.time != 0 && appDir.lastModified() == mt.time)
+                    return false;     // success, nothing to do
+
+                /*
+                 * Recursively attach the application directory and
+                 * all the generated directories.  The client will
+                 * remove the old versions before installing the new ones.
+                 */
+                attachDir(appDir, outboundPayload);
+            }
+
+            // in either case, we attach the generated artifacts
             File gdir;
             gdir = env.getApplicationCompileJspPath();
             attachDir(new File(gdir, mt.name), outboundPayload);
@@ -335,7 +439,8 @@ System.out.println("sync app " + mt.name);
             gdir = new File(env.getApplicationStubPath(), "policy");
             attachDir(new File(gdir, mt.name), outboundPayload);
         } catch (IOException ioex) {
-            // XXX - log it
+            logger.fine("SynchronizeFiles: IOException syncing app " + mt.name);
+            logger.fine(ioex.toString());
         }
         return true;
     }
@@ -346,7 +451,12 @@ System.out.println("sync app " + mt.name);
      */
     private void attachFile(File file, Payload.Outbound outboundPayload)
                                 throws IOException {
-System.out.println("attach file " + domainRootUri.relativize(file.toURI()));
+        if (logger.isLoggable(Level.FINER)) {
+            logger.finer("SynchronizeFiles: domainRootUri " + domainRootUri);
+            logger.finer("SynchronizeFiles: file.toURI() " + file.toURI());
+            logger.finer("SynchronizeFiles: attach file " +
+                            domainRootUri.relativize(file.toURI()));
+        }
         if (file.isDirectory()) {
             outboundPayload.requestFileReplacement("application/octet-stream",
                 domainRootUri.relativize(file.toURI()),
@@ -363,7 +473,9 @@ System.out.println("attach file " + domainRootUri.relativize(file.toURI()));
      */
     private void attachDir(File file, Payload.Outbound outboundPayload)
                                 throws IOException {
-System.out.println("attach directory " + domainRootUri.relativize(file.toURI()));
+        if (logger.isLoggable(Level.FINER))
+            logger.finer("SynchronizeFiles: attach directory " +
+                            domainRootUri.relativize(file.toURI()));
         outboundPayload.requestFileReplacement("application/octet-stream",
             domainRootUri.relativize(file.toURI()),
             "configChange", null, file, true);
@@ -373,9 +485,9 @@ System.out.println("attach directory " + domainRootUri.relativize(file.toURI()))
      * Send requests to the client to remove the specified app directory
      * and all the generated directories.
      */
-    private void removeApp(File base, ModTime mt,
+    private void removeApp(Application app, File base, ModTime mt,
                             Payload.Outbound outboundPayload) {
-System.out.println("remove app " + mt.name);
+        logger.finer("SynchronizeFiles: remove app " + mt.name);
         try {
             File dir = new File(base, mt.name);
             removeDir(dir, outboundPayload);
@@ -388,7 +500,9 @@ System.out.println("remove app " + mt.name);
             dir = new File(env.getApplicationStubPath(), "policy");
             removeDir(new File(dir, mt.name), outboundPayload);
         } catch (IOException ioex) {
-System.out.println(ioex);
+            logger.fine("SynchronizeFiles: IOException removing app " +
+                                                                    mt.name);
+            logger.fine(ioex.toString());
         }
     }
 

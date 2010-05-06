@@ -72,6 +72,13 @@ public class ApplicationsTest extends ConfigApiTest {
         assertTrue(modules!=null);
     }
 
+    @Test
+    public void getApplicationTest() {
+        Applications apps = getHabitat().getComponent(Applications.class);
+        Application app = apps.getApplication("simple");
+        assertTrue(app != null);
+    }
+
     /**
      * Test which is expecting an UnsupportedOperationException since we are
      * operating on a copy list of the original getModules() list.

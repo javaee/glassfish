@@ -38,6 +38,8 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
+import java.util.zip.*;
 import javax.xml.bind.*;
 
 import org.jvnet.hk2.annotations.*;
@@ -48,6 +50,7 @@ import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.cluster.SyncRequest;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -59,6 +62,12 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
+
+    @Param(name = "syncarchive", optional = true, defaultValue = "true")
+    private boolean syncArchive = true;
+
+    @Param(name = "allapps", optional = true, defaultValue = "true")
+    private boolean allApps = true;
 
     private RemoteCommand syncCmd;
 
@@ -115,7 +124,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          * If not, we're all done.
          */
         if (domainXml.lastModified() == dtime) {
-            logger.printDebugMessage("Nothing to update");
+            logger.printDetailMessage("Instance is already synchronized");
             return true;
         }
 
@@ -124,6 +133,29 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          */
         sr = getModTimes("applications");
         synchronizeFiles(sr);
+
+        /*
+         * Did we get any archive files?  If so,
+         * have to unzip them in the applications
+         * directory.
+         */
+        File appsDir = new File(instanceDir, "applications");
+        File archiveDir = new File(appsDir, "__internal");
+        for (File adir : FileUtils.listFiles(archiveDir)) {
+            File[] af = FileUtils.listFiles(adir);
+            if (af.length != 1) {
+System.out.println("IGNORING " + adir + ", # files " + af.length);
+                continue;
+            }
+            File archive = af[0];
+            File appDir = new File(appsDir, adir.getName());
+System.out.println("UNZIP " + archive + " TO " + appDir);
+            try {
+                expand(appDir, archive);
+            } catch (Exception ex) { }
+        }
+
+        FileUtils.whack(archiveDir);
 
         return true;
     }
@@ -165,14 +197,18 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
             marshaller.marshal(sr, tempFile);
-            marshaller.marshal(sr, System.out);
+            if (logger.isLoggable(Level.FINER))
+                marshaller.marshal(sr, System.out);
 
             File syncdir = new File(instanceDir, sr.dir);
             logger.printDebugMessage("Sync directory: " + syncdir);
             if (!syncdir.exists())
                 syncdir.mkdir();
             // _synchronize-files takes a single operand of type File
-            syncCmd.execute("_synchronize-files", tempFile.getPath());
+            syncCmd.execute("_synchronize-files",
+                "--syncarchive", Boolean.toString(syncArchive),
+                "--allapps", Boolean.toString(allApps),
+                tempFile.getPath());
 
             // the returned files are automatically saved by the command
         } catch (IOException ioex) {
@@ -183,5 +219,28 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             if (tempFile != null)
                 tempFile.delete();
         }
+    }
+
+    /**
+     * Expand the archive to the specified directory.
+     * XXX - this doesn't handle all the cases required for a Java EE app,
+     * but it's good enough for now for some performance testing
+     */
+    private static void expand(File dir, File archive) throws Exception {
+        dir.mkdir();
+        long modtime = archive.lastModified();
+        ZipFile zf = new ZipFile(archive);
+        Enumeration<? extends ZipEntry> e = zf.entries();
+        while (e.hasMoreElements()) {
+            ZipEntry ze = e.nextElement();
+            File entry = new File(dir, ze.getName());
+            if (ze.isDirectory()) {
+                entry.mkdir();
+            } else {
+                FileUtils.copy(zf.getInputStream(ze),
+                                new FileOutputStream(entry), 0);
+            }
+        }
+        dir.setLastModified(modtime);
     }
 }
