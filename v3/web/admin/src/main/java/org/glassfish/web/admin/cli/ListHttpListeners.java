@@ -36,19 +36,20 @@
 
 package org.glassfish.web.admin.cli;
 
+import java.util.List;
+
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-
-import java.util.List;
 
 /**
  * List http listeners command
@@ -59,8 +60,9 @@ import java.util.List;
 public class ListHttpListeners implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListHttpListeners.class);
-    @Inject
-    NetworkConfig httpService;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     /**
      * Executes the command with the command parameters passed as Properties
@@ -71,8 +73,7 @@ public class ListHttpListeners implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        List<NetworkListener> list = httpService.getNetworkListeners()
-            .getNetworkListener();
+        List<NetworkListener> list = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
         for (NetworkListener listener : list) {
             if (listener.findHttpProtocol().getHttp() != null) {
                 report.getTopMessagePart()

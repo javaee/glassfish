@@ -36,30 +36,28 @@
 
 package org.glassfish.web.admin.cli;
 
-import com.sun.enterprise.config.serverbeans.Configs;
+import java.util.List;
+
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.Protocol;
-
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.grizzly.config.dom.Protocols;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
-import java.util.List;
 
 /**
  * Delete Protocol command
@@ -78,8 +76,8 @@ public class DeleteProtocol implements AdminCommand {
 
     Protocol protocol = null;
     
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject
     Habitat habitat;
@@ -93,8 +91,6 @@ public class DeleteProtocol implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         Protocols protocols = networkConfig.getProtocols();
 
@@ -125,8 +121,7 @@ public class DeleteProtocol implements AdminCommand {
             }
 
             ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-                public Object run(Protocols param)
-                throws PropertyVetoException, TransactionFailure {
+                public Object run(Protocols param) {
                     param.getProtocol().remove(protocol);
                     return protocol;
                 }

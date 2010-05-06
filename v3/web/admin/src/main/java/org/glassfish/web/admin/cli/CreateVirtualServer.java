@@ -35,74 +35,59 @@
  */
 package org.glassfish.web.admin.cli;
 
-import java.util.List;
-import java.util.Properties;
+import java.beans.PropertyVetoException;
 import java.util.Map;
+import java.util.Properties;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
-
 /**
  * Command to create virtual server
- * 
  */
-@Service(name="create-virtual-server")
+@Service(name = "create-virtual-server")
 @Scoped(PerLookup.class)
 @I18n("create.virtual.server")
 public class CreateVirtualServer implements AdminCommand {
-    
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateVirtualServer.class);
-
-    @Param(name="hosts")
+    @Param(name = "hosts")
     String hosts;
-             
-    @Param(name="httplisteners", optional=true)
+    @Param(name = "httplisteners", optional = true)
     String httpListeners;
-
-    @Param(name="networklisteners", optional=true)
+    @Param(name = "networklisteners", optional = true)
     String networkListeners;
-
-    @Param(name="defaultwebmodule", optional=true)
+    @Param(name = "defaultwebmodule", optional = true)
     String defaultWebModule;
-
-    @Param(name="state", acceptableValues="on, off", optional=true)
+    @Param(name = "state", acceptableValues = "on, off", optional = true)
     String state;
-
-    @Param(name="logfile", optional=true)
+    @Param(name = "logfile", optional = true)
     String logFile;
-
-    @Param(name="property", optional=true, separator=':')
+    @Param(name = "property", optional = true, separator = ':')
     Properties properties;
-
-    @Param(name="virtual_server_id", primary=true)
+    @Param(name = "virtual_server_id", primary = true)
     String virtualServerId;
-    
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
@@ -114,31 +99,23 @@ public class CreateVirtualServer implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-
         //use the listener parameter provided by the user.
-        networkListeners = (networkListeners != null) ? networkListeners : httpListeners;
-
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
+        networkListeners = networkListeners != null ? networkListeners : httpListeners;
         HttpService httpService = config.getHttpService();
-        
         // ensure we don't already have one of this name
-        for (VirtualServer virtualServer: httpService.getVirtualServer()) {
+        for (VirtualServer virtualServer : httpService.getVirtualServer()) {
             if (virtualServer.getId().equals(virtualServerId)) {
                 report.setMessage(localStrings.getLocalString("create.virtual.server.duplicate",
-                        "Virtual Server named {0} already exists.", virtualServerId));
+                    "Virtual Server named {0} already exists.", virtualServerId));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;                    
+                return;
             }
         }
-        
         try {
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
-
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
                     boolean docrootAdded = false;
                     boolean accessLogAdded = false;
-                    
                     VirtualServer newVirtualServer = param.createChild(VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
@@ -146,7 +123,6 @@ public class CreateVirtualServer implements AdminCommand {
                     newVirtualServer.setDefaultWebModule(defaultWebModule);
                     newVirtualServer.setState(state);
                     newVirtualServer.setLogFile(logFile);
-
                     // 1. add properties
                     // 2. check if the access-log and docroot properties have
                     //    been specified. We need to add those with default 
@@ -154,14 +130,16 @@ public class CreateVirtualServer implements AdminCommand {
                     if (properties != null) {
                         for (Map.Entry entry : properties.entrySet()) {
                             Property property = newVirtualServer.createChild(Property.class);
-                            String pn = (String)entry.getKey();
+                            String pn = (String) entry.getKey();
                             property.setName(pn);
-                            property.setValue((String)entry.getValue());
+                            property.setValue((String) entry.getValue());
                             newVirtualServer.getProperty().add(property);
-                            if ("docroot".equals(pn))
+                            if ("docroot".equals(pn)) {
                                 docrootAdded = true;
-                            if ("accesslog".equals(pn))
+                            }
+                            if ("accesslog".equals(pn)) {
                                 accessLogAdded = true;
+                            }
                         }
                     }
                     if (!docrootAdded) {
@@ -170,21 +148,20 @@ public class CreateVirtualServer implements AdminCommand {
                         drp.setValue("${com.sun.aas.instanceRoot}/docroot");
                         newVirtualServer.getProperty().add(drp);
                     }
-                    
                     if (!accessLogAdded) {
                         Property alp = newVirtualServer.createChild(Property.class);
                         alp.setName("accesslog");
                         alp.setValue("${com.sun.aas.instanceRoot}/logs/access");
                         newVirtualServer.getProperty().add(alp);
                     }
-                    
                     param.getVirtualServer().add(newVirtualServer);
                     return newVirtualServer;
                 }
             }, httpService);
 
-        } catch(TransactionFailure e) {
-            report.setMessage(localStrings.getLocalString("create.virutal.server.fail", "{0} create failed ", virtualServerId));
+        } catch (TransactionFailure e) {
+            report.setMessage(
+                localStrings.getLocalString("create.virutal.server.fail", "{0} create failed ", virtualServerId));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
         }
