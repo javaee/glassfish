@@ -146,6 +146,11 @@
     <sequential>
         <java classname="@{classname}" classpath="@{classpath}" fork="true">
             <jvmarg value="-Das.props=${as.props}"/>
+            <jvmarg value="-Dadmin.user=${admin.user}"/>
+            <jvmarg value="-Dadmin.port=${admin.port}"/>
+            <jvmarg value="-Dhttp.port=${http.port}"/>
+            <jvmarg value="-Dhttps.port=${https.port}"/>
+            <jvmarg value="-Dhttp.host=${http.host}"/>
         </java>
     </sequential>
 </macrodef>

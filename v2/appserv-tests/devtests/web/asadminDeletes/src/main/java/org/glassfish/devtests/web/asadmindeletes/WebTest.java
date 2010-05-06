@@ -61,12 +61,13 @@ public class WebTest extends BaseDevTest {
     }
 
     public void run() {
+        final String port = "" + (Integer.valueOf(antProp("http.port")) + 20);
         report("create-threadpool", asadmin("create-threadpool", name));
         report("create-transport", asadmin("create-transport", name));
         report("create-protocol", asadmin("create-protocol", name));
         report("create-http", asadmin("create-http", "--default-virtual-server", "server", name));
         report("create-network-listener", asadmin("create-network-listener",
-            "--listenerport", "10000",
+            "--listenerport", port,
             "--protocol", name,
             "--threadpool", name,
             "--transport", name,

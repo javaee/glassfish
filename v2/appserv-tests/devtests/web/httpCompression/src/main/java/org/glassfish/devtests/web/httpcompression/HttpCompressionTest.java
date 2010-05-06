@@ -36,7 +36,6 @@
 package org.glassfish.devtests.web.httpcompression;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,13 +64,14 @@ public class HttpCompressionTest extends BaseDevTest {
             final String[] schemes = {"gzip"/*, "lzma"*/};
             for (String scheme : schemes) {
                 String header = scheme + "-";
-                get("localhost", 8080, "", false, "compressed-output-off", scheme);
+                final int port = Integer.valueOf(antProp("http.port"));
+                get("localhost", port, false, "compressed-output-off", scheme);
                 report(header + "set-compression-on", asadmin("set",
                     "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=on"));
-                get("localhost", 8080, "", true, "compressed-output-on", scheme);
+                get("localhost", port, true, "compressed-output-on", scheme);
                 report(header + "set-compression-force", asadmin("set",
                     "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=force"));
-                get("localhost", 8080, "", true, "compressed-output-force", scheme);
+                get("localhost", port, true, "compressed-output-force", scheme);
                 report(header + "set-compression-false", !asadmin("set",
                     "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.compression=false"));
                 report(header + "set-compression-true", !asadmin("set",
@@ -88,7 +88,7 @@ public class HttpCompressionTest extends BaseDevTest {
         }
     }
 
-    private void get(String host, int port, String result, boolean zipped, final String test, final String compScheme)
+    private void get(String host, int port, boolean zipped, final String test, final String compScheme)
         throws Exception {
         Socket s = new Socket(host, port);
         OutputStream os = s.getOutputStream();
@@ -100,8 +100,7 @@ public class HttpCompressionTest extends BaseDevTest {
         send(os, "\n");
         InputStream is = s.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-        String line = null;
-        int tripCount = 0;
+        String line;
         boolean found = false;
         try {
             while ((line = bis.readLine()) != null && !"".equals(line.trim())) {
@@ -123,8 +122,12 @@ public class HttpCompressionTest extends BaseDevTest {
         os.write((text + "\n").getBytes());
     }
 
-    public static void main(String[] args) throws FileNotFoundException {
-        new HttpCompressionTest().run();
+    public static void main(String[] args) {
+        try {
+            new HttpCompressionTest().run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
