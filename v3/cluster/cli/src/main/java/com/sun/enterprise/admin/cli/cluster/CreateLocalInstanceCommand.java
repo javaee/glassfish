@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -199,22 +200,44 @@ public final class CreateLocalInstanceCommand extends CLICommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
         
-            int exitCode = 1;
-
             if (!this.filesystemOnly) {
-                registerToDAS();
+               registerToDAS();
             }
-            exitCode = createDirectories()? 0 : 1;
 
-            return exitCode;        
+            return createDirectories();
     }
 
-    private void registerToDAS() {
-        //TODO
+    private int registerToDAS() throws CommandException {
+        ArrayList<String> argsList = new ArrayList<String>();
+        argsList.add(0, "create-instance");
+        if (clusterName != null) {
+            argsList.add("--cluster");
+            argsList.add(clusterName);
+        }
+        if (configName != null) {
+            argsList.add("--config");
+            argsList.add(configName);
+        }
+        if (nodeAgent != null) {
+            argsList.add("--nodeagent");
+            argsList.add(nodeAgent);
+        }
+        if (systemProperties != null) {
+            argsList.add("--systemproperties");
+            argsList.add(systemProperties);
+        }
+        argsList.add(this.instanceName);
+
+        String[] argsArray = new String[argsList.size()];
+        argsArray = argsList.toArray(argsArray);
+
+        Environment currEnv = new Environment();
+        ProgramOptions po = new ProgramOptions(currEnv);
+        RemoteCommand rc = new RemoteCommand("create-instance", po, currEnv);
+        return rc.execute(argsArray);
     }
 
-    private boolean createDirectories() throws CommandException {
-        boolean createDirsSuccess = true;
+    private int createDirectories() throws CommandException {
         boolean createDirsComplete = false;
         File badfile = null;
         while (badfile == null && !createDirsComplete) {
@@ -275,9 +298,8 @@ public final class CreateLocalInstanceCommand extends CLICommand {
             createDirsComplete = true;
         }
         if (badfile != null) {
-            createDirsSuccess = false;
             throw new CommandException(strings.get("Instance.cannotMkDir", badfile));
         }
-        return createDirsSuccess;
+        return SUCCESS;
     }
 }
