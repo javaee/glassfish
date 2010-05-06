@@ -35,11 +35,11 @@
  holder.
 -->
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-<!ENTITY run SYSTEM "./../../../config/run.xml">
-<!ENTITY testproperties SYSTEM "./build.properties">
-]>
+        <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+        <!ENTITY run SYSTEM "./../../../config/run.xml">
+        <!ENTITY testproperties SYSTEM "./build.properties">
+        ]>
 
 <project name="webcontainer_unittest" default="all" basedir=".">
 
@@ -48,45 +48,46 @@
     &testproperties;
     &run;
 
+    <path id="class.path">
+        <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
+        <pathelement location="build"/>
+        <fileset dir="${env.S1AS_HOME}/modules"/>
+    </path>
+    <pathconvert refid="class.path" property="test"/>
+
     <target name="all" depends="build,run"/>
 
     <target name="clean" depends="init-common">
-      <antcall target="clean-common"/>
+        <antcall target="clean-common"/>
+        <delete dir="build" quiet="true"/>
     </target>
-       
+
     <target name="compile" depends="clean">
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
         </antcall>
     </target>
     <target name="build" depends="compile">
-        <copy file="docroot/test.xyz" 
+        <copy file="docroot/test.xyz"
               todir="${env.S1AS_HOME}/domains/domain1/docroot"/>
-    </target> 
-    
-    <target name="build-publish-war" depends="build, publish-war-common" />
+    </target>
+
+    <target name="build-publish-war" depends="build, publish-war-common"/>
 
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-common"/>
     </target>
-    
+
     <target name="run" depends="init-common">
-        <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
+        <mkdir dir="build"/>
+        <javac srcdir="." destdir="build" classpath="${env.APS_HOME}/lib/reportbuilder.jar"
                includes="WebTest.java"/>
-        <java classname="WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="${contextroot}"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="."/>
-         </classpath>
-        </java>
+        <run-test classname="WebTest" classpath="${test}"/>
     </target>
- 
+
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
-    </target>   
+    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>

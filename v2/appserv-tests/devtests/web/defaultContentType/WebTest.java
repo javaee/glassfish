@@ -33,66 +33,68 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.io.*;
-import java.net.*;
-import com.sun.ejte.ccl.reporter.*;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import com.sun.appserv.test.BaseDevTest;
 
 /*
  * Unit test for 6328909
  */
-public class WebTest {
-
-    private static SimpleReporterAdapter stat =
-        new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "default-content-type";
-    private static final String EXPECTED_CONTENT_TYPE =
-        "text/plain;charset=iso-8859-1";
-
+public class WebTest extends BaseDevTest {
+    private static final String EXPECTED_CONTENT_TYPE = "text/plain;charset=iso-8859-1";
     private String host;
-    private String port;
-    private String contextRoot;
+    private int port;
 
-    public WebTest(String[] args) {
-        host = args[0];
-        port = args[1];
-        contextRoot = args[2];
+    public WebTest() {
+        host = antProp("http.host");
+        port = Integer.valueOf(antProp("http.port"));
     }
-    
+
     public static void main(String[] args) {
-        stat.addDescription("defaultContentType");
-        new WebTest(args).doTest();
-        stat.printSummary(TEST_NAME);
+        new WebTest().doTest();
     }
 
-    public void doTest() {     
-        try { 
-            invoke();
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } catch (Exception ex) {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-            ex.printStackTrace();
+    public void doTest() {
+        try {
+            invoke(null);
+            report("no-content-type", invoke(null));
+            report("set-content-type-value", asadmin("set",
+                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http."
+                    + "default-response-type=" + EXPECTED_CONTENT_TYPE));
+            report("default-response-type", invoke(EXPECTED_CONTENT_TYPE));
+            report("set-content-type-value", asadmin("set",
+                "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http."
+                    + "default-response-type="));
+            report("no-content-type-again", invoke(null));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            stat.printSummary();
         }
     }
 
-    private void invoke() throws Exception {
-         
-        URL url = new URL("http://" + host  + ":" + port + "/test.xyz");
+    private boolean invoke(final String expected) throws Exception {
+        URL url = new URL("http://" + host + ":" + port + "/test.xyz");
         System.out.println("Connecting to: " + url.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.connect();
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
-            throw new Exception("Wrong response code. Expected: 200" +
-                                ", received: " + responseCode);
+            throw new Exception("Wrong response code. Expected: 200, received: " + responseCode);
         }
-
         String contentType = conn.getHeaderField("Content-Type");
-        if (contentType == null ||
-                // trim space after ; before comparison
-                !(contentType.replace("; ", ";").equals(EXPECTED_CONTENT_TYPE))) {
-            throw new Exception("Missing or wrong response Content-Type. " +
-                                "Expected: " + EXPECTED_CONTENT_TYPE +
-                                ", received: " + contentType);
-        }
+        return expected == null ? contentType == null : contentType.equals(expected);
+    }
+
+    @Override
+    protected String getTestName() {
+        return "default-content-type";
+    }
+
+    @Override
+    protected String getTestDescription() {
+        return "Tests that the default content type can be set correctly";
     }
 }

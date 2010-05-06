@@ -1,6 +1,8 @@
 package com.sun.appserv.test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +10,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
@@ -49,7 +52,6 @@ public abstract class BaseDevTest {
         command.add(System.getenv().get("S1AS_HOME") + "/bin/asadmin");
         command.addAll(Arrays.asList(antProp("as.props").split(" ")));
         command.addAll(Arrays.asList(args));
-
         ProcessBuilder builder = new ProcessBuilder(command);
         Process process = null;
         boolean success = false;
@@ -91,7 +93,24 @@ public abstract class BaseDevTest {
     }
 
     public String antProp(final String key) {
-        return System.getProperty(key);
+        String value = System.getProperty(key);
+        if (value == null) {
+            try {
+                Properties props = new Properties();
+                String apsHome = System.getenv("APS_HOME");
+                FileReader reader = new FileReader(new File(apsHome, "config.properties"));
+                try {
+                    props.load(reader);
+                } finally {
+                    reader.close();
+                }
+                value = props.getProperty(key);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
+        return value;
     }
 
     public void write(final String out) {
