@@ -82,8 +82,8 @@ public class SynchronizeFiles implements AdminCommand {
     @Param(name = "file_list", primary = true)
     private File fileList;
 
-    @Param(name = "syncarchive", optional = true, defaultValue = "true")
-    private boolean syncArchive = true;
+    @Param(name = "syncarchive", optional = true)
+    private boolean syncArchive;
 
     @Param(name = "allapps", optional = true, defaultValue = "true")
     private boolean allApps = true;

@@ -63,8 +63,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
 
-    @Param(name = "syncarchive", optional = true, defaultValue = "true")
-    private boolean syncArchive = true;
+    @Param(name = "syncarchive", optional = true)
+    private boolean syncArchive;
 
     @Param(name = "allapps", optional = true, defaultValue = "true")
     private boolean allApps = true;
