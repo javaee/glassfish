@@ -418,6 +418,7 @@ public final class JDBCRealm extends DigestRealmBase {
                             valid = false;
                             break;
                         }
+                        valid = true;
                     }
                 } else {
                     valid = Arrays.equals(passwd, hpwd);
