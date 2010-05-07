@@ -57,7 +57,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -100,8 +99,8 @@ public class CreateHttpListener implements AdminCommand {
     Boolean secure; //FIXME
     @Param(name = "listener_id", primary = true)
     String listenerId;
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config config;
+    @Inject
+    Configs configs;
     @Inject
     Habitat habitat;
     @Inject
@@ -118,6 +117,8 @@ public class CreateHttpListener implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
+        List<Config> configList = configs.getConfig();
+        Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         HttpService httpService = config.getHttpService();
         if (!(verifyUniqueName(report, networkConfig) && verifyUniquePort(report, networkConfig)
@@ -242,7 +243,7 @@ public class CreateHttpListener implements AdminCommand {
                 listener.getAddress().trim().equals(listenerAddress)) {
                 String def = "Port is already taken by another listener, choose another port.";
                 String msg = localStrings
-                    .getLocalString("port.in.use", def, listenerPort, listener.getName(), listenerAddress);
+                    .getLocalString("port.occupied", def, listenerPort, listener.getName(), listenerAddress);
                 report.setMessage(msg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return false;

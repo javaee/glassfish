@@ -60,7 +60,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -213,8 +212,14 @@ public class GrizzlyProxy implements NetworkProxy {
         }
     }
 
+
     static ArrayList<String> toArray(String list, String token){
-        return new ArrayList<String>(Arrays.asList(list.split(token)));
+        String[] s = list.split(token);
+        ArrayList<String> a = new ArrayList<String>();
+        for(String h:s){
+            a.add(h);
+        }
+        return a;
     }
 
     /**

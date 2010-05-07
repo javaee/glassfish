@@ -36,8 +36,10 @@
 package org.glassfish.web.admin.cli;
 
 import java.beans.PropertyVetoException;
+import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -47,7 +49,6 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -70,8 +71,8 @@ public class DeleteNetworkListener implements AdminCommand {
     @Param(name = "networkListenerName", primary = true)
     String networkListenerName;
     NetworkListener listenerToBeRemoved = null;
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config config;
+    @Inject
+    Configs configs;
     @Inject
     Habitat habitat;
 
@@ -83,7 +84,8 @@ public class DeleteNetworkListener implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        NetworkListeners networkListeners = config.getNetworkConfig().getNetworkListeners();
+        List<Config> configList = configs.getConfig();
+        NetworkListeners networkListeners = configList.get(0).getNetworkConfig().getNetworkListeners();
         try {
             if (findListener(report)) {
                 final VirtualServer virtualServer = habitat.getComponent(VirtualServer.class,

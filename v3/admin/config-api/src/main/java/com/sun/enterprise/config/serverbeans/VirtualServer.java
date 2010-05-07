@@ -33,32 +33,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.config.serverbeans;
 
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.admin.RestRedirect;
-import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.config.support.datatypes.PositiveInteger;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Injectable;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.config.types.PropertyBag;
+import org.jvnet.hk2.config.DuckTyped;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+import com.sun.grizzly.config.dom.NetworkListener;
 
 /**
  * Configuration of Virtual Server
@@ -177,7 +179,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "on")
-    @Pattern(regexp = "(on|off|disabled)")
+    @Pattern(regexp="(on|off|disabled)")
     String getState();
 
     /**
@@ -226,7 +228,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "inherit")
-    @Pattern(regexp = "(true|on|false|off|inherit)")
+    @Pattern(regexp="(true|on|false|off|inherit)")
     String getSsoEnabled();
 
     /**
@@ -242,7 +244,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
      * @return possible object is {@link String }
      */
     @Attribute(defaultValue = "inherit")
-    @Pattern(regexp = "(true|on|false|off|inherit)")
+    @Pattern(regexp="(true|on|false|off|inherit)")
     String getAccessLoggingEnabled();
 
     /**
@@ -288,11 +290,11 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     /**
      * Gets the Secure attribute of any JSESSIONIDSSO cookies associated with the web applications deployed to this
      * virtual server. Applicable only if the sso-enabled property is set to true. To set the Secure attribute of a
-     * JSESSIONID cookie, use the cookieSecure cookie-properties property in the sun-web.xml file. Valid values: "true",
-     * "false", "dynamic"
+     * JSESSIONID cookie, use the cookieSecure cookie-properties property in the sun-web.xml file. Valid values:
+     * "true", "false", "dynamic"
      */
     @Attribute(defaultValue = "dynamic")
-    @Pattern(regexp = "(true|false|dynamic)")
+    @Pattern(regexp="(true|false|dynamic)")
     String getSsoCookieSecure();
 
     void setSsoCookieSecure(String value);
@@ -304,10 +306,10 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
     void removeNetworkListener(String name) throws PropertyVetoException;
 
     @DuckTyped
-    NetworkListener findNetworkListener(String name);
+    NetworkListener findNetworkListener(Habitat habitat, String name) throws PropertyVetoException;
 
     @DuckTyped
-    List<NetworkListener> findNetworkListeners();
+    List<NetworkListener> findNetworkListeners(Habitat habitat) throws PropertyVetoException;
 
     class Duck {
         public static void addNetworkListener(VirtualServer server, String name) throws PropertyVetoException {
@@ -317,39 +319,35 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
                 set.add(string.trim());
             }
             set.add(name);
+
             server.setNetworkListeners(ConfigBeansUtilities.join(set, ","));
         }
-
+        
         public static void removeNetworkListener(VirtualServer server, String name) throws PropertyVetoException {
             final String[] strings = server.getNetworkListeners().split(",");
-            final Set<String> set = new TreeSet<String>();
+            final Set<String> set = new TreeSet();
             for (String string : strings) {
                 set.add(string.trim());
             }
             set.remove(name);
+
             server.setNetworkListeners(ConfigBeansUtilities.join(set, ","));
         }
 
-        public static NetworkListener findNetworkListener(VirtualServer server, String name) {
-            if (server.getNetworkListeners().contains("name")) {
-                final NetworkConfig config = server.getParent().getParent(Config.class).getNetworkConfig();
-                return config.getNetworkListener(name);
-            } else {
-                return null;
-            }
+        public static NetworkListener findNetworkListener(VirtualServer server, Habitat habitat, String name) throws PropertyVetoException {
+            return server.getNetworkListeners().contains("name") ? habitat.getComponent(NetworkListener.class, name) : null;
         }
 
-        public static List<NetworkListener> findNetworkListeners(VirtualServer server) {
+        public static List<NetworkListener> findNetworkListeners(VirtualServer server, Habitat habitat) throws PropertyVetoException {
             final String[] strings = server.getNetworkListeners().split(",");
-            final NetworkConfig config = server.getParent().getParent(Config.class).getNetworkConfig();
             List<NetworkListener> list = new ArrayList<NetworkListener>();
             for (String name : strings) {
-                list.add(config.getNetworkListener(name));
+                list.add(habitat.getComponent(NetworkListener.class, name));
             }
             return list;
         }
     }
-
+    
     /**
      * Properties.
      */
@@ -363,9 +361,8 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
             @PropertyDesc(name = "sso-reap-interval-seconds", defaultValue = "60", dataType = PositiveInteger.class,
                 description = "Interval between purges of expired single sign-on records"),
             @PropertyDesc(name = "setCacheControl",
-                description =
-                    "Comma-separated list of Cache-Control response directives. For a list of valid directives, "
-                        + "see section 14.9 of the document at http://www.ietf.org/rfc/rfc2616.txt"),
+                description = "Comma-separated list of Cache-Control response directives. For a list of valid directives, "
+                    + "see section 14.9 of the document at http://www.ietf.org/rfc/rfc2616.txt"),
             @PropertyDesc(name = "accessLoggingEnabled", defaultValue = "false", dataType = Boolean.class,
                 description = "Enables access logging for this virtual server only"),
             @PropertyDesc(name = "accessLogBufferSize", defaultValue = "32768", dataType = PositiveInteger.class,
@@ -378,10 +375,9 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
                     + "it is not full. This means that each time the server is accessed, the log message is stored directly to the file. "
                     + "To set this property for all virtual servers, set it as a property of the parent http-service"),
             @PropertyDesc(name = "allowRemoteAddress",
-                description =
-                    "Comma-separated list of regular expression patterns that the remote client's IP address is "
-                        + "compared to. If this property is specified, the remote address must match for this request to be accepted. "
-                        + "If this property is not specified, all requests are accepted unless the remote address matches a 'denyRemoteAddress' pattern"),
+                description = "Comma-separated list of regular expression patterns that the remote client's IP address is "
+                    + "compared to. If this property is specified, the remote address must match for this request to be accepted. "
+                    + "If this property is not specified, all requests are accepted unless the remote address matches a 'denyRemoteAddress' pattern"),
             @PropertyDesc(name = "denyRemoteAddress",
                 description = "Comma-separated list of regular expression patterns that the remote client's "
                     + "IP address is compared to. If this property is specified, the remote address must not "
@@ -393,24 +389,21 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
                     + "If this property is specified, the remote hostname must match for the request to be accepted. "
                     + "If this property is not specified, all requests are accepted unless the remote hostname matches a 'denyRemoteHost' pattern"),
             @PropertyDesc(name = "denyRemoteHost",
-                description =
-                    "Specifies a comma-separated list of regular expression patterns that the remote client's "
-                        + "hostname (as returned by java.net.Socket.getInetAddress().getHostName()) is compared to. "
-                        + "If this property is specified, the remote hostname must not match for this request to be accepted. "
-                        + "If this property is not specified, request acceptance is governed solely by the 'allowRemoteHost' property"),
+                description = "Specifies a comma-separated list of regular expression patterns that the remote client's "
+                    + "hostname (as returned by java.net.Socket.getInetAddress().getHostName()) is compared to. "
+                    + "If this property is specified, the remote hostname must not match for this request to be accepted. "
+                    + "If this property is not specified, request acceptance is governed solely by the 'allowRemoteHost' property"),
             @PropertyDesc(name = "authRealm",
                 description = "Specifies the name attribute of an â€œauth-realmâ€? on page 23 element, which overrides "
                     + "the server instance's default realm for stand-alone web applications deployed to this virtual server. "
                     + "A realm defined in a stand-alone web application's web.xml file overrides the virtual server's realm"),
             @PropertyDesc(name = "securePagesWithPragma", defaultValue = "true", dataType = Boolean.class,
-                description =
-                    "Set this property to false to ensure that for all web applications on this virtual server "
+                description = "Set this property to false to ensure that for all web applications on this virtual server "
                         + "file downloads using SSL work properly in Internet Explorer. You can set this property for a specific web application."),
             @PropertyDesc(name = "contextXmlDefault",
                 description = "The location, relative to domain-dir, of the context.xml file for this virtual server, if one is used"),
             @PropertyDesc(name = "allowLinking", defaultValue = "false", dataType = Boolean.class,
-                description =
-                    "If true, resources that are symbolic links in web applications on this virtual server are served. "
+                description = "If true, resources that are symbolic links in web applications on this virtual server are served. "
                         + "The value of this property in the sun-web.xml file takes precedence if defined. "
                         + "Caution: setting this property to true on Windows systems exposes JSP source code."),
             /**

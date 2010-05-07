@@ -104,7 +104,7 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.3</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>1.9.19-beta3</grizzly.version>
+        <grizzly.version>1.9.19-beta1</grizzly.version>
         <jaxb-api.version>2.1</jaxb-api.version>
         <jsr250-api.version>1.0</jsr250-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
@@ -132,7 +132,7 @@
         <scales.version>1.3.1</scales.version>
         <glassfish-corba.version>3.1.0-b001</glassfish-corba.version>
         <uc-pkg-client.version>1.122-38.2492</uc-pkg-client.version>
-        <uc-pkg-bootstrap.version>1.122-38.2492</uc-pkg-bootstrap.version>
+	    <uc-pkg-bootstrap.version>1.122-38.2492</uc-pkg-bootstrap.version>
         <webservices.version>2.0-b29</webservices.version>
         <woodstox.version>3.2.1-RC1</woodstox.version>
         <jaxb.version>2.2-promoted-b65</jaxb.version>
@@ -196,8 +196,8 @@
                 <module>jdbc</module>
                 <module>persistence</module>
                 <module>extras</module>
-                <module>admingui</module>
-                <module>extras/embedded/shell</module>
+		<module>admingui</module>
+		<module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -332,8 +332,8 @@
                 <module>jdbc</module>
                 <module>persistence</module>
                 <module>extras</module>
-                <module>admingui</module>
-                <module>extras/embedded/shell</module>
+		<module>admingui</module>
+		<module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -381,8 +381,8 @@
                 <module>jdbc</module>
                 <module>persistence</module>
                 <module>extras</module>
-                <module>admingui</module>
-                <module>extras/embedded/shell</module>
+		<module>admingui</module>
+		<module>extras/embedded/shell</module>
                 <module>packager</module>
                 <module>distributions</module>
                 <module>security</module>
@@ -533,7 +533,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-remote-resources-plugin</artifactId>
-                    <version>1.1</version>
+		    <version>1.1</version>
                 </plugin>
 
              </plugins>
@@ -546,7 +546,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0-beta-1</version>
+		<version>1.0-beta-1</version>
                 <executions>
                     <execution>
                     <id>enforce-versions</id>
@@ -670,39 +670,40 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven</groupId>
-                        <artifactId>maven-archiver</artifactId>
-                        <version>2.4</version>
-                   </dependency>
-                </dependencies>
+                  <dependency>
+                      <groupId>org.apache.maven</groupId>
+                      <artifactId>maven-archiver</artifactId>
+                      <version>2.4</version>
+                 </dependency>
+               </dependencies>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.0.1</version>
-                <configuration>
-                    <threshold>High</threshold>
-                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
-                    <findbugsXmlOutput>true</findbugsXmlOutput>
-                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-                </configuration>
-            </plugin>
+	    <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>findbugs-maven-plugin</artifactId>
+		<version>2.0.1</version>
+		<configuration>
+		    <threshold>High</threshold>
+		    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+		    <findbugsXmlOutput>true</findbugsXmlOutput>
+		    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+		</configuration>
+	    </plugin>
+
         </plugins>
     </build>
 
     <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.0.1</version>
-                <configuration>
-                    <threshold>High</threshold>
-                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
-                </configuration>
-            </plugin>
-        </plugins>
+	<plugins>
+	    <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>findbugs-maven-plugin</artifactId>
+		<version>2.0.1</version>
+		<configuration>
+		    <threshold>High</threshold>
+		    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+		</configuration>
+	    </plugin>
+	</plugins>
     </reporting>
 
     <!--  Begin: Dependency management -->
@@ -1313,7 +1314,7 @@
             <dependency>
                 <groupId>asm</groupId>
                 <artifactId>asm-commons</artifactId>
-                <version>${asm.version}</version>
+	        <version>${asm.version}</version>
             </dependency>
 
         </dependencies>

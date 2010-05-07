@@ -33,20 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.glassfish.web.admin.cli;
 
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocol;
+import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocols;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
@@ -54,7 +50,6 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -62,6 +57,11 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+
+import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Delete http listener command
@@ -71,13 +71,18 @@ import org.jvnet.hk2.config.TransactionFailure;
 @I18n("delete.http.listener")
 public class DeleteHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteHttpListener.class);
+
     @Param(name = "listener_id", primary = true)
     String listenerId;
+
     @Param(name = "secure", optional = true)
     String secure;
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config config;
-    private NetworkConfig networkConfig;
+
+    @Inject
+    HttpService httpService;
+
+    @Inject
+    NetworkConfig networkConfig;
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -87,7 +92,6 @@ public class DeleteHttpListener implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        networkConfig = config.getNetworkConfig();
         if (!exists()) {
             report.setMessage(localStrings.getLocalString("delete.http.listener.notexists", "{0} doesn't exist",
                 listenerId));
@@ -97,7 +101,7 @@ public class DeleteHttpListener implements AdminCommand {
         try {
             NetworkListener ls = networkConfig.getNetworkListener(listenerId);
             final String name = ls.getProtocol();
-            VirtualServer vs = config.getHttpService()
+            VirtualServer vs = httpService
                 .getVirtualServerByName(ls.findHttpProtocol().getHttp().getDefaultVirtualServer());
             ConfigSupport.apply(new DeleteNetworkListener(), networkConfig.getNetworkListeners());
             ConfigSupport.apply(new UpdateVirtualServer(), vs);
@@ -174,6 +178,7 @@ public class DeleteHttpListener implements AdminCommand {
                     break;
                 }
             }
+
             return param;
         }
     }

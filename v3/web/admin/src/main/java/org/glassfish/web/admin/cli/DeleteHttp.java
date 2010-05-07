@@ -39,6 +39,7 @@ package org.glassfish.web.admin.cli;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -49,7 +50,6 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -74,9 +74,9 @@ public class DeleteHttp implements AdminCommand {
     String protocolName;
 
     Protocol protocolToBeRemoved = null;
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    Config config;
 
+    @Inject
+    Configs configs;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -87,6 +87,8 @@ public class DeleteHttp implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
+        List <Config> configList = configs.getConfig();
+        Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         Protocols protocols = networkConfig.getProtocols();
 
