@@ -225,9 +225,9 @@
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/jsfManagedBeanAnnotation" target="all"/>
+        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithWars" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithEAR" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
-        <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithWars" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializerAddRestrictedServletContextListener" target="all"/>
         <ant dir="servlet-3.0/servletContextAddListenerByClassName" target="all"/>
         <ant dir="servlet-3.0/servletContextAddServletAndFilterByClass" target="all"/>
