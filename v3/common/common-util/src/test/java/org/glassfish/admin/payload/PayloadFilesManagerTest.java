@@ -122,6 +122,35 @@ public class PayloadFilesManagerTest {
     }
 
     @Test
+    public void testGetOutputFileURIWindows() throws Exception {
+        System.out.println("getOutputFileURIWindows");
+
+        final PayloadFilesManager instance = new PayloadFilesManager.Temp(Logger.getAnonymousLogger());
+        final String originalPath = "with" + File.separator + "separator";
+        final Part testPart = PayloadImpl.Part.newInstance("text/plain", originalPath, null, "random content");
+        final URI result = instance.getOutputFileURI(testPart, testPart.getName());
+        System.out.println("  " + originalPath + " -> " + result);
+        assertTrue(result.toASCIIString().endsWith("/separator"));
+    }
+
+    @Test
+    public void testBraces() throws Exception {
+        System.out.println("testBraces");
+
+        final File tmpDir = File.createTempFile("gfpayl{braces}", "tmp");
+        tmpDir.delete();
+        tmpDir.mkdir();
+
+        final PayloadFilesManager instance = new PayloadFilesManager.Perm(tmpDir,
+                null, Logger.getAnonymousLogger());
+        final String originalPath = "some/path";
+        final Part testPart = PayloadImpl.Part.newInstance("text/plain", originalPath, null, "random content");
+        final URI result = instance.getOutputFileURI(testPart, testPart.getName());
+        System.out.println("  " + originalPath + " -> " + result);
+        assertFalse(result.toASCIIString().contains("{"));
+    }
+
+    @Test
     public void testDiffFilesFromSamePath() throws Exception {
         new CommonTempTest() {
 
@@ -977,7 +1006,7 @@ public class PayloadFilesManagerTest {
             assertFalse("path " + uriString + " still contains bad character(s)",
                     uriString.contains("/") ||
                     uriString.contains("\\") ||
-                    uriString.contains(":"));        } catch (Exception e) {
+                    (uriString.contains(":") && File.separatorChar == '\\'));        } catch (Exception e) {
             fail("unexpected exception " + e.getLocalizedMessage());
         }
     }

@@ -45,7 +45,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -57,6 +59,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.Payload.Part;
@@ -222,20 +225,38 @@ public abstract class PayloadFilesManager {
             // no-op for permanent files
         }
 
-        private URI getParentURI(Part part) {
+        private URI getParentURI(Part part) throws UnsupportedEncodingException {
+            /*
+             * parentURI and parentFile start as the target extraction directory for this
+             * manager, but will change iff the part specifies a file
+             * transfer root.
+             */
+            File parentFile = getTargetDir();
+            URI parentFileURI = parentFile.toURI();
+
             final Properties partProps = part.getProperties();
             String parentPathFromPart = partProps.getProperty("file-xfer-root");
-            URI parentURI = getTargetDir().toURI();
             if (parentPathFromPart != null) {
-                /*
-                 * Add a trailing slash
-                 */
-                if ( ! parentPathFromPart.endsWith("/")) {
-                    parentPathFromPart = parentPathFromPart + "/";
+                if (! parentPathFromPart.endsWith(File.separator)) {
+                    parentPathFromPart = parentPathFromPart + File.separator;
                 }
-                parentURI = parentURI.resolve(parentPathFromPart);
+                final File xferRootFile = new File(parentPathFromPart);
+                if (xferRootFile.isAbsolute()) {
+                    parentFile = xferRootFile;
+                    parentFileURI = parentFile.toURI();
+                } else {
+                    parentFile = new File(parentFile, parentPathFromPart);
+                    /*
+                     * If this parent directory does not exist, then the URI from
+                     * the File object will lack the trailing slash.  So create
+                     * the URI a little oddly to account for that case.
+                     */
+                    parentFileURI = URI.create(
+                            parentFile.toURI().toASCIIString() +
+                            (parentFile.exists() ? "" : "/"));
+                }
             }
-            return parentURI;
+            return parentFileURI;
         }
 
         @Override
@@ -273,6 +294,12 @@ public abstract class PayloadFilesManager {
      * caller has not.
      */
     public static class Temp extends PayloadFilesManager {
+
+        /*
+         * regex to match colons and backslashes on Windows and slashes on non-Windows 
+         */
+        private static final String DIR_PATH_TO_FLAT_NAME_PATTERN = (File.separatorChar == '\\') ?
+                "[:\\\\]" : "/";
 
         private boolean isCleanedUp = false;
 
@@ -358,14 +385,16 @@ public abstract class PayloadFilesManager {
             File tempSubDir = pathToTempSubdir.get(parentPath);
             if (tempSubDir == null) {
                 /*
-                 * The extra dashes make sure the prefix meets createTempFile's reqts.
                  * Replace slashes (forward or backward) that are directory
                  * separators and replace colons (from Windows devices) with single
                  * dashes.  This technique generates unique but flat directory
                  * names so same-named files in different directories will
                  * go to different directories.
+                 *
+                 * The extra dashes make sure the prefix meets createTempFile's reqts.
+                 * 
                  */
-                String tempDirPrefix = parentPath.replaceAll("[/:\\\\]", "-") + "---";
+                String tempDirPrefix = parentPath.replaceAll(DIR_PATH_TO_FLAT_NAME_PATTERN, "-") + "---";
                 tempSubDir = createTempFolder(getTargetDir(), tempDirPrefix, super.logger);
                 pathToTempSubdir.put(parentPath, tempSubDir);
             }
