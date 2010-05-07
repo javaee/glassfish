@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -124,7 +124,16 @@ public class WARManifestProcessor
                             libs.add(name);
                         }
                     }
+                    String GF_WEB_XML = "WEB-INF/gf-web.xml";
                     String SUN_WEB_XML = "WEB-INF/sun-web.xml";
+                    if (!je.isDirectory() && je.getName().equals(GF_WEB_XML))
+                    {
+                        String contextRoot1 = parseContextRoot(jis);
+                        if (contextRoot1 != null)
+                        {
+                            contextRootFromSunDD.append(contextRoot1);
+                        }
+                    } else {
                     if (!je.isDirectory() && je.getName().equals(SUN_WEB_XML))
                     {
                         String contextRoot1 = parseContextRoot(jis);
@@ -132,6 +141,7 @@ public class WARManifestProcessor
                         {
                             contextRootFromSunDD.append(contextRoot1);
                         }
+                    }
                     }
                 }
             });

@@ -132,7 +132,7 @@ public class WebVerifier extends BaseVerifier {
      */
     protected String[] getDDString() {
         String dd[] = {"WEB-INF/sun-web.xml", "WEB-INF/web.xml", // NOI18N
-                       "WEB-INF/webservices.xml"}; // NOI18N
+                "WEB-INF/gf-web.xml", "WEB-INF/webservices.xml"}; // NOI18N
         return dd;
     }
 

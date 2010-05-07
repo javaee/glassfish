@@ -103,7 +103,7 @@ public class ASCacheMappingFieldConstraint extends ASCache implements WebCheck {
                                 addErrorDetails(result, compName);
                                 result.failed(smh.getLocalString
                                     (getClass().getName() + ".failed",
-                                    "FAILED [AS-WEB cache-mapping] List of field-constraint in cache-mapping for [ {0} ] is not proper,  within the web archive/sun-web.xml of [ {1} ].",
+                                    "FAILED [AS-WEB cache-mapping] List of field-constraint in cache-mapping for [ {0} ] is not proper,  within the web archive/(gf/)sun-web.xml of [ {1} ].",
                                     new Object[] {mappingFor,descriptor.getName()}));
 
                             }
@@ -176,7 +176,7 @@ public class ASCacheMappingFieldConstraint extends ASCache implements WebCheck {
                     addGoodDetails(result, compName);
                     result.passed(smh.getLocalString
 					  (getClass().getName() + ".passed2",
-					   "PASSED [AS-WEB cache-mapping]Proper field-constraint/value   [ {0} ]  defined for [ {1} ], within the web archive/sun-web.xml of [ {2} ].",
+					   "PASSED [AS-WEB cache-mapping]Proper field-constraint/value   [ {0} ]  defined for [ {1} ], within the web archive/(gf/)sun-web.xml of [ {2} ].",
 					   new Object[] {values[rep],mappingFor,descriptor.getName()}));
 
                 }else {
@@ -184,7 +184,7 @@ public class ASCacheMappingFieldConstraint extends ASCache implements WebCheck {
                     addErrorDetails(result, compName);
                     result.failed(smh.getLocalString
                                       (getClass().getName() + ".failed2",
-                                      "FAILED [AS-WEB cache-mapping] field-constraint/value [ {0} ] defined for [ {1} ], can not be empty, within the web archive/sun-web.xml of [ {2} ].",
+                                      "FAILED [AS-WEB cache-mapping] field-constraint/value [ {0} ] defined for [ {1} ], can not be empty, within the web archive/(gf/)sun-web.xml of [ {2} ].",
                                       new Object[] {values[rep],mappingFor,descriptor.getName()}));
 
                 }

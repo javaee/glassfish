@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.ApplicationRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.GFApplicationRuntimeDDFile;
 import com.sun.enterprise.deployment.io.runtime.WLApplicationRuntimeDDFile;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -805,8 +806,17 @@ public class ApplicationArchivist extends Archivist<Application>
      */
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile() {
-        return new ApplicationRuntimeDDFile();
+        return new GFApplicationRuntimeDDFile();
     }   
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     * handling the Sun configuration deployment descriptors
+     */
+    @Override
+    public DeploymentDescriptorFile getSunConfigurationDDFile() {
+        return new ApplicationRuntimeDDFile();
+    }
 
     /**
      * @return if exists the DeploymentDescriptorFile responsible for

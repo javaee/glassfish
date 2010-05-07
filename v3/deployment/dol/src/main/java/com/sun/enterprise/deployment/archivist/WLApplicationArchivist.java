@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.runtime.WLApplicationRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.GFApplicationRuntimeDDFile;
 import com.sun.enterprise.deployment.io.runtime.ApplicationRuntimeDDFile;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -93,8 +94,12 @@ public class WLApplicationArchivist extends ExtensionsArchivist {
 
     @Override
     public DeploymentDescriptorFile getGFCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
-        return new ApplicationRuntimeDDFile();
+        return new GFApplicationRuntimeDDFile();
     }
 
+    @Override
+    public DeploymentDescriptorFile getSunCounterPartConfigurationDDFile(RootDeploymentDescriptor descriptor) {
+        return new ApplicationRuntimeDDFile();
+    }
 }
 

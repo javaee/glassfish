@@ -1,14 +1,14 @@
 <!--
   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  
-  Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+  Copyright 2010 Sun Microsystems, Inc. All rights reserved.
   
   Use is subject to License Terms
 --> 
 
 <!--
   XML DTD for Sun Application Server specific Java EE Client Application
-  deployment descriptor. This is a companion DTD to application-client_5.xsd
+  deployment descriptor. This is a companion DTD to application-client_6.xsd
 
   It must include a DOCTYPE of the following form:
 
@@ -17,7 +17,7 @@
 -->
 
 <!--
-application-client is the root element describing all the runtime bindings
+sun-application-client is the root element describing all the runtime bindings
 of a single application client
 -->
 <!ELEMENT sun-application-client (ejb-ref*, resource-ref*, resource-env-ref*, service-ref*,

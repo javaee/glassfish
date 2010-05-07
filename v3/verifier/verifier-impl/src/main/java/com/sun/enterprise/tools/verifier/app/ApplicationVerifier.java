@@ -89,7 +89,8 @@ public class ApplicationVerifier extends BaseVerifier {
 
     protected String[] getDDString() {
         String dd[] = {"META-INF/sun-application.xml", // NOI18N
-                       "META-INF/application.xml"}; // NOI18N
+                       "META-INF/application.xml", 
+                       "META-INF/gf-application.xml"}; // NOI18N
         return dd;
     }
 

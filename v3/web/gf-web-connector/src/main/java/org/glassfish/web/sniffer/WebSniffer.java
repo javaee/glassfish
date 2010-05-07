@@ -105,6 +105,7 @@ public class WebSniffer  extends GenericSniffer implements Sniffer {
         final List<String> result = new ArrayList<String>();
         result.add("WEB-INF/web.xml");
         result.add("WEB-INF/sun-web.xml");
+        result.add("WEB-INF/gf-web.xml");
         return result;
     }
     

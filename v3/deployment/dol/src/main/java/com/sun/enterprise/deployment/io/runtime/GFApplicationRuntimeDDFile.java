@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,59 +34,39 @@
  * holder.
  */
 
+package com.sun.enterprise.deployment.io.runtime;
 
-package org.glassfish.osgiweb;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamConstants;
-import static javax.xml.stream.XMLStreamConstants.*;
-import java.io.InputStream;
+import com.sun.enterprise.deployment.Descriptor;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
+import com.sun.enterprise.deployment.io.DescriptorConstants;
+import com.sun.enterprise.deployment.node.RootXMLNode;
+import com.sun.enterprise.deployment.node.runtime.application.GFApplicationRuntimeNode;
 
 /**
- * A mini parser to parse sun-web.xml and gf-web.xml for entries of interest 
- * to us.
- * Currently, we only read context-root value.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * This class is responsible for handling the XML configuration information
+ * for the Glassfish Web Container
  */
-class SunWebXmlParser
-{
-    private static XMLInputFactory xmlIf = null;
-
-    static {
-        xmlIf = XMLInputFactory.newInstance();
-        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-    }
-
-    String contextRoot;
-
+public class GFApplicationRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {  
     /**
-     * The caller should close the input stream.
-     * @param in InputStream for sun-web.xml or gf-web.xml
+     * @return the location of the DeploymentDescriptor file for a
+     * particular type of J2EE Archive
      */
-    SunWebXmlParser(InputStream in) throws XMLStreamException
-    {
-        XMLStreamReader reader = xmlIf.createXMLStreamReader(in);
-        try {
-            int event;
-            while (reader.hasNext() && (event = reader.next()) != END_DOCUMENT) {
-                if (event == START_ELEMENT) {
-                    String element = reader.getLocalName();
-                    if (element.equals("context-root")) {
-                        contextRoot = reader.getElementText();
-                        break;
-                    }
-                }
-            }
-        } finally {
-            reader.close();
-        }
+    public String getDeploymentDescriptorPath() {
+        return DescriptorConstants.GF_APPLICATION_JAR_ENTRY;        
     }
-
-    public String getContextRoot()
-    {
-        return contextRoot;
+    
+    /**
+     * @return a RootXMLNode responsible for handling the deployment
+     * descriptors associated with this J2EE module
+     *
+     * @param the descriptor for which we need the node
+     */
+    public RootXMLNode getRootXMLNode(Descriptor descriptor) {
+   
+        if (descriptor instanceof Application) {
+            return new GFApplicationRuntimeNode((Application) descriptor);
+        }
+        return null;
     }
 }

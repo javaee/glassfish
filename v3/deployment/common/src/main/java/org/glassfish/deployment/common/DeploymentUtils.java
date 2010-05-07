@@ -58,6 +58,8 @@ public class DeploymentUtils {
     private static final String JSP_SUFFIX = ".jsp";
     private static final String RA_XML = "META-INF/ra.xml";
     private static final String APPLICATION_XML = "META-INF/application.xml";    
+    private static final String SUN_APPLICATION_XML = "META-INF/sun-application.xml";    
+    private static final String GF_APPLICATION_XML = "META-INF/gf-application.xml";    
     private static final String EAR_EXTENSION = ".ear";
     private static final String WAR_EXTENSION = ".war";
     private static final String RAR_EXTENSION = ".rar";
@@ -148,7 +150,9 @@ public class DeploymentUtils {
                 return true;
             }
 
-            isEar = archive.exists(APPLICATION_XML);
+            isEar = archive.exists(APPLICATION_XML) || 
+                    archive.exists(SUN_APPLICATION_XML) || 
+                    archive.exists(GF_APPLICATION_XML);
 
             if (!isEar) {
                 isEar = isEARFromIntrospecting(archive);

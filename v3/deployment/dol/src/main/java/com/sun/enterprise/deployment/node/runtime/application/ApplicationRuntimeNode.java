@@ -76,7 +76,7 @@ import java.util.Map;
  */
 public class ApplicationRuntimeNode extends RuntimeBundleNode<Application> {
     
-    private Application descriptor=null;
+    protected Application descriptor=null;
     private String currentWebUri=null;
     
     public ApplicationRuntimeNode(Application descriptor) {

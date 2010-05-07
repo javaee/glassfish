@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,59 +34,55 @@
  * holder.
  */
 
+package com.sun.enterprise.deployment.node.runtime.application;
 
-package org.glassfish.osgiweb;
+import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.xml.DTDRegistry;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamConstants;
-import static javax.xml.stream.XMLStreamConstants.*;
-import java.io.InputStream;
+import java.util.Map;
+
 
 /**
- * A mini parser to parse sun-web.xml and gf-web.xml for entries of interest 
- * to us.
- * Currently, we only read context-root value.
- *
- * @author Sanjeeb.Sahoo@Sun.COM
+ * This node is responsible for handling all runtime information for 
+ * application.
  */
-class SunWebXmlParser
-{
-    private static XMLInputFactory xmlIf = null;
+public class GFApplicationRuntimeNode extends ApplicationRuntimeNode {
 
-    static {
-        xmlIf = XMLInputFactory.newInstance();
-        xmlIf.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    public GFApplicationRuntimeNode(Application descriptor) {
+        super(descriptor);
     }
-
-    String contextRoot;
-
+    
     /**
-     * The caller should close the input stream.
-     * @param in InputStream for sun-web.xml or gf-web.xml
+     * @return the XML tag associated with this XMLNode
      */
-    SunWebXmlParser(InputStream in) throws XMLStreamException
-    {
-        XMLStreamReader reader = xmlIf.createXMLStreamReader(in);
-        try {
-            int event;
-            while (reader.hasNext() && (event = reader.next()) != END_DOCUMENT) {
-                if (event == START_ELEMENT) {
-                    String element = reader.getLocalName();
-                    if (element.equals("context-root")) {
-                        contextRoot = reader.getElementText();
-                        break;
-                    }
-                }
-            }
-        } finally {
-            reader.close();
-        }
+    protected XMLElement getXMLRootTag() {
+        return new XMLElement(RuntimeTagNames.GF_APPLICATION_RUNTIME_TAG);
+    }    
+    
+    /** 
+     * @return the DOCTYPE that should be written to the XML file
+     */
+    public String getDocType() {
+        return DTDRegistry.GF_APPLICATION_600_DTD_PUBLIC_ID;
+    }
+    
+    /**
+     * @return the SystemID of the XML file
+     */
+    public String getSystemID() {
+        return DTDRegistry.GF_APPLICATION_600_DTD_SYSTEM_ID;
     }
 
-    public String getContextRoot()
-    {
-        return contextRoot;
-    }
+   /**
+    * register this node as a root node capable of loading entire DD files
+    * 
+    * @param publicIDToDTD is a mapping between xml Public-ID to DTD 
+    * @return the doctype tag name
+    */
+   public static String registerBundle(Map publicIDToDTD) {    
+       publicIDToDTD.put(DTDRegistry.GF_APPLICATION_600_DTD_PUBLIC_ID, DTDRegistry.GF_APPLICATION_600_DTD_SYSTEM_ID);
+       return RuntimeTagNames.GF_APPLICATION_RUNTIME_TAG;       
+   }    
 }
