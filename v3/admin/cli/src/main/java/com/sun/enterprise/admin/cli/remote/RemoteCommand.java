@@ -280,7 +280,8 @@ public class RemoteCommand extends CLICommand {
              * fake everything else.
              */
             if (programOpts.isHelp()) {
-                rac.setCommandModel(helpModel());
+                commandModel = helpModel();
+                rac.setCommandModel(commandModel);
                 return;
             }
 
