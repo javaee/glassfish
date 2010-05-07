@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
@@ -50,6 +51,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.util.Iterator;
 import java.util.Collection;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.server.ServerEnvironmentImpl;
 
 /**
  * AdminCommand to stop the instance
@@ -62,10 +65,13 @@ import java.util.Collection;
 @I18n("stop.instance.command")
 public class StopInstanceCommand implements AdminCommand {
 
-    final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopInstanceCommand.class);
+    final private static LocalStringsImpl strings = new LocalStringsImpl(StopInstanceCommand.class);
     
     @Inject
     ModulesRegistry registry;
+
+    @Inject
+    private ServerEnvironment env;
 
     @Param(optional=true, defaultValue="true")
     Boolean force;
@@ -78,8 +84,18 @@ public class StopInstanceCommand implements AdminCommand {
      * LookupManager is flushed.
      */
     public void execute(AdminCommandContext context) {
-         
-        context.getLogger().info(localStrings.getLocalString("stop.instance.init","Server shutdown initiated"));
+
+        if(!env.isInstance()) {
+            // This command is asynchronous.  We can't return anything so we just
+            // log the error and return
+            String msg = strings.get("stop.instance.notAnInstance",
+                            env.getRuntimeType().toString());
+
+            context.getLogger().warning(msg);
+            return;
+        }
+
+        context.getLogger().info(strings.get("stop.instance.init"));
         Collection<Module> modules = registry.getModules(
                 "org.glassfish.core.glassfish");
         if (modules.size() == 1) {

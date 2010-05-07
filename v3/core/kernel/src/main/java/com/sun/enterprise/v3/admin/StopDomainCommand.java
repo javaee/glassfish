@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.util.Iterator;
 import java.util.Collection;
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * AdminCommand to stop the domain execution which mean shuting down the application
@@ -67,6 +68,9 @@ public class StopDomainCommand implements AdminCommand {
     @Inject
     ModulesRegistry registry;
 
+    @Inject
+    ServerEnvironment env;
+
     @Param(optional=true, defaultValue="true")
     Boolean force;
     
@@ -78,7 +82,18 @@ public class StopDomainCommand implements AdminCommand {
      * LookupManager is flushed.
      */
     public void execute(AdminCommandContext context) {
-         
+
+        if(!env.isDas()) {
+            // This command is asynchronous.  We can't return anything so we just
+            // log the error and return
+            String msg = localStrings.getLocalString("stop.domain.notDas",
+                           "stop-domain only works with domains, this is a {0}",
+                           env.getRuntimeType().toString());
+
+            context.getLogger().warning(msg);
+            return;
+        }
+
         context.getLogger().info(localStrings.getLocalString("stop.domain.init","Server shutdown initiated"));
         Collection<Module> modules = registry.getModules(
                 "org.glassfish.core.glassfish");

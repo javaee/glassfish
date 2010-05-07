@@ -337,13 +337,23 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (configRef == null && clusterName == null) {
                 Config defaultConfig = domain.getConfigs().getConfigByName("default-config");
 
+                if(defaultConfig == null) {
+                    final String msg = localStrings.getLocalString(Server.class,
+                        "Cluster.noDefaultConfig",
+                        "Can''t find the default config (an element named \"default-config\") " +
+                            "in domain.xml.  You may specify the name of an existing config element next time.");
+
+                    logger.log(Level.SEVERE, msg);
+                    throw new TransactionFailure(msg);
+                }
+
                 final Config configCopy;
                 try {
                     configCopy = (Config) defaultConfig.deepCopy();
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, localStrings.getLocalString(Server.class,
                     "Cluster.error_while_copying",
-                    "Error while copying the default configuration {0)",
+                    "Error while copying the default configuration {0}",
                     e.toString(), e));
                     throw new TransactionFailure(e.toString(),e);
                 }

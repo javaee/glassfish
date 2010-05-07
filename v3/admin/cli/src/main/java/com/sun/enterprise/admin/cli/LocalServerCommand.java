@@ -53,9 +53,32 @@ import org.glassfish.api.admin.CommandException;
 /**
  * A class that's supposed to capture all the behavior common to operation
  * on a "local" server.
+ * It's getting fairly complicated thus the "section headers" comments.
+ * This class plays two roles, <UL><LI>a place for putting common code - which
+ * are final methods.  A parent class that is communicating with its own unknown
+ * sub-classes.  These are non-final methods
+ *
  * @author Byron Nevins
  */
 public abstract class LocalServerCommand extends CLICommand {
+    ////////////////////////////////////////////////////////////////
+    /// Section:  protected methods that are OK to override
+    ////////////////////////////////////////////////////////////////
+
+    /**
+     * Override this method and return false to turn-off the file validation.
+     * E.g. it demands that config/domain.xml be present.  In special cases like
+     * Synchronization -- this is how you turn off the testing.
+     * @return true - do the checks, false - don't do the checks
+     */
+    protected boolean checkForSpecialFiles() {
+        return true;
+    }
+
+    ////////////////////////////////////////////////////////////////
+    /// Section:  protected methods that are notOK to override.
+    ////////////////////////////////////////////////////////////////
+
     /**
      * Returns the admin port of the local domain. Note that this method should
      * be called only when you own the domain that is available on accessible
@@ -64,7 +87,7 @@ public abstract class LocalServerCommand extends CLICommand {
      * @return an integer that represents admin port
      * @throws CommandException in case of parsing errors
      */
-    protected int getAdminPort()
+    protected final int getAdminPort()
             throws CommandException {
         // default:  DAS which always has the name "server"
         return getAdminPort("server");
@@ -78,7 +101,7 @@ public abstract class LocalServerCommand extends CLICommand {
      * @return an integer that represents admin port
      * @throws CommandException in case of parsing errors
      */
-    protected int getAdminPort(String serverName)
+    protected final int getAdminPort(String serverName)
             throws CommandException {
 
         try {
@@ -107,20 +130,8 @@ public abstract class LocalServerCommand extends CLICommand {
         return serverDirs;
     }
 
-    protected File getDomainXml() {
+    protected final File getDomainXml() {
         return serverDirs.getDomainXml();
-    }
-
-    private final File getMasterPasswordFile() {
-
-        if(serverDirs == null)
-            return null;
-
-        File mp = new File(serverDirs.getServerDir(), "master-password");
-        if(!mp.canRead())
-            return null;
-
-        return mp;
     }
 
     /**
@@ -170,16 +181,6 @@ public abstract class LocalServerCommand extends CLICommand {
         }
     }
 
-    private final File getJKS() {
-        if(serverDirs == null)
-            return null;
-
-        File mp = new File(new File(serverDirs.getServerDir(), "config"), "keystore.jks");
-        if(!mp.canRead())
-            return null;
-        return mp;
-    }
-
     /**
      * Get the master password, either from a password file or
      * by asking the user.
@@ -214,7 +215,7 @@ public abstract class LocalServerCommand extends CLICommand {
      *
      * @return true if it's the DAS at this domain directory
      */
-    protected boolean isThisServer(File ourDir, String directoryKey) {
+    protected final boolean isThisServer(File ourDir, String directoryKey) {
         if(!ok(directoryKey))
             throw new NullPointerException();
 
@@ -295,6 +296,31 @@ public abstract class LocalServerCommand extends CLICommand {
                     programOpts.getPort());
     }
 
+    ////////////////////////////////////////////////////////////////
+    /// Section:  private methods
+    ////////////////////////////////////////////////////////////////
+    private final File getJKS() {
+        if(serverDirs == null)
+            return null;
+
+        File mp = new File(new File(serverDirs.getServerDir(), "config"), "keystore.jks");
+        if(!mp.canRead())
+            return null;
+        return mp;
+    }
+
+    private File getMasterPasswordFile() {
+
+        if(serverDirs == null)
+            return null;
+
+        File mp = new File(serverDirs.getServerDir(), "master-password");
+        if(!mp.canRead())
+            return null;
+
+        return mp;
+    }
+
     private String retry(int times) throws CommandException {
         String mpv;
         // prompt times times
@@ -324,10 +350,14 @@ public abstract class LocalServerCommand extends CLICommand {
         }
         return f;
     }
-    /////////////////////// private variables ////////////////////
+
+    ////////////////////////////////////////////////////////////////
+    /// Section:  private variables
+    ////////////////////////////////////////////////////////////////
+
+    private ServerDirs serverDirs;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalDomainCommand.class);
-    private ServerDirs serverDirs;
 }
 
 

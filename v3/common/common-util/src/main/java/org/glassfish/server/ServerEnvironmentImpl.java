@@ -356,6 +356,24 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         return instanceName;
     }
 
+    /**
+     * Am I a running GlassFish server instance?
+     * @return true if we are an instance
+     */
+    @Override
+    public boolean isInstance() {
+        return serverType == RuntimeType.INSTANCE;
+    }
+    
+    /**
+     * Am I a running GlassFish DAS server?
+     * @return true if we are a DAS
+     */
+    @Override
+    public boolean isDas() {
+        return serverType == RuntimeType.DAS;
+    }
+
     private boolean ok(String s) {
         return s != null && s.length() > 0;
     }

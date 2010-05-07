@@ -133,4 +133,7 @@ public interface ServerEnvironment {
      * @return the name of this server i.e. "my" name
      */
     String getInstanceName();
+
+    boolean isInstance();
+    boolean isDas();
 }
