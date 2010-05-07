@@ -107,6 +107,7 @@
 
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${build.classes.dir}:${assemble.dir}/${appname}-ejb.jar:${assemble.dir}/${appname}-client.jar:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
+           <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
            <arg line="${module}-ejb"/>
         </java>
     </target>
