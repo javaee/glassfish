@@ -43,6 +43,7 @@ import com.sun.enterprise.config.serverbeans.SystemApplications;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
@@ -119,7 +120,6 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     @Inject
     protected Applications applications;
 
-    @Inject
     protected SystemApplications systemApplications;
 
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
@@ -156,6 +156,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         }catch(Exception e){
             logger.log(Level.WARNING, "optionalpkg.error", e);
         }
+
+        Domain domain = habitat.getComponent(Domain.class);
+        systemApplications = domain.getSystemApplications();
 
         List<Application> allApplications = applications.getApplications();
 
