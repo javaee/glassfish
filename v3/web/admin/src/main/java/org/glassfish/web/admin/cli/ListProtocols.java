@@ -33,22 +33,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
+import java.util.List;
+
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.Protocol;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-
-import java.util.List;
 
 /**
  * List protocols command
@@ -59,20 +59,18 @@ import java.util.List;
 public class ListProtocols implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListProtocols.class);
-
-    @Inject
-    NetworkConfig networkConfig;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter
-     * values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        List<Protocol> list = networkConfig.getProtocols().getProtocol();
+        List<Protocol> list = config.getNetworkConfig().getProtocols().getProtocol();
         for (Protocol protocol : list) {
             report.getTopMessagePart()
                 .addChild().setMessage(protocol.getName());

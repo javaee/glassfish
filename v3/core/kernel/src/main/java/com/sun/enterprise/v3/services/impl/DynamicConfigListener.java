@@ -37,6 +37,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collection;
@@ -157,11 +158,8 @@ public class DynamicConfigListener implements ConfigListener {
     private NotProcessed processVirtualServer(Changed.TYPE type, VirtualServer vs) {
         NotProcessed notProcessed = null;
         String list = vs.getNetworkListeners();
-        Collection<NetworkListener> nls = grizzlyService.getHabitat().getAllByType(NetworkListener.class);
-        ArrayList<String> as = GrizzlyProxy.toArray(list,",");
-
-        for (String s: as){
-            for(NetworkListener n: nls){
+        for (String s: GrizzlyProxy.toArray(list,",")){
+            for(NetworkListener n: vs.findNetworkListeners()){
                 if (n.getName().equals(s)){
                     notProcessed = processNetworkListener(type, n);
                 }

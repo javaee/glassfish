@@ -33,14 +33,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -51,9 +48,11 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -76,33 +75,26 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class CreateHttp implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateHttp.class);
-
     @Param(name = "protocolname", primary = true)
     String protocolName;
-
     @Param(name = "request-timeout-seconds", defaultValue = "30", optional = true)
     String requestTimeoutSeconds;
-
     @Param(name = "timeout-seconds", defaultValue = "30", optional = true)
     String timeoutSeconds;
-
     @Param(name = "max-connection", defaultValue = "256", optional = true)
     String maxConnections;
-
     @Param(name = "default-virtual-server")
     String defaultVirtualServer;
-
     @Param(name = "dns-lookup-enabled", defaultValue = "false", optional = true)
     Boolean dnsLookupEnabled = false;
-
     @Param(name = "servername", optional = true)
     String serverName;
-
     @Param(name = "xpowered", optional = true, defaultValue = "true")
     Boolean xPoweredBy = false;
-
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
     @Inject
-    Configs configs;
+    Habitat habitat;
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -111,34 +103,27 @@ public class CreateHttp implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-
         final ActionReport report = context.getActionReport();
-
         // check for duplicates
-        List<Config> configList = configs.getConfig();
-        Config config = configList.get(0);
         Protocols protocols = config.getNetworkConfig().getProtocols();
-
-        if (config.getNetworkConfig().findProtocol(protocolName) == null) {
-            report.setMessage(localStrings.getLocalString("create.http.fail.protocolnotfound",
-                "The specified protocol {0} is not yet configured. " +
-                "Please create one", protocolName));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
         Protocol protocol = null;
         for (Protocol p : protocols.getProtocol()) {
-            if (p.getName().equalsIgnoreCase(protocolName) && p.getHttp() != null) {
-                report.setMessage(localStrings.getLocalString("create.http.fail.duplicate",
-                    "An http element for {0} already exists. Cannot add duplicate http", protocolName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            } else {
+            if(protocolName.equals(p.getName())) {
                 protocol = p;
             }
         }
-
+        if (protocol == null) {
+            report.setMessage(localStrings.getLocalString("create.http.fail.protocolnotfound",
+                "The specified protocol {0} is not yet configured. Please create one", protocolName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+        if (protocol.getHttp() != null) {
+            report.setMessage(localStrings.getLocalString("create.http.fail.duplicate",
+                "An http element for {0} already exists. Cannot add duplicate http", protocolName));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         // Add to the <network-config>
         try {
             ConfigSupport.apply(new SingleConfigCode<Protocol>() {
@@ -159,15 +144,13 @@ public class CreateHttp implements AdminCommand {
                 }
             }, protocol);
         } catch (TransactionFailure e) {
-            report.setMessage(
-                localStrings.getLocalString("create.http.fail",
-                    "Failed to create http for {0}: " + (e.getMessage() == null ? "No reason given." : e.getMessage()),
-                    protocolName));
+            report.setMessage(localStrings.getLocalString("create.http.fail",
+                "Failed to create http for {0}: " + (e.getMessage() == null ? "No reason given." : e.getMessage()),
+                protocolName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;
         }
-
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

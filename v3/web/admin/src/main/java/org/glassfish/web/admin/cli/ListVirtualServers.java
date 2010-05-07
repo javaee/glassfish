@@ -33,60 +33,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.config.serverbeans.HttpService;
-import com.sun.enterprise.config.serverbeans.VirtualServer;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.ActionReport.MessagePart;
+import org.glassfish.api.I18n;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
 /**
  * List virtual server command
- *
  */
-@Service(name="list-virtual-servers")
+@Service(name = "list-virtual-servers")
 @Scoped(PerLookup.class)
 @I18n("list.virtual.servers")
 public class ListVirtualServers implements AdminCommand {
-    
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListVirtualServers.class);
-
-    @Inject
-    HttpService httpService;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     /**
-     * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
+     * the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-
-        List<VirtualServer> list = httpService.getVirtualServer();
-        Iterator iter = list.iterator();
-        while (iter.hasNext()) {
-            VirtualServer virtualServer = (VirtualServer)iter.next();
-            final ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+        List<VirtualServer> list = config.getHttpService().getVirtualServer();
+        for (final VirtualServer virtualServer : list) {
+            final MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(virtualServer.getId());
-        };
+        }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 }

@@ -33,25 +33,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.web.admin.cli;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocol;
+import com.sun.grizzly.config.dom.ProtocolFinder;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -85,11 +86,10 @@ public class CreateNetworkListener implements AdminCommand {
     String transport;
     @Param(name = "enabled", optional = true, defaultValue = "true")
     Boolean enabled;
-    @Param(name="jkenabled", optional=true, defaultValue = "false")
+    @Param(name = "jkenabled", optional = true, defaultValue = "false")
     Boolean jkEnabled;
-
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
     @Inject
     Habitat habitat;
 
@@ -101,8 +101,6 @@ public class CreateNetworkListener implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        List<Config> configList = configs.getConfig();
-        Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         NetworkListeners nls = networkConfig.getNetworkListeners();
         // ensure we don't have one of this name already
@@ -116,26 +114,25 @@ public class CreateNetworkListener implements AdminCommand {
                 return;
             }
         }
-
         if (!verifyUniquePort(networkConfig)) {
-            String def = "Port is already taken by another listener, choose another port.";
-            //String msg = localStrings
-             //   .getLocalString("port.occupied", def, port, listenerName, address);
-            report.setMessage(def);
+            report.setMessage(localStrings.getLocalString("port.in.use",
+                "Port [{0}] is already taken for address [{1}], please choose another port.", port, address));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
-
-        Protocol prot = networkConfig.findProtocol(protocol);
-        if (prot == null || prot.getHttp() == null) {
-               report.setMessage(localStrings.getLocalString(
-                    "create.network.listener.fail.nohttp",
-                    "Network Listener named {0} refers to protocol {1} that doesn't exist or has no http configured",
-                    listenerName, protocol));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
+        Protocol prot = habitat.getComponent(Protocol.class, protocol);
+        if (prot == null) {
+            report.setMessage(localStrings.getLocalString("create.http.fail.protocolnotfound",
+                "The specified protocol {0} is not yet configured", protocol));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
-
+        if (prot.getHttp() == null && prot.getPortUnification() == null) {
+            report.setMessage(localStrings.getLocalString("create.network.listener.fail.bad.protocol",
+                "Protocol {0} has neither a protocol nor a port-unification configured", protocol));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         try {
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy... params) throws TransactionFailure, PropertyVetoException {
@@ -150,11 +147,10 @@ public class CreateNetworkListener implements AdminCommand {
                     newNetworkListener.setName(listenerName);
                     newNetworkListener.setAddress(address);
                     listeners.getNetworkListener().add(newNetworkListener);
-                    ((VirtualServer)params[1]).addNetworkListener(listenerName);
-
+                    ((VirtualServer) params[1]).addNetworkListener(listenerName);
                     return newNetworkListener;
                 }
-            }, nls, habitat.getComponent(VirtualServer.class, prot.getHttp().getDefaultVirtualServer()));
+            }, nls, findVirtualServer(prot));
         } catch (TransactionFailure e) {
             e.printStackTrace();
             report.setMessage(
@@ -165,6 +161,25 @@ public class CreateNetworkListener implements AdminCommand {
             return;
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    private VirtualServer findVirtualServer(final Protocol protocol) {
+        String name = null;
+        final Http http = protocol.getHttp();
+        if (http != null) {
+            name = http.getDefaultVirtualServer();
+        } else {
+            final List<ProtocolFinder> finders = protocol.getPortUnification().getProtocolFinder();
+            for (ProtocolFinder finder : finders) {
+                if (name == null) {
+                    final Protocol p = finder.findProtocol();
+                    if (p.getHttp() != null) {
+                        name = p.getHttp().getDefaultVirtualServer();
+                    }
+                }
+            }
+        }
+        return habitat.getComponent(VirtualServer.class, name);
     }
 
     private boolean verifyUniquePort(NetworkConfig networkConfig) {

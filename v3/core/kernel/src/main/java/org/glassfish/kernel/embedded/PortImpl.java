@@ -35,30 +35,32 @@
  */
 package org.glassfish.kernel.embedded;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.*;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.ActionReport;
-
 import java.beans.PropertyVetoException;
-import java.util.Properties;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-
+import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocol;
-import com.sun.grizzly.config.dom.Http;
+import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
-import com.sun.grizzly.config.dom.Protocols;
-import com.sun.grizzly.config.dom.NetworkListeners;
+import com.sun.grizzly.config.dom.Transports;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.embedded.Port;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigCode;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * Abstract to port creation and destruction
@@ -91,52 +93,38 @@ public class PortImpl implements Port {
                     param.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
                     http.setDefaultVirtualServer(defaultVirtualServer);
-                    http.setServerName("");
                     protocol.setHttp(http);
                     return protocol;
                 }
             }, config.getProtocols());
-            ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
-                public Object run(NetworkListeners param) throws TransactionFailure {
-                    final NetworkListener listener = param.createChild(NetworkListener.class);
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy... params) throws TransactionFailure {
+                    NetworkListeners listeners = (NetworkListeners) params[0];
+                    Transports transports = (Transports) params[1];
+                    final NetworkListener listener = listeners.createChild(NetworkListener.class);
                     listener.setName(listenerName);
                     listener.setPort(Integer.toString(portNumber));
                     listener.setProtocol(listenerName);
                     listener.setThreadPool("http-thread-pool");
                     if (listener.findThreadPool() == null) {
-                        final ThreadPool pool = config.getNetworkListeners().createChild(ThreadPool.class);
+                        final ThreadPool pool = listeners.createChild(ThreadPool.class);
                         pool.setName(listenerName);
                         listener.setThreadPool(listenerName);
                     }
                     listener.setTransport("tcp");
                     if (listener.findTransport() == null) {
-                        final Transport transport = config.getTransports().createChild(Transport.class);
+                        final Transport transport = transports.createChild(Transport.class);
                         transport.setName(listenerName);
                         listener.setTransport(listenerName);
                     }
-                    param.getNetworkListener().add(listener);
+                    listeners.getNetworkListener().add(listener);
                     return listener;
                 }
-            }, config.getNetworkListeners());
+            }, config.getNetworkListeners(), config.getTransports());
             VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
             ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
                 public Object run(VirtualServer avs) throws PropertyVetoException {
-                    String DELIM = ",";
-                    String lss = avs.getNetworkListeners();
-                    boolean listenerShouldBeAdded = true;
-                    if (lss == null || lss.length() == 0) {
-                        lss = listenerName; //the only listener in the list
-                    } else if (!lss.contains(listenerName)) { //listener does not already exist
-                        if (!lss.endsWith(DELIM)) {
-                            lss += DELIM;
-                        }
-                        lss += listenerName;
-                    } else { //listener already exists in the list, do nothing
-                        listenerShouldBeAdded = false;
-                    }
-                    if (listenerShouldBeAdded) {
-                        avs.setNetworkListeners(lss);
-                    }    
+                    avs.addNetworkListener(listenerName);
                     return avs;
                 }
             }, vs);
@@ -170,15 +158,13 @@ public class PortImpl implements Port {
                     final NetworkListeners nt = (NetworkListeners) params[0];
                     final VirtualServer vs = (VirtualServer) params[1];
                     final Protocols protocols = (Protocols) params[2];
-
                     List<Protocol> protos = protocols.getProtocol();
                     for (Protocol proto : protos) {
-                        if (proto.getName().equals(listenerName))  {
+                        if (proto.getName().equals(listenerName)) {
                             protos.remove(proto);
                             break;
                         }
                     }
-
                     final List<NetworkListener> list = nt.getNetworkListener();
                     for (NetworkListener listener : list) {
                         if (listener.getName().equals(listenerName)) {
@@ -192,13 +178,12 @@ public class PortImpl implements Port {
                     return null;
                 }
             }, config.getNetworkListeners(),
-               httpService.getVirtualServerByName(defaultVirtualServer),
-               config.getProtocols());
-        } catch(TransactionFailure tf) {
+                httpService.getVirtualServerByName(defaultVirtualServer),
+                config.getProtocols());
+        } catch (TransactionFailure tf) {
             tf.printStackTrace();
             throw new RuntimeException(tf);
         }
-
         ports.remove(this);
     }
 

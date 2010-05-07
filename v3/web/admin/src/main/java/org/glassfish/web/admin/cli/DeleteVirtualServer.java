@@ -36,7 +36,13 @@
 
 package org.glassfish.web.admin.cli;
 
+import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
@@ -59,11 +65,6 @@ import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.TransactionFailure;
 
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
 /**
  * Delete virtual server command
  * 
@@ -78,26 +79,25 @@ public class DeleteVirtualServer implements AdminCommand {
     @Param(name="virtual_server_id", primary=true)
     String vsid;
 
-    @Inject
-    HttpService httpService;
-
-    @Inject
-    NetworkConfig networkConfig;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
+    private HttpService httpService;
+    private NetworkConfig networkConfig;
 
-    //xxx
-    
     /**
      * Executes the command with the command parameters passed as Properties
-     * where the keys are the paramter names and the values the parameter values
+     * where the keys are the parameter names and the values the parameter values
      *
      * @param context information
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
- 
+        httpService = config.getHttpService();
+        networkConfig = config.getNetworkConfig();
+
         if(!exists()) {
             report.setMessage(localStrings.getLocalString("delete.virtual.server.notexists", "{0} doesn't exist", vsid));
             report.setActionExitCode(ExitCode.FAILURE);
@@ -129,7 +129,7 @@ public class DeleteVirtualServer implements AdminCommand {
                 proxies[i+1] = appRefs.get(i);
             }
 
-            ConfigSupport.apply(new Config(vsid), proxies);
+            ConfigSupport.apply(new ConfigUpdate(vsid), proxies);
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
         } catch(TransactionFailure e) {
@@ -167,8 +167,8 @@ public class DeleteVirtualServer implements AdminCommand {
         return null;
     }
 
-    private static class Config implements ConfigCode {
-        private Config(String vsid) {
+    private static class ConfigUpdate implements ConfigCode {
+        private ConfigUpdate(String vsid) {
             this.vsid = vsid;
         }
         public Object run(ConfigBeanProxy... proxies) throws PropertyVetoException, TransactionFailure {

@@ -36,30 +36,27 @@
 
 package org.glassfish.web.admin.cli;
 
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.Transports;
-import com.sun.grizzly.config.dom.Transport;
+import java.util.List;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.Transport;
+import com.sun.grizzly.config.dom.Transports;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-
-import com.sun.grizzly.config.dom.NetworkListener;
-import java.beans.PropertyVetoException;
-
-import java.util.List;
 
 /**
  * Delete Transport command
@@ -78,8 +75,8 @@ public class DeleteTransport implements AdminCommand {
 
     Transport transportToBeRemoved = null;
     
-    @Inject
-    Configs configs;
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Config config;
     
     /**
      * Executes the command with the command parameters passed as Properties
@@ -90,8 +87,6 @@ public class DeleteTransport implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
-        List <Config> configList = configs.getConfig();
-        Config config = configList.get(0);
         NetworkConfig networkConfig = config.getNetworkConfig();
         Transports transports = networkConfig.getTransports();
 
@@ -127,8 +122,7 @@ public class DeleteTransport implements AdminCommand {
             }
 
             ConfigSupport.apply(new SingleConfigCode<Transports>() {
-                public Object run(Transports param)
-                throws PropertyVetoException, TransactionFailure {
+                public Object run(Transports param) {
                     param.getTransport().remove(transportToBeRemoved);
                     return transportToBeRemoved;
                 }

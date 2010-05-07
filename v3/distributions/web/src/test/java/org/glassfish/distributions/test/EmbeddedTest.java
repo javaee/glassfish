@@ -36,39 +36,40 @@
 
 package org.glassfish.distributions.test;
 
-
-import java.util.*;
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.ScatteredArchive;
-import org.glassfish.api.embedded.ScatteredArchive.Builder;
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.admin.AdminInfo;
-import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
-import org.glassfish.api.embedded.admin.CommandExecution;
-import org.glassfish.api.embedded.admin.CommandParameters;
-import org.glassfish.api.ActionReport.MessagePart;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.distributions.test.ejb.SampleEjb;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import com.sun.grizzly.config.dom.NetworkConfig;
+import com.sun.grizzly.config.dom.NetworkListener;
+import org.glassfish.api.ActionReport.MessagePart;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.api.deployment.DeployCommandParameters;
+import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.api.embedded.EmbeddedContainer;
+import org.glassfish.api.embedded.EmbeddedDeployer;
+import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.ScatteredArchive;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.admin.AdminInfo;
+import org.glassfish.api.embedded.admin.CommandExecution;
+import org.glassfish.api.embedded.admin.CommandParameters;
+import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
+import org.glassfish.distributions.test.ejb.SampleEjb;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class EmbeddedTest {
 
