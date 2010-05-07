@@ -1014,6 +1014,10 @@ public class PackageAnalyser {
                 return files.toArray(new File[files.size()]);
             }
         };
+        if (!f.exists()) {
+            System.err.println(repoPath + " does not exist.");
+            System.exit(-1);
+        }
         OSGiFactoryImpl.initialize(null);
         Repository moduleRepository = new OSGiDirectoryBasedRepository("repo", f);
         moduleRepository.initialize();
