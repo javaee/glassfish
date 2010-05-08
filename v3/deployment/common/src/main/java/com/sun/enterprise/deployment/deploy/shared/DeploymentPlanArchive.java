@@ -173,7 +173,7 @@ public class DeploymentPlanArchive extends JarArchive implements ReadableArchive
             String mangledName = entryName;
             String prefix = "META-INF/";
             if (entryName.indexOf("sun-web.xml")!=-1 || 
-                entryName.indexOf("gf-web.xml")!=-1) {
+                entryName.indexOf("glassfish-web.xml")!=-1) {
                 prefix = "WEB-INF/";
             }  
             if (subArchiveUri != null && entryName.startsWith(subArchiveUri)) {

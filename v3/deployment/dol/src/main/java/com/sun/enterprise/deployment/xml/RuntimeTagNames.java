@@ -56,10 +56,10 @@ public interface RuntimeTagNames extends TagNames {
     public final static String WL_WEB_RUNTIME_TAG = "weblogic-web-app";
     public final static String WL_CONNECTOR_RUNTIME_TAG = "weblogic-connector";
 
-    public final static String GF_EJB_RUNTIME_TAG = "gf-ejb-jar";
-    public final static String GF_APPCLIENT_RUNTIME_TAG = "gf-application-client";
-    public final static String GF_APPLICATION_RUNTIME_TAG = "gf-application";
-    public final static String GF_WEB_RUNTIME_TAG = "gf-web-app";
+    public final static String GF_EJB_RUNTIME_TAG = "glassfish-ejb-jar";
+    public final static String GF_APPCLIENT_RUNTIME_TAG = "glassfish-application-client";
+    public final static String GF_APPLICATION_RUNTIME_TAG = "glassfish-application";
+    public final static String GF_WEB_RUNTIME_TAG = "glassfish-web-app";
 
     String AS_CONTEXT = "as-context";
     String AUTH_METHOD = "auth-method";

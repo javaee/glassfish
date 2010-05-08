@@ -13,19 +13,19 @@
 
   It must include a DOCTYPE of the following form:
 
-  <!DOCTYPE gf-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://glassfish.org/dtds/gf-web-app_3_0-0.dtd">
+  <!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-0.dtd">
 
 -->
 
 <!ENTITY % boolean "(yes | no | on | off | 1 | 0 | true | false)">
 
 <!-- root element for vendor specific web application (module) configuration -->
-<!ELEMENT gf-web-app (context-root?, security-role-mapping*, servlet*, idempotent-url-pattern*, session-config?,
+<!ELEMENT glassfish-web-app (context-root?, security-role-mapping*, servlet*, idempotent-url-pattern*, session-config?,
                        ejb-ref*, resource-ref*, resource-env-ref*,  service-ref*,
                        message-destination-ref*, cache?, class-loader?,
                        jsp-config?, locale-charset-info?, parameter-encoding?,
                        property*, valve*, message-destination*, webservice-description*)>
-<!ATTLIST gf-web-app error-url CDATA ""
+<!ATTLIST glassfish-web-app error-url CDATA ""
                       httpservlet-security-provider CDATA #IMPLIED>
 
 <!--

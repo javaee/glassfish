@@ -239,7 +239,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
             String compatProp = context.getAppProps().getProperty(
                 DeploymentProperties.COMPATIBILITY);
             // if user does not specify the compatibility property
-            // let's see if it's defined in gf-application.xml
+            // let's see if it's defined in glassfish-application.xml
             if (compatProp == null) {
                 GFApplicationXmlParser gfApplicationXmlParser =
                     new GFApplicationXmlParser(context.getSourceDir());
@@ -424,7 +424,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
         GFApplicationXmlParser(File baseDir) throws XMLStreamException, FileNotFoundException {
             InputStream input = null;
-            File f = new File(baseDir, "META-INF/gf-application.xml");
+            File f = new File(baseDir, "META-INF/glassfish-application.xml");
             if (f.exists()) {
                 input = new FileInputStream(f);
                 try {
@@ -453,7 +453,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
             int event = 0;
             boolean done = false;
-            skipRoot("gf-application");
+            skipRoot("glassfish-application");
 
             while (!done && (event = parser.next()) != END_DOCUMENT) {
 

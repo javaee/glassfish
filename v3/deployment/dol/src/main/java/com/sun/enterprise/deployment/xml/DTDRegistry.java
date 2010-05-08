@@ -276,27 +276,27 @@ public final class DTDRegistry {
     public static final String GF_WEBAPP_300_DTD_PUBLIC_ID = 
         "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN";
     public static final String GF_WEBAPP_300_DTD_SYSTEM_ID = 
-        "http://glassfish.org/dtds/gf-web-app_3_0-0.dtd";
+        "http://glassfish.org/dtds/glassfish-web-app_3_0-0.dtd";
 
     public static final String GF_APPLICATION_600_DTD_PUBLIC_ID =
         "-//GlassFish.org//DTD GlassFish Application Server 3.0 Java EE Application 6.0//EN";
     public static final String GF_APPLICATION_600_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/gf-application_6_0-0.dtd";
+        "http://glassfish.org/dtds/glassfish-application_6_0-0.dtd";
 
     public static final String GF_APPCLIENT_600_DTD_PUBLIC_ID =
         "-//GlassFish.org//DTD GlassFish Application Server 3.0 Java EE Application Client 6.0//EN";
     public static final String GF_APPCLIENT_600_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/gf-application-client_6_0-0.dtd";
+        "http://glassfish.org/dtds/glassfish-application-client_6_0-0.dtd";
 
     public static final String GF_EJBJAR_310_DTD_PUBLIC_ID =
         "-//GlassFish.org//DTD GlassFish Application Server 3.0 EJB 3.1//EN";
     public static final String GF_EJBJAR_310_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/gf-ejb-jar_3_1-0.dtd";
+        "http://glassfish.org/dtds/glassfish-ejb-jar_3_1-0.dtd";
 
     public static final String GF_EJBJAR_311_DTD_PUBLIC_ID =
         "-//GlassFish.org//DTD GlassFish Application Server 3.1 EJB 3.1//EN";
     public static final String GF_EJBJAR_311_DTD_SYSTEM_ID =
-        "http://glassfish.org/dtds/gf-ejb-jar_3_1-1.dtd";
+        "http://glassfish.org/dtds/glassfish-ejb-jar_3_1-1.dtd";
 }
 
 // END OF IASRI 4661135

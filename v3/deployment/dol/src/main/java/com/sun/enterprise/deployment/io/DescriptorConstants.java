@@ -69,7 +69,7 @@ public interface DescriptorConstants {
     String WL_PREFIX = "weblogic-";
 
     /** Prefix used for GF xmls */
-    String GF_PREFIX = "gf-";
+    String GF_PREFIX = "glassfish-";
 
     /** The name of the deployment descriptor entry in the application ear. */
     String APPLICATION_DD_ENTRY = "META-INF"+File.separator+"application.xml";

@@ -45,7 +45,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
 import java.io.InputStream;
 
 /**
- * A mini parser to parse sun-web.xml and gf-web.xml for entries of interest 
+ * A mini parser to parse sun-web.xml and glassfish-web.xml for entries of interest 
  * to us.
  * Currently, we only read context-root value.
  *
@@ -64,7 +64,7 @@ class SunWebXmlParser
 
     /**
      * The caller should close the input stream.
-     * @param in InputStream for sun-web.xml or gf-web.xml
+     * @param in InputStream for sun-web.xml or glassfish-web.xml
      */
     SunWebXmlParser(InputStream in) throws XMLStreamException
     {

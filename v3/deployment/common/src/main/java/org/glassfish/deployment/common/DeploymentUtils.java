@@ -59,7 +59,7 @@ public class DeploymentUtils {
     private static final String RA_XML = "META-INF/ra.xml";
     private static final String APPLICATION_XML = "META-INF/application.xml";    
     private static final String SUN_APPLICATION_XML = "META-INF/sun-application.xml";    
-    private static final String GF_APPLICATION_XML = "META-INF/gf-application.xml";    
+    private static final String GF_APPLICATION_XML = "META-INF/glassfish-application.xml";    
     private static final String EAR_EXTENSION = ".ear";
     private static final String WAR_EXTENSION = ".war";
     private static final String RAR_EXTENSION = ".rar";

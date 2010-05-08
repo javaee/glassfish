@@ -88,7 +88,7 @@ public class EarSniffer extends GenericCompositeSniffer {
         final List<String> result = new ArrayList<String>();
         result.add("META-INF/application.xml");
         result.add("META-INF/sun-application.xml");
-        result.add("META-INF/gf-application.xml");
+        result.add("META-INF/glassfish-application.xml");
         return result;
     }
 

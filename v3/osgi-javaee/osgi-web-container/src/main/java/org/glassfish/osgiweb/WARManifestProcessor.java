@@ -124,7 +124,7 @@ public class WARManifestProcessor
                             libs.add(name);
                         }
                     }
-                    String GF_WEB_XML = "WEB-INF/gf-web.xml";
+                    String GF_WEB_XML = "WEB-INF/glassfish-web.xml";
                     String SUN_WEB_XML = "WEB-INF/sun-web.xml";
                     if (!je.isDirectory() && je.getName().equals(GF_WEB_XML))
                     {
