@@ -2,8 +2,6 @@ package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.MultiMap;
 
-import java.util.Collection;
-
 import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
 import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
 
@@ -47,10 +45,6 @@ public class InhabitantFileBasedParser implements InhabitantParser {
 
     public String getLine() {
         return parser.getLine();
-    }
-
-    public String getTargetType() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void setImplName(String name) {

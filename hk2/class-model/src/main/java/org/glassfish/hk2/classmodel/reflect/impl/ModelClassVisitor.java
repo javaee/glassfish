@@ -64,8 +64,8 @@ public class ModelClassVisitor implements ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {        
 
-        String parentName = org.objectweb.asm.Type.getObjectType(superName).getClassName();
-        TypeProxy parent = typeBuilder.getHolder(parentName);
+        String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
+        TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName):null);
         String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
         type = typeBuilder.getType(access, className, parent);
         visitField=ctx.getConfig().getInjectionTargetAnnotations().isEmpty();

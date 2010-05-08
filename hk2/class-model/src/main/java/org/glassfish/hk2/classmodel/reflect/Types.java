@@ -59,6 +59,15 @@ public interface Types {
      * @param name the requested type name
      * @return a type instance
      */
-    public Type getByName(String name);
+    public Type getBy(String name);
+
+    /**
+     * Returns a Model instance given a name
+     *
+     * @param type type of the requested model
+     * @param name the requested type name
+     * @return the type instance or null if not found
+     */
+    public <T extends Type> T getBy(Class<T> type, String name);
     
 }

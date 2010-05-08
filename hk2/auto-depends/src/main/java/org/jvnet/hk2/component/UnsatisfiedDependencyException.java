@@ -1,9 +1,9 @@
 /*
- *
+ * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
+ * Copyright 2007-2008 Sun Microsystems, Inc. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,7 +11,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -20,9 +20,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,32 +34,72 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.InhabitantsDescriptor;
-import com.sun.hk2.component.InhabitantParser;
-import com.sun.hk2.component.InhabitantsScanner;
-import com.sun.hk2.component.KeyValuePairParser;
+package org.jvnet.hk2.component;
 
-import java.io.File;
-import java.io.IOException;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Member;
+import java.lang.annotation.Annotation;
 
 /**
- * Creates the inhabitants metadata based on classes introspection using the
- * class-model library.
+ * Exception thrown by the injection manager when a dependency is not satisfied when
+ * performing injection.
  *
  * @author Jerome Dochez
  */
-public class IntrospectionInhabitantsDescriptor  implements InhabitantsDescriptor {
+public class UnsatisfiedDependencyException extends ComponentException {
 
-    public IntrospectionInhabitantsDescriptor(File dir) {
+    Member member = null;
+
+
+    public UnsatisfiedDependencyException(Field target) {
+        this(target,null);
+    }
+    public UnsatisfiedDependencyException(Field target,Throwable cause) {
+        super("Unsatisfied dependency exception : " + target,cause);
+        this.member = target;
+    }
+    public UnsatisfiedDependencyException(Method target) {
+        this(target,null);
+    }
+    public UnsatisfiedDependencyException(Method target,Throwable cause) {
+        super("Unsatisfied dependency exception : " + target,cause);
+        this.member = target;
     }
 
-    public String getSystemId() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean isField() {
+        return member instanceof Field;
     }
 
-    public Iterable<InhabitantParser> createScanner() throws IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean isMethod() {
+        return member instanceof Method;
+    }
+
+    public String getUnsatisfiedName() {
+        String name = member.getName();
+        if (isMethod()) {
+            return name.substring(3).toLowerCase();
+        }
+        return name;
+    }
+
+    public AnnotatedElement getUnsatisfiedElement() {
+        try {
+            return AnnotatedElement.class.cast(member);
+        } catch(ClassCastException e) {
+            return null;
+        }
+    }
+
+    public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
+        AnnotatedElement annotated = getUnsatisfiedElement();
+        if (annotated!=null) {
+            return annotated.getAnnotation(annotationType);
+        } else {
+            return null;
+        }
     }
 }

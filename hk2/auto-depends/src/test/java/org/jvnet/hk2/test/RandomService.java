@@ -46,7 +46,7 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class RandomService implements RandomContract {
     
-    public void someMethod(String parameter) {
-
+    public String someMethod(String parameter) {
+        return parameter+parameter;
     }
 }
