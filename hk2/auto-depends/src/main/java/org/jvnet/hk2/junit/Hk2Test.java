@@ -39,7 +39,7 @@ package org.jvnet.hk2.junit;
 import org.junit.runner.RunWith;
 
 /**
- * Superclass for hk2 tests, so far to avoid having to annotate with @RunWith
+ * Super class for hk2 tests, so far to avoid having to annotate with @RunWith
  *
  * @author Jerome Dochez
  */

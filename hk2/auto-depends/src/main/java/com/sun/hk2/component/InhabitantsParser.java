@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.Inhabitants;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Parses <tt>/META-INF/inhabitants</tt> and populate {@link Habitat}.
@@ -114,6 +115,8 @@ public class InhabitantsParser {
      * All the earlier drop/replace commands will be honored during this process.
      */
     public void parse(Iterable<InhabitantParser> scanner, Holder<ClassLoader> classLoader) throws IOException {
+        if (scanner==null)
+            return;
         for( InhabitantParser inhabitantParser : scanner) {
             String typeName = inhabitantParser.getImplName();
             if(replacements.containsKey(typeName)) {

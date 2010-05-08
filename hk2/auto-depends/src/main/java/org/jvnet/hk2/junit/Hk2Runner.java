@@ -36,16 +36,19 @@
  */
 package org.jvnet.hk2.junit;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.Description;
-import org.junit.runner.Result;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
+import org.jvnet.hk2.component.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * JUnit runner for hk2 enabled tests. Life-cycle of the test will be managed by
@@ -55,7 +58,7 @@ import java.lang.reflect.Method;
  */
 public class Hk2Runner extends Runner {
 
-    final Class testClass;
+    final Class<?> testClass;
     final Description description;
     
     public Hk2Runner(Class testClass) {
@@ -65,7 +68,6 @@ public class Hk2Runner extends Runner {
 
     @Override
     public Description getDescription() {
-        System.out.println("description is " + description.testCount());
         return description;        
     }
 
@@ -75,19 +77,38 @@ public class Hk2Runner extends Runner {
             notifier.fireTestIgnored(getDescription());
             return;
         }
+
+        // Run the @BeforeClass methods.
+        for (Method m : testClass.getMethods()) {
+            int mod = m.getModifiers();
+            if (Modifier.isStatic(mod) && m.getAnnotation(BeforeClass.class)!=null) {
+                if (m.getAnnotation(Ignore.class)!=null) continue;
+                try {
+                    m.invoke(null);
+                } catch (IllegalAccessException e) {
+                    Failure failure = new Failure(null, e);
+                    notifier.fireTestFailure(failure);
+                } catch (InvocationTargetException e) {
+                    Failure failure = new Failure(null, e);
+                    notifier.fireTestFailure(failure);
+                }
+            }
+        }
+
+        Habitat habitat = singleton.getHabitat();
+        // so far we don't support extra meta-data on our tests.
+        Womb womb = Wombs.create(testClass, habitat, new MultiMap<String, String>());
+        
         Object instance;
         try {
-            instance = testClass.newInstance();
-        } catch (InstantiationException e) {
-            notifier.fireTestFailure(new Failure(getDescription(),e));
-            return;
-        } catch (IllegalAccessException e) {
+            instance = womb.get();
+        } catch (ComponentException e) {
             notifier.fireTestFailure(new Failure(getDescription(),e));
             return;
         }
+
         for (Method m : testClass.getDeclaredMethods()) {
             Description testDescription = Description.createTestDescription(testClass, m.getName());
-            System.out.println("description is " + testDescription.testCount());
             System.out.println("Running " + m.toGenericString());
             if (m.isAnnotationPresent(Ignore.class)) {
                 notifier.fireTestIgnored(testDescription);
@@ -104,10 +125,33 @@ public class Hk2Runner extends Runner {
                     notifier.fireTestFailure(failure);
                 }
             }
-            notifier.fireTestFinished(testDescription);            
+            notifier.fireTestFinished(testDescription);
         }
+
+        // Run the @AfterClass methods.
+        for (Method m : testClass.getMethods()) {
+            int mod = m.getModifiers();
+            if (Modifier.isStatic(mod) && m.getAnnotation(AfterClass.class)!=null) {
+                if (m.getAnnotation(Ignore.class)!=null) continue;
+                try {
+                    m.invoke(null);
+                } catch (IllegalAccessException e) {
+                    Failure failure = new Failure(null, e);
+                    notifier.fireTestFailure(failure);
+                } catch (InvocationTargetException e) {
+                    Failure failure = new Failure(null, e);
+                    notifier.fireTestFailure(failure);
+                }
+            }
+        }
+        
 
     }
 
-    final static Singleton singleton = new Singleton();
+    @SuppressWarnings("unused")
+    public static Habitat getHabitat() {
+        return singleton.getHabitat();
+    }
+
+    final static Hk2TestServices singleton = new Hk2TestServices();
 }

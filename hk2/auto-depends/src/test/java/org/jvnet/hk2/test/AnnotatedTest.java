@@ -36,8 +36,10 @@
  */
 package org.jvnet.hk2.test;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.junit.Hk2Runner;
 
 /**
@@ -48,8 +50,12 @@ import org.jvnet.hk2.junit.Hk2Runner;
 @RunWith(Hk2Runner.class)
 public class AnnotatedTest {
 
+    @Inject
+    RandomService myService; // injection by type versus by contract
+
     @Test
     public void second() {
-        System.out.println("Another test");
+        Assert.assertTrue(myService!=null);
+        Assert.assertEquals(myService.someMethod("bar"), "barbar");
     }
 }

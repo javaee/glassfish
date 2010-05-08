@@ -50,5 +50,6 @@
     <name>OSGi repackaging of HK2 dependencies</name>
     <modules>
 	    <module>tiger-types</module>
+	    <module>asm-all</module>
     </modules>
 </project>

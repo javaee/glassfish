@@ -49,7 +49,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -71,7 +70,7 @@ public class ProxyModuleDefinition implements ModuleDefinition {
         }
 
         public ProxyModuleDefinition(ClassLoader classLoader, List<ManifestProxy.SeparatorMappings> mappings) throws IOException {
-            this(classLoader, null, Collections.singleton("default"));
+            this(classLoader, mappings, Collections.singleton("default"));
         }
 
         public ProxyModuleDefinition(ClassLoader classLoader, List<ManifestProxy.SeparatorMappings> mappings,
@@ -151,7 +150,6 @@ public class ProxyModuleDefinition implements ModuleDefinition {
         private static boolean ok(String[] ss) {
             return ss != null && ss.length > 0;
         }
-        private static final String[] EMPTY_STRING_ARRAY = new String[0];
         private static final ModuleDependency[] EMPTY_MODULE_DEFINITIONS_ARRAY = new ModuleDependency[0];
         private static URI[] uris = new URI[0];
 

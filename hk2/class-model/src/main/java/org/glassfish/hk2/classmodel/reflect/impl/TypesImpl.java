@@ -50,6 +50,10 @@ import java.util.*;
  */
 public class TypesImpl implements Types, TypeBuilder {
 
+    public TypesImpl() {
+        System.out.println("TypesIMpl creation");
+    }
+
     public Collection<Type> getAllTypes() {
         List<Type> allTypes = new ArrayList<Type>();
         for (TypeProxy typeProxy : map.values()) {
@@ -61,9 +65,19 @@ public class TypesImpl implements Types, TypeBuilder {
     }
 
     @Override
-    public Type getByName(String name) {
+    public Type getBy(String name) {
         TypeProxy proxy = map.get(name);
         return (proxy!=null?proxy.get():null);
+    }
+
+    @Override
+    public <T extends Type> T getBy(Class<T> type, String name) {
+        Type t = getBy(name);
+        try {
+            return type.cast(t);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     public ModelBuilder getModelBuilder(String name, String parentName) {

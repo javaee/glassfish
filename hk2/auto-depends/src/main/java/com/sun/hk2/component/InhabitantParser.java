@@ -17,8 +17,6 @@ public interface InhabitantParser {
 
     void setImplName(String name);
 
-    String getTargetType();
-
     String getLine();
 
     void rewind();

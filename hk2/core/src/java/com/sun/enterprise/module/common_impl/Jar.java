@@ -39,7 +39,11 @@ package com.sun.enterprise.module.common_impl;
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
+import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
+import com.sun.hk2.component.IntrospectionScanner;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -114,7 +118,26 @@ public abstract class Jar {
             File inhabitantFileLocation = new File(dir, InhabitantsFile.PATH);
             if (!inhabitantFileLocation.exists()) {
                 // rely on introspection...
-                result.addHabitat("default", new IntrospectionInhabitantsDescriptor(dir));
+                result.addHabitat("default", new InhabitantsDescriptor() {
+                    public String getSystemId() {
+                        return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    }
+
+
+
+                    public Iterable<InhabitantParser> createScanner() throws IOException {
+                        ParsingContext context = (new ParsingContext.Builder()).build();
+                        Parser parser = new Parser(context);
+                        parser.parse(dir, null);
+                        try {
+                            parser.awaitTermination();
+                        } catch (InterruptedException e) {
+                            throw new IOException(e);
+                        }
+
+                        return new IntrospectionScanner(context);
+                    }                    
+                });
             }
             for( File svc : fixNull(new File(dir, InhabitantsFile.PATH).listFiles())) {
                 if(svc.isDirectory())

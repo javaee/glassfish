@@ -1,12 +1,13 @@
 -exportcontents: \
                             org.jvnet.hk2.component; \
                             org.jvnet.hk2.annotations; \
+                            org.glassfish.hk2.classmodel.reflect; \
+                            org.glassfish.hk2.classmodel.reflect.util; \
                             com.sun.hk2.component; version=${project.osgi.version}
 
 Import-Package: \
                         org.junit;resolution:=optional, \
                         org.junit.runner;resolution:=optional, \
                         org.junit.runner.notification;resolution:=optional, \
-                        org.glassfish.hk2.classmodel.reflect;resolution:=optional, \
-                        org.glassfish.hk2.classmodel.reflect.util;resolution:=optional, \
+                        org.objectweb.asm;password=GlassFish;resolution:=optional, \
                         *

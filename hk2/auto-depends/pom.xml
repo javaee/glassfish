@@ -13,30 +13,31 @@
     <description>${project.name}</description>
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>               
+        <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                  <execution>
-                    <id>unpack</id>
-                    <phase>process-resources</phase>
-                    <goals>
-                      <goal>unpack</goal>
-                    </goals>
-                  </execution>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.glassfish.hk2</groupId>
+                                    <artifactId>class-model</artifactId>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
                 </executions>
-                <configuration>
-                    <artifactItems>
-                   		<dependency>
-                        	<groupId>org.glassfish.hk2</groupId>
-                            <artifactId>class-model</artifactId>
-                            <version>${project.version}</version>
-                        </dependency>                        
-                    </artifactItems>
-                </configuration>
-            </plugin-->
+            </plugin>
             <plugin>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
@@ -78,11 +79,14 @@
         	<groupId>org.glassfish.hk2</groupId>
             <artifactId>class-model</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
    		<dependency>
         	<groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
+            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <profiles>
