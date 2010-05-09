@@ -108,9 +108,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.external</groupId>
+            <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>asm-all-repackaged</artifactId>
-            <version>${project.version}</version>
+            <version>${hk2.version}</version>
         </dependency>
     </dependencies>
     <build>

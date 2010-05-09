@@ -40,8 +40,6 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
-import org.jvnet.hk2.component.InjectionManager;
-import org.jvnet.hk2.component.UnsatisfiedDepedencyException;
 import org.jvnet.hk2.component.ComponentException;
 import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.Param;

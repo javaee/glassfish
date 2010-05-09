@@ -71,9 +71,6 @@ import org.jvnet.hk2.component.PerLookup;
 public class ListContracts implements AdminCommand {
 
     @Inject
-    ModulesRegistry modulesRegistry;
-
-    @Inject
     Habitat habitat;
 
     @Param(primary = true, optional = true)

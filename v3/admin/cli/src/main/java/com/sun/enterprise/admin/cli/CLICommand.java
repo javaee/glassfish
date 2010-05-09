@@ -721,7 +721,7 @@ public abstract class CLICommand implements PostConstruct {
         // inject
         try {
             injectionMgr.inject(this, injector);
-        } catch (UnsatisfiedDepedencyException e) {
+        } catch (UnsatisfiedDependencyException e) {
             throw new CommandValidationException(e.getMessage(), e);
         }
     }

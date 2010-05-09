@@ -62,7 +62,6 @@
         <module>sysnet-registration</module>
         <module>commons-codec</module>
         <module>ldapbp</module>
-        <module>asm-all</module>
         <module>dbschema</module>
         <module>schema2beans</module>
 	<module>antlr</module>

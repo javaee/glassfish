@@ -73,8 +73,8 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
     @Inject
     private volatile ServerEnvironmentImpl env = null;
 
-    @Inject(name="Security SSL Password Provider Service")
-    private MasterPassword masterPasswordHelper;
+    @Inject(name="Security SSL Password Provider Service", optional=true)
+    private MasterPassword masterPasswordHelper=null;
 
     private volatile char[] masterPassword;
 
@@ -106,7 +106,8 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
         //if (!success)
             //logger.warning("THIS SHOULD BE FIXED, IN EMBEDDED CASE, THERE IS NO MASTER PASSWORD SET OR KEYSTORE DOES NOT EXIST ...");
 
-        masterPasswordHelper.setMasterPassword(masterPassword);
+        if (masterPasswordHelper!=null)
+            masterPasswordHelper.setMasterPassword(masterPassword);
         // TODO: Remove once Grizzly provides a method to set the store passwords.
         setJSSEProperties();
         Arrays.fill(masterPassword, ' ');
