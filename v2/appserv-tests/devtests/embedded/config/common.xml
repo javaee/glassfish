@@ -385,12 +385,25 @@ Variables Used:
 <!-- Target to execute asadmin commands  -->
 <!-- ================================================================ -->
 <target name="asadmin-common">
+    <antcall name="asadmin-common-regular"/>
+    <antcall name="asadmin-common-embedded"/>
+</target>
+
+<target name="asadmin-common-regular" unless="env.EMBEDDED">
   <echo message="Doing admin task ${admin.command}" level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
   <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="${admin.command} ${as.props} ${operand.props}" />        
     </exec>
+</target>
+
+
+<target name="asadmin-common-embedded" if="env.EMBEDDED">
+  <echo message="Doing admin task ${admin.command} in EMBEDDEDMODE " level="verbose"/>
+  <echo message="Operand ${operand.props}"  level="verbose"/>
+  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
+  <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}" />
 </target>
 
 <target name="asadmin-common-ignore-fail">
