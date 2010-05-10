@@ -35,13 +35,23 @@ public class InstanceInfo {
 
     public void runAdvancedTest() {
         Socket socket = NetUtils.getClientSocket(host, port, 1000);
+        BufferedReader reader = null  ;
+
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         }
         catch (IOException ex) {
             running = false;
         }
-
+        finally {
+            try {
+                if(reader != null)
+                    reader.close(); 
+            }
+            catch(Exception e) {
+                // ignore
+            }
+        }
     }
 /**
      * @return the host

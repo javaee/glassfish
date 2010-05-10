@@ -5,6 +5,7 @@
 package com.sun.enterprise.util.io;
 
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.File;
 import java.io.FileFilter;
@@ -39,14 +40,14 @@ public final class DomainDirs {
                 systemProps.get(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
 
             if(defDomains == null)
-                throw new IOException("can't find default domains directory");
+                throw new IOException(strings.get("Domain.noDomainsDir",
+                        SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
 
             domainsDir = new File(defDomains);
         }
 
         if(!domainsDir.isDirectory()) {
-            throw new IOException("error");
-            //strings.get("Domain.badDomainsDir", domainsDir));
+            throw new IOException(strings.get("Domain.badDomainsDir", domainsDir));
         }
 
         File domainDir;
@@ -59,12 +60,8 @@ public final class DomainDirs {
         }
 
         if(!domainDir.isDirectory()) {
-            throw new IOException("bad domain dir");
-            //strings.get("Domain.badDomainDir", domainRootDir));
+            throw new IOException(strings.get("Domain.badDomainDir", domainDir));
         }
-
-        if(!new File(domainDir, "config").isDirectory())
-            throw new IOException("no config dir");
 
         dirs = new ServerDirs(domainDir);
     }
@@ -132,17 +129,24 @@ public final class DomainDirs {
             }
         });
 
-        if(files == null || files.length == 0) {
-            throw new IOException("");
-            //strings.get("Domain.noDomainDirs", parent));
-        }
+        if(files == null || files.length == 0)
+            throw new IOException(strings.get("Domain.noDomainDirs", parent));
 
         if(files.length > 1) {
-            throw new IOException("");
-            //strings.get("Domain.tooManyDomainDirs", parent));
+            String names = "";
+            
+            for(int i = 0 ; i < files.length; i++) {
+                if(i > 0)
+                    names += ", ";
+                names += files[i].getName();
+            }
+            
+            throw new IOException(strings.get("Domain.tooManyDomainDirs", names));
         }
+
         return files[0];
     }
 
     private final ServerDirs dirs;
+    private final static LocalStringsImpl strings = new LocalStringsImpl(DomainDirs.class);
 }
