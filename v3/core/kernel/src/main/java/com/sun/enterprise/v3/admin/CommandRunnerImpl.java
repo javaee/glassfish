@@ -36,8 +36,6 @@
 
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.module.common_impl.LogHelper;
 
 import java.io.*;
@@ -95,12 +93,6 @@ public class CommandRunnerImpl implements CommandRunner {
 
     @Inject
     private ServerContext sc;
-
-    @Inject
-    private ServerEnvironment serverEnv;
-
-    @Inject
-    private Domain domain;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
@@ -839,49 +831,6 @@ public class CommandRunnerImpl implements CommandRunner {
                     new MapInjectionResolver(model, parameters);
         doCommand(model, command, injectionMgr, report,
                     inv.inboundPayload(), inv.outboundPayload());
-        /*
-         * Command execution completed; If this is DAS and the command succeeded,
-         * time to replicate; At this point we will get the appropriate ClusterExecutor
-         * and give it complete control; We will let the executor take care all considerations
-         * (like RuntimeType settings, FailurePolicy settings etc)
-         * and just give the final execution results which we will set as is in the Final
-         * Action report returned to the caller.
-         */
-        // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
-        Config cfg = domain.getConfigs().getConfigByName("server-config");
-        List<String> jvmOpts=cfg.getJavaConfig().getJvmOptions();
-        if(!jvmOpts.contains("-Dcommand.replication.enabled=true"))
-            return;
-        //TODO : Remove the above flag check by MS2
-        
-        if(serverEnv.getRuntimeType().isDas() &&
-                report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            Cluster clAnnotation = command.getClass().getAnnotation(Cluster.class);
-            ClusterExecutor executor = null;
-            if(clAnnotation != null && clAnnotation.executor() != null) {
-                try {
-                    executor = clAnnotation.executor().newInstance();
-                } catch(InstantiationException iex) {
-                    logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.instantiationfailure",
-                            "Unable to initialize specified exector class {0} : {1}", clAnnotation.executor(),
-                            iex.getLocalizedMessage()));
-                } catch(IllegalAccessException aex) {
-                    logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.instantiationfailure",
-                            "Unable to initialize specified exector class {0} : {1}", clAnnotation.executor(),
-                            aex.getLocalizedMessage()));
-                }
-            } else {
-                executor = habitat.getByContract(ClusterExecutor.class);
-            }
-            if(executor == null) {
-                logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.notinitialized",
-                        "Unable to get an instance of ClusterExecutor; Cannot dynamically reconfigure instances"));
-                return;
-            }
-            report.setActionExitCode(executor.execute(model.getCommandName(), command,
-                    new AdminCommandContext(logger, report, inv.inboundPayload(), inv.outboundPayload()),
-                    parameters));
-        }
     }
 
     /*
