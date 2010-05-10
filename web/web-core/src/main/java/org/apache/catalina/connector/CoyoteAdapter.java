@@ -76,7 +76,6 @@ import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.buf.ByteChunk;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.mapper.MappingData;
 import com.sun.appserv.ProxyHandler;
 
@@ -144,9 +143,6 @@ public class CoyoteAdapter
         super();
         this.connector = connector;
         this.debug = connector.getDebug();
-        // START GlassFish 936
-        urlEncoder.addSafeCharacter('/');
-        // END GlassFish 936
     }
 
 
@@ -164,9 +160,6 @@ public class CoyoteAdapter
      */
     private int debug = 0;
 
-    // START GlassFish 936
-    private UEncoder urlEncoder = new UEncoder();
-    // END GlassFish 936
 
     /**
      * The string manager for this package.
@@ -580,7 +573,7 @@ public class CoyoteAdapter
                     + request.getRequestedSessionId();
             }            
             // START GlassFish 936
-            redirectPath = urlEncoder.encodeURL(redirectPath);
+            redirectPath = response.encode(redirectPath);
             // END GlassFish 936
             if (query != null) {
                 // This is not optimal, but as this is not very common, it

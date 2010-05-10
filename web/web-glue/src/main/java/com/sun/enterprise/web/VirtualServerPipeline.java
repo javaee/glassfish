@@ -53,7 +53,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.core.StandardPipeline;
-import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.buf.CharChunk;
 
 import com.sun.logging.LogDomains;
@@ -79,7 +78,6 @@ public class VirtualServerPipeline extends StandardPipeline {
     private ArrayList<RedirectParameters> redirects;
 
     private ConcurrentLinkedQueue<CharChunk> locations;
-    private ConcurrentLinkedQueue<UEncoder> urlEncoders;
 
     /**
      * Constructor.
@@ -91,7 +89,6 @@ public class VirtualServerPipeline extends StandardPipeline {
         super(vs);
         this.vs = vs;
         locations = new ConcurrentLinkedQueue<CharChunk>();
-        urlEncoders = new ConcurrentLinkedQueue<UEncoder>();
     }
 
     /**
@@ -270,7 +267,6 @@ public class VirtualServerPipeline extends StandardPipeline {
             }
      
             CharChunk locationCC = null;
-            UEncoder urlEncoder = null;
 
             if (redirectMatch.isEscape) {
                 try {
@@ -286,12 +282,7 @@ public class VirtualServerPipeline extends StandardPipeline {
                         locationCC.append(":");
                         locationCC.append(String.valueOf(url.getPort()));
                     }
-                    urlEncoder = urlEncoders.poll();
-                    if (urlEncoder == null){
-                        urlEncoder = new UEncoder();
-                        urlEncoder.addSafeCharacter('/');
-                    }
-                    locationCC.append(urlEncoder.encodeURL(url.getPath()));
+                    locationCC.append(response.encode(url.getPath()));
                     if (queryString != null) {
                         locationCC.append("?");
                         locationCC.append(url.getQuery());
@@ -310,9 +301,6 @@ public class VirtualServerPipeline extends StandardPipeline {
                         }
                     }
                 } finally {
-                    if (urlEncoder != null) {
-                        urlEncoders.offer(urlEncoder);
-                    }
                     if (locationCC != null) {
                         locationCC.recycle();
                         locations.offer(locationCC);
