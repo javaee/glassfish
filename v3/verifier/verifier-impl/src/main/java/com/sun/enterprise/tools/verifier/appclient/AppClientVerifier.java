@@ -97,7 +97,8 @@ public class AppClientVerifier extends BaseVerifier {
 
     protected String[] getDDString() {
         String dd[] = {"META-INF/sun-application-client.xml", // NOI18N
-                       "META-INF/application-client.xml"}; // NOI18N
+                       "META-INF/application-client.xml", 
+                       "META-INF/glassfish-application-client.xml"}; // NOI18N
         return dd;
     }
 

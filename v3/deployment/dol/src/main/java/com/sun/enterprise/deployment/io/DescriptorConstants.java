@@ -150,7 +150,7 @@ public interface DescriptorConstants {
     String GF_EJB_JAR_ENTRY = "META-INF/" + GF_PREFIX + "ejb-jar.xml";
 
     /** The name of the glassfish deployment descriptor entry in the client jar. */
-    String GF_APP_CLIENT_JAR_ENTRY = "META-INF/"+ WL_PREFIX + "application-client.xml";
+    String GF_APP_CLIENT_JAR_ENTRY = "META-INF/"+ GF_PREFIX + "application-client.xml";
 
 
     /** The name of the WEB-INF entry in a war. */

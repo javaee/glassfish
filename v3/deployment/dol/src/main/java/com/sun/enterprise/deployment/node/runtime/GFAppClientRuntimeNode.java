@@ -34,39 +34,55 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.io.runtime;
+package com.sun.enterprise.deployment.node.runtime;
 
-import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.DescriptorConstants;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.runtime.application.GFApplicationRuntimeNode;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.xml.DTDRegistry;
+
+import java.util.Map;
+
 
 /**
- * This class is responsible for handling the XML configuration information
- * for the Glassfish Application Container
+ * This node is responsible for handling all runtime information for 
+ * application client.
  */
-public class GFApplicationRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {  
-    /**
-     * @return the location of the DeploymentDescriptor file for a
-     * particular type of J2EE Archive
-     */
-    public String getDeploymentDescriptorPath() {
-        return DescriptorConstants.GF_APPLICATION_JAR_ENTRY;        
+public class GFAppClientRuntimeNode extends AppClientRuntimeNode {
+
+    public GFAppClientRuntimeNode(ApplicationClientDescriptor descriptor) {
+        super(descriptor);
     }
     
     /**
-     * @return a RootXMLNode responsible for handling the deployment
-     * descriptors associated with this J2EE module
-     *
-     * @param the descriptor for which we need the node
+     * @return the XML tag associated with this XMLNode
      */
-    public RootXMLNode getRootXMLNode(Descriptor descriptor) {
-   
-        if (descriptor instanceof Application) {
-            return new GFApplicationRuntimeNode((Application) descriptor);
-        }
-        return null;
+    protected XMLElement getXMLRootTag() {
+        return new XMLElement(RuntimeTagNames.GF_APPCLIENT_RUNTIME_TAG);
+    }    
+    
+    /** 
+     * @return the DOCTYPE that should be written to the XML file
+     */
+    public String getDocType() {
+        return DTDRegistry.GF_APPCLIENT_600_DTD_PUBLIC_ID;
     }
+    
+    /**
+     * @return the SystemID of the XML file
+     */
+    public String getSystemID() {
+        return DTDRegistry.GF_APPCLIENT_600_DTD_SYSTEM_ID;
+    }
+
+   /**
+    * register this node as a root node capable of loading entire DD files
+    * 
+    * @param publicIDToDTD is a mapping between xml Public-ID to DTD 
+    * @return the doctype tag name
+    */
+   public static String registerBundle(Map publicIDToDTD) {    
+       publicIDToDTD.put(DTDRegistry.GF_APPCLIENT_600_DTD_PUBLIC_ID, DTDRegistry.GF_APPCLIENT_600_DTD_SYSTEM_ID);
+       return RuntimeTagNames.GF_APPCLIENT_RUNTIME_TAG;       
+   }    
 }

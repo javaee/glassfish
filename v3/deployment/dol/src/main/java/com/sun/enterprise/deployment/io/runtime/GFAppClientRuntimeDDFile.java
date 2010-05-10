@@ -37,23 +37,23 @@
 package com.sun.enterprise.deployment.io.runtime;
 
 import com.sun.enterprise.deployment.Descriptor;
-import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.runtime.application.GFApplicationRuntimeNode;
+import com.sun.enterprise.deployment.node.runtime.GFAppClientRuntimeNode;
 
 /**
  * This class is responsible for handling the XML configuration information
- * for the Glassfish Application Container
+ * for the Glassfish Application Client Container
  */
-public class GFApplicationRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {  
+public class GFAppClientRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {  
     /**
      * @return the location of the DeploymentDescriptor file for a
      * particular type of J2EE Archive
      */
     public String getDeploymentDescriptorPath() {
-        return DescriptorConstants.GF_APPLICATION_JAR_ENTRY;        
+        return DescriptorConstants.GF_APP_CLIENT_JAR_ENTRY;        
     }
     
     /**
@@ -64,8 +64,8 @@ public class GFApplicationRuntimeDDFile extends ConfigurationDeploymentDescripto
      */
     public RootXMLNode getRootXMLNode(Descriptor descriptor) {
    
-        if (descriptor instanceof Application) {
-            return new GFApplicationRuntimeNode((Application) descriptor);
+        if (descriptor instanceof ApplicationClientDescriptor) {
+            return new GFAppClientRuntimeNode((ApplicationClientDescriptor) descriptor);
         }
         return null;
     }

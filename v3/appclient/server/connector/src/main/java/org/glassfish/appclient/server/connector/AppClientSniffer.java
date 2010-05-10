@@ -55,7 +55,7 @@ import java.util.ArrayList;
 @Scoped(Singleton.class)
 public class AppClientSniffer extends GenericSniffer implements Sniffer {
     private static final String[] stigmas = {
-        "META-INF/application-client.xml", "META-INF/sun-application-client.xml"
+        "META-INF/application-client.xml", "META-INF/sun-application-client.xml", "META-INF/glassfish-application-client.xml"
     };
 
     private static final String[] containers = {"appclient"};
@@ -129,6 +129,7 @@ public class AppClientSniffer extends GenericSniffer implements Sniffer {
         final List<String> result = new ArrayList<String>();
         result.add("META-INF/application-client.xml");
         result.add("META-INF/sun-application-client.xml");
+        result.add("META-INF/glassfish-application-client.xml");
         return result;
     }
 
