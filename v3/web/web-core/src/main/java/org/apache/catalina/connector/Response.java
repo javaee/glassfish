@@ -1241,6 +1241,17 @@ public class Response
 
 
     /**
+     * Apply URL Encoding to the given URL without adding session identifier
+     * et al associated to this response.
+     *
+     * @param url URL to be encoded
+     */
+    public String encode(String url) {
+        return urlEncoder.encodeURL(url);
+    }
+
+
+    /**
      * Send an acknowledgment of a request.
      * 
      * @exception IOException if an input/output error occurs

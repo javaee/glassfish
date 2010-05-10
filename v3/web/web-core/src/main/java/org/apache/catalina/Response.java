@@ -306,4 +306,11 @@ public interface Response {
         throws IOException;
 
 
+    /**
+     * Apply URL Encoding to the given URL without adding session identifier
+     * et al associated to this response.
+     *
+     * @param url URL to be encoded
+     */
+    public String encode(String url);
 }

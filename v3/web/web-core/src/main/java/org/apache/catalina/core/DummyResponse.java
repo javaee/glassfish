@@ -149,6 +149,7 @@ public class DummyResponse
     public String encodeRedirectUrl(String url) { return null; }
     public String encodeURL(String url) { return null; }
     public String encodeUrl(String url) { return null; }
+    public String encode(String url) { return null; }
     public void sendAcknowledgement() throws IOException {}
     public void sendError(int status) throws IOException {}
     public void sendError(int status, String message) throws IOException {}

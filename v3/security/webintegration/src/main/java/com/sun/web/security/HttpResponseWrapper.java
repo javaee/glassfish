@@ -218,4 +218,8 @@ class HttpResponseWrapper extends HttpServletResponseWrapper
     public void sendAcknowledgement() throws IOException {
         httpResponse.sendAcknowledgement();
     }
+
+    public String encode(String url) {
+        return httpResponse.encode(url);
+    }
 }
