@@ -41,6 +41,7 @@ import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.AppClientRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.GFAppClientRuntimeDDFile;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.util.ModuleContentValidator;
@@ -137,6 +138,14 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile() {
+        return new GFAppClientRuntimeDDFile();
+    }
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     *         handling the Sun configuration deployment descriptors
+     */
+    public DeploymentDescriptorFile getSunConfigurationDDFile() {
         return new AppClientRuntimeDDFile();
     }
 
