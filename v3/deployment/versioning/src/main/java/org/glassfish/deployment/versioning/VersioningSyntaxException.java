@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,29 +32,20 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
 
-package org.glassfish.api.deployment;
-
-import org.glassfish.api.Param;
+package org.glassfish.deployment.versioning;
 
 /**
- * parameters passed to commands changing the state of a deployed application
+ * This class is an exception used when application name that complies
+ * with versioning incorporates critical pattern.
+ *
+ * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
  */
-public class StateCommandParameters extends OpsParams {
 
-    @Param(primary=true)
-    public String component = null;
+public class VersioningSyntaxException extends VersioningException{
 
-    @Param(optional=true)
-    public String target = "server";
-
-    public String name() {
-        return component;
-    }
-
-    public String libraries() {
-        throw new IllegalStateException("We need to be able to get access to libraries when enabling/disabling");
+    VersioningSyntaxException(String msg) {
+        super(msg);
     }
 }

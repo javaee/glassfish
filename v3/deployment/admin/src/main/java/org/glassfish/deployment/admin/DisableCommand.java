@@ -65,6 +65,11 @@ import org.jvnet.hk2.config.TransactionFailure;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.beans.PropertyVetoException;
+import java.util.Collections;
+import java.util.List;
+
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningException;
 
 /**
  * Disable command
@@ -86,6 +91,9 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
+    @Inject
+    VersioningService versioningService;
+
     public DisableCommand() {
         origin = Origin.unload;
     }
@@ -99,29 +107,54 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        if (!deployment.isRegistered(name())) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));
+        String appName = name();
+
+        try {
+            List<String> matchedVersions = versioningService.getMatchedVersions(appName);
+            if (matchedVersions == Collections.EMPTY_LIST) {
+                // no version matched by the expression
+                // nothing to do : success
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                return;
+            }
+            String enabledVersion = versioningService.getEnabledVersion(appName, target);
+            if (matchedVersions.contains(enabledVersion)) {
+                // the enabled version is matched by the expression
+                appName = enabledVersion;
+            } else {
+                // the enabled version is not matched by the expression
+                // nothing to do : success
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                return;
+            }
+        } catch (VersioningException e) {
+            report.failure(logger, e.getMessage());
+            return;
+        }
+
+        if (!deployment.isRegistered(appName)) {
+            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
 
         }
         // return if the application is already in disabled state
         if (!Boolean.valueOf(ConfigBeansUtilities.getEnabled(target,
-            name()))) {
+            appName))) {
             logger.fine("The application is already disabled");
             return;
         }
 
-        ApplicationInfo appInfo = deployment.get(name());
+        ApplicationInfo appInfo = deployment.get(appName);
 
         try {
             UndeployCommandParameters commandParams = 
                 new UndeployCommandParameters();
             commandParams.origin = this.origin;
-            commandParams.name = this.name();
+            commandParams.name = appName;
             final ExtendedDeploymentContext deploymentContext = 
                     deployment.getBuilder(logger, commandParams, report).source(appInfo.getSource()).build();
-            ApplicationName module = ConfigBeansUtilities.getModule(name());
+            ApplicationName module = ConfigBeansUtilities.getModule(appName);
             Application application = null;
             if (module instanceof Application) {
                 application = (Application) module;
@@ -139,7 +172,7 @@ public class DisableCommand extends StateCommandParameters implements AdminComma
             if (report.getActionExitCode().equals(
                 ActionReport.ExitCode.SUCCESS)) {
             for (ApplicationRef ref : server.getApplicationRef()) {
-                if (ref.getRef().equals(name())) {
+                if (ref.getRef().equals(appName)) {
                     ConfigSupport.apply(new SingleConfigCode<ApplicationRef>() {
                         public Object run(ApplicationRef param) throws
                                 PropertyVetoException, TransactionFailure {

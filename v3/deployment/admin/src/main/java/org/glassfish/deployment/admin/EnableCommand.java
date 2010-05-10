@@ -70,6 +70,9 @@ import java.net.URI;
 import java.beans.PropertyVetoException;
 import org.glassfish.deployment.common.ApplicationConfigInfo;
 
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+
 /**
  * Enable command
  */
@@ -95,6 +98,9 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
+    @Inject
+    VersioningService versioningService;
+
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
@@ -102,6 +108,14 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
+
+        // try to disable the enabled version, if exist
+        try {
+            versioningService.handleDisable(name(),target, report);
+        } catch (VersioningSyntaxException e) {
+            report.failure(logger, e.getMessage());
+            return;
+        }
         
         if (!deployment.isRegistered(name())) {
             report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name()));

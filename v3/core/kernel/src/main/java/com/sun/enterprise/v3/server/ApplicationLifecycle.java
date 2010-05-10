@@ -84,6 +84,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+
 /**
  * Application Loader is providing utitily methods to load applications
  *
@@ -131,6 +134,9 @@ public class ApplicationLifecycle implements Deployment {
 
     @Inject
     Events events;
+
+    @Inject
+    VersioningService versioningService;
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
@@ -1055,9 +1061,19 @@ public class ApplicationLifecycle implements Deployment {
             DeploymentUtils.getDefaultEEName(sourceFile.getName()));   
 
         if (!(sourceFile.isDirectory())) {
+
+            String repositoryBitName = copy.params().name();
+            try {
+                repositoryBitName = versioningService.getRepositoryName(repositoryBitName);
+            } catch (VersioningSyntaxException e) {
+                ActionReport report = copy.report();
+                report.setMessage(e.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            }
+            
             // create a temporary deployment context
             File expansionDir = new File(domain.getApplicationRoot(), 
-                copy.params().name());
+                repositoryBitName);
             if (!expansionDir.mkdirs()) {
                 /*
                  * On Windows especially a previous directory might have

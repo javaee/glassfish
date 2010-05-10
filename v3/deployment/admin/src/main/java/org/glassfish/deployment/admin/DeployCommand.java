@@ -83,6 +83,9 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.deployment.common.DownloadableArtifacts;
 
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningSyntaxException;
+
 
 /**
  * Deploy command
@@ -129,6 +132,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     @Inject
     Events events;
+
+    @Inject
+    VersioningService versioningService;
 
     private PayloadFilesManager.Perm payloadFilesMgr = null;
     private Map<File,Properties> payloadFiles = null;
@@ -215,6 +221,16 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             if (name==null) {
                 name = archiveHandler.getDefaultApplicationName(archive, initialContext);
+            }
+
+            if(enabled){
+                // try to disable the enabled version, if exist
+                try {
+                    versioningService.handleDisable(name,target, report);
+                } catch (VersioningSyntaxException e) {
+                    report.failure(logger, e.getMessage());
+                    return;
+                }
             }
 
             ActionReport.MessagePart part = report.getTopMessagePart();

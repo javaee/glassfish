@@ -138,7 +138,7 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;:#]*")
     public String getRef();
 
     /**

@@ -64,6 +64,11 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.List;
+
+import org.glassfish.deployment.versioning.VersioningService;
+import org.glassfish.deployment.versioning.VersioningException;
 
 /**
  * Undeploys applications.
@@ -86,6 +91,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
     @Inject
     Applications apps;
 
+    @Inject
+    VersioningService versioningService;
+
     public UndeployCommand() {
         origin = Origin.undeploy;
     }
@@ -100,120 +108,134 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
          */
         name = (new File(name)).getName();
 
-        ApplicationInfo info = deployment.get(name);
-
-        Application application = apps.getModule(Application.class, name);
-
-        if (application==null) {
-            report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", name));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE); 
+        // retrieve matched version(s) if exist
+        List<String> matchedVersions = null;
+        try {
+            matchedVersions = versioningService.getMatchedVersions(name);
+        } catch (VersioningException e) {
+            report.failure(logger, e.getMessage());
             return;
- 
         }
-        ReadableArchive source = null;
-        if (info==null) {
-            // disabled application or application failed to be
-            // loaded for some reason
-            if (application!=null) {
-                URI uri = null;
-                try {
-                    uri = new URI(application.getLocation());
-                } catch (URISyntaxException e) {
-                    logger.severe("Cannot determine original location for application : " + e.getMessage());
-                }
-                if (uri != null) {
-                    File location = new File(uri);
-                    if (location.exists()) {
-                        try {
-                            source = archiveFactory.openArchive(location);
-                        } catch (IOException e) {
-                            logger.log(Level.INFO, e.getMessage(),e );
+
+        // for each matched version
+        Iterator it = matchedVersions.iterator();
+        while (it.hasNext()) {
+            String appName = (String)it.next();
+            
+            ApplicationInfo info = deployment.get(appName);
+
+            Application application = apps.getModule(Application.class, appName);
+
+            if (application==null) {
+                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+
+            }
+            ReadableArchive source = null;
+            if (info==null) {
+                // disabled application or application failed to be
+                // loaded for some reason
+                if (application!=null) {
+                    URI uri = null;
+                    try {
+                        uri = new URI(application.getLocation());
+                    } catch (URISyntaxException e) {
+                        logger.severe("Cannot determine original location for application : " + e.getMessage());
+                    }
+                    if (uri != null) {
+                        File location = new File(uri);
+                        if (location.exists()) {
+                            try {
+                                source = archiveFactory.openArchive(location);
+                            } catch (IOException e) {
+                                logger.log(Level.INFO, e.getMessage(),e );
+                            }
+                        } else {
+                            logger.warning("Originally deployed application at "+ location + " not found");
                         }
-                    } else {
-                        logger.warning("Originally deployed application at "+ location + " not found");
                     }
                 }
-            }
-        } else {
-            source = info.getSource();
-        }
-
-        if (source == null) {
-            logger.fine("Cannot get source archive for undeployment"); 
-            // remove the application from the domain.xml so at least server is 
-            // in a consistent state
-            try {
-                deployment.unregisterAppFromDomainXML(name);
-            } catch(TransactionFailure e) {
-                logger.warning("Module " + name + " not found in configuration");
-            }
-            return;
-        }
-
-        File sourceFile = new File(source.getURI());
-        if (!source.exists()) {
-            logger.log(Level.WARNING, "Cannot find application bits at " + 
-                sourceFile.getPath());
-            // remove the application from the domain.xml so at least server is 
-            // in a consistent state
-            try {
-                deployment.unregisterAppFromDomainXML(name);
-            } catch(TransactionFailure e) {
-                logger.warning("Module " + name + " not found in configuration");
-            }
-            return;
-        }
-
-        ExtendedDeploymentContext deploymentContext = null;
-        try {
-            deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
-            report.setMessage(localStrings.getLocalString("undeploy.contextcreation.failed","Cannot create context for undeployment : {0} ", e.getMessage()));            
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
-        deploymentContext.getAppProps().putAll(application.getDeployProperties());
-
-        if (properties!=null) {
-            deploymentContext.getAppProps().putAll(properties);
-        }
-
-        deploymentContext.setModulePropsMap(
-            application.getModulePropertiesMap());
-
-        if (info!=null) {
-            deployment.undeploy(name, deploymentContext);
-        }
-
-        // check if it's directory deployment
-        boolean isDirectoryDeployed = false;
-        if (application!=null) {
-            isDirectoryDeployed = Boolean.valueOf(application.getDirectoryDeployed());
-        }
-
-        if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            // so far I am doing this after the unload, maybe this should be moved before...
-            try {
-                // remove the "application" element
-                deployment.unregisterAppFromDomainXML(name);
-            } catch(TransactionFailure e) {
-                logger.warning("Module " + name + " not found in configuration");
+            } else {
+                source = info.getSource();
             }
 
-            //remove context from generated
-            deploymentContext.clean();
-
-            //if directory deployment then do no remove the directory
-            if (source!=null) {
-                if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
-                    FileUtils.whack(new File(source.getURI()));
+            if (source == null) {
+                logger.fine("Cannot get source archive for undeployment");
+                // remove the application from the domain.xml so at least server is
+                // in a consistent state
+                try {
+                    deployment.unregisterAppFromDomainXML(appName);
+                } catch(TransactionFailure e) {
+                    logger.warning("Module " + appName + " not found in configuration");
                 }
+                return;
             }
 
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } // else a message should have been provided.
+            File sourceFile = new File(source.getURI());
+            if (!source.exists()) {
+                logger.log(Level.WARNING, "Cannot find application bits at " +
+                    sourceFile.getPath());
+                // remove the application from the domain.xml so at least server is
+                // in a consistent state
+                try {
+                    deployment.unregisterAppFromDomainXML(appName);
+                } catch(TransactionFailure e) {
+                    logger.warning("Module " + name + " not found in configuration");
+                }
+                return;
+            }
 
+            ExtendedDeploymentContext deploymentContext = null;
+            try {
+                deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
+                report.setMessage(localStrings.getLocalString("undeploy.contextcreation.failed","Cannot create context for undeployment : {0} ", e.getMessage()));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            deploymentContext.getAppProps().putAll(application.getDeployProperties());
+
+            if (properties!=null) {
+                deploymentContext.getAppProps().putAll(properties);
+            }
+
+            deploymentContext.setModulePropsMap(
+                application.getModulePropertiesMap());
+
+            if (info!=null) {
+                deployment.undeploy(appName, deploymentContext);
+            }
+
+            // check if it's directory deployment
+            boolean isDirectoryDeployed = false;
+            if (application!=null) {
+                isDirectoryDeployed = Boolean.valueOf(application.getDirectoryDeployed());
+            }
+
+            if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                // so far I am doing this after the unload, maybe this should be moved before...
+                try {
+                    // remove the "application" element
+                    deployment.unregisterAppFromDomainXML(appName);
+                } catch(TransactionFailure e) {
+                    logger.warning("Module " + appName + " not found in configuration");
+                }
+
+                //remove context from generated
+                deploymentContext.clean();
+
+                //if directory deployment then do no remove the directory
+                if (source!=null) {
+                    if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
+                        FileUtils.whack(new File(source.getURI()));
+                    }
+                }
+
+                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            } // else a message should have been provided.
+        }
     }
 }
