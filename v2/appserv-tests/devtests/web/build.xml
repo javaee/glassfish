@@ -54,7 +54,7 @@
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
 
-    <target name="jsp">
+    <target name="jsp" depends="init-report">
         <ant dir="emptyServletPathJspInclude" target="all"/>
         <ant dir="jsp-security" target="all"/>
         <ant dir="jspAllowErrorPageToSetResponseCharsetIfNoOutputWritten" target="all"/>
@@ -138,7 +138,7 @@
         <ant dir="welcomePageSecurityConstraintJspExtension" target="all"/>
     </target>
 
-    <target name="taglib">
+    <target name="taglib" depends="init-report">
         <ant dir="jstlHtmlParamOutsideFmtMessage" target="all"/>
         <ant dir="jstlLocaleSupportAPI" target="all"/>
         <ant dir="tagPluginForEach" target="all"/>
@@ -147,7 +147,7 @@
         <ant dir="tagplugin" target="all"/>
     </target>
 
-    <target name="el">
+    <target name="el" depends="init-report">
         <ant dir="bodyTag" target="all"/>
         <ant dir="elBigDecimal" target="all"/>
         <ant dir="elFunctionWithoutParams" target="all"/>
@@ -155,7 +155,7 @@
         <ant dir="elequals" target="all"/>
     </target>
 
-    <target name="servlet">
+    <target name="servlet" depends="init-report">
         <ant dir="applicationDispatcher" target="all"/>
         <ant dir="cacheControlResponseHeaders" target="all"/>
         <ant dir="cacheFilterMappingDispatcher" target="all"/>
@@ -208,15 +208,18 @@
         <ant dir="servlet-3.0/asyncContextDispatchZeroArg" target="all"/>
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servlet-3.0/asyncContextMultipleDispatch" target="all"/>
-        <ant dir="servlet-3.0/asyncContextSetTimeout" target="all"/>
+		  <!-- comment out until https://grizzly.dev.java.net/issues/show_bug.cgi?id=825 is fixed -->
+        <!-- ant dir="servlet-3.0/asyncContextSetTimeout" target="all"/ -->
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnError" target="all"/>
-        <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
+		  <!-- comment out until https://grizzly.dev.java.net/issues/show_bug.cgi?id=825 is fixed -->
+        <!-- ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/ -->
         <ant dir="servlet-3.0/asyncStartOutsideAsyncDispatchScope" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedFalse" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
-        <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
+		  <!-- comment out until https://grizzly.dev.java.net/issues/show_bug.cgi?id=825 is fixed -->
+        <!-- ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/ -->
         <ant dir="servlet-3.0/cookieHttpOnly" target="all"/>  
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/javaxServletContextOrderedLibs" target="all"/>
@@ -310,7 +313,7 @@
         <ant dir="standalonewar" target="all"/>  
     </target>
 
-    <target name="web-container">
+    <target name="web-container" depends="init-report">
         <ant dir="asadminDeletes" target="all"/>
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="broken_webapp" target="all"/>
@@ -414,7 +417,7 @@
         <ant dir="weldJsfLoginPage" target="all"/>
     </target>
 
-    <target name="security">
+    <target name="security" depends="init-report">
         <ant dir="anonymousAccessForbidden" target="all"/>
         <ant dir="authPassthroughGetRemoteAddress" target="all"/>
         <ant dir="authPassthroughGetRemoteHost" target="all"/>
@@ -447,7 +450,7 @@
         <ant dir="virtualServerAuthRealmProperty" target="all"/>
     </target>
 
-    <target name="http-connector">
+    <target name="http-connector" depends="init-report">
         <ant dir="caseSensitiveHostMapping" target="all"/>
         <ant dir="chunkingDisabled" target="all"/>
         <ant dir="defaultContentType" target="all"/>
@@ -492,22 +495,19 @@
 -->
     </target>
 
-    <target name="comet">
+    <target name="comet" depends="init-report">
         <ant dir="cometEcho" target="all"/>
     </target>
 
-    <target name="all" depends="init">
+    <target name="init-report" unless="report.inited">
+        <property name="report.inited" value="true"/>
+        <antcall target="init"/>
         <record name="web.output" action="start" />
         <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
-        <antcall target="comet"/>
-        <antcall target="el"/>
-        <antcall target="http-connector"/>
-        <antcall target="jsp"/>
-        <antcall target="security"/>
-        <antcall target="servlet"/>
-        <antcall target="taglib"/>
-        <antcall target="web-container"/>
+    </target>
+
+    <target name="finish-report">
         <antcall target="stopDomain"/>
         <record name="web.output" action="stop" />
 
@@ -519,21 +519,13 @@
         <echo message="#################################################"/>
     </target>
 
-    <target name="single" depends="init" if="target">
-        <record name="web.output" action="start" />
-        <antcall target="stopDomain"/>
-        <antcall target="startDomain"/>
-		  <echo>calling ${target}</echo>
-		  <ant dir="${target}" target="all"/>
-        <antcall target="stopDomain"/>
-        <record name="web.output" action="stop" />
+    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container"/>
+    <target name="all2" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container"/>
 
-        <antcall target="dev-report"/>
-
-        <echo message="Detailed results available under appserv-tests/test_result.html"/>
-        <echo message="#################################################"/>
-        <echo message="javaxServletErrorRequestUriDynamicResource and javaxServletErrorRequestUriStaticResource will fail on Linux if you don't change appserv-tests/config.properties localhost to localhost.localdomain"/>
-        <echo message="#################################################"/>
+    <target name="single" depends="init,init-report" if="target">
+        <echo>calling ${target}</echo>
+        <ant dir="${target}" target="all"/>
+        <antcall target="finish-report"/>
     </target>
 
     <target name="init">
