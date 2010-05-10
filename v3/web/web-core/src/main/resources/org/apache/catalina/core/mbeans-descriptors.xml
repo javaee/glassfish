@@ -454,7 +454,6 @@
 
 
   <mbean         name="PECoyoteConnector"
-            className="org.apache.catalina.mbeans.ConnectorMBean"
           description="Implementation of a PE Coyote connector"
                domain="com.sun.appserv"
                 group="Connector"

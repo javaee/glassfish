@@ -60,7 +60,6 @@
 <mbeans-descriptors>
 
   <mbean         name="CoyoteConnector"
-            className="org.apache.catalina.mbeans.ConnectorMBean"
           description="Implementation of a Coyote connector"
                domain="Catalina"
                 group="Connector"

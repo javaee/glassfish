@@ -176,13 +176,6 @@ public final class StandardServer
     };
 
 
-    /**
-     * ServerLifecycleListener classname.
-     */
-    private static String SERVER_LISTENER_CLASS_NAME =
-        "org.apache.catalina.mbeans.ServerLifecycleListener";
-
-
     // ------------------------------------------------------------ Constructor
 
 
