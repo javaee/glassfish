@@ -45,6 +45,7 @@ import javax.resource.spi.security.PasswordCredential;
 import javax.security.auth.Subject;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -148,14 +149,6 @@ public class SecurityUtils {
         if (!isEqual(pC1.getUserName(), pC2.getUserName())) {
             return false;
         }
-        String p1 = null;
-        String p2 = null;
-        if (pC1.getPassword() != null) {
-            p1 = new String(pC1.getPassword());
-        }
-        if (pC2.getPassword() != null) {
-            p2 = new String(pC2.getPassword());
-        }
-        return (isEqual(p1, p2));
+        return Arrays.equals(pC1.getPassword(), pC2.getPassword());
     }
 }
