@@ -49,6 +49,9 @@
         <ant dir="directorydeploy" target="private-all">
             <property name="build" value="${build}/directorydeploy"/>
         </ant>
+        <ant dir="versioning" target="private-all">
+            <property name="build" value="${build}/versioning"/>
+        </ant>
     </target>
 
     <target name="clobber" depends="clean">

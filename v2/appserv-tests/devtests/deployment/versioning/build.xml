@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+]>
+
+<project name="versioning" default="all" basedir=".">
+
+	&commonBuild;
+
+    <target name="private-all">
+        <!--
+            Build the versioning devtests with simple-version-servlet
+        -->
+        <ant dir="simple-versionned-servlet" target="private-all">
+            <property name="build" value="${build}/simple-versionned-servlet"/>
+        </ant>
+    </target>
+</project>
