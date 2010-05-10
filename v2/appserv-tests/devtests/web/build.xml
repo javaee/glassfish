@@ -520,7 +520,6 @@
     </target>
 
     <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container"/>
-    <target name="all2" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container"/>
 
     <target name="single" depends="init,init-report" if="target">
         <echo>calling ${target}</echo>
