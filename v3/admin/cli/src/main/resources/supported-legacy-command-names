@@ -153,4 +153,4 @@ crete-jms-host R
 delete-jms-host R
 list-jms-hosts R
 stop-instance R
-
+list-instances R

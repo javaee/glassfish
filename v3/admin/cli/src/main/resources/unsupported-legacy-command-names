@@ -35,7 +35,6 @@ start-node-agent L
 stop-node-agent L
 create-node-agent-config R
 delete-node-agent-config R
-list-instances R
 start-instance R
 start-cluster R
 stop-cluster R

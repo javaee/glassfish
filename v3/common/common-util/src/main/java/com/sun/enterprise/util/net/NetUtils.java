@@ -64,9 +64,10 @@ package com.sun.enterprise.util.net;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NetUtils {
-
     private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
 
     private static void printd(String string) {
@@ -75,17 +76,51 @@ public class NetUtils {
         }
     }
 
-    public enum PortAvailability { illegalNumber, noPermission, inUse, unknown, OK };
-    
+    public enum PortAvailability {
+        illegalNumber, noPermission, inUse, unknown, OK
+    };
+
     private NetUtils() {
     }
     public static final int MAX_PORT = 65535;
+
+    static public Socket getClientSocket(final String host, final int port, final int msecTimeout) {
+        class SocketFetcher implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    socket = new Socket(host, port);
+                }
+                catch (Exception e) {
+                    socket = null;
+                }
+            }
+            Socket getSocket() {
+                return socket;
+            }
+            private Socket socket;
+        };
+
+        SocketFetcher fetcher = new SocketFetcher();
+        Thread t = new Thread(fetcher);
+
+        t.start();
+        try {
+            t.join(msecTimeout);
+        }
+        catch (InterruptedException ex) {
+            // It's probably not running at all
+        }
+
+        return fetcher.getSocket();
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     public static String getHostName() {
         try {
             return InetAddress.getLocalHost().getHostName();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return null;
         }
     }
@@ -107,8 +142,8 @@ public class NetUtils {
         // check to see if ip returned or canonical hostname is different than hostname
         // It is possible for dhcp connected computers to have an erroneous name returned
         // that is created by the dhcp server.  If that happens, return just the default hostname
-        if (hostname.equals(InetAddress.getLocalHost().getHostAddress()) ||
-                !hostname.startsWith(defaultHostname)) {
+        if(hostname.equals(InetAddress.getLocalHost().getHostAddress())
+                || !hostname.startsWith(defaultHostname)) {
             // don't want IP or canonical hostname, this will cause a lot of problems for dhcp users
             // get just plan host name instead
             hostname = defaultHostname;
@@ -122,12 +157,13 @@ public class NetUtils {
         try {
             String hname = getHostName();
 
-            if (hname == null) {
+            if(hname == null) {
                 return null;
             }
 
             return InetAddress.getAllByName(hname);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return null;
         }
     }
@@ -137,32 +173,33 @@ public class NetUtils {
         try {
             InetAddress[] adds = getHostAddresses();
 
-            if (adds == null) {
+            if(adds == null) {
                 return null;
             }
 
             String[] ips = new String[adds.length];
 
-            for (int i = 0; i < adds.length; i++) {
+            for(int i = 0; i < adds.length; i++) {
                 String ip = trimIP(adds[i].toString());
                 ips[i] = ip;
             }
 
             return ips;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return null;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
     public static String trimIP(String ip) {
-        if (ip == null || ip.length() <= 0) {
+        if(ip == null || ip.length() <= 0) {
             return ip;
         }
 
         int index = ip.lastIndexOf('/');
 
-        if (index >= 0) {
+        if(index >= 0) {
             return ip.substring(++index);
         }
 
@@ -179,21 +216,22 @@ public class NetUtils {
 
             byte[] bytes = new byte[stk.countTokens()];
 
-            for (int i = 0; stk.hasMoreTokens(); i++) {
+            for(int i = 0; stk.hasMoreTokens(); i++) {
                 String num = stk.nextToken();
                 int inum = Integer.parseInt(num);
                 bytes[i] = (byte) inum;
                 //System.out.println("token: " + inum);
             }
             return bytes;
-        } catch (NumberFormatException nfe) {
+        }
+        catch (NumberFormatException nfe) {
             return null;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
     public static boolean isLocalHost(String ip) {
-        if (ip == null) {
+        if(ip == null) {
             return false;
         }
 
@@ -204,24 +242,24 @@ public class NetUtils {
 
     ///////////////////////////////////////////////////////////////////////////
     public static boolean isLocal(String ip) {
-        if (ip == null) {
+        if(ip == null) {
             return false;
         }
 
         ip = trimIP(ip);
 
-        if (isLocalHost(ip)) {
+        if(isLocalHost(ip)) {
             return true;
         }
 
         String[] myIPs = getHostIPs();
 
-        if (myIPs == null) {
+        if(myIPs == null) {
             return false;
         }
 
-        for (int i = 0; i < myIPs.length; i++) {
-            if (ip.equals(myIPs[i])) {
+        for(int i = 0; i < myIPs.length; i++) {
+            if(ip.equals(myIPs[i])) {
                 return true;
             }
         }
@@ -241,8 +279,8 @@ public class NetUtils {
      * @return The next incremental port number or 0 if a port cannot be found.
      */
     public static int getNextFreePort(String hostName, int port) {
-        while (port++ < MAX_PORT) {
-            if (isPortFree(hostName, port)) {
+        while(port++ < MAX_PORT) {
+            if(isPortFree(hostName, port)) {
                 return port;
             }
         }
@@ -259,11 +297,11 @@ public class NetUtils {
     public static int getFreePort(String hostName, int startingPort, int endingPort) {
         int range = endingPort - startingPort;
         int port = 0;
-        if (range > 0) {
+        if(range > 0) {
             Random r = new Random();
-            while (true) {
+            while(true) {
                 port = r.nextInt(range + 1) + startingPort;
-                if (isPortFree(hostName, port)) {
+                if(isPortFree(hostName, port)) {
                     break;
                 }
             }
@@ -272,9 +310,10 @@ public class NetUtils {
     }
 
     public static boolean isPortValid(int portNumber) {
-        if (portNumber >= 0 && portNumber <= MAX_PORT) {
+        if(portNumber >= 0 && portNumber <= MAX_PORT) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -282,20 +321,22 @@ public class NetUtils {
     public static boolean isPortStringValid(String portNumber) {
         try {
             return isPortValid(Integer.parseInt(portNumber));
-        } catch (NumberFormatException ex) {
+        }
+        catch (NumberFormatException ex) {
             return false;
         }
     }
 
     ///////////////////////////////////////////////////////////////////////////
     public static boolean isPortFree(String hostName, int portNumber) {
-        if (portNumber <= 0 || portNumber > MAX_PORT) {
+        if(portNumber <= 0 || portNumber > MAX_PORT) {
             return false;
         }
 
-        if (hostName == null || isThisMe(hostName)) {
+        if(hostName == null || isThisMe(hostName)) {
             return isPortFreeServer(portNumber);
-        } else {
+        }
+        else {
             return isPortFreeClient(hostName, portNumber);
         }
     }
@@ -328,7 +369,6 @@ public class NetUtils {
 
         if(!server && !client)
             return PortAvailability.inUse;
-
         else // !server && client
             return PortAvailability.noPermission;
     }
@@ -346,7 +386,7 @@ public class NetUtils {
             // Feel free to change it if you know EXACTLY what you're doing
 
             //If the host name is null, assume localhost
-            if (hostName == null) {
+            if(hostName == null) {
                 hostName = getHostName();
             }
             Socket socket = new Socket(hostName, portNumber);
@@ -358,7 +398,8 @@ public class NetUtils {
             is = null;
             socket.close();
             socket = null;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // Nobody is listening on this port
             return true;
         }
@@ -376,8 +417,8 @@ public class NetUtils {
         // way around
 
         try {
-            byte[] allZero = new byte[] { 0,0,0,0 };
-            InetAddress add=InetAddress.getByAddress(allZero);
+            byte[] allZero = new byte[]{0, 0, 0, 0};
+            InetAddress add = InetAddress.getByAddress(allZero);
 
             if(isPortFreeServer(port, add) == false)
                 return false;   // return immediately on "not-free"
@@ -391,12 +432,13 @@ public class NetUtils {
 
             return isPortFreeServer(port, add);
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // If we can't get an IP address then we can't check
             return false;
         }
 
     }
+
     private static boolean isPortFreeServer(int port, InetAddress add) {
         try {
             ServerSocket ss = new ServerSocket(port, 100, add);
@@ -404,11 +446,13 @@ public class NetUtils {
 
             printd(add.toString() + " : " + port + " --> FREE");
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             printd(add.toString() + " : " + port + " --> IN USE");
             return false;
         }
     }
+
     /**
     Gets a free port at the time of call to this method.
     The logic leverages the built in java.net.ServerSocket implementation
@@ -441,20 +485,23 @@ public class NetUtils {
                 serverSocket = new ServerSocket(0);
                 freePort = serverSocket.getLocalPort();
                 portFound = true;
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 //squelch the exception
-            } finally {
-                if (!portFound) {
+            }
+            finally {
+                if(!portFound) {
                     freePort = 0;
                 }
                 try {
-                    if (serverSocket != null) {
+                    if(serverSocket != null) {
                         serverSocket.close();
-                        if (!serverSocket.isClosed()) {
+                        if(!serverSocket.isClosed()) {
                             throw new Exception("local exception ...");
                         }
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     //squelch the exception
                     freePort = 0;
                 }
@@ -487,14 +534,15 @@ public class NetUtils {
         // Get the result
         java.io.InputStream istream = socket.getInputStream();
         int count = 0;
-        while (count < 20) {
+        while(count < 20) {
             // Wait up to 4 seconds
             try {
-                if (istream.available() > 0) {
+                if(istream.available() > 0) {
                     break;
                 }
                 Thread.sleep(200);
-            } catch (InterruptedException ex) {
+            }
+            catch (InterruptedException ex) {
             }
             count++;
         }
@@ -509,13 +557,16 @@ public class NetUtils {
         // default & try to detect an http response.
         String response = new String(input).toLowerCase();
         boolean isSecure = true;
-        if (response.length() == 0) {
+        if(response.length() == 0) {
             isSecure = false;
-        } else if (response.startsWith("http/1.")) {
+        }
+        else if(response.startsWith("http/1.")) {
             isSecure = false;
-        } else if (response.indexOf("<html") != -1) {
+        }
+        else if(response.indexOf("<html") != -1) {
             isSecure = false;
-        } else if (response.indexOf("connection: ") != -1) {
+        }
+        else if(response.indexOf("connection: ") != -1) {
             isSecure = false;
         }
         return isSecure;
@@ -540,24 +591,27 @@ public class NetUtils {
         try {
             server = new Socket(host, port);
             return true;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             return false;
-        } finally {
-            if (server != null) {
+        }
+        finally {
+            if(server != null) {
                 try {
                     server.close();
-                } catch (IOException ex) { }
+                }
+                catch (IOException ex) {
+                }
             }
         }
     }
 
-	/**
-	 * convenience method for the local machine
-	 */
+    /**
+     * convenience method for the local machine
+     */
     public static final boolean isRunning(int port) {
-		return isRunning(null, port);
-	}
-
+        return isRunning(null, port);
+    }
     ///////////////////////////////////////////////////////////////////////////
     private static final String LOCALHOST_IP = "127.0.0.1";
 
@@ -567,23 +621,23 @@ public class NetUtils {
             InetAddress[] myadds = getHostAddresses();
             InetAddress[] theiradds = InetAddress.getAllByName(hostname);
 
-            for (int i = 0; i < theiradds.length; i++) {
-                if (theiradds[i].isLoopbackAddress()) {
+            for(int i = 0; i < theiradds.length; i++) {
+                if(theiradds[i].isLoopbackAddress()) {
                     return true;
                 }
 
-                for (int j = 0; j < myadds.length; j++) {
-                    if (myadds[j].equals(theiradds[i])) {
+                for(int j = 0; j < myadds.length; j++) {
+                    if(myadds[j].equals(theiradds[i])) {
                         return true;
                     }
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
         }
 
         return false;
     }
-
 
     ///////////////////////////////////////////////////////////////////////////
     public static void main(String[] args) {
