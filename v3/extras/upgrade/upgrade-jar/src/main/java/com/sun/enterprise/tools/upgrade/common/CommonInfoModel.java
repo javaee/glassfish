@@ -55,6 +55,13 @@ public class CommonInfoModel{
     // singleton
     private static final CommonInfoModel instance = new CommonInfoModel();
 
+    private static final String [] SUPPORTED_VERSIONS = {
+        UpgradeConstants.VERSION_91,
+        UpgradeConstants.VERSION_3_0,
+        UpgradeConstants.VERSION_3_0_1,
+        UpgradeConstants.VERSION_3_1
+    };
+
     private TargetAppSrvObj tAppSrvObj = new TargetAppSrvObj();
     private SourceAppSrvObj sAppSrvObj = new SourceAppSrvObj();
     private boolean alreadyCloned = false;
@@ -95,17 +102,20 @@ public class CommonInfoModel{
     }
 	
     public boolean isUpgradeSupported() {
-        boolean retVal = true;
         String sourceVersion = sAppSrvObj.getVersion();
         String targetVersion = tAppSrvObj.getVersion();
 
-        if (!sourceVersion.equals(UpgradeConstants.VERSION_91) &&
-            !sourceVersion.equals(UpgradeConstants.VERSION_3_0)) {
-            logger.info(stringManager.getString("upgrade.common.upgrade_not_supported",
-                sourceVersion, sAppSrvObj.getEdition(), targetVersion, tAppSrvObj.getEdition()));
-            retVal = false;
+        for (String version : SUPPORTED_VERSIONS) {
+            if (version.equals(sourceVersion)) {
+                return true;
         }
-        return retVal;
     }
 	
+        logger.info(stringManager.getString(
+            "upgrade.common.upgrade_not_supported",
+            sourceVersion, sAppSrvObj.getEdition(),
+            targetVersion, tAppSrvObj.getEdition()));
+        return false;
+}
+
 }

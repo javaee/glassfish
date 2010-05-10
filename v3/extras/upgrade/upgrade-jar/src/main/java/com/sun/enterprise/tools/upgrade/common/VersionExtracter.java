@@ -97,7 +97,7 @@ public class VersionExtracter {
             if (!"domain".equals(rootElement.getTagName())) {
                 logger.log(Level.SEVERE, stringManager.getString("common.versionextracter.dtd_product_version_find_failured"), ex);
             } else {
-                verEdStr = formatVersionEditionStrings(UpgradeConstants.VERSION_3_0, UpgradeConstants.ALL_PROFILE);
+                verEdStr = formatVersionEditionStrings(UpgradeConstants.VERSION_3_1, UpgradeConstants.ALL_PROFILE);
             }
         }
         return verEdStr;

@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.tools.upgrade.gui;
 
-import com.sun.enterprise.tools.upgrade.common.CLIConstants;
+import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.util.i18n.StringManager;
@@ -78,12 +78,19 @@ public class DataCollectionPanel extends javax.swing.JPanel {
     private final MainFrame mainFrame;
     private final JFileChooser chooser;
 
+    // could be rebranded
+    private String contentLabelString;
+    
     /**
      * Creates new form DataCollectionPanel. Instance of MainPanel is
      * passed in so that this panel can set the state of the 'next'
      * button to continue.
      */
     public DataCollectionPanel(MainFrame mainFrame) {
+        contentLabelString = Branding.getString(
+            "upgrade.gui.detailspanel.contentLabel",
+            stringManager, commonInfoModel.getTarget().getVersion());
+
         initComponents();
 
         this.mainFrame = mainFrame;
@@ -161,7 +168,7 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         headerLabel.setText(stringManager.getString("upgrade.gui.detailspanel.headerPanel"));
 
         contentLabel.setForeground(java.awt.Color.blue);
-        contentLabel.setText(stringManager.getString("upgrade.gui.detailspanel.contentLabel"));
+        contentLabel.setText(contentLabelString);
 
         sourceLabel.setLabelFor(sourceTextField);
         sourceLabel.setText(SOURCE_LABEL_TEXT);
@@ -189,8 +196,8 @@ public class DataCollectionPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(contentLabel)
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
-                            .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+                            .addComponent(headerLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(sourceLabel)
@@ -203,14 +210,14 @@ public class DataCollectionPanel extends javax.swing.JPanel {
                                     .addComponent(sourceBrowseButton))))
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(masterPWField, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                        .addComponent(masterPWField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                         .addGap(266, 266, 266))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(masterPWLabel)
-                        .addContainerGap(419, Short.MAX_VALUE))
+                        .addContainerGap(436, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(reqTextLabel)
-                        .addContainerGap(419, Short.MAX_VALUE))))
+                        .addContainerGap(436, Short.MAX_VALUE))))
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {sourceBrowseButton, targetBrowseButton});

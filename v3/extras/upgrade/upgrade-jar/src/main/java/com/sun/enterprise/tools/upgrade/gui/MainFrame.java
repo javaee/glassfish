@@ -33,10 +33,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.tools.upgrade.gui;
 
 import com.sun.enterprise.tools.upgrade.UpgradeToolMain;
+import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
@@ -90,19 +90,25 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
     private final ProgressPanel progressPanel =
         new ProgressPanel();
 
+    // values could be rebranded
+    private String titleMessage;
+
     // image used in image panel
     private ImageIcon upgradeIcon;
 
     public MainFrame(UpgradeToolMain upgradeToolMain) {
         this.upgradeToolMain = upgradeToolMain;
         
-        String imageURLString =
+        titleMessage = Branding.getString("upgrade.gui.mainframe.titleMessage",
+            stringManager,
+            commonInfoModel.getTarget().getVersion());
+
+	String imageURLString =
             "com/sun/enterprise/tools/upgrade/gui/Appserv_upgrade_wizard.gif";
-        URL imageURL =
-            ClassLoader.getSystemClassLoader().getResource(imageURLString);
+        URL imageURL = Branding.getWizardUrl(imageURLString);
         if (imageURL != null) {
             upgradeIcon = new ImageIcon(imageURL,
-                "some text. booyah!");
+                "upgrade wizard icon");
         } else {
             // This shouldn't happen, but just in case we'd like to be told.
             System.err.println(String.format(
@@ -149,8 +155,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         helpButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle(stringManager.getString("upgrade.gui.mainframe.titleMessage",
-            commonInfoModel.getTarget().getVersion()));
+        setTitle(titleMessage);
     setMinimumSize(new java.awt.Dimension(725, 545));
 
     imagePanel.setLayout(new javax.swing.BoxLayout(imagePanel, javax.swing.BoxLayout.LINE_AXIS));

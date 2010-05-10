@@ -56,7 +56,14 @@ public class UpgradeConstants {
     public static final String VERSION_91_01 = "9.1_01";	//as91_ur1
     public static final String VERSION_91_02 = "9.1_02";	//as91_ur2
     public static final String VERSION_91_1 = "9.1.1";		// sailfin  (not to be upgraded to v3)
+
+    /*
+     * String#startsWith() should return true for VERSION_3_0_1
+     * if it's true for VERSION_3_0. Otherwise, check code for use.
+     */
     public static final String VERSION_3_0 = "3.0";		// GF_v3
+    public static final String VERSION_3_0_1 = "3.0.1";		// GF 3.0.1
+    public static final String VERSION_3_1 = "3.1";		// GF 3.1
     public static final String VERSION_2_1 = "2.1";         // as91_ur2 ( Sun GlassFish Enterprise Server v2.1)
     
     public static final String DEVELOPER_PROFILE = "developer";

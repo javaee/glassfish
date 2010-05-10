@@ -51,11 +51,10 @@ import java.util.logging.Logger;
 
 public class UpgradeToolMain {
 
-    public static final String AS_DOMAIN_ROOT = "com.sun.aas.domainRoot";
     private static final Logger logger = LogService.getLogger();
 
     static {
-        String domainRoot = System.getProperty(AS_DOMAIN_ROOT);
+        String domainRoot = System.getProperty(UpgradeConstants.AS_DOMAIN_ROOT);
         if (domainRoot == null) {
             System.err.println("Configuration Error: AS_DEFS_DOMAINS_PATH is not set.");
             System.exit(1);
@@ -74,7 +73,8 @@ public class UpgradeToolMain {
         new ASenvPropertyReader();
 
         //- Default location of all traget server domains
-        String rawTargetDomainRoot = System.getProperty(AS_DOMAIN_ROOT);
+        String rawTargetDomainRoot =
+            System.getProperty(UpgradeConstants.AS_DOMAIN_ROOT);
         if (rawTargetDomainRoot == null) {
             rawTargetDomainRoot = "";
         }

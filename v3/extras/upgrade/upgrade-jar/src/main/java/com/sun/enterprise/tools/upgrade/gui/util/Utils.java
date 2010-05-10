@@ -40,6 +40,7 @@ package com.sun.enterprise.tools.upgrade.gui.util;
  *
  * @author  prakash
  */
+import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.logging.LogService;
 import java.net.URL;
 import java.util.logging.Logger;
@@ -56,8 +57,8 @@ public class Utils {
 
     public static HelpBroker getHelpBroker() {
         if (helpBroker == null) {
-            String helpHSString =
-                "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs";
+            String helpHSString = Branding.getHSString(
+                "com/sun/enterprise/tools/upgrade/doc/UpgradeToolHelp.hs");
             HelpSet helpHS = null;
             ClassLoader cl = Utils.class.getClassLoader();
             try {

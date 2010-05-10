@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
+import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
 
 /**
@@ -47,10 +48,11 @@ public class ARG_version extends ArgumentHandler {
     /** Creates a new instance of ARG_version */
 	public ARG_version() {
         super();
-        System.out.println(sm.getString(
+        String versionMessage = Branding.getString(
             "enterprise.tools.upgrade.cli.arg_version.versionMessage",
-            CommonInfoModel.getInstance().getTarget().getVersion()));
+            sm,
+            CommonInfoModel.getInstance().getTarget().getVersion());
+        System.out.println(versionMessage);
         System.exit(0);
     }
-
 }

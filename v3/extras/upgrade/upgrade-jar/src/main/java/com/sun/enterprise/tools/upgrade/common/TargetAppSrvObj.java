@@ -106,7 +106,7 @@ public class TargetAppSrvObj extends BaseDomainInfoObj {
         if (versionEdition == null) {
             VersionExtracter vExtracter = new VersionExtracter(
                 CommonInfoModel.getInstance());
-            version = UpgradeConstants.VERSION_3_0;
+            version = UpgradeConstants.VERSION_3_1;
             edition = UpgradeConstants.ALL_PROFILE;
             versionEdition = vExtracter.formatVersionEditionStrings(
                 version, edition);
