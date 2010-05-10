@@ -95,6 +95,18 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
             String compatProp = context.getAppProps().getProperty(
                 DeploymentProperties.COMPATIBILITY);
             // if user does not specify the compatibility property
+            // let's see if it's defined in glassfish-ejb-jar.xml
+            if (compatProp == null) {
+                GFEjbJarXMLParser gfEjbJarXMLParser =
+                    new GFEjbJarXMLParser(context.getSourceDir());
+                compatProp = gfEjbJarXMLParser.getCompatibilityValue();
+                if (compatProp != null) {
+                    context.getAppProps().put(
+                        DeploymentProperties.COMPATIBILITY, compatProp);
+                }
+            }
+
+            // if user does not specify the compatibility property
             // let's see if it's defined in sun-ejb-jar.xml
             if (compatProp == null) {
                 SunEjbJarXMLParser sunEjbJarXMLParser =
@@ -132,6 +144,85 @@ public class JarHandler extends AbstractArchiveHandler implements ArchiveHandler
             return null;
         }
         return cloader;
+    }
+
+    private class GFEjbJarXMLParser {
+        private XMLStreamReader parser = null;
+        private String compatValue = null;
+
+        GFEjbJarXMLParser(File baseDir) throws XMLStreamException, FileNotFoundException {
+            InputStream input = null;
+            File f = new File(baseDir, "META-INF/glassfish-ejb-jar.xml");
+            if (f.exists()) {
+                input = new FileInputStream(f);
+                try {
+                    read(input);
+                } finally {
+                    if (parser != null) {
+                        try {
+                            parser.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                    if (input != null) {
+                        try {
+                            input.close();
+                        } catch(Exception ex) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        }
+
+        private void read(InputStream input) throws XMLStreamException {
+            parser = xmlIf.createXMLStreamReader(input);
+
+            int event = 0;
+            boolean done = false;
+            skipRoot("glassfish-ejb-jar");
+
+            while (!done && (event = parser.next()) != END_DOCUMENT) {
+
+                if (event == START_ELEMENT) {
+                    String name = parser.getLocalName();
+                    if (DeploymentProperties.COMPATIBILITY.equals(name)) {
+                        compatValue = parser.getElementText();
+                       done = true;
+                    } else {
+                        skipSubTree(name);
+                    }
+                }
+            }
+        }
+
+        private void skipRoot(String name) throws XMLStreamException { 
+            while (true) {
+                int event = parser.next();
+                if (event == START_ELEMENT) {
+                    if (!name.equals(parser.getLocalName())) {
+                       throw new XMLStreamException();
+                    }
+                    return; 
+                }
+            }
+        }
+
+        private void skipSubTree(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == END_DOCUMENT) {
+                    throw new XMLStreamException();
+                } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
+                    return;
+                }
+            }
+        }
+
+        String getCompatibilityValue() {
+            return compatValue;
+        }
     }
 
     private class SunEjbJarXMLParser {

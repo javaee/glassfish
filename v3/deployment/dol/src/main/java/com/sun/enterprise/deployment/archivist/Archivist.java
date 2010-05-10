@@ -1213,6 +1213,16 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 return true;
             }
         }
+
+        if (getSunConfigurationDDFile() != null) {
+            InputStream runIs = archive.getEntry(
+                    getSunConfigurationDDFile().getDeploymentDescriptorPath());
+            if (runIs != null) {
+                runIs.close();
+                return true;
+            }
+        }
+
         return false;
     }
 

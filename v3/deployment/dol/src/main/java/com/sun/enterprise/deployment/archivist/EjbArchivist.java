@@ -43,6 +43,7 @@ import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.EjbRuntimeDDFile;
+import com.sun.enterprise.deployment.io.runtime.GFEjbRuntimeDDFile;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -119,6 +120,14 @@ public class EjbArchivist extends Archivist<EjbBundleDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile getConfigurationDDFile() {
+        return new GFEjbRuntimeDDFile();
+    }
+
+    /**
+     * @return if exists the DeploymentDescriptorFile responsible for
+     *         handling the Sun configuration deployment descriptors
+     */
+    public DeploymentDescriptorFile getSunConfigurationDDFile() {
         return new EjbRuntimeDDFile();
     }
 

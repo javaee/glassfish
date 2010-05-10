@@ -148,6 +148,15 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
 
         if (result == false) {
             try {
+                result = location.exists("META-INF/sun-ejb-jar.xml") || 
+                    location.exists("META-INF/glassfish-ejb-jar.xml"); 
+            } catch (IOException ioe) {
+                // Ignore
+            }
+        }
+
+        if (result == false) {
+            try {
                 result = location.exists("WEB-INF/ejb-jar.xml");
             } catch (IOException ioEx) {
                 //TODO
@@ -189,6 +198,7 @@ public class EjbSniffer  extends GenericSniffer implements Sniffer {
         final List<String> result = new ArrayList<String>();
         result.add("META-INF/ejb-jar.xml");
         result.add("META-INF/sun-ejb-jar.xml");
+        result.add("META-INF/glassfish-ejb-jar.xml");
         return result;
     }
 

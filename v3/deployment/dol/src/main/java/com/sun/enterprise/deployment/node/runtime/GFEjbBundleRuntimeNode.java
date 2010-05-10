@@ -36,7 +36,7 @@
 
 package com.sun.enterprise.deployment.node.runtime;
 
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
@@ -46,36 +46,36 @@ import java.util.Map;
 
 /**
  * This node is responsible for handling all runtime information for 
- * application client.
+ * ejb.
  */
-public class GFAppClientRuntimeNode extends AppClientRuntimeNode {
+public class GFEjbBundleRuntimeNode extends EjbBundleRuntimeNode {
 
-    public GFAppClientRuntimeNode(ApplicationClientDescriptor descriptor) {
+    public GFEjbBundleRuntimeNode(EjbBundleDescriptor descriptor) {
         super(descriptor);
     }
-
-    public GFAppClientRuntimeNode() {
-    }
     
+    public GFEjbBundleRuntimeNode() {
+        super(null);
+    }
     /**
      * @return the XML tag associated with this XMLNode
      */
     protected XMLElement getXMLRootTag() {
-        return new XMLElement(RuntimeTagNames.GF_APPCLIENT_RUNTIME_TAG);
+        return new XMLElement(RuntimeTagNames.GF_EJB_RUNTIME_TAG);
     }    
     
     /** 
      * @return the DOCTYPE that should be written to the XML file
      */
     public String getDocType() {
-        return DTDRegistry.GF_APPCLIENT_600_DTD_PUBLIC_ID;
+        return DTDRegistry.GF_EJBJAR_311_DTD_PUBLIC_ID;
     }
     
     /**
      * @return the SystemID of the XML file
      */
     public String getSystemID() {
-        return DTDRegistry.GF_APPCLIENT_600_DTD_SYSTEM_ID;
+        return DTDRegistry.GF_EJBJAR_311_DTD_SYSTEM_ID;
     }
 
    /**
@@ -85,7 +85,8 @@ public class GFAppClientRuntimeNode extends AppClientRuntimeNode {
     * @return the doctype tag name
     */
    public static String registerBundle(Map publicIDToDTD) {    
-       publicIDToDTD.put(DTDRegistry.GF_APPCLIENT_600_DTD_PUBLIC_ID, DTDRegistry.GF_APPCLIENT_600_DTD_SYSTEM_ID);
-       return RuntimeTagNames.GF_APPCLIENT_RUNTIME_TAG;       
+       publicIDToDTD.put(DTDRegistry.GF_EJBJAR_310_DTD_PUBLIC_ID, DTDRegistry.GF_EJBJAR_310_DTD_SYSTEM_ID);
+       publicIDToDTD.put(DTDRegistry.GF_EJBJAR_311_DTD_PUBLIC_ID, DTDRegistry.GF_EJBJAR_311_DTD_SYSTEM_ID);
+       return RuntimeTagNames.GF_EJB_RUNTIME_TAG;       
    }    
 }

@@ -96,7 +96,7 @@ public class EjbVerifier extends BaseVerifier {
     }
 
     protected String[] getDDString() {
-        String dd[] = {"META-INF/sun-ejb-jar.xml", "META-INF/ejb-jar.xml", // NOI18N
+        String dd[] = {"META-INF/sun-ejb-jar.xml", "META-INF/ejb-jar.xml", "META-INF/glassfish-ejb-jar.xml", // NOI18N
                        "META-INF/webservices.xml"}; // NOI18N
         return dd;
     }
