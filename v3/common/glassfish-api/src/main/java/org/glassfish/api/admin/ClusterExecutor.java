@@ -57,11 +57,12 @@ public interface ClusterExecutor {
      * <p>Each remote execution must return a different ActionReport so the user
      * or framework can get feedback on the success or failure or such executions.
      *
+     * @param commandName the name of the command to execute
      * @param command the command to execute
      * @param context the original command context
      * @param parameters the parameters passed to the original local command
-     * @return an array of @{link org.glassfish.api.ActionReport} for each remote
-     * execution status. 
+     * @return the exit status of overall command replication 
      */
-    public ActionReport[] execute(AdminCommand command, AdminCommandContext context, ParameterMap parameters);
+    public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context,
+                                                        ParameterMap parameters);
 }
