@@ -14,4 +14,5 @@ public class SlessEJB implements Sless
         return "hello";
     }
 
+    public com.sun.ejb.containers.TimerSchedule foo () {return null;}
 }

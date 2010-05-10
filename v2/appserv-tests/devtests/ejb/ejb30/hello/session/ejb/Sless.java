@@ -10,4 +10,6 @@ import javax.ejb.Remote;
 public interface Sless
 {
     public String hello();
+
+    public com.sun.ejb.containers.TimerSchedule foo ();
 }
