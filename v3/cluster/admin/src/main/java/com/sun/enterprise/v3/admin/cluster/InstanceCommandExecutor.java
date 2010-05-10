@@ -34,35 +34,38 @@
  * holder.
  *
  */
-package org.glassfish.api.admin;
+package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.api.admin.*;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * A ClusterExecutor is responsible for remotely executing commands.
- * The list of target servers (either clusters or remote instances) is obtained
- * from the parameter list.
- *
- * @author Jerome Dochez
+ * @author Vijay Ramachandran
  */
-@Contract
-public interface ClusterExecutor {
+public class InstanceCommandExecutor extends RemoteAdminCommand {
 
-    /**
-     * <p>Execute the passed command on targeted remote instances. The list of remote
-     * instances is usually retrieved from the passed parameters (with a "target"
-     * parameter for instance) or from the configuration.
-     *
-     * <p>Each remote execution must return a different ActionReport so the user
-     * or framework can get feedback on the success or failure or such executions.
-     *
-     * @param commandName the name of the command to execute
-     * @param command the command to execute
-     * @param context the original command context
-     * @param parameters the parameters passed to the original local command
-     * @return the exit status of overall command replication 
-     */
-    public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context,
-                                                        ParameterMap parameters);
+    @Inject
+    Domain domain;
+
+    private Server server;
+
+    public InstanceCommandExecutor(String commandName, Server server,
+                                   String host, int port, Logger logger) throws CommandException {
+        super(commandName, host, port, false, "admin", "", logger);
+        this.server = server;
+    }
+
+    public Server getServer() { return server;}
 }
+
+
