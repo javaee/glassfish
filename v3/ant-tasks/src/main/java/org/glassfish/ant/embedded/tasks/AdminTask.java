@@ -43,13 +43,16 @@ import org.glassfish.api.admin.ParameterMap;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.ActionReport;
+import com.sun.enterprise.admin.cli.Parser;
+import com.sun.enterprise.admin.cli.ArgumentTokenizer;
+
 
 import java.util.*;
 
 public class AdminTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
-    String command; 
+    String command, commandLine;
     CommandProperty commandProperty;
     List<CommandProperty> commandProperties = new ArrayList<CommandProperty>();
 
@@ -61,6 +64,10 @@ public class AdminTask extends Task {
         this.command = command;
     }
 
+
+    public void setCommandLine(String cmdLine) {
+        this.commandLine = cmdLine;
+    }
 
     public CommandProperty createCommandProperty() {
         commandProperty = new CommandProperty();
@@ -85,15 +92,44 @@ public class AdminTask extends Task {
 
 
     public void execute() throws BuildException {
-        log("executing admin task : " + command + " serverID = " + serverID);
+        if (command == null && commandLine == null) {
+            throw new BuildException("Either command or commandLine should be specified");
+        }
         Server server = Server.getServer(serverID);
+        if (server == null) {
+           throw new BuildException("Embedded Server [" + serverID + "] not running");
+        }
         CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
         ActionReport report = server.getHabitat().getComponent(ActionReport.class);
-	runner.getCommandInvocation(command, report).
+
+        if (commandLine != null) {
+            try {
+            log("executing admin task : " + commandLine + " serverID = " + serverID);
+                String args[] = getArgs(commandLine);
+                Parser parser = new Parser(args, 1,  null, true);
+                ParameterMap pMap = parser.getOptions();
+                runner.getCommandInvocation(args[0], report).
+                    parameters(pMap).execute();
+            } catch (Exception ex) {
+                    throw new BuildException(ex);
+            }
+        }
+        else {
+            log("executing admin command: " + command + " serverID = " + serverID);
+            runner.getCommandInvocation(command, report).
 		parameters(getCommandParameters()).execute();
-        log("admin task " + command + " executed");
+        }
+        log("admin task executed");
     }
 
+    private String[] getArgs(String line)
+                                throws ArgumentTokenizer.ArgumentException {
+        List<String> args = new ArrayList<String>();
+        ArgumentTokenizer t = new ArgumentTokenizer(line);
+        while (t.hasMoreTokens())
+            args.add(t.nextToken());
+        return args.toArray(new String[args.size()]);
+    }
 
     public class CommandProperty  {
         String name, value;
