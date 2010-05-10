@@ -5,15 +5,6 @@
 # Use is subject to license terms.
 #
 
-DIRNAME=`dirname $0`
-CONFIG_HOME=${DIRNAME}/../config
-. "${CONFIG_HOME}/asenv.conf"
+AS_INSTALL=`dirname $0`/..
 
-# override relative path from asenv.conf
-AS_INSTALL=${DIRNAME}/..
-AS_INSTALL_LIB=$AS_INSTALL/lib
-AS_INSTALL_MOD=$AS_INSTALL/modules
-LD_LIBRARY_PATH="$AS_INSTALL/lib":"$LD_LIBRARY_PATH";export LD_LIBRARY_PATH
-
-# note: $AS_DEF_DOMAINS_PATH is relative to config dir
-java -Dcom.sun.aas.domainRoot="${DIRNAME}/$AS_DEF_DOMAINS_PATH" -jar "$AS_INSTALL_MOD/upgrade-tool.jar" "$@"
+java -Dcom.sun.aas.domainRoot="$AS_INSTALL/domains" -jar "$AS_INSTALL/modules/upgrade-tool.jar" "$@"
