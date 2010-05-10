@@ -381,7 +381,12 @@ public abstract class PayloadFilesManager {
             return null;
         }
 
-        URI getTempSubDirForPath(final String parentPath) throws IOException {
+        URI getTempSubDirForPath(String parentPath) throws IOException {
+            /*
+             * Convert the parent path (which is currently in URI form) to
+             * the local file system form.
+             */
+            parentPath = parentPath.replace('/', File.separatorChar);
             File tempSubDir = pathToTempSubdir.get(parentPath);
             if (tempSubDir == null) {
                 /*
