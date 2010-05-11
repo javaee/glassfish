@@ -1014,7 +1014,40 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     @Override
     public void release() {
         listeners.clear();
+        // let's remove ourself from the habitat.
+        String key = getKey();
+        if (key != null) {
+            getHabitat().removeIndex(getProxyType().getName(), key);
+        } else {
+            for (Inhabitant<? extends ConfigBeanProxy> i : getHabitat().getInhabitants(getProxyType())) {
+                if (i.isInstantiated()) {
+                    ConfigBeanProxy cbp = i.get();
+                    Dom candidate = Dom.unwrap(cbp);
+                    if (candidate.equals(this)) {
+                        getHabitat().remove(i);
+                    }
+                }
+            }
+        }
         super.release();
+    }
+
+    /**
+     * Publish this new object to the habitat.
+     */
+    public void publish() {
+        ConfigBeanProxy proxy = getHabitat().getComponent(this.<ConfigBeanProxy>getProxyType(), getKey());
+        if (proxy!=null) {
+            // better be the same one...
+            Dom dom = Dom.unwrap(proxy);
+            if (dom==this) {
+                System.out.println("OOOOOOOOO ------- this objet was already registered -------- OOOOOOOOO");
+            } else {
+                System.out.println("OOOOOOOOO 000 already registered ");
+            }
+        } else {
+            getHabitat().addIndex(this, this.<ConfigBeanProxy>getProxyType().getName(), getKey());
+        }
     }
 
     Set<ConfigListener> listeners = new HashSet<ConfigListener>();

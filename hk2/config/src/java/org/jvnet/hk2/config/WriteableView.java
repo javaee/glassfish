@@ -369,6 +369,9 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 for (PropertyChangeEvent event : entry.changeEvents) {
                     if (event.getOldValue()==null) {
                         originalList.add(event.getNewValue());
+                        if (event.getNewValue() instanceof ConfigBeanProxy) {
+                            Dom.unwrap((ConfigBeanProxy) event.getNewValue()).publish();
+                        }
                     } else {
                         final Object toBeRemovedObj = event.getOldValue();
                         if ( toBeRemovedObj instanceof ConfigBeanProxy ) {
@@ -378,20 +381,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                                 Dom dom = Dom.unwrap((ConfigBeanProxy) element);
                                 if (dom==toBeRemoved) {
                                     originalList.remove(index);
-                                    String key = dom.getKey();
-                                    if (key!=null) {
-                                        dom.getHabitat().removeIndex(dom.<ConfigBeanProxy>getProxyType().getName(), key);
-                                    } else {
-                                        for (Inhabitant<? extends ConfigBeanProxy> i : dom.getHabitat().getInhabitants(dom.<ConfigBeanProxy>getProxyType())) {
-                                            if (i.isInstantiated()) {
-                                                ConfigBeanProxy cbp = i.get();
-                                                Dom candidate = Dom.unwrap(cbp);
-                                                if (candidate.equals(toBeRemoved)) {
-                                                    dom.getHabitat().remove(i);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    dom.release();
                                 }
                             }
                         }
