@@ -329,7 +329,12 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     static Properties convertStringToProperties(String propsString, char sep) {
         final Properties properties = new Properties();
         if (propsString != null) {
-            ParamTokenizer stoken = new ParamTokenizer(propsString, sep);
+
+            //This is because when there are multiple values in the arraylist
+            //they appear like [foo=bar:baz=baz1] so need to remove the braces
+            String unbracedString = propsString.substring(propsString.indexOf('[')+1);
+            
+            ParamTokenizer stoken = new ParamTokenizer(unbracedString, sep);
             while (stoken.hasMoreTokens()) {
                 String token = stoken.nextTokenKeepEscapes();
                 final ParamTokenizer nameTok = new ParamTokenizer(token, '=');
@@ -342,7 +347,11 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                     throw new IllegalArgumentException("TODO : i18n : Invalid property syntax." + propsString);
                         //strings.getLocalString("InvalidPropertySyntax",
                         //    "Invalid property syntax.", propsString));
-                properties.setProperty(name, value);
+                int index = value.indexOf(']');
+               
+                String unbracedValue =index > 0 ? value.substring(0,index) : value;
+
+                properties.setProperty(name, unbracedValue);
             }
         }
         return properties;
