@@ -407,6 +407,11 @@ Variables Used:
 </target>
 
 <target name="asadmin-common-ignore-fail">
+    <antcall name="asadmin-common-ignore-fail-regular"/>
+    <antcall name="asadmin-common-ignore-fail-embedded"/>
+</target>
+
+<target name="asadmin-common-ignore-fail-regular" unless="env.EMBEDDED">
   <echo message="Doing admin task ${admin.command} (ignore failures)" 
       level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
@@ -414,6 +419,14 @@ Variables Used:
     <exec executable="${ASADMIN}" failonerror="false">
         <arg line="${admin.command} ${as.props} ${operand.props}" />        
     </exec>
+</target>
+
+<target name="asadmin-common-ignore-fail-embedded" if="env.EMBEDDED">
+  <echo message="Doing admin task ${admin.command} in EMBEDDEDMODE (ignore failures)"
+      level="verbose"/>
+  <echo message="Operand ${operand.props}"  level="verbose"/>
+  <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
+  <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}" failonerror="false"/>
 </target>
 
 
@@ -1066,6 +1079,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
  <taskdef name="glassfish-embedded-start" classname="org.glassfish.ant.embedded.tasks.StartServerTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/all/target/glassfish-embedded-all.jar:${env.S1AS_HOME}/modules/ant.jar"/>
  <taskdef name="glassfish-embedded-stop" classname="org.glassfish.ant.embedded.tasks.StopServerTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/all/target/glassfish-embedded-all.jar:${env.S1AS_HOME}/modules/ant.jar"/>
 
+ <taskdef name="glassfish-embedded-admin" classname="org.glassfish.ant.embedded.tasks.AdminTask" classpath="${env.GF_HOME}/ant-tasks/target/ant-tasks.jar:${env.GF_HOME}/extras/embedded/all/target/glassfish-embedded-all.jar:${env.S1AS_HOME}/modules/ant.jar"/>
 
 <target name="start-server-embedded" if="env.EMBEDDED">
     <echo> === Embedded STARTING === </echo>
