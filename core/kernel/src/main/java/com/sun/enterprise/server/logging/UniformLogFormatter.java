@@ -166,7 +166,7 @@ public class UniformLogFormatter extends Formatter {
         if (branding == null){
             return null;
         }
-        String version =  branding.getAbbreviatedVersion()+branding.getVersionPrefix()+ branding.getMajorVersion()+"."+branding.getMinorVersion();
+        String version =  branding.getAbbreviatedVersion()+branding.getVersionPrefix()+ branding.getMajorVersion()+"."+branding.getMinorVersion()+"."+branding.getUpdateVersion();
         return (version);
     }
 
