@@ -42,6 +42,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import java.util.Set;
+import javax.ws.rs.core.MediaType;
 import org.glassfish.internal.api.ServerContext;
 
 /**
@@ -62,7 +63,7 @@ public class LazyJerseyInit {
     /**
      * Called via introspection in the RestAdapter service() method only when the GrizzlyAdapter is not initialized
      * @param classes set of Jersey Resources classes
-     * @param sc the current ServerContext, needed to finf the correct classpath
+     * @param sc the current ServerContext, needed to find the correct classpath
      * @return the correct GrizzlyAdapter
      * @throws EndpointRegistrationException
      */
@@ -72,6 +73,9 @@ public class LazyJerseyInit {
         Adapter adapter = null;
 
         ResourceConfig rc = new DefaultResourceConfig(classes);
+        rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
+        rc.getMediaTypeMappings().put("json", MediaType.APPLICATION_JSON_TYPE);
+      //not working for now  rc.getMediaTypeMappings().put("html", MediaType.TEXT_HTML_TYPE);
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader
