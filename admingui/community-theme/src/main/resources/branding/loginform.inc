@@ -54,7 +54,7 @@
         </tr>
         <tr>
             <td><label for="Login.password" style="font-weight: bold;">$resource{i18n.common.password}</label>
-            <td><input type="password" name="j_password" id="Login.password" onKeyPress="return submitenter(event, 'loginButton', '$resource{i18n.loginPageTitle}')" tabindex="2">
+            <td><input type="password" name="j_password" id="Login.password" tabindex="2">
         <tr>
             <td colspan="2" align="center">
                 <input type="submit" class="Btn1"
@@ -64,8 +64,6 @@
                     onmouseout="javascript: if (this.disabled==0) this.className='Btn1'"
                     onblur="javascript: if (this.disabled==0) this.className='Btn1'"
                     onfocus="javascript: if (this.disabled==0) this.className='Btn1Hov'"
-                    onclick="return submitAndDisable(this, '$resource{i18n.loginPageTitle}');"
-                    onkeypress="javascript: submitenter(event, 'loginButton', '$resource{i18n.loginPageTitle}');"
                     name="loginButton" id="loginButton">
         	    <input type="hidden" name="loginButton.DisabledHiddenField" value="true" />
     	    </td>
