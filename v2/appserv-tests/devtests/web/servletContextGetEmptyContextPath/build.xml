@@ -72,42 +72,6 @@
     
     <target name="build-publish-war" depends="build, publish-war-common" />
 
-    <!-- deploy the standalone war in AppServ without specifying any
-         contextroot argument, so that the context-root specified in
-         sun-web.xml takes effect
-    -->
-    <target name="deploy-war-no-context-root">
-        <antcall target ="deploy-war-no-context-root-pe"/>
-        <antcall target ="deploy-war-no-context-root-ee"/>
-    </target>
-
-    <target name="deploy-war-no-context-root-pe" depends="init-common" unless="ee">
-    <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="--user ${admin.user}"/>
-    <arg line="--passwordfile ${admin.password.file}"/>
-    <arg line="--host ${admin.host}"/>
-    <arg line="--port ${admin.port}"/>
-    <arg line="--upload=true"/>
-    <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="${assemble.dir}/${appname}-web.war"/>
-    </exec>
-    </target> 
-
-    <target name="deploy-war-no-context-root-ee" if="ee">
-    <exec executable="${ASADMIN}" failonerror="false">
-    <arg line="deploy"/>
-    <arg line="--user ${admin.user}"/>
-    <arg line="--password ${admin.password}"/>
-    <arg line="--host ${admin.host}"/>
-    <arg line="--port ${admin.port}"/>
-    <arg line="--type web"/>
-    <arg line="--upload=true"/>
-    <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="${assemble.dir}/${appname}-web.war"/>
-    </exec>
-    </target>
-
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-no-context-root"/>
     </target>

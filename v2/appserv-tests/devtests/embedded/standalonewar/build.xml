@@ -48,7 +48,7 @@
     &testproperties;
     &embeddedCommonBuild;
 
-    <target name="all" depends="start,build,deploy,run,stop"/>
+    <target name="all" depends="start,build,deploy,run,stop,clean"/>
 
     <target name="start" depends="init-common">
         <glassfish-embedded-start/>
@@ -59,7 +59,7 @@
     </target>
 
     <target name="clean" depends="init-common">
-      <antcall target="clean-common"/>
+      <delete dir="*tmp"/>
     </target>
        
     <target name="compile" depends="clean">

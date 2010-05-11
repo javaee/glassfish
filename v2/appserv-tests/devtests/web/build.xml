@@ -503,7 +503,6 @@
         <property name="report.inited" value="true"/>
         <antcall target="init"/>
         <record name="web.output" action="start" />
-        <antcall target="stopDomain"/>
         <antcall target="startDomain"/>
     </target>
 
@@ -520,6 +519,12 @@
     </target>
 
     <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,finish-report"/>
+    <target name="embedded-all" depends="embedded-setup,all"/>
+
+    <target name="embedded-setup">
+        <copy file="../embedded/config/common.xml" todir="../../config" overwrite="true"/>
+        <copy file="../embedded/config/run.xml" todir="../../config" overwrite="true"/>
+    </target>
 
     <target name="single" depends="init,init-report" if="target">
         <echo>calling ${target}</echo>
