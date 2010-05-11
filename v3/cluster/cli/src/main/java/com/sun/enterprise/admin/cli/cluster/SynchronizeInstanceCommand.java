@@ -71,6 +71,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
     private RemoteCommand syncCmd;
 
+    private static enum SyncLevel { TOP, DIRECTORY, RECURSIVE };
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(SynchronizeInstanceCommand.class);
 
@@ -99,7 +101,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     protected boolean synchronizeInstance() throws CommandException {
 
         if (!dasProperties.exists()) {
-            logger.printMessage(strings.get("NoDASConfigured"));
+            logger.printMessage(
+                strings.get("Sync.noDASConfigured", dasProperties.toString()));
             return false;
         }
 
@@ -116,7 +119,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             new File(new File(instanceDir, "config"), "domain.xml");
         long dtime = domainXml.lastModified();
 
-        SyncRequest sr = getModTimes("config");
+        SyncRequest sr = getModTimes("config", SyncLevel.DIRECTORY);
         synchronizeFiles(sr);
 
         /*
@@ -124,14 +127,14 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          * If not, we're all done.
          */
         if (domainXml.lastModified() == dtime) {
-            logger.printDetailMessage("Instance is already synchronized");
+            logger.printDetailMessage(strings.get("Sync.alreadySynced"));
             return true;
         }
 
         /*
          * Now synchronize the applications.
          */
-        sr = getModTimes("applications");
+        sr = getModTimes("applications", SyncLevel.DIRECTORY);
         synchronizeFiles(sr);
 
         /*
@@ -157,37 +160,77 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
 
         FileUtils.whack(archiveDir);
 
+        /*
+         * Next, the libraries.
+         * We assume there's usually very few files in the
+         * "lib" directory so we check them all individually.
+         */
+        sr = getModTimes("lib", SyncLevel.RECURSIVE);
+        synchronizeFiles(sr);
+
+        /*
+         * Finally, the docroot.
+         * The docroot could be full of files, so we only check
+         * the top level.
+         */
+        sr = getModTimes("docroot", SyncLevel.TOP);
+        synchronizeFiles(sr);
+
         return true;
     }
 
     /**
      * Return a SyncRequest with the mod times for all the
-     * files in the specified directory (non-recursive).
+     * files in the specified directory.
      */
-    private SyncRequest getModTimes(String dir) {
+    private SyncRequest getModTimes(String dir, SyncLevel level) {
         SyncRequest sr = new SyncRequest();
         sr.instance = instanceName;
         sr.dir = dir;
         File fdir = new File(instanceDir, dir);
         if (!fdir.exists())
             return sr;
-        for (String file : fdir.list()) {
-            File f = new File(fdir, file);
-            // XXX - what about subdirectories?
+        getFileModTimes(fdir, fdir, sr, level);
+        return sr;
+    }
+
+    /**
+     * Get the mod times for the entries in dir and add them to the
+     * SyncRequest, using names relative to baseDir.  If level is
+     * RECURSIVE, check subdirectories and only include times for files,
+     * not directories.
+     */
+    private void getFileModTimes(File dir, File baseDir, SyncRequest sr,
+                                    SyncLevel level) {
+        if (level == SyncLevel.TOP) {
+            long time = dir.lastModified();
+            SyncRequest.ModTime mt = new SyncRequest.ModTime(".", time);
+            sr.files.add(mt);
+            return;
+        }
+        for (String file : dir.list()) {
+            File f = new File(dir, file);
             long time = f.lastModified();
             if (time == 0)
                 continue;
-            SyncRequest.ModTime mt = new SyncRequest.ModTime(file, time);
-            sr.files.add(mt);
-            logger.printDebugMessage(file + ": mod time " + mt.time);
+            if (f.isDirectory() && level == SyncLevel.RECURSIVE)
+                getFileModTimes(f, baseDir, sr, level);
+            else {
+                String name = baseDir.toURI().relativize(f.toURI()).getPath();
+                // if name is a directory, it will end with "/"
+                if (name.endsWith("/"))
+                    name = name.substring(0, name.length() - 1);
+                SyncRequest.ModTime mt = new SyncRequest.ModTime(name, time);
+                sr.files.add(mt);
+                logger.printDebugMessage(f + ": mod time " + mt.time);
+            }
         }
-        return sr;
     }
 
     /**
      * Ask the server to synchronize the files in the SyncRequest.
      */
-    private void synchronizeFiles(SyncRequest sr) {
+    private void synchronizeFiles(SyncRequest sr) throws CommandException {
         File tempFile = null;
         try {
             tempFile = File.createTempFile("mt.", ".xml");
@@ -202,8 +245,6 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
 
             File syncdir = new File(instanceDir, sr.dir);
             logger.printDebugMessage("Sync directory: " + syncdir);
-            if (!syncdir.exists())
-                syncdir.mkdir();
             // _synchronize-files takes a single operand of type File
             syncCmd.execute("_synchronize-files",
                 "--syncarchive", Boolean.toString(syncArchive),
@@ -212,8 +253,11 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
 
             // the returned files are automatically saved by the command
         } catch (IOException ioex) {
+            throw new CommandException(strings.get("sync.failed", sr.dir));
         } catch (JAXBException jbex) {
+            throw new CommandException(strings.get("sync.failed", sr.dir));
         } catch (CommandException cex) {
+            throw new CommandException(strings.get("sync.failed", sr.dir));
         } finally {
             // remove tempFile
             if (tempFile != null)

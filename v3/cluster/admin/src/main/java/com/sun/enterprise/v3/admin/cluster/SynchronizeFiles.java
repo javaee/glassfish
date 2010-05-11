@@ -56,6 +56,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.config.ApplicationName;
+import org.glassfish.admin.payload.PayloadFilesManager;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -104,6 +105,8 @@ public class SynchronizeFiles implements AdminCommand {
 
     private Logger logger;
 
+    private static enum SyncLevel { TOP, DIRECTORY, RECURSIVE };
+
     /*
     private static final boolean syncArchive = Boolean.parseBoolean(
                         System.getProperty("copy.inplace.archive", "true"));
@@ -118,6 +121,8 @@ public class SynchronizeFiles implements AdminCommand {
 System.out.println("SynchronizeFiles: logger " + logger.getName());
 logger.setLevel(Level.FINEST);
         domainRootUri = env.getDomainRoot().toURI();
+        PayloadFilesManager.Temp pfm = null;
+        SyncRequest sr = null;
         try {
             /*
             try {
@@ -129,14 +134,35 @@ logger.setLevel(Level.FINEST);
             in.close();
             } catch (IOException ex) {}
             */
+            pfm = new PayloadFilesManager.Temp(logger);
+            List<File> files = pfm.processParts(context.getInboundPayload());
+            for (File f : files)
+                logger.finest("SynchronizeFiles: got file: " + f);
+            logger.finest("SynchronizeFiles: fileList: " + fileList);
+            if (files.size() >= 1)
+                fileList = files.get(0);
 
             // read the input document
             JAXBContext jc = JAXBContext.newInstance(SyncRequest.class);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             unmarshaller.setSchema(null);       // XXX - needed?
-            SyncRequest sr = (SyncRequest)unmarshaller.unmarshal(fileList);
+            sr = (SyncRequest)unmarshaller.unmarshal(fileList);
             logger.finer("SynchronizeFiles: synchronize dir " + sr.dir);
+        } catch (Exception ex) {
+            logger.fine("SynchronizeFiles: Exception reading request");
+            logger.fine(ex.toString());
+            report.setActionExitCode(ExitCode.FAILURE);
+            report.setMessage(
+                        strings.getLocalString("sync.exception.reading",
+                            "SynchronizeFiles: Exception reading request"));
+            report.setFailureCause(ex);
+            return;
+        } finally {
+            if (pfm != null)
+                pfm.cleanup();
+        }
 
+        try {
             // verify the server instance is valid
             Server server = null;
             if (servers != null)
@@ -145,7 +171,9 @@ logger.setLevel(Level.FINEST);
                 // XXX - switch this once create-instance is working
                 /*
                 report.setActionExitCode(ExitCode.FAILURE);
-                report.setMessage("Unknown server instance: " + sr.instance); // XXX I18N
+                report.setMessage(
+                        strings.getLocalString("sync.unknown.instance",
+                            "Unknown server instance: {0}", sr.instance));
                 return;
                 */
                 logger.fine("SynchronizeFiles: instance unknown: " + sr.instance);
@@ -157,23 +185,27 @@ logger.setLevel(Level.FINEST);
                 synchronizeConfig(context, sr);
             else if (sr.dir.equals("applications"))
                 synchronizeApplications(context, server, sr);
-            /*
             else if (sr.dir.equals("lib"))
-                ; // XXX
+                synchronizeLib(context, server, sr);
             else if (sr.dir.equals("docroot"))
-                ; // XXX
-            */
+                synchronizeDocroot(context, server, sr);
             else {
                 report.setActionExitCode(ExitCode.FAILURE);
-                report.setMessage("Unknown directory: " + sr.dir); // XXX I18N
+                report.setMessage(
+                        strings.getLocalString("sync.unknown.dir",
+                            "Unknown directory: {0}", sr.dir));
                 return;
             }
-        } catch (JAXBException jex) {
-            logger.fine("SynchronizeFiles: JAXBException reading request");
-            logger.fine(jex.toString());
-            // ignore for now
+            report.setActionExitCode(ExitCode.SUCCESS);
+        } catch (Exception ex) {
+            logger.fine("SynchronizeFiles: Exception processing request");
+            logger.fine(ex.toString());
+            report.setActionExitCode(ExitCode.FAILURE);
+            report.setMessage(
+                        strings.getLocalString("sync.exception.processing",
+                            "SynchronizeFiles: Exception processing request"));
+            report.setFailureCause(ex);
         }
-        report.setActionExitCode(ExitCode.SUCCESS);
     }
 
     // XXX - should be in a resource file
@@ -199,7 +231,7 @@ logger.setLevel(Level.FINEST);
      * about any of the other files.
      */
     private void synchronizeConfig(AdminCommandContext context,
-                                    SyncRequest sr) {
+                                    SyncRequest sr) throws URISyntaxException {
         logger.finer("SynchronizeFiles: synchronize config");
         // find the domain.xml entry
         ModTime domainXmlMT = null;
@@ -214,7 +246,7 @@ logger.setLevel(Level.FINEST);
 
         File configDir = env.getConfigDirPath();
         Payload.Outbound outboundPayload = context.getOutboundPayload();
-        if (!syncFile(configDir, domainXmlMT, outboundPayload)) {
+        if (!syncFile(domainRootUri, configDir, domainXmlMT, outboundPayload)) {
             logger.finer("SynchronizeFiles: domain.xml HAS NOT CHANGED");
             return;
         }
@@ -229,14 +261,15 @@ logger.setLevel(Level.FINEST);
             if (configFileSet.contains(mt.name)) {
                 // if client has file, remove it from set
                 configFileSet.remove(mt.name);
-                syncFile(configDir, mt, outboundPayload);
+                syncFile(domainRootUri, configDir, mt, outboundPayload);
             } else
-                removeFile(configDir, mt, outboundPayload);
+                removeFile(domainRootUri, configDir, mt, outboundPayload);
         }
 
         // now do all the remaining files the client doesn't have
         for (String name : configFileSet)
-            syncFile(configDir, new ModTime(name, 0), outboundPayload);
+            syncFile(domainRootUri, configDir, new ModTime(name, 0),
+                                                            outboundPayload);
     }
 
     /**
@@ -276,10 +309,13 @@ logger.setLevel(Level.FINEST);
 
     /**
      * Sync an individual file.  Return true if the file changed.
+     * The file is named by mt.name, relative to base.  The name
+     * used in the response will be relative to root.
      */
-    private boolean syncFile(File base, ModTime mt,
-                            Payload.Outbound outboundPayload) {
-        File f = new File(base, mt.name);
+    private boolean syncFile(URI root, File base, ModTime mt,
+                            Payload.Outbound outboundPayload)
+                            throws URISyntaxException {
+        File f = fileOf(base, mt.name);
         if (mt.time != 0 && f.lastModified() == mt.time)
             return false;     // success, nothing to do
         if (logger.isLoggable(Level.FINEST))
@@ -287,7 +323,7 @@ logger.setLevel(Level.FINEST);
                             " out of date, time " + f.lastModified());
         try {
             outboundPayload.attachFile("application/octet-stream",
-                domainRootUri.relativize(f.toURI()),
+                root.relativize(f.toURI()),
                 "configChange", f);
         } catch (IOException ioex) {
             logger.fine("SynchronizeFiles: IOException attaching file: " + f);
@@ -298,16 +334,19 @@ logger.setLevel(Level.FINEST);
 
     /**
      * Send a request to the client to remove the specified file.
+     * The file is named by mt.name, relative to base.  The name
+     * used in the response will be relative to root.
      */
-    private void removeFile(File base, ModTime mt,
-                            Payload.Outbound outboundPayload) {
-        File f = new File(base, mt.name);
+    private void removeFile(URI root, File base, ModTime mt,
+                            Payload.Outbound outboundPayload)
+                            throws URISyntaxException {
+        File f = fileOf(base, mt.name);
         if (logger.isLoggable(Level.FINEST))
             logger.finest("SynchronizeFiles: file " + mt.name +
                             " removed from client");
         try {
             outboundPayload.requestFileRemoval(
-                domainRootUri.relativize(f.toURI()),
+                root.relativize(f.toURI()),
                 "configChange", null);
         } catch (IOException ioex) {
             logger.fine("SynchronizeFiles: IOException removing file: " + f);
@@ -322,7 +361,8 @@ logger.setLevel(Level.FINEST);
      * any of the generated content.
      */
     private void synchronizeApplications(AdminCommandContext context,
-                                    Server server, SyncRequest sr) {
+                                    Server server, SyncRequest sr)
+                                    throws URISyntaxException {
         logger.finer("SynchronizeFiles: synchronize application instance " +
                                                                 sr.instance);
         Map<String, Application> apps = getApps(server);
@@ -398,10 +438,11 @@ logger.setLevel(Level.FINEST);
      * the generated files.
      */
     private boolean syncApp(Application app, File base, ModTime mt,
-                            Payload.Outbound outboundPayload) {
+                            Payload.Outbound outboundPayload)
+                            throws URISyntaxException {
         logger.finer("SynchronizeFiles: sync app " + mt.name);
         try {
-            File appDir = new File(base, mt.name);
+            File appDir = fileOf(base, mt.name);
             if (syncArchive) {
                 File archive = app.application();
                 logger.finest("SynchronizeFiles: check archive " + archive);
@@ -409,7 +450,7 @@ logger.setLevel(Level.FINEST);
                     return false;     // success, nothing to do
 
                 // attach the archive file
-                attachFile(archive, outboundPayload);
+                attachAppArchive(archive, outboundPayload);
                 /*
                  * Note that we don't need the deployment plan because
                  * we're not going to actually deploy it on the server
@@ -425,19 +466,19 @@ logger.setLevel(Level.FINEST);
                  * all the generated directories.  The client will
                  * remove the old versions before installing the new ones.
                  */
-                attachDir(appDir, outboundPayload);
+                attachAppDir(appDir, outboundPayload);
             }
 
             // in either case, we attach the generated artifacts
             File gdir;
             gdir = env.getApplicationCompileJspPath();
-            attachDir(new File(gdir, mt.name), outboundPayload);
+            attachAppDir(fileOf(gdir, mt.name), outboundPayload);
             gdir = env.getApplicationGeneratedXMLPath();
-            attachDir(new File(gdir, mt.name), outboundPayload);
+            attachAppDir(fileOf(gdir, mt.name), outboundPayload);
             gdir = env.getApplicationEJBStubPath();
-            attachDir(new File(gdir, mt.name), outboundPayload);
+            attachAppDir(fileOf(gdir, mt.name), outboundPayload);
             gdir = new File(env.getApplicationStubPath(), "policy");
-            attachDir(new File(gdir, mt.name), outboundPayload);
+            attachAppDir(fileOf(gdir, mt.name), outboundPayload);
         } catch (IOException ioex) {
             logger.fine("SynchronizeFiles: IOException syncing app " + mt.name);
             logger.fine(ioex.toString());
@@ -446,10 +487,101 @@ logger.setLevel(Level.FINEST);
     }
 
     /**
-     * Attach the file to the payload.
-     * If the file is a directory, recurse.  XXX - still need to support?
+     * Synchronize the lib directory.
      */
-    private void attachFile(File file, Payload.Outbound outboundPayload)
+    private void synchronizeLib(AdminCommandContext context,
+                                    Server server, SyncRequest sr)
+                                    throws URISyntaxException {
+        synchronizeConfigSpecificDir(context, server, sr, "lib",
+                                                        SyncLevel.RECURSIVE);
+    }
+
+    /**
+     * Synchronize the docroot directory.
+     */
+    private void synchronizeDocroot(AdminCommandContext context,
+                                    Server server, SyncRequest sr)
+                                    throws URISyntaxException {
+        synchronizeConfigSpecificDir(context, server, sr, "docroot",
+                                                        SyncLevel.TOP);
+    }
+
+    /**
+     * Synchronize a config-specific directory.
+     * The directory for the instance is in the instance-config-specific
+     * config directory, which is in the main config directory.
+     * The instance-config-specific config directory is named
+     * <config-name>.
+     */
+    private void synchronizeConfigSpecificDir(AdminCommandContext context,
+            Server server, SyncRequest sr, String dirName, SyncLevel level)
+            throws URISyntaxException {
+        String configDirName = server.getConfigRef();
+        File configDir = new File(env.getConfigDirPath(), configDirName);
+        logger.finest("SynchronizeFiles: " +
+                    "config-specific directory is " + configDir);
+        File dir = new File(configDir, dirName);
+        List<String> fileSet = getFileNames(dir, level);
+
+        Payload.Outbound outboundPayload = context.getOutboundPayload();
+        URI configDirUri = configDir.toURI();
+        for (ModTime mt : sr.files) {
+            if (fileSet.contains(mt.name)) {
+                // if client has file, remove it from set
+                fileSet.remove(mt.name);
+                syncFile(configDirUri, dir, mt, outboundPayload);
+            } else
+                removeFile(configDirUri, dir, mt, outboundPayload);
+        }
+
+        // now do all the remaining files the client doesn't have
+        for (String name : fileSet)
+            syncFile(configDirUri, dir, new ModTime(name, 0), outboundPayload);
+    }
+
+    /**
+     * Return a list with the names of all the
+     * files in the specified directory.
+     */
+    private List<String> getFileNames(File dir, SyncLevel level) {
+        List<String> names = new ArrayList<String>();
+        if (dir.exists())
+            getFileNames(dir, dir, names, level);
+        else
+            logger.finest("SynchronizeFiles: directory doesn't exist: " + dir);
+        return names;
+    }
+
+    /**
+     * Get the mod times for the entries in dir and add them to the
+     * SyncRequest, using names relative to baseDir.  If level is
+     * RECURSIVE, check subdirectories and only include times for files,
+     * not directories.
+     */
+    private void getFileNames(File dir, File baseDir, List<String> names,
+                                    SyncLevel level) {
+        if (level == SyncLevel.TOP) {
+            names.add(".");
+            return;
+        }
+        for (String file : dir.list()) {
+            File f = new File(dir, file);
+            if (f.isDirectory() && level == SyncLevel.RECURSIVE)
+                getFileNames(f, baseDir, names, level);
+            else {
+                String name = baseDir.toURI().relativize(f.toURI()).getPath();
+                // if name is a directory, it will end with "/"
+                if (name.endsWith("/"))
+                    name = name.substring(0, name.length() - 1);
+                names.add(name);
+            }
+        }
+    }
+
+    /**
+     * Attach the application archive file to the payload.
+     */
+    private void attachAppArchive(File file, Payload.Outbound outboundPayload)
                                 throws IOException {
         if (logger.isLoggable(Level.FINER)) {
             logger.finer("SynchronizeFiles: domainRootUri " + domainRootUri);
@@ -457,28 +589,22 @@ logger.setLevel(Level.FINEST);
             logger.finer("SynchronizeFiles: attach file " +
                             domainRootUri.relativize(file.toURI()));
         }
-        if (file.isDirectory()) {
-            outboundPayload.requestFileReplacement("application/octet-stream",
-                domainRootUri.relativize(file.toURI()),
-                "configChange", null, file, true);
-        } else {
-            outboundPayload.attachFile("application/octet-stream",
-                domainRootUri.relativize(file.toURI()),
-                "configChange", file);
-        }
+        outboundPayload.attachFile("application/octet-stream",
+            domainRootUri.relativize(file.toURI()),
+            "configChange", file);
     }
 
     /**
-     * Attach the directory and all its contents to the payload.
+     * Attach the application directory and all its contents to the payload.
      */
-    private void attachDir(File file, Payload.Outbound outboundPayload)
+    private void attachAppDir(File dir, Payload.Outbound outboundPayload)
                                 throws IOException {
         if (logger.isLoggable(Level.FINER))
             logger.finer("SynchronizeFiles: attach directory " +
-                            domainRootUri.relativize(file.toURI()));
+                            domainRootUri.relativize(dir.toURI()));
         outboundPayload.requestFileReplacement("application/octet-stream",
-            domainRootUri.relativize(file.toURI()),
-            "configChange", null, file, true);
+            domainRootUri.relativize(dir.toURI()),
+            "configChange", null, dir, true);
     }
 
     /**
@@ -486,19 +612,20 @@ logger.setLevel(Level.FINEST);
      * and all the generated directories.
      */
     private void removeApp(Application app, File base, ModTime mt,
-                            Payload.Outbound outboundPayload) {
+                            Payload.Outbound outboundPayload)
+                            throws URISyntaxException {
         logger.finer("SynchronizeFiles: remove app " + mt.name);
         try {
-            File dir = new File(base, mt.name);
+            File dir = fileOf(base, mt.name);
             removeDir(dir, outboundPayload);
             dir = env.getApplicationCompileJspPath();
-            removeDir(new File(dir, mt.name), outboundPayload);
+            removeDir(fileOf(dir, mt.name), outboundPayload);
             dir = env.getApplicationGeneratedXMLPath();
-            removeDir(new File(dir, mt.name), outboundPayload);
+            removeDir(fileOf(dir, mt.name), outboundPayload);
             dir = env.getApplicationEJBStubPath();
-            removeDir(new File(dir, mt.name), outboundPayload);
+            removeDir(fileOf(dir, mt.name), outboundPayload);
             dir = new File(env.getApplicationStubPath(), "policy");
-            removeDir(new File(dir, mt.name), outboundPayload);
+            removeDir(fileOf(dir, mt.name), outboundPayload);
         } catch (IOException ioex) {
             logger.fine("SynchronizeFiles: IOException removing app " +
                                                                     mt.name);
@@ -507,12 +634,22 @@ logger.setLevel(Level.FINEST);
     }
 
     /**
-     * Request recursive removal of teh specified directory.
+     * Request recursive removal of the specified directory.
      */
     private void removeDir(File file, Payload.Outbound outboundPayload)
                                 throws IOException {
         outboundPayload.requestFileRemoval(
             domainRootUri.relativize(file.toURI()),
             "configChange", null, true);    // recursive removal
+    }
+
+    /**
+     * Return a File representing the URI relative to the base directory.
+     */
+    private File fileOf(File base, String uri) throws URISyntaxException {
+        // have to use string concatenation to combine the relative URI
+        // with the base URI because URI.resolve() ignores the last
+        // component of the base URI
+        return new File(new URI(base.toURI().toString() + "/" + uri));
     }
 }
