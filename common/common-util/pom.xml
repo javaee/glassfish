@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -93,6 +93,7 @@
                                         <filter token="FULL_VERSION" value="${project.version}" />
                                         <filter token="MAJOR_VERSION" value="${major_version}" />
                                         <filter token="MINOR_VERSION" value="${minor_version}" />
+                                        <filter token="UPDATE_VERSION" value="${update_version}" />
                                         <filter token="BUILD_ID" value="${build.id}" />
                                         <filter token="VERSION_PREFIX" value="${version_prefix}" />
                                         <filter token="VERSION_SUFFIX" value="${version_suffix}" />
