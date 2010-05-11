@@ -412,13 +412,13 @@ public final class JDBCRealm extends DigestRealmBase {
                 char[] passwd = new char[noOfChars];
                 System.arraycopy(pwd, 0, passwd, 0, noOfChars);
                 if (HEX.equalsIgnoreCase(getProperty(PARAM_ENCODING))) {
+                    valid = true;
                     //Do a case-insensitive equals
                     for(int i = 0; i < noOfChars; i ++) {
                         if (!(Character.toLowerCase(passwd[i]) == Character.toLowerCase(hpwd[i]))) {
                             valid = false;
                             break;
                         }
-                        valid = true;
                     }
                 } else {
                     valid = Arrays.equals(passwd, hpwd);

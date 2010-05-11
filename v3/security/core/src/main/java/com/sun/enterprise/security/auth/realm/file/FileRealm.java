@@ -359,7 +359,7 @@ public final class FileRealm extends IASRealm
 
         try {
             
-            ok = SSHA.verify(ud.getSalt(), ud.getHash(), Util.convertCharArrayToByteArray(null, password));
+            ok = SSHA.verify(ud.getSalt(), ud.getHash(), password == null? null : Util.convertCharArrayToByteArray(null, password));
 
         } catch (Exception e) {
             _logger.fine("File authentication failed: "+e.toString());
