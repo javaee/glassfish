@@ -1,5 +1,9 @@
 package org.glassfish.admin.rest;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -7,22 +11,30 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RestTestBase {
     public static final String BASE_URL = "http://localhost:4848/management";
+    protected static Client client;
 
     public RestTestBase() {
     }
 
     @BeforeClass
     public static void setup() {
+        if (client == null) {
+            client = Client.create();
+        }
+
         Authenticator.setDefault(new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -53,24 +65,10 @@ public class RestTestBase {
     }
 
     protected String get(String address, String responseType) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            HttpURLConnection conn = getConnection(address, responseType);
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-
-            while ((inputLine = in.readLine()) != null) {
-                sb.append(inputLine);
-            }
-            in.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return sb.toString();
+        return client.resource(address).accept(responseType).get(String.class);
     }
 
-    protected String options(String address, String responseType) {
+    protected String options1(String address, String responseType) {
         StringBuilder sb = new StringBuilder();
         try {
             HttpURLConnection conn = getConnection(address, responseType);
@@ -91,63 +89,55 @@ public class RestTestBase {
     }
 
     protected String post(String address, Map<String, String> payload, String responseType) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            HttpURLConnection conn = getConnection(address, responseType);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
+        WebResource webResource = client.resource(address);
 
-            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-            String sep = "";
-            for (Map.Entry entry : payload.entrySet()) {
-                out.write(sep + entry.getKey() + "=" + entry.getValue());
-                sep = "&";
-            }
-            out.close();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String decodedString;
-
-            while ((decodedString = in.readLine()) != null) {
-                sb.append(decodedString);
-            }
-            in.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        MultivaluedMap formData = new MultivaluedMapImpl();
+        for (final Map.Entry<String, String> entry : payload.entrySet()) {
+            formData.putSingle(entry.getKey(), entry.getValue());
         }
-
-        return sb.toString();
+        ClientResponse cr = webResource.type("application/x-www-form-urlencoded")
+                .accept(responseType)
+                .post(ClientResponse.class, formData);
+        return cr.toString();
     }
 
-    protected String put(String address, Map<String, String> payload, String responseType) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            HttpURLConnection conn = getConnection(address, responseType);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("PUT");
+    protected String put1(String address, Map<String, String> payload, String responseType) {
+        WebResource webResource = client.resource(address);
 
-            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-            String sep = "";
-            for (Map.Entry entry : payload.entrySet()) {
-                out.write(sep + entry.getKey() + "=" + entry.getValue());
-                sep = "&";
-            }
-            out.close();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String decodedString;
-
-            while ((decodedString = in.readLine()) != null) {
-                sb.append(decodedString);
-            }
-            in.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return sb.toString();
+        MultivaluedMap formData = new MultivaluedMapImpl();
+        formData.putAll(payload);
+        ClientResponse cr = webResource.type("application/x-www-form-urlencoded")
+                .accept(responseType)
+                .put(ClientResponse.class, formData);
+        return cr.toString();
+        
+//        StringBuilder sb = new StringBuilder();
+//        try {
+//            HttpURLConnection conn = getConnection(address, responseType);
+//            conn.setDoOutput(true);
+//            conn.setRequestMethod("PUT");
+//
+//            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+//            String sep = "";
+//            for (Map.Entry entry : payload.entrySet()) {
+//                out.write(sep + entry.getKey() + "=" + entry.getValue());
+//                sep = "&";
+//            }
+//            out.close();
+//
+//            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//            String decodedString;
+//
+//            while ((decodedString = in.readLine()) != null) {
+//                sb.append(decodedString);
+//            }
+//            in.close();
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        return sb.toString();
     }
 
     /**
