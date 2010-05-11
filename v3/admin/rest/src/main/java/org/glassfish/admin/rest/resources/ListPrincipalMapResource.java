@@ -44,7 +44,6 @@ public class ListPrincipalMapResource extends TemplateListOfResource<PrincipalMa
 	public PrincipalMapResource getPrincipalMapResource(@PathParam("EisPrincipal") String id) {
 		PrincipalMapResource resource = resourceContext.getResource(PrincipalMapResource.class);
 		for (PrincipalMap c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
 			//Using '-' for back-slash in resource names
 			//For example, jndi names has back-slash in it.
 			if(c.getEisPrincipal().replace('/', '-').equals(id)){

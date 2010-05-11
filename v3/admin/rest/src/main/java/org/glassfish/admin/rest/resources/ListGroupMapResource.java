@@ -40,14 +40,13 @@ import com.sun.enterprise.config.serverbeans.GroupMap;
 public class ListGroupMapResource extends TemplateListOfResource<GroupMap> {
 
 
-	@Path("{MappedGroup}/")
-	public GroupMapResource getGroupMapResource(@PathParam("MappedGroup") String id) {
+	@Path("{EisGroup}/")
+	public GroupMapResource getGroupMapResource(@PathParam("EisGroup") String id) {
 		GroupMapResource resource = resourceContext.getResource(GroupMapResource.class);
 		for (GroupMap c: entity){
-//THIS KEY IS THE FIRST Attribute ONE ludo
 			//Using '-' for back-slash in resource names
 			//For example, jndi names has back-slash in it.
-			if(c.getMappedGroup().replace('/', '-').equals(id)){
+			if(c.getEisGroup().replace('/', '-').equals(id)){
 				resource.setEntity(c);
 			}
 		}

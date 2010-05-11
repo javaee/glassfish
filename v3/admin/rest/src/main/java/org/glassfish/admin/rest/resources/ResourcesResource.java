@@ -39,6 +39,42 @@ import org.glassfish.admin.rest.TemplateResource;
 import com.sun.enterprise.config.serverbeans.Resources;
 public class ResourcesResource extends TemplateResource<Resources> {
 
+@Path("resource-adapter-config/")
+public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
+ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
+java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.ResourceAdapterConfig> newList = new java.util.ArrayList();
+for (com.sun.enterprise.config.serverbeans.Resource r: l){
+try {
+if (r instanceof com.sun.enterprise.config.serverbeans.ResourceAdapterConfig) {
+newList.add((com.sun.enterprise.config.serverbeans.ResourceAdapterConfig)r);
+}
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
+@Path("connector-connection-pool/")
+public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() {
+ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
+java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.ConnectorConnectionPool> newList = new java.util.ArrayList();
+for (com.sun.enterprise.config.serverbeans.Resource r: l){
+try {
+if (r instanceof com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) {
+newList.add((com.sun.enterprise.config.serverbeans.ConnectorConnectionPool)r);
+}
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
 @Path("persistence-manager-factory-resource/")
 public ListPersistenceManagerFactoryResourceResource getPersistenceManagerFactoryResourceResource() {
 ListPersistenceManagerFactoryResourceResource resource = resourceContext.getResource(ListPersistenceManagerFactoryResourceResource.class);
@@ -75,24 +111,6 @@ return resource;
 }
 
 
-@Path("work-security-map/")
-public ListWorkSecurityMapResource getWorkSecurityMapResource() {
-ListWorkSecurityMapResource resource = resourceContext.getResource(ListWorkSecurityMapResource.class);
-java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.WorkSecurityMap> newList = new java.util.ArrayList();
-for (com.sun.enterprise.config.serverbeans.Resource r: l){
-try {
-if (r instanceof com.sun.enterprise.config.serverbeans.WorkSecurityMap) {
-newList.add((com.sun.enterprise.config.serverbeans.WorkSecurityMap)r);
-}
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
 @Path("jdbc-resource/")
 public ListJdbcResourceResource getJdbcResourceResource() {
 ListJdbcResourceResource resource = resourceContext.getResource(ListJdbcResourceResource.class);
@@ -111,24 +129,6 @@ return resource;
 }
 
 
-@Path("resource-adapter-config/")
-public ListResourceAdapterConfigResource getResourceAdapterConfigResource() {
-ListResourceAdapterConfigResource resource = resourceContext.getResource(ListResourceAdapterConfigResource.class);
-java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.ResourceAdapterConfig> newList = new java.util.ArrayList();
-for (com.sun.enterprise.config.serverbeans.Resource r: l){
-try {
-if (r instanceof com.sun.enterprise.config.serverbeans.ResourceAdapterConfig) {
-newList.add((com.sun.enterprise.config.serverbeans.ResourceAdapterConfig)r);
-}
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
 @Path("external-jndi-resource/")
 public ListExternalJndiResourceResource getExternalJndiResourceResource() {
 ListExternalJndiResourceResource resource = resourceContext.getResource(ListExternalJndiResourceResource.class);
@@ -138,6 +138,24 @@ for (com.sun.enterprise.config.serverbeans.Resource r: l){
 try {
 if (r instanceof com.sun.enterprise.config.serverbeans.ExternalJndiResource) {
 newList.add((com.sun.enterprise.config.serverbeans.ExternalJndiResource)r);
+}
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
+@Path("connector-resource/")
+public ListConnectorResourceResource getConnectorResourceResource() {
+ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
+java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.ConnectorResource> newList = new java.util.ArrayList();
+for (com.sun.enterprise.config.serverbeans.Resource r: l){
+try {
+if (r instanceof com.sun.enterprise.config.serverbeans.ConnectorResource) {
+newList.add((com.sun.enterprise.config.serverbeans.ConnectorResource)r);
 }
 } catch (Exception e){
 }
@@ -183,6 +201,24 @@ return resource;
 }
 
 
+@Path("work-security-map/")
+public ListWorkSecurityMapResource getWorkSecurityMapResource() {
+ListWorkSecurityMapResource resource = resourceContext.getResource(ListWorkSecurityMapResource.class);
+java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
+java.util.List<com.sun.enterprise.config.serverbeans.WorkSecurityMap> newList = new java.util.ArrayList();
+for (com.sun.enterprise.config.serverbeans.Resource r: l){
+try {
+if (r instanceof com.sun.enterprise.config.serverbeans.WorkSecurityMap) {
+newList.add((com.sun.enterprise.config.serverbeans.WorkSecurityMap)r);
+}
+} catch (Exception e){
+}
+}
+resource.setEntity(newList );
+return resource;
+}
+
+
 @Path("mail-resource/")
 public ListMailResourceResource getMailResourceResource() {
 ListMailResourceResource resource = resourceContext.getResource(ListMailResourceResource.class);
@@ -192,42 +228,6 @@ for (com.sun.enterprise.config.serverbeans.Resource r: l){
 try {
 if (r instanceof com.sun.enterprise.config.serverbeans.MailResource) {
 newList.add((com.sun.enterprise.config.serverbeans.MailResource)r);
-}
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
-@Path("connector-resource/")
-public ListConnectorResourceResource getConnectorResourceResource() {
-ListConnectorResourceResource resource = resourceContext.getResource(ListConnectorResourceResource.class);
-java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.ConnectorResource> newList = new java.util.ArrayList();
-for (com.sun.enterprise.config.serverbeans.Resource r: l){
-try {
-if (r instanceof com.sun.enterprise.config.serverbeans.ConnectorResource) {
-newList.add((com.sun.enterprise.config.serverbeans.ConnectorResource)r);
-}
-} catch (Exception e){
-}
-}
-resource.setEntity(newList );
-return resource;
-}
-
-
-@Path("connector-connection-pool/")
-public ListConnectorConnectionPoolResource getConnectorConnectionPoolResource() {
-ListConnectorConnectionPoolResource resource = resourceContext.getResource(ListConnectorConnectionPoolResource.class);
-java.util.List<com.sun.enterprise.config.serverbeans.Resource> l = entity.getResources();
-java.util.List<com.sun.enterprise.config.serverbeans.ConnectorConnectionPool> newList = new java.util.ArrayList();
-for (com.sun.enterprise.config.serverbeans.Resource r: l){
-try {
-if (r instanceof com.sun.enterprise.config.serverbeans.ConnectorConnectionPool) {
-newList.add((com.sun.enterprise.config.serverbeans.ConnectorConnectionPool)r);
 }
 } catch (Exception e){
 }
