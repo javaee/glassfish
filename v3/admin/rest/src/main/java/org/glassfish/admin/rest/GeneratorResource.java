@@ -395,7 +395,7 @@ public class GeneratorResource {
                 System.out.println("ConfigModel.Node node isCollection=" + prop.isCollection());
                 System.out.println("ConfigModel.Node node isLeaf=" + prop.isLeaf());
                 System.out.println("ConfigModel.Node node xlmname=" + prop.xmlName());
-                if (childModel.targetTypeName.endsWith("Named")) {
+                if (childModel.targetTypeName.endsWith("ApplicationName")) {//was named
                     a = "application";
                     getterName = "Applications";
                     try {
@@ -817,7 +817,54 @@ public class GeneratorResource {
 
         //package
         out.write("package org.glassfish.admin.rest.resources;\n\n");
+        out.write("//generated code...;\n\n");
 
+        if (commandMethod.equals("GET")) {
+            //get method
+            out.write("public class " + commandResourceName + " extends org.glassfish.admin.rest.TemplateCommandGetResource {\n");
+        }
+        if (commandMethod.equals("DELETE")) {
+            //get method
+            out.write("public class " + commandResourceName + " extends org.glassfish.admin.rest.TemplateCommandDeleteResource {\n");
+        }
+        if (commandMethod.equals("POST")) {
+            //get method
+            out.write("public class " + commandResourceName + " extends org.glassfish.admin.rest.TemplateCommandPostResource {\n");
+        }
+        out.write("   public " + commandResourceName + "() {\n");
+        out.write("       super(\n");
+
+        out.write("          \"" + resourceName + "\",\n");
+        out.write("          \"" + commandName + "\",\n");
+        out.write("          \"" + commandMethod + "\",\n");
+
+        if (!commandMethod.equals("GET")) {
+
+            out.write("          \"" + commandAction + "\",\n");
+            out.write("          \"" + commandDisplayName + "\",\n");
+        }
+
+        boolean isLinkedToParent = false;
+        if (configBeansToCommandResourcesArray.length > 5) {
+            out.write("          new java.util.HashMap<String, String>() {{\n");
+            for (int i = 5; i <= configBeansToCommandResourcesArray.length - 1; i++) {
+                String[] name_value = stringToArray(configBeansToCommandResourcesArray[i], "=");
+                if (name_value[1].equals(Constants.PARENT_NAME_VARIABLE)) {
+                    isLinkedToParent = true;
+                }
+                out.write("                    put(\"" + name_value[0] + "\",\"" + name_value[1] + "\");\n");
+            }
+
+            out.write("       }},\n");
+        } else {
+            out.write("          (java.util.HashMap<String, String>) null ,\n");
+        }
+        out.write("          " + isLinkedToParent + ");\n");
+
+
+        out.write("    }\n");
+        out.write("}\n");
+        /*
         //imports
         out.write("import java.util.HashMap;\n\n");
         out.write("import javax.ws.rs.*;\n");
@@ -896,6 +943,9 @@ public class GeneratorResource {
         out.write("private ResourceUtil __resourceUtil;\n");
         out.write("}\n");
 
+
+        */
+
         out.close();
         System.out.println("created:" + file.getAbsolutePath());
     }
@@ -956,7 +1006,7 @@ public class GeneratorResource {
         out.close();
     }
 
-
+/*
     private void createCommandMethod(String commandMethod, BufferedWriter out) throws IOException {
         out.write("@" + commandMethod + "\n");
         out.write("@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})\n");
@@ -964,7 +1014,7 @@ public class GeneratorResource {
         out.write("try {\n");
         out.write("if (data.containsKey(\"error\")) {\n");
         out.write("String errorMessage = localStrings.getLocalString(\"rest.request.parsing.error\", \"Unable to parse the input entity. Please check the syntax.\");\n");
-        out.write("return __resourceUtil.getResponse(400, /*parsing error*/\n errorMessage, requestHeaders, uriInfo);\n");
+        out.write("return __resourceUtil.getResponse(400, \n errorMessage, requestHeaders, uriInfo);\n");
         out.write("}\n\n");
 
         out.write("if (commandParams != null) {\n");
@@ -984,11 +1034,11 @@ public class GeneratorResource {
         out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
         out.write("String successMessage = localStrings.getLocalString(\"rest.request.success.message\",\n");
         out.write("\"{0} of {1} executed successfully.\", new Object[] {commandMethod, uriInfo.getAbsolutePath()});\n");
-        out.write("return __resourceUtil.getResponse(200, /*200 - ok*/\n successMessage, requestHeaders, uriInfo);\n");
+        out.write("return __resourceUtil.getResponse(200, \n successMessage, requestHeaders, uriInfo);\n");
         out.write("}\n\n");
 
         out.write("String errorMessage = actionReport.getMessage();\n");
-        out.write("return __resourceUtil.getResponse(400, /*400 - bad request*/\n errorMessage, requestHeaders, uriInfo);\n");
+        out.write("return __resourceUtil.getResponse(400, \n errorMessage, requestHeaders, uriInfo);\n");
         out.write("} catch (Exception e) {\n");
         out.write("throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);\n");
         out.write("}\n");
@@ -1105,9 +1155,9 @@ public class GeneratorResource {
         out.write("ActionReport.ExitCode exitCode = actionReport.getActionExitCode();\n\n");
         out.write("StringResult results = new StringResult(commandName, __resourceUtil.getMessage(actionReport), options());\n");
         out.write("if (exitCode == ActionReport.ExitCode.SUCCESS) {\n");
-        out.write("results.setStatusCode(200); /*200 - ok*/\n");
+        out.write("results.setStatusCode(200); \n");
         out.write("} else {\n");
-        out.write("results.setStatusCode(400); /*400 - bad request*/\n");
+        out.write("results.setStatusCode(400); \n");
         out.write("results.setIsError(true);\n");
         out.write("results.setErrorMessage(actionReport.getMessage());\n");
         out.write("}\n\n");
@@ -1148,7 +1198,7 @@ public class GeneratorResource {
         out.write("return optionsResult;\n");
         out.write("}\n\n");
     }
-
+*/
 
     //This method converts a string into stringarray, uses the delimeter as the
     //separator character.
