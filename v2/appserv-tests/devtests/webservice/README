@@ -6,13 +6,13 @@ web service unit tests
 3. Expected results are :
 
      [exec] ************************
-     [exec] PASSED=         56
+     [exec] PASSED=         58
      [exec] ------------  =========
      [exec] FAILED=          0
      [exec] ------------  =========
      [exec] DID NOT RUN=  0
      [exec] ------------  =========
-     [exec] Total Expected=56
+     [exec] Total Expected=58
      [exec] ************************
 
 
