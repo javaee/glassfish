@@ -286,6 +286,9 @@ public abstract class CLICommand implements PostConstruct {
             // do not want to display password as an option
             if (opt.getParam().password())
                 continue;
+            // primary parameter is the operand, not an option
+            if (opt.getParam().primary())
+                continue;
             boolean optional = opt.getParam().optional();
             String defValue = opt.getParam().defaultValue();
             if (optional)
