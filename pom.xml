@@ -145,7 +145,7 @@
         <mq.version>4.4.2-004</mq.version>
         <javadb.version>10.5.3.0</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
-        <weld.version>1.0.1-SP1</weld.version>
+        <weld.version>1.0.1-SP2</weld.version>
         <jersey.version>1.1.5</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
