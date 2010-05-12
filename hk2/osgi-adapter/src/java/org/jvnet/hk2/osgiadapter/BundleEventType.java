@@ -52,17 +52,22 @@ public enum BundleEventType {
     RESOLVED(0x20),
     UNRESOLVED(0x40),
     STARTING(0x80),
-    STOPPING(0x100);
+    STOPPING(0x100),
+    LAZY_ACTIVATION(0x200),
+    UNKNOWN_EVENT;
 
     private int i;
     BundleEventType(int i) {
         this.i = i;
     }
 
+    BundleEventType() {
+    }
+
     public static BundleEventType valueOf(int i) {
         for (BundleEventType m : values()) {
             if(m.i == i) return m;
         }
-        throw new IllegalArgumentException("No matching constant for " + i);
+        return UNKNOWN_EVENT;
     }
 }
