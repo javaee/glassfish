@@ -50,6 +50,7 @@ import javax.resource.spi.ConnectionRequestInfo;
 import javax.resource.spi.security.PasswordCredential;
 import javax.sql.PooledConnection;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -840,9 +841,9 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
 
         String thisUser = (pc == null) ? null : pc.getUserName();
         char[] passwordArray = (pc == null) ? null : pc.getPassword();
-        String thisPassword = (passwordArray == null) ? null : new String(passwordArray);
 
-        return (isStringEqual(thisUser, user) && isStringEqual(thisPassword, password));
+        return (isStringEqual(thisUser, user) && 
+                Arrays.equals(passwordArray, password.toCharArray()));
 
     }
 
