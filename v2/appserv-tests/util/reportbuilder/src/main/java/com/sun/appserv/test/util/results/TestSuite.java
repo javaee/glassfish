@@ -10,6 +10,7 @@ package com.sun.appserv.test.util.results;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.List;
 
 public class TestSuite {
     private String id;
@@ -103,10 +104,12 @@ public class TestSuite {
                 + ReportHandler.row(null, "td", "Testsuite Description", getDescription())
                 + ReportHandler.row(null, "th", "Name", "Status"));
         for (Test test : getTests().values()) {
-            for (TestCase testCase : test.getTestCases().values()) {
-                final String status = testCase.getStatus();
-                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
-                    ReportHandler.cell(status.replaceAll("_", ""), 1, status)));
+            for (List<TestCase> list : test.getTestCases().values()) {
+                for (TestCase testCase : list) {
+                    final String status = testCase.getStatus();
+                    table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
+                        ReportHandler.cell(status.replaceAll("_", ""), 1, status)));
+                }
             }
         }
         return table

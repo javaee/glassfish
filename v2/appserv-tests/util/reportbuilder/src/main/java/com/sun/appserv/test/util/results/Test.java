@@ -11,6 +11,8 @@ package com.sun.appserv.test.util.results;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Test {
     private String id;
@@ -20,7 +22,7 @@ public class Test {
     private String statusDescription = ReporterConstants.OPTIONAL;
     private String expected;
     private String actual;
-    private Map<String, TestCase> testCases = new LinkedHashMap<String, TestCase>();
+    private Map<String, List<TestCase>> testCases = new LinkedHashMap<String, List<TestCase>>();
 
     public Test() {
     }
@@ -85,16 +87,20 @@ public class Test {
         return actual;
     }
 
-    public Map<String, TestCase> getTestCases() {
+    public Map<String, List<TestCase>> getTestCases() {
         return testCases;
     }
 
     public void addTestCase(TestCase testCase) {
-        if(testCases.get(testCase.getName()) == null) {
-            testCases.put(testCase.getName(), testCase);
+        List<TestCase> list = testCases.get(testCase.getName());
+        if(list == null) {
+            list = new ArrayList<TestCase>();
+            list.add(testCase);
+            testCases.put(testCase.getName(), list);
         } else {
-            testCase.setName(testCase.getName() + " -- DUPLICATE");
-            testCases.put(testCase.getName() + " -- DUPLICATE", testCase);
+            String newname = testCase.getName() + " -- DUPLICATE" + list.size();
+            testCase.setName(newname);
+            list.add(testCase);
         }
     }
 
@@ -136,8 +142,10 @@ public class Test {
         }
         if (!testCases.isEmpty()) {
             buffer.append("<testcases>\n");
-            for (TestCase myTestCase : testCases.values()) {
-                buffer.append(myTestCase.toXml());
+            for (List<TestCase> list : testCases.values()) {
+                for (TestCase myTestCase : list) {
+                    buffer.append(myTestCase.toXml());
+                }
             }
             buffer.append("</testcases>\n");
         }
@@ -146,8 +154,10 @@ public class Test {
     }
 
     public void merge(final Test test) {
-        for (TestCase testCase : test.getTestCases().values()) {
+        for (List<TestCase> list : test.getTestCases().values()) {
+        for (TestCase testCase : list) {
             addTestCase(testCase);
+        }
         }
     }
 }

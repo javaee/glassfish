@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.List;
 
 public class ReportHandler {
     int pass;
@@ -42,10 +43,12 @@ public class ReportHandler {
                 + row(null, "td", "Testsuite Description", suite.getDescription())
                 + row(null, "th", "Name", "Status"));
         for (Test test : suite.getTests().values()) {
-            for (TestCase testCase : test.getTestCases().values()) {
-                final String status = testCase.getStatus();
-                table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
-                    cell(status.replaceAll("_", ""), 1, status)));
+            for (List<TestCase> list : test.getTestCases().values()) {
+                for (TestCase testCase : list) {
+                    final String status = testCase.getStatus();
+                    table.append(String.format("<tr><td>%s</td>%s", testCase.getName(),
+                        cell(status.replaceAll("_", ""), 1, status)));
+                }
             }
         }
         return table
@@ -59,8 +62,10 @@ public class ReportHandler {
 
     private String buildSummary(final TestSuite suite) {
         for (Test test : suite.getTests().values()) {
-            for (TestCase testCase : test.getTestCases().values()) {
-                process(suite, testCase);
+            for (List<TestCase> list : test.getTestCases().values()) {
+                for (TestCase testCase : list) {
+                    process(suite, testCase);
+                }
             }
         }
         return String.format("<tr class=\"%s\"><td width=\"50%%\">%s</td>%s%s%s</tr>",

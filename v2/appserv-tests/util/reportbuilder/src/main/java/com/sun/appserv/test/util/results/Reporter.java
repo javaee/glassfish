@@ -289,10 +289,12 @@ public class Reporter extends Thread implements Serializable {
 
     private TestCase findTestCase(final String testCaseId, final Test test, final TestSuite suite) {
 //        TestCase testCase = test.getTestCases().get(testCaseId);
-        for (TestCase testCase : test.getTestCases().values()) {
-            if (testCase.getId().equals(testCaseId.trim())) {
-                return testCase;
-            }
+          for (List<TestCase> list : test.getTestCases().values()) {
+              for (TestCase testCase : list) {
+                  if (testCase.getId().equals(testCaseId.trim())) {
+                      return testCase;
+                  }
+              }
         }
 //        if (testCase == null) {
         System.err.println(String.format("ERROR: setTestCaseStatus might have called without addTestCase."
