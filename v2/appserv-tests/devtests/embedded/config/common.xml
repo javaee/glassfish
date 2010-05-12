@@ -385,8 +385,8 @@ Variables Used:
 <!-- Target to execute asadmin commands  -->
 <!-- ================================================================ -->
 <target name="asadmin-common">
-    <antcall name="asadmin-common-regular"/>
-    <antcall name="asadmin-common-embedded"/>
+    <antcall target="asadmin-common-regular"/>
+    <antcall target="asadmin-common-embedded"/>
 </target>
 
 <target name="asadmin-common-regular" unless="env.EMBEDDED">
@@ -407,8 +407,8 @@ Variables Used:
 </target>
 
 <target name="asadmin-common-ignore-fail">
-    <antcall name="asadmin-common-ignore-fail-regular"/>
-    <antcall name="asadmin-common-ignore-fail-embedded"/>
+    <antcall target="asadmin-common-ignore-fail-regular"/>
+    <antcall target="asadmin-common-ignore-fail-embedded"/>
 </target>
 
 <target name="asadmin-common-ignore-fail-regular" unless="env.EMBEDDED">
