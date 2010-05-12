@@ -36,17 +36,17 @@
  */
 package org.jvnet.hk2.junit;
 
-import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.IntrospectionScanner;
+import com.sun.hk2.component.*;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * Services available to junit tests running with the {@link Hk2Runner} runner.
@@ -96,6 +96,9 @@ public class Hk2TestServices {
         };
         
         habitat = new Habitat();
+
+        List<InhabitantsScanner> metaInfScanners = new ArrayList<InhabitantsScanner>();
+
         final StringTokenizer st = new StringTokenizer(classPath, File.pathSeparator);
         while(st.hasMoreElements()) {
             final String fileName = st.nextToken();
@@ -103,11 +106,37 @@ public class Hk2TestServices {
             if (f.exists()) {
                 try {
                     System.out.println("Beginning parsing " + fileName);
-                    parser.parse(f, new Runnable() {
-                        public void run() {
-                            System.out.println("Finished parsing " + fileName);
+                    if (f.isFile()) {
+                        JarFile jarFile = new JarFile(f);
+                        // TODO : add support for other habitat than default.
+                        JarEntry entry = jarFile.getJarEntry(InhabitantsFile.PATH+"/default");
+                        if (entry!=null) {
+                            byte[] buf = new byte[(int) entry.getSize()];
+                            DataInputStream in = new DataInputStream(jarFile.getInputStream(entry));
+                            try {
+                                in.readFully(buf);
+                            } finally {
+                                in.close();
+                            }
+                            System.out.println("Using meta-inf file for " + f.getPath());
+                            metaInfScanners.add(new InhabitantsScanner(new ByteArrayInputStream(buf),
+                                "jar:"+f.toURL()+"!/"+entry.getName()));
+                        } else {
+                            // it's a file but no inhabitant file...
+                            parse(parser, f);
                         }
-                    });
+                    } else {
+                        // directory, for now, always parse.
+                        File inhabitantFile = new File(f, InhabitantsFile.PATH+File.separator+"default");
+                        if (inhabitantFile.exists()) {
+                            System.out.println("Using meta-inf file for " + f.getPath());
+                            metaInfScanners.add(new InhabitantsScanner(new BufferedInputStream(
+                                    new FileInputStream(inhabitantFile)),
+                                    inhabitantFile.getPath()));
+                        } else {
+                            parse(parser, f);
+                        }
+                    }
                 } catch(IOException e) {
                     e.printStackTrace();
                 }
@@ -128,6 +157,16 @@ public class Hk2TestServices {
         }
         System.out.println("finished introspecting");
 
+        System.out.println("Starting to introspect");
+        for (InhabitantsScanner scanner : metaInfScanners) {
+            try {
+                ip.parse(scanner, holder);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println("finished introspecting");
+
         Iterator<String> contracts = habitat.getAllContracts();
         while (contracts.hasNext()) {
             String contract = contracts.next();
@@ -138,6 +177,37 @@ public class Hk2TestServices {
         }
     }
 
+
+    private void parse(Parser parser, final File f) throws IOException {
+        Manifest manifest=null;
+        if (f.isDirectory()) {
+            File manifestFile = new File(f, JarFile.MANIFEST_NAME);
+            if (manifestFile.exists()) {
+                InputStream is = new BufferedInputStream(new FileInputStream(manifestFile));
+                try {
+                    manifest = new Manifest(is);
+                } finally {
+                    is.close();
+                }
+            }
+        } else {
+            JarFile jar = new JarFile(f);
+            manifest = jar.getManifest();
+        }
+        if (manifest!=null) {
+            String imports = manifest.getMainAttributes().getValue("Import-Package");
+            if (imports==null || imports.indexOf("hk2")==-1) {
+                System.out.println("Ignoring service-less " + f.getName());
+                return;
+            }
+        }
+        parser.parse(f, new Runnable() {
+            public void run() {
+                System.out.println("Finished introspecting " + f.getName());
+            }
+        });
+
+    }
     public Habitat getHabitat() {
         return habitat;
     }

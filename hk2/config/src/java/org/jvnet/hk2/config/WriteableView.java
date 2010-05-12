@@ -36,8 +36,6 @@
  */
 package org.jvnet.hk2.config;
 
-import org.jvnet.hk2.component.Inhabitant;
-
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -369,9 +367,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 for (PropertyChangeEvent event : entry.changeEvents) {
                     if (event.getOldValue()==null) {
                         originalList.add(event.getNewValue());
-                        if (event.getNewValue() instanceof ConfigBeanProxy) {
-                            Dom.unwrap((ConfigBeanProxy) event.getNewValue()).publish();
-                        }
                     } else {
                         final Object toBeRemovedObj = event.getOldValue();
                         if ( toBeRemovedObj instanceof ConfigBeanProxy ) {
@@ -381,7 +376,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                                 Dom dom = Dom.unwrap((ConfigBeanProxy) element);
                                 if (dom==toBeRemoved) {
                                     originalList.remove(index);
-                                    dom.release();
                                 }
                             }
                         }
