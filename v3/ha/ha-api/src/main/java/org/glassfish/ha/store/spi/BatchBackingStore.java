@@ -73,7 +73,8 @@ public interface BatchBackingStore<T> {
      * @throws IllegalArgumentException if entry is not a
      *                                  StoreEntry
      */
-    public abstract void save(String storeName, Object key, T entry, boolean isNew);
+    public abstract void save(String storeName, Object key, T entry, boolean isNew)
+             throws BackingStoreException;
 
     /**
      * Commit all the batch operations as (possibly) a single unit. This
@@ -82,5 +83,6 @@ public interface BatchBackingStore<T> {
      * The BatchManager may also implement the save as a write through method.
      * In which case, commit will be a no-op.
      */
-    public abstract void commit();
+    public abstract void commit()
+             throws BackingStoreException;
 }
