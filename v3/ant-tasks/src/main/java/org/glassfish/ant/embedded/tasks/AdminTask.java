@@ -106,10 +106,18 @@ public class AdminTask extends Task {
             try {
             log("executing admin task : " + commandLine + " serverID = " + serverID);
                 String args[] = getArgs(commandLine);
+                if (args.length == 0) {
+                   throw new BuildException("admin command not specified");
+                }
+                if (args[0].equalsIgnoreCase("set") && args.length > 1) {
+                    commandLine = args[0] + " --values = " + commandLine.substring(args[0].length() + 1);
+                    args = getArgs(commandLine);
+                }
                 Parser parser = new Parser(args, 1,  null, true);
                 ParameterMap pMap = parser.getOptions();
                 runner.getCommandInvocation(args[0], report).
                     parameters(pMap).execute();
+                System.out.println("executed : " + commandLine);
             } catch (Exception ex) {
                     throw new BuildException(ex);
             }
