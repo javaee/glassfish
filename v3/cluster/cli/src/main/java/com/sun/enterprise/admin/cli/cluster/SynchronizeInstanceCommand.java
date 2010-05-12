@@ -66,8 +66,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     @Param(name = "syncarchive", optional = true)
     private boolean syncArchive;
 
-    @Param(name = "allapps", optional = true, defaultValue = "true")
-    private boolean allApps = true;
+    @Param(name = "syncallapps", optional = true)
+    private boolean syncAllApps;
 
     private RemoteCommand syncCmd;
 
@@ -248,7 +248,7 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
             // _synchronize-files takes a single operand of type File
             syncCmd.execute("_synchronize-files",
                 "--syncarchive", Boolean.toString(syncArchive),
-                "--allapps", Boolean.toString(allApps),
+                "--syncallapps", Boolean.toString(syncAllApps),
                 tempFile.getPath());
 
             // the returned files are automatically saved by the command

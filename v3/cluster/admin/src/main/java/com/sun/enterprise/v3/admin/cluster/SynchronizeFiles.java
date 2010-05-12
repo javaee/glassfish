@@ -86,17 +86,14 @@ public class SynchronizeFiles implements AdminCommand {
     @Param(name = "syncarchive", optional = true)
     private boolean syncArchive;
 
-    @Param(name = "allapps", optional = true, defaultValue = "true")
-    private boolean allApps = true;
+    @Param(name = "syncallapps", optional = true)
+    private boolean syncAllApps;
 
     @Inject
     private ServerEnvironment env;
 
     @Inject(optional = true)
     private Applications applications;
-
-    @Inject(optional = true)
-    private Clusters clusters;
 
     @Inject(optional = true)
     private Servers servers;
@@ -389,7 +386,7 @@ logger.setLevel(Level.FINEST);
      * available to the specified server instance.
      */
     private Map<String, Application> getApps(Server server) {
-        if (allApps)
+        if (syncAllApps)
             return getAllApps();
 
         Map<String, Application> apps = new HashMap<String, Application>();
