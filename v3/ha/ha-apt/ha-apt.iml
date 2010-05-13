@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
@@ -11,14 +12,16 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ha-api" exported="" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2:1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2-core:1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:config:1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:auto-depends:1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:tiger-types-osgi:1.0.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.glassfish:bean-validator:3.0-JBoss-4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: sun.jdk:tools:1.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2:1.0.12" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:hk2-core:1.0.12" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:config:1.0.12" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:auto-depends:1.0.12" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.enterprise:tiger-types-osgi:1.0.12" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish.hk2:class-model:1.0.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.3.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: asm:asm-all:3.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.glassfish:bean-validator:3.0-JBoss-4.0.2_03" level="project" />
+    <orderEntry type="library" name="Maven: sun.jdk:tools:1.6.0" level="project" />
   </component>
 </module>
 

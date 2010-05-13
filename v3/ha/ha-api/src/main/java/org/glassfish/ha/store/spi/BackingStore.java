@@ -39,6 +39,7 @@ package org.glassfish.ha.store.spi;
 import org.glassfish.ha.store.criteria.Criteria;
 import org.jvnet.hk2.annotations.Contract;
 
+import java.io.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -190,7 +191,7 @@ public abstract class BackingStore<K, V> {
     /**
      * Remove expired entries
      */
-    public abstract int removeExpired()
+    public abstract int removeExpired(long idleForMillis)
              throws BackingStoreException;
 
     /**
@@ -258,4 +259,15 @@ public abstract class BackingStore<K, V> {
         return Collections.EMPTY_LIST;
     }
 
+    protected ObjectOutputStream createObjectOutputStream(OutputStream os)
+        throws IOException {
+        ObjectInputOutputStreamFactory oosf = ObjectInputOutputStreamFactoryRegistry.getObjectInputOutputStreamFactory();
+        return oosf.createObjectOutputStream(os);
+    }
+
+    protected ObjectInputStream createObjectInputStream(InputStream is)
+        throws IOException {
+        ObjectInputOutputStreamFactory oosf = ObjectInputOutputStreamFactoryRegistry.getObjectInputOutputStreamFactory();
+        return oosf.createObjectInputStream(is, vClazz.getClassLoader());
+    }
 }
