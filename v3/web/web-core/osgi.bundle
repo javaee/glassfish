@@ -18,6 +18,7 @@
                         org.apache.catalina.util; \
                         org.apache.catalina.valves; \
                         org.apache.tomcat.util.modeler; \
+                        org.glassfish.web.util; \
                         org.glassfish.web.valve; version=${project.osgi.version}
 
 # Normally Import-Package is not required, as the default value of *
