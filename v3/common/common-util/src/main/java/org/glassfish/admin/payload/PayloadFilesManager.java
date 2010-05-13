@@ -306,6 +306,14 @@ public abstract class PayloadFilesManager {
         /** maps payload part name paths (excluding name and type) to temp file subdirs */
         private Map<String,File> pathToTempSubdir = new HashMap<String,File>();
 
+        public Temp(final File parentDir, final ActionReport report,
+                final Logger logger) throws IOException {
+            super(createTempFolder(
+                      parentDir,
+                      logger),
+                  report,
+                  logger);
+        }
         /**
          * Creates a new PayloadFilesManager for temporary files.
          * @param report results report to which extraction results will be appended
@@ -313,11 +321,7 @@ public abstract class PayloadFilesManager {
          * @throws java.io.IOException
          */
         public Temp(final ActionReport report, final Logger logger) throws IOException {
-            super(createTempFolder(
-                      new File(System.getProperty("java.io.tmpdir")),
-                      logger),
-                  report,
-                  logger);
+            this(new File(System.getProperty("java.io.tmpdir")), report, logger);
         }
 
         /**

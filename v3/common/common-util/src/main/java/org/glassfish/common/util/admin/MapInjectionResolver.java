@@ -57,6 +57,8 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
     private final CommandModel model;
     private final ParameterMap parameters;
 
+    private final Map<String,File> optionNameToUploadedFileMap;
+
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
     public static final LocalStringManagerImpl localStrings =
@@ -64,9 +66,16 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
 
     public MapInjectionResolver(CommandModel model,
 					ParameterMap parameters) {
+        this(model, parameters, null);
+    }
+
+    public MapInjectionResolver(CommandModel model,
+					ParameterMap parameters,
+                                        final Map<String,File> optionNameToUploadedFileMap) {
 	super(Param.class);
 	this.model = model;
 	this.parameters = parameters;
+        this.optionNameToUploadedFileMap = optionNameToUploadedFileMap;
     }
 
     @Override
@@ -87,6 +96,18 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
 	    // XXX - for now, only handle multiple values for primary
 	    List<String> value = parameters.get("DEFAULT");
 	    if (value != null && value.size() > 0) {
+                /*
+                 * If the operand is an uploaded file, replace the
+                 * client-provided value with the path to the uploaded file.
+                 */
+                for (int i = 0; i < value.size(); i++) {
+                    final String filePath = getUploadedFileParamValue(
+                            "DEFAULT",
+                            type, optionNameToUploadedFileMap);
+                    if (filePath != null) {
+                        value.set(i, filePath);
+                    }
+                }
 		// let's also copy this value to the cmd with a real name
 		parameters.set(paramName, value);
 		return convertListToObject(target, type, value);
@@ -94,12 +115,45 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
 	}
 	String paramValueStr = getParamValueString(parameters, param, target);
 
+        /*
+         * If the parameter is an uploaded file, replace the client-provided
+         * value with the path to the uploaded file.
+         */
+        final String fileParamValueStr = getUploadedFileParamValue(
+                paramName, type, optionNameToUploadedFileMap);
+        if (fileParamValueStr != null) {
+            paramValueStr = fileParamValueStr;
+        }
 	checkAgainstAcceptableValues(target, paramValueStr);
 	if (paramValueStr != null) {
 	    return convertStringToObject(target, type, paramValueStr);
 	}
 	// return default value
 	return getParamField(component, target);
+    }
+
+    /**
+     * Returns the path to the uploaded file if the specified field is of type
+     * File and if the field name is the same as one of the option names that
+     * was associated with an uploaded File in the incoming command request.
+     *
+     * @param fieldName name of the field being injected
+     * @param fieldType type of the field being injected
+     * @param optionNameToFileMap map of field names to uploaded Files
+     * @return absolute path of the uploaded file for the field; null if no file uploaded for this field
+     */
+    public static String getUploadedFileParamValue(final String fieldName,
+                final Class fieldType,
+                final Map<String,File> optionNameToFileMap) {
+        if (optionNameToFileMap == null) {
+            return null;
+        }
+        final File uploadedFile = optionNameToFileMap.get(fieldName);
+        if (uploadedFile != null && fieldType.isAssignableFrom(File.class)) {
+            return uploadedFile.getAbsolutePath();
+        } else {
+            return null;
+        }
     }
 
     /**

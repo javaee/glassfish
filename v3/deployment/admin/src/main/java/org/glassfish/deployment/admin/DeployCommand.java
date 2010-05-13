@@ -100,7 +100,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);
     final private static String COPY_IN_PLACE_ARCHIVE_PROP_NAME = "copy.inplace.archive";
     private static final String INSTANCE_ROOT_URI_PROPERTY_NAME = "com.sun.aas.instanceRootURI";
-    private static final String INTERNAL_DIR_NAME = "__internal";
 
 
     @Inject
@@ -136,17 +135,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     @Inject
     VersioningService versioningService;
 
-    private PayloadFilesManager.Perm payloadFilesMgr = null;
-    private Map<File,Properties> payloadFiles = null;
-
-    private File uploadedApp = null;
-    private File uploadedDeploymentPlan = null;
-    
     private File safeCopyOfApp = null;
     private File safeCopyOfDeploymentPlan = null;
-
-    /* the JAR or directory from which to deploy the app */
-    private File fileToDeployFrom = null;
+    private File originalPathValue;
 
     public DeployCommand() {
         origin = Origin.deploy;
@@ -166,27 +157,13 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
 
-        final File uniqueSubdirUnderApplications;
-        
-        try {
-            uniqueSubdirUnderApplications = saveUploadedFiles(context, logger);
-        } catch (Exception e) {
-            report.setFailureCause(e);
-            report.failure(logger, localStrings.getLocalString(
-                    "adapter.command.errorPrepUploadedFiles", 
-                    "Error preparing uploaded files"), e);
-            return;
-        }
-
-        fileToDeployFrom = choosePathFile(context);
-        if (!fileToDeployFrom.exists()) {
-            report.setMessage(localStrings.getLocalString("fnf","File not found", fileToDeployFrom.getAbsolutePath()));
+        originalPathValue = path;
+        if (!path.exists()) {
+            report.setMessage(localStrings.getLocalString("fnf","File not found", path.getAbsolutePath()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
         }
 
-        deploymentplan = chooseDeploymentPlanFile(context);
-        
         if (snifferManager.hasNoSniffers()) {
             String msg = localStrings.getLocalString("nocontainer", "No container services registered, done...");
             report.failure(logger,msg);
@@ -195,14 +172,14 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
         ReadableArchive archive;
         try {
-            archive = archiveFactory.openArchive(fileToDeployFrom, this);
+            archive = archiveFactory.openArchive(path, this);
         } catch (IOException e) {
             final String msg = localStrings.getLocalString("deploy.errOpeningArtifact",
-                    "deploy.errOpeningArtifact", fileToDeployFrom.getAbsolutePath());
+                    "deploy.errOpeningArtifact", path.getAbsolutePath());
             if (logReportedErrors) {
                 report.failure(logger, msg, e);
             } else {
-                report.setMessage(msg + fileToDeployFrom.getAbsolutePath() + e.toString());
+                report.setMessage(msg + path.getAbsolutePath() + e.toString());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             }
             return;
@@ -212,7 +189,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             ArchiveHandler archiveHandler = deployment.getArchiveHandler(archive);
             if (archiveHandler==null) {
-                report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",fileToDeployFrom.getName()));
+                report.failure(logger,localStrings.getLocalString("deploy.unknownarchivetype","Archive type of {0} was not recognized",path.getName()));
                 return;
             }
 
@@ -250,7 +227,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             if (!source.isDirectory()) {
                 isDirectoryDeployed = false;
                 expansionDir = new File(domain.getApplicationRoot(), name);
-                fileToDeployFrom = expansionDir;
+                path = expansionDir;
             }
 
             // create the parent class loader
@@ -323,7 +300,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             
             if (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS) {
                 try {
-                    moveAppFilesToPermanentLocation(uniqueSubdirUnderApplications,
+                    moveAppFilesToPermanentLocation(
                             deploymentContext, logger);
                     recordFileLocations(appProps);
 
@@ -353,7 +330,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 logger.log(Level.INFO, localStrings.getLocalString(
                         "errClosingArtifact", 
                         "Error while closing deployable artifact : ",
-                        fileToDeployFrom.getAbsolutePath()), e);
+                        path.getAbsolutePath()), e);
             }
             if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
                 if (report.hasWarnings()) {
@@ -389,46 +366,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
     }
 
     /**
-     * Saves any uploaded files into a temporary directory under the
-     * applications directory.  Placing them there allows us to rename them
-     * later, if needed, instead of copying them.
-     * @param context
-     * @param logger
-     * @return temp directory containing the saved, uploaded files
-     * @throws IOException
-     * @throws Exception
-     */
-    private File saveUploadedFiles(final AdminCommandContext context,
-            final Logger logger) throws IOException, Exception {
-        // bnevins May 2009
-        // An Exception is thrown out by createTempFile if appRoot doesn't
-        // exist -- so I added a mkdirs() call -- we should at least try...
-
-        File appRoot = new File(domain.getApplicationRoot());
-
-        if(!appRoot.isDirectory())
-            appRoot.mkdirs();
-
-        final File uniqueSubdirUnderApplications = File.createTempFile("upload", "dir", appRoot);
-        uniqueSubdirUnderApplications.delete();
-        uniqueSubdirUnderApplications.mkdir();
-        payloadFilesMgr = new PayloadFilesManager.Perm(
-                uniqueSubdirUnderApplications,
-                context.getActionReport(),
-                logger);
-        payloadFiles = payloadFilesMgr.processPartsExtended(context.getInboundPayload());
-        for (Map.Entry<File,Properties> entry : payloadFiles.entrySet()) {
-            if (entry.getValue().getProperty("data-request-name").equals("DEFAULT")) {
-                uploadedApp = entry.getKey();
-            } else if (entry.getValue().getProperty("data-request-name").equals(
-                    ParameterNames.DEPLOYMENT_PLAN)) {
-                uploadedDeploymentPlan = entry.getKey();
-            }
-        }
-        return uniqueSubdirUnderApplications;
-    }
-
-    /**
      * Makes safe copies of the archive and deployment plan for later use
      * during instance sync activity.
      * <p>
@@ -442,51 +379,59 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
      * @throws IOException
      */
     private void moveAppFilesToPermanentLocation(
-            final File uniqueSubdirUnderApplications,
             final ExtendedDeploymentContext deploymentContext,
             final Logger logger) throws IOException {
         final File finalUploadDir = deploymentContext.getAppInternalDir();
         finalUploadDir.mkdirs();
         safeCopyOfApp = renameUploadedFileOrCopyInPlaceFile(
-                finalUploadDir, uploadedApp, path, logger);
+                finalUploadDir, originalPathValue, logger);
         safeCopyOfDeploymentPlan = renameUploadedFileOrCopyInPlaceFile(
-                finalUploadDir, uploadedDeploymentPlan, deploymentplan, logger);
-        uniqueSubdirUnderApplications.delete();
+                finalUploadDir, deploymentplan, logger);
     }
 
     private File renameUploadedFileOrCopyInPlaceFile(
             final File finalUploadDir,
-            final File uploadedFile,
-            final File inPlaceFile,
+            final File fileParam,
             final Logger logger) throws IOException {
+        if (fileParam == null) {
+            return null;
+        }
+        /*
+         * If the fileParam resides within the applications directory then
+         * it has been uploaded.  In that case, rename it.
+         */
+        final File appsDir = env.getApplicationRepositoryPath();
+
         /*
          * The default answer is the in-place file, to handle the
          * directory-deployment case or the in-place archive case if we ae
          * not copying the in-place archive.
          */
-        File result = inPlaceFile;
-        if (uploadedFile != null) {
+        File result = fileParam;
+        
+        if ( ! appsDir.toURI().relativize(fileParam.toURI()).isAbsolute()) {
             /*
-             * The uploaded file exists, so rename it to the permanent location.
+             * The file lies within the apps directory, so it was 
+             * uploaded.
              */
-            result = new File(finalUploadDir, uploadedFile.getName());
-            FileUtils.renameFile(uploadedFile, result);
-            result.setLastModified(uploadedFile.lastModified());
-        } else if (inPlaceFile != null) {
+            result = new File(finalUploadDir, fileParam.getName());
+            FileUtils.renameFile(fileParam, result);
+            result.setLastModified(fileParam.lastModified());
+        } else {
             final boolean copyInPlaceArchive = Boolean.valueOf(
                     System.getProperty(COPY_IN_PLACE_ARCHIVE_PROP_NAME, "true"));
-            if ( ! inPlaceFile.isDirectory() && copyInPlaceArchive) {
+            if ( ! fileParam.isDirectory() && copyInPlaceArchive) {
                 /*
                  * The file was not uploaded and the in-place file is not a directory,
                  * so copy the archive to the permanent location.
                  */
                 final long startTime = System.currentTimeMillis();
-                result = new File(finalUploadDir, inPlaceFile.getName());
-                FileUtils.copy(inPlaceFile, result);
-                result.setLastModified(inPlaceFile.lastModified());
+                result = new File(finalUploadDir, fileParam.getName());
+                FileUtils.copy(fileParam, result);
+                result.setLastModified(fileParam.lastModified());
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("*** In-place archive copy of " +
-                            inPlaceFile.getAbsolutePath() + " took " +
+                            fileParam.getAbsolutePath() + " took " +
                             (System.currentTimeMillis() - startTime) + " ms");
                 }
             }
@@ -511,27 +456,6 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                         relativizeWithinDomainIfPossible(
                         safeCopyOfDeploymentPlan.toURI()));
         }
-    }
-
-    private File choosePathFile(AdminCommandContext context) {
-        if (uploadedApp != null) {
-            /*
-             * Use the uploaded file rather than the one specified by --path.
-             */
-            return uploadedApp;
-        }
-        return path;
-    }
-
-    private File chooseDeploymentPlanFile(AdminCommandContext context) {
-        if (uploadedDeploymentPlan != null) {
-            /*
-             * Use the uploaded file rather than the one specified by
-             * --deploymentplan.
-             */
-            return uploadedDeploymentPlan;
-        }
-        return deploymentplan;
     }
 
     /**

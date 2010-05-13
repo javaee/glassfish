@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.module.common_impl.LogHelper;
 
 import java.io.*;
@@ -45,6 +46,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.admin.payload.PayloadFilesManager;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;
@@ -93,6 +95,9 @@ public class CommandRunnerImpl implements CommandRunner {
 
     @Inject
     private ServerContext sc;
+
+    @Inject
+    private Domain domain;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
@@ -771,66 +776,92 @@ public class CommandRunnerImpl implements CommandRunner {
         } catch (ClassCastException e) {
             model = new CommandModelImpl(command.getClass());
         }
-        if (inv.typedParams() != null) {
-            InjectionResolver<Param> injectionTarget =
-                new DelegatedInjectionResolver(model, inv.typedParams());
-            doCommand(model, command, injectionTarget, inv.report(),
-                        inv.inboundPayload(), inv.outboundPayload());
-            return;
-        }
-
-        ParameterMap parameters = inv.parameters();
-        if (parameters == null) {
-            // no parameters, pass an empty collection
-            parameters = new ParameterMap();            
-        }
-
+        UploadedFilesManager ufm = null;
         final ActionReport report = inv.report();
 
-        if (isSet(parameters, "help") || isSet(parameters, "Xhelp")) {
-            InputStream in = getManPage(model.getCommandName(), command);
-            String manPage = encodeManPage(in);
-
-            if (manPage != null && isSet(parameters, "help")) {
-                inv.report().getTopMessagePart().addProperty("MANPAGE", manPage);
-            } else {
-                report.getTopMessagePart().addProperty(
-                                AdminCommandResponse.GENERATED_HELP, "true");
-                getHelp(command, report);
-            }
-            return;
-        }
-
         try {
-            if (!skipValidation(command)) {
-                validateParameters(model, parameters);
-            }
-        } catch (ComponentException e) {
-            // If the cause is UnacceptableValueException -- we want the message
-            // from it.  It is wrapped with a less useful Exception.
+            /*
+             * Extract any uploaded files and build a map from parameter names
+             * to the corresponding extracted, uploaded file.
+             */
+            ufm = new UploadedFilesManager(inv.report, logger,
+                    inv.inboundPayload());
 
-            Exception exception = e;
-            Throwable cause = e.getCause();
-            if (cause != null &&
-                    (cause instanceof UnacceptableValueException)) {
-                // throw away the wrapper.
-                exception = (Exception)cause;
+            if (inv.typedParams() != null) {
+                InjectionResolver<Param> injectionTarget =
+                    new DelegatedInjectionResolver(model, inv.typedParams(),
+                        ufm.optionNameToFileMap()
+                        );
+                doCommand(model, command, injectionTarget, inv.report(),
+                            inv.inboundPayload(), inv.outboundPayload());
+                return;
             }
-            logger.severe(exception.getMessage());
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(exception.getMessage());
-            report.setFailureCause(exception);
-            ActionReport.MessagePart childPart =
-                                report.getTopMessagePart().addChild();
-            childPart.setMessage(getUsageText(command, model));
-            return;
+
+            ParameterMap parameters = inv.parameters();
+            if (parameters == null) {
+                // no parameters, pass an empty collection
+                parameters = new ParameterMap();
+            }
+
+            if (isSet(parameters, "help") || isSet(parameters, "Xhelp")) {
+                InputStream in = getManPage(model.getCommandName(), command);
+                String manPage = encodeManPage(in);
+
+                if (manPage != null && isSet(parameters, "help")) {
+                    inv.report().getTopMessagePart().addProperty("MANPAGE", manPage);
+                } else {
+                    report.getTopMessagePart().addProperty(
+                                    AdminCommandResponse.GENERATED_HELP, "true");
+                    getHelp(command, report);
+                }
+                return;
+            }
+
+            try {
+                if (!skipValidation(command)) {
+                    validateParameters(model, parameters);
+                }
+            } catch (ComponentException e) {
+                // If the cause is UnacceptableValueException -- we want the message
+                // from it.  It is wrapped with a less useful Exception.
+
+                Exception exception = e;
+                Throwable cause = e.getCause();
+                if (cause != null &&
+                        (cause instanceof UnacceptableValueException)) {
+                    // throw away the wrapper.
+                    exception = (Exception)cause;
+                }
+                logger.severe(exception.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(exception.getMessage());
+                report.setFailureCause(exception);
+                ActionReport.MessagePart childPart =
+                                    report.getTopMessagePart().addChild();
+                childPart.setMessage(getUsageText(command, model));
+                return;
+            }
+
+            // initialize the injector.
+            InjectionResolver<Param> injectionMgr =
+                        new MapInjectionResolver(model, parameters,
+                        ufm.optionNameToFileMap());
+            doCommand(model, command, injectionMgr, report,
+                        inv.inboundPayload(), inv.outboundPayload());
+        } catch (Exception ex) {
+            logger.severe(ex.getMessage());
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setMessage(ex.getMessage());
+                report.setFailureCause(ex);
+                ActionReport.MessagePart childPart =
+                                    report.getTopMessagePart().addChild();
+                childPart.setMessage(getUsageText(command, model));
+                return;
+        } finally {
+            if (ufm != null) {
+                ufm.close();
+            }
         }
-
-        // initialize the injector.
-        InjectionResolver<Param> injectionMgr =
-                    new MapInjectionResolver(model, parameters);
-        doCommand(model, command, injectionMgr, report,
-                    inv.inboundPayload(), inv.outboundPayload());
     }
 
     /*
@@ -901,12 +932,16 @@ public class CommandRunnerImpl implements CommandRunner {
                             extends InjectionResolver<Param> {
         private final CommandModel model;
         private final CommandParameters parameters;
+        private final Map<String,File> optionNameToUploadedFileMap;
 
         public DelegatedInjectionResolver(CommandModel model,
-                                            CommandParameters parameters) {
+                                            CommandParameters parameters,
+                                            final Map<String,File> optionNameToUploadedFileMap) {
             super(Param.class);
             this.model = model;
             this.parameters = parameters;
+            this.optionNameToUploadedFileMap = optionNameToUploadedFileMap;
+            
         }
 
         @Override
@@ -928,6 +963,20 @@ public class CommandRunnerImpl implements CommandRunner {
                         parameters.getClass().getField(targetField.getName());
                     targetField.setAccessible(true);
                     Object paramValue = sourceField.get(parameters);
+                    /*
+                     * If this field is a File, then replace the param value
+                     * (which is whatever the client supplied on the command) with
+                     * the actual absolute path of the uploaded and extracted
+                     * file if, in fact, the file was uploaded.
+                     */
+                    final String paramFileValue =
+                            MapInjectionResolver.getUploadedFileParamValue(
+                                targetField.getName(),
+                                targetField.getType(),
+                                optionNameToUploadedFileMap);
+                    if (paramFileValue != null) {
+                        paramValue = new File(paramFileValue);
+                    }
 /*
                     if (paramValue==null) {
                         return convertStringToObject(target, type,
@@ -983,5 +1032,94 @@ public class CommandRunnerImpl implements CommandRunner {
         if (val == null)
             return false;
         return val.length() == 0 || Boolean.valueOf(val).booleanValue();
+    }
+
+    /**
+     * Encapsulates handling of files uploaded to the server in the payload
+     * of the incoming HTTP request.
+     * <p>
+     * Extracts any such files from the payload into a temporary directory
+     * under the domain's applications directory.  (Putting them there allows
+     * the deployment processing to rename the uploaded archive to another location
+     * under the applications directory, rather than having to copy them.)
+     */
+    private class UploadedFilesManager {
+
+        private final ActionReport report;
+        private final Logger logger;
+
+        /**
+         * maps option names as sent with each uploaded file to the corresponding
+         * extracted files
+         */
+        private Map<String,File> optionNameToFileMap;
+
+        /*
+         * PFM needs to be a field so it is not gc-ed before the
+         * UploadedFilesManager is closed.
+         */
+        private PayloadFilesManager.Temp payloadFilesMgr = null;
+
+        private UploadedFilesManager(final ActionReport report,
+                final Logger logger,
+                final Payload.Inbound inboundPayload) throws IOException, Exception {
+            this.logger = logger;
+            this.report = report;
+            extractFiles(inboundPayload);
+        }
+
+        private Map<String,File> optionNameToFileMap() {
+            return optionNameToFileMap;
+        }
+
+        private void close() {
+            if (payloadFilesMgr != null) {
+                payloadFilesMgr.cleanup();
+            }
+        }
+
+        private Map<String,File> extractFiles(final Payload.Inbound inboundPayload) throws IOException, Exception {
+            if (inboundPayload == null) {
+                return Collections.EMPTY_MAP;
+            }
+
+            final File uniqueSubdirUnderApplications = chooseTempDirParent();
+            payloadFilesMgr = new PayloadFilesManager.Temp(
+                    uniqueSubdirUnderApplications,
+                    report,
+                    logger);
+
+            /*
+             * Extract the files into the temp directory.
+             */
+            final Map<File,Properties> payloadFiles =
+                    payloadFilesMgr.processPartsExtended(inboundPayload);
+
+            /*
+             * Prepare the map of command options names to corresponding
+             * uploaded files.
+             */
+            optionNameToFileMap = new HashMap<String,File>();
+            for (Map.Entry<File,Properties> e : payloadFiles.entrySet()) {
+                final String optionName = e.getValue().getProperty("data-request-name");
+                if (optionName != null) {
+                    optionNameToFileMap.put(optionName, e.getKey());
+                }
+            }
+            return optionNameToFileMap;
+        }
+
+        private File chooseTempDirParent() throws IOException {
+            final File appRoot = new File(domain.getApplicationRoot());
+
+            /*
+             * Apparently during embedded runs the applications directory
+             * might not be present already.  Create it if needed.
+             */
+            if(!appRoot.isDirectory())
+                appRoot.mkdirs();
+
+            return appRoot;
+        }
     }
 }

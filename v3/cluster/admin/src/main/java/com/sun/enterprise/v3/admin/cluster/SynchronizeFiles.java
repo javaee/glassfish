@@ -131,14 +131,6 @@ logger.setLevel(Level.FINEST);
             in.close();
             } catch (IOException ex) {}
             */
-            pfm = new PayloadFilesManager.Temp(logger);
-            List<File> files = pfm.processParts(context.getInboundPayload());
-            for (File f : files)
-                logger.finest("SynchronizeFiles: got file: " + f);
-            logger.finest("SynchronizeFiles: fileList: " + fileList);
-            if (files.size() >= 1)
-                fileList = files.get(0);
-
             // read the input document
             JAXBContext jc = JAXBContext.newInstance(SyncRequest.class);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
