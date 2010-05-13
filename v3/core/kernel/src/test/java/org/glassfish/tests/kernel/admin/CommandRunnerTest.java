@@ -36,15 +36,18 @@
  */
 package org.glassfish.tests.kernel.admin;
 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import junit.framework.Assert;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -60,18 +63,40 @@ import org.jvnet.hk2.junit.Hk2Runner;
 //@Ignore
 public class CommandRunnerTest {
 
-//    @Inject
+    @Inject
     CommandRunner commandRunner;
 
     @BeforeClass
     public static void setup() {
         Habitat h = Hk2Runner.getHabitat();
+        /*
+         * The CommandRunnerImpl now injects Domain but these tests do not
+         * exercise the code path that requires the domain.  So register a
+         * dummy Domain instance with the habitat so injection will work.
+         */
+        h.addIndex(new ExistingSingletonInhabitant<Domain>(simpleDomain()),
+                Domain.class.getName(), null);
         h.addComponent(null, new StartupContext());
         h.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(new SingleModulesRegistry(CommandRunnerTest.class.getClassLoader()))
                 , ModulesRegistry.class.getName(), null);
     }
+    
+    private static Domain simpleDomain() {
+        InvocationHandler handler = new InvocationHandler() {
 
-    @Ignore
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                throw new UnsupportedOperationException("Feature-free dummy implementation for injection only");
+            }
+        };
+        Domain d = (Domain) Proxy.newProxyInstance(Domain.class.getClassLoader(),
+                                          new Class[] { Domain.class },
+                                          handler);
+        return d;
+    }
+
+
+
     @Test
     public void tryOut() {
         Assert.assertTrue(commandRunner!=null);
