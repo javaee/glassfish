@@ -80,6 +80,8 @@ import javax.servlet.http.*;
 import org.apache.catalina.Globals;
 import org.apache.catalina.util.IOTools;
 
+import org.glassfish.web.util.HtmlEntityEncoder;
+
 
 /**
  *  CGI-invoking servlet for web applications, used to execute scripts which
@@ -376,40 +378,63 @@ public final class CGIServlet extends HttpServlet {
     protected void printServletEnvironment(ServletOutputStream out,
         HttpServletRequest req, HttpServletResponse res) throws IOException {
 
+        printServletEnvironment(out, req, res, new HtmlEntityEncoder());
+    }
+
+    /**
+     * Prints out important Servlet API and container information
+     *
+     * <p>
+     * Copied from SnoopAllServlet by Craig R. McClanahan
+     * </p>
+     *
+     * @param  out    ServletOutputStream as target of the information
+     * @param  req    HttpServletRequest object used as source of information
+     * @param  res    HttpServletResponse object currently not used but could
+     *                provide future information
+     * @param  htmlEntityEncoder
+     *
+     * @exception  IOException  if a write operation exception occurs
+     *
+     */
+    protected void printServletEnvironment(ServletOutputStream out,
+        HttpServletRequest req, HttpServletResponse res,
+        HtmlEntityEncoder htmlEntityEncoder) throws IOException {
+
         // Document the properties from ServletRequest
         out.println("<h1>ServletRequest Properties</h1>");
         out.println("<ul>");
         Enumeration<String> attrs = req.getAttributeNames();
         while (attrs.hasMoreElements()) {
             String attr = attrs.nextElement();
-            out.println("<li><b>attribute</b> " + attr + " = " +
-                           req.getAttribute(attr));
+            out.println("<li><b>attribute</b> " + htmlEntityEncoder.encode(attr) + " = " +
+                           htmlEntityEncoder.encode(req.getAttribute(attr)));
         }
         out.println("<li><b>characterEncoding</b> = " +
-                       req.getCharacterEncoding());
+                       htmlEntityEncoder.encode(req.getCharacterEncoding()));
         out.println("<li><b>contentLength</b> = " +
                        req.getContentLength());
         out.println("<li><b>contentType</b> = " +
-                       req.getContentType());
+                       htmlEntityEncoder.encode(req.getContentType()));
         Enumeration<Locale> locales = req.getLocales();
         while (locales.hasMoreElements()) {
             Locale locale = locales.nextElement();
-            out.println("<li><b>locale</b> = " + locale);
+            out.println("<li><b>locale</b> = " + htmlEntityEncoder.encode(locale));
         }
         Enumeration<String> params = req.getParameterNames();
         while (params.hasMoreElements()) {
             String param = params.nextElement();
             String values[] = req.getParameterValues(param);
             for (int i = 0; i < values.length; i++)
-                out.println("<li><b>parameter</b> " + param + " = " +
-                               values[i]);
+                out.println("<li><b>parameter</b> " + htmlEntityEncoder.encode(param) + " = " +
+                               htmlEntityEncoder.encode(values[i]));
         }
         out.println("<li><b>protocol</b> = " + req.getProtocol());
         out.println("<li><b>remoteAddr</b> = " + req.getRemoteAddr());
         out.println("<li><b>remoteHost</b> = " + req.getRemoteHost());
         out.println("<li><b>scheme</b> = " + req.getScheme());
         out.println("<li><b>secure</b> = " + req.isSecure());
-        out.println("<li><b>serverName</b> = " + req.getServerName());
+        out.println("<li><b>serverName</b> = " + htmlEntityEncoder.encode(req.getServerName()));
         out.println("<li><b>serverPort</b> = " + req.getServerPort());
         out.println("</ul>");
         out.println("<hr>");
@@ -423,25 +448,26 @@ public final class CGIServlet extends HttpServlet {
         Cookie cookies[] = req.getCookies();
         if (cookies!=null) {
             for (int i = 0; i < cookies.length; i++)
-                out.println("<li><b>cookie</b> " + cookies[i].getName() +" = " +cookies[i].getValue());
+                out.println("<li><b>cookie</b> " + htmlEntityEncoder.encode(cookies[i].getName())
+                       +" = " +htmlEntityEncoder.encode(cookies[i].getValue()));
         }
         Enumeration<String> headers = req.getHeaderNames();
         while (headers.hasMoreElements()) {
             String header = headers.nextElement();
-            out.println("<li><b>header</b> " + header + " = " +
-                           req.getHeader(header));
+            out.println("<li><b>header</b> " + htmlEntityEncoder.encode(header) + " = " +
+                           htmlEntityEncoder.encode(req.getHeader(header)));
         }
-        out.println("<li><b>method</b> = " + req.getMethod());
+        out.println("<li><b>method</b> = " + htmlEntityEncoder.encode(req.getMethod()));
         out.println("<li><a name=\"pathInfo\"><b>pathInfo</b></a> = "
-                    + req.getPathInfo());
+                    + htmlEntityEncoder.encode(req.getPathInfo()));
         out.println("<li><b>pathTranslated</b> = " +
-                       req.getPathTranslated());
+                       htmlEntityEncoder.encode(req.getPathTranslated()));
         out.println("<li><b>queryString</b> = " +
-                       req.getQueryString());
+                       htmlEntityEncoder.encode(req.getQueryString()));
         out.println("<li><b>remoteUser</b> = " +
                        req.getRemoteUser());
         out.println("<li><b>requestedSessionId</b> = " +
-                       req.getRequestedSessionId());
+                       htmlEntityEncoder.encode(req.getRequestedSessionId()));
         out.println("<li><b>requestedSessionIdFromCookie</b> = " +
                        req.isRequestedSessionIdFromCookie());
         out.println("<li><b>requestedSessionIdFromURL</b> = " +
@@ -463,8 +489,8 @@ public final class CGIServlet extends HttpServlet {
         attrs = req.getAttributeNames();
         while (attrs.hasMoreElements()) {
             String attr = attrs.nextElement();
-            out.println("<li><b>" + attr + "</b> = " +
-                           req.getAttribute(attr));
+            out.println("<li><b>" + htmlEntityEncoder.encode(attr) + "</b> = " +
+                           htmlEntityEncoder.encode(req.getAttribute(attr)));
         }
         out.println("</ul>");
         out.println("<hr>");
@@ -493,8 +519,8 @@ public final class CGIServlet extends HttpServlet {
             attrs = session.getAttributeNames();
             while (attrs.hasMoreElements()) {
                 String attr = attrs.nextElement();
-                out.println("<li><b>" + attr + "</b> = " +
-                               session.getAttribute(attr));
+                out.println("<li><b>" + htmlEntityEncoder.encode(attr) + "</b> = " +
+                               htmlEntityEncoder.encode(session.getAttribute(attr)));
             }
             out.println("</ul>");
             out.println("<hr>");
@@ -625,12 +651,13 @@ public final class CGIServlet extends HttpServlet {
         }
  
         if (debug >= 10) {
+            HtmlEntityEncoder htmlEntityEncoder = new HtmlEntityEncoder();
             ServletOutputStream out = res.getOutputStream();
             out.println("<HTML><HEAD><TITLE>$Name:  $</TITLE></HEAD>");
             out.println("<BODY>$Header$<p>");
 
             if (cgiEnv.isValid()) {
-                out.println(cgiEnv.toString());
+                out.println(cgiEnv.toString(htmlEntityEncoder));
             } else {
                 out.println("<H3>");
                 out.println("CGI script not found or not specified.");
@@ -653,7 +680,7 @@ public final class CGIServlet extends HttpServlet {
 
             }
 
-            printServletEnvironment(out, req, res);
+            printServletEnvironment(out, req, res, htmlEntityEncoder);
 
             out.println("</BODY></HTML>");
         } //debugging
@@ -1156,8 +1183,8 @@ public final class CGIServlet extends HttpServlet {
          * directory to enable CGI script to be executed.
          */
         protected void expandCGIScript() {
-            StringBuffer srcPath = new StringBuffer();
-            StringBuffer destPath = new StringBuffer();
+            StringBuilder srcPath = new StringBuilder();
+            StringBuilder destPath = new StringBuilder();
             InputStream is = null;
 
             // paths depend on mapping
@@ -1247,8 +1274,12 @@ public final class CGIServlet extends HttpServlet {
          *
          */
         public String toString() {
+            return toString(new HtmlEntityEncoder());
+        }
 
-            StringBuffer sb = new StringBuffer();
+        public String toString(HtmlEntityEncoder htmlEntityEncoder) {
+
+            StringBuilder sb = new StringBuilder();
 
             sb.append("<TABLE border=2>");
 
@@ -1268,9 +1299,9 @@ public final class CGIServlet extends HttpServlet {
                 while (envk.hasMoreElements()) {
                     String s = envk.nextElement();
                     sb.append("<tr><td>");
-                    sb.append(s);
+                    sb.append(htmlEntityEncoder.encode(s));
                     sb.append("</td><td>");
-                    sb.append(blanksToString(env.get(s),
+                    sb.append(blanksToString(htmlEntityEncoder.encode(env.get(s)),
                                              "[will be set to blank]"));
                     sb.append("</td></tr>");
                 }
@@ -1292,7 +1323,7 @@ public final class CGIServlet extends HttpServlet {
             for (int i=0; i < cmdLineParameters.size(); i++) {
                 String param = cmdLineParameters.get(i);
                 sb.append("<p>");
-                sb.append(param);
+                sb.append(htmlEntityEncoder.encode(param));
                 sb.append("</p>");
             }
             sb.append("</td></tr>");
@@ -1663,7 +1694,7 @@ public final class CGIServlet extends HttpServlet {
             int bufRead = -1;
 
             //create query arguments
-            StringBuffer cmdAndArgs = new StringBuffer();
+            StringBuilder cmdAndArgs = new StringBuilder();
             if (command.indexOf(" ") < 0) {
                 cmdAndArgs.append(command);
             } else {
@@ -1686,7 +1717,7 @@ public final class CGIServlet extends HttpServlet {
                 }
             }
 
-            StringBuffer command = new StringBuffer(cgiExecutable);
+            StringBuilder command = new StringBuilder(cgiExecutable);
             command.append(" ");
             command.append(cmdAndArgs.toString());
             cmdAndArgs = command;
