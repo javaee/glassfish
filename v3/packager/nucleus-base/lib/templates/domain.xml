@@ -198,9 +198,10 @@
      <config name="default-config" dynamic-reconfiguration-enabled="true" >
          <http-service>
              <access-log/>
-             <virtual-server id="server" network-listeners="http-listener-1,  http-listener-2" >
+             <virtual-server id="server" network-listeners="http-listener-1, http-listener-2" >
                  <property name="default-web-xml" value="${com.sun.aas.instanceRoot}/config/default-web.xml"/>
              </virtual-server>
+             <virtual-server id="__asadmin" network-listeners="admin-listener" />
          </http-service>
          <iiop-service>
              <orb use-thread-pool-ids="thread-pool-1" />
@@ -322,20 +323,26 @@
          <network-config>
              <protocols>
                  <protocol name="http-listener-1">
-                     <http default-virtual-server="server" server-name="">
+                     <http default-virtual-server="server">
                          <file-cache />
                      </http>
                  </protocol>
                  <protocol security-enabled="true" name="http-listener-2">
-                     <http default-virtual-server="server" server-name="">
+                     <http default-virtual-server="server">
                          <file-cache />
                      </http>
                      <ssl ssl3-enabled="false" cert-nickname="s1as" />
+                 </protocol>
+                 <protocol name="admin-listener">
+                     <http default-virtual-server="__asadmin" max-connections="250">
+                         <file-cache enabled="false" />
+                     </http>
                  </protocol>
              </protocols>
              <network-listeners>
                  <network-listener address="0.0.0.0" port="${HTTP_LISTENER_PORT}" protocol="http-listener-1" transport="tcp" name="http-listener-1" thread-pool="http-thread-pool" />
                  <network-listener address="0.0.0.0" port="${HTTP_SSL_LISTENER_PORT}" protocol="http-listener-2" transport="tcp" name="http-listener-2" thread-pool="http-thread-pool" />
+                 <network-listener port="${ASADMIN_LISTENER_PORT}" protocol="admin-listener" transport="tcp" name="admin-listener" thread-pool="http-thread-pool" />
              </network-listeners>
              <transports>
                  <transport name="tcp" />
@@ -347,6 +354,7 @@
          </thread-pools>
          <group-management-service ping-protocol-timeout-in-millis="5000"/>
          <management-rules />
+         <system-property name="HTTP_LISTENER_PORT" value="34848"/>
          <system-property name="HTTP_LISTENER_PORT" value="38080"/>
          <system-property name="HTTP_SSL_LISTENER_PORT" value="38181"/>
          <system-property name="JMS_PROVIDER_PORT" value="37676"/>
