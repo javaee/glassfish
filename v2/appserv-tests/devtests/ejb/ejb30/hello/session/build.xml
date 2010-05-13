@@ -71,6 +71,8 @@
                    value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
               <jvmarg
                    value="-Djava.naming.provider.url=iiop://localhost:${orb.port}"/>
+              <jvmarg
+                   value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
 
         </java>
     </target>
