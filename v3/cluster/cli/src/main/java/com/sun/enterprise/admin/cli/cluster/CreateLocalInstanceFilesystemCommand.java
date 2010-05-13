@@ -71,15 +71,15 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "_create-instance-filesystem")
 @Scoped(PerLookup.class)
 public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
+    //TODO --agentport, --agentproperties, savemasterpassword not yet implemented
+    //@Param(name = "agentport", optional = true)
+    //private String agentPort;  --> nodeagent.properties agent.adminPort
 
-    @Param(name = "agentport", optional = true)
-    private String agentPort;
+    //@Param(name = "agentproperties", optional = true, separator = ':')
+    //private Properties agentProperties;
 
-    @Param(name = "agentproperties", optional = true, separator = ':')
-    private Properties agentProperties;
-
-    @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
-    private boolean saveMasterPassword = false;
+    //@Param(name = "savemasterpassword", optional = true, defaultValue = "false")
+    //private boolean saveMasterPassword = false;
 
     @Param(name = "instance_name", primary = true)
     private String instanceName0;
@@ -88,14 +88,11 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     public static final String K_DAS_PROTOCOL = "agent.das.protocol";
     public static final String K_DAS_PORT = "agent.das.port";
     public static final String K_DAS_IS_SECURE = "agent.das.isSecure";
-    public static final String K_DAS_USER = "agent.das.user";
-    public static final String K_DAS_PASSWORD = "agent.das.password";
 
     public static final String K_MASTER_PASSWORD = "agent.masterpassword";
     public static final String K_SAVE_MASTER_PASSWORD = "agent.saveMasterPassword";
 
     public static final String NODEAGENT_JMX_DEFAULT_PROTOCOL = "rmi_jrmp"; // what is this for 3.1?
-    public static final String NODEAGENT_DEFAULT_HOST_ADDRESS = "0.0.0.0";
     public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "true";
     public static final String NODEAGENT_DEFAULT_DAS_PORT = "4848";  // ??
 
@@ -268,33 +265,24 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             dasPropsFile.createNewFile();
         }
 
-        // ?? Need to verify
-        String adminUser = (String)this.getOption(ProgramOptions.USER);
-        String adminPassword = (String)this.getOption(ProgramOptions.PASSWORDFILE);
-        String adminPort = (String)this.getOption(ProgramOptions.PORT);
         String DASHost = (String)this.getOption(ProgramOptions.HOST);
-        String DASPort = this.agentPort;
-        String DASUser = (String)this.getOption(ProgramOptions.USER);
-        String DASPassword = adminPassword;
-        String saveMasterPasswd = Boolean.toString(saveMasterPassword);
+        String DASPort = (String)this.getOption(ProgramOptions.PORT);
+        String dasIsSecure = (String)this.getOption(ProgramOptions.SECURE);
 
         dasProperties = new Properties();
         if (!ok(DASHost)) {
-            DASHost = hostName;  // default to localhost
+            DASHost = hostName;
         }
-        dasProperties.setProperty(K_DAS_HOST, DASHost);
-        dasProperties.setProperty(K_DAS_IS_SECURE, NODEAGENT_DEFAULT_DAS_IS_SECURE);
         if (!ok(DASPort)) {
             DASPort = NODEAGENT_DEFAULT_DAS_PORT;
         }
-        dasProperties.setProperty(K_DAS_PORT, DASPort);
-        dasProperties.setProperty(K_DAS_PROTOCOL, NODEAGENT_JMX_DEFAULT_PROTOCOL);
-
-        dasProperties.setProperty(K_SAVE_MASTER_PASSWORD, saveMasterPasswd);
-
-        if (agentProperties != null) {
-            dasProperties.putAll(agentProperties);
+        if (!ok(dasIsSecure)) {
+            dasIsSecure = NODEAGENT_DEFAULT_DAS_IS_SECURE;
         }
+        dasProperties.setProperty(K_DAS_HOST, DASHost);
+        dasProperties.setProperty(K_DAS_PORT, DASPort);
+        dasProperties.setProperty(K_DAS_IS_SECURE, dasIsSecure);
+        dasProperties.setProperty(K_DAS_PROTOCOL, NODEAGENT_JMX_DEFAULT_PROTOCOL);
 
         FileOutputStream fos = new FileOutputStream(dasPropsFile);
         dasProperties.store(fos, strings.get("Instance.dasPropertyComment"));
