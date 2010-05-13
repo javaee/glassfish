@@ -47,7 +47,8 @@
     <target name="all_wd" >
         <record name="allrun.output" action="start"/>
         <property name="env.security_manager" value="OFF"/>
-        <antcall target="start-derby"/>        
+        <antcall target="verify-xml"/>
+        <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
 	<antcall target="build-deploy"/>
         <antcall target="runtest">
@@ -84,6 +85,7 @@
 
     <target name="start_server_with_security_manager_enabled">
         <property name="env.security_manager" value="ON"/>
+        <antcall target="verify-xml"/>
         <antcall target="start-derby"/>        
         <antcall target="start-server-felix"/>
 	<antcall target="enable-security-manager"/>
@@ -104,6 +106,7 @@
     <target name="all" depends="clean">
         <record name="allrun.output" action="start"/>
         <property name="env.security_manager" value="OFF"/>
+        <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
@@ -125,6 +128,7 @@
         <record name="allrun.output" action="start"/>
         <antcall target="add-quicklook-policy-grants" />
         <property name="env.security_manager" value="ON"/>
+        <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
         <antcall target="enable-security-manager"/>
@@ -149,6 +153,7 @@
     <!-- Target for testing glassfish distribution (containing EJB)  -->
     <target name="dev_debug" depends="clean">
         <record name="allrun.output" action="start"/>
+        <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
         <antcall target="build-deploy"/>
         <antcall target="runtest">
@@ -538,9 +543,28 @@
          
 <target name="stop-server-unix" if="isUnix">
     <antcall target="restart-server-unix"/>
-     <exec executable="${glassfish.home}/bin/asadmin">        
+     <exec executable="${glassfish.home}/bin/asadmin">
         <arg value="stop-domain"/>
     </exec>
 </target>
 
+<target name="verify-xml" depends="setOSConditions">
+    <echo message="Verify Domain.xml"/>
+    <antcall target="verify-xml-unix"/>
+    <antcall target="verify-xml-windows"/>
+</target>
+
+<target name="verify-xml-unix" if="isUnix">
+     <exec executable="${glassfish.home}/bin/asadmin">
+        <arg value="verify-domain-xml"/>
+    </exec>
+</target>
+
+<target name="verify-xml-windows" if="isWindows">
+     <exec executable="cmd">	
+         <arg value="/c"/>
+         <arg value="${glassfish.home}\bin\asadmin.bat"/>
+         <arg value="verify-domain-xml"/>
+     </exec>
+</target>
 </project>
