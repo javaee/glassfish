@@ -44,10 +44,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.InstanceInfo;
-import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
-import java.io.IOException;
-import java.net.Socket;
 import java.util.*;
 import java.util.logging.*;
 import org.glassfish.api.ActionReport;
@@ -103,9 +100,11 @@ public class ListInstancesCommand implements AdminCommand {
             String name = server.getName();
 
             // skip ourself
+            // TODO I'm assuming for now that GetNodeAgentRef's value is the
+            //remote hostname
             if(name != null && !name.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
                 InstanceInfo ii = new InstanceInfo(
-                        name, getAdminPort(server), server.getNodeAgentRef());
+                        name, getAdminPort(server), server.getNodeAgentRef(), logger);
                 infos.add(ii);
             }
         }

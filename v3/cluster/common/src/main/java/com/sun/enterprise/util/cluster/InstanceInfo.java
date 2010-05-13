@@ -4,12 +4,10 @@
  */
 package com.sun.enterprise.util.cluster;
 
-import com.sun.enterprise.util.net.NetUtils;
-import java.io.*;
-import java.io.InputStreamReader;
-import java.net.*;
-import java.util.logging.Level;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  * Used to format instance state info in a standard way.
@@ -17,48 +15,29 @@ import java.util.logging.Logger;
  * @author byron Nevins
  */
 public class InstanceInfo {
-    public InstanceInfo(String name0, int port0, String nodeAgentRef0) {
-        host = name0;
+    public InstanceInfo(String name0, int port0, String host0, Logger logger0) {
+        name = name0;
         port = port0;
-        nodeAgentRef = nodeAgentRef0;
-        running = simplePortTest(nodeAgentRef, port);    // always do this
+        host = host0;
+        logger = logger0;
+        running = pingInstance();
     }
 
     @Override
     public String toString() {
-        String runningString = running ? "Running" : "Not Running";
-        return "host: " + getHost()
+        return "name: " + getName()
+                + ", host: " + getHost()
                 + ", port: " + getPort()
-                + ", nodeAgentRef: " + getNodeAgentRef()
-                + ", state: " + runningString;
+                + ", state: " + running;
     }
 
-    public void runAdvancedTest() {
-        Socket socket = NetUtils.getClientSocket(host, port, 1000);
-        BufferedReader reader = null  ;
-
-        try {
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        }
-        catch (IOException ex) {
-            running = false;
-        }
-        finally {
-            try {
-                if(reader != null)
-                    reader.close(); 
-            }
-            catch(Exception e) {
-                // ignore
-            }
-        }
-    }
-/**
+    /**
      * @return the host
      */
     public String getHost() {
         return host;
     }
+
     /**
      * @param host the host to set
      */
@@ -81,28 +60,61 @@ public class InstanceInfo {
     }
 
     /**
-     * @return the nodeAgentRef
+     * @return the host
      */
-    public String getNodeAgentRef() {
-        return nodeAgentRef;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param nodeAgentRef the nodeAgentRef to set
+     * @param name the name to set
      */
-    public void setNodeAgentRef(String nodeAgentRef) {
-        this.nodeAgentRef = nodeAgentRef;
+    public void setName(String name0) {
+        name = name0;
     }
 
-    private boolean simplePortTest(String host, int port) {
-        return !NetUtils.isPortFree(host, port);
+    // TODO what about security????
+    private String pingInstance() {
+        // TODO force a shorter timeout if instance isn't running -- currently an unacceptable 10-15 seconds
+        try {
+            RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
+            ParameterMap map = new ParameterMap();
+            return rac.executeCommand(map);
+        }
+        catch (CommandException ex) {
+            return "Not Running";
+        }
     }
-
     private String host;
     private int port;
-    private String nodeAgentRef;
-    private boolean running;
-
-    
+    private String name;
+    private String running;
+    private Logger logger;
+}
+/** delete this stuff after May 30, 2010
+private boolean simplePortTest() {
+return !NetUtils.isPortFree(host, port);
 }
 
+private boolean advancedPortTest() {
+Socket socket = NetUtils.getClientSocket(host, port, 1000);
+BufferedReader reader = null  ;
+
+try {
+reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+return true;
+}
+catch (IOException ex) {
+return false;
+}
+finally {
+try {
+if(reader != null)
+reader.close();
+}
+catch(Exception e) {
+// ignore
+}
+}
+}
+ */
