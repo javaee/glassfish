@@ -20,8 +20,9 @@
 		<param name="port" value="HelloImpl"/>
 	</antcall>
         <javac srcdir="." destdir="${env.APS_HOME}/build/module/classes"
-            classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/jaxrpc-impl.jar:${env.S1AS_HOME}/lib/jaxws-impl.jar"
-            includes="ejb/GatewayImpl.java"/>
+            includes="ejb/GatewayImpl.java">
+            <classpath refid="classpath"/>
+        </javac>
  	<mkdir dir="${env.APS_HOME}/build/module/classes/wsdl/wsdl"/>
 	<get src="http://${http.host}:${http.port}/HelloImplService/HelloImpl?WSDL" dest="${env.APS_HOME}/build/module/classes//wsdl/wsdl/HelloImplService.wsdl"/>
         <jar destfile="${env.S1AS_HOME}/domains/domain1/autodeploy/EjbClient.jar"

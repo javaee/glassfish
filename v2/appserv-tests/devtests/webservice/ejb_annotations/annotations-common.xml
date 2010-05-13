@@ -36,9 +36,12 @@
                       <include name="*.jar"/>
 
                    </fileset>
-        <fileset dir="${env.S1AS_HOME}/modules/endorsed">
+                   <fileset dir="${env.S1AS_HOME}/modules/endorsed">
                       <include name="*.jar"/>
 
+                   </fileset>
+                   <fileset dir="${env.APS_HOME}/lib">
+                     <include name="reporter.jar"/>
                    </fileset>
 
 
@@ -55,8 +58,9 @@
 
 <target name="compile-client">
     <javac srcdir="." destdir="${env.APS_HOME}/build/module/classes" 
-        classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
-        includes="${client-src-name}"/>
+        includes="${client-src-name}">
+        <classpath refid="classpath"/>
+    </javac>
 </target>
 
 <target name="build">

@@ -32,7 +32,7 @@
 	</antcall>
         <javac srcdir="." destdir="${env.APS_HOME}/build/module/classes"
             includes="ejb/HelloEJB.java">
-            classpath refid="classpath"/>
+            <classpath refid="classpath"/>
         </javac>
         <jar destfile="${env.S1AS_HOME}/domains/domain1/autodeploy/EjbClient.jar"
 	    basedir="${env.APS_HOME}/build/module/classes"
