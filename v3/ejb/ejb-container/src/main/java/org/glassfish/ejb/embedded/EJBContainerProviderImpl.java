@@ -113,8 +113,8 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
             init(properties);
             try {
-                Set<File> modules = addEJBModules(properties);
-                if (modules.isEmpty()) {
+                Set<DeploymentElement> modules = addModules(properties);
+                if (!DeploymentElement.hasEJBModule(modules)) {
                     _logger.log(Level.SEVERE, "ejb.embedded.no_modules_found");
                 } else {
                     container.deploy(properties, modules);
@@ -179,10 +179,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
     /**
      * Adds EJB modules for the property in the properties Map or if such property
-     * is not specified, from the System classpath
+     * is not specified, from the System classpath. Also adds library references.
      */
-    private Set<File> addEJBModules(Map<?, ?> properties) {
-        Set<File> modules = new HashSet<File>();
+    private Set<DeploymentElement> addModules(Map<?, ?> properties) {
+        Set<DeploymentElement> modules = new HashSet<DeploymentElement>();
         Object obj = (properties == null)? null : properties.get(EJBContainer.MODULES);
         Set<String> moduleNames = new HashSet<String>();
 
@@ -197,11 +197,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     moduleNames.add(s);
                 }
             } else if (obj instanceof File) {
-                addEJBModule(modules, moduleNames, (File)obj);
+                addModule(modules, moduleNames, (File)obj);
             } else if (obj instanceof File[]) {
                 File[] arr = (File[])obj;
                 for (File f : arr) {
-                    addEJBModule(modules, moduleNames, f);
+                    addModule(modules, moduleNames, f);
                 }
             } 
         } 
@@ -214,7 +214,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             }
             String[] entries = path.split(File.pathSeparator);
             for (String s0 : entries) {
-                addEJBModule(modules, moduleNames, new File(s0));
+                addModule(modules, moduleNames, new File(s0));
             }
         }
 
@@ -222,10 +222,13 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     }
 
     /**
-     * @returns true if this file represents EJB module.
+     * @returns DeploymentElement if this file represents an EJB module or a library.
+     * Returns null if it's an EJB module which name is not present in the list of requested
+     * module names.
      */
-    private boolean isRequestedEJBModule(File file, Set<String> moduleNames) 
+    private DeploymentElement getRequestedEJBModuleOrLibrary(File file, Set<String> moduleNames) 
             throws Exception {
+        DeploymentElement result = null;
         String fileName = file.getName();
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("... Testing ... " + fileName);
@@ -233,12 +236,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         ReadableArchive archive = null;
         InputStream is = null;
         try {
-            boolean handles = false;
+            boolean isEJBModule = false;
             String moduleName = DeploymentUtils.getDefaultEEName(fileName);
             archive = archiveFactory.openArchive(file);
             is = archive.getEntry("META-INF/ejb-jar.xml");
             if (is != null) {
-                handles = true;
+                isEJBModule = true;
                 EjbDeploymentDescriptorFile eddf =
                         new EjbDeploymentDescriptorFile();
                 eddf.setXMLValidation(false);
@@ -249,18 +252,22 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             } else {
                 GenericAnnotationDetector detector =
                     new GenericAnnotationDetector(ejbAnnotations);
-                handles = detector.hasAnnotationInArchive(archive);
+                isEJBModule = detector.hasAnnotationInArchive(archive);
             }
 
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("... is EJB module: " + handles);
-                if (handles) {
+                _logger.fine("... is EJB module: " + isEJBModule);
+                if (isEJBModule) {
                     _logger.fine("... is Requested EJB module [" + moduleName + "]: " 
                             + (moduleNames.isEmpty() || moduleNames.contains(moduleName)));
                 }
             }
 
-            return handles && (moduleNames.isEmpty() || moduleNames.contains(moduleName));
+            if (!isEJBModule || moduleNames.isEmpty() || moduleNames.contains(moduleName)) {
+                result = new DeploymentElement(file, isEJBModule);
+            }
+
+            return result;
         } finally {
             if (archive != null) 
                 archive.close();
@@ -270,16 +277,21 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     }
 
     /**
-     * Adds an a File to the Set of EJB modules if it represents an EJB module.
+     * Adds an a DeploymentElement to the Set of modules if it represents an EJB module or a library.
      */
-    private void addEJBModule(Set<File> modules, Set<String> moduleNames, File f) {
+    private void addModule(Set<DeploymentElement> modules, Set<String> moduleNames, File f) {
         try {
-            if (f.exists() && isRequestedEJBModule(f, moduleNames) && !skipJar(f)) {
-                modules.add(f);
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("... Added EJB Module .... " + f.getName());
+            if (f.exists() && !skipJar(f)) {
+                
+                DeploymentElement de = getRequestedEJBModuleOrLibrary(f, moduleNames);
+                if (de != null) {
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("... Added " + ((de.isEJBModule())? "EJB Module" : "library") + 
+                                " .... " + de.getElement().getName());
+                    }
+                    modules.add(de);
                 }
-            } // skip the rest
+            } 
         } catch (Exception ioe) {
             _logger.log(Level.FINE, "ejb.embedded.io_exception", ioe);
             // skip it
@@ -312,6 +324,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                                 }
                             }
                             // Not OK - skip it
+System.err.println("... skipping... " + file.getName());
                             return true;
                         }
                     }

@@ -38,8 +38,13 @@ package org.glassfish.ejb.embedded;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -57,8 +62,9 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
 import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.api.embedded.Server;
+import org.glassfish.api.embedded.ScatteredArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.deployment.common.ModuleExploder;
@@ -110,22 +116,26 @@ public class EJBContainerImpl extends EJBContainer {
     /**
      * Construct new EJBContainerImpl instance and deploy found modules.
      */
-    void deploy(Map<?, ?> properties, Set<File> modules) throws EJBException {
-        File app = null;
+    void deploy(Map<?, ?> properties, Set<DeploymentElement> modules) throws EJBException {
         try {
-            app = getOrCreateApplication(modules);
+            Object app = getOrCreateApplication(modules);
             
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("[EJBContainerImpl] Deploying app: " + app);
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.info("[EJBContainerImpl] Deploying app: " + app);
             }
             DeployCommandParameters dp = new DeployCommandParameters();
-            dp.path = app;
-
-            if (properties != null) {
+            if (properties != null && DeploymentElement.countEJBModules(modules) > 1) {
                 dp.name = (String)properties.get(EJBContainer.APP_NAME);
             }
 
-            deployedAppName = deployer.deploy(app, dp);
+            if (app instanceof File) {
+                File f = (File)app;
+                dp.path = f;
+                deployedAppName = deployer.deploy(f, dp);
+            } else {
+                deployedAppName = deployer.deploy((ScatteredArchive)app, dp);
+            }
+
             cleanup = new Cleanup(this);
         } catch (IOException e) {
             throw new EJBException("Failed to deploy EJB modules", e);
@@ -188,28 +198,61 @@ public class EJBContainerImpl extends EJBContainer {
 
     /** 
      */
-    private File getOrCreateApplication(Set<File> modules)
+    private Object getOrCreateApplication(Set<DeploymentElement> modules)
             throws EJBException, IOException {
-        File result = null;
-        if (modules == null || modules.size() == 0) {
+        Object result = null;
+        if (modules == null || modules.size() == 0 || !DeploymentElement.hasEJBModule(modules)) {
             _logger.info("[EJBContainerImpl] No modules found");
         } else if (modules.size() == 1) {
-            result = modules.iterator().next();
+            // Single EJB module
+            result = modules.iterator().next().getElement();
+        } else if (DeploymentElement.countEJBModules(modules) == 1) {
+            // EJB molule with libraries - create ScatteredArchive
+            String mName = null;
+            Collection<URL> archives = new ArrayList<URL>();
+            for (DeploymentElement m : modules) {
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.info("[EJBContainerImpl] adding archive to ScatteredArchive " + m.getElement().getName());
+                }
+                
+                archives.add(m.getElement().toURI().toURL());
+                if (m.isEJBModule()) {
+                    mName = m.getElement().getName();
+                    result = m.getElement();
+                    break;
+                }
+            }
+/**
+            ScatteredArchive.Builder saBuilder = new ScatteredArchive.Builder(mName,
+                    Collections.unmodifiableCollection(archives));
+            result = saBuilder.buildJar(); 
+**/
         } else {
             // Create a temp dir by creating a temp file first, then 
             // delete the file and create a directory in its place.
-            result = File.createTempFile("ejb-app", "");
-            if (result.delete() && result.mkdirs()) {
+            File resultFile = File.createTempFile("ejb-app", "");
+            File lib = null;
+            if (resultFile.delete() && resultFile.mkdirs()) {
                 if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("[EJBContainerImpl] temp dir created at " + result.getAbsolutePath());
+                    _logger.fine("[EJBContainerImpl] temp dir created at " + resultFile.getAbsolutePath());
                 }
+                
+                // Create lib dir if there are library entries
+                if (DeploymentElement.hasLibrary(modules)) {
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("[EJBContainerImpl] lib dir added ... ");
+                    }
+                    lib = new File(resultFile, "lib");
+                }
+
             } else {
-                throw new EJBException("Not able to create temp dir " + result.getAbsolutePath ());
+                throw new EJBException("Not able to create temp dir " + resultFile.getAbsolutePath ());
             }
-//            result.deleteOnExit();
+//            resultFile.deleteOnExit();
 
             // Copy module directories and explode module jars
-            for (File f : modules) {
+            for (DeploymentElement m : modules) {
+                File f = m.getElement();
                 String filename = f.toURI().getSchemeSpecificPart();
                 if (filename.endsWith(File.separator) || filename.endsWith("/")) {
                     int length = filename.length();
@@ -224,19 +267,23 @@ public class EJBContainerImpl extends EJBContainer {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("[EJBContainerImpl] Converted file name: " + filename + " to " + name);
                 }
-                if (f.isDirectory()) {
-                    File out = new File(result, name + "_jar");
+
+                File base = (m.isEJBModule())? resultFile : lib;
+                if (f.isDirectory() || !m.isEJBModule()) {
+                    File out = new File(base, name + (m.isEJBModule()? "_jar" : ""));
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine("[EJBContainerImpl] Copying directory to: " + out);
                     }
                     FileUtils.copy(f, out);
                 } else {
-                    File out = new File(result, FileUtils.makeFriendlyFilename(name));
+                    File out = new File(base, FileUtils.makeFriendlyFilename(name));
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine("[EJBContainerImpl] Exploding jar to: " + out);
                     }
                     ModuleExploder.explodeJar(f, out);
                 }
+
+                result = resultFile;
             }
         }
         return result;
