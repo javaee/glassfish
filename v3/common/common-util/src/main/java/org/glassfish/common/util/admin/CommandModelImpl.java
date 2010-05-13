@@ -40,6 +40,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.UnknownOptionsAreOperands;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandModel;
 import org.jvnet.hk2.annotations.Service;
 
@@ -60,6 +61,7 @@ public class CommandModelImpl extends CommandModel {
     // use a LinkedHashMap so params appears in the order they are declared in the class.
     final Map<String, CommandModel.ParamModel> params = new LinkedHashMap<String, ParamModel>();
     final String commandName;
+    final Cluster cluster;
     final I18n i18n;
     private boolean dashOk = false;
 
@@ -68,11 +70,13 @@ public class CommandModelImpl extends CommandModel {
         Service service = commandType.getAnnotation(Service.class);
         commandName = service!=null?service.name():null;
         i18n = commandType.getAnnotation(I18n.class);
+        cluster = commandType.getAnnotation(Cluster.class);
         init(commandType);
     }
 
     public CommandModelImpl() {
         commandName = null;
+        cluster=null;
         i18n=null;
     }
 
@@ -109,6 +113,11 @@ public class CommandModelImpl extends CommandModel {
 
     public Collection<String> getParametersNames() {
         return params.keySet();
+    }
+
+    @Override
+    public Cluster getClusteringAttributes() {
+        return cluster;
     }
 
     /**

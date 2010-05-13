@@ -43,6 +43,8 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
+import org.glassfish.common.util.admin.CommandModelImpl;
+import org.glassfish.config.support.GenericCrudCommand;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -92,9 +94,17 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
      */
     public ActionReport.ExitCode execute(String commandName, AdminCommand command, AdminCommandContext context, ParameterMap parameters) {
 
-        // Get @Cluster annotatoin params; if not present, set required defaults.
-        org.glassfish.api.admin.Cluster clAnnotation =
-                command.getClass().getAnnotation(org.glassfish.api.admin.Cluster.class);
+        // Obtain the command model for this command.
+        CommandModel model;
+        try {
+            CommandModelProvider c = (CommandModelProvider) command;
+            model = c.getModel();
+        } catch(ClassCastException e) {
+            model = new CommandModelImpl(command.getClass());
+        }
+
+        // Get @Cluster annotation params; if not present, set required defaults.
+        org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
         if(clAnnotation == null) {
             runtimeTypes.add(RuntimeType.DAS);
             runtimeTypes.add(RuntimeType.INSTANCE);

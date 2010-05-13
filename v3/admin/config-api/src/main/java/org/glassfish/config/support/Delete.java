@@ -36,6 +36,7 @@
 
 package org.glassfish.config.support;
 
+import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
 
@@ -108,4 +109,13 @@ public @interface Delete {
      * @return the instance targeted for deletion.
      */
     Class<? extends CrudResolver> resolver() default CrudResolver.DefaultResolver.class;
+
+    /**
+     * Returns the desired behaviors in a clustered environment. By default, using all the
+     * {@link org.glassfish.api.admin.Cluster} default values
+     *
+     * @return the cluster information
+     */
+    Cluster cluster() default @Cluster();
+    
 }

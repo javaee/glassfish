@@ -78,7 +78,7 @@ public class GenericListCommand  extends GenericCrudCommand implements AdminComm
         listing = targetMethod.getAnnotation(Listing.class);
         resolverType = listing.resolver();
         try {
-            model = new GenericCommandModel(null, habitat.getComponent(DomDocument.class), commandName, listing.resolver(), null);
+            model = new GenericCommandModel(null, null, habitat.getComponent(DomDocument.class), commandName, listing.resolver(), null);
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);

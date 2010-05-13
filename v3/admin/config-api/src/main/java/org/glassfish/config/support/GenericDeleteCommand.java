@@ -75,7 +75,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
         delete = targetMethod.getAnnotation(Delete.class);
         resolverType = delete.resolver();
         try {
-            model = new GenericCommandModel(targetType, habitat.getComponent(DomDocument.class), commandName, delete.resolver(), null);
+            model = new GenericCommandModel(targetType, delete.cluster(), habitat.getComponent(DomDocument.class), commandName, delete.resolver(), null);
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);

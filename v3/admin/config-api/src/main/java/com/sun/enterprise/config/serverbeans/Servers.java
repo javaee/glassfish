@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.Create;
 import org.glassfish.config.support.Delete;
 import org.glassfish.config.support.TypeAndNameResolver;
@@ -62,7 +63,9 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
      * @return the list of configured {@link Server}
      */
     @Element
-    @Create(value="create-instance", resolver= TypeResolver.class, decorator=Server.Decorator.class)
+    // example below on how to annotate a CRUD command with cluster specific data.
+    @Create(value="create-instance", resolver= TypeResolver.class, decorator=Server.Decorator.class,
+        cluster=@org.glassfish.api.admin.Cluster(value = RuntimeType.DAS))
     @Delete(value="delete-instance", resolver= TypeAndNameResolver.class)
     public List<Server> getServer();
 

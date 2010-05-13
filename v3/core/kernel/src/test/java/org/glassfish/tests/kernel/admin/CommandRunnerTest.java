@@ -36,13 +36,17 @@
  */
 package org.glassfish.tests.kernel.admin;
 
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.single.SingleModulesRegistry;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import junit.framework.Assert;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.junit.Hk2Runner;
@@ -52,8 +56,8 @@ import org.jvnet.hk2.junit.Hk2Runner;
  *
  * @author Jerome Dochez
  */
-//@RunWith(Hk2Runner.class)
-@Ignore
+@RunWith(Hk2Runner.class)
+//@Ignore
 public class CommandRunnerTest {
 
     @Inject
@@ -63,6 +67,8 @@ public class CommandRunnerTest {
     public static void setup() {
         Habitat h = Hk2Runner.getHabitat();
         h.addComponent(null, new StartupContext());
+        h.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(new SingleModulesRegistry(CommandRunnerTest.class.getClassLoader()))
+                , ModulesRegistry.class.getName(), null);
     }
 
     @Test
@@ -72,7 +78,10 @@ public class CommandRunnerTest {
             ActionReport report = commandRunner.getActionReport("plain");
             CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("list-contracts", report);
             inv.execute();
-            System.out.println(report.toString());
+            System.out.println(report.getTopMessagePart().getMessage());
+            for (ActionReport.MessagePart child : report.getTopMessagePart().getChildren()) {
+                System.out.println(child.getMessage());
+            }
         } catch(Exception e) {
             e.printStackTrace();
         }

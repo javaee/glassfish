@@ -36,6 +36,7 @@
 
 package org.glassfish.config.support;
 
+import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
 
@@ -119,6 +120,12 @@ public @interface Create {
      */
     Class<? extends CreationDecorator> decorator() default CreationDecorator.NoDecoration.class;
 
-
+    /**
+     * Returns the desired behaviors in a clustered environment. By default, using all the
+     * {@link Cluster} default values
+     *
+     * @return the cluster information
+     */
+    Cluster cluster() default @Cluster();
 
 }

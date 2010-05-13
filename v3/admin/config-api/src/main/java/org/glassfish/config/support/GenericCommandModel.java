@@ -37,6 +37,7 @@ package org.glassfish.config.support;
 
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.Cluster;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.jvnet.hk2.config.Attribute;
@@ -53,9 +54,11 @@ public class GenericCommandModel extends CommandModel {
 
     final HashMap<String, ParamModel> params = new HashMap<String, ParamModel>();
     final String commandName;
+    final Cluster cluster;
 
-    public GenericCommandModel(Class<?> targetType, DomDocument document, String commandName, Class<?>... extraTypes) {
+    public GenericCommandModel(Class<?> targetType, Cluster cluster, DomDocument document, String commandName, Class<?>... extraTypes) {
         this.commandName = commandName;
+        this.cluster = cluster;
         if (targetType!=null && ConfigBeanProxy.class.isAssignableFrom(targetType)) {
             ConfigModel cm = document.buildModel(targetType);
             for (Method m : targetType.getMethods()) {
@@ -107,6 +110,11 @@ public class GenericCommandModel extends CommandModel {
 
     public Collection<String> getParametersNames() {
         return params.keySet();
+    }
+
+    @Override
+    public Cluster getClusteringAttributes() {
+        return cluster;
     }
 
     private final class ParamBasedModel extends ParamModel {

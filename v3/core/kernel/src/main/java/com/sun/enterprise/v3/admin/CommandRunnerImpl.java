@@ -766,7 +766,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
         CommandModel model;
         try {
-            GenericCrudCommand c = GenericCrudCommand.class.cast(command);
+            CommandModelProvider c = CommandModelProvider.class.cast(command);
             model = c.getModel();
         } catch (ClassCastException e) {
             model = new CommandModelImpl(command.getClass());

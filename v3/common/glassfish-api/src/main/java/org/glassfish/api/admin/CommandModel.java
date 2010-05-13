@@ -62,6 +62,14 @@ public abstract class CommandModel {
 
     public abstract Collection<String> getParametersNames();
 
+    /**
+     * Return the cluster parameters for this command  or null if none are
+     * specified and defaults should be used.
+     *
+     * @return a {@link Cluster} annotation instance or null
+     */
+    public abstract Cluster getClusteringAttributes();
+
     public Collection<ParamModel> getParameters() {
         ArrayList<ParamModel> copy = new ArrayList<ParamModel>();
         for (String name : getParametersNames()) {

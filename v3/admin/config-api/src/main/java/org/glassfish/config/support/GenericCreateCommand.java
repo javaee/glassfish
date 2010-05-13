@@ -70,7 +70,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     Habitat habitat;
     
     Class<? extends CrudResolver> resolverType;
-    CommandModel model;
+    GenericCommandModel model;
     Create create;
 
     final static Logger logger = LogDomains.getLogger(GenericCreateCommand.class, LogDomains.ADMIN_LOGGER);
@@ -82,7 +82,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         create = targetMethod.getAnnotation(Create.class);
         resolverType = create.resolver();
         try {
-            model = new GenericCommandModel(targetType, habitat.getComponent(DomDocument.class), commandName, create.resolver(), create.decorator());
+            model = new GenericCommandModel(targetType, create.cluster(), habitat.getComponent(DomDocument.class), commandName, create.resolver(), create.decorator());
             if (logger.isLoggable(level)) {
                 for (String paramName : model.getParametersNames()) {
                     CommandModel.ParamModel param = model.getModelFor(paramName);
@@ -187,10 +187,6 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                         decorator.decorate(context, childBean);
                     }
 
-                    // Now we need to add our new configuration object to the habitat so it can looked up
-                    // just like if it had been read from the domain.xml
-                    Dom childDom = Dom.unwrap(childBean);
-                    habitat.addIndex(new ExistingSingletonInhabitant<ConfigBeanProxy>(childDom.<ConfigBeanProxy>createProxy()), targetType.getName(), name);
                     return childBean;
                 }
             }, parentBean);
