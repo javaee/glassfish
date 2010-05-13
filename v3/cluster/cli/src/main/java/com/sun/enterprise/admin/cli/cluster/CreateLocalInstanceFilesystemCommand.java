@@ -70,7 +70,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  */
 @Service(name = "_create-instance-filesystem")
 @Scoped(PerLookup.class)
-public final class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
+public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
 
     @Param(name = "agentport", optional = true)
     private String agentPort;
@@ -123,6 +123,8 @@ public final class CreateLocalInstanceFilesystemCommand extends LocalInstanceCom
             instanceName = instanceName0;
         else
             throw new CommandValidationException(strings.get("Instance.badInstanceName"));
+
+        //super.validate();  fails with No node agents in directory <gf install>\nodeagents
 
         // nodeagents
         if (ok(agentDir)) {
