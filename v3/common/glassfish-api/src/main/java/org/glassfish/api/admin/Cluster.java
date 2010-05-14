@@ -38,6 +38,7 @@ package org.glassfish.api.admin;
 
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.*;
 
@@ -97,6 +98,7 @@ public @interface Cluster {
      * provider will be looked up from the habitat by its type ClusterExecutor and the
      * "target" name. 
      */
+    @Service
     final static class TargetBasedExecutor implements ClusterExecutor {
 
         @Inject(name="GlassFishClusterExecutor")
