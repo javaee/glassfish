@@ -78,7 +78,7 @@
 #define FINEST_LOG_LEVEL_PROP "Log-Level=FINEST"
 #define DEFAULT_LOG_LEVEL_PROP "Log-Level=INFO"
 
-#define MEDIA_PATH FILE_SEPARATOR "metadata"
+#define MEDIA_PATH FILE_SEPARATOR "install" FILE_SEPARATOR "metadata"
 #define MEDIA_LOCATION_PROP "Media-Location="
 
 
@@ -101,6 +101,8 @@ Saves about 4-5 MB to the download size. */
 #define RESOURCES_ZIP_PATH FILE_SEPARATOR "Product" FILE_SEPARATOR "Packages" FILE_SEPARATOR "Resources.zip"
 #define METADATA_ZIP_PATH FILE_SEPARATOR "Product" FILE_SEPARATOR "Packages" FILE_SEPARATOR "metadata.zip"
 
+/* Path to JDK.zip, only applicable to Java EE SDKs with JDK bundle. */
+#define JDK_ZIP_PATH FILE_SEPARATOR "Product" FILE_SEPARATOR "Packages" FILE_SEPARATOR "jdk.zip"
 
 
 /*
