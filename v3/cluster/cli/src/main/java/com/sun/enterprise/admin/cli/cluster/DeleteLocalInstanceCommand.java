@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.util.*;
 
@@ -46,6 +48,7 @@ import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 
 /**
  * Delete a local server instance.
@@ -65,6 +68,9 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
                         throws CommandException, CommandValidationException {
         instanceName = instanceName0;
         super.validate();
+
+        if(!StringUtils.ok(getServerDirs().getServerName()))
+            throw new CommandException(strings.get("DeleteInstance.noInstanceName"));
     }
 
     /**
@@ -73,6 +79,24 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
-        throw new CommandException("Not implemented");
+        if(isRunning()) {
+            throw new CommandException(strings.get("DeleteInstance.running"));
+        }
+
+        // wipe it out in DAS first
+        
+        // todo What about its config?  delete???
+        RemoteCommand rc = new RemoteCommand("delete-instance", programOpts, env);
+        rc.execute("delete-instance", "--nodeagent",
+                getServerDirs().getServerParentDir().getName(),
+                getServerDirs().getServerName());
+
+        FileUtils.whack(getServerDirs().getServerDir());
+
+        if(getServerDirs().getServerDir().isDirectory())
+            throw new CommandException(strings.get("DeleteInstance.badWhack",
+                    getServerDirs().getServerDir()));
+
+        return SUCCESS;
     }
 }
