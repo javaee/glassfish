@@ -85,17 +85,6 @@ public class ServerDirs {
         configDir = new File(serverDir, "config");
         domainXml = new File(configDir, "domain.xml");
         pidFile = new File(configDir, "pid");
-
-		/*
-        if(!configDir.isDirectory())
-            throw new IOException("Bad config directory.  It should be here: "
-                    + configDir);
-
-        if(!domainXml.canRead())
-            throw new IOException("No domain.xml.  It should be here: "
-                    + domainXml);
-         */
-
         localPasswordFile = new File(configDir, "local-password");
 
         String localPasswordBuffer = null;  // need an atomic assign tor localPassword
