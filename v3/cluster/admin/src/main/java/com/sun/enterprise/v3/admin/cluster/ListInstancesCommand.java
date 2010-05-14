@@ -36,15 +36,10 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.InstanceInfo;
-import com.sun.grizzly.config.dom.NetworkListener;
 import java.util.*;
 import java.util.logging.*;
 import org.glassfish.api.ActionReport;
@@ -52,11 +47,9 @@ import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.*;
 
 /**
  * AdminCommand to list all instances and their states
@@ -66,8 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-instances")
 @I18n("list.instances.command")
 @Scoped(PerLookup.class)
-
-public class ListInstancesCommand implements AdminCommand {
+public class ListInstancesCommand implements AdminCommand, PostConstruct {
     //@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     //private Server dasServer;
     @Inject
@@ -80,6 +72,11 @@ public class ListInstancesCommand implements AdminCommand {
     final private static LocalStringsImpl strings = new LocalStringsImpl(ListInstancesCommand.class);
 
     @Override
+    public void postConstruct() {
+        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+    }
+
+    @Override
     public void execute(AdminCommandContext context) {
         // setup
         ActionReport report = context.getActionReport();
@@ -87,14 +84,14 @@ public class ListInstancesCommand implements AdminCommand {
         List<Server> serverList = servers.getServer();
 
         // Require that we be a DAS
-        if(!env.isDas()) {
+        if(!helper.isDas()) {
             String msg = strings.get("list.instances.onlyRunsOnDas");
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage(msg);
             return;
         }
-        
+
         // Gather a list of InstanceInfo -- one per instance in domain.xml
         for(Server server : serverList) {
             String name = server.getName();
@@ -104,54 +101,22 @@ public class ListInstancesCommand implements AdminCommand {
             //remote hostname
             if(name != null && !name.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
                 InstanceInfo ii = new InstanceInfo(
-                        name, getAdminPort(server), server.getNodeAgentRef(), logger);
+                        name, helper.getAdminPort(server), server.getNodeAgentRef(), logger);
                 infos.add(ii);
             }
         }
 
         // report the list
+        // TODO i18n
         StringBuilder sb = new StringBuilder("*** list-instances ***\n");
-
 
         for(InstanceInfo info : infos) {
             sb.append(info).append('\n');
         }
-        
+
         report.setActionExitCode(ExitCode.SUCCESS);
         report.setMessage(sb.toString());
     }
 
-    private int getAdminPort(Server server) {
-        try {
-            Config config = getConfig(server);
-
-            if(config != null) {
-                List<NetworkListener> listeners = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
-
-                for(NetworkListener listener : listeners) {
-                    if("admin-listener".equals(listener.getProtocol()))
-                        return Integer.parseInt(listener.getPort());
-                }
-            }
-        }
-        catch (Exception e) {
-            // handled below...
-        }
-        return -1;
-    }
-
-    private Config getConfig(Server server) {
-        if(server != null) {
-            String cfgName = server.getConfigRef();
-
-            if(StringUtils.ok(cfgName))
-                for(Config config : configs.getConfig())
-                    if(cfgName.equals(config.getName()))
-                        return config;
-        }
-        return null;
-    }
+    private RemoteInstanceCommandHelper helper;
 }
-
-
-
