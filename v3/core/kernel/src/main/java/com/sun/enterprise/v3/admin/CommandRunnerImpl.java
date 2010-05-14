@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.module.common_impl.LogHelper;
 
@@ -98,6 +99,12 @@ public class CommandRunnerImpl implements CommandRunner {
 
     @Inject
     private Domain domain;
+
+    @Inject
+    private ServerEnvironment serverEnv;
+
+    @Inject
+    private ProcessEnvironment processEnv;
 
     private static final String ASADMIN_CMD_PREFIX = "AS_ADMIN_";
 
@@ -778,7 +785,8 @@ public class CommandRunnerImpl implements CommandRunner {
         }
         UploadedFilesManager ufm = null;
         final ActionReport report = inv.report();
-
+        ParameterMap parameters;
+        
         try {
             /*
              * Extract any uploaded files and build a map from parameter names
@@ -797,7 +805,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 return;
             }
 
-            ParameterMap parameters = inv.parameters();
+            parameters = inv.parameters();
             if (parameters == null) {
                 // no parameters, pass an empty collection
                 parameters = new ParameterMap();
@@ -861,6 +869,54 @@ public class CommandRunnerImpl implements CommandRunner {
             if (ufm != null) {
                 ufm.close();
             }
+        }
+        /*
+         * Command execution completed; If this is DAS and the command succeeded,
+         * time to replicate; At this point we will get the appropriate ClusterExecutor
+         * and give it complete control; We will let the executor take care all considerations
+         * (like RuntimeType settings, FailurePolicy settings etc)
+         * and just give the final execution results which we will set as is in the Final
+         * Action report returned to the caller.
+         */
+
+        if(processEnv.getProcessType().isEmbedded())
+            return;
+        if(serverEnv.getRuntimeType().isDas() &&
+                report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+            // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
+            Config cfg = domain.getConfigs().getConfigByName("server-config");
+            List<String> jvmOpts=cfg.getJavaConfig().getJvmOptions();
+            if(!jvmOpts.contains("-Dcommand.replication.enabled=true"))
+                return;
+            //TODO : Remove the above flag check by MS2
+            Cluster clAnnotation = model.getClusteringAttributes();
+            ClusterExecutor executor = null;
+            if(clAnnotation != null && clAnnotation.executor() != null) {
+                //try {
+                    //TODO : THIS HAS GOT TO GO; HOW TO GET THE SPECIFIED ONE THRO HABITAT ? NEED TO CHECK
+                    executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
+                /*
+                } catch(InstantiationException iex) {
+                    logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.instantiationfailure",
+                            "Unable to initialize specified exector class {0} : {1}", clAnnotation.executor(),
+                            iex.getLocalizedMessage()));
+                } catch(IllegalAccessException aex) {
+                    logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.instantiationfailure",
+                            "Unable to initialize specified exector class {0} : {1}", clAnnotation.executor(),
+                            aex.getLocalizedMessage()));
+                }
+                */
+            } else {
+                executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
+            }
+            if(executor == null) {
+                logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.notinitialized",
+                        "Unable to get an instance of ClusterExecutor; Cannot dynamically reconfigure instances"));
+                return;
+            }
+            report.setActionExitCode(executor.execute(model.getCommandName(), command,
+                    new AdminCommandContext(logger, report, inv.inboundPayload(), inv.outboundPayload()),
+                    parameters));
         }
     }
 

@@ -99,7 +99,7 @@ public @interface Cluster {
      */
     final static class TargetBasedExecutor implements ClusterExecutor {
 
-        @Inject(name="target")
+        @Inject(name="GlassFishClusterExecutor")
         private ClusterExecutor delegate=null;
 
         @Override
