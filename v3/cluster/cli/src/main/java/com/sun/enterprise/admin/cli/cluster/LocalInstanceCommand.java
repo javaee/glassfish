@@ -33,12 +33,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.InstanceDirs;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
@@ -52,73 +56,62 @@ import com.sun.enterprise.universal.io.SmartFile;
 /**
  * A base class for local commands that manage a local server instance.
  */
-public abstract class LocalInstanceCommand extends LocalServerCommand{
-
+public abstract class LocalInstanceCommand extends LocalServerCommand {
     @Param(name = "nodeagent", optional = true)
     protected String nodeAgent;
-
     @Param(name = "agentdir", optional = true)
     protected String agentDir;
-
     // subclasses decide whether it's optional, required, or not allowed
     //@Param(name = "instance_name", primary = true, optional = true)
     protected String instanceName;
-
     protected File agentsDir;           // the parent dir of all node agents
     protected File nodeAgentDir;        // the specific node agent dir
     protected File instanceDir;         // the specific instance dir
     protected File dasProperties;       // the das.properties file
-
     private InstanceDirs instanceDirs;
-
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalInstanceCommand.class);
 
     @Override
     protected void validate()
-                        throws CommandException, CommandValidationException {
+            throws CommandException, CommandValidationException {
         initInstance();
     }
 
     protected void initInstance() throws CommandException {
-        if (ok(agentDir)) {
-            agentsDir = new File(agentDir);
-        } else {
-            String agentRoot = getSystemProperty(
-                                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
-            // AS_DEF_NODEAGENTS_PATH might not be set on upgraded domains
-            if (agentRoot != null)
-                agentsDir = new File(agentRoot);
-            else
-                agentsDir = new File(new File(getSystemProperty(
-                                SystemPropertyConstants.INSTALL_ROOT_PROPERTY)),
-                                "nodeagents");
+        String agentsDirPath = null;  // normally <install-root>/nodeagents
 
-            // TODO -- agentDir might be set to null
-        }
+        if(ok(agentDir))
+            agentsDirPath = agentDir;
+        else
+            agentsDirPath = getAgentsDirPath();
 
+        agentsDir = new File(agentsDirPath);
         agentsDir.mkdirs();
 
-        if (!agentsDir.isDirectory()) {
+        if(!agentsDir.isDirectory()) {
             throw new CommandException(
                     strings.get("Instance.badAgentDir", agentsDir));
         }
 
-        if (nodeAgent != null) {
+        if(nodeAgent != null) {
             nodeAgentDir = new File(agentsDir, nodeAgent);
-        } else {
+        }
+        else {
             nodeAgentDir = getTheOneAndOnlyAgent(agentsDir);
             nodeAgent = nodeAgentDir.getName();
         }
 
-        if (instanceName != null) {
+        if(instanceName != null) {
             instanceDir = new File(nodeAgentDir, instanceName);
-        } else {
+            instanceDir.mkdirs();
+        }
+        else {
             instanceDir = getTheOneAndOnlyInstance(nodeAgentDir);
             instanceName = instanceDir.getName();
         }
 
-        if (!instanceDir.isDirectory()) {
+        if(!instanceDir.isDirectory()) {
             throw new CommandException(
                     strings.get("Instance.badInstanceDir", instanceDir));
         }
@@ -126,11 +119,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
         instanceDir = SmartFile.sanitize(instanceDir);
 
         try {
-           instanceDirs = new InstanceDirs(instanceDir);
-           setServerDirs(instanceDirs.getServerDirs());
-           //setServerDirs(instanceDirs.getServerDirs(), checkForSpecialFiles());
+            instanceDirs = new InstanceDirs(instanceDir);
+            setServerDirs(instanceDirs.getServerDirs());
+            //setServerDirs(instanceDirs.getServerDirs(), checkForSpecialFiles());
         }
-        catch(IOException e) {
+        catch (IOException e) {
             throw new CommandException(e);
         }
 
@@ -146,6 +139,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
 
     private File getTheOneAndOnlyAgent(File parent) throws CommandException {
         // look for subdirs in the parent dir -- there must be one and only one
+        // or there can be zero in which case we create one-and-only
 
         File[] files = parent.listFiles(new FileFilter() {
             public boolean accept(File f) {
@@ -153,17 +147,31 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
             }
         });
 
-        if (files == null || files.length == 0) {
-            throw new CommandException(
-                    strings.get("Agent.noAgentDirs", parent));
-        }
-
-        if (files.length > 1) {
+        // ERROR:  more than one nodeagent directory
+        if(files.length > 1) {
             throw new CommandException(
                     strings.get("Agent.tooManyAgentDirs", parent));
         }
 
-        return files[0];
+        // the usual case -- one agent dir
+        if(files.length == 1)
+            return files[0];
+
+        /*
+         * If there is no existing nodeagent directory -- create one!
+         */
+        try {
+            String hostname = InetAddress.getLocalHost().getHostName();
+            File f = new File(parent, hostname);
+
+            if(!f.mkdirs() || !f.isDirectory()) // for instance there is a regular file with that name
+                throw new CommandException(strings.get("Agent.cantCreateAgentDir", f));
+
+            return f;
+        }
+        catch (UnknownHostException ex) {
+            throw new CommandException(strings.get("Agent.cantGetHostName", ex));
+        }
     }
 
     private File getTheOneAndOnlyInstance(File parent) throws CommandException {
@@ -175,23 +183,43 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
             }
         });
 
-        if (files == null || files.length == 0) {
+        if(files == null || files.length == 0) {
             throw new CommandException(
                     strings.get("Instance.noInstanceDirs", parent));
         }
 
         // expect two - the "agent" directory and the instance directory
-        if (files.length > 2) {
+        if(files.length > 2) {
             throw new CommandException(
                     strings.get("Instance.tooManyInstanceDirs", parent));
         }
 
-        for (File f : files) {
-            if (!f.getName().equals("agent"))
+        for(File f : files) {
+            if(!f.getName().equals("agent"))
                 return f;
         }
         throw new CommandException(
                 strings.get("Instance.noInstanceDirs", parent));
+    }
+
+    private String getAgentsDirPath() throws CommandException {
+        String agentsDirPath = getSystemProperty(
+                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
+
+        if(StringUtils.ok(agentsDirPath))
+            return agentsDirPath;
+
+        String installRootPath = getSystemProperty(
+                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        if(!StringUtils.ok(installRootPath))
+            installRootPath = System.getProperty(
+                    SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+
+        if(!StringUtils.ok(installRootPath))
+            throw new CommandException("Agent.noInstallDirPath");
+
+        return installRootPath + "/" + "nodeagents";
     }
 
     protected void setDasDefaults() throws CommandException {
@@ -199,13 +227,17 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
         // TODO
         // make sure this works!
         dasProperties = new File(new File(new File(instanceDirs.getNodeAgentDir(), "agent"),
-                                                "config"), "das.properties");
+                "config"), "das.properties");
 
-        if (!dasProperties.exists())
+
+
+        if(!dasProperties.exists())
             return;
 
         Properties dasprops = new Properties();
         FileInputStream fis = null;
+
+
         try {
             // read properties and set them in programOptions
             // properties are:
@@ -217,27 +249,43 @@ public abstract class LocalInstanceCommand extends LocalServerCommand{
             dasprops.load(fis);
             String p;
             p = dasprops.getProperty("agent.das.host");
-            if (p != null)
+
+
+            if(p != null)
                 programOpts.setHost(p);
             p = dasprops.getProperty("agent.das.port");
-            if (p != null)
+
+
+            if(p != null)
                 programOpts.setPort(Integer.parseInt(p));
             p = dasprops.getProperty("agent.das.isSecure");
-            if (p != null)
+
+
+            if(p != null)
                 programOpts.setSecure(Boolean.parseBoolean(p));
             p = dasprops.getProperty("agent.das.user");
-            if (p != null)
+
+
+            if(p != null)
                 programOpts.setUser(p);
             // XXX - what about the DAS admin password?
-        } catch (IOException ioex) {
+
+
+        }
+        catch (IOException ioex) {
             throw new CommandException(
-                        strings.get("Instance.cantReadDasProperties",
-                                    dasProperties.getPath()));
-        } finally {
-            if (fis != null) {
+                    strings.get("Instance.cantReadDasProperties",
+                    dasProperties.getPath()));
+
+
+        }
+        finally {
+            if(fis != null) {
                 try {
                     fis.close();
-                } catch (IOException cex) {
+
+                }
+                catch (IOException cex) {
                     // ignore it
                 }
             }
