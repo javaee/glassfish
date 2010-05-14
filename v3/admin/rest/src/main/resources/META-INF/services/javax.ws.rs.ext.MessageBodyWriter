@@ -10,6 +10,9 @@ org.glassfish.admin.rest.provider.OptionsResultXmlProvider
 org.glassfish.admin.rest.provider.StringResultJsonProvider
 org.glassfish.admin.rest.provider.StringResultXmlProvider
 org.glassfish.admin.rest.provider.StringResultHtmlProvider
+org.glassfish.admin.rest.provider.StringListResultJsonProvider
+org.glassfish.admin.rest.provider.StringListResultXmlProvider
+org.glassfish.admin.rest.provider.StringListResultHtmlProvider
 org.glassfish.admin.rest.provider.CommandResourceGetResultJsonProvider
 org.glassfish.admin.rest.provider.CommandResourceGetResultXmlProvider
 org.glassfish.admin.rest.provider.CommandResourceGetResultHtmlProvider
