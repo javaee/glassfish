@@ -895,11 +895,16 @@ public class FileDirContext extends BaseDirContext {
                 canPath = file.getCanonicalPath();
             } catch (IOException e) {
             }
-            if (canPath == null)
+            if (canPath == null) {
+                logger.warning(sm.getString("fileResources.nullCanonicalPath",
+                                  canPath));
                 return null;
+            }
 
             // Check to see if going outside of the web application root
             if ((!allowLinking) && (!canPath.startsWith(absoluteBase))) {
+                logger.warning(sm.getString("fileResources.notAllowed",
+                                  allowLinking,canPath,absoluteBase));
                 return null;
             }
 
@@ -919,8 +924,11 @@ public class FileDirContext extends BaseDirContext {
                 if ((absoluteBase.length() < absPath.length()) 
                     && (absoluteBase.length() < canPath.length())) {
                     absPath = absPath.substring(absoluteBase.length() + 1);
-                    if ((canPath == null) || (absPath == null))
+                    if ((canPath == null) || (absPath == null)) {
+                        logger.warning(sm.getString("fileResources.nullAbsPath",
+                                canPath,absPath));
                         return null;
+                    }
                     if (absPath.equals(""))
                         absPath = "/";
                     canPath = canPath.substring(absoluteBase.length() + 1);
@@ -933,6 +941,8 @@ public class FileDirContext extends BaseDirContext {
                     // START S1AS 6200277
                         if (canPath.equalsIgnoreCase(absPath)
                                 || !allowLinking) {
+                            logger.warning(sm.getString("fileResources.canPathEqualsAbsPath",
+                                canPath,absPath,allowLinking));
                             return null;
                         }
                     // END S1AS 6200277
@@ -941,6 +951,8 @@ public class FileDirContext extends BaseDirContext {
             }
 
         } else {
+            logger.warning(sm.getString("fileResources.notExist",
+                                  file.getAbsolutePath()));
             return null;
         }
         // START S1AS8PE 4965170
@@ -983,7 +995,7 @@ public class FileDirContext extends BaseDirContext {
             // END S1AS8PE 4965170
 
             Object object = null;
-            if (currentFile.isDirectory()) {
+            if (currentFile!=null & currentFile.isDirectory()) {
                 FileDirContext tempContext = new FileDirContext(env);
                 tempContext.setDocBase(file.getPath());
                 tempContext.setAllowLinking(getAllowLinking());
