@@ -371,6 +371,12 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @DuckTyped
     Server getServerNamed(String name);
 
+    @DuckTyped
+    Config getConfigNamed(String name);
+
+    @DuckTyped
+    Cluster getClusterNamed(String name);
+
     class Duck {
         public static List<Application> getAllDefinedSystemApplications(Domain me) {
             List<Application> allSysApps = new ArrayList<Application>();
@@ -454,6 +460,30 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             for (Server s : servers) {
                 if (name.equals(s.getName().trim())) {
                     return s;
+                }
+            }
+            return null;
+        }
+
+        public static Config getConfigNamed(Domain d, String name) {
+            if (d.getConfigs() == null || name == null)
+                throw new IllegalArgumentException ("no <config> element");
+            List<Config> configs = d.getConfigs().getConfig();
+            for (Config c : configs) {
+                if (name.equals(c.getName().trim())) {
+                    return c;
+                }
+            }
+            return null;
+        }
+
+         public static Cluster getClusterNamed(Domain d, String name) {
+            if (d.getClusters() == null || name == null)
+                throw new IllegalArgumentException ("no <cluster> element");
+            List<Cluster> clusters = d.getClusters().getCluster();
+            for (Cluster c : clusters) {
+                if (name.equals(c.getName().trim())) {
+                    return c;
                 }
             }
             return null;

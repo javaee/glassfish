@@ -299,6 +299,13 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
             String configRef = instance.getConfigRef();
 
+
+            //There should be no cluster/config with the same name as the server
+            if ((domain.getClusterNamed(instance.getName()) != null) ||
+                    (domain.getConfigNamed(instance.getName()) != null)){
+                 throw new TransactionFailure(localStrings.getLocalString(
+                            "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
+            }
             // cluster instance using cluster config
             if (clusterName != null) {
                 if (configRef != null) {

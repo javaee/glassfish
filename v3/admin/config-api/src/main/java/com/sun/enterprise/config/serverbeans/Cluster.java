@@ -285,6 +285,14 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         public void decorate(AdminCommandContext context, final Cluster instance) throws TransactionFailure, PropertyVetoException {
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
+
+            //There should be no instance/config with the same name as the cluster
+            if ((domain.getServerNamed(instance.getName()) != null) ||
+                    (domain.getConfigNamed(instance.getName()) != null)){
+                 throw new TransactionFailure(localStrings.getLocalString(
+                            "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
+            }
+
             if (configRef==null) {
                 Config config = habitat.getComponent(Config.class, "default-config");
                 if (config==null) {
