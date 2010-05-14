@@ -127,7 +127,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(e);
         }
 
-        setDasDefaults();
         logger.printDebugMessage("nodeAgentDir: " + nodeAgentDir);
         logger.printDebugMessage("instanceDir: " + instanceDir);
         logger.printDebugMessage("dasProperties: " + dasProperties);
@@ -220,75 +219,5 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException("Agent.noInstallDirPath");
 
         return installRootPath + "/" + "nodeagents";
-    }
-
-    protected void setDasDefaults() throws CommandException {
-        // TODO
-        // TODO
-        // make sure this works!
-        dasProperties = new File(new File(new File(instanceDirs.getNodeAgentDir(), "agent"),
-                "config"), "das.properties");
-
-
-
-        if(!dasProperties.exists())
-            return;
-
-        Properties dasprops = new Properties();
-        FileInputStream fis = null;
-
-
-        try {
-            // read properties and set them in programOptions
-            // properties are:
-            // agent.das.port
-            // agent.das.host
-            // agent.das.isSecure
-            // agent.das.user           XXX - not in v2?
-            fis = new FileInputStream(dasProperties);
-            dasprops.load(fis);
-            String p;
-            p = dasprops.getProperty("agent.das.host");
-
-
-            if(p != null)
-                programOpts.setHost(p);
-            p = dasprops.getProperty("agent.das.port");
-
-
-            if(p != null)
-                programOpts.setPort(Integer.parseInt(p));
-            p = dasprops.getProperty("agent.das.isSecure");
-
-
-            if(p != null)
-                programOpts.setSecure(Boolean.parseBoolean(p));
-            p = dasprops.getProperty("agent.das.user");
-
-
-            if(p != null)
-                programOpts.setUser(p);
-            // XXX - what about the DAS admin password?
-
-
-        }
-        catch (IOException ioex) {
-            throw new CommandException(
-                    strings.get("Instance.cantReadDasProperties",
-                    dasProperties.getPath()));
-
-
-        }
-        finally {
-            if(fis != null) {
-                try {
-                    fis.close();
-
-                }
-                catch (IOException cex) {
-                    // ignore it
-                }
-            }
-        }
     }
 }

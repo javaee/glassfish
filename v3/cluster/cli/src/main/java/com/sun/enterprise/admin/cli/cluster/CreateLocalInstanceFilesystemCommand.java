@@ -47,8 +47,6 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -71,13 +69,14 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "_create-instance-filesystem")
 @Scoped(PerLookup.class)
 public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
-    //TODO --agentport, --agentproperties, savemasterpassword not yet implemented
+    //TODO --agentport, --agentproperties not needed until we have node agent.
     //@Param(name = "agentport", optional = true)
     //private String agentPort;  --> nodeagent.properties agent.adminPort
 
     //@Param(name = "agentproperties", optional = true, separator = ':')
-    //private Properties agentProperties;
+    //private Properties agentProperties;  --> nodeagent.properties
 
+    //TODO where to get masterpassword?
     //@Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     //private boolean saveMasterPassword = false;
 
@@ -92,7 +91,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     public static final String K_MASTER_PASSWORD = "agent.masterpassword";
     public static final String K_SAVE_MASTER_PASSWORD = "agent.saveMasterPassword";
 
-    public static final String NODEAGENT_JMX_DEFAULT_PROTOCOL = "rmi_jrmp"; // what is this for 3.1?
+    public static final String NODEAGENT_DEFAULT_PROTOCOL = "rmi_jrmp"; // what is this for 3.1?
     public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "true";
     public static final String NODEAGENT_DEFAULT_DAS_PORT = "4848";  // ??
 
@@ -108,8 +107,6 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceFilesystemCommand.class);
 
-    String hostName = "localhost";
-
     /**
      */
     @Override
@@ -121,63 +118,17 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         else
             throw new CommandValidationException(strings.get("Instance.badInstanceName"));
 
-        //super.validate();  fails with No node agents in directory <gf install>\nodeagents
+        super.validate();
 
-        // nodeagents
-        if (ok(agentDir)) {
-            agentsDir = new File(agentDir);
-            System.out.println(agentsDir.getName());
-        } else {
-            String agentRoot = getSystemProperty(
-                                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
-            // AS_DEF_NODEAGENTS_PATH might not be set on upgraded domains
-            if (agentRoot != null)
-                agentsDir = new File(agentRoot);
-            else
-                agentsDir = new File(new File(getSystemProperty(
-                                SystemPropertyConstants.INSTALL_ROOT_PROPERTY)),
-                                "nodeagents");
-        }
-
-        // nodeagents\<hostname>
-        if (nodeAgent != null) {
-            nodeAgentDir = new File(agentsDir, nodeAgent);
-        } else {
-            //nodeAgentDir = getTheOneAndOnlyAgent(agentsDir);
-            try {
-                hostName = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException ex) {
-                logger.getLogger().warning(strings.get("Instance.unknownHost"));
-                logger.getLogger().warning(ex.getLocalizedMessage());
-                hostName = "localhost";
-            }
-            nodeAgentDir = new File(agentsDir, hostName);
-
-            nodeAgent = nodeAgentDir.getName();
-        }
-
-        // nodeagents\<host name>\agent\config
         String agentPath = "agent" + File.separator + "config";
         agentConfigDir = new File(nodeAgentDir, agentPath);
         dasPropsFile = new File(agentConfigDir, "das.properties");
 
-        // nodeagents\<host name>\<server instance>
-        instanceDir = new File(nodeAgentDir, instanceName);
         applicationsDir = new File(instanceDir, "applications");
         configDir = new File(instanceDir, "config");
         generatedDir = new File(instanceDir, "generated");
         libDir = new File(instanceDir, "lib");
         docrootDir = new File(instanceDir, "docroot");
-
-
-        agentsDir = SmartFile.sanitize(agentsDir);
-        nodeAgentDir = SmartFile.sanitize(nodeAgentDir);
-        instanceDir = SmartFile.sanitize(instanceDir);
-        applicationsDir = SmartFile.sanitize(applicationsDir);
-        configDir = SmartFile.sanitize(configDir);
-        generatedDir = SmartFile.sanitize(generatedDir);
-        libDir = SmartFile.sanitize(libDir);
-        docrootDir = SmartFile.sanitize(docrootDir);
     }
 
     /**
@@ -193,58 +144,34 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         boolean createDirsComplete = false;
         File badfile = null;
         while (badfile == null && !createDirsComplete) {
-            if (!agentsDir.isDirectory()) {
-                if (!agentsDir.mkdir()) {
-                    badfile = agentsDir;
-                }
-            }
-            if (!nodeAgentDir.isDirectory()) {
-                if (!nodeAgentDir.mkdir()) {
-                    badfile = nodeAgentDir;
-                }
-            }
             if (!agentConfigDir.isDirectory()) {
                 if (!agentConfigDir.mkdirs()) {
                     badfile = agentConfigDir;
                 }
             }
-            if (!instanceDir.isDirectory()) {
-                if (!instanceDir.mkdir())
-                    badfile = instanceDir;
-                if (!applicationsDir.mkdir())
+            if (!applicationsDir.isDirectory()) {
+                if (!applicationsDir.mkdir()) {
                     badfile = applicationsDir;
-                if (!configDir.mkdir())
+                }
+            }
+            if (!configDir.isDirectory()) {
+                if (!configDir.mkdir()) {
                     badfile = configDir;
-                if (!generatedDir.mkdir())
+                }
+            }
+            if (!generatedDir.isDirectory()) {
+                if (!generatedDir.mkdir()) {
                     badfile = generatedDir;
-                if (!libDir.mkdir())
+                }
+            }
+            if (!libDir.isDirectory()) {
+                if (!libDir.mkdir()) {
                     badfile = libDir;
-                if (!docrootDir.mkdir())
+                }
+            }
+            if (!docrootDir.isDirectory()) {
+                if (!docrootDir.mkdir()) {
                     badfile = docrootDir;
-            } else {
-                if (!instanceDir.isDirectory()) {
-                    if (!instanceDir.mkdir())
-                        badfile = instanceDir;
-                }
-                if (!applicationsDir.isDirectory()) {
-                    if (!applicationsDir.mkdir())
-                        badfile = applicationsDir;
-                }
-                if (!configDir.isDirectory()) {
-                    if (!configDir.mkdir())
-                        badfile = configDir;
-                }
-                if (!generatedDir.isDirectory()) {
-                    if (!generatedDir.mkdir())
-                        badfile = generatedDir;
-                }
-                if (!libDir.isDirectory()) {
-                    if (!libDir.mkdir())
-                        badfile = libDir;
-                }
-                if (!docrootDir.isDirectory()) {
-                    if (!docrootDir.mkdir())
-                        badfile = docrootDir;
                 }
             }
             createDirsComplete = true;
@@ -271,6 +198,14 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
 
         dasProperties = new Properties();
         if (!ok(DASHost)) {
+            String hostName;
+             try {
+                hostName = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException ex) {
+                logger.getLogger().warning(strings.get("Instance.unknownHost"));
+                logger.getLogger().warning(ex.getLocalizedMessage());
+                hostName = "localhost";
+            }
             DASHost = hostName;
         }
         if (!ok(DASPort)) {
@@ -282,7 +217,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         dasProperties.setProperty(K_DAS_HOST, DASHost);
         dasProperties.setProperty(K_DAS_PORT, DASPort);
         dasProperties.setProperty(K_DAS_IS_SECURE, dasIsSecure);
-        dasProperties.setProperty(K_DAS_PROTOCOL, NODEAGENT_JMX_DEFAULT_PROTOCOL);
+        dasProperties.setProperty(K_DAS_PROTOCOL, NODEAGENT_DEFAULT_PROTOCOL);
 
         FileOutputStream fos = new FileOutputStream(dasPropsFile);
         dasProperties.store(fos, strings.get("Instance.dasPropertyComment"));
