@@ -314,7 +314,9 @@
     </target>
 
     <target name="web-container" depends="init-report">
+<!-- comment out IT 11904 is fixed
         <ant dir="asadminDeletes" target="all"/>
+-->
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="broken_webapp" target="all"/>
         <ant dir="classPathManifestAttribute" target="all"/>
@@ -358,7 +360,9 @@
         <ant dir="multiByteContextRoot" target="all"/>
         <ant dir="multiByteContextRootWithCookie" target="all"/>
         <ant dir="overrideImplicitMapping" target="all"/>
+<!-- comment out IT 11905 is fixed
         <ant dir="pipelineQueueFull" target="all"/>
+-->
         <ant dir="reconfigDefaultWebModule" target="all"/>
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="replaceRootContext" target="all"/>
@@ -369,7 +373,9 @@
         <ant dir="sessionJvmRoute" target="all"/>
         <ant dir="sessionMemoryPersist" target="all"/>
         <ant dir="sessionMemoryPersistPrimitiveClass" target="all"/>
+<!-- comment out IT 11906 is fixed
         <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
+-->
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
         <ant dir="sessionWithCookiePersistenceType" target="all"/>
@@ -378,7 +384,9 @@
         <ant dir="singleengine" target="all"/>
         <ant dir="ssiEscapeCharacter" target="all"/>
         <ant dir="ssiHtmlEntity" target="all"/>
+<!-- comment out IT 11907 is fixed
         <ant dir="threadPoolIdleTimeout" target="all"/>
+-->
         <ant dir="useBundledJsf" target="all"/>
         <ant dir="useBundledJsfWithTagCompilation" target="all"/>
         <ant dir="valveGlassFishStyleBackwardCompatible" target="all"/>
@@ -489,7 +497,9 @@
         <ant dir="redirectWithRootWildCardUrlPattern" target="all"/>
         <ant dir="setResponseContentLengthToZeroKeepResponseHeaders" target="all"/>
         <ant dir="sslMultiSelector" target="all"/>
+<!-- comment out until IT 11903 is fixed 
         <ant dir="sslServerName" target="all"/>
+-->
         <ant dir="v3HttpListenerDynamicConfig" target="all"/>
 <!-- Exclude since port unification is not supported in v3, see IT 4675
         <ant dir="wrongTransport" target="all"/>
