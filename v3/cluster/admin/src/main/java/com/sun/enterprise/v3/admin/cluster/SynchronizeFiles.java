@@ -56,7 +56,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.config.ApplicationName;
-import org.glassfish.admin.payload.PayloadFilesManager;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
@@ -118,7 +117,6 @@ public class SynchronizeFiles implements AdminCommand {
 System.out.println("SynchronizeFiles: logger " + logger.getName());
 logger.setLevel(Level.FINEST);
         domainRootUri = env.getDomainRoot().toURI();
-        PayloadFilesManager.Temp pfm = null;
         SyncRequest sr = null;
         try {
             /*
@@ -146,9 +144,6 @@ logger.setLevel(Level.FINEST);
                             "SynchronizeFiles: Exception reading request"));
             report.setFailureCause(ex);
             return;
-        } finally {
-            if (pfm != null)
-                pfm.cleanup();
         }
 
         try {
@@ -178,6 +173,8 @@ logger.setLevel(Level.FINEST);
                 synchronizeLib(context, server, sr);
             else if (sr.dir.equals("docroot"))
                 synchronizeDocroot(context, server, sr);
+            else if (sr.dir.equals("config-specific"))
+                synchronizeConfigSpecificDir(context, server, sr);
             else {
                 report.setActionExitCode(ExitCode.FAILURE);
                 report.setMessage(
@@ -481,8 +478,8 @@ logger.setLevel(Level.FINEST);
     private void synchronizeLib(AdminCommandContext context,
                                     Server server, SyncRequest sr)
                                     throws URISyntaxException {
-        synchronizeConfigSpecificDir(context, server, sr, "lib",
-                                                        SyncLevel.RECURSIVE);
+        synchronizeDirectory(context, server, sr,
+                                env.getLibPath(), SyncLevel.RECURSIVE);
     }
 
     /**
@@ -491,41 +488,63 @@ logger.setLevel(Level.FINEST);
     private void synchronizeDocroot(AdminCommandContext context,
                                     Server server, SyncRequest sr)
                                     throws URISyntaxException {
-        synchronizeConfigSpecificDir(context, server, sr, "docroot",
-                                                        SyncLevel.TOP);
+        synchronizeDirectory(context, server, sr,
+                                new File(env.getDomainRoot(), "docroot"),
+                                SyncLevel.TOP);
     }
 
     /**
-     * Synchronize a config-specific directory.
+     * Synchronize a directory.
+     */
+    private void synchronizeDirectory(AdminCommandContext context,
+            Server server, SyncRequest sr, File dir, SyncLevel level)
+            throws URISyntaxException {
+        logger.finest("SynchronizeFiles: directory is " + dir);
+        List<String> fileSet = getFileNames(dir, level);
+        synchronizeDirectory(context, server, sr, dir, fileSet);
+    }
+
+    private void synchronizeDirectory(AdminCommandContext context,
+            Server server, SyncRequest sr, File dir, List<String> fileSet)
+            throws URISyntaxException {
+
+        Payload.Outbound outboundPayload = context.getOutboundPayload();
+        for (ModTime mt : sr.files) {
+            if (fileSet.contains(mt.name)) {
+                // if client has file, remove it from set
+                fileSet.remove(mt.name);
+                syncFile(domainRootUri, dir, mt, outboundPayload);
+            } else
+                removeFile(domainRootUri, dir, mt, outboundPayload);
+        }
+
+        // now do all the remaining files the client doesn't have
+        for (String name : fileSet)
+            syncFile(domainRootUri, dir, new ModTime(name, 0), outboundPayload);
+    }
+
+    /**
+     * Synchronize the config-specific directory.
      * The directory for the instance is in the instance-config-specific
      * config directory, which is in the main config directory.
      * The instance-config-specific config directory is named
      * <config-name>.
      */
     private void synchronizeConfigSpecificDir(AdminCommandContext context,
-            Server server, SyncRequest sr, String dirName, SyncLevel level)
+            Server server, SyncRequest sr)
             throws URISyntaxException {
         String configDirName = server.getConfigRef();
-        File configDir = new File(env.getConfigDirPath(), configDirName);
+        File configDir = env.getConfigDirPath();
+        File configSpecificDir = new File(configDir, configDirName);
         logger.finest("SynchronizeFiles: " +
-                    "config-specific directory is " + configDir);
-        File dir = new File(configDir, dirName);
-        List<String> fileSet = getFileNames(dir, level);
+                    "config-specific directory is " + configSpecificDir);
+        if (!configSpecificDir.exists())
+            return;             // nothing to do
 
-        Payload.Outbound outboundPayload = context.getOutboundPayload();
-        URI configDirUri = configDir.toURI();
-        for (ModTime mt : sr.files) {
-            if (fileSet.contains(mt.name)) {
-                // if client has file, remove it from set
-                fileSet.remove(mt.name);
-                syncFile(configDirUri, dir, mt, outboundPayload);
-            } else
-                removeFile(configDirUri, dir, mt, outboundPayload);
-        }
-
-        // now do all the remaining files the client doesn't have
-        for (String name : fileSet)
-            syncFile(configDirUri, dir, new ModTime(name, 0), outboundPayload);
+        List<String> fileSet = new ArrayList<String>();
+        getFileNames(configSpecificDir, configDir, fileSet,
+                                                        SyncLevel.DIRECTORY);
+        synchronizeDirectory(context, server, sr, configDir, fileSet);
     }
 
     /**
@@ -549,10 +568,15 @@ logger.setLevel(Level.FINEST);
      */
     private void getFileNames(File dir, File baseDir, List<String> names,
                                     SyncLevel level) {
-        if (level == SyncLevel.TOP) {
-            names.add(".");
-            return;
+        if (level == SyncLevel.TOP || level == SyncLevel.DIRECTORY) {
+            String name = baseDir.toURI().relativize(dir.toURI()).getPath();
+            // if name is a directory, it will end with "/"
+            if (name.endsWith("/"))
+                name = name.substring(0, name.length() - 1);
+            names.add(name);
         }
+        if (level == SyncLevel.TOP)
+            return;     // nothing else
         for (String file : dir.list()) {
             File f = new File(dir, file);
             if (f.isDirectory() && level == SyncLevel.RECURSIVE)

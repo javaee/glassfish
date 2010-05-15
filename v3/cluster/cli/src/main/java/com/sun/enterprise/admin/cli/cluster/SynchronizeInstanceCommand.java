@@ -169,11 +169,30 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
         synchronizeFiles(sr);
 
         /*
-         * Finally, the docroot.
+         * Next, the docroot.
          * The docroot could be full of files, so we only check
-         * the top level.
+         * one level.
          */
-        sr = getModTimes("docroot", SyncLevel.TOP);
+        sr = getModTimes("docroot", SyncLevel.DIRECTORY);
+        synchronizeFiles(sr);
+
+        /*
+         * Check any subdirectories of the instance directory.
+         * We only expect one - the config-specific directory,
+         * but since we don't have an easy way of knowing the
+         * name of that directory, we include them all.  The
+         * DAS will tell us to remove anything that shouldn't
+         * be there.
+         */
+        sr = new SyncRequest();
+        sr.instance = instanceName;
+        sr.dir = "config-specific";
+        File configDir = new File(instanceDir, "config");
+        for (File f : configDir.listFiles()) {
+            if (!f.isDirectory())
+                continue;
+            getFileModTimes(configDir, f, sr, SyncLevel.DIRECTORY);
+        }
         synchronizeFiles(sr);
 
         return true;
