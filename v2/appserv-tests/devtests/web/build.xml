@@ -377,7 +377,9 @@
         <ant dir="sessionPreserveAcrossRedeploy" target="all"/>
 -->
         <ant dir="sessionPropertyEnableCookiesInstanceLevel" target="all"/>
+<!-- comment out IT 11908 is fixed
         <ant dir="sessionSerializeOnShutdownOnly" target="all"/>
+-->
         <ant dir="sessionWithCookiePersistenceType" target="all"/>
         <ant dir="singleSignOnCookieSecure" target="all"/>
         <ant dir="singleSignOnHttpServiceDynamicReconfig" target="all"/>
