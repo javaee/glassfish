@@ -101,7 +101,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
             //remote hostname
             if(name != null && !name.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
                 InstanceInfo ii = new InstanceInfo(
-                        name, helper.getAdminPort(server), server.getNodeAgentRef(), logger);
+                        name, helper.getAdminPort(server), helper.getHost(server), logger);
                 infos.add(ii);
             }
         }

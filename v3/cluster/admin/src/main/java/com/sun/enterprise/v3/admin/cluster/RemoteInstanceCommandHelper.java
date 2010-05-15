@@ -79,6 +79,26 @@ final class RemoteInstanceCommandHelper {
         return getAdminPort(getServer(serverName));
     }
 
+    final String getHost(final String serverName) {
+        return getHost(getServer(serverName));
+    }
+
+    final String getHost(final Server server) {
+
+        if(server == null)
+            return null;
+
+        // TODO May 14 - for now we assume this is the host
+        // TODO May 14 - for now we assume this is the host
+        // TODO May 14 - for now we assume this is the host
+        // TODO May 14 - for now we assume this is the host
+        return server.getNodeAgentRef();
+        // TODO May 14 - for now we assume this is the host
+        // TODO May 14 - for now we assume this is the host
+        // TODO May 14 - for now we assume this is the host
+        // TODO May 14 - for now we assume this is the host
+    }
+
     final Server getServer(final String serverName) {
         for(Server server : servers) {
             final String name = server.getName();

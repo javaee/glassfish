@@ -34,18 +34,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin.cluster;
 
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.StringUtils;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.ParameterMap;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
@@ -53,59 +59,104 @@ import java.util.Iterator;
 import java.util.Collection;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * AdminCommand to stop the instance
  * server.
+ * Shutdown of an instance.
+ * If this is DAS -- we call the instance
+ * If this is an instance we commit suicide
  *
+ * note: This command is asynchronous.  We can't return anything so we just
+ * log errors and return
+
  * @author Byron Nevins
  */
-@Service(name="stop-instance")
+@Service(name = "stop-instance")
 @Async
 @I18n("stop.instance.command")
-public class StopInstanceCommand implements AdminCommand {
-
-    final private static LocalStringsImpl strings = new LocalStringsImpl(StopInstanceCommand.class);
-    
-    @Inject
-    ModulesRegistry registry;
-
-    @Inject
-    private ServerEnvironment env;
-
-    @Param(optional=true, defaultValue="true")
-    Boolean force;
-    
-
-    /**
-     * Shutdown of the application server : 
-     *
-     * All running services are stopped. 
-     * LookupManager is flushed.
-     */
+public class StopInstanceCommand implements AdminCommand, PostConstruct {
     public void execute(AdminCommandContext context) {
+        logger = context.getLogger();
 
-        if(!env.isInstance()) {
-            // This command is asynchronous.  We can't return anything so we just
-            // log the error and return
-            String msg = strings.get("stop.instance.notAnInstance",
-                            env.getRuntimeType().toString());
-
-            context.getLogger().warning(msg);
-            return;
+        if(env.isDas()) {
+            callInstance();
         }
-
-        context.getLogger().info(strings.get("stop.instance.init"));
-        Collection<Module> modules = registry.getModules(
-                "org.glassfish.core.glassfish");
-        if (modules.size() == 1) {
-            final Module mgmtAgentModule = modules.iterator().next();
-            mgmtAgentModule.stop();
-        } else {
-            context.getLogger().warning(modules.size() + " no of primordial modules found");
+        else if(env.isInstance()) {
+            logger.info(strings.get("stop.instance.init"));
+            Collection<Module> modules = registry.getModules(
+                    "org.glassfish.core.glassfish");
+            if(modules.size() == 1) {
+                final Module mgmtAgentModule = modules.iterator().next();
+                mgmtAgentModule.stop();
+            }
+            else {
+                logger.warning(modules.size() + " no of primordial modules found");
+            }
+            if(force) {
+                System.exit(0);
+            }
         }
-        if (force) {
-            System.exit(0);
+        else {
+            String msg = strings.get("stop.instance.notAnInstanceOrDas",
+                    env.getRuntimeType().toString());
+            logger.warning(msg);
         }
     }
+
+    @Override
+    public void postConstruct() {
+        helper = new RemoteInstanceCommandHelper(env, servers, configs);
+    }
+
+    private void callInstance() {
+        try {
+            if(!StringUtils.ok(instanceName)) {
+                logger.severe("stop.instance.noInstanceName");
+                return;
+            }
+            final Server instance = helper.getServer(instanceName);
+            if(instance == null) {
+                logger.severe(strings.get("stop.instance.noSuchInstance", instanceName));
+                return;
+            }
+            String host = helper.getHost(instance);
+            if(host == null) {
+                logger.severe(strings.get("stop.instance.noHost", instanceName));
+                return;
+            }
+            int port = helper.getAdminPort(instance);
+            if(port < 0) {
+                logger.severe(strings.get("stop.instance.noPort", instanceName));
+                return;
+            }
+
+            // TODO username password ????
+            RemoteAdminCommand rac = new RemoteAdminCommand("stop-instance", helper.getHost(instance), helper.getAdminPort(instance), false, "admin", null, logger);
+
+            // notice how we do NOT send in the instance's name as an operand!!
+            rac.executeCommand(new ParameterMap());
+        }
+        catch (CommandException ex) {
+            logger.severe(strings.get("stop.instance.racError", instanceName));
+        }
+    }
+    
+    @Inject
+    private ServerEnvironment env;
+    @Inject
+    private Servers servers;
+    @Inject
+    private Configs configs;
+    @Inject
+    private ModulesRegistry registry;
+    @Param(optional = true, defaultValue = "true")
+    private Boolean force;
+    @Param(optional = true)
+    private String instanceName;
+    private Logger logger;
+    private RemoteInstanceCommandHelper helper;
+    final private static LocalStringsImpl strings =
+            new LocalStringsImpl(StopInstanceCommand.class);
 }

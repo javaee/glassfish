@@ -79,6 +79,7 @@ public class InstanceInfo {
         try {
             RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
             ParameterMap map = new ParameterMap();
+            //map.add("--target", "INSTANCE");
             return rac.executeCommand(map);
         }
         catch (CommandException ex) {
