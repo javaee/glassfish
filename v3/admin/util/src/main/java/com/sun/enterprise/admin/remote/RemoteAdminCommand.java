@@ -111,7 +111,7 @@ public class RemoteAdminCommand {
     private static final String COMMAND_NAME_REGEXP =
                                     "^[a-zA-Z_][-a-zA-Z0-9_]*$";
     private static final String READ_TIMEOUT = "AS_ADMIN_READTIMEOUT";
-    private static final int readTimeout;       // read timeout for URL conns
+    private static final int defaultReadTimeout; // read timeout for URL conns
 
     private String              responseFormatType = "hk2-agent";
     private OutputStream        userOut;
@@ -139,6 +139,8 @@ public class RemoteAdminCommand {
 
     private CommandModel        commandModel;
     private StringBuilder       metadataErrors; // XXX
+    private int                 readTimeout = defaultReadTimeout;
+    private int                 connectTimeout = -1;
 
     private List<Header>        requestHeaders = new ArrayList<Header>();
 
@@ -150,9 +152,9 @@ public class RemoteAdminCommand {
         if (rt == null)
             rt = System.getenv(READ_TIMEOUT);
         if (rt != null)
-            readTimeout = Integer.parseInt(rt);
+            defaultReadTimeout = Integer.parseInt(rt);
         else
-            readTimeout = 10 * 60 * 1000;       // 10 minutes
+            defaultReadTimeout = 10 * 60 * 1000;       // 10 minutes
     }
 
     /**
@@ -223,6 +225,20 @@ public class RemoteAdminCommand {
      */
     public void setCommandModel(CommandModel commandModel) {
         this.commandModel = commandModel;
+    }
+
+    /**
+     * Set the read timeout for the URLConnection.
+     */
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    /**
+     * Set the connect timeout for the URLConnection.
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
     }
 
     /**
@@ -496,6 +512,8 @@ public class RemoteAdminCommand {
                     url.getBasicAuthString());
             urlConnection.setRequestMethod(httpMethod);
             urlConnection.setReadTimeout(readTimeout);
+            if (connectTimeout >= 0)
+                urlConnection.setConnectTimeout(connectTimeout);
             cmd.doCommand(urlConnection);
             logger.finer("doHttpCommand succeeds");
 
