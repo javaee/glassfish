@@ -73,6 +73,7 @@ class JvmOptions {
             }
         }
         filter(); // get rid of forbidden stuff
+        setOsgiPort();
     }
 
     @Override
@@ -138,6 +139,10 @@ class JvmOptions {
         return all;
     }
 
+    int getOsgiPort() {
+        return osgiPort;
+    }
+    
     private void addPlainProp(String s) {
         s = s.substring(1);
         NameValue nv = new NameValue(s);
@@ -226,10 +231,26 @@ class JvmOptions {
             sysProps.remove(key);
     }
 
+    private void setOsgiPort() {
+        String s = sysProps.get("osgi.shell.telnet.port");
+
+        // not configured
+        if(!StringUtils.ok(s))
+            return;
+
+        try {
+            osgiPort = Integer.parseInt(s);
+        }
+        catch(Exception e) {
+            // already handled -- it is already set to -1
+        }
+    }
+
     Map<String, String> sysProps = new HashMap<String, String>();
     Map<String, String> xxProps = new HashMap<String, String>();
     Map<String, String> xProps = new HashMap<String, String>();
     Map<String, String> plainProps = new HashMap<String, String>();
+    int osgiPort = -1;
 
     private static class NameValue {
 

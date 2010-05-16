@@ -35,10 +35,6 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.sun.enterprise.admin.launcher;
 
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;

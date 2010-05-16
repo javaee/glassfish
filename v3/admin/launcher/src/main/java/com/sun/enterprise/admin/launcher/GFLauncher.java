@@ -43,6 +43,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
+import com.sun.enterprise.util.net.NetUtils;
 import java.io.*;
 import java.util.*;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
@@ -50,9 +51,7 @@ import com.sun.enterprise.universal.xml.MiniXmlParser;
 import java.util.logging.Level;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
 import static com.sun.enterprise.admin.launcher.GFLauncherConstants.*;
-import java.util.logging.Logger;
-//import com.sun.enterprise.security.store.PasswordAdapter;
-//import com.sun.enterprise.security.store.IdentityManager;
+
 
 /**
  * This is the main Launcher class designed for external and internal usage.
@@ -167,6 +166,7 @@ public abstract class GFLauncher {
         // if no <network-config> element, we need to upgrade this domain
         needsUpgrade = !parser.hasNetworkConfig();
         setupCalledByClients = true;
+        checkOsgiPort();
     }
 
     /**
@@ -254,10 +254,10 @@ public abstract class GFLauncher {
      *
      * @return true if the domain needs to be upgraded first
      */
-    public boolean needsUpgrade() {
+    public final boolean needsUpgrade() {
         return needsUpgrade;
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     //////     ALL private and package-private below   ////////////////////////
@@ -508,10 +508,6 @@ public abstract class GFLauncher {
             processWhacker.setProcess(p);
     }
         
-    ////////////////////////////////////////////////////////////////////////////
-    ///////              EVERYTHING BELOW IS PRIVATE                  //////////
-    ////////////////////////////////////////////////////////////////////////////
-
     private void resolveAllTokens() {
         // resolve jvm-options against:
         // 1. itself
@@ -734,6 +730,15 @@ public abstract class GFLauncher {
             GFLauncherLogger.setConsoleLevel(Level.WARNING);
     }
 
+    private void checkOsgiPort() {
+       int port = jvmOptions.getOsgiPort();
+
+        // note: if I just send in port as an int then the JDK will put a comma
+        // after the thousands which looks dumb, e.g.  6666 vs. 6,666
+         if(port > 0 && port < 65536 && !NetUtils.isPortFree(port))
+            GFLauncherLogger.severe("badOsgiPort", "" + port);
+    }
+
     private List<String> commandLine = new ArrayList<String>();
     private GFLauncherInfo info;
     private Map<String, String> asenvProps;
@@ -768,6 +773,7 @@ public abstract class GFLauncher {
             process = p;
         }
 
+        @Override
         public void run() {
             // we are in a shutdown hook -- most of the JVM is gone.
             // logger won't work anymore...
