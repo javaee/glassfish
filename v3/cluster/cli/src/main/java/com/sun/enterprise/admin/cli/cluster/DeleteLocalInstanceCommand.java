@@ -51,6 +51,11 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 
+
+// TODO TODO
+// wipe out the tree if this is the last instance
+// TODO TODO TODO
+
 /**
  * Delete a local server instance.
  */
@@ -99,7 +104,7 @@ public final class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             RemoteCommand rc = new RemoteCommand("delete-instance", programOpts, env);
             rc.execute("delete-instance",
                     "--nodeagent", getServerDirs().getServerParentDir().getName(),
-                    "--remote_only", "true",
+                    //"--remote_only", "true",
                     getServerDirs().getServerName());
         }
         catch(CommandException ce) {
