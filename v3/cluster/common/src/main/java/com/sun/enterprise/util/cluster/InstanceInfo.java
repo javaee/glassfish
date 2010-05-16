@@ -46,12 +46,13 @@ import org.glassfish.api.admin.ParameterMap;
  * @author byron Nevins
  */
 public class InstanceInfo {
-    public InstanceInfo(String name0, int port0, String host0, Logger logger0) {
+    public InstanceInfo(String name0, int port0, String host0, Logger logger0, int timeout0) {
         name = name0;
         port = port0;
         host = host0;
         logger = logger0;
         running = pingInstance();
+        timeoutInMsec = timeout0;
     }
 
     @Override
@@ -108,8 +109,7 @@ public class InstanceInfo {
     private String pingInstance() {
         try {
             RemoteAdminCommand rac = new RemoteAdminCommand("uptime", host, port, false, "admin", null, logger);
-            // default timeout is 20,000 msec!!
-            rac.setConnectTimeout(2000);
+            rac.setConnectTimeout(timeoutInMsec);
             ParameterMap map = new ParameterMap();
             return rac.executeCommand(map);
         }
@@ -117,11 +117,12 @@ public class InstanceInfo {
             return "Not Running";
         }
     }
-    private String host;
-    private int port;
-    private String name;
-    private String running;
-    private Logger logger;
+    private  String host;
+    private  int port;
+    private  String name;
+    private  String running;
+    private  Logger logger;
+    private final int timeoutInMsec;
 }
 /** delete this stuff after May 30, 2010
 private boolean simplePortTest() {

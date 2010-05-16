@@ -45,6 +45,7 @@ import java.util.logging.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.*;
@@ -68,6 +69,9 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     private Servers servers;
     @Inject
     private Configs configs;
+    @Param(optional=true, defaultValue="2000")
+    int timeoutInMsec;
+
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     final private static LocalStringsImpl strings = new LocalStringsImpl(ListInstancesCommand.class);
 
@@ -101,7 +105,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
             //remote hostname
             if(name != null && !name.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
                 InstanceInfo ii = new InstanceInfo(
-                        name, helper.getAdminPort(server), helper.getHost(server), logger);
+                        name, helper.getAdminPort(server), helper.getHost(server), logger, timeoutInMsec);
                 infos.add(ii);
             }
         }

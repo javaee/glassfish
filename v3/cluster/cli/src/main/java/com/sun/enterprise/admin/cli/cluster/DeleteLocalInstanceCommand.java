@@ -33,13 +33,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -53,19 +54,19 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 /**
  * Delete a local server instance.
  */
-@Service(name = "delete-local-instance")
+@Service(name = "delete-instance")
 @Scoped(PerLookup.class)
-public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
-
+public final class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
-
+    @Param(name = "local_only", primary = false, optional = true, defaultValue = "false")
+    private boolean localOnly;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(DeleteLocalInstanceCommand.class);
 
     @Override
     protected void validate()
-                        throws CommandException, CommandValidationException {
+            throws CommandException, CommandValidationException {
         instanceName = instanceName0;
         super.validate();
 
@@ -83,20 +84,50 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             throw new CommandException(strings.get("DeleteInstance.running"));
         }
 
-        // wipe it out in DAS first
-        
-        // todo What about its config?  delete???
-        RemoteCommand rc = new RemoteCommand("delete-instance", programOpts, env);
-        rc.execute("delete-instance", "--nodeagent",
-                getServerDirs().getServerParentDir().getName(),
-                getServerDirs().getServerName());
+        if(!localOnly)
+            doRemote();
 
-        FileUtils.whack(getServerDirs().getServerDir());
-
-        if(getServerDirs().getServerDir().isDirectory())
-            throw new CommandException(strings.get("DeleteInstance.badWhack",
-                    getServerDirs().getServerDir()));
-
+        doLocal();
         return SUCCESS;
+    }
+
+    /**
+     * Ask DAS to wipe it out from domain.xml
+     */
+    private void doRemote() throws CommandException {
+        try {
+            RemoteCommand rc = new RemoteCommand("delete-instance", programOpts, env);
+            rc.execute("delete-instance",
+                    "--nodeagent", getServerDirs().getServerParentDir().getName(),
+                    "--remote_only", "true",
+                    getServerDirs().getServerName());
+        }
+        catch(CommandException ce) {
+            // Let's add our $0.02 to this Exception!
+            Throwable t = ce.getCause();
+            String newString = strings.get("DeleteInstance.remoteError", 
+                    ce.getLocalizedMessage());
+
+            if(t != null)
+                throw new CommandException(newString, t);
+            else
+                throw new CommandException(newString);
+        }
+    }
+
+    private void doLocal() throws CommandException {
+        File whackee = getServerDirs().getServerDir();
+
+        if(whackee == null || !whackee.isDirectory()) {
+            throw new CommandException(strings.get("DeleteInstance.noWhack",
+                    whackee));
+        }
+
+        FileUtils.whack(whackee);
+
+        if(whackee.isDirectory())
+            throw new CommandException(strings.get("DeleteInstance.badWhack",
+                    whackee));
+
     }
 }
