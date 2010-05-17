@@ -298,10 +298,10 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
             LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
             String configRef = instance.getConfigRef();
-
+            Clusters clusters = domain.getClusters();
 
             //There should be no cluster/config with the same name as the server
-            if ((domain.getClusterNamed(instance.getName()) != null) ||
+            if (((clusters!= null && domain.getClusterNamed(instance.getName()) != null)) ||
                     (domain.getConfigNamed(instance.getName()) != null)){
                  throw new TransactionFailure(localStrings.getLocalString(
                             "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
@@ -314,7 +314,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                             "A configuration name and cluster name cannot both be specified."));
                 }
                 boolean clusterExists = false;
-                Clusters clusters = domain.getClusters();
+                
                 if (clusters != null) {
                     for (Cluster cluster : clusters.getCluster()) {
                         if (cluster != null && clusterName.equals(cluster.getName())) {
