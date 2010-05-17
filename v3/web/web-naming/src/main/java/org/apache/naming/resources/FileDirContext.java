@@ -995,7 +995,7 @@ public class FileDirContext extends BaseDirContext {
             // END S1AS8PE 4965170
 
             Object object = null;
-            if (currentFile!=null & currentFile.isDirectory()) {
+            if (currentFile!=null && currentFile.isDirectory()) {
                 FileDirContext tempContext = new FileDirContext(env);
                 tempContext.setDocBase(file.getPath());
                 tempContext.setAllowLinking(getAllowLinking());
