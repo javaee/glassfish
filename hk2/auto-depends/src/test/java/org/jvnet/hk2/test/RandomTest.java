@@ -38,10 +38,9 @@ package org.jvnet.hk2.test;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2Test;
+import org.jvnet.hk2.test.contracts.RandomContract;
 
 /**
  * Test
@@ -52,7 +51,7 @@ import org.jvnet.hk2.junit.Hk2Test;
 public class RandomTest extends Hk2Test {
 
     @Inject
-    RandomContract myService;    
+    RandomContract myService;
 
     @Test
     public void first() {

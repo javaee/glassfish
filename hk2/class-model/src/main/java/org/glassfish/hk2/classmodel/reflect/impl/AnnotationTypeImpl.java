@@ -33,6 +33,7 @@
  *  only if the new code is made subject to such option by the copyright
  *  holder.
  */
+
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
@@ -40,70 +41,35 @@ import org.glassfish.hk2.classmodel.reflect.*;
 import java.util.*;
 
 /**
- * Implementation of an annotated element
- *
- * @author Jerome Dochez
+ * Implementation of an annoation model
  */
-public class AnnotatedElementImpl implements AnnotatedElement {
-    
-    public final String name;
+public class AnnotationTypeImpl extends TypeImpl implements AnnotationType {
 
-    public final Set<AnnotationModel> annotations = Collections.synchronizedSet(new HashSet<AnnotationModel>());
+    private final Set<AnnotatedElement> references = new HashSet<AnnotatedElement>();
 
-    public AnnotatedElementImpl(ModelBuilder tb) {
-        this.name = tb.name;
+    public AnnotationTypeImpl(ModelBuilder tb) {
+        super(tb);
     }
 
-
-
-    @Override
-    public String getName() {
-        return name;
+    public Collection<AnnotatedElement> allAnnotatedTypes() {
+        return Collections.unmodifiableSet(references);
     }
 
-    void addAnnotation(AnnotationModel annotation) {
-        annotations.add(annotation);
+    Set<AnnotatedElement> getReferences() {
+        return references;
     }
 
     @Override
-    public Collection<AnnotationModel> getAnnotations() {
-        return Collections.unmodifiableSet(annotations);
+    public void addMethod(MethodModelImpl m) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public AnnotationModel getAnnotation(String name) {
-        for (AnnotationModel am : annotations) {
-            if (am.getType().getName().equals(name)) {
-                return am;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String toString() {
-
-        StringBuffer sb = new StringBuffer();
-        sb.append(getClass().getSimpleName()).append("{");
-        print(sb);
-        sb.append("}");
-        return sb.toString();
-    }
-
-    @Override
-    public String shortDesc() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(getClass().getSimpleName()).append("{");
-        sb.append(getName());
-        sb.append("}");
-        return sb.toString();
-    }
-
     protected void print(StringBuffer sb) {
-        sb.append("name='").append(name).append("\', annotations=");
-        sb.append("[");
-        for (AnnotationModel am : this.getAnnotations()) {
-            sb.append(" ").append(am.getType().getName());
+        super.print(sb);
+        sb.append(", referenced from [");
+        for (AnnotatedElement a : allAnnotatedTypes()) {
+            sb.append(" ").append(a.shortDesc());
         }
         sb.append("]");
     }

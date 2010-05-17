@@ -65,7 +65,7 @@ public class ModelBuilder {
         Annotation {
             @Override
             public TypeImpl make(ModelBuilder tb) {
-                return new AnnotationModelImpl(tb);
+                return new AnnotationTypeImpl(tb);
             }}
 
     }    
@@ -100,11 +100,11 @@ public class ModelBuilder {
         }
     }
 
-    public AnnotationModelImpl buildAnnotation() {
+    public AnnotationTypeImpl buildAnnotation() {
         if (sink.get()==null) {
-            return new AnnotationModelImpl(this);
+            return new AnnotationTypeImpl(this);
         } else {
-            return (AnnotationModelImpl) sink.get();
+            return (AnnotationTypeImpl) sink.get();
         }
     }
 
