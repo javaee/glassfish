@@ -207,9 +207,45 @@ public class ConfigSupport {
     }
 
     /**
+     * Retuns the transaction associated with a writable view
+     * @param source the proxy to the writable view
+     * @return the transaction object for that view or null if not transaction is in progress
+     */
+    public <T extends ConfigBeanProxy> Transaction getTransaction(final T source) {
+        ConfigView sourceBean = (ConfigBean) Proxy.getInvocationHandler(source);
+        if (sourceBean instanceof WriteableView) {
+            return ((WriteableView) sourceBean).getTransaction();
+        }
+        return null;
+    }
+
+    /**
+     * Enroll a configuration object in a transaction and returns a writeable view of it
+     *
+     * @param t the transaction to enroll the configuration object in.
+     * @param source the configured interface implementation
+     * @return the new interface implementation providing write access
+     * @throws TransactionFailure if the object cannot be enrolled (probably already enrolled in
+     * another transaction).
+     */
+    public <T extends ConfigBeanProxy> T enrollInTransaction(Transaction t, final T source)
+        throws TransactionFailure {
+
+        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
+        WriteableView writeableView = getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+        if (!writeableView.join(t)) {
+            throw new TransactionFailure("Cannot join transaction : " + sourceBean.getProxyType());
+        }
+        return (T) writeableView.getProxy(sourceBean.getProxyType());
+    }
+
+
+    /**
      * Returns a writeable view of a configuration object
      * @param source the configured interface implementation
      * @return the new interface implementation providing write access
+     * @throws TransactionFailure if the object cannot be enrolled (probably already enrolled in
+     * another transaction).
      */
     public <T extends ConfigBeanProxy> T getWriteableView(final T source)
         throws TransactionFailure {
