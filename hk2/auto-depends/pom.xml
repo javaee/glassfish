@@ -33,6 +33,11 @@
                                     <artifactId>class-model</artifactId>
                                     <version>${project.version}</version>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jvnet</groupId>
+                                    <artifactId>tiger-types</artifactId>
+                                    <version>1.2</version>
+                                </artifactItem>                                
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -71,9 +76,10 @@
     </build>
     <dependencies>
    		<dependency>
-        	<groupId>com.sun.enterprise</groupId>
-            <artifactId>tiger-types-osgi</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.jvnet</groupId>
+            <artifactId>tiger-types</artifactId>
+            <version>1.2</version>
+            <optional>true</optional>
         </dependency>
    		<dependency>
         	<groupId>org.glassfish.hk2</groupId>
@@ -88,6 +94,11 @@
             <optional>true</optional>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+        	<groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>asm-all-repackaged</artifactId>
+            <version>${project.version}</version>
+         </dependency>
     </dependencies>
     <profiles>
         <profile>

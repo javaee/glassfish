@@ -3,6 +3,7 @@
                             org.jvnet.hk2.annotations; \
                             org.glassfish.hk2.classmodel.reflect; \
                             org.glassfish.hk2.classmodel.reflect.util; \
+                            org.jvnet.tiger_types; \
                             com.sun.hk2.component; version=${project.osgi.version}
 
 Import-Package: \

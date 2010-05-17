@@ -63,6 +63,7 @@ public class Hk2TestServices {
         if (classPath==null) {
             classPath = System.getProperty("java.class.path");
         }
+        System.out.println("classpath is " + classPath);
         ParsingContext.Builder builder = new ParsingContext.Builder();
         final Set<String> annotations = new HashSet<String>();
         annotations.add("org.jvnet.hk2.annotations.Contract");
@@ -84,7 +85,12 @@ public class Hk2TestServices {
             }
         });
 
-        ParsingContext context = builder.build();
+        ParsingContext context = null;
+        try {
+            context = builder.build();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         Parser parser = new Parser(context);
 
         final ClassLoader cLoader = this.getClass().getClassLoader();
