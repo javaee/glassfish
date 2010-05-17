@@ -38,6 +38,7 @@ package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.common_impl.LogHelper;
 
 import java.io.*;
@@ -790,7 +791,13 @@ public class CommandRunnerImpl implements CommandRunner {
         // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
         boolean doReplication = false;
         if(!processEnv.getProcessType().isEmbedded()) {
-            Config cfg = domain.getConfigs().getConfigByName("server-config");
+            Config cfg;
+            if(serverEnv.isDas()) {
+                cfg = domain.getConfigNamed("server-config");
+            } else {
+                Server svr = domain.getServerNamed(serverEnv.getInstanceName());
+                cfg = domain.getConfigNamed(svr.getConfigRef());
+            }
             List<String> jvmOpts=cfg.getJavaConfig().getJvmOptions();
             if(jvmOpts.contains("-Dcommand.replication.enabled=true"))
                 doReplication = true;
