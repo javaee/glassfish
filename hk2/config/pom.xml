@@ -85,14 +85,9 @@
             <artifactId>auto-depends</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.enterprise</groupId>
-            <artifactId>tiger-types-osgi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-	<dependency>
-	    <groupId>org.glassfish</groupId>
-	    <artifactId>bean-validator</artifactId>
+		<dependency>
+	    	<groupId>org.glassfish</groupId>
+	    	<artifactId>bean-validator</artifactId>
             <version>3.0-JBoss-4.0.2_03</version>
         </dependency>
     </dependencies>
