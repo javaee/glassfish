@@ -52,10 +52,8 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,10 +77,12 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
     @Inject
     private Habitat habitat;
 
+    @Inject
+    private ServerEnvironment serverEnv;
+
     private static final LocalStringManagerImpl strings =
                         new LocalStringManagerImpl(GlassFishClusterExecutor.class);
 
-    private ArrayList<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
     private FailurePolicy onFailure = FailurePolicy.Error;
     private FailurePolicy ifOffline = FailurePolicy.Warn;
 
@@ -111,20 +111,9 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
             model = new CommandModelImpl(command.getClass());
         }
 
-        // Get @Cluster annotatoin params; if not present, set required defaults.
+        // Get @Cluster annotation params; if not present, set required defaults.
         org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
-        if(clAnnotation == null) {
-            runtimeTypes.add(RuntimeType.DAS);
-            runtimeTypes.add(RuntimeType.INSTANCE);
-        } else {
-            if(clAnnotation.value().length == 0) {
-                runtimeTypes.add(RuntimeType.DAS);
-                runtimeTypes.add(RuntimeType.INSTANCE);
-            } else {
-                for(RuntimeType t : clAnnotation.value()) {
-                    runtimeTypes.add(t);
-                }
-            }
+        if(clAnnotation != null) {
             if(clAnnotation.ifFailure() != null) {
                 onFailure = clAnnotation.ifFailure();
             }
@@ -133,41 +122,34 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
             }
         }
 
-        //If this command is meant for DAS only, return right now
-        if(!runtimeTypes.contains(RuntimeType.INSTANCE))
-                return ActionReport.ExitCode.SUCCESS;
+        //Do replication only is this is DAS
+        if(serverEnv.isDas()) {
+            // Get target and find list of instances from target
+            if(parameters.getOne("target") == null) {
+                ActionReport aReport = context.getActionReport().addSubActionsReport();
+                aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargetspecified",
+                        "A target was not specified in the command line; aborting further execution of CLI"));
+                //TODO : Undoable command support needed ?
+                return getReturnValueFor(onFailure);
+            }
 
-        // Get target and find list of instances from target
-        // TODO : Handle targettype = config; targettype = domain
-        String target = parameters.getOne("target");
-        ArrayList<Server> instancesForReplication = new ArrayList<Server>();
+            Target target = new Target(parameters.getOne("target"), domain);
+            List<Server> instancesForReplication = target.getInstances();
+            if(instancesForReplication.size() == 0) {
+                ActionReport aReport = context.getActionReport().addSubActionsReport();
+                aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargets",
+                        "Unable to find instances for target {0}", target));
+                //TODO : Undoable command support needed ?
+                return getReturnValueFor(onFailure);
+            }
 
-        //If given target is an instance itself, this is the only target
-        if(domain.getServerNamed(target) != null) {
-            instancesForReplication.add(domain.getServerNamed(target));
-        } else {
-            instancesForReplication.addAll(getInstancesForCluster(target));
+            //TODO : Support for dynamic-reconfig-enabled flag should go here
+
+            return(replicateCommand(commandName, instancesForReplication, context, parameters));
         }
-
-        if(instancesForReplication.size() == 0) {
-            ActionReport aReport = context.getActionReport().addSubActionsReport();
-            aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargets",
-                    "Unable to find instances for target {0}", target));
-            //TODO : Undoable command support needed ?
-            return getReturnValueFor(onFailure);
-        }
-
-        //TODO : Support for dynamic-reconfig-enabled flag should go here
-
-        ActionReport.ExitCode returnValue = replicateCommand(commandName, instancesForReplication, context, parameters);
-        if(ActionReport.ExitCode.FAILURE.equals(returnValue))
-            return returnValue;
-
-        //Execute supplemental commands with Timing  = After.
-        doSupplementalCommands(commandName, context);
-
-        return returnValue;
+        return ActionReport.ExitCode.SUCCESS;
     }
 
     /**
@@ -217,58 +199,6 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                 returnValue = getReturnValueFor(onFailure);
         }
         return returnValue;
-    }
-
-    private void doSupplementalCommands(String commandName, AdminCommandContext context) {
-        List<AdminCommand> cmdList = new ArrayList();
-
-        // TODO : Can we cache this supplemental command list once and cache it ?
-        Collection<Inhabitant<? extends Supplemental>> supplementals = habitat.getInhabitants(Supplemental.class);
-        if(!supplementals.isEmpty()) {
-            Iterator<Inhabitant<? extends Supplemental>> iter = supplementals.iterator();
-            while(iter.hasNext()) {
-                Inhabitant<? extends Supplemental> inh = iter.next();
-                MultiMap<String, String> map = inh.metadata();
-                if(commandName.equals(map.getOne("target"))) {
-                    cmdList.add((AdminCommand) inh.get());
-                }
-            }
-        }
-
-        //TODO : Use the executor service to parallelize this
-        if(cmdList.size() != 0) {
-            for(AdminCommand cmd : cmdList) {
-                cmd.execute(context);
-            }
-        }
-    }
-    /**
-     * Given the name of a cluster, return the list of servers assosicated with the cluster
-     * @param clusterName name of cluster
-     * @return List<Server> the list of servers associated with the given cluster
-     */
-    private List<Server> getInstancesForCluster(String clusterName) {
-        //TODO : Is this the way to get instances ? Cant we use some DuckType methods in config beans ? 
-        ArrayList<Server> instanceList = new ArrayList<Server>();
-        Cluster cluster = null;
-
-        List<Cluster> clList = domain.getClusters().getCluster();
-        for(Cluster cl : clList) {
-            if(clusterName.equals(cl.getName())) {
-                cluster = cl;
-                break;
-            }
-        }
-        if(cluster != null) {
-            String clusterConfigName = cluster.getConfigRef();
-            List<Server> svrList = domain.getServers().getServer();
-            for(Server svr : svrList) {
-                if(clusterConfigName.equals(svr.getConfigRef())) {
-                    instanceList.add(svr);
-                }
-            }
-        }
-        return instanceList;
     }
 
     /**

@@ -40,6 +40,9 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.InhabitantMetadata;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Annotation to define a supplemental command
  *
@@ -119,6 +122,7 @@ import org.jvnet.hk2.annotations.InhabitantMetadata;
  * @author Jerome Dochez
  *
  */
+@Retention(RetentionPolicy.RUNTIME)
 @Contract
 @InhabitantAnnotation("default")
 public @interface Supplemental {

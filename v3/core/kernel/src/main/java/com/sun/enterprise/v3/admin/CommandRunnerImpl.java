@@ -786,7 +786,17 @@ public class CommandRunnerImpl implements CommandRunner {
         UploadedFilesManager ufm = null;
         final ActionReport report = inv.report();
         ParameterMap parameters;
-        
+        List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
+        // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
+        boolean doReplication = false;
+        if(!processEnv.getProcessType().isEmbedded()) {
+            Config cfg = domain.getConfigs().getConfigByName("server-config");
+            List<String> jvmOpts=cfg.getJavaConfig().getJvmOptions();
+            if(jvmOpts.contains("-Dcommand.replication.enabled=true"))
+                doReplication = true;
+        }
+        //TODO : Remove the above flag check by MS2
+
         try {
             /*
              * Extract any uploaded files and build a map from parameter names
@@ -854,8 +864,44 @@ public class CommandRunnerImpl implements CommandRunner {
             InjectionResolver<Param> injectionMgr =
                         new MapInjectionResolver(model, parameters,
                         ufm.optionNameToFileMap());
-            doCommand(model, command, injectionMgr, report,
+
+            if(doReplication) {
+                // Run Supplemental commands that have to run before this command on this instance type
+                SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
+                        "SupplementalCommandExecutorImpl");
+                ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
+                            Supplemental.Timing.Before,
+                            new AdminCommandContext(logger, report, inv.inboundPayload(), inv.outboundPayload()));
+                //TODO : Apply FailurePolicy for the above
+                //Run main command if it is applicable for this instance type
+                org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
+                if(clAnnotation == null) {
+                    runtimeTypes.add(RuntimeType.DAS);
+                    runtimeTypes.add(RuntimeType.INSTANCE);
+                } else {
+                    if(clAnnotation.value().length == 0) {
+                        runtimeTypes.add(RuntimeType.DAS);
+                        runtimeTypes.add(RuntimeType.INSTANCE);
+                    } else {
+                        for(RuntimeType t : clAnnotation.value()) {
+                            runtimeTypes.add(t);
+                        }
+                    }
+                }
+                if( (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
+                    (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
+                    doCommand(model, command, injectionMgr, report,
+                            inv.inboundPayload(), inv.outboundPayload());
+                }
+                //Run Supplemental commands that have to be run after this command on this instance type
+                supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
+                        Supplemental.Timing.After,
+                        new AdminCommandContext(logger, report, inv.inboundPayload(), inv.outboundPayload()));
+                //TODO : Apply FailurePolicy for the above
+            } else
+                doCommand(model, command, injectionMgr, report,
                         inv.inboundPayload(), inv.outboundPayload());
+
         } catch (Exception ex) {
             logger.severe(ex.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -870,6 +916,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 ufm.close();
             }
         }
+
         /*
          * Command execution completed; If this is DAS and the command succeeded,
          * time to replicate; At this point we will get the appropriate ClusterExecutor
@@ -881,31 +928,11 @@ public class CommandRunnerImpl implements CommandRunner {
 
         if(processEnv.getProcessType().isEmbedded())
             return;
-        if(serverEnv.getRuntimeType().isDas() &&
-                report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
-            // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
-            Config cfg = domain.getConfigs().getConfigByName("server-config");
-            List<String> jvmOpts=cfg.getJavaConfig().getJvmOptions();
-            if(!jvmOpts.contains("-Dcommand.replication.enabled=true"))
-                return;
-            //TODO : Remove the above flag check by MS2
-            Cluster clAnnotation = model.getClusteringAttributes();
+        if( (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) &&
+            (serverEnv.isDas()) && doReplication) {
             ClusterExecutor executor = null;
-            if(clAnnotation != null && clAnnotation.executor() != null) {
-                //try {
-                    //TODO : THIS HAS GOT TO GO; HOW TO GET THE SPECIFIED ONE THRO HABITAT ? NEED TO CHECK
-                    executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
-                /*
-                } catch(InstantiationException iex) {
-                    logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.instantiationfailure",
-                            "Unable to initialize specified exector class {0} : {1}", clAnnotation.executor(),
-                            iex.getLocalizedMessage()));
-                } catch(IllegalAccessException aex) {
-                    logger.severe(adminStrings.getLocalString("commandrunner.clusterexecutor.instantiationfailure",
-                            "Unable to initialize specified exector class {0} : {1}", clAnnotation.executor(),
-                            aex.getLocalizedMessage()));
-                }
-                */
+            if(model.getClusteringAttributes() != null && model.getClusteringAttributes().executor() != null) {
+                executor = habitat.getComponent(model.getClusteringAttributes().executor());
             } else {
                 executor = habitat.getComponent(ClusterExecutor.class, "GlassFishClusterExecutor");
             }
