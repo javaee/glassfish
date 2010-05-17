@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<console-config id="restprototype">
-    <integration-point  id="rest1"
-                        type="org.glassfish.admingui:navNode" 
-                        priority="500"
-                        parentId="resources"
-                        content="treeNode.jsf" />
-</console-config> 
+<console-config id="rest">
+        <integration-point 
+                id="restNodes" 
+                type="org.glassfish.admingui:navNode" 
+                priority="100" 
+                parentId="resources" 
+                content="restTreeNode.jsf" 
+        />
+</console-config>

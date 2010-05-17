@@ -41,8 +41,8 @@ import org.jvnet.hk2.annotations.Service;
 
 import java.net.URL;
 
-
-public class PluginConsoleProvider implements ConsoleProvider {
+@Service
+public class RestPrototypePlugin implements ConsoleProvider {
 
     /**
      *	<p> Returns a <code>URL</code> to the <code>console-config.xml</code>
