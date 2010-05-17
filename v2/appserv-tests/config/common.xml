@@ -117,8 +117,12 @@ Variables Used:
   <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes"/>
   <mkdir dir="${build.classes.dir}/tmp/WEB-INF/lib"/>
   <mkdir dir="lib"/>
+  <copy file="${glassfish-web.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/glassfish-web.xml" failonerror="false"/>
   <copy file="${sun-web.xml}" 
       tofile="${build.classes.dir}/tmp/WEB-INF/sun-web.xml" failonerror="false"/>
+  <copy file="${weblogic.xml}" 
+      tofile="${build.classes.dir}/tmp/WEB-INF/weblogic.xml" failonerror="false"/>
   <copy todir="${build.classes.dir}/tmp/WEB-INF/lib" failonerror="false">
       <fileset dir="lib">
           <include name="**/*.jar"/>
@@ -168,7 +172,9 @@ Variables Used:
     </fileset>
     <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
       <include name="WEB-INF/web.xml"/>
+      <include name="WEB-INF/glassfish-web.xml"/>
       <include name="WEB-INF/sun-web.xml"/>
+      <include name="WEB-INF/weblogic.xml"/>
       <include name="WEB-INF/webservices.xml"/>
       <include name="WEB-INF/tagPlugins.xml"/>
       <include name="WEB-INF/lib/*"/>
