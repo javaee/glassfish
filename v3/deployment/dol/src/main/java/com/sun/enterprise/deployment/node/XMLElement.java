@@ -94,11 +94,17 @@ public class XMLElement extends java.lang.Object {
             return qName;
         }
     }
-   
+
+    @Override
     public boolean equals(Object other ) {
         if (other instanceof XMLElement) {
             return qName.equals(((XMLElement) other).getQName());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return qName.hashCode();
     }
 }
