@@ -37,7 +37,7 @@
 package org.glassfish.hk2.classmodel.reflect.test;
 
 import org.glassfish.hk2.classmodel.reflect.*;
-import org.glassfish.hk2.classmodel.reflect.impl.AnnotationModelImpl;
+import org.glassfish.hk2.classmodel.reflect.impl.AnnotationTypeImpl;
 import org.glassfish.hk2.classmodel.reflect.util.*;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -136,12 +136,12 @@ public class GFInstallationTest {
         }
         System.out.println("Found " + files.size() + " files in " + (System.currentTimeMillis() - start));
         for (Type t : context.getTypes().getAllTypes()) {
-            if (t instanceof AnnotationModelImpl) {
-                System.out.println("Found annotation : " + ((AnnotationModelImpl) t).name);
+            if (t instanceof AnnotationTypeImpl) {
+                System.out.println("Found annotation : " + ((AnnotationTypeImpl) t).name);
             }
         }
         /*
-        AnnotationModelImpl service = TypesImpl.all.annotations.getElement("Lorg/jvnet/hk2/annotations/Service;");
+        AnnotationTypeImpl service = TypesImpl.all.annotations.getElement("Lorg/jvnet/hk2/annotations/Service;");
         for (RefType type : service.allAnnotatedTypes()) {
             System.out.println("My services are " + type.getName);
         }

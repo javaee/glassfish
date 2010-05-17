@@ -178,7 +178,7 @@ public class Hk2TestServices {
             String contract = contracts.next();
             System.out.println("Found contract : " + contract);
             for (Inhabitant t : habitat.getInhabitantsByContract(contract)) {
-                System.out.println(" --> " + t.typeName());
+                System.out.println(" --> " + t.typeName() + " "+ t.metadata());
             }
         }
     }

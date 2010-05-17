@@ -37,8 +37,6 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
-import org.glassfish.hk2.classmodel.reflect.impl.TypeProxy;
-import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
 
 import java.util.*;
 
@@ -106,7 +104,7 @@ public class TypesImpl implements Types, TypeBuilder {
         return mb.buildInterface();
     }
 
-    public synchronized AnnotationModelImpl getAnnotation(String name) {
+    public synchronized AnnotationTypeImpl getAnnotation(String name) {
         ModelBuilder mb = new ModelBuilder(name, getHolder(name));
         return mb.buildAnnotation();
     }

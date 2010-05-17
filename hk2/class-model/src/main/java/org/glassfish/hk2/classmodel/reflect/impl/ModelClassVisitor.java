@@ -37,8 +37,6 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
-import org.glassfish.hk2.classmodel.reflect.impl.TypeProxy;
-import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
 import org.objectweb.asm.*;
 
 /**
@@ -106,10 +104,11 @@ public class ModelClassVisitor implements ClassVisitor {
         
         desc = unwrap(desc);
 
-        AnnotationModelImpl am = typeBuilder.getAnnotation(desc);
+        final AnnotationTypeImpl at = typeBuilder.getAnnotation(desc);
+        final AnnotationModelImpl am = new AnnotationModelImpl(type, at);
 
         // reverse index
-        am.getReferences().add(type);
+        at.getReferences().add(type);
 
         // forward index
         type.addAnnotation(am);
@@ -119,7 +118,32 @@ public class ModelClassVisitor implements ClassVisitor {
             visitField=true;
         }
 
-        return null;
+        return new AnnotationVisitor() {
+            @Override
+            public void visit(String name, Object value) {
+                am.addValue(name, value);
+            }
+
+            @Override
+            public void visitEnum(String name, String desc, String value) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public AnnotationVisitor visitAnnotation(String name, String desc) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public AnnotationVisitor visitArray(String name) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void visitEnd() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
     }
 
     @Override
@@ -162,10 +186,11 @@ public class ModelClassVisitor implements ClassVisitor {
         return new FieldVisitor() {
             @Override
             public AnnotationVisitor visitAnnotation(String s, boolean b) {
-                AnnotationModelImpl annotationModel = typeBuilder.getAnnotation(unwrap(s));
+                AnnotationTypeImpl annotationType = typeBuilder.getAnnotation(unwrap(s));
+                AnnotationModelImpl annotationModel = new AnnotationModelImpl(field, annotationType);
 
                 // reverse index.
-                annotationModel.getReferences().add(field);
+                annotationType.getReferences().add(field);
 
                 // forward index
                 field.addAnnotation(annotationModel);

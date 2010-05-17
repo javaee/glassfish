@@ -2,6 +2,7 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class IntrospectionScanner implements Iterable<InhabitantParser> {
     Iterator<AnnotatedElement> current;
 
     public IntrospectionScanner(ParsingContext context) {
-        AnnotationModel am = context.getTypes().getBy(AnnotationModel.class, InhabitantAnnotation.class.getName());
+        AnnotationType am = context.getTypes().getBy(AnnotationType.class, InhabitantAnnotation.class.getName());
         if (am==null) {                                  
             inhabitantAnnotations = (new ArrayList<AnnotatedElement>()).iterator();
         } else {
@@ -37,7 +38,7 @@ public class IntrospectionScanner implements Iterable<InhabitantParser> {
             return;
         }
         do {
-            AnnotationModel am = AnnotationModel.class.cast(inhabitantAnnotations.next());
+            AnnotationType am = AnnotationType.class.cast(inhabitantAnnotations.next());
             current = am.allAnnotatedTypes().iterator();
         } while (!current.hasNext() && inhabitantAnnotations.hasNext());
     }
@@ -53,7 +54,7 @@ public class IntrospectionScanner implements Iterable<InhabitantParser> {
                 InhabitantParser ip = new InhabitantParser() {
                     public Iterable<String> getIndexes() {
                         if (ae instanceof ClassModel) {
-                            ClassModel cm = (ClassModel) ae;
+                            final ClassModel cm = (ClassModel) ae;
                             final Iterator<InterfaceModel> interfaces = cm.getInterfaces().iterator();
                             return new Iterable<String>() {
                                 public Iterator<String> iterator() {
@@ -63,7 +64,14 @@ public class IntrospectionScanner implements Iterable<InhabitantParser> {
                                         }
 
                                         public String next() {
-                                            return interfaces.next().getName();
+                                            final AnnotationModel am = cm.getAnnotation(Service.class.getName());
+                                            String contract = interfaces.next().getName();
+                                            String name = (String) am.getValues().get("name");
+                                            if (name==null || name.isEmpty()) {
+                                                return contract;
+                                            } else {
+                                                return contract+":"+name;
+                                            }
                                         }
 
                                         public void remove() {

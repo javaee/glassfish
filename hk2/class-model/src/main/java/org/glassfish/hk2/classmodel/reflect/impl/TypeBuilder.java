@@ -48,7 +48,7 @@ public interface TypeBuilder {
 
     public InterfaceModelImpl getInterface(String name);
 
-    public AnnotationModelImpl getAnnotation(String name);
+    public AnnotationTypeImpl getAnnotation(String name);
 
     public FieldModelImpl getFieldModel(String name, TypeProxy type);
 

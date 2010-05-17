@@ -74,4 +74,13 @@ public interface AnnotatedElement {
      * @return the collection of annotations
      */
     Collection<AnnotationModel> getAnnotations();
+
+    /**
+     * Returns an annotation model if the type is annotated with the
+     * passed annotation name
+     * @param name the annotation name
+     * @return the annotation model or null if the type is not annotated with
+     * this annotation type of the passed name.
+     */
+    public AnnotationModel getAnnotation(String name);
 }
