@@ -84,7 +84,7 @@ public class DeleteLifecycleModuleCommand implements AdminCommand {
         }
 
         try {
-            deployment.unregisterAppFromDomainXML(name);
+            deployment.unregisterAppFromDomainXML(name, target);
         } catch(Exception e) {
             report.setMessage("Failed to delete lifecycle module: " + e);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

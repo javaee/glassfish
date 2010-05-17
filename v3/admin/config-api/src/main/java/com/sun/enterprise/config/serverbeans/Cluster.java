@@ -55,6 +55,7 @@ import org.glassfish.api.admin.config.ReferenceContainer;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -222,9 +223,25 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @DuckTyped
     String getReference();
 
+    @DuckTyped
+    List<Server> getInstances();
+
     class Duck {
         public static String getReference(Cluster cluster) {
             return cluster.getConfigRef();
+        }
+
+        public static List<Server> getInstances(Cluster cluster) {
+            
+            Dom clusterDom = Dom.unwrap(cluster);
+            Domain domain = 
+                clusterDom.getHabitat().getComponent(Domain.class);
+
+            ArrayList<Server> instances = new ArrayList<Server>();
+            for (ServerRef sRef : cluster.getServerRef()) {
+                instances.add(domain.getServerNamed(sRef.getRef()));    
+            }
+            return instances;
         }
     }
 

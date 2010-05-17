@@ -478,8 +478,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         }
 
          public static Cluster getClusterNamed(Domain d, String name) {
-            if (d.getClusters() == null || name == null)
-                throw new IllegalArgumentException ("no <cluster> element");
+            if (d.getClusters() == null || name == null) {
+                return null;
+            }
             List<Cluster> clusters = d.getClusters().getCluster();
             for (Cluster c : clusters) {
                 if (name.equals(c.getName().trim())) {

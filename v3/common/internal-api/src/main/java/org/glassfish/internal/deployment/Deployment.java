@@ -176,7 +176,8 @@ public interface Deployment {
         applicationInfo, final DeploymentContext context)
         throws TransactionFailure;
 
-    public void unregisterAppFromDomainXML(final String appName)
+    public void unregisterAppFromDomainXML(final String appName, 
+        final String target)
         throws TransactionFailure;
     
 

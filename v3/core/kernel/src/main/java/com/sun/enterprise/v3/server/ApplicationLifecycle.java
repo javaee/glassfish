@@ -74,6 +74,7 @@ import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
+import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.TransactionFailure;
 
@@ -125,9 +126,6 @@ public class ApplicationLifecycle implements Deployment {
 
     @Inject
     protected Domain domain;
-
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    protected Server server;
 
     @Inject
     ServerEnvironmentImpl env;
@@ -339,8 +337,10 @@ public class ApplicationLifecycle implements Deployment {
                 // time the containers are set up, all the modules have been prepared in their
                 // associated engines and the application info is created and registered
                  // if enable attribute is set to true
+                 // and the target is the default server instance
                  // we load and start the application
-                if (commandParams.enabled) {
+                if (commandParams.enabled && commandParams.target.equals(
+                    "server")) {
                     Thread.currentThread().setContextClassLoader(context.getFinalClassLoader());
                     appInfo.setLibraries(commandParams.libraries());
                     try {
@@ -822,116 +822,188 @@ public class ApplicationLifecycle implements Deployment {
         final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
-
                 Applications apps = (Applications) params[0];
-                Server servr = (Server) params[1];
+                Domain dmn = (Domain) params[1];
 
                 // adding the application element
                 Application app = params[0].createChild(Application.class);
-
-                // various attributes
-                app.setName(deployParams.name);
-                if (deployParams.libraries != null) {
-                    app.setLibraries(deployParams.libraries);
-                }
-                if (deployParams.description != null) {
-                    app.setDescription(deployParams.description);
-                }
-
-                if (appProps.getProperty(ServerTags.CONTEXT_ROOT) != null) {
-                    app.setContextRoot(appProps.getProperty(
-                        ServerTags.CONTEXT_ROOT));
-                }
-                if (appProps.getProperty(ServerTags.LOCATION) != null) {
-                    app.setLocation(appProps.getProperty(
-                        ServerTags.LOCATION));
-                    // always set the enable attribute of application to true
-                    app.setEnabled(String.valueOf(true));
-                } else {
-                    // this is not a regular javaee module 
-                    app.setEnabled(deployParams.enabled.toString());
-                }
-                if (appProps.getProperty(ServerTags.OBJECT_TYPE) != null) {
-                    app.setObjectType(appProps.getProperty(
-                        ServerTags.OBJECT_TYPE));
-                }
-                if (appProps.getProperty(ServerTags.DIRECTORY_DEPLOYED) 
-                    != null) {
-                    app.setDirectoryDeployed(appProps.getProperty(
-                        ServerTags.DIRECTORY_DEPLOYED));
-                }
-
-
+                setAppAttributes(app, deployParams, appProps);
                 apps.getModules().add(app);
-             
                 if (applicationInfo != null) {
                     applicationInfo.save(app);
                 }
 
-                // property element
-                // trim the properties that have been written as attributes
-                // the rest properties will be written as property element
-                for (Iterator itr = appProps.keySet().iterator();
-                    itr.hasNext();) {
-                    String propName = (String) itr.next();
-                    if (!propName.equals(ServerTags.LOCATION) &&
-                        !propName.equals(ServerTags.CONTEXT_ROOT) &&
-                        !propName.equals(ServerTags.OBJECT_TYPE) &&
-                        !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
-                        !propName.startsWith(
-                            DeploymentProperties.APP_CONFIG))
-                    {
-                        Property prop = app.createChild(Property.class);
-                        app.getProperty().add(prop);
-                        prop.setName(propName);
-                        prop.setValue(appProps.getProperty(propName));
-                    }
+                Server servr = dmn.getServerNamed(deployParams.target); 
+                if (servr != null) {
+                    // adding the application-ref element to the standalone
+                    // server instance
+                    ConfigSupport.apply(new SingleConfigCode() {
+                        public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                            Server refServer = (Server)param;
+                            ApplicationRef appRef = param.createChild(ApplicationRef.class);
+                            setAppRefAttributes(appRef, deployParams);
+                            refServer.getApplicationRef().add(appRef);
+                            return Boolean.TRUE;
+                        }
+                    }, servr);
                 }
 
-                // adding the application-ref element
-                ApplicationRef appRef = params[1].createChild(ApplicationRef.class);
-                appRef.setRef(deployParams.name);
-                if (deployParams.virtualservers != null) {
-                    appRef.setVirtualServers(deployParams.virtualservers);
-                } else {
-                    // deploy to all virtual-servers, we need to get the list.
-                    HttpService httpService = habitat.getComponent(HttpService.class);
-                    StringBuilder sb = new StringBuilder();
-                    for (VirtualServer s : httpService.getVirtualServer()) {
-                        if (s.getId().equals(AdminAdapter.VS_NAME)) {
-                            continue;
+                Cluster cluster = dmn.getClusterNamed(deployParams.target); 
+                if (cluster != null) {
+                    // adding the application-ref element to the cluster
+                    // and instances
+                    ConfigSupport.apply(new SingleConfigCode() {
+                        public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                            Cluster cls = (Cluster)param;
+                            ApplicationRef appRef = param.createChild(ApplicationRef.class);
+                            setAppRefAttributes(appRef, deployParams);
+                            cls.getApplicationRef().add(appRef);
+                            return Boolean.TRUE;
                         }
-                        if (sb.length()>0) {
-                            sb.append(',');
-                        }
-                        sb.append(s.getId());
+                    }, cluster);
+
+                    for (Server svr : cluster.getInstances() ) {
+                        ConfigSupport.apply(new SingleConfigCode() {
+                            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                                Server refServer = (Server)param;
+                                ApplicationRef appRef = param.createChild(ApplicationRef.class);
+                                setAppRefAttributes(appRef, deployParams);
+                                refServer.getApplicationRef().add(appRef);
+                                return Boolean.TRUE;
+                            }
+                        }, svr);
                     }
-                    appRef.setVirtualServers(sb.toString());
                 }
-                appRef.setEnabled(deployParams.enabled.toString());
-
-                servr.getApplicationRef().add(appRef);
-
                 return Boolean.TRUE;
             }
 
-        }, applications, server);
+        }, applications, domain);
     }
 
-    public void unregisterAppFromDomainXML(final String appName)
-        throws TransactionFailure {
+
+    private void setAppAttributes(Application app, 
+        DeployCommandParameters deployParams, Properties appProps)
+        throws PropertyVetoException, TransactionFailure {
+        // various attributes
+        app.setName(deployParams.name);
+        if (deployParams.libraries != null) {
+            app.setLibraries(deployParams.libraries);
+        }
+        if (deployParams.description != null) {
+            app.setDescription(deployParams.description);
+        }
+
+        if (appProps.getProperty(ServerTags.CONTEXT_ROOT) != null) {
+            app.setContextRoot(appProps.getProperty(
+                ServerTags.CONTEXT_ROOT));
+        }
+        if (appProps.getProperty(ServerTags.LOCATION) != null) {
+                    app.setLocation(appProps.getProperty(
+                ServerTags.LOCATION));
+            // always set the enable attribute of application to true
+            app.setEnabled(String.valueOf(true));
+        } else {
+            // this is not a regular javaee module 
+                    app.setEnabled(deployParams.enabled.toString());
+        }
+        if (appProps.getProperty(ServerTags.OBJECT_TYPE) != null) {
+            app.setObjectType(appProps.getProperty(
+                ServerTags.OBJECT_TYPE));
+        }
+        if (appProps.getProperty(ServerTags.DIRECTORY_DEPLOYED) 
+            != null) {
+            app.setDirectoryDeployed(appProps.getProperty(
+                ServerTags.DIRECTORY_DEPLOYED));
+        }
+
+
+        // property element
+        // trim the properties that have been written as attributes
+        // the rest properties will be written as property element
+        for (Iterator itr = appProps.keySet().iterator();
+            itr.hasNext();) {
+            String propName = (String) itr.next();
+            if (!propName.equals(ServerTags.LOCATION) &&
+                !propName.equals(ServerTags.CONTEXT_ROOT) &&
+                !propName.equals(ServerTags.OBJECT_TYPE) &&
+                !propName.equals(ServerTags.DIRECTORY_DEPLOYED) &&
+                !propName.startsWith(
+                    DeploymentProperties.APP_CONFIG))
+                    {
+                Property prop = app.createChild(Property.class);
+                app.getProperty().add(prop);
+                prop.setName(propName);
+                prop.setValue(appProps.getProperty(propName));
+            }
+        }
+    }
+
+    public void unregisterAppFromDomainXML(final String appName, 
+        final String target) throws TransactionFailure {
         ConfigSupport.apply(new ConfigCode() {
             public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
                 Applications apps = (Applications) params[0];
-                Server servr = (Server) params[1];
-                // remove application-ref element
-                for (ApplicationRef appRef : servr.getApplicationRef()) {
-                    if (appRef.getRef().equals(appName)) {
-                        ((Server)params[1]).getApplicationRef().remove(appRef);
-                        break;
+                Domain dmn = (Domain) params[1];
+
+                Server servr = dmn.getServerNamed(target);
+                if (servr != null) {
+                    // remove the application-ref from standalone 
+                    // server instance
+                    ConfigSupport.apply(new SingleConfigCode() {
+                        public Object run(ConfigBeanProxy param) 
+                            throws PropertyVetoException, TransactionFailure {
+                            Server refServer = (Server)param;
+                            for (ApplicationRef appRef : 
+                                refServer.getApplicationRef()) {
+                                if (appRef.getRef().equals(appName)) {
+                                    ((Server)param).getApplicationRef().remove(
+                                        appRef);
+                                    break;
+                                }
+                            }
+                            return Boolean.TRUE;
+                        }
+                    }, servr);
+                }
+              
+                Cluster cluster = dmn.getClusterNamed(target);
+                if (cluster != null) {
+                    // remove the application-ref from cluster
+                    ConfigSupport.apply(new SingleConfigCode() {
+                        public Object run(ConfigBeanProxy param)
+                            throws PropertyVetoException, TransactionFailure {
+                            Cluster cls = (Cluster)param;
+                            for (ApplicationRef appRef :
+                                cls.getApplicationRef()) {
+                                if (appRef.getRef().equals(appName)) {
+                                    ((Cluster)param).getApplicationRef().remove(
+                                        appRef);
+                                    break;
+                                }
+                            }
+                            return Boolean.TRUE;
+                        }
+                    }, cluster);
+
+                    // remove the application-ref from cluster instances
+                    for (Server svr : cluster.getInstances() ) {
+                        ConfigSupport.apply(new SingleConfigCode() {
+                            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                                Server refServer = (Server)param;
+                                for (ApplicationRef appRef : 
+                                    refServer.getApplicationRef()) {
+                                        if (appRef.getRef().equals(appName)) {
+                                            ((Server)param).getApplicationRef(
+                                                ).remove(appRef);
+                                            break;
+                                        }
+                                    }
+                                return Boolean.TRUE;
+                            }
+                        }, svr);
                     }
                 }
-
+              
                 // remove application element
                 for (ApplicationName module : apps.getModules()) {
                     if (module.getName().equals(appName)) {
@@ -941,7 +1013,7 @@ public class ApplicationLifecycle implements Deployment {
                 }
                 return Boolean.TRUE;
             }
-        }, applications, server);
+        }, applications, domain);
     }
 
 
@@ -1117,31 +1189,64 @@ public class ApplicationLifecycle implements Deployment {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         Server server = domain.getServerNamed(target);
+        Config config = null;
         if (server != null) {
-            Config config = domain.getConfigs().getConfigByName(
+            config = domain.getConfigs().getConfigByName(
                 server.getConfigRef());
-            if (config != null) {
-                HttpService httpService = config.getHttpService();
-                if (httpService != null) {
-                    List<VirtualServer> hosts = httpService.getVirtualServer();
-                    if (hosts != null) {
-                        for (VirtualServer host : hosts) {
-                            if (("__asadmin").equals(host.getId())) {
-                                continue;
-                            }
-                            if (first) {
-                                sb.append(host.getId());
-                                first = false;
-                            } else {
-                                sb.append(",");
-                                sb.append(host.getId());
-                            }
+        } else {
+            Cluster cluster = domain.getClusterNamed(target); 
+            if (cluster != null) {
+                config = domain.getConfigs().getConfigByName(
+                    cluster.getConfigRef());
+            }
+        }
+        
+        if (config != null) {
+            HttpService httpService = config.getHttpService();
+            if (httpService != null) {
+                List<VirtualServer> hosts = httpService.getVirtualServer();
+                if (hosts != null) {
+                    for (VirtualServer host : hosts) {
+                        if (("__asadmin").equals(host.getId())) {
+                            continue;
+                        }
+                        if (first) {
+                            sb.append(host.getId());
+                            first = false;
+                        } else {
+                            sb.append(",");
+                            sb.append(host.getId());
                         }
                     }
                 }
             }
         }
+     
         return sb.toString();
     }
+
+    private void setAppRefAttributes(ApplicationRef appRef, 
+        DeployCommandParameters deployParams)
+        throws PropertyVetoException {
+        appRef.setRef(deployParams.name);
+        if (deployParams.virtualservers != null) {
+            appRef.setVirtualServers(deployParams.virtualservers);
+        } else {
+            // deploy to all virtual-servers, we need to get the list.
+            HttpService httpService = habitat.getComponent(HttpService.class);
+            StringBuilder sb = new StringBuilder();
+            for (VirtualServer s : httpService.getVirtualServer()) {
+                if (s.getId().equals(AdminAdapter.VS_NAME)) {
+                    continue;
+                }
+                if (sb.length()>0) {
+                    sb.append(',');
+                }
+                sb.append(s.getId());
+            }
+            appRef.setVirtualServers(sb.toString());
+        }
+        appRef.setEnabled(deployParams.enabled.toString());
+    }        
 }
 

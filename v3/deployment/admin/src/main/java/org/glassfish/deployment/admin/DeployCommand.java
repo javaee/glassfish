@@ -48,6 +48,8 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -95,6 +97,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
 @Service(name="deploy")
 @I18n("deploy.command")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 public class DeployCommand extends DeployCommandParameters implements AdminCommand, EventListener {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeployCommand.class);

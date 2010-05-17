@@ -47,6 +47,8 @@ import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Named;
@@ -78,6 +80,7 @@ import org.glassfish.deployment.versioning.VersioningException;
 @Service(name="undeploy")
 @I18n("undeploy.command")
 @Scoped(PerLookup.class)
+@Cluster(value={RuntimeType.DAS})
 public class UndeployCommand extends UndeployCommandParameters implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(UndeployCommand.class);
@@ -165,7 +168,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 // remove the application from the domain.xml so at least server is
                 // in a consistent state
                 try {
-                    deployment.unregisterAppFromDomainXML(appName);
+                    deployment.unregisterAppFromDomainXML(appName, target);
                 } catch(TransactionFailure e) {
                     logger.warning("Module " + appName + " not found in configuration");
                 }
@@ -179,7 +182,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 // remove the application from the domain.xml so at least server is
                 // in a consistent state
                 try {
-                    deployment.unregisterAppFromDomainXML(appName);
+                    deployment.unregisterAppFromDomainXML(appName, target);
                 } catch(TransactionFailure e) {
                     logger.warning("Module " + name + " not found in configuration");
                 }
@@ -219,7 +222,7 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 // so far I am doing this after the unload, maybe this should be moved before...
                 try {
                     // remove the "application" element
-                    deployment.unregisterAppFromDomainXML(appName);
+                    deployment.unregisterAppFromDomainXML(appName, target);
                 } catch(TransactionFailure e) {
                     logger.warning("Module " + appName + " not found in configuration");
                 }
