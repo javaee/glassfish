@@ -119,9 +119,9 @@
         <phobos.version>0.5.10</phobos.version>
         <product.name>GlassFish</product.name>
         <abbrev_product_name>glassfish</abbrev_product_name>
-        <version_prefix>v</version_prefix>
+        <version_prefix></version_prefix>
         <major_version>3</major_version>
-        <minor_version>0</minor_version>
+        <minor_version>1</minor_version>
         <version_suffix></version_suffix>
         <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
         <jruby-scripting.version>1.0-b17</jruby-scripting.version>
