@@ -34,7 +34,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.api.admin;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -52,15 +51,20 @@ import java.io.File;
  */
 @Contract
 public interface ServerEnvironment {
-
-
-    public enum Status { starting, started, stopping, stopped };
-
+    public enum Status {
+        starting, started, stopping, stopped
+    };
     /** folder where the compiled JSP pages reside */
     public static final String kCompileJspDirName = "jsp";
     String DEFAULT_INSTANCE_NAME = "default-instance-name";
 
+    /**
+     * @return the instance root
+     * @deprecated  As of GlassFish 3.1 replaced with {@link #getInstanceRoot() }
+     */
+    @Deprecated
     public File getDomainRoot();
+
     public File getInstanceRoot();
 
     /**
@@ -135,5 +139,6 @@ public interface ServerEnvironment {
     String getInstanceName();
 
     boolean isInstance();
+
     boolean isDas();
 }

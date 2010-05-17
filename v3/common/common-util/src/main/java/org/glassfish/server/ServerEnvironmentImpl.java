@@ -200,6 +200,11 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
         return root;
     }
 
+    /**
+     * @return the instance root
+     * @deprecated  As of GlassFish 3.1 replaced with {@link #getInstanceRoot() }
+     */
+    @Deprecated
     @Override
     public File getDomainRoot() {
         return getInstanceRoot();
@@ -321,7 +326,7 @@ public class ServerEnvironmentImpl implements ServerEnvironment, PostConstruct {
 
     @Override
     public File getMasterPasswordFile() {
-        return new File (getDomainRoot(), "master-password");
+        return new File (getInstanceRoot(), "master-password");
     }
 
     @Override
