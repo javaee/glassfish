@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -33,41 +32,6 @@
  and therefore, elected the GPL Version 2 license, then the option applies
  only if the new code is made subject to such option by the copyright
  holder.
--->
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-  <servlet>
-    <servlet-name>TestServlet</servlet-name>
-    <servlet-class>test.TestServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>TestServlet</servlet-name>
-    <url-pattern>/TestServlet</url-pattern>
-  </servlet-mapping>
-
-  <servlet>
-    <servlet-name>HelloServlet</servlet-name>
-    <servlet-class>test.HelloServlet</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>HelloServlet</servlet-name>
-    <url-pattern>/HelloServlet</url-pattern>
-  </servlet-mapping>
-
-  <error-page>
-    <exception-type>java.lang.NoClassDefFoundError</exception-type>
-    <location>/errorNoClassDefFoundError.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>java.lang.Exception</exception-type>
-    <location>/errorException.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>test.HelloException</exception-type>
-    <location>/errorHelloException.jsp</location>
-  </error-page>
-
-
-</web-app>
+--%>
+Error page for Hello Exception
 

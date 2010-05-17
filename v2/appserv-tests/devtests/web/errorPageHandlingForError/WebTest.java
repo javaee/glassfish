@@ -70,6 +70,10 @@ public class WebTest {
 
     public void doTest() {     
         try { 
+            invoke("HelloServlet",
+                    "HTTP/1.1 500 ",
+                    "Error page for Hello Exception");
+
             invoke("TestServlet",
                     "HTTP/1.1 500 ",
                     "Error page for NoClassDefFoundError");
