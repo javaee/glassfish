@@ -563,15 +563,14 @@ logger.setLevel(Level.FINEST);
      */
     private void getFileNames(File dir, File baseDir, List<String> names,
                                     SyncLevel level) {
-        if (level == SyncLevel.TOP || level == SyncLevel.DIRECTORY) {
+        if (level == SyncLevel.TOP) {
             String name = baseDir.toURI().relativize(dir.toURI()).getPath();
             // if name is a directory, it will end with "/"
             if (name.endsWith("/"))
                 name = name.substring(0, name.length() - 1);
             names.add(name);
-        }
-        if (level == SyncLevel.TOP)
             return;     // nothing else
+        }
         for (String file : dir.list()) {
             File f = new File(dir, file);
             if (f.isDirectory() && level == SyncLevel.RECURSIVE)
