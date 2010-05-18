@@ -36,7 +36,8 @@
 * holder. 
 */ 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.admingui</groupId>
@@ -70,14 +71,17 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>amx-core</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
-	  <dependency>
+        <dependency>
             <groupId>org.glassfish.admingui</groupId>
             <artifactId>console-common</artifactId>
             <version>${project.version}</version>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
     </dependencies>
 </project>

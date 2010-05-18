@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,11 +43,5 @@ import java.net.URL;
 
 @Service
 public class RestPrototypePlugin implements ConsoleProvider {
-
-    /**
-     *	<p> Returns a <code>URL</code> to the <code>console-config.xml</code>
-     *	    file, or <code>null</code>.  If <code>null</code> is returned, the
-     *	    default ("META-INF/admingui/console-config.xml") will be used.</p>
-     */
     public URL getConfiguration() { return null; }
 }
