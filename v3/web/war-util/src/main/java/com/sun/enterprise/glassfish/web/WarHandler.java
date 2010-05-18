@@ -68,6 +68,10 @@ import static javax.xml.stream.XMLStreamConstants.*;
  */
 @Service(name="war")
 public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+    private static final String GLASSFISH_WEB_XML = "WEB-INF/glassfish-web.xml";
+    private static final String SUN_WEB_XML = "WEB-INF/sun-web.xml";
+    private static final String WEBLOGIC_XML = "WEB-INF/weblogic.xml";
+
     private static XMLInputFactory xmlIf = null;
 
     static {
@@ -99,7 +103,6 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             FileDirContext r = new FileDirContext();
             File base = new File(context.getSource().getURI());
             r.setDocBase(base.getAbsolutePath());
-            SunWebXmlParser sunWebXmlParser = new SunWebXmlParser(base.getAbsolutePath());
 
             cloader.setResources(r);
             cloader.addRepository("WEB-INF/classes/", new File(base, "WEB-INF/classes/"));
@@ -118,8 +121,20 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                 }
             }
 
-            configureLoaderAttributes(cloader, sunWebXmlParser, base);
-            configureLoaderProperties(cloader, sunWebXmlParser, base);
+            WebXmlParser webXmlParser = null;
+            File file = null;
+            if ((new File(base, GLASSFISH_WEB_XML)).exists()) {
+                webXmlParser = new GlassFishWebXmlParser(base.getAbsolutePath());
+            } else if ((new File(base, SUN_WEB_XML)).exists()) {
+                webXmlParser = new SunWebXmlParser(base.getAbsolutePath());
+            } else if ((new File(base, WEBLOGIC_XML)).exists()) {
+                webXmlParser = new WeblogicXmlParser(base.getAbsolutePath());
+            } else {
+                webXmlParser = new GlassFishWebXmlParser(base.getAbsolutePath());
+            }
+
+            configureLoaderAttributes(cloader, webXmlParser, base);
+            configureLoaderProperties(cloader, webXmlParser, base);
             
         } catch(MalformedURLException malex) {
             logger.log(Level.SEVERE, malex.getMessage());
@@ -138,16 +153,16 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     protected void configureLoaderAttributes(WebappClassLoader cloader,
-            SunWebXmlParser sunWebXmlParser, File base) {
+            WebXmlParser webXmlParser, File base) {
 
-        boolean delegate = sunWebXmlParser.isDelegate();
+        boolean delegate = webXmlParser.isDelegate();
         cloader.setDelegate(delegate);
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("WebModule[" + sunWebXmlParser.getBase() +
+            logger.fine("WebModule[" + webXmlParser.getBase() +
                         "]: Setting delegate to " + delegate);
         }
 
-        String extraClassPath = sunWebXmlParser.getExtraClassPath();
+        String extraClassPath = webXmlParser.getExtraClassPath();
         if (extraClassPath != null) {
             // Parse the extra classpath into its ':' and ';' separated
             // components. Ignore ':' as a separator if it is preceded by
@@ -157,7 +172,7 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                 for (String path : pathElements) {
                     path = path.replace("\\:", ":");
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.fine("WarHandler[" + sunWebXmlParser.getBase() +
+                        logger.fine("WarHandler[" + webXmlParser.getBase() +
                                     "]: Adding " + path +
                                     " to the classpath");
                     }
@@ -193,14 +208,14 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
     }
 
     protected void configureLoaderProperties(WebappClassLoader cloader,
-            SunWebXmlParser sunWebXmlParser, File base) {
+            WebXmlParser webXmlParser, File base) {
 
-        cloader.setUseMyFaces(sunWebXmlParser.isUseBundledJSF());
+        cloader.setUseMyFaces(webXmlParser.isUseBundledJSF());
 
         File libDir = new File(base, "WEB-INF/lib");
         if (libDir.exists()) {
             int baseFileLen = base.getPath().length();
-            final boolean ignoreHiddenJarFiles = sunWebXmlParser.isIgnoreHiddenJarFiles();
+            final boolean ignoreHiddenJarFiles = webXmlParser.isIgnoreHiddenJarFiles();
 
             for (File file : libDir.listFiles(
                     new FileFilter() {
@@ -229,28 +244,24 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
         }
     }
 
-    protected class SunWebXmlParser {
-        private String baseStr = null;
-        private XMLStreamReader parser = null;
 
-        //XXX need to compute the default delegate depending on the version of dtd
-        /*
-         * The DOL will *always* return a value: If 'delegate' has not been
-         * configured in sun-web.xml, its default value will be returned,
-         * which is FALSE in the case of sun-web-app_2_2-0.dtd and
-         * sun-web-app_2_3-0.dtd, and TRUE in the case of
-         * sun-web-app_2_4-0.dtd.
-         */
-        private boolean delegate = true;
+    // ---- inner class ----
+    protected abstract class WebXmlParser {
+        protected String baseStr = null;
+        protected XMLStreamReader parser = null;
 
-        private boolean ignoreHiddenJarFiles = false;
-        private boolean useBundledJSF = false;
-        private String extraClassPath = null;
+        protected boolean delegate = true;
 
-        SunWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
+        protected boolean ignoreHiddenJarFiles = false;
+        protected boolean useBundledJSF = false;
+        protected String extraClassPath = null;
+
+        WebXmlParser(String baseStr) 
+                throws XMLStreamException, FileNotFoundException {
+
             this.baseStr = baseStr;
             InputStream input = null;
-            File f = new File(baseStr, "WEB-INF/sun-web.xml");
+            File f = new File(baseStr, getXmlFileName());
             if (f.exists()) {
                 input = new FileInputStream(f);
                 try {
@@ -274,12 +285,89 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             }
         }
 
-        private void read(InputStream input) throws XMLStreamException {
+        protected abstract String getXmlFileName();
+
+        /**
+         * This method will parse the input stream and set the XMLStreamReader
+         * object for latter use.
+         *
+         * @param input InputStream
+         * @exception XMLStreamException;
+         */
+        protected abstract void read(InputStream input) throws XMLStreamException;
+
+        protected void skipRoot(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == START_ELEMENT) {
+                    if (!name.equals(parser.getLocalName())) {
+                        throw new XMLStreamException();
+                    }
+                    return;
+                }
+            }
+        }
+
+        protected void skipSubTree(String name) throws XMLStreamException {
+            while (true) {
+                int event = parser.next();
+                if (event == END_DOCUMENT) {
+                    throw new XMLStreamException();
+                } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
+                    return;
+                }
+            }
+        }
+
+        String getBase() {
+            return baseStr;
+        }
+
+        boolean isDelegate() {
+            return delegate;
+        }
+
+        boolean isIgnoreHiddenJarFiles() {
+            return ignoreHiddenJarFiles;
+        }
+
+        String getExtraClassPath() {
+            return extraClassPath;
+        }
+
+        boolean isUseBundledJSF() {
+            return useBundledJSF;
+        }
+    }
+
+    protected class SunWebXmlParser extends WebXmlParser {
+        //XXX need to compute the default delegate depending on the version of dtd
+        /*
+         * The DOL will *always* return a value: If 'delegate' has not been
+         * configured in sun-web.xml, its default value will be returned,
+         * which is FALSE in the case of sun-web-app_2_2-0.dtd and
+         * sun-web-app_2_3-0.dtd, and TRUE in the case of
+         * sun-web-app_2_4-0.dtd.
+         */
+
+        SunWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
+            super(baseStr);
+        }
+
+        protected String getXmlFileName() {
+            return SUN_WEB_XML;
+        }
+
+        protected String getRootElementName() {
+            return "sun-web-app";
+        }
+
+        protected void read(InputStream input) throws XMLStreamException {
             parser = xmlIf.createXMLStreamReader(input);
 
             int event = 0;
             boolean inClassLoader = false;
-            skipRoot("sun-web-app");
+            skipRoot(getRootElementName());
 
             while (parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
                 if (event == START_ELEMENT) {
@@ -363,48 +451,49 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
                 }
             }
         }
+    }
 
-        private void skipRoot(String name) throws XMLStreamException {
-            while (true) {
-                int event = parser.next();
+    protected class GlassFishWebXmlParser extends SunWebXmlParser {
+        GlassFishWebXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
+            super(baseStr);
+        }
+
+        protected String getXmlFileName() {
+            return GLASSFISH_WEB_XML;
+        }
+
+        protected String getRootElementName() {
+            return "glassfish-web-app";
+        }
+    }
+
+    protected class WeblogicXmlParser extends WebXmlParser {
+        WeblogicXmlParser(String baseStr) throws XMLStreamException, FileNotFoundException {
+            super(baseStr);
+        }
+
+        protected String getXmlFileName() {
+            return WEBLOGIC_XML;
+        }
+
+        protected void read(InputStream input) throws XMLStreamException {
+            parser = xmlIf.createXMLStreamReader(input);
+
+            skipRoot("weblogic-web-app");
+
+            int event = 0;
+            while (parser.hasNext() && (event = parser.next()) != END_DOCUMENT) {
                 if (event == START_ELEMENT) {
-                    if (!name.equals(parser.getLocalName())) {
-                        throw new XMLStreamException();
+                    String name = parser.getLocalName();
+                    if ("prefer-web-inf-classes".equals(name)) {
+                        //weblogic DD has default "false" for perfer-web-inf-classes
+                        delegate = !Boolean.parseBoolean(parser.getElementText());
+                        break;
+                    }  else if (!"container-descriptor".equals(name)) {
+                        skipSubTree(name);
                     }
-                    return;
                 }
             }
-        }
-
-        private void skipSubTree(String name) throws XMLStreamException {
-            while (true) {
-                int event = parser.next();
-                if (event == END_DOCUMENT) {
-                    throw new XMLStreamException();
-                } else if (event == END_ELEMENT && name.equals(parser.getLocalName())) {
-                    return;
-                }
-            }
-        }
-
-        String getBase() {
-            return baseStr;
-        }
-
-        boolean isDelegate() {
-            return delegate;
-        }
-
-        boolean isIgnoreHiddenJarFiles() {
-            return ignoreHiddenJarFiles;
-        }
-
-        String getExtraClassPath() {
-            return extraClassPath;
-        }
-
-        boolean isUseBundledJSF() {
-            return useBundledJSF;
         }
     }
 }
