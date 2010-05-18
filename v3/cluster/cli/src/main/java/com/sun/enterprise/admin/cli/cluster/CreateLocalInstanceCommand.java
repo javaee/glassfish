@@ -36,14 +36,13 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 
@@ -69,6 +68,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?
 
+    public static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceCommand.class);
@@ -83,6 +83,11 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                                         strings.get("ConfigClusterConflict"));
 
         super.validate();
+        
+        if (!rendezvousWithDAS()) {
+           throw new CommandValidationException(
+                                        strings.get("Unable to rendezvous with DAS on host={0}, port={1}, protocol={2}", DASHost, DASPort, DASProtocol));
+        }
     }
 
     /**
@@ -90,12 +95,30 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-        
+            int exitCode = -1;
+            int exitCodeRegister = -1;
             if (!this.filesystemOnly) {
-               registerToDAS();
+               exitCodeRegister = registerToDAS();
+            }
+            if (exitCodeRegister == SUCCESS) {
+                exitCode = super.executeCommand();
+            } else {
+                exitCode = exitCodeRegister;
             }
 
-            return super.executeCommand();
+            return exitCode;
+    }
+
+    private boolean rendezvousWithDAS() {
+        try {
+            RemoteAdminCommand rac = new RemoteAdminCommand("uptime", DASHost, DASPort, dasIsSecure, "admin", null, logger.getLogger());
+            rac.setConnectTimeout(10000);
+            ParameterMap map = new ParameterMap();
+            rac.executeCommand(map);
+            return true;
+        } catch (CommandException ex) {
+            return false;
+        }
     }
 
     private int registerToDAS() throws CommandException {
@@ -122,9 +145,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         String[] argsArray = new String[argsList.size()];
         argsArray = argsList.toArray(argsArray);
 
-        Environment currEnv = new Environment();
-        ProgramOptions po = new ProgramOptions(currEnv);
-        RemoteCommand rc = new RemoteCommand("create-instance", po, currEnv);
+        RemoteCommand rc = new RemoteCommand("create-instance", this.programOpts, this.env);
         return rc.execute(argsArray);
     }
 }

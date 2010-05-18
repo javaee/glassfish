@@ -83,6 +83,11 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true)
     private String instanceName0;
 
+    String DASHost;
+    int DASPort = -1;
+    String DASProtocol;
+    boolean dasIsSecure;
+
     public static final String K_DAS_HOST = "agent.das.host";
     public static final String K_DAS_PROTOCOL = "agent.das.protocol";
     public static final String K_DAS_PORT = "agent.das.port";
@@ -91,9 +96,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     public static final String K_MASTER_PASSWORD = "agent.masterpassword";
     public static final String K_SAVE_MASTER_PASSWORD = "agent.saveMasterPassword";
 
-    public static final String NODEAGENT_DEFAULT_PROTOCOL = "rmi_jrmp"; // what is this for 3.1?
-    public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "true";
-    public static final String NODEAGENT_DEFAULT_DAS_PORT = "4848";  // ??
+    public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "false";
+    public static final String NODEAGENT_DEFAULT_DAS_PORT = String.valueOf(CLIConstants.DEFAULT_ADMIN_PORT);
 
     private File agentConfigDir;
     private File applicationsDir;
@@ -129,6 +133,27 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         generatedDir = new File(instanceDir, "generated");
         libDir = new File(instanceDir, "lib");
         docrootDir = new File(instanceDir, "docroot");
+
+        DASHost = programOpts.getHost();
+        DASPort = programOpts.getPort();
+        dasIsSecure = programOpts.isSecure();
+
+        //ProgramOptions should takes care of default values?
+        if (!ok(DASHost)) {
+             try {
+                DASHost = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException ex) {
+                logger.getLogger().warning(strings.get("Instance.unknownHost"));
+                logger.getLogger().warning(ex.getLocalizedMessage());
+                DASHost = CLIConstants.DEFAULT_HOSTNAME;
+            }
+        }
+        
+        if (DASPort == -1) {
+            DASPort = dasIsSecure ? 4849 : 4848;
+        }
+        DASProtocol = dasIsSecure ? "https" : "http";
+
     }
 
     /**
@@ -192,32 +217,12 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             dasPropsFile.createNewFile();
         }
 
-        String DASHost = (String)this.getOption(ProgramOptions.HOST);
-        String DASPort = (String)this.getOption(ProgramOptions.PORT);
-        String dasIsSecure = (String)this.getOption(ProgramOptions.SECURE);
-
         dasProperties = new Properties();
-        if (!ok(DASHost)) {
-            String hostName;
-             try {
-                hostName = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException ex) {
-                logger.getLogger().warning(strings.get("Instance.unknownHost"));
-                logger.getLogger().warning(ex.getLocalizedMessage());
-                hostName = "localhost";
-            }
-            DASHost = hostName;
-        }
-        if (!ok(DASPort)) {
-            DASPort = NODEAGENT_DEFAULT_DAS_PORT;
-        }
-        if (!ok(dasIsSecure)) {
-            dasIsSecure = NODEAGENT_DEFAULT_DAS_IS_SECURE;
-        }
+        
         dasProperties.setProperty(K_DAS_HOST, DASHost);
-        dasProperties.setProperty(K_DAS_PORT, DASPort);
-        dasProperties.setProperty(K_DAS_IS_SECURE, dasIsSecure);
-        dasProperties.setProperty(K_DAS_PROTOCOL, NODEAGENT_DEFAULT_PROTOCOL);
+        dasProperties.setProperty(K_DAS_PORT, String.valueOf(DASPort));
+        dasProperties.setProperty(K_DAS_IS_SECURE, String.valueOf(dasIsSecure));
+        dasProperties.setProperty(K_DAS_PROTOCOL, DASProtocol);
 
         FileOutputStream fos = new FileOutputStream(dasPropsFile);
         dasProperties.store(fos, strings.get("Instance.dasPropertyComment"));
