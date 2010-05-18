@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.config.types.Property;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -208,29 +209,22 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
                                                          List<Server> servers, Logger logger) throws CommandException {
         ArrayList<InstanceCommandExecutor> list = new ArrayList<InstanceCommandExecutor>();
         for(Server svr : servers) {
+            //TODO : As of now, the node-agent-ref is used to indicate host info for instance. This may change later
+            String host = svr.getNodeAgentRef();
+
             NetworkListener adminListener =
               domain.getConfigs().getConfigByName(svr.getConfigRef()).getNetworkConfig().getNetworkListener("admin-listener");
-            String host = svr.getNodeAgentRef();
-            /**
-             * TODO : Why no admin-listener for config pointed to by server instance?
-            int port = Integer.parserInt(adminListener.getPort());
-             */
-            // TODO : Remove all these checks and hardcoded stuff once CLI is ready
-            int port = Integer.parseInt("4848");
-            if("instance1".equals(svr.getName()))
-                port = Integer.parseInt("14848");
-            if("instance2".equals(svr.getName()))
-                port = Integer.parseInt("24848");
-            NetworkListener httpListener =
-                domain.getConfigs().getConfigByName(svr.getConfigRef()).getNetworkConfig().getNetworkListener("http-listener-1");
-            String portStr = svr.getPropertyValue("ASADMIN_LISTENER_PORT");
-            portStr = svr.getPropertyValue("JMS_PROVIDER_PORT");
-            portStr = svr.getPropertyValue("HTTP_SSL_LISTENER_PORT");
-            if(httpListener != null)
-                portStr = httpListener.getPort();
-            String adminListPort =  adminListener.getPort();
-            //TODO : Replace code till here once CLI is ready
-
+            String portStr = adminListener.getPort();
+            //int port = Integer.parseInt(portStr);
+            //TODO : The following piece of code is kludge - pending config API changes for tokens in MS2
+            int port = 4848;
+            List<SystemProperty> sprops = svr.getSystemProperty();
+            for(SystemProperty p : sprops) {
+                if("ASADMIN_LISTENER_PORT".equals(p.getName())) {
+                    port = Integer.parseInt(p.getValue());
+                    break;
+                }
+            }
             list.add(new InstanceCommandExecutor(commandName, svr, host, port, logger));
         }
         return list;
