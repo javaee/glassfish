@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,17 @@ public class JCDIServiceImpl implements JCDIService
 
     }
 
-    public JCDIInjectionContext injectEJBInstance(EjbDescriptor ejb, Object instance) {
+    public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejb, Object instance) {
+	return _createJCDIInjectionContext(ejb, instance);
+    }
+
+    public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejb) {
+	return _createJCDIInjectionContext(ejb, null);
+    }
+
+    // instance could be null. If null, create a new one
+    private JCDIInjectionContext _createJCDIInjectionContext(EjbDescriptor ejb, 
+							     Object instance) {
 
         BundleDescriptor topLevelBundleDesc = (BundleDescriptor)
                 ejb.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
@@ -138,16 +148,30 @@ public class JCDIServiceImpl implements JCDIService
         InjectionTarget it = weldManager.createInjectionTarget(ejbDesc);
 
         // Per instance required, create the creational context
-        CreationalContext<?> cc = weldManager.createCreationalContext(bean);
+        CreationalContext<?> cc = weldManager.createCreationalContext(bean);   
+	
+	Object beanInstance = instance;
 
-        // Perform injection and call initializers
-        it.inject(instance, cc);
+	if( beanInstance == null ) {
+	    // Create instance , perform constructor injection.
+	    beanInstance = it.produce(cc);
+	} 
 
-        // NOTE : PostConstruct is handled by ejb container
+	// Injection is not performed yet. Separate injectEJBInstance() call is required.
 
+        return new JCDIInjectionContextImpl(it, cc, beanInstance);
 
-        return new JCDIInjectionContextImpl(it, cc, instance);
+    }
 
+    public void injectEJBInstance(JCDIInjectionContext injectionCtx) {
+	
+	JCDIInjectionContextImpl injectionCtxImpl = 
+	    (JCDIInjectionContextImpl) injectionCtx;
+
+	// Perform injection and call initializers
+	injectionCtxImpl.it.inject(injectionCtxImpl.instance, injectionCtxImpl.cc);
+
+	// NOTE : PostConstruct is handled by ejb container
     }
 
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle) {
@@ -189,9 +213,9 @@ public class JCDIServiceImpl implements JCDIService
 
     private class JCDIInjectionContextImpl implements JCDIInjectionContext {
 
-        private InjectionTarget it;
-        private CreationalContext cc;
-        private Object instance;
+        InjectionTarget it;
+        CreationalContext cc;
+        Object instance;
 
         JCDIInjectionContextImpl(InjectionTarget it, CreationalContext cc, Object i) {
             this.it = it;

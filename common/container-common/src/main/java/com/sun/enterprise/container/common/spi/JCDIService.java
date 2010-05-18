@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,10 @@ public interface JCDIService {
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle,
                                                     boolean invokePostConstruct);
 
-    public JCDIInjectionContext injectEJBInstance(EjbDescriptor ejb, Object instance);
+    public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejbDesc);
+    public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejbDesc, Object instance);
+
+    public void injectEJBInstance(JCDIInjectionContext injectionCtx);
 
     public interface JCDIInjectionContext {
         public Object getInstance();

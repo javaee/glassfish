@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -449,6 +449,9 @@ public class StatelessSessionContainer
         }
     }
 
+    protected EJBContextImpl _constructEJBContextImpl(Object instance) {
+	return new SessionContextImpl(instance, this);
+    }
 
     /**
     * called when an invocation arrives and there are no instances
@@ -462,12 +465,11 @@ public class StatelessSessionContainer
         SessionContextImpl context;
 
         try {
-            // create new stateless EJB
-            Object ejb = ejbClass.newInstance();
 
-            // create SessionContext and set it in the EJB
-            context = new SessionContextImpl(ejb, this);
-            
+	    context = (SessionContextImpl) createEjbInstanceAndContext();
+	    
+            Object ejb = context.getEJB();
+
             // this allows JNDI lookups from setSessionContext, ejbCreate
             ejbInv = super.createEjbInvocation(ejb, context);
             invocationManager.preInvoke(ejbInv);
@@ -483,7 +485,7 @@ public class StatelessSessionContainer
             // would be called.  This is important since injection methods
             // have the same "operations allowed" permissions as
             // setSessionContext.
-            injectEjbInstance(ejb, context);
+            injectEjbInstance(context);
 
             if ( isRemote ) {
 
