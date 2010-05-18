@@ -213,6 +213,7 @@
                 <module>verifier/verifier-scripts</module>
                 <module>verifier/verifier-jdk-extension-bundle</module>
                 <module>osgi-javaee</module>
+                <module>ant-tasks</module>
             </modules>
             <build>
                 <plugins>
@@ -357,6 +358,7 @@
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
                 <module>osgi-javaee</module>
+		<module>ant-tasks</module>
             </modules>
        </profile>
 
@@ -408,6 +410,7 @@
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
                 <module>osgi-javaee</module>
+                <module>>ant-tasks</module>
             </modules>
         </profile>
     </profiles>
