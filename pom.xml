@@ -495,7 +495,7 @@
                 <plugin>
                     <groupId>org.jvnet.updatecenter2</groupId>
                     <artifactId>maven-makepkgs-plugin</artifactId>
-                    <version>0.3</version>
+                    <version>0.5.1</version>
                 </plugin>
 
 
