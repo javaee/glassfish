@@ -70,7 +70,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     @Inject
     private Configs configs;
     @Param(optional=true, defaultValue="2000")
-    int timeoutInMsec;
+    String timeoutInMsecString;
 
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
     final private static LocalStringsImpl strings = new LocalStringsImpl(ListInstancesCommand.class);
@@ -83,6 +83,15 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     @Override
     public void execute(AdminCommandContext context) {
         // setup
+        int timeoutInMsec;
+
+        try {
+            timeoutInMsec = Integer.parseInt(timeoutInMsecString);
+        }
+        catch(Exception e) {
+            timeoutInMsec = 2000;
+        }
+        
         ActionReport report = context.getActionReport();
         Logger logger = context.getLogger();
         List<Server> serverList = servers.getServer();
