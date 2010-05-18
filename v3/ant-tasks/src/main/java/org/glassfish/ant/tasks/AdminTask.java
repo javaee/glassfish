@@ -120,8 +120,8 @@ public class AdminTask extends Task {
             return;
         }
         try {
-            Process pr = Runtime.getRuntime().exec(installDirectory +
-                    File.separator + "bin" + File.separator + "asadmin " + commandExec);
+            File asadmin = getAsAdmin(f);
+            Process pr = Runtime.getRuntime().exec(asadmin.getAbsolutePath() + " " + commandExec);
 
             BufferedReader error = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
             String errorLine=null;
@@ -146,5 +146,16 @@ public class AdminTask extends Task {
 
     void optionIgnored(String option) {
         log("Option Ignored : " + option);
+    }
+
+    private File getAsAdmin(File installDir) {
+        String osName = System.getProperty("os.name");
+        File binDir = new File(installDir, "bin");
+        if (osName.indexOf("Windows") == -1) {
+            return new File(binDir, "asadmin");
+        } else {
+            return new File(binDir, "asadmin.bat");
+        }
+
     }
 }
