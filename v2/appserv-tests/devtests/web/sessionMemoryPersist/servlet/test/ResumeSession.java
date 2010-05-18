@@ -61,7 +61,7 @@ public class ResumeSession extends HttpServlet {
         if (passed) {
             res.getWriter().print("Test passed!");
         } else {
-            res.getWriter().print("Test failed!");
+            res.getWriter().print("Test failed! Session = "+session+" name1 = "+map.get("name1")+" name2 "+map.get("name2"));
         }
     }
 }

@@ -28,7 +28,7 @@
 <!-- Setup and Restart the server instance-->
 <target name="restart-server-instance-common">
     <antcall target="stopDomain"/>
-    <sleep seconds="15" />
+    <sleep seconds="5" />
     <antcall target="startDomain"/>
 </target>
 

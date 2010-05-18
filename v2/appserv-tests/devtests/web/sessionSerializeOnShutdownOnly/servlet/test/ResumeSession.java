@@ -53,7 +53,7 @@ public class ResumeSession extends HttpServlet {
         if ("value1".equals(map.get("name1")) && "value2".equals(map.get("name2"))) {
             res.getWriter().print("Found map");
         } else {
-            res.getWriter().print("No map found");
+            res.getWriter().print("No map found. Session = "+session+" name1 = "+map.get("name1")+" name2 = "+map.get("name2"));
         }
     }
 }
