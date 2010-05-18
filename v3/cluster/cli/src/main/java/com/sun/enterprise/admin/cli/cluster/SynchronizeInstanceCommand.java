@@ -196,7 +196,7 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
         for (File f : configDir.listFiles()) {
             if (!f.isDirectory())
                 continue;
-            getFileModTimes(configDir, f, sr, SyncLevel.DIRECTORY);
+            getFileModTimes(f, configDir, sr, SyncLevel.DIRECTORY);
         }
         synchronizeFiles(sr);
 

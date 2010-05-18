@@ -382,13 +382,8 @@ logger.setLevel(Level.FINEST);
         if (applications == null)
             return apps;        // no apps
 
-        Cluster cluster = server.getCluster();
-        List<ApplicationRef> appRefs;
-        if (cluster != null)
-            appRefs = cluster.getApplicationRef();
-        else
-            appRefs = server.getApplicationRef();
-        for (ApplicationRef ref : appRefs)
+        // all apps are under <server>, even in a cluster
+        for (ApplicationRef ref : server.getApplicationRef())
             apps.put(ref.getRef(), applications.getApplication(ref.getRef()));
         return apps;
     }
@@ -490,7 +485,7 @@ logger.setLevel(Level.FINEST);
                                     throws URISyntaxException {
         synchronizeDirectory(context, server, sr,
                                 new File(env.getDomainRoot(), "docroot"),
-                                SyncLevel.TOP);
+                                SyncLevel.DIRECTORY);
     }
 
     /**
