@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -94,6 +94,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.servlet.http.HttpServletResponse;
 
+import org.glassfish.web.util.HtmlEntityEncoder;
 import org.jvnet.hk2.component.Habitat;
 import org.w3c.dom.*;
 import org.w3c.dom.Node;
@@ -142,7 +143,7 @@ public class WsUtil {
 
     private Config config = null;
     private Habitat habitat = null;
-
+    private HtmlEntityEncoder htmlEntityEncoder = new HtmlEntityEncoder();
     private List<NetworkListener> networkListeners = null;
 
     public WsUtil() {
@@ -1407,13 +1408,13 @@ public class WsUtil {
         out.println("Invalid Method Type");
         out.println("</title></head>");
         out.println("<body>");
-        out.println(message);
+        out.println(htmlEntityEncoder.encode(message));
         out.println("</body>");
         out.println("</html>");
         
     }
 
-    private void writeNotFoundErrorPage(HttpServletResponse response, 
+    private void writeNotFoundErrorPage(HttpServletResponse response,
                                         String message) throws IOException {
 
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -1424,7 +1425,7 @@ public class WsUtil {
         out.println("J2EE Web Services");       
         out.println("</title></head>");
         out.println("<body>");
-        out.println("<h1>404 Not Found: " + message + "</h1>");       
+        out.println("<h1>404 Not Found: " + htmlEntityEncoder.encode(message) + "</h1>");
         out.println("</body>");
         out.println("</html>");
 
