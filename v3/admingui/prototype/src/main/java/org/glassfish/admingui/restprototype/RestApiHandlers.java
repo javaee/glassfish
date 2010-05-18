@@ -44,17 +44,20 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.V3AMX;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author jasonlee
@@ -74,31 +77,8 @@ public class RestApiHandlers {
                     (String) handlerCtx.getInputValue("childType"));
             Map<String, String> orig = (Map) handlerCtx.getInputValue("orig");
 
-            Map<String, String> defaultValues = new HashMap<String, String>();
+            Map<String, String> defaultValues = buildDefaultValueMap(endpoint);
 
-            String options = options(endpoint, "application/xml");
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(new ByteArrayInputStream(options.getBytes()));
-            Element root = doc.getDocumentElement();
-            NodeList nl = root.getElementsByTagName("Message-Parameters");
-            if (nl.getLength() > 0) {
-                NodeList params = nl.item(0).getChildNodes();
-                Node child;
-                for (int i = 0; i < params.getLength(); i++) {
-                    child = params.item(i);
-                    if (child.getNodeType() == Node.ELEMENT_NODE) {
-                        String defaultValue = ((Element) child).getAttribute("Default-Value");
-                        if (!"".equals(defaultValue) && (defaultValue != null)) { // null test necessary?
-                            String nodeName = child.getNodeName();
-                            nodeName = nodeName.substring(0, 1).toUpperCase() + nodeName.substring(1);
-                            defaultValues.put(child.getNodeName(), defaultValue);
-                        }
-                    }
-                }
-            }
-
-            System.out.println(defaultValues);
             if (orig == null) {
                 handlerCtx.setOutputValue("valueMap", defaultValues);
             } else {
@@ -116,8 +96,102 @@ public class RestApiHandlers {
         }
     }
 
-    // This method may be a really bad idea. :P
+    protected static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
+        Map<String, String> defaultValues = new HashMap<String, String>();
 
+        String options = options(endpoint, "application/xml");
+        System.out.println(options);
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(new ByteArrayInputStream(options.getBytes()));
+        Element root = doc.getDocumentElement();
+        NodeList nl = root.getElementsByTagName("Message-Parameters");
+        if (nl.getLength() > 0) {
+            NodeList params = nl.item(0).getChildNodes();
+            Node child;
+            for (int i = 0; i < params.getLength(); i++) {
+                child = params.item(i);
+                if (child.getNodeType() == Node.ELEMENT_NODE) {
+                    String defaultValue = ((Element) child).getAttribute("defaultValue");
+                    if (!"".equals(defaultValue) && (defaultValue != null)) { // null test necessary?
+                        String nodeName = child.getNodeName();
+                        nodeName = nodeName.substring(0, 1).toUpperCase() + nodeName.substring(1);
+                        defaultValues.put(nodeName, defaultValue);
+                    }
+                }
+            }
+        }
+        return defaultValues;
+    }
+
+    @Handler(id = "createProxy",
+            input = {
+                    @HandlerInput(name = "parentObjectNameStr", type = String.class, required = true),
+                    @HandlerInput(name = "childType", type = String.class, required = true),
+                    @HandlerInput(name = "attrs", type = Map.class),
+                    @HandlerInput(name = "skipAttrs", type = List.class),
+                    @HandlerInput(name = "onlyUseAttrs", type = List.class),
+                    @HandlerInput(name = "convertToFalse", type = List.class)},
+            output = {
+                    @HandlerOutput(name = "result", type = String.class)})
+    public static void createProxy(HandlerContext handlerCtx) {
+        Map<String, String> attrs = (Map) handlerCtx.getInputValue("attrs");
+        if (attrs == null) {
+            attrs = new HashMap<String, String>();
+        }
+        String endpoint = getRestEndPoint((String) handlerCtx.getInputValue("parentObjectNameStr"),
+                (String) handlerCtx.getInputValue("childType"));
+        List<String> skipAttrs = (List) handlerCtx.getInputValue("skipAttrs");
+        List<String> onlyUseAttrs = (List) handlerCtx.getInputValue("onlyUseAttrs");
+
+        int status = sendCreateRequest(endpoint, attrs, skipAttrs, onlyUseAttrs);
+        if (status != 201) {
+            GuiUtil.getLogger().severe("CreateProxy failed.  parent=" + endpoint + "; attrs =" + attrs);
+            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
+            return;
+        }
+        handlerCtx.setOutputValue("result", endpoint);
+
+    }
+
+    protected static int sendCreateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs) {
+        //Should specify either skipAttrs or onlyUseAttrs
+//        V3AMX.removeSpecifiedAttr(attrs, skipAttrs);
+
+        if (onlyUseAttrs != null) {
+            Map newAttrs = new HashMap();
+            for (String key : onlyUseAttrs) {
+                if (attrs.keySet().contains(key)) {
+                    newAttrs.put(key, attrs.get(key));
+                }
+            }
+            attrs = newAttrs;
+        }
+
+//        V3AMX.removeElement(attrs);
+
+        /* If user doesn't fill in anything, we need to remove it, otherwise, it is written out as "" in domain.xml and
+        * user will not be able to get the default value.
+        * Another reason is for attributes that is optional but is an enum, eg  transactionIsolationLevel in jdbc connection
+        * pool, (read-uncommitted|read-committed|repeatable-read|serializable)  pass in "" will result in constraints
+        * violation.
+        */
+        Set<Map.Entry<String, String>> attrSet = attrs.entrySet();
+        Iterator<Map.Entry<String, String>> iter = attrSet.iterator();
+        while (iter.hasNext()) {
+            Map.Entry<String, String> oneEntry = iter.next();
+            Object val = oneEntry.getValue();
+            if ((val != null) && (val instanceof String) && (val.equals(""))) {
+                iter.remove();
+            }
+        }
+
+        attrs = fixKeyNames(attrs);
+        
+        return  post(endpoint, attrs, "text/html");
+    }
+
+    // This method may be a really bad idea. :P
     protected static String getRestEndPoint(String parent, String child) {
         String endpoint = parent;
 
@@ -137,11 +211,26 @@ public class RestApiHandlers {
         return "http://localhost:4848/management" + endpoint;
     }
 
+    protected static Map<String, String> fixKeyNames(Map<String, String> map) {
+        Map<String, String> results = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String key = entry.getKey().substring(0, 1).toLowerCase() + entry.getKey().substring(1);
+            String value = entry.getValue();
+            results.put(key, value);
+        }
+
+        return results;
+    }
+
+    //******************************************************************************************************************
+    // Jersey client methods
+    //******************************************************************************************************************
+
     protected static String get(String address, String responseType) {
         return Client.create().resource(address).accept(responseType).get(String.class);
     }
 
-    protected static String post(String address, Map<String, String> payload, String responseType) {
+    protected static int post(String address, Map<String, String> payload, String responseType) {
         WebResource webResource = Client.create().resource(address);
 
         MultivaluedMap formData = new MultivaluedMapImpl();
@@ -151,7 +240,7 @@ public class RestApiHandlers {
         ClientResponse cr = webResource.type("application/x-www-form-urlencoded")
                 .accept(responseType)
                 .post(ClientResponse.class, formData);
-        return cr.toString();
+        return cr.getStatus();
     }
 
     protected static String put(String address) {
