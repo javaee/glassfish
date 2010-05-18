@@ -212,7 +212,7 @@ public class ConfigSupport {
      * @return the transaction object for that view or null if not transaction is in progress
      */
     public <T extends ConfigBeanProxy> Transaction getTransaction(final T source) {
-        ConfigView sourceBean = (ConfigBean) Proxy.getInvocationHandler(source);
+        Object sourceBean = Proxy.getInvocationHandler(source);
         if (sourceBean instanceof WriteableView) {
             return ((WriteableView) sourceBean).getTransaction();
         }
