@@ -69,6 +69,11 @@ public final class InstanceDirs {
     public final ServerDirs getServerDirs() {
         return dirs;
     }
+
+    public final File getDasPropertiesFile() {
+        return dirs.getDasPropertiesFile();
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
     ///////////////////////////////////////////////////////////////////////////

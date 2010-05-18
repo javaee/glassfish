@@ -61,6 +61,7 @@ public class ServerDirs {
         valid = false;
         localPassword = null;
         localPasswordFile = null;
+        dasPropertiesFile = null;
     }
 
     public ServerDirs(File leaf) throws IOException {
@@ -106,6 +107,8 @@ public class ServerDirs {
             }
         }
 
+        // bnevins May 17 -- perhaps we should have a NodeAgentDirs ???
+        dasPropertiesFile = new File(parentDir, "agent/config/das.properties");
         valid = true;
     }
 
@@ -182,6 +185,11 @@ public class ServerDirs {
         return pidFile;
     }
 
+    public final File getDasPropertiesFile() {
+        return dasPropertiesFile;
+    }
+
+
     public String getLocalPassword() {
         return localPassword;
     }
@@ -202,6 +210,7 @@ public class ServerDirs {
     private final boolean valid;
     private final String localPassword;
     private final File localPasswordFile;
+    private final File dasPropertiesFile; // this only makes sense for instances...
     // Can be shared among classes in the package
     static final LocalStringsImpl strings = new LocalStringsImpl(ServerDirs.class);
     // root-dir/config/domain.xml
