@@ -100,8 +100,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
      */
     protected boolean synchronizeInstance() throws CommandException {
 
-        File dasProperties = new File(new File(new File(nodeAgentDir, "agent"),
-                                                "config"), "das.properties");
+        File dasProperties = getServerDirs().getDasPropertiesFile();
         logger.printDebugMessage("das.properties: " + dasProperties);
 
         if (!dasProperties.exists()) {

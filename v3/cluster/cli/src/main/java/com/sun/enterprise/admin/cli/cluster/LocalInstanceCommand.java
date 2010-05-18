@@ -67,7 +67,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File agentsDir;           // the parent dir of all node agents
     protected File nodeAgentDir;        // the specific node agent dir
     protected File instanceDir;         // the specific instance dir
-    protected File dasProperties;       // the das.properties file
     private InstanceDirs instanceDirs;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(LocalInstanceCommand.class);
@@ -129,7 +128,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         logger.printDebugMessage("nodeAgentDir: " + nodeAgentDir);
         logger.printDebugMessage("instanceDir: " + instanceDir);
-        logger.printDebugMessage("dasProperties: " + dasProperties);
     }
 
     protected final InstanceDirs getInstanceDirs() {
