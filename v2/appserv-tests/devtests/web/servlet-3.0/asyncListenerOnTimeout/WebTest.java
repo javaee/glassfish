@@ -84,7 +84,7 @@ public class WebTest {
        
         try {     
             URL url = new URL("http://" + host  + ":" + port +
-                contextRoot + "/TestServlet?" + mode);
+                contextRoot + "/AsyncListenerTimeoutServlet?" + mode);
             System.out.println("Connecting to: " + url.toString());
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

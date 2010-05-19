@@ -35,11 +35,16 @@
  */
 package test;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.io.IOException;
+import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class TestServlet extends HttpServlet implements AsyncListener {
+public class AsyncListenerTimeoutServlet extends HttpServlet implements AsyncListener {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {

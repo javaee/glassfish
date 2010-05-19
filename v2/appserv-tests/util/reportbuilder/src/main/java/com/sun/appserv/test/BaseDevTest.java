@@ -23,7 +23,7 @@ public abstract class BaseDevTest {
     public BaseDevTest() {
         if (DEBUG) {
             try {
-                writer = new PrintWriter(new FileWriter("test.out"), true);
+                writer = new PrintWriter(new FileWriter("test.out", true), true);
             } catch (IOException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
@@ -76,10 +76,10 @@ public abstract class BaseDevTest {
             }
             String outString = new String(out.toByteArray()).trim();
             String errString = new String(err.toByteArray()).trim();
-            process.waitFor();
-            success = process.exitValue() == 0 && !outString.contains(String.format("Command %s failed.", args[0]));
             write(outString);
             write(errString);
+            process.waitFor();
+            success = process.exitValue() == 0 && !outString.contains(String.format("Command %s failed.", args[0]));
         } catch (Exception e) {
             e.printStackTrace();
             success = false;
@@ -114,9 +114,10 @@ public abstract class BaseDevTest {
     }
 
     public void write(final String out) {
-        if (DEBUG) {
-            writer.println(out);
-            writer.flush();
+        if(DEBUG) {
+            System.out.println(out);
         }
+        writer.println(out);
+        writer.flush();
     }
 }
