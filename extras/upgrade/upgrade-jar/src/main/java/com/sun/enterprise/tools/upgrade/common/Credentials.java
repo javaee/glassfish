@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,6 +36,8 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
+import java.io.File;
+
 
 /**
  * Stores the master password and password file when used with
@@ -43,9 +45,8 @@ package com.sun.enterprise.tools.upgrade.common;
  */
 public interface Credentials {
 
-    public void setMasterPassword(String s);
-	public String getMasterPassword();
-	
+    public void setMasterPassword(char [] c);
+    public void setPasswordFile(File file);
 	public String getPasswordFile();
-	public void deletePasswordFile();
+
 }

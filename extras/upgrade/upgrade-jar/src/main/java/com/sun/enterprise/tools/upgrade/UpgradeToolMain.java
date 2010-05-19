@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -142,11 +142,7 @@ public class UpgradeToolMain {
     private void printArgs(ArrayList<ArgumentHandler> aList) {
         StringBuilder sb = new StringBuilder();
         for (ArgumentHandler tmpAh : aList) {
-            if (tmpAh instanceof ARG_m || tmpAh instanceof ARG_masterpassword) {
-                //- don't reveal passwords
-                sb.append("-" + tmpAh.getCmd() + " " +
-                    tmpAh.getRawParameter().replaceAll(".", "*"));
-            } else if (tmpAh instanceof ARG_c || tmpAh instanceof ARG_console ||
+            if (tmpAh instanceof ARG_c || tmpAh instanceof ARG_console ||
                 tmpAh instanceof ARG_h || tmpAh instanceof ARG_help ||
                 tmpAh instanceof ARG_V || tmpAh instanceof ARG_version) {
                 sb.append("-" + tmpAh.getCmd());
@@ -181,10 +177,6 @@ public class UpgradeToolMain {
                     "enterprise.tools.upgrade.generalException", he));
             }
 
-            //Delete temporary files (if any) created during the process
-            logger.log(Level.FINE, sm.getString(
-                "enterprise.tools.upgrade.deletingTempPasswordFiles"));
-            commonInfo.getSource().getDomainCredentials().deletePasswordFile();
         } catch (Exception e) {
             logger.log(Level.INFO, e.getMessage());
         }

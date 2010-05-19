@@ -1,41 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!--
- DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- 
- Copyright (c) 2009, 2010 Oracle and/or its affiliates, Inc. All rights reserved.
- 
- The contents of this file are subject to the terms of either the GNU
- General Public License Version 2 only ("GPL") or the Common Development
- and Distribution License("CDDL") (collectively, the "License").  You
- may not use this file except in compliance with the License. You can obtain
- a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
- language governing permissions and limitations under the License.
- 
- When distributing the software, include this License Header Notice in each
- file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- Oracle designates this particular file as subject to the "Classpath" exception
- as provided by Oracle in the GPL Version 2 section of the License file that
- accompanied this code.  If applicable, add the following below the License
- Header, with the fields enclosed by brackets [] replaced by your own
- identifying information: "Portions Copyrighted [year]
- [name of copyright owner]"
- 
- Contributor(s):
- 
- If you wish your version of this file to be governed by only the CDDL or
- only the GPL Version 2, indicate your decision by adding "[Contributor]
- elects to include this software in this distribution under the [CDDL or GPL
- Version 2] license."  If you don't indicate a single choice of license, a
- recipient has the option to distribute your version of this file under
- either the CDDL, the GPL Version 2 or to extend the choice of license to
- its licensees as provided above.  However, if you add GPL Version 2 code
- and therefore, elected the GPL Version 2 license, then the option applies
- only if the new code is made subject to such option by the copyright
- holder.
--->
-
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="0"/>
@@ -48,7 +12,6 @@
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,5,0,0,2,-59"/>
   </SyntheticProperties>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
@@ -71,7 +34,7 @@
                   <Group type="102" attributes="0">
                       <Component id="imagePanel" min="-2" pref="120" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="1"/>
-                      <Component id="mainPanel" pref="571" max="32767" attributes="0"/>
+                      <Component id="mainPanel" pref="613" max="32767" attributes="0"/>
                   </Group>
                   <Component id="buttonPanel" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -114,6 +77,8 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_AddingCodePre" type="java.lang.String" value="// custom &quot;Pre-Adding Code&quot;&#xa;mainPanel.add(dataCollectionPanel, Panels.DATA_COLLECTION_PANEL.name());&#xa;mainPanel.add(progressPanel, Panels.PROGRESS_PANEL.name());&#xa;"/>
       </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
     </Container>
     <Container class="javax.swing.JPanel" name="buttonPanel">
       <AuxValues>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,7 +36,6 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.common.arguments.ArgumentHandler;
@@ -144,19 +143,12 @@ public class InteractiveInputImpl implements DirectoryMover, InteractiveInput {
     }
 	
     private void masterPasswordPrompt() {
-        ArgumentHandler tmpA = inputMap.get(CLIConstants.MASTERPASSWORD_SHORT);
-        if (tmpA == null) {
-            tmpA = inputMap.get(CLIConstants.MASTERPASSWORD);
+        char[] passwordChars = console.readPassword(
+            sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
+        if (passwordChars.length > 0) {
+            commonInfoModel.getSource().getDomainCredentials().setMasterPassword(
+                passwordChars);
         }
-        if (tmpA == null) {
-            char [] passwordChars = console.readPassword(
-                sm.getString("enterprise.tools.upgrade.cli.MasterPW_input"));
-            tmpA = new ARG_masterpassword();
-            tmpA.setRawParameters(new String(passwordChars));
-            Arrays.fill(passwordChars, ' ');
-            inputMap.put(CLIConstants.MASTERPASSWORD, tmpA);
-        }
-        tmpA.exec();
     }
 
     /**

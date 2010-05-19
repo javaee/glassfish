@@ -88,9 +88,9 @@ public class Commands {
         cb.add(asadminScript + ext);
         cb.add("start-domain");
 
-        String masterPassword = c.getMasterPassword();
-        if (masterPassword != null && masterPassword.length() > 0) {
-            cb.add("--passwordfile ");
+        String passwordFile = c.getPasswordFile();
+        if (passwordFile != null && !passwordFile.isEmpty()) {
+            cb.add("--passwordfile");
             cb.add(c.getPasswordFile());
         }
 
@@ -194,6 +194,8 @@ public class Commands {
      */
     private static class StreamWatcher extends Thread {
 
+        private static final Logger log = LogService.getLogger();
+        
         /*
          * This is the pattern to match lines that include
          * |SEVERE|
@@ -222,11 +224,13 @@ public class Commands {
                 if (line != null) {
                     matcher = pattern.matcher(line);
                     while (line != null) {
-                        logger.finer(getName() + ": " + line);
+                        if (log.isLoggable(Level.FINE)) {
+                            log.finer(getName() + ": " + line);
+                        }
                         matcher.reset(line);
                         if (matcher.matches()) {
-                            if (logger.isLoggable(Level.FINE)) {
-                                logger.fine(String.format(
+                            if (log.isLoggable(Level.FINE)) {
+                                log.fine(String.format(
                                     "Line in %s possible error: '%s'",
                                     getName(), line));
                             }
@@ -237,7 +241,7 @@ public class Commands {
                     }
                 }
             } catch (Throwable t) {
-                logger.log(Level.SEVERE,
+                log.log(Level.SEVERE,
                     stringManager.getString("commands.exceptionReadingStream"),
                     t);
             } finally {
@@ -245,7 +249,7 @@ public class Commands {
                     reader.close();
                 } catch (IOException ioe) {
                     // seriously?
-                    logger.log(Level.FINE,
+                    log.log(Level.FINE,
                         "Exception closing reader in StreamWatcher",
                         ioe);
                 }

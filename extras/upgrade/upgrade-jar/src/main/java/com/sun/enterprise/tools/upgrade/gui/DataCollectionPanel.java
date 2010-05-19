@@ -38,7 +38,6 @@ package com.sun.enterprise.tools.upgrade.gui;
 
 import com.sun.enterprise.tools.upgrade.common.Branding;
 import com.sun.enterprise.tools.upgrade.common.CommonInfoModel;
-import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.util.i18n.StringManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -114,12 +113,6 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         tempStr = commonInfoModel.getTarget().getInstallDir();
         if (tempStr != null) {
             targetTextField.setText(tempStr);
-        }
-
-        Credentials cred = commonInfoModel.getSource().getDomainCredentials();
-        String masPW = cred.getMasterPassword();
-        if (masPW != null) {
-            masterPWField.setText(cred.getMasterPassword());
         }
 
         // add listeners for source/target browse buttons
@@ -284,14 +277,8 @@ public class DataCollectionPanel extends javax.swing.JPanel {
         return targetTextField.getText();
     }
 
-    public String getMasterPassword() {
-        String retVal = null;
-        char [] pwd = masterPWField.getPassword();
-        if (pwd != null) {
-            retVal = new String(pwd);
-            Arrays.fill(pwd, ' ');
-        }
-        return retVal;
+    public char [] getMasterPassword() {
+        return masterPWField.getPassword();
     }
     /*** end getters ***/
 
