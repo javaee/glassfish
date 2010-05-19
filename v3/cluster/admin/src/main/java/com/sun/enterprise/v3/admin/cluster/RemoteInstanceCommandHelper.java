@@ -58,7 +58,6 @@ import java.util.*;
  * method call.
  *
  */
-
 final class RemoteInstanceCommandHelper {
     RemoteInstanceCommandHelper(ServerEnvironment env0, Servers servers0, Configs configs0) {
         env = env0;
@@ -115,33 +114,43 @@ final class RemoteInstanceCommandHelper {
     }
 
     final int getAdminPort(Server server) {
-        if(server == null)
+        String portString = getAdminPortString(server, getConfig(server));
+
+        if(portString == null)
             return -1; // get out quick.  it is kosher to call with a null Server
 
         try {
-            Config config = getConfig(server);
-
-            if(config != null) {
-                List<NetworkListener> listeners = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
-
-                for(NetworkListener listener : listeners) {
-                    if("admin-listener".equals(listener.getProtocol()))
-                        return Integer.parseInt(listener.getPort());
-                }
-            }
+            return Integer.parseInt(portString);
         }
-        catch (Exception e) {
-            // handled below...
+        catch(Exception e) {
+            // drop through...
         }
+        // we might have something like "${SOME_PORT}" as the value of the port
         return -1;
     }
-    
+
     ///////////////////////////////////////////////////////////////////////////
     //  All private below.  If you need something below in a derived class then
     // upgrade to pkg-private and move it above this line.  Change the keyword
     // private to final on the method
     ///////////////////////////////////////////////////////////////////////////
-    
+    private String getAdminPortString(Server server, Config config) {
+        if(server == null || config == null)
+            return null;
+
+        try {
+            List<NetworkListener> listeners = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
+
+            for(NetworkListener listener : listeners) {
+                if("admin-listener".equals(listener.getProtocol()))
+                    return translatePort(listener.getPort(), server, config);
+            }
+        }
+        catch(Exception e) {
+            // handled below...
+        }
+        return null;
+    }
 
     private Config getConfig(final Server server) {
         // multiple returns makes this short method more readable...
@@ -160,6 +169,52 @@ final class RemoteInstanceCommandHelper {
         return null;
     }
 
+    /**
+     * The way the automatic translation works is that system-property
+     * elements are used to resolve tokens.  But we are inside DAS.  We need to
+     * resolve relative to an instance.  The values are NOT in System.getProperty() !!
+     * There are potentially FOUR elements to check, in order of precedence high to low:
+     * 1. server for the instance
+     * 2. config for the instance
+     * 3. cluster for the instance
+     * 4. config for the cluster
+     * @return the port number or -1 if there is an error.
+     */
+    private String translatePort(String portString, Server server, Config config) {
+        if(!isToken(portString))
+            return portString;
+
+        // isToken returned true so we are NOT assuming anything below!
+        String key = portString.substring(2, portString.length() - 1);
+
+        // TODO TODO TODO
+        // TODO TODO TODO
+        // check cluster and the cluster's config if applicable
+        // TODO TODO TODO
+        // TODO TODO TODO
+        // TODO TODO TODO
+
+        SystemProperty prop = server.getSystemProperty(key);
+
+        if(prop != null) {
+            return prop.getValue();
+        }
+
+        prop = config.getSystemProperty(key);
+
+        if(prop != null) {
+            return prop.getValue();
+        }
+
+        return null;
+    }
+
+    private static boolean isToken(String s) {
+        return s != null
+                && s.startsWith("${")
+                && s.endsWith("}")
+                && s.length() > 3;
+    }
     final private ServerEnvironment env;
     final private List<Server> servers;
     final private List<Config> configs;
