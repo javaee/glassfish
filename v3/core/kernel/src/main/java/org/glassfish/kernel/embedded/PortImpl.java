@@ -56,11 +56,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigCode;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.*;
 
 /**
  * Abstract to port creation and destruction
@@ -86,21 +82,20 @@ public class PortImpl implements Port {
         number = portNumber;
         listenerName = getListenerName();
         try {
-            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-                public Object run(Protocols param) throws TransactionFailure {
-                    final Protocol protocol = param.createChild(Protocol.class);
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy... params) throws TransactionFailure, PropertyVetoException {
+
+                    Protocols protocols = (Protocols) params[0];
+                    final Protocol protocol = protocols.createChild(Protocol.class);
                     protocol.setName(listenerName);
-                    param.getProtocol().add(protocol);
+                    protocols.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
                     http.setDefaultVirtualServer(defaultVirtualServer);
                     protocol.setHttp(http);
-                    return protocol;
-                }
-            }, config.getProtocols());
-            ConfigSupport.apply(new ConfigCode() {
-                public Object run(ConfigBeanProxy... params) throws TransactionFailure {
-                    NetworkListeners listeners = (NetworkListeners) params[0];
-                    Transports transports = (Transports) params[1];
+
+
+                    NetworkListeners listeners = (NetworkListeners) params[1];
+                    Transports transports = (Transports) params[2];
                     final NetworkListener listener = listeners.createChild(NetworkListener.class);
                     listener.setName(listenerName);
                     listener.setPort(Integer.toString(portNumber));
@@ -118,16 +113,16 @@ public class PortImpl implements Port {
                         listener.setTransport(listenerName);
                     }
                     listeners.getNetworkListener().add(listener);
+
+                    VirtualServer readOnlyVS = httpService.getVirtualServerByName(defaultVirtualServer);
+                    ConfigSupport configSupport = new ConfigSupport();
+                    Transaction t = configSupport.getTransaction(protocols);
+                    VirtualServer vs = configSupport.enrollInTransaction(t, readOnlyVS);
+                    vs.addNetworkListener(listenerName);
+
                     return listener;
                 }
-            }, config.getNetworkListeners(), config.getTransports());
-            VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
-            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
-                public Object run(VirtualServer avs) throws PropertyVetoException {
-                    avs.addNetworkListener(listenerName);
-                    return avs;
-                }
-            }, vs);
+            }, config.getProtocols(), config.getNetworkListeners(), config.getTransports());
         } catch (Exception e) {
             e.printStackTrace();
         }
