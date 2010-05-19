@@ -426,7 +426,7 @@ Variables Used:
       level="verbose"/>
   <echo message="Operand ${operand.props}"  level="verbose"/>
   <echo message="asadmin ${admin.command} ${as.props} ${operand.props}"/>
-  <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}" failonerror="false"/>
+  <glassfish-embedded-admin commandLine="${admin.command} ${operand.props}"/>
 </target>
 
 
