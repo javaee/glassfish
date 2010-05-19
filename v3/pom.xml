@@ -410,7 +410,7 @@
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
                 <module>osgi-javaee</module>
-                <module>>ant-tasks</module>
+                <module>ant-tasks</module>
             </modules>
         </profile>
     </profiles>
