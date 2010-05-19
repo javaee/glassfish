@@ -5,12 +5,9 @@ skip() {
     echo Parsing ${FILE}
     cat ${FILE} | while read LINE
     do
-        if [ "${LINE:0:1}" != "#" ]
-        then
-            NAME=${LINE%% *}
-            echo excluding \"${NAME}\"
-            sed -i -e "s@<ant dir=\"${NAME}\" target=\"all\"/>@<!--&-->@" build.xml
-        fi
+        NAME=${LINE%% *}
+        echo excluding \"${NAME}\"
+        sed -i -e "s@<ant dir=\"${NAME}\" target=\"all\"/>@<!--&-->@" build.xml
     done
 }
 
