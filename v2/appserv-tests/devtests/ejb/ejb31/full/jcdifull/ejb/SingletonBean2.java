@@ -18,20 +18,25 @@ import org.jboss.weld.examples.translator.*;
 
 @Singleton
 @Startup
-public class SingletonBean implements SingletonRemote {
+public class SingletonBean2 {
+
+    private final Event<SomeEvent> someEvent;
 
     @Inject
-    private Event<SomeEvent> someEvent;
-    
+    public SingletonBean2(Event<SomeEvent> se) {
+	someEvent = se;
+	System.out.println("In SingletonBean2 someEvent = " + someEvent);
+	
+    }
+
     @Inject Foo foo;
 
     @EJB
 	private StatelessLocal statelessEE;
 
-    @Inject
-	private StatelessLocal2 sl2;
-
     @Inject private TranslatorController tc;
+
+    @Inject StatelessLocal2 sl2;
 
     @Resource(lookup="java:module/FooManagedBean")
     private FooManagedBean fmb;
@@ -43,37 +48,29 @@ public class SingletonBean implements SingletonRemote {
 
     @PostConstruct
     public void init() {
-        System.out.println("In SingletonBean::init()");
+        System.out.println("In SingletonBean2::init()");
 	if( beanManagerInject == null ) {
 	    throw new EJBException("BeanManager is null");
 	}
 	System.out.println("Bean manager inject = " + beanManagerInject);
 	testIMCreateDestroyMO();
 
-
 	System.out.println("Sending some event...");
 	someEvent.fire( new SomeEvent(2) );
     }
 
     public void hello() {
-	System.out.println("In SingletonBean::hello() " + foo);
+	System.out.println("In SingletonBean2::hello() " + foo);
 	statelessEE.hello();
-	sl2.hello();
 
 	fmb.hello();
 	
 	BeanManager beanMgr = (BeanManager)
 	    sesCtx.lookup("java:comp/BeanManager");
-
-
+	
 	System.out.println("Successfully retrieved bean manager " +
 			   beanMgr + " for JCDI enabled app");
-
-	/**
-	StatefulBean sb = (StatefulBean) sesCtx.lookup("java:module/StatefulBean");
-	System.out.println("In SingletonBean sb = " + sb);
-	sb.hello();
-	**/
+			   
 
     }
 

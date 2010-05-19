@@ -5,6 +5,7 @@ import javax.annotation.*;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.enterprise.event.Observes;
 
 @Stateless
 @LocalBean
@@ -15,6 +16,11 @@ public class StatelessBean implements StatelessLocal {
     @PostConstruct
 	public void init() {
 	System.out.println("In StatelessBean::init()");
+    }
+
+    public void processSomeEvent(@Observes SomeEvent event) {
+	System.out.println("In StatelessBean::processSomeEvent " +
+			   event);
     }
 
     public void hello() {

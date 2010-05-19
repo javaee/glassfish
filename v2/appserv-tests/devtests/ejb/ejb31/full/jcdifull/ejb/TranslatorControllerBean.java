@@ -9,7 +9,7 @@ import javax.inject.Named;
 @Stateful
 @RequestScoped
 @Named("translator")
-public class TranslatorControllerBean implements TranslatorController
+    public class TranslatorControllerBean implements TranslatorController , TranslatorController2 
 {
    
    @Inject
@@ -38,6 +38,8 @@ public class TranslatorControllerBean implements TranslatorController
    {
       return translatedText;
    }
+
+    public void foo() {}
    
    @Remove
    public void remove()
