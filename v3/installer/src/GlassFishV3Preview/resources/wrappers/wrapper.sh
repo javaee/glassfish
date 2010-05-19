@@ -73,25 +73,18 @@ locate_jar() {
     echo ""
 }
 
+flag_jdk_error() {
+ echo
+ echo "Could not locate a suitable Java runtime."
+ echo "Please ensure that you have Java 6 or newer installed on your system"
+ echo "and accessible in your PATH or by setting JAVA_HOME"
+ exit 105
+}
+
 ARGS=""
 export ARGS 
 _POSIX2_VERSION=199209
 export _POSIX2_VERSION
-
-#validate JAVA_HOME, leave full validation to OI.
-my_java=`locate_java`
-
-if [ -z "$my_java" ]; then
-    echo
-    echo "Could not locate a suitable Java runtime."
-    echo "Please ensure that you have Java 6 or newer installed on your system"
-    echo "and accessible in your PATH or by setting JAVA_HOME"
-    exit 105
-fi
-
-my_java_bin=`dirname $my_java`
-JAVA_HOME=`dirname $my_java_bin`
-export JAVA_HOME
 
 my_jar=`locate_jar`
 
@@ -173,9 +166,34 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Extracting archive, please wait..."
-tail +189l $0 > ${tmpdir_path}/tmp.jar
+tail +207l $0 > ${tmpdir_path}/tmp.jar
 cd ${tmpdir_path}
 $my_jar xvf tmp.jar 
+
+#validate JAVA_HOME, leave full validation to OI.
+my_java=`locate_java`
+
+#if a valid java could not be found check if one is bundled with this file.
+if [ -z "$my_java" ]; then
+    if [ -f ${tmpdir_path}/Product/Packages/jdk.zip ]
+    then
+	$my_jar xvf ${tmpdir_path}/Product/Packages/jdk.zip
+        #Check if the zip is okay, basic sanity, rest is handled by OI
+	if [ -f ${tmpdir_path}/jdk/bin/java ]
+        then
+		my_java=`echo ${tmpdir_path}/jdk/bin/java`
+		chmod -R ugo+x ${tmpdir_path}/jdk/bin
+	else
+		flag_jdk_error
+	fi
+    else
+		flag_jdk_error
+    fi
+fi
+
+my_java_bin=`dirname $my_java`
+JAVA_HOME=`dirname $my_java_bin`
+export JAVA_HOME
 $my_jar xvf ./Product/Packages/Engine.zip 
 $my_jar xvf ./Product/Packages/Resources.zip 
 $my_jar xvf ./Product/Packages/metadata.zip 
