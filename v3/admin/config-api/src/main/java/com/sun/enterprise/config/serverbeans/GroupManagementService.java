@@ -174,7 +174,7 @@ public interface GroupManagementService extends ConfigBeanProxy, Injectable, Pro
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="2000")
+    @Attribute (defaultValue="5000")
     @Min(value=1000)
     @Max(value=120000)    
     String getPingProtocolTimeoutInMillis();
