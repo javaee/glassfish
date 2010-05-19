@@ -1,4 +1,5 @@
 classPathManifestAttribute
 classPathManifestAttributePrecompile
-sessionWithCookiePersistenceType
+portUnification # skip until the next grizzly integration so GF code can be committed
 servlet-3.0/serveJspAndStaticResourceFromLocalJar
+sessionWithCookiePersistenceType

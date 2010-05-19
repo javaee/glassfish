@@ -356,6 +356,7 @@
         <ant dir="multiByteContextRootWithCookie" target="all"/>
         <ant dir="overrideImplicitMapping" target="all"/>
         <ant dir="pipelineQueueFull" target="all"/>
+        <ant dir="portUnification" target="all"/>
         <ant dir="reconfigDefaultWebModule" target="all"/>
         <ant dir="relativeRedirectAllowed" target="all"/>
         <ant dir="replaceRootContext" target="all"/>
