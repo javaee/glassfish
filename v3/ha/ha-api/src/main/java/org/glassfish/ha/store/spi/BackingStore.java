@@ -188,6 +188,8 @@ public abstract class BackingStore<K, V> {
      */
     public abstract void remove(K key) throws BackingStoreException;
 
+    public abstract void updateTimestamp(K key, long time) throws BackingStoreException;
+
     /**
      * Remove expired entries
      */
@@ -238,7 +240,10 @@ public abstract class BackingStore<K, V> {
         return (Collection) Collections.EMPTY_LIST;
     }
 
-    //public <T> Collection<T> findByCriteria(T t) {return (Collection<T>) Collections.EMPTY_LIST;}
+    public void close()
+        throws BackingStoreException {
+        
+    }
 
 
     /**
@@ -267,7 +272,11 @@ public abstract class BackingStore<K, V> {
 
     protected ObjectInputStream createObjectInputStream(InputStream is)
         throws IOException {
+        /*
         ObjectInputOutputStreamFactory oosf = ObjectInputOutputStreamFactoryRegistry.getObjectInputOutputStreamFactory();
         return oosf.createObjectInputStream(is, vClazz.getClassLoader());
+        */
+
+        return new ObjectInputStreamWithLoader(is, vClazz.getClassLoader());
     }
 }

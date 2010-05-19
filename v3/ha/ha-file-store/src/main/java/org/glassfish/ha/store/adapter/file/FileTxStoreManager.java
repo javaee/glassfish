@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
+ * 
  * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- *
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -10,7 +10,7 @@
  * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
  * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
  * Sun designates this particular file as subject to the "Classpath" exception
@@ -19,9 +19,9 @@
  * Header, with the fields enclosed by brackets [] replaced by your own
  * identifying information: "Portions Copyrighted [year]
  * [name of copyright owner]"
- *
+ * 
  * Contributor(s):
- *
+ * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -34,56 +34,75 @@
  * holder.
  */
 
-package org.glassfish.ha.store.impl;
+package org.glassfish.ha.store.adapter.file;
 
-import org.glassfish.ha.store.spi.BackingStore;
 import org.glassfish.ha.store.spi.BackingStoreException;
+import org.glassfish.ha.store.spi.BatchBackingStore;
 
-import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 
 /**
+ * A SFSBTxStoreManager that <b>CANNOT</b> save multiple SFSBBeanStates
+ * as a single transactional unit (Example file system).
+ * <p/>
+ * This implementation simply stores each BeanState separately by
+ * calling the appropriate StoreManager's checkpointSave method
+ *
  * @author Mahesh Kannan
  */
-public class NoOpBackingStore<K, V>
-    extends BackingStore<K, V> {
+public class FileTxStoreManager
+        implements BatchBackingStore
+{
 
-    @Override
-    protected void initialize(String storeName, Class<K> keyClazz, Class<V> vClazz, Properties props) {
-        super.initialize(storeName, keyClazz, vClazz, props);
+    private static final Level TRACE_LEVEL = Level.FINE;
+
+    protected static final Logger _logger =
+            Logger.getLogger(FileTxStoreManager.class.getName());
+
+    private ConcurrentLinkedQueue<StorableHolder> batchedData =
+            new ConcurrentLinkedQueue<StorableHolder>();
+
+    public FileTxStoreManager() {
     }
 
     @Override
-    public V load(K key, String version) throws BackingStoreException {
-        return null;
+    public void saveAll(Object... data) throws BackingStoreException {
+        throw new BackingStoreException("saveAll(Object... args) not supported...",
+                new UnsupportedOperationException("saveAll(Object... args) not supported..."));
     }
 
     @Override
-    public void save(K key, V value, boolean isNew) throws BackingStoreException {
-
+    public void save(String storeName, Object key, Object entry, boolean isNew) {
+        StorableHolder sh = new StorableHolder(storeName, key, isNew, entry);
+        batchedData.add(sh);
     }
 
     @Override
-    public void remove(K key) throws BackingStoreException {
-
+    public void commit()
+        throws BackingStoreException {
+        for (StorableHolder storable : batchedData) {
+            SimpleFileBackingStore fs = FileBackingStoreFactory.getFileBackingStore(storable.storeName);
+            if (fs != null) {
+                fs.save(storable.key, storable.entry, storable.isNew);
+            }
+        }
     }
 
-    @Override
-    public void updateTimestamp(K key, long time) throws BackingStoreException {
-        
+    private static class StorableHolder {
+        String storeName;
+        Object key;
+        boolean isNew;
+        Object entry;
+
+        StorableHolder(String storeName, Object key, boolean isNew, Object entry) {
+            this.storeName = storeName;
+            this.key = key;
+            this.isNew = isNew;
+            this.entry = entry;
+        }
     }
 
-    @Override
-    public int removeExpired(long idleForMillis) throws BackingStoreException {
-        return 0;
-    }
-
-    @Override
-    public int size() throws BackingStoreException {
-        return 0;
-    }
-
-    @Override
-    public void destroy() throws BackingStoreException {
-        
-    }
 }

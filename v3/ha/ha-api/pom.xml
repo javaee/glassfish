@@ -91,6 +91,14 @@
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
+
+        <!-- Temporary dependency till we fix the OSGi input/output streams -->
+	<!--
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>glassfish-naming</artifactId>
+        </dependency>
+        -->
           <dependency>
             <groupId>sun.jdk</groupId>
             <artifactId>tools</artifactId>
