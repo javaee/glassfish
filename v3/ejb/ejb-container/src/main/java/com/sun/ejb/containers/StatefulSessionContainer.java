@@ -559,6 +559,17 @@ public final class StatefulSessionContainer
         }
     }
 
+   @Override
+   protected EJBContextImpl _constructEJBContextImpl(Object instance) {
+	return new SessionContextImpl(instance, this);
+    }
+
+    @Override
+    protected Object _constructEJBInstance() throws Exception {
+	return  (sfsbSerializedClass != null) ?
+	    sfsbSerializedClass.newInstance() : ejbClass.newInstance();
+    }
+
     /**
      * Create a new Session Bean and set Session Context.
      */
@@ -566,12 +577,11 @@ public final class StatefulSessionContainer
             throws Exception {
         EjbInvocation ejbInv = null;
         try {
-            // create new (stateful) EJB
-            Object ejb = (sfsbSerializedClass != null) ?
-                    sfsbSerializedClass.newInstance() : ejbClass.newInstance();
 
-            // create SessionContext and set it in the EJB
-            SessionContextImpl context = new SessionContextImpl(ejb, this);
+	    SessionContextImpl context = (SessionContextImpl) 
+		createEjbInstanceAndContext();
+
+            Object ejb = context.getEJB();
 
             Object sessionKey = uuidGenerator.createSessionKey();
             createExtendedEMs(context, sessionKey);
@@ -593,7 +603,7 @@ public final class StatefulSessionContainer
             // would be called.  This is important since injection methods
             // have the same "operations allowed" permissions as
             // setSessionContext.
-            injectEjbInstance(ejb, context);
+            injectEjbInstance(context);
             
             // Set the timestamp before inserting into bean store, else
             // Recycler might go crazy and remove this bean!

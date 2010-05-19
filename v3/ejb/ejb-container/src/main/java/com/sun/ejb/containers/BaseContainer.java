@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.ejb.containers;
 
 import com.sun.ejb.*;
@@ -1589,7 +1588,59 @@ public abstract class BaseContainer
         return javaGlobalPrefix.toString();
     }
 
-    protected void injectEjbInstance(Object instance, EJBContextImpl context) throws Exception {
+    protected EJBContextImpl createEjbInstanceAndContext() throws Exception {
+
+	Habitat h = ejbContainerUtilImpl.getDefaultHabitat();
+
+        JCDIService jcdiService = h.getByContract(JCDIService.class);
+
+        EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
+
+	Object instance = null;
+	JCDIService.JCDIInjectionContext jcdiCtx = null;
+
+        if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
+
+	   
+	    Constructor[] ctors = ejbClass.getConstructors();
+	    boolean hasCtorWithArgs = false;
+	    for(Constructor ctor : ctors) {
+		if( ctor.getParameterTypes().length > 0 ) {
+		    hasCtorWithArgs = true;
+		    break;
+		}
+	    }
+
+	    // If constructor injection is being used, let CDI create the instance. 
+	    // Either way, instance will be part of JCDI injection context.
+	    jcdiCtx = hasCtorWithArgs ? 
+		jcdiService.createJCDIInjectionContext(ejbDescriptor) :
+		jcdiService.createJCDIInjectionContext(ejbDescriptor, _constructEJBInstance());
+
+	    instance = jcdiCtx.getInstance();
+
+	} else {
+	    instance = _constructEJBInstance();
+	}
+
+	EJBContextImpl contextImpl = _constructEJBContextImpl(instance);
+	if( jcdiCtx != null ) {
+	    contextImpl.setJCDIInjectionContext(jcdiCtx);
+	}
+	
+	return contextImpl;
+    }
+
+    protected EJBContextImpl _constructEJBContextImpl(Object instance) {
+	// Overridden for any container that supports injection
+	throw new IllegalStateException();
+    }
+
+    protected Object _constructEJBInstance() throws Exception {
+	return ejbClass.newInstance();
+    }
+
+    protected void injectEjbInstance(EJBContextImpl context) throws Exception {
         
         Habitat h = ejbContainerUtilImpl.getDefaultHabitat();
 
@@ -1601,10 +1652,7 @@ public abstract class BaseContainer
 
         if( (jcdiService != null) && jcdiService.isJCDIEnabled(ejbBundle)) {
 
-            JCDIService.JCDIInjectionContext jcdiCtx =
-                    jcdiService.injectEJBInstance(ejbDescriptor, instance);
-
-            context.setJCDIInjectionContext(jcdiCtx);
+	    jcdiService.injectEJBInstance(context.getJCDIInjectionContext());
 
             Class[] interceptorClasses = interceptorManager.getInterceptorClasses();
 
@@ -1620,7 +1668,7 @@ public abstract class BaseContainer
             interceptorManager.initializeInterceptorInstances(interceptorInstances);
 
         } else {
-            injectionManager.injectInstance(instance, ejbDescriptor, false);
+            injectionManager.injectInstance(context.getEJB(), ejbDescriptor, false);
 
             interceptorInstances = interceptorManager.createInterceptorInstances();
 
@@ -1760,9 +1808,9 @@ public abstract class BaseContainer
     /**
      * Called from EJBObject/EJBHome before invoking on EJB.
      * Set the EJB instance in the EjbInvocation.
-     * 
+     *
      * It must be ensured that the following general pattern
-     *  is followed by various parts of the EJBContainer code:
+     * is followed by various parts of the EJBContainer code:
      *
      * try {
      *      container.preInvoke(inv);

@@ -33,7 +33,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.ejb.containers;
 
 import com.sun.ejb.ComponentContext;
@@ -456,6 +455,11 @@ public abstract class AbstractSingletonContainer
 
         return singletonCtx;
     }
+
+    @Override
+    protected EJBContextImpl _constructEJBContextImpl(Object instance) {
+	return new SingletonContextImpl(instance, this);
+    }
     
     private SingletonContextImpl createSingletonEJB()
         throws CreateException
@@ -469,22 +473,20 @@ public abstract class AbstractSingletonContainer
         boolean initGotToPreInvokeTx = false;
 
         try {
-            // create new Singleton EJB
-            Object ejb = ejbClass.newInstance();
 
-            // create SessionContext and set it in the EJB
-            context = new SingletonContextImpl(ejb, this);
+            context = (SingletonContextImpl) createEjbInstanceAndContext();
+
+            Object ejb = context.getEJB();
             
             // this allows JNDI lookups from setSessionContext, ejbCreate
             ejbInv = createEjbInvocation(ejb, context);
             invocationManager.preInvoke(ejbInv);
 
-
             // Perform injection right after where setSessionContext
             // would be called.  This is important since injection methods
             // have the same "operations allowed" permissions as
             // setSessionContext.
-            injectEjbInstance(ejb, context);
+            injectEjbInstance(context);
 
             if ( isRemote ) {
 

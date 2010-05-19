@@ -40,6 +40,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import java.lang.reflect.Constructor;
 
 import java.io.Serializable;
 
@@ -108,15 +109,38 @@ public class AsmSerializableBeanGenerator
                 Type.getType(baseClass).getInternalName(), interfaces);
 
 
+	// Generate constructor. The EJB spec only allows no-arg constructors, but
+	// JSR 299 added requirements that allow a single constructor to define
+	// parameters injected by CDI.
+	
+	Constructor[] ctors = baseClass.getConstructors();
+	Constructor ctorWithParams = null;
+	for(Constructor ctor : ctors) {
+	    if( ctor.getParameterTypes().length > 0 ) {
+		ctorWithParams = ctor;
+		break;
+	    }
+	}
 
-        Method m = Method.getMethod("void <init> ()");
-        GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC, m, null, null, tv);
-        mg.loadThis();
-        mg.invokeConstructor(Type.getType(baseClass), m);
-        mg.returnValue();
-        mg.endMethod();
+	int numArgsToPass = 1; // default is 1 to just handle 'this'
+	String paramTypeString = "()V";
 
+	if( ctorWithParams != null ) {
+	    Class[] paramTypes = ctorWithParams.getParameterTypes();	    
+	    numArgsToPass = paramTypes.length + 1;
+	    paramTypeString = Type.getConstructorDescriptor(ctorWithParams);
+	}
 
+	MethodVisitor ctorv = tv.visitMethod(ACC_PUBLIC, "<init>", paramTypeString, null, null);
+
+	for(int i = 0; i < numArgsToPass; i++) {
+	    ctorv.visitVarInsn(ALOAD, i);
+	}
+
+	ctorv.visitMethodInsn(INVOKESPECIAL,  Type.getType(baseClass).getInternalName(), "<init>",
+			   paramTypeString);
+	ctorv.visitInsn(RETURN);
+	ctorv.visitMaxs(numArgsToPass, numArgsToPass);
 
         MethodVisitor cv = cw.visitMethod(ACC_PRIVATE, "writeObject", "(Ljava/io/ObjectOutputStream;)V", null, new String[] { "java/io/IOException" });
         cv.visitVarInsn(ALOAD, 0);

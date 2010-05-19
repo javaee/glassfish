@@ -40,6 +40,8 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.commons.Method;
 
+import java.lang.reflect.Constructor;
+
 
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
@@ -198,13 +200,39 @@ public class EjbOptionalIntfGenerator
                 fldDesc, null, null);
         fv.visitEnd();
 
+	// Generate constructor. The EJB spec only allows no-arg constructors, but
+	// JSR 299 added requirements that allow a single constructor to define
+	// parameters injected by CDI.
+	{
 
-        Method m = Method.getMethod("void <init> ()");
-        GeneratorAdapter mg = new GeneratorAdapter(ACC_PUBLIC, m, null, null, tv);
-        mg.loadThis();
-        mg.invokeConstructor(Type.getType(superClass), m);
-        mg.returnValue();
-        mg.endMethod();
+	    Constructor[] ctors = superClass.getConstructors();
+	    Constructor ctorWithParams = null;
+	    for(Constructor ctor : ctors) {
+		if( ctor.getParameterTypes().length > 0 ) {
+		    ctorWithParams = ctor;
+		    break;
+		}
+	    }
+
+	    MethodVisitor cv = tv.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+	    cv.visitVarInsn(ALOAD, 0);
+	    String paramTypeString = "()V";
+	    // if void, only one param (implicit 'this' param)
+	    int maxValue = 1;
+	    if( ctorWithParams != null ) {
+		Class[] paramTypes = ctorWithParams.getParameterTypes();
+		for(int i = 0; i < paramTypes.length; i++) {
+		    cv.visitInsn(ACONST_NULL);
+		}
+		paramTypeString = Type.getConstructorDescriptor(ctorWithParams);
+		// num params + one for 'this' pointer
+		maxValue = paramTypes.length + 1;
+	    }
+	    cv.visitMethodInsn(INVOKESPECIAL,  Type.getType(superClass).getInternalName(), "<init>",
+			   paramTypeString);
+	    cv.visitInsn(RETURN);
+	    cv.visitMaxs(maxValue, 1);
+	}
 
         generateSetDelegateMethod(tv, delegateClass, subClassName);
 

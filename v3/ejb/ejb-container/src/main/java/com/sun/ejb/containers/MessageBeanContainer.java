@@ -655,6 +655,11 @@ public final class MessageBeanContainer extends BaseContainer implements
 		return beanPoolDesc_;
 	}
 
+ @Override
+    protected EJBContextImpl _constructEJBContextImpl(Object instance) {
+	return new MessageBeanContextImpl(instance, this);
+    }
+
 	/**
 	 * Instantiate and initialize a message-driven bean instance.
 	 */
@@ -672,11 +677,10 @@ public final class MessageBeanContainer extends BaseContainer implements
 			originalClassLoader = Utility
 					.setContextClassLoader(getClassLoader());
 
-			// create new message-driven ejb
-			Object ejb = ejbClass.newInstance();
+			context = (MessageBeanContextImpl)
+			    createEjbInstanceAndContext();
 
-			// create MessageDrivenContext and set it in the EJB
-			context = new MessageBeanContextImpl(ejb, this);
+			Object ejb = context.getEJB();
 			
 
 			// java:comp/env lookups are allowed from here on...
@@ -695,7 +699,7 @@ public final class MessageBeanContainer extends BaseContainer implements
 			// would be called. This is important since injection methods
 			// have the same "operations allowed" permissions as
 			// setMessageDrivenContext.
-			injectEjbInstance(ejb, context);
+			injectEjbInstance(context);
 			
 
 			// Set flag in context so UserTransaction can
