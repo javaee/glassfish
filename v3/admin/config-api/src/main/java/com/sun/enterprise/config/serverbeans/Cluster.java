@@ -353,6 +353,31 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 }
             }
 
+            for (Resource resource : domain.getResources().getResources()) {
+                if (resource.getObjectType().equals("system-all")) {
+                    String name=null;
+                    if (resource instanceof BindableResource) {
+                        name = ((BindableResource) resource).getJndiName();
+                    }
+                    if (resource instanceof Named) {
+                        name = ((Named) resource).getName();
+                    }
+                    if (name==null) {
+                        throw new TransactionFailure("Cannot add un-named resources to the new server instance");
+                    }
+                    ResourceRef newResourceRef = instance.createChild(ResourceRef.class);
+                    newResourceRef.setRef(name);
+                    instance.getResourceRef().add(newResourceRef);
+                }
+            }
+            for (Application application : domain.getApplications().getApplications()) {
+                if (application.getObjectType().equals("system-all")) {
+                    ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
+                    newAppRef.setRef(application.getName());
+                    instance.getApplicationRef().add(newAppRef);
+                }
+            }
+
             if (hosts!=null ||
                     haagentport!=0 ||
                     haadminpassword!=null ||
