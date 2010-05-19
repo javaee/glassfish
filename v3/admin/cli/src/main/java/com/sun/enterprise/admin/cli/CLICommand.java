@@ -286,6 +286,9 @@ public abstract class CLICommand implements PostConstruct {
             // do not want to display password as an option
             if (opt.getParam().password())
                 continue;
+            // also do not want to display obsolete options
+            if (opt.getParam().obsolete())
+                continue;
             // primary parameter is the operand, not an option
             if (opt.getParam().primary())
                 continue;
@@ -642,6 +645,9 @@ public abstract class CLICommand implements PostConstruct {
         for (ParamModel opt : commandModel.getParameters()) {
             if (opt.getParam().password())
                 continue;       // passwords are handled later
+	    if (opt.getParam().obsolete() && getOption(opt.getName()) != null)
+		logger.printMessage(
+			strings.get("ObsoleteOption", opt.getName()));
             if (opt.getParam().optional())
                 continue;
             if (opt.getParam().primary())
@@ -661,6 +667,9 @@ public abstract class CLICommand implements PostConstruct {
                 logger.printMessage(
                         strings.get("missingOption", "--" + opt.getName()));
             }
+	    if (opt.getParam().obsolete())	// a required obsolete option?
+		logger.printMessage(
+			strings.get("ObsoleteOption", opt.getName()));
         }
         if (missingOption)
             throw new CommandValidationException(

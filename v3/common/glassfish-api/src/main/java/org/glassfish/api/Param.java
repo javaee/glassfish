@@ -127,4 +127,13 @@ public @interface Param {
      * @return true if multiple instances are allowed
      */
     public boolean multiple() default false;
+
+    /**
+     * Returns true if this parameter is obsolete.
+     * Obsolete parameters produce warnings when used in asadmin,
+     * are ignored, and are not included in the command usage.
+     *
+     * @return true if the parameter is obsolete
+     */
+    public boolean obsolete() default false;
 }

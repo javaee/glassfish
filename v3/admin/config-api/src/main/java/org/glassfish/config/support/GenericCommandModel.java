@@ -207,6 +207,10 @@ public class GenericCommandModel extends CommandModel {
                 public boolean multiple() {
                     return false;
                 }
+
+                public boolean obsolete() {
+                    return false;
+                }
             };
         }
     }

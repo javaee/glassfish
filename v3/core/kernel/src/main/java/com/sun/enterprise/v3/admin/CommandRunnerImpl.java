@@ -441,6 +441,9 @@ public class CommandRunnerImpl implements CommandRunner {
             // do not want to display password as an option
             if (param.password())
                 continue;
+            // do not want to display obsolete options
+            if (param.obsolete())
+                continue;
             final boolean optional = param.optional();
             final Class<?> ftype = pModel.getType();
             Object fvalue = null;
@@ -569,6 +572,8 @@ public class CommandRunnerImpl implements CommandRunner {
 	    ppart.addProperty("name", p.getName());
 	    ppart.addProperty("type", typeOf(p));
 	    ppart.addProperty("optional", Boolean.toString(param.optional()));
+	    if (param.obsolete())	// don't include it if it's false
+		ppart.addProperty("obsolete", "true");
 	    String paramDesc = getParamDescription(localStrings, i18n_key, p);
 	    if (ok(paramDesc))
 		ppart.addProperty("description", paramDesc);
@@ -608,7 +613,7 @@ public class CommandRunnerImpl implements CommandRunner {
      */
     private static String typeOf(CommandModel.ParamModel p) {
 	Class t = p.getType();
-	if (t == Boolean.class)
+	if (t == Boolean.class || t == boolean.class)
 	    return "BOOLEAN";
 	else if (t == File.class)
 	    return "FILE";

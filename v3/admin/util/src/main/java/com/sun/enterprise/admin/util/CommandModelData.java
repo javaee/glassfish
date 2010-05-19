@@ -138,6 +138,11 @@ public class CommandModelData extends CommandModel {
 
         public ParamModelData(String name, Class type, boolean optional,
                                 String def, String shortName) {
+	    this(name, type, optional, def, shortName, false);
+	}
+
+        public ParamModelData(String name, Class type, boolean optional,
+                                String def, String shortName, boolean obs) {
             ParamData param = new ParamData();
             param._name = name;
             param._optional = optional;
@@ -145,6 +150,7 @@ public class CommandModelData extends CommandModel {
             if (shortName == null)
                 shortName = "";
             param._shortName = shortName;
+            param._obsolete = obs;
             ParamModelData.this.name = name;
             ParamModelData.this.type = type;
             ParamModelData.this.param = param;
@@ -195,6 +201,7 @@ public class CommandModelData extends CommandModel {
         public boolean _password = false;
         public char _separator = ',';
         public boolean _multiple = false;
+        public boolean _obsolete = false;
 
         @Override
         public Class<? extends Annotation> annotationType() {
@@ -219,6 +226,8 @@ public class CommandModelData extends CommandModel {
         public char separator() { return _separator; }
         @Override
         public boolean multiple() { return _multiple; }
+        @Override
+        public boolean obsolete() { return _obsolete; }
 
         @Override
         public String toString() {
@@ -230,7 +239,8 @@ public class CommandModelData extends CommandModel {
                 ", defaultValue=" + _defaultValue +
                 ", password=" + _password +
                 ", separator=" + _separator +
-                ", multiple=" + _multiple;
+                ", multiple=" + _multiple +
+                ", obsolete=" + _obsolete;
         }
     }
 }

@@ -801,12 +801,14 @@ public class RemoteAdminCommand {
                 NamedNodeMap attrs = n.getAttributes();
                 String sn = getAttr(attrs, "short");
                 String def = getAttr(attrs, "default");
+                String obs = getAttr(attrs, "obsolete");
                 ParamModelData opt = new ParamModelData(
                         getAttr(attrs, "name"),
                         typeOf(getAttr(attrs, "type")),
                         Boolean.parseBoolean(getAttr(attrs, "optional")),
                         def,
-                        ok(sn) ? sn : null);
+                        ok(sn) ? sn : null,
+			ok(obs) ? Boolean.parseBoolean(obs) : false);
                 if (getAttr(attrs, "type").equals("PASSWORD")) {
                     opt.param._password = true;
                     opt.description = getAttr(attrs, "description");
