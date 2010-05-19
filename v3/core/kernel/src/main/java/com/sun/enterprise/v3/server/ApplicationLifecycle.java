@@ -76,6 +76,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
@@ -135,6 +136,9 @@ public class ApplicationLifecycle implements Deployment {
 
     @Inject
     VersioningService versioningService;
+
+    @Inject
+    ConfigSupport configSupport;
 
     protected Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationLifecycle.class);      
@@ -820,64 +824,54 @@ public class ApplicationLifecycle implements Deployment {
         throws TransactionFailure {
         final Properties appProps = context.getAppProps();
         final DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
-        ConfigSupport.apply(new ConfigCode() {
-            public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
-                Applications apps = (Applications) params[0];
-                Domain dmn = (Domain) params[1];
+        ConfigSupport.apply(new SingleConfigCode() {
+            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                // get the transaction
+                Transaction t = configSupport.getTransaction(param);
+                if (t!=null) {
+                    Applications apps = ((Domain)param).getApplications(); 
+                    ConfigBeanProxy apps_w = configSupport.enrollInTransaction(t, apps);
+                    // adding the application element
+                    Application app = apps_w.createChild(Application.class);
+                    setAppAttributes(app, deployParams, appProps);
+                    ((Applications)apps_w).getModules().add(app);
+                    if (applicationInfo != null) {
+                        applicationInfo.save(app);
+                    }
 
-                // adding the application element
-                Application app = params[0].createChild(Application.class);
-                setAppAttributes(app, deployParams, appProps);
-                apps.getModules().add(app);
-                if (applicationInfo != null) {
-                    applicationInfo.save(app);
-                }
+                    Server servr = ((Domain)param).getServerNamed(deployParams.target); 
+                    if (servr != null) {
+                        // adding the application-ref element to the standalone
+                        // server instance
+                        ConfigBeanProxy servr_w = configSupport.enrollInTransaction(t, servr);
+                        // adding the application-ref element to the standalone
+                        // server instance
+                        ApplicationRef appRef = servr_w.createChild(ApplicationRef.class);
+                        setAppRefAttributes(appRef, deployParams);
+                        ((Server)servr_w).getApplicationRef().add(appRef);
+                    }
 
-                Server servr = dmn.getServerNamed(deployParams.target); 
-                if (servr != null) {
-                    // adding the application-ref element to the standalone
-                    // server instance
-                    ConfigSupport.apply(new SingleConfigCode() {
-                        public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                            Server refServer = (Server)param;
-                            ApplicationRef appRef = param.createChild(ApplicationRef.class);
-                            setAppRefAttributes(appRef, deployParams);
-                            refServer.getApplicationRef().add(appRef);
-                            return Boolean.TRUE;
+                    Cluster cluster = ((Domain)param).getClusterNamed(deployParams.target); 
+                    if (cluster != null) {
+                        // adding the application-ref element to the cluster
+                        // and instances
+                        ConfigBeanProxy cluster_w = configSupport.enrollInTransaction(t, cluster);
+                        ApplicationRef appRef = cluster_w.createChild(ApplicationRef.class);
+                        setAppRefAttributes(appRef, deployParams);
+                        ((Cluster)cluster_w).getApplicationRef().add(appRef);
+
+                        for (Server svr : cluster.getInstances() ) {
+                            ConfigBeanProxy svr_w = configSupport.enrollInTransaction(t, svr);
+                            ApplicationRef appRef2 = svr_w.createChild(ApplicationRef.class);
+                            setAppRefAttributes(appRef2, deployParams);
+                            ((Server)svr_w).getApplicationRef().add(appRef2);
                         }
-                    }, servr);
-                }
-
-                Cluster cluster = dmn.getClusterNamed(deployParams.target); 
-                if (cluster != null) {
-                    // adding the application-ref element to the cluster
-                    // and instances
-                    ConfigSupport.apply(new SingleConfigCode() {
-                        public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                            Cluster cls = (Cluster)param;
-                            ApplicationRef appRef = param.createChild(ApplicationRef.class);
-                            setAppRefAttributes(appRef, deployParams);
-                            cls.getApplicationRef().add(appRef);
-                            return Boolean.TRUE;
-                        }
-                    }, cluster);
-
-                    for (Server svr : cluster.getInstances() ) {
-                        ConfigSupport.apply(new SingleConfigCode() {
-                            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                                Server refServer = (Server)param;
-                                ApplicationRef appRef = param.createChild(ApplicationRef.class);
-                                setAppRefAttributes(appRef, deployParams);
-                                refServer.getApplicationRef().add(appRef);
-                                return Boolean.TRUE;
-                            }
-                        }, svr);
                     }
                 }
                 return Boolean.TRUE;
             }
 
-        }, applications, domain);
+        }, domain);
     }
 
 
@@ -940,80 +934,66 @@ public class ApplicationLifecycle implements Deployment {
 
     public void unregisterAppFromDomainXML(final String appName, 
         final String target) throws TransactionFailure {
-        ConfigSupport.apply(new ConfigCode() {
-            public Object run(ConfigBeanProxy... params) throws PropertyVetoException, TransactionFailure {
-                Applications apps = (Applications) params[0];
-                Domain dmn = (Domain) params[1];
-
-                Server servr = dmn.getServerNamed(target);
-                if (servr != null) {
-                    // remove the application-ref from standalone 
-                    // server instance
-                    ConfigSupport.apply(new SingleConfigCode() {
-                        public Object run(ConfigBeanProxy param) 
-                            throws PropertyVetoException, TransactionFailure {
-                            Server refServer = (Server)param;
-                            for (ApplicationRef appRef : 
-                                refServer.getApplicationRef()) {
-                                if (appRef.getRef().equals(appName)) {
-                                    ((Server)param).getApplicationRef().remove(
-                                        appRef);
-                                    break;
-                                }
+        ConfigSupport.apply(new SingleConfigCode() {
+            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+                // get the transaction
+                Transaction t = configSupport.getTransaction(param);
+                if (t!=null) {
+                    Server servr = ((Domain)param).getServerNamed(target);
+                    if (servr != null) {
+                        // remove the application-ref from standalone 
+                        // server instance
+                        ConfigBeanProxy servr_w = configSupport.enrollInTransaction(t, servr);
+                        for (ApplicationRef appRef : 
+                            servr.getApplicationRef()) {
+                            if (appRef.getRef().equals(appName)) {
+                                ((Server)servr_w).getApplicationRef().remove(
+                                    appRef);
+                                break;
                             }
-                            return Boolean.TRUE;
                         }
-                    }, servr);
-                }
-              
-                Cluster cluster = dmn.getClusterNamed(target);
-                if (cluster != null) {
-                    // remove the application-ref from cluster
-                    ConfigSupport.apply(new SingleConfigCode() {
-                        public Object run(ConfigBeanProxy param)
-                            throws PropertyVetoException, TransactionFailure {
-                            Cluster cls = (Cluster)param;
-                            for (ApplicationRef appRef :
-                                cls.getApplicationRef()) {
-                                if (appRef.getRef().equals(appName)) {
-                                    ((Cluster)param).getApplicationRef().remove(
-                                        appRef);
-                                    break;
-                                }
-                            }
-                            return Boolean.TRUE;
-                        }
-                    }, cluster);
-
-                    // remove the application-ref from cluster instances
-                    for (Server svr : cluster.getInstances() ) {
-                        ConfigSupport.apply(new SingleConfigCode() {
-                            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-                                Server refServer = (Server)param;
-                                for (ApplicationRef appRef : 
-                                    refServer.getApplicationRef()) {
-                                        if (appRef.getRef().equals(appName)) {
-                                            ((Server)param).getApplicationRef(
-                                                ).remove(appRef);
-                                            break;
-                                        }
-                                    }
-                                return Boolean.TRUE;
-                            }
-                        }, svr);
                     }
-                }
               
-                // remove application element
-                for (ApplicationName module : apps.getModules()) {
-                    if (module.getName().equals(appName)) {
-                        ((Applications)params[0]).getModules().remove(module);
-                        break;
+                    Cluster cluster = ((Domain)param).getClusterNamed(target);
+                    if (cluster != null) {
+                        // remove the application-ref from cluster
+                        ConfigBeanProxy cluster_w = configSupport.enrollInTransaction(t, cluster);
+                        for (ApplicationRef appRef : 
+                            cluster.getApplicationRef()) {
+                            if (appRef.getRef().equals(appName)) {
+                                ((Cluster)cluster_w).getApplicationRef().remove(
+                                        appRef);
+                                    break;
+                            }
+                        }
+
+                        // remove the application-ref from cluster instances
+                        for (Server svr : cluster.getInstances() ) {
+                            ConfigBeanProxy svr_w = configSupport.enrollInTransaction(t, svr);
+                            for (ApplicationRef appRef : 
+                                svr.getApplicationRef()) {
+                                if (appRef.getRef().equals(appName)) {
+                                    ((Server)svr_w).getApplicationRef(
+                                       ).remove(appRef);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // remove application element
+                    Applications apps = ((Domain)param).getApplications();
+                    ConfigBeanProxy apps_w = configSupport.enrollInTransaction(t, apps);
+                    for (ApplicationName module : apps.getModules()) {
+                        if (module.getName().equals(appName)) {
+                            ((Applications)apps_w).getModules().remove(module);
+                            break;
+                        }
                     }
                 }
                 return Boolean.TRUE;
             }
-        }, applications, domain);
+        }, domain);
     }
 
 
