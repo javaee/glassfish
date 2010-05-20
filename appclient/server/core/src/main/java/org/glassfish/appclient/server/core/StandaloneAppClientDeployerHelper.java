@@ -99,6 +99,11 @@ public class StandaloneAppClientDeployerHelper extends AppClientDeployerHelper {
     }
 
     @Override
+    public File rootForSignedFilesInApp() {
+        return new File(dc().getScratchDir("xml"), "signed/");
+    }
+
+    @Override
     protected void prepareJARs() throws IOException, URISyntaxException {
         super.prepareJARs();
         /*

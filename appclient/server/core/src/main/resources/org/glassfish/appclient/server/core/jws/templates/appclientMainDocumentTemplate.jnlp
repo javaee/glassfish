@@ -5,7 +5,7 @@
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,13 +73,6 @@
         -->
         ${group.facade.jar.element}
 
-        <!--
-            These next JARs will have been signed using the
-            deployer-specified alias, if specified, or the default domain alias.
-            Note that even though these are fetched within the code base of the
-            app, we do not sign these once for each app but reuse ones
-            signed with the same alias.
-        -->
         <jar href="${gf-client.jar}"/>
         <jar href="${gf-client-module.jar}"/>
 

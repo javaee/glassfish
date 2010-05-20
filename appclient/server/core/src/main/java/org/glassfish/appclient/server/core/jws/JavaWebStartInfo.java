@@ -122,6 +122,8 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private VendorInfo vendorInfo;
 
+    private String signingAlias;
+
     final private Map<String,StaticContent> staticContent = new HashMap<String,StaticContent>();
     final private Map<String,DynamicContent> dynamicContent = new HashMap<String,DynamicContent>();
 
@@ -227,6 +229,7 @@ public class JavaWebStartInfo implements ConfigListener {
         final File sourceDir = acDesc.getApplication().isVirtual() ?
             dc.getSourceDir() : new File(dc.getSource().getParentArchive().getURI());
         this.jnlpDoc = devJNLPDoc;
+        signingAlias = JWSAdapterManager.signingAlias(dc);
         dch.init(dc.getClassLoader(),
                     tHelper,
                     sourceDir,
@@ -472,7 +475,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * JAR will point to and reuse the same signed JAR, rather than
          * re-sign it each time an app needed it is started.
          */
-        addSignedSystemContent(staticContent);
+        addSignedSystemContent();
 
         /*
          * The developer might have used the sun-application-client.xml
@@ -489,16 +492,22 @@ public class JavaWebStartInfo implements ConfigListener {
     }
 
     private void addSignedSystemContent(
-            final Map<String,StaticContent> content) {
-        for (SignedSystemContentFromApp signedContentFromApp : SIGNED_SYSTEM_CONTENT_SERVED_AT_APP_LEVEL) {
-            final AutoSignedContent signedContent =
-                    jwsAdapterManager.appLevelSignedSystemContent(
-                        signedContentFromApp.getRelativePath(),
-                        JWSAdapterManager.signingAlias(dc));
-            recordStaticContent(content, signedContent,
-                    signedContentFromApp.getRelativePathURI(),
-                    signedContentFromApp.getTokenName());
-        }
+            ) throws FileNotFoundException, IOException {
+        final List<String> systemJARRelativeURIs = new ArrayList<String>();
+        final Map<String,StaticContent> addedStaticContent =
+                jwsAdapterManager.addStaticSystemContent(
+                    systemJARRelativeURIs,
+                    signingAlias);
+        final Map<String,DynamicContent> addedDynContent =
+                jwsAdapterManager.addDynamicSystemContent(
+                    systemJARRelativeURIs,
+                    signingAlias);
+        jwsAdapterManager.addContentIfAbsent(addedStaticContent, addedDynContent);
+
+        tHelper.setProperty("gf-client.jar", jwsAdapterManager.systemPathInClientJNLP(
+                jwsAdapterManager.gfClientJAR().toURI(), signingAlias));
+        tHelper.setProperty("gf-client-module.jar", jwsAdapterManager.systemPathInClientJNLP(
+                jwsAdapterManager.gfClientModuleJAR().toURI(), signingAlias));
     }
 
     private void createAndAddSignedContentFromAppFile(final Map<String,StaticContent> content,
@@ -534,7 +543,7 @@ public class JavaWebStartInfo implements ConfigListener {
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
                 signedFile,
-                JWSAdapterManager.signingAlias(dc),
+                signingAlias,
                 jarSigner);
         recordStaticContent(content, signedJarContent, uriForLookup, tokenName);
     }
@@ -581,9 +590,9 @@ public class JavaWebStartInfo implements ConfigListener {
          * relative to the app's scratch directory to compute the URI relative
          * to generated/xml/(appName)/signed where the signed file should reside.
          */
-        final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
+        final File rootForSignedFilesInApp = helper.rootForSignedFilesInApp();
         rootForSignedFilesInApp.mkdirs();
-        final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").toURI().
+        final URI unsignedFileURIRelativeToXMLDir = dc.getScratchDir("xml").getParentFile().toURI().
                 relativize(unsignedFile.toURI());
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(unsignedFileURIRelativeToXMLDir);
         return new File(signedFileURI);
@@ -604,7 +613,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * 
          * 
          */
-        final File rootForSignedFilesInApp = new File(dc.getScratchDir("xml"), "signed/");
+        final File rootForSignedFilesInApp = helper.rootForSignedFilesInApp();
         rootForSignedFilesInApp.mkdirs();
         final URI signedFileURI = rootForSignedFilesInApp.toURI().resolve(relURI);
         

@@ -51,6 +51,10 @@
         <offline-allowed/>
     </information>
 
+    <security>
+        <all-permissions/>
+    </security>
+
     <resources>
         ${system.jars}
     </resources>

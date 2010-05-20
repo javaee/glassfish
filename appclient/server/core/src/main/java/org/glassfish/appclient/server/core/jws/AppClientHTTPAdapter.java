@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -78,9 +79,9 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
 
-    private final String LINE_SEP = System.getProperty("line.separator");
+    private final static String LINE_SEP = System.getProperty("line.separator");
 
-    private final Logger logger = LogDomains.getLogger(getClass(),
+    private final static Logger logger = LogDomains.getLogger(AppClientHTTPAdapter.class,
             LogDomains.ACC_LOGGER);
 
     private final Map<String,DynamicContent> dynamicContent;
@@ -90,6 +91,21 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private final ACCConfigContent accConfigContent;
     private final LoaderConfigContent loaderConfigContent;
 
+    public AppClientHTTPAdapter(
+            final String contextRoot,
+            final Properties tokens,
+            final File domainDir,
+            final File installDir,
+            final IiopService iiopService) throws IOException {
+        this(contextRoot,
+                new HashMap<String,StaticContent>(),
+                new HashMap<String,DynamicContent>(),
+                tokens,
+                domainDir,
+                installDir,
+                iiopService);
+    }
+    
     public AppClientHTTPAdapter(
             final String contextRoot,
             final Map<String,StaticContent> staticContent,

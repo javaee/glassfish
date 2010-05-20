@@ -282,6 +282,12 @@ public abstract class AppClientDeployerHelper {
     public abstract FixedContent fixedContentWithinEAR(String uriString);
     
     /**
+     * Returns the root directory for signed files in the applications.
+     * @return File object for the signed JAR root directory
+     */
+    public abstract File rootForSignedFilesInApp();
+
+    /**
      * If the specified URI is for an expanded submodule, makes a copy of
      * the submodule as a JAR and returns the URI for the copy.
      * @param classPathElement

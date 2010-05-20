@@ -4,7 +4,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,7 @@ import java.util.Properties;
 import org.glassfish.appclient.server.core.AppClientDeployerHelper;
 import org.glassfish.appclient.server.core.NestedAppClientDeployerHelper;
 import org.glassfish.appclient.server.core.StandaloneAppClientDeployerHelper;
+import org.glassfish.appclient.server.core.jws.JWSAdapterManager;
 import org.glassfish.appclient.server.core.jws.JavaWebStartInfo;
 import org.glassfish.appclient.server.core.jws.JavaWebStartInfo.VendorInfo;
 import org.glassfish.appclient.server.core.jws.NamingConventions;
@@ -67,6 +68,8 @@ public abstract class TokenHelper {
 
     private VendorInfo vendorInfo = null;
 
+    private String signingAlias;
+
     public static TokenHelper newInstance(final AppClientDeployerHelper dHelper,
             final VendorInfo vendorInfo) {
         TokenHelper tHelper;
@@ -77,6 +80,7 @@ public abstract class TokenHelper {
         }
         tHelper.vendorInfo = vendorInfo;
 
+        tHelper.signingAlias = JWSAdapterManager.signingAlias(dHelper.dc());
         tHelper.tokens = tHelper.buildTokens();
         return tHelper;
     }
@@ -114,7 +118,7 @@ public abstract class TokenHelper {
     }
 
     public String systemJNLP() {
-        return NamingConventions.systemJNLPURI();
+        return NamingConventions.systemJNLPURI(signingAlias);
     }
 
     public abstract String appLibraryExtensions();
