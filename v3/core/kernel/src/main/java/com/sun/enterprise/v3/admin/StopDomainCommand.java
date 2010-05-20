@@ -43,14 +43,12 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.Async;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.Iterator;
 import java.util.Collection;
-import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * AdminCommand to stop the domain execution which mean shuting down the application
@@ -61,6 +59,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 @Service(name="stop-domain")
 @Async
 @I18n("stop.domain.command")
+@Cluster(RuntimeType.DAS)
 public class StopDomainCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);

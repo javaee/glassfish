@@ -124,17 +124,8 @@ public class GlassFishClusterExecutor implements ClusterExecutor {
         }
 
         //Do replication only is this is DAS
-        if(serverEnv.isDas()) {
-            // Get target and find list of instances from target
-            if(parameters.getOne("target") == null) {
-                ActionReport aReport = context.getActionReport().addSubActionsReport();
-                aReport.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.notargetspecified",
-                        "A target was not specified in the command line; aborting further execution of CLI"));
-                //TODO : Undoable command support needed ?
-                return getReturnValueFor(onFailure);
-            }
-
+        //TODO : Got to check for default server name and stop replication if target is default server itself.
+        if(serverEnv.isDas() && parameters.getOne("target") != null) {
             Target target = new Target(parameters.getOne("target"), domain);
             List<Server> instancesForReplication = target.getInstances();
             if(instancesForReplication.size() == 0) {
