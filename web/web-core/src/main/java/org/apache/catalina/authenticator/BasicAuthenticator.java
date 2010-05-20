@@ -183,7 +183,7 @@ public class BasicAuthenticator
         // Send an "unauthorized" response and an appropriate challenge
         String realmName = config.getRealmName();
         if (realmName == null)
-            realmName = hreq.getServerName() + ":" + hreq.getServerPort();
+            realmName = REALM_NAME;
     //        if (debug >= 1)
     //            log("Challenging for realm '" + realmName + "'");
         hres.setHeader("WWW-Authenticate",

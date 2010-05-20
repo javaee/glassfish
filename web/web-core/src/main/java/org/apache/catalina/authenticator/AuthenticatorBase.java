@@ -175,6 +175,12 @@ public abstract class AuthenticatorBase
             StringManager.getManager(Constants.Package);
 
 
+    /**
+     * Default authentication realm name.
+     */
+    protected static final String REALM_NAME = "Authentication required";
+
+
     // ----------------------------------------------------- Instance Variables    
     /**
      * The message digest algorithm to be used when generating session
