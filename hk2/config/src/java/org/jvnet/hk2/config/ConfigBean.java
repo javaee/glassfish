@@ -76,7 +76,7 @@ public class ConfigBean extends Dom implements ConfigView {
         objectName = objectNameIn;
     }
 
-    public ConfigBean(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
+    public ConfigBean(Habitat habitat, DomDocument document, ConfigBean parent, ConfigModel model, XMLStreamReader in) {
 
         super(habitat, document, parent, model, in);
         // by default all ConfigBean support the ConstrainedBeanListener interface
@@ -269,6 +269,11 @@ public class ConfigBean extends Dom implements ConfigView {
     public Lock getLock() {
         return lock;
 
+    }
+
+    @Override
+    public ConfigBean parent() {
+        return (ConfigBean) super.parent();
     }
 
     /**

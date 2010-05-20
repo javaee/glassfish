@@ -51,7 +51,7 @@ import java.util.*;
  *
  * @author Kohsuke Kawaguchi
  */
-public class DomDocument {
+public class DomDocument<T extends Dom> {
     /**
      * A hook to perform variable replacements on the attribute/element values
      * that are found in the configuration file.
@@ -66,7 +66,7 @@ public class DomDocument {
 
     /*package*/ final Habitat habitat;
 
-    /*package*/ Dom root;
+    /*package*/ T root;
 
     private final Map<String, DataType> validators = new HashMap<String, DataType>();
     
@@ -188,7 +188,7 @@ public class DomDocument {
         return buildModel(c);
     }
 
-    public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
+    public Dom make(Habitat habitat, XMLStreamReader in, T parent, ConfigModel model) {
         return new Dom(habitat,this,parent,model,in);
     }
 
