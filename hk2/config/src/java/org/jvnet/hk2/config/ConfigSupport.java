@@ -724,8 +724,6 @@ public class ConfigSupport {
 
 
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
-        final Class<? extends ConfigBeanProxy> childType = child.getProxyType();
-
         apply(new SingleConfigCode<ConfigBeanProxy>() {
 
             /**
@@ -741,11 +739,39 @@ public class ConfigSupport {
              */
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
 
-                // get the child
-                ConfigBeanProxy childProxy = child.getProxy(childType);
 
                 // remove the child from the parent.
                 WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
+
+                _deleteChild(parent, writeableParent, child);
+                return child;
+            }
+        }, readableView);
+    }
+
+    /**
+     * Unprotected child deletion, caller must start a transaction before calling this
+     * method.
+     *
+     * @param parent the parent element
+     * @param writeableParent the writeable view of the parent element
+     * @param child the child to delete
+     * @throws TransactionFailure if something goes wrong.
+     */
+    public static void _deleteChild(
+                final ConfigBean parent,
+                final WriteableView writeableParent,
+                final ConfigBean child)
+        throws TransactionFailure {
+
+
+        final Class<? extends ConfigBeanProxy> childType = child.getProxyType();
+
+
+                // get the child
+                ConfigBeanProxy childProxy = child.getProxy(childType);
+
+                // get the parent type
                 Class parentProxyType = parent.getProxyType();
 
                 // first we need to find the element associated with this type
@@ -754,7 +780,7 @@ public class ConfigSupport {
                     if (!(e instanceof ConfigModel.Node)) {
                         continue;
                     }
-                        
+
                     ConfigModel elementModel = ((ConfigModel.Node) e).model;
                     try {
                         final Class<?> targetClass = parent.model.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
@@ -783,7 +809,7 @@ public class ConfigSupport {
                                 if (itemType.isAssignableFrom(childType)) {
                                     List list = null;
                                     try {
-                                        list = (List) m.invoke(param, null);
+                                        list = (List) m.invoke(writeableParent.getProxy(writeableParent.<ConfigBeanProxy>getProxyType()), null);
                                     } catch (IllegalAccessException e) {
                                         throw new TransactionFailure("Exception while adding to the parent", e);
                                     } catch (InvocationTargetException e) {
@@ -803,10 +829,6 @@ public class ConfigSupport {
                 } else {
                     throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
                 }
-
-                return child;
-            }
-        }, readableView);
     }
     
     public interface TransactionCallBack<T> {
