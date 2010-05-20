@@ -35,7 +35,6 @@
  */
 package admin;
 
-import java.io.FileNotFoundException;
 
 import com.sun.appserv.test.BaseDevTest;
 
@@ -47,7 +46,7 @@ public class AdminInfraTest extends BaseDevTest {
 
     private static final boolean DEBUG = false;
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args)  {
         new AdminInfraTest().run();
     }
 
