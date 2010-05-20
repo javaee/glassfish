@@ -372,8 +372,9 @@ public class VersioningService {
         // retrieve the currently enabled version of the application
         String enabledVersion = getEnabledVersion(appName, target);
 
-        // invoke disable if there is a currently enabled version
-        if(enabledVersion != null){
+        // invoke disable if the currently enabled version is not itself
+        if(enabledVersion != null &&
+                  !enabledVersion.equals(appName)){
             commandParams.component = enabledVersion;
             commandParams.origin = Origin.load;
             commandParams.target = target;
