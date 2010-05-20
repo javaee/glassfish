@@ -111,7 +111,7 @@ abstract class BaseContainerCallbackHandler
         implements CallbackHandler, CallbackHandlerConfig {
      
     private static final String SUBJECT_KEY_IDENTIFIER_OID = "2.5.29.14";
-    private static final String DEFAULT_DIGEST_ALGORITHM = "SHA-1";
+    private static final String DEFAULT_DIGEST_ALGORITHM = "SHA-256";
     private static final String CLIENT_SECRET_KEYSTORE =
         "com.sun.appserv.client.secretKeyStore";
     private static final String CLIENT_SECRET_KEYSTORE_PASSWORD =
