@@ -63,6 +63,7 @@ public class SSHA
     private static StringManager sm =
         StringManager.getManager(SSHA.class);
     private static MessageDigest md = null;
+    private  static final int iteration = 1000;
 
     
     /**
@@ -82,25 +83,25 @@ public class SSHA
         System.arraycopy(salt, 0, buff, password.length, salt.length);
 
         byte[] hash = null;
-
         synchronized (SSHA.class) {
-            
-            if (md == null) {
-                try {
-                    md = MessageDigest.getInstance("SHA");
-                } catch (Exception e) {
-                    throw new IASSecurityException(e);
-                }    
+
+            try {
+                md = java.security.MessageDigest.getInstance("SHA");
+            } catch (NoSuchAlgorithmException ex) {
+                throw new IASSecurityException(ex);
             }
-
-            assert (md != null);
             md.reset();
-            hash = md.digest(buff);
-        }
+            md.update(buff);
+            hash = md.digest();
 
-        assert (hash.length==20); // SHA output is 160 bits
-
-        return hash;
+            for (int i = 2; i <= iteration; i++) {
+                md.reset();
+                md.update(hash);
+                hash = md.digest();
+            }
+            assert (hash.length == 20); // SHA output is 20 bits
+            return hash;
+        }        
     }
 
 
