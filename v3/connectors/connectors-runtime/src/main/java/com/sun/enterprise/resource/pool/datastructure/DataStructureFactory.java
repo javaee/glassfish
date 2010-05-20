@@ -62,8 +62,8 @@ public class DataStructureFactory {
         if (className != null) {
             ds = initializeCustomDataStructureInPrivilegedMode(className, parameters, maxPoolSize, handler, strategyClass);
         } else {
-            debug("Initializing List DataStructure");
-            ds = new ListDataStructure(parameters, maxPoolSize, handler, strategyClass);
+            debug("Initializing RWLock DataStructure");
+            ds = new RWLockDataStructure(parameters, maxPoolSize, handler, strategyClass);
         }
         return ds;
     }
