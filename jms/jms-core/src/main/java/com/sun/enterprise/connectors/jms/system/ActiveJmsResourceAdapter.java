@@ -833,7 +833,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             setProperty(cd, envProp12);
 
             //set adminpassfile
-            if (!getJmsService().getType().equals(REMOTE)) {
+           /* if (!getJmsService().getType().equals(REMOTE)) {
                 //For LOCAL and EMBEDDED, we pass in the admin pass file path
                 //containing the MQ admin password to enable authenticated
                 //startup of the broker.
@@ -844,7 +844,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                             "Broker admin password", "java.lang.String");
                     setProperty(cd, envProp13);
                 }
-            }
+            }*/
         }
         //Optional
         //BrokerBindAddress, RmiRegistryPort
