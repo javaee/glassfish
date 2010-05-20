@@ -38,14 +38,12 @@
         <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
         <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
         <!ENTITY run SYSTEM "./../../../../config/run.xml">
-        <!ENTITY testproperties SYSTEM "./build.properties">
         ]>
 
 <project name="admin_clitest" default="all" basedir=".">
 
     &commonSetup;
     &commonBuild;
-    &testproperties;
     &run;
 
     <path id="class.path">

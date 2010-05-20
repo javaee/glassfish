@@ -43,7 +43,6 @@
 
 <project name="admin" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="10"/>
 
     &commonSetup;
     &commonBuild;
