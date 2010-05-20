@@ -57,6 +57,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.resource.spi.ConfigProperty;
 import org.glassfish.api.jdbc.ConnectionValidation;
 import org.glassfish.api.jdbc.SQLTraceListener;
 
@@ -658,6 +659,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param user <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "APP")
     public void setUser(String user) {
         spec.setDetail(DataSourceSpec.USERNAME, user);
     }
@@ -676,6 +678,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param passwd <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "APP")
     public void setPassword(String passwd) {
         spec.setDetail(DataSourceSpec.PASSWORD, passwd);
     }
@@ -694,6 +697,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param className <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "org.apache.derby.jdbc.ClientConnectionPoolDataSource")
     public void setClassName(String className) {
         spec.setDetail(DataSourceSpec.CLASSNAME, className);
     }
@@ -712,6 +716,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param conVldReq <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "false")
     public void setConnectionValidationRequired(String conVldReq) {
         spec.setDetail(DataSourceSpec.CONNECTIONVALIDATIONREQUIRED, conVldReq);
     }
@@ -730,6 +735,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param validationMethod <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setValidationMethod(String validationMethod) {
         spec.setDetail(DataSourceSpec.VALIDATIONMETHOD, validationMethod);
     }
@@ -748,6 +754,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param table <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setValidationTableName(String table) {
         spec.setDetail(DataSourceSpec.VALIDATIONTABLENAME, table);
     }
@@ -802,6 +809,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param trnIsolation <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setTransactionIsolation(String trnIsolation) {
         spec.setDetail(DataSourceSpec.TRANSACTIONISOLATION, trnIsolation);
     }
@@ -820,6 +828,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      *
      * @param guaranteeIsolation <code>String</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setGuaranteeIsolationLevel(String guaranteeIsolation) {
         spec.setDetail(DataSourceSpec.GUARANTEEISOLATIONLEVEL, guaranteeIsolation);
     }
@@ -857,6 +866,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param serverName <code>String</code>
      * @see <code>getServerName</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "localhost")
     public void setServerName(String serverName) {
         spec.setDetail(DataSourceSpec.SERVERNAME, serverName);
     }
@@ -877,6 +887,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param portNumber <code>String</code>
      * @see <code>getPortNumber</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "1527")
     public void setPortNumber(String portNumber) {
         spec.setDetail(DataSourceSpec.PORTNUMBER, portNumber);
     }
@@ -905,6 +916,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param databaseName <code>String</code>
      * @see <code>getDatabaseName</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "testdb")
     public void setDatabaseName(String databaseName) {
         spec.setDetail(DataSourceSpec.DATABASENAME, databaseName);
     }
@@ -925,6 +937,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param dsn <code>String</code>
      * @see <code>getDataSourceName</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setDataSourceName(String dsn) {
         spec.setDetail(DataSourceSpec.DATASOURCENAME, dsn);
     }
@@ -1026,6 +1039,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param desc <code>String</code>
      * @see <code>getDescription</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "Derby driver for datasource")
     public void setDescription(String desc) {
         spec.setDetail(DataSourceSpec.DESCRIPTION, desc);
     }
@@ -1046,6 +1060,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param nwProtocol <code>String</code>
      * @see <code>getNetworkProtocol</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setNetworkProtocol(String nwProtocol) {
         spec.setDetail(DataSourceSpec.NETWORKPROTOCOL, nwProtocol);
     }
@@ -1066,6 +1081,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param roleName <code>String</code>
      * @see <code>getRoleName</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setRoleName(String roleName) {
         spec.setDetail(DataSourceSpec.ROLENAME, roleName);
     }
@@ -1086,6 +1102,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param loginTimeOut <code>String</code>
      * @see <code>getLoginTimeOut</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "0")
     public void setLoginTimeOut(String loginTimeOut) {
         spec.setDetail(DataSourceSpec.LOGINTIMEOUT, loginTimeOut);
     }
@@ -1106,6 +1123,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param delim <code>String</code>
      * @see <code>getDelimiter</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "#")
     public void setDelimiter(String delim) {
         spec.setDetail(DataSourceSpec.DELIMITER, delim);
     }
@@ -1134,6 +1152,7 @@ public abstract class ManagedConnectionFactory implements javax.resource.spi.Man
      * @param driverProps <code>String</code>
      * @see <code>getDriverProperties</code>
      */
+    @ConfigProperty(type = String.class, defaultValue = "")
     public void setDriverProperties(String driverProps) {
         spec.setDetail(DataSourceSpec.DRIVERPROPERTIES, driverProps);
     }

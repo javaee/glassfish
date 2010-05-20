@@ -38,7 +38,9 @@ package com.sun.gjc.spi;
 
 import javax.resource.NotSupportedException;
 import javax.resource.spi.ActivationSpec;
+import javax.resource.spi.AuthenticationMechanism;
 import javax.resource.spi.BootstrapContext;
+import javax.resource.spi.Connector;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.transaction.xa.XAResource;
 
@@ -48,6 +50,17 @@ import javax.transaction.xa.XAResource;
  * @author Evani Sai Surya Kiran
  * @version 1.0, 02/08/05
  */
+@Connector(
+    description = "Resource adapter wrapping implementation of driver",
+    displayName = "Resource Adapter",
+    vendorName = "Sun Microsystems",
+    eisType = "Database",
+    version = "1.0",
+    authMechanisms = {
+        @AuthenticationMechanism(authMechanism="BasicPassword",
+            credentialInterface=AuthenticationMechanism.CredentialInterface.PasswordCredential)
+    }
+)
 public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
 
     /**

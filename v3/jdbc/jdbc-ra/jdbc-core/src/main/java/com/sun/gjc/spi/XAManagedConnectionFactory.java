@@ -48,6 +48,8 @@ import javax.resource.spi.ResourceAllocationException;
 import javax.resource.spi.security.PasswordCredential;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.resource.spi.ConfigProperty;
+import javax.resource.spi.ConnectionDefinition;
 
 /**
  * XA <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -55,7 +57,12 @@ import java.util.logging.Logger;
  * @author Evani Sai Surya Kiran
  * @version 1.0, 02/07/27
  */
-
+@ConnectionDefinition(
+    connectionFactory = javax.sql.DataSource.class,
+    connectionFactoryImpl = com.sun.gjc.spi.base.DataSource.class,
+    connection = java.sql.Connection.class,
+    connectionImpl = com.sun.gjc.spi.base.ConnectionHolder.class
+)
 public class XAManagedConnectionFactory extends ManagedConnectionFactory {
 
     private transient javax.sql.XADataSource xaDataSourceObj;
@@ -163,6 +170,17 @@ public class XAManagedConnectionFactory extends ManagedConnectionFactory {
             return this.spec.equals(otherMCF.spec);
         }
         return false;
+    }
+
+    /**
+     * Sets the class name of the data source
+     *
+     * @param className <code>String</code>
+     */
+    @ConfigProperty(type = String.class, defaultValue = "org.apache.derby.jdbc.ClientXADataSource")
+    @Override
+    public void setClassName(String className) {
+        spec.setDetail(DataSourceSpec.CLASSNAME, className);
     }
 
     /**

@@ -47,11 +47,10 @@
     <target name="assemble">
 
         <!-- build JDBC RAR of type javax.sql.DataSource -->
-        <copy file="xml/ra-ds.xml"
-              tofile="${component.lib.home}/ra.xml" overwrite="yes">
-        </copy>
+        <mkdir dir="${component.lib.home}"/>
+
         <jar jarfile="${component.lib.home}/__ds_jdbc_ra.rar"
-             basedir="${component.lib.home}" excludes="**/*">
+	      basedir="${component.lib.home}" excludes="**/*">
             <manifest>
                 <attribute name="Specification-Title" value="JDBC Specification"/>
                 <attribute name="Specification-Vendor" value="Sun Microsystems, Inc.,"/>
@@ -60,9 +59,6 @@
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
-            <metainf dir="${component.lib.home}">
-                <include name="ra.xml"/>
-            </metainf>
         </jar>
 
         <jar jarfile="${component.lib.home}/__ds_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"
@@ -71,16 +67,13 @@
             <exclude name="com/sun/gjc/spi/CPManagedConnectionFactory.class"/>
             <exclude name="com/sun/gjc/spi/DMManagedConnectionFactory.class"/>
         </jar>
-            <echo message="Assembling __ds rar"/>
+        <echo message="Assembling __ds rar"/>
         <jar jarfile="${component.lib.home}/__ds_jdbc_ra.rar" update="true" basedir="${component.lib.home}">
             <include name="__ds_jdbc_ra.jar"/>
         </jar>
 
 
         <!-- build JDBC RAR of type javax.sql.ConnectionPoolDataSource -->
-        <copy file="xml/ra-cp.xml"
-              tofile="${component.lib.home}/ra.xml" overwrite="yes">
-        </copy>
         <jar jarfile="${component.lib.home}/__cp_jdbc_ra.rar"
              basedir="${component.lib.home}" excludes="**/*">
             <manifest>
@@ -91,9 +84,6 @@
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
-            <metainf dir="${component.lib.home}">
-                <include name="ra.xml"/>
-            </metainf>
         </jar>
 
 
@@ -112,9 +102,6 @@
 
 
 	<!-- build JDBC RAR of type javax.sql.XADataSource -->
-        <copy file="xml/ra-xa.xml"
-              tofile="${component.lib.home}/ra.xml" overwrite="yes">
-        </copy>
         <jar jarfile="${component.lib.home}/__xa_jdbc_ra.rar"
              basedir="${component.lib.home}" excludes="**/*">
             <manifest>
@@ -125,9 +112,6 @@
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
-            <metainf dir="${component.lib.home}">
-                <include name="ra.xml"/>
-            </metainf>
         </jar>
 
 
@@ -145,9 +129,6 @@
         </jar>
 
         <!-- build JDBC RAR of type java.sql.Driver -->
-        <copy file="xml/ra-dm.xml"
-              tofile="${component.lib.home}/ra.xml" overwrite="yes">
-        </copy>
         <jar jarfile="${component.lib.home}/__dm_jdbc_ra.rar"
              basedir="${component.lib.home}" excludes="**/*">
             <manifest>
@@ -158,9 +139,6 @@
                 <attribute name="Implementation-Version" value="V3"/>
                 <attribute name="Implementation-Title" value="GlassFish"/>
             </manifest>
-            <metainf dir="${component.lib.home}">
-                <include name="ra.xml"/>
-            </metainf>
         </jar>
 
         <jar jarfile="${component.lib.home}/__dm_jdbc_ra.jar" update="true" basedir="${component.classes.dir}"

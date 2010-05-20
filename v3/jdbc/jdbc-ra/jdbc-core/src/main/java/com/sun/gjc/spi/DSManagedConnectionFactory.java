@@ -47,6 +47,7 @@ import javax.resource.spi.ResourceAllocationException;
 import javax.resource.spi.security.PasswordCredential;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.resource.spi.ConnectionDefinition;
 
 /**
  * Data Source <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -55,6 +56,12 @@ import java.util.logging.Logger;
  * @version 1.0, 02/07/30
  */
 
+@ConnectionDefinition(
+    connectionFactory = javax.sql.DataSource.class,
+    connectionFactoryImpl = com.sun.gjc.spi.base.DataSource.class,
+    connection = java.sql.Connection.class,
+    connectionImpl = com.sun.gjc.spi.base.ConnectionHolder.class
+)
 public class DSManagedConnectionFactory extends ManagedConnectionFactory {
 
     private transient javax.sql.DataSource dataSourceObj;

@@ -53,6 +53,8 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.resource.spi.ConfigProperty;
+import javax.resource.spi.ConnectionDefinition;
 
 /**
  * Driver Manager <code>ManagedConnectionFactory</code> implementation for Generic JDBC Connector.
@@ -60,7 +62,12 @@ import java.util.logging.Logger;
  * @author Evani Sai Surya Kiran
  * @version 1.0, 02/07/31
  */
-
+@ConnectionDefinition(
+    connectionFactory = javax.sql.DataSource.class,
+    connectionFactoryImpl = com.sun.gjc.spi.base.DataSource.class,
+    connection = java.sql.Connection.class,
+    connectionImpl = com.sun.gjc.spi.base.ConnectionHolder.class
+)
 public class DMManagedConnectionFactory extends ManagedConnectionFactory {
 
     Properties props;
@@ -318,6 +325,17 @@ public class DMManagedConnectionFactory extends ManagedConnectionFactory {
                 _logger.log(Level.FINE, "jdbc.exc_caught_ign", e.getMessage());
             }
         }
+    }
+
+    /**
+     * Sets the class name of the driver
+     *
+     * @param className <code>String</code>
+     */
+    @ConfigProperty(type = String.class, defaultValue = "org.apache.derby.jdbc.ClientDriver")
+    @Override
+    public void setClassName(String className) {
+        spec.setDetail(DataSourceSpec.CLASSNAME, className);
     }
 
     public void setURL(String url) {
