@@ -6,8 +6,14 @@ skip() {
     cat ${FILE} | while read LINE
     do
         NAME=${LINE%% *}
-        echo excluding \"${NAME}\"
-        sed -i -e "s@<ant dir=\"${NAME}\" target=\"all\"/>@<!--&-->@" build.xml
+        if [ -d "${NAME}" ]
+        then
+            echo excluding \"${NAME}\"
+            sed -e "s@^ *<ant dir=\"${NAME}\" target=\"all\"/>@<!--&-->@" build.xml > build.xml.sed
+            mv build.xml.sed build.xml
+        else
+            echo "***** ${NAME} is not a valid test directory *****" 
+        fi
     done
 }
 
