@@ -40,6 +40,7 @@
 package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyChangeEvent;
@@ -50,13 +51,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -73,6 +78,7 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -124,6 +130,8 @@ public class JavaWebStartInfo implements ConfigListener {
                 LogDomains.ACC_LOGGER);
 
     private VendorInfo vendorInfo;
+
+    private String signingAlias;
 
     final private Map<String,StaticContent> staticContent = new HashMap<String,StaticContent>();
     final private Map<String,DynamicContent> dynamicContent = new HashMap<String,DynamicContent>();
@@ -200,16 +208,7 @@ public class JavaWebStartInfo implements ConfigListener {
             return URI.create(relativePath);
         }
     }
-
-    private final static List<SignedSystemContentFromApp> SIGNED_SYSTEM_CONTENT_SERVED_AT_APP_LEVEL =
-            Arrays.asList(
-                new SignedSystemContentFromApp(
-                    "gf-client.jar",
-                    GLASSFISH_DIRECTORY_PREFIX + "modules/gf-client.jar"),
-                new SignedSystemContentFromApp(
-                    "gf-client-module.jar",
-                    GLASSFISH_DIRECTORY_PREFIX + "modules/gf-client-module.jar")
-                    );
+    
     /**
      * Completes initialization of the object.  Should be invoked immediate
      * after the object is created by the habitat.
@@ -230,6 +229,7 @@ public class JavaWebStartInfo implements ConfigListener {
         final File sourceDir = acDesc.getApplication().isVirtual() ?
             dc.getSourceDir() : new File(dc.getSource().getParentArchive().getURI());
         this.jnlpDoc = devJNLPDoc;
+        signingAlias = JWSAdapterManager.signingAlias(dc);
         dch.init(dc.getClassLoader(),
                     tHelper,
                     sourceDir,
@@ -489,12 +489,15 @@ public class JavaWebStartInfo implements ConfigListener {
         processExtensionReferences();
 
         /*
-         * Make sure that there are versions of gf-client.jar and gf-client-module.jar
+         * Make sure that there are versions of all GF system JARs
          * that are signed by the same cert used to sign the facade JAR for
          * this app.  That's because the user might have chosen to sign using
          * a particular alias so the end-users will accept JARs signed by
          * the corresponding cert.  (Java Web Start will prompt them to do this
-         * during the download of signed JARs.)
+         * during the download of signed JARs.)  Also, Java Web Start (as of
+         * 1.6.0_19) warns users about apps which run boh signed and unsigned
+         * code and segregates the two into different class loaders which
+         * would not work for us.
          *
          * Note that the following logic makes sure that such signed versions
          * exist.  If multiple apps use the same cert to sign JARs, then the
@@ -502,7 +505,7 @@ public class JavaWebStartInfo implements ConfigListener {
          * JAR will point to and reuse the same signed JAR, rather than
          * re-sign it each time an app needed it is started.
          */
-        addSignedSystemContent(staticContent);
+        addSignedSystemContent();
 
         /*
          * The developer might have used the sun-application-client.xml
@@ -519,16 +522,22 @@ public class JavaWebStartInfo implements ConfigListener {
     }
 
     private void addSignedSystemContent(
-            final Map<String,StaticContent> content) throws FileNotFoundException {
-        for (SignedSystemContentFromApp signedContentFromApp : SIGNED_SYSTEM_CONTENT_SERVED_AT_APP_LEVEL) {
-            final AutoSignedContent signedContent =
-                    jwsAdapterManager.appLevelSignedSystemContent(
-                        signedContentFromApp.getRelativePath(),
-                        JWSAdapterManager.signingAlias(dc));
-            recordStaticContent(content, signedContent,
-                    signedContentFromApp.getRelativePathURI(),
-                    signedContentFromApp.getTokenName());
-        }
+            ) throws FileNotFoundException, IOException {
+        final List<String> systemJARRelativeURIs = new ArrayList<String>();
+        final Map<String,StaticContent> addedStaticContent =
+                jwsAdapterManager.addStaticSystemContent(
+                    systemJARRelativeURIs,
+                    signingAlias);
+        final Map<String,DynamicContent> addedDynContent = 
+                jwsAdapterManager.addDynamicSystemContent(
+                    systemJARRelativeURIs,
+                    signingAlias);
+        jwsAdapterManager.addContentIfAbsent(addedStaticContent, addedDynContent);
+
+        tHelper.setProperty("gf-client.jar", jwsAdapterManager.systemPathInClientJNLP(
+                jwsAdapterManager.gfClientJAR().toURI(), signingAlias));
+        tHelper.setProperty("gf-client-module.jar", jwsAdapterManager.systemPathInClientJNLP(
+                jwsAdapterManager.gfClientModuleJAR().toURI(), signingAlias));
     }
 
     private void createAndAddSignedContentFromAppFile(final Map<String,StaticContent> content,
@@ -581,7 +590,7 @@ public class JavaWebStartInfo implements ConfigListener {
         final StaticContent signedJarContent = new AutoSignedContent(
                 unsignedFile,
                 signedFile,
-                JWSAdapterManager.signingAlias(dc),
+                signingAlias,
                 jarSigner);
         return signedJarContent;
     }
@@ -768,11 +777,6 @@ public class JavaWebStartInfo implements ConfigListener {
                 vendorInfo().JNLPImageURI(), staticContent);
         addImageContentIfSpecified(vendorInfo().getSplashImageURI(),
                 vendorInfo().JNLPSplashImageURI(), staticContent);
-
-//        if (result.length() == 0) {
-//            result.append("<!-- No image information specified in sun-application-client.xml -->");
-//        }
-//        tokens.setProperty(MAIN_IMAGE_XML_PROPERTY_NAME, result.toString());
     }
 
     private void addImageContentIfSpecified(

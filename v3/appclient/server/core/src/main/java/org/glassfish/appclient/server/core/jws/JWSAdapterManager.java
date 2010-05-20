@@ -48,8 +48,8 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,11 +69,9 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.appclient.server.core.AppClientDeployer;
 import org.glassfish.appclient.server.core.AppClientServerApplication;
 import org.glassfish.appclient.server.core.jws.ExtensionFileManager.Extension;
-import org.glassfish.appclient.server.core.jws.ExtensionFileManager.ExtensionKey;
 import org.glassfish.appclient.server.core.jws.servedcontent.ASJarSigner;
 import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
-import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.internal.api.ServerContext;
@@ -174,11 +172,6 @@ public class JWSAdapterManager implements PostConstruct {
     
     /**
      * Adds more static content to the content served by the system adapter.
-     * <p>
-     * Most system content is known during start-up and is set by initStaticSystemContent.
-     * One use for this method is during deployment of an app client which
-     * declares a dependency on an optional library JAR.  The JAR is really a
-     * system JAR but we discover the need to serve it only during deployment.
      * @param lookupURI
      * @param content
      */
@@ -200,18 +193,8 @@ public class JWSAdapterManager implements PostConstruct {
 
 
         try {
-            final List<String> systemJARRelativeURIs = new ArrayList<String>();
-
-            Map<String,StaticContent> staticSystemContent =
-                    initStaticSystemContent(systemJARRelativeURIs);
-
-            final Map<String,DynamicContent> dynamicSystemContent =
-                    initDynamicSystemContent(systemJARRelativeURIs);
-
             AppClientHTTPAdapter sysAdapter = new AppClientHTTPAdapter(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
-                    staticSystemContent, 
-                    dynamicSystemContent,
                     new Properties(),
                     serverEnv.getDomainRoot(), new File(installRootURI),
                     iiopService);
@@ -232,34 +215,41 @@ public class JWSAdapterManager implements PostConstruct {
         }
     }
 
-    private Map<String,StaticContent> initStaticSystemContent(final List<String> systemJARRelativeURIs) throws IOException {
+    void addContentIfAbsent(final Map<String,StaticContent> staticContent,
+            final Map<String,DynamicContent> dynamicContent) throws IOException {
+        systemAdapter().addContentIfAbsent(staticContent, dynamicContent);
+    }
+    
+    /**
+     * Records the need for signed copies of the GlassFish system JARs for the
+     * specified signing alias.
+     *
+     * @param systemJARRelativeURIs populated with the relative URIs for the added content
+     * @param signingAlias alias to use in signing the JARs
+     * @return map from the key by which the content will be stored to the content for that key
+     * @throws IOException
+     */
+    Map<String,StaticContent> addStaticSystemContent(
+            final List<String> systemJARRelativeURIs,
+            final String signingAlias) throws IOException {
         /*
-         * This method builds the static content for the "system" Grizzly
+         * This method builds the static content for a given signing alias to
+         * be served by the "system" Grizzly
          * adapter which serves files from the installation, as opposed to
          * files from the domain or files from a specific app.
-         *
-         * Note that at least part of every deployed app will be signed, if not
-         * by the developer before deployment then by the server during
-         * deployment.  The certificates used for this signing could vary from
-         * one domain to another, and even from one application to another if
-         * the deployer so chooses.  So in this method we do NOT create
-         * static content entries for the gf-client.jar and gf-client-module.jar
-         * files.  Instead those are handled by the AppClientServerApplication
-         * logic.
          */
-        final File modulesDir = new File(installRootURI.getRawPath(), "modules");
         Map<String,StaticContent> result = new HashMap<String,StaticContent>();
-        File gfClientJAR = new File(
-            modulesDir,
-            "gf-client.jar");
+        File gfClientJAR = gfClientJAR();
 
         final String classPathExpr = getGFClientModuleClassPath(gfClientJAR);
         final URI gfClientJARURI = gfClientJAR.toURI();
 
-        result.put(systemPath(gfClientJARURI), new FixedContent(new File(gfClientJARURI)));
+        result.put(systemPath(gfClientJARURI, signingAlias),
+                systemJarSignedContent(gfClientJAR, signingAlias));
+
         for (String classPathElement : classPathExpr.split(" ")) {
             final URI uri = gfClientJARURI.resolve(classPathElement);
-            final String systemPath = systemPath(uri);
+            final String systemPath = systemPath(uri, signingAlias);
             /*
              * There may be elements in the class path which do not exist
              * on some platforms.  So make sure the file exists before we offer
@@ -269,7 +259,8 @@ public class JWSAdapterManager implements PostConstruct {
             final String relativeSystemPath = relativeSystemPath(uri);
             if (candidateFile.exists() && 
                 ( ! candidateFile.isDirectory()) && ( ! DO_NOT_SERVE_LIST.contains(relativeSystemPath))) {
-                result.put(systemPath, new FixedContent(new File(uri)));
+                result.put(systemPath,
+                           systemJarSignedContent(candidateFile, signingAlias));
                 systemJARRelativeURIs.add(relativeSystemPath(uri));
             }
         }
@@ -277,7 +268,7 @@ public class JWSAdapterManager implements PostConstruct {
         /*
          * Add the endorsed JARs to the system content.
          */
-        final File endorsedDir = new File(modulesDir, "endorsed");
+        final File endorsedDir = new File(modulesDir(), "endorsed");
         for (File endorsedJar : endorsedDir.listFiles(new FileFilter(){
 
                     @Override
@@ -285,10 +276,27 @@ public class JWSAdapterManager implements PostConstruct {
                         return (pathname.isFile() && pathname.getName().endsWith(".jar"));
                     }
             })) {
-            result.put(systemPath(endorsedJar.toURI()), new FixedContent(endorsedJar));
+            result.put(systemPath(endorsedJar.toURI()),
+                    systemJarSignedContent(endorsedJar, signingAlias));
             systemJARRelativeURIs.add(relativeSystemPath(endorsedJar.toURI()));
         }
         return result;
+    }
+
+    File gfClientJAR() {
+        return new File(
+            modulesDir(),
+            "gf-client.jar");
+    }
+
+    File gfClientModuleJAR() {
+        return new File(
+            modulesDir(),
+            "gf-client-module.jar");
+    }
+
+    private File modulesDir() {
+        return new File(installRootURI.getRawPath(), "modules");
     }
 
     static String publicExtensionHref(final Extension ext) {
@@ -301,19 +309,28 @@ public class JWSAdapterManager implements PostConstruct {
                 ext.getFile().getName();
     }
 
-    private Map<String,DynamicContent> initDynamicSystemContent(final List<String> systemJARRelativeURIs) throws IOException {
+    private AutoSignedContent systemJarSignedContent (
+            final File unsignedFile,
+            final String signingAlias) throws FileNotFoundException {
+        final File signedFile = new File(signedSystemContentAliasDir(signingAlias),
+                relativeSystemPath(unsignedFile.toURI()));
+        return new AutoSignedContent(unsignedFile, signedFile, signingAlias, jarSigner);
+    }
+
+    Map<String,DynamicContent> addDynamicSystemContent(final List<String> systemJARRelativeURIs,
+            final String signingAlias) throws IOException {
         final Map<String,DynamicContent> result = new HashMap<String,DynamicContent>();
         final String template = JavaWebStartInfo.textFromURL(
                 "/org/glassfish/appclient/server/core/jws/templates/systemJarsDocumentTemplate.jnlp");
         final StringBuilder sb = new StringBuilder();
         for (String relativeURIString : systemJARRelativeURIs) {
-            sb.append("<jar href=\"" + relativeURIString + "\"/>").append(LINE_SEP);
+            sb.append("<jar href=\"" + signingAlias + "/" + relativeURIString + "\"/>").append(LINE_SEP);
         }
         
         final Properties p = new Properties();
         p.setProperty("system.jars", sb.toString());
         final String replacedText = Util.replaceTokens(template, p);
-        result.put(NamingConventions.systemJNLPURI(),
+        result.put(NamingConventions.systemJNLPURI(signingAlias),
                 new SimpleDynamicContentImpl(replacedText, "jnlp"));
 
         return result;
@@ -324,6 +341,16 @@ public class JWSAdapterManager implements PostConstruct {
                 relativeSystemPath(systemFileURI);
     }
 
+    String systemPath(final URI systemFileURI, final String signingAlias) {
+        return signingAlias + "/" + relativeSystemPath(systemFileURI);
+    }
+
+    String systemPathInClientJNLP(final URI systemFileURI, final String signingAlias) {
+        return "${request.scheme}://${request.host}:${request.port}" +
+                NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX + "/" + 
+                signingAlias + "/" + relativeSystemPath(systemFileURI);
+    }
+    
     private String relativeSystemPath(final URI systemFileURI) {
         return umbrellaRootURI.relativize(systemFileURI).getPath();
     }
@@ -513,10 +540,14 @@ public class JWSAdapterManager implements PostConstruct {
         return result;
     }
 
-    private String keyToAppLevelSignedSystemContentMap(
+    private static String keyToAppLevelSignedSystemContentMap(
             final String relativePathToSystemJar,
             final String alias) {
         return alias + "/" + relativePathToSystemJar;
+    }
+
+    File signedSystemContentAliasDir(final String alias) {
+        return new File(systemLevelSignedJARsRoot, alias);
     }
 
     public String contextRootForAppAdapter(final String appName) {
