@@ -583,6 +583,8 @@ public class CommandRunnerImpl implements CommandRunner {
 		ppart.addProperty("default", param.defaultValue());
 	    if (ok(param.acceptableValues()))
 		ppart.addProperty("acceptable-values", param.acceptableValues());
+	    if (ok(param.alias()))
+		ppart.addProperty("alias", param.alias());
 	}
 
 	// are operands allowed?

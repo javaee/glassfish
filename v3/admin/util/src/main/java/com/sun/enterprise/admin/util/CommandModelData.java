@@ -142,7 +142,12 @@ public class CommandModelData extends CommandModel {
 	}
 
         public ParamModelData(String name, Class type, boolean optional,
-                                String def, String shortName, boolean obs) {
+			    String def, String shortName, boolean obsolete) {
+	    this(name, type, optional, def, shortName, obsolete, "");
+	}
+
+        public ParamModelData(String name, Class type, boolean optional,
+		String def, String shortName, boolean obsolete, String alias) {
             ParamData param = new ParamData();
             param._name = name;
             param._optional = optional;
@@ -150,7 +155,10 @@ public class CommandModelData extends CommandModel {
             if (shortName == null)
                 shortName = "";
             param._shortName = shortName;
-            param._obsolete = obs;
+            param._obsolete = obsolete;
+	    if (alias == null)
+		alias = "";
+            param._alias = alias;
             ParamModelData.this.name = name;
             ParamModelData.this.type = type;
             ParamModelData.this.param = param;
@@ -202,6 +210,7 @@ public class CommandModelData extends CommandModel {
         public char _separator = ',';
         public boolean _multiple = false;
         public boolean _obsolete = false;
+        public String _alias = "";
 
         @Override
         public Class<? extends Annotation> annotationType() {
@@ -228,6 +237,8 @@ public class CommandModelData extends CommandModel {
         public boolean multiple() { return _multiple; }
         @Override
         public boolean obsolete() { return _obsolete; }
+        @Override
+        public String alias() { return _alias; }
 
         @Override
         public String toString() {
@@ -240,7 +251,8 @@ public class CommandModelData extends CommandModel {
                 ", password=" + _password +
                 ", separator=" + _separator +
                 ", multiple=" + _multiple +
-                ", obsolete=" + _obsolete;
+                ", obsolete=" + _obsolete +
+                ", alias=" + _alias;
         }
     }
 }

@@ -802,13 +802,15 @@ public class RemoteAdminCommand {
                 String sn = getAttr(attrs, "short");
                 String def = getAttr(attrs, "default");
                 String obs = getAttr(attrs, "obsolete");
+                String alias = getAttr(attrs, "alias");
                 ParamModelData opt = new ParamModelData(
                         getAttr(attrs, "name"),
                         typeOf(getAttr(attrs, "type")),
                         Boolean.parseBoolean(getAttr(attrs, "optional")),
                         def,
                         ok(sn) ? sn : null,
-			ok(obs) ? Boolean.parseBoolean(obs) : false);
+			ok(obs) ? Boolean.parseBoolean(obs) : false,
+			alias);
                 if (getAttr(attrs, "type").equals("PASSWORD")) {
                     opt.param._password = true;
                     opt.description = getAttr(attrs, "description");

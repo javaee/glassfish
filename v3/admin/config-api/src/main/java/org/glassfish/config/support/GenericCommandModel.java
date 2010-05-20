@@ -211,6 +211,10 @@ public class GenericCommandModel extends CommandModel {
                 public boolean obsolete() {
                     return false;
                 }
+
+                public String alias() {
+                    return "";
+                }
             };
         }
     }

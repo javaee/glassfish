@@ -120,7 +120,9 @@ public abstract class CommandModel {
             if (getParam().password()) {
                 return key.startsWith(ASADMIN_CMD_PREFIX);
             }
-            return getName().equals(key) || getParam().shortName().equals(key);
+            return getName().equals(key) ||
+		    getParam().shortName().equals(key) ||
+		    getParam().alias().equals(key);
         }
 
     }

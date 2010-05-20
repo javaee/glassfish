@@ -176,6 +176,10 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
         String paramValueStr = getParameterValue(parameters,
                                       CommandModel.getParamName(param, target),
                                       true);
+        if (paramValueStr == null && param.alias().length() > 0) {
+            // check for alias
+            paramValueStr = parameters.getOne(param.alias());
+        }
         if (paramValueStr == null) {
             // check for shortName
             paramValueStr = parameters.getOne(param.shortName());

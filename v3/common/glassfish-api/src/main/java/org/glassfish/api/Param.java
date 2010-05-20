@@ -136,4 +136,13 @@ public @interface Param {
      * @return true if the parameter is obsolete
      */
     public boolean obsolete() default false;
+
+    /**
+     * Returns an alias for the option.
+     * This supports renaming options and supporting both the old name
+     * and the new name.
+     *
+     * @return the parameter alias
+     */
+    public String alias() default "";
 }

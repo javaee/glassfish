@@ -263,13 +263,19 @@ public class Parser {
      * Get ParamModel for long option name.
      */
     private ParamModel lookupLongOption(String s) {
+	if (s == null || s.length() == 0)
+	    return null;
         // XXX - for now, fake it if no options
         if (options == null) {
             // no valid options specified so everything is valid
             return new ParamModelData(s, String.class, true, null);
         }
         for (ParamModel od : options) {
-            if (od.getName().equals(s) && !od.getParam().primary())
+            if (od.getParam().primary())
+		continue;
+            if (s.equals(od.getName()))
+                return od;
+	    if (s.equals(od.getParam().alias()))
                 return od;
         }
         return null;
