@@ -39,10 +39,10 @@ package com.sun.enterprise.admin.cli.optional;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.admin.*;
+import org.glassfish.api.Param;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.launcher.GFLauncher;
@@ -55,7 +55,7 @@ import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.io.DomainDirs;
 
 /**
  *  This is a local command that lists the domains.
@@ -63,34 +63,33 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 @Service(name = "list-domains")
 @Scoped(PerLookup.class)
 public final class ListDomainsCommand extends LocalDomainCommand {
+    @Param(name = "domaindir", optional = true)
+    private String domainDirParam = null;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);
+    private String domainsRoot = null;
 
-    /**
-     * Override superclass version to do nothing, since this command
-     * doesn't operate on just a single domain.
+    /*
+     * We don't want the domain to be initialized since this command is not
+     * for a specific domain.
      */
-    protected void initDomain() {
-    }
- 
-    /**
-     */
+    @Override
+    protected void initDomain() throws CommandException { }
+
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
         try {
-            DomainConfig domainConfig = new DomainConfig(null, 
-                getDomainsRoot());
+            DomainConfig domainConfig = new DomainConfig(null, getDomainsRoot());
             DomainsManager manager = new PEDomainsManager();
             String[] domainsList = manager.listDomains(domainConfig);
             programOpts.setInteractive(false);  // no prompting for passwords
             if (domainsList.length > 0) {
-                for (int i = 0; i < domainsList.length; i++) {
-                    String dn = domainsList[i];
+                for (String dn : domainsList) {
                     String status = getStatus(dn);
-                    String name = strings.get("list.domains.Name");
-                    logger.printMessage(name + " " + dn + " " + status);
+                    String dname = strings.get("list.domains.Name");
+                    logger.printMessage(dname + " " + dn + " " + status);
                 }
             } else {
                 logger.printDetailMessage(strings.get("NoDomainsToList"));
@@ -102,30 +101,34 @@ public final class ListDomainsCommand extends LocalDomainCommand {
     }
 
     protected String getDomainsRoot() throws CommandException {
-        File dd = getDomainsDir();
-        
-        if (dd == null)
-            dd = new File(getSystemProperty(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
-
-        if (!dd.isDirectory()) {
-            throw new CommandException(
-                            strings.get("InvalidDomainPath", dd));
+        if (domainsRoot != null) {
+            return domainsRoot;
         }
-        return SmartFile.sanitize(dd.getAbsolutePath());
+        try {
+            File domainsDirFile = ok(domainDirParam) ?
+                new File(domainDirParam) : DomainDirs.getDefaultDomainsDir();
+            if (!domainsDirFile.isDirectory()) {
+                throw new CommandException(
+                            strings.get("InvalidDomainPath",
+                            domainsDirFile.toString()));
+            }
+            domainsRoot = SmartFile.sanitize(domainsDirFile.getAbsolutePath());
+            return domainsRoot;
+        }
+        catch (IOException ioe) {
+            throw new CommandException(strings.get("InvalidDomainPath",
+                    ioe.getLocalizedMessage()));
+        }
     }
 
     // Implementation note: This has to be redone - km@dev.java.net (Aug 2008)
-    private String getStatus(String dn) throws IOException {
+    private String getStatus(String dn) throws IOException, CommandException {
         try {
             GFLauncher launcher = GFLauncherFactory.getInstance(
                 RuntimeType.DAS);
             GFLauncherInfo li = launcher.getInfo();
-            File parentFile = getDomainsDir();
-            String parent = null;
+            String parent = getDomainsRoot();
             
-            if(parentFile != null && parentFile.isDirectory())
-                parent = parentFile.getPath();
-
             if (parent != null)
                 li.setDomainParentDir(parent);            
 

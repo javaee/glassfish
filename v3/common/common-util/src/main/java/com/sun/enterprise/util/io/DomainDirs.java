@@ -33,17 +33,9 @@ public final class DomainDirs {
      * the domains-dir is known.
      */
     public DomainDirs(File domainsDir, String domainName) throws IOException {
-        Map<String, String> systemProps = new ASenvPropertyReader().getProps();
 
         if(domainsDir == null || !domainsDir.isDirectory()) {
-            String defDomains =
-                systemProps.get(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
-
-            if(defDomains == null)
-                throw new IOException(strings.get("Domain.noDomainsDir",
-                        SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
-
-            domainsDir = new File(defDomains);
+            domainsDir = getDefaultDomainsDir();
         }
 
         if(!domainsDir.isDirectory()) {
@@ -116,6 +108,18 @@ public final class DomainDirs {
         }
     }
 
+    public static File getDefaultDomainsDir() throws IOException {
+        Map<String, String> systemProps = new ASenvPropertyReader().getProps();
+        String defDomains =
+                systemProps.get(SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
+
+        if (defDomains == null)
+            throw new IOException(strings.get("Domain.noDomainsDir",
+                    SystemPropertyConstants.DOMAINS_ROOT_PROPERTY));
+
+        return new File(defDomains);
+
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
