@@ -217,6 +217,8 @@ class InstanceReaderFilter extends ServerReaderFilter {
      * @param reader
      */
     private void reparse() throws XMLStreamException {
+        logger.warning(strings.get("InstanceReaderFilter.ReparseNeeded"));
+
         String name = reparseReader.getLocalName();
 
         if(!StringUtils.ok(name))
