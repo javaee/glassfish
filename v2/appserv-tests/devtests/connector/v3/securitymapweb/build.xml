@@ -146,6 +146,9 @@
 
   <target name="execute-sql" depends="init-common" >
     <echo message="***** LD_LIBRARY_PATH=${env.LD_LIBRARY_PATH}  *****"/>
+    <echo message="url jdbc:derby://${db.host}:${db.port}/${db.name};create=true"/>
+    <echo message="userid ${database.user}"/>
+    <echo message="password ${database.password}"/>
     <sql
       driver="${db.driver}"
       url="jdbc:derby://${db.host}:${db.port}/${db.name};create=true"
@@ -396,11 +399,9 @@
         <echo message="AS_ADMIN_MAPPEDPASSWORD=${mappedpassword}${line.separator}" file="${admin.password.file}" append="true"/>
     <exec executable="${ASADMIN}" failonerror="false">
       <arg line="create-connector-security-map"/>
-      <arg line="${as.props}"/>
       <arg line="${principals}"/>
       <arg line="--poolname ${poolname}"/>
-      <!-- custom parameter -->
-      <arg line="--passwordfile1 ${admin.password.file}"/>
+      <arg line="--passwordfile ${admin.password.file}"/>
       <arg line="--mappedusername ${mappeduser}"/>
       <arg line="${map.name}"/>
     </exec>

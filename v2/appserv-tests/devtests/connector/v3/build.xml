@@ -304,6 +304,9 @@
         <echo message="@@## beanvalidation-simple ##@@"/>
         <ant dir="beanvalidation-simple" target="embedded-all"/>
 
+       <echo message="@@## security-map-web#@@"/>
+        <ant dir="securitymapweb" target="all"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>

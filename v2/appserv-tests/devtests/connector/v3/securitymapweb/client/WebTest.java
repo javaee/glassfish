@@ -43,8 +43,7 @@ public class WebTest {
         for (int i = 0; i <users.length; i++) {
             sendRequest(users[i]);
 
-            //if (query(dbUsers[i], users[i]))
-            if (query("dbmap1", users[i]))
+            if (query(dbUsers[i], users[i]))
                 status.addStatus("connector.securitymapweb.test" + (1 + i),
                                  status.PASS);
             else
