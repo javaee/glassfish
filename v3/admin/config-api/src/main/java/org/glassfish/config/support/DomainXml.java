@@ -152,17 +152,12 @@ public abstract class DomainXml implements Populator {
      */
     protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
         try {
-            // wbn: March 17, 2010 -- we use this constructor which adds ALL config
-            // elements to the habitat and checks that every server element has its
-            // config element available
-
-            DomainXmlReader xsr = null;
+            ServerReaderFilter xsr = null;
 
             if(env.getRuntimeType() == RuntimeType.DAS)
-                xsr = new DomainXmlReader(domainXml, xif, logger);
+                xsr = new DasReaderFilter(habitat, domainXml, xif, logger);
             else if(env.getRuntimeType() == RuntimeType.INSTANCE)
-                xsr = new DomainXmlReader(domainXml, env.getInstanceName(), 
-                        xif, logger);
+                xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif, logger);
             else
                 throw new RuntimeException("Internal Error: Unknown server type: "
                         + env.getRuntimeType());
