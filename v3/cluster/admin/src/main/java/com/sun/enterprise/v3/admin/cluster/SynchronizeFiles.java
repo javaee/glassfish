@@ -473,8 +473,10 @@ logger.setLevel(Level.FINEST);
     private void synchronizeLib(AdminCommandContext context,
                                     Server server, SyncRequest sr)
                                     throws URISyntaxException {
+        List<String> skip = new ArrayList<String>();
+        skip.add("databases");
         synchronizeDirectory(context, server, sr,
-                                env.getLibPath(), SyncLevel.RECURSIVE);
+                                env.getLibPath(), skip, SyncLevel.RECURSIVE);
     }
 
     /**
@@ -484,7 +486,7 @@ logger.setLevel(Level.FINEST);
                                     Server server, SyncRequest sr)
                                     throws URISyntaxException {
         synchronizeDirectory(context, server, sr,
-                                new File(env.getDomainRoot(), "docroot"),
+                                new File(env.getDomainRoot(), "docroot"), null,
                                 SyncLevel.DIRECTORY);
     }
 
@@ -492,10 +494,10 @@ logger.setLevel(Level.FINEST);
      * Synchronize a directory.
      */
     private void synchronizeDirectory(AdminCommandContext context,
-            Server server, SyncRequest sr, File dir, SyncLevel level)
-            throws URISyntaxException {
+            Server server, SyncRequest sr, File dir, List<String> skip,
+            SyncLevel level) throws URISyntaxException {
         logger.finest("SynchronizeFiles: directory is " + dir);
-        List<String> fileSet = getFileNames(dir, level);
+        List<String> fileSet = getFileNames(dir, skip, level);
         synchronizeDirectory(context, server, sr, dir, fileSet);
     }
 
@@ -537,7 +539,7 @@ logger.setLevel(Level.FINEST);
             return;             // nothing to do
 
         List<String> fileSet = new ArrayList<String>();
-        getFileNames(configSpecificDir, configDir, fileSet,
+        getFileNames(configSpecificDir, configDir, fileSet, null,
                                                         SyncLevel.DIRECTORY);
         synchronizeDirectory(context, server, sr, configDir, fileSet);
     }
@@ -546,10 +548,11 @@ logger.setLevel(Level.FINEST);
      * Return a list with the names of all the
      * files in the specified directory.
      */
-    private List<String> getFileNames(File dir, SyncLevel level) {
+    private List<String> getFileNames(File dir, List<String> skip,
+                                        SyncLevel level) {
         List<String> names = new ArrayList<String>();
         if (dir.exists())
-            getFileNames(dir, dir, names, level);
+            getFileNames(dir, dir, skip, names, level);
         else
             logger.finest("SynchronizeFiles: directory doesn't exist: " + dir);
         return names;
@@ -561,8 +564,8 @@ logger.setLevel(Level.FINEST);
      * RECURSIVE, check subdirectories and only include times for files,
      * not directories.
      */
-    private void getFileNames(File dir, File baseDir, List<String> names,
-                                    SyncLevel level) {
+    private void getFileNames(File dir, File baseDir, List<String> skip,
+                                List<String> names, SyncLevel level) {
         if (level == SyncLevel.TOP) {
             String name = baseDir.toURI().relativize(dir.toURI()).getPath();
             // if name is a directory, it will end with "/"
@@ -573,13 +576,15 @@ logger.setLevel(Level.FINEST);
         }
         for (String file : dir.list()) {
             File f = new File(dir, file);
-            if (f.isDirectory() && level == SyncLevel.RECURSIVE)
-                getFileNames(f, baseDir, names, level);
-            else {
-                String name = baseDir.toURI().relativize(f.toURI()).getPath();
-                // if name is a directory, it will end with "/"
-                if (name.endsWith("/"))
-                    name = name.substring(0, name.length() - 1);
+            String name = baseDir.toURI().relativize(f.toURI()).getPath();
+            // if name is a directory, it will end with "/"
+            if (name.endsWith("/"))
+                name = name.substring(0, name.length() - 1);
+            if (skip != null && skip.contains(name))
+                continue;
+            if (f.isDirectory() && level == SyncLevel.RECURSIVE) {
+                getFileNames(f, baseDir, skip, names, level);
+            } else {
                 names.add(name);
             }
         }
