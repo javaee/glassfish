@@ -61,7 +61,7 @@ public class SecurityConstraint {
      * Sets the web resource collection associated with this
      * security constrint
      *
-     * @see org.glassfish.web.embed.config.WebResourceCollection
+     * @see org.glassfish.api.embedded.web.config.WebResourceCollection
      * 
      * @param webResourceCollection the web resource collection
      * for this constraint definition
@@ -73,7 +73,7 @@ public class SecurityConstraint {
     /**
      * Gets the web resource collection for this security constraint
      *
-     * @see org.glassfish.web.embed.config.WebResourceCollection
+     * @see org.glassfish.api.embedded.web.config.WebResourceCollection
      *
      * @return the web resource collection for this security constraint
      */
@@ -100,7 +100,7 @@ public class SecurityConstraint {
      * container must accept the request when received over any connection,
      * including an unprotected one.
      *
-     * @see org.glassfish.web.embed.config.TransportGuarantee
+     * @see org.glassfish.api.embedded.web.config.TransportGuarantee
      *
      * @param tg the transport guarntee
      */
@@ -121,7 +121,7 @@ public class SecurityConstraint {
     /**
      * Gets the transport guarantee requirements for this SecurityConstraint
      *
-     * @see org.glassfish.web.embed.config.TransportGuarantee
+     * @see org.glassfish.api.embedded.web.config.TransportGuarantee
      *
      * @return the transport guarantee requirement for this SecurityConstraint
      */

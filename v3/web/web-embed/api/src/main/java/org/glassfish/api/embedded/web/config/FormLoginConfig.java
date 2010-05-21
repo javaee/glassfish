@@ -41,8 +41,8 @@ package org.glassfish.api.embedded.web.config;;
  * Class that is used for configuring form based login, when
  * the authentication method is set to <tt>FORM</tt> in <tt>LoginConfig</tt>
  *
- * @see org.glassfish.web.embed.config.LoginConfig
- * @see org.glassfish.web.embed.config.AuthMethod
+ * @see org.glassfish.api.embedded.web.config.LoginConfig
+ * @see org.glassfish.api.embedded.web.config.AuthMethod
  *
  * @author Rajiv Mordani
  */

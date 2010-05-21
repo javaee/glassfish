@@ -40,7 +40,7 @@ package org.glassfish.api.embedded.web.config;
 /**
  * Class that is used for configuring WebListener instances.
  *
- * @see org.glassfish.web.embed.WebListener
+ * @see org.glassfish.api.embedded.web.WebListener
  */
 public class WebListenerConfig {
 

@@ -40,7 +40,7 @@ package org.glassfish.api.embedded.web.config;
 /**
  * Class that is used for configuring VirtualServer instances.
  *
- * @see org.glassfish.web.embed.VirtualServer
+ * @see org.glassfish.api.embedded.web.VirtualServer
  */
 public class VirtualServerConfig {
 

@@ -62,7 +62,7 @@ public class SecurityConfig {
     /**
      * Set the security constraints for a context.
      *
-     * @see org.glassfish.web.embed.config.SecurityConstraint
+     * @see org.glassfish.api.embedded.web.config.SecurityConstraint
      *
      * @param securityConstraints a set of constraints for the
      * context on which this security configuration applies.
@@ -74,7 +74,7 @@ public class SecurityConfig {
     /**
      * Configures the login related configuration for the context
      *
-     * @see org.glassfish.web.embed.config.LoginConfig
+     * @see org.glassfish.api.embedded.web.config.LoginConfig
      *
      * @param lc the login config for the context
      */
@@ -85,7 +85,7 @@ public class SecurityConfig {
     /**
      * Gets the security constraints for the context
      *
-     * @see org.glassfish.web.embed.config.SecurityConstraint
+     * @see org.glassfish.api.embedded.web.config.SecurityConstraint
      *
      * @return the security constraints for the context
      */
@@ -96,7 +96,7 @@ public class SecurityConfig {
     /**
      * Gets the login config for the context
      *
-     * @see org.glassfish.web.embed.config.LoginConfig
+     * @see org.glassfish.api.embedded.web.config.LoginConfig
      *
      * @return the login configuration for the context
      */
