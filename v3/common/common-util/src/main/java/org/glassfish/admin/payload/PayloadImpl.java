@@ -239,9 +239,10 @@ public class PayloadImpl implements Payload {
                 final String dataRequestName,
                 final Properties enhancedProps,
                 final File dirFile) throws FileNotFoundException, IOException {
+            final String dirFileURIPath = dirFileURI.getPath();
             parts.add(Part.newInstance(
                 "application/octet-stream", /* for the directory itself */
-                dirFileURI.getPath(),
+                dirFileURIPath + (dirFileURIPath.endsWith("/") ? "" : "/"),
                 enhancedProps,
                 (InputStream) null));
 
