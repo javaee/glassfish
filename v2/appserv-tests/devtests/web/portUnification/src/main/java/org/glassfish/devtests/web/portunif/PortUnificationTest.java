@@ -164,19 +164,21 @@ public class PortUnificationTest extends BaseDevTest {
         report("delete-http-protocol", asadmin("delete-protocol",
             httpName));
 
-//        report("delete-protocol-finder-http", asadmin("delete-protocol-finder",
-//            "--protocol", puName,
-//            "http-finder"));
-//        report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
-//            "--protocol", puName,
-//            "dummy-finder"));
+        report("delete-protocol-finder-http", asadmin("delete-protocol-finder",
+            "--protocol", puName,
+            "http-finder"));
+        report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
+            "--protocol", puName,
+            "dummy-finder"));
 
         report("delete-protocol-filter-dummy", asadmin("delete-protocol-filter",
             "--protocol", dummyName,
             "dummy-filter"));
         
-//        report("delete-dummy-protocol", asadmin("delete-protocol",
-//            dummyName));
+        report("delete-dummy-protocol", asadmin("delete-protocol",
+            dummyName));
+        report("delete-pu-protocol", asadmin("delete-protocol",
+            puName));
     }
 
     private void close(Closeable c) {
