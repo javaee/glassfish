@@ -42,8 +42,6 @@ import com.sun.enterprise.admin.launcher.GFLauncherFactory;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import java.io.*;
-import java.io.BufferedReader;
-import java.io.File;
 
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -54,12 +52,14 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.admin.cli.StartServerCommand;
+
 /**
  * Start a local server instance.
  */
 @Service(name = "start-local-instance")
 @Scoped(PerLookup.class)
-public class StartLocalInstanceCommand extends LocalInstanceCommand implements StartServerCommand {
+public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
+                                        implements StartServerCommand {
     @Param(optional = true, defaultValue = "false")
     private boolean verbose;
 
@@ -69,9 +69,12 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
 
+    @Param(optional = true, defaultValue = "false")
+    private boolean nosync;
 
-    @Param(name = "instance_name", primary = true, optional = false)
-    private String instanceName0;
+    // handled by superclass
+    //@Param(name = "instance_name", primary = true, optional = false)
+    //private String instanceName0;
 
     private StartServerHelper helper;
 
@@ -85,28 +88,20 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
          return RuntimeType.INSTANCE;
     }
 
-    @Override
-    protected void validate()
-                        throws CommandException, CommandValidationException {
-      
-        if(ok(instanceName0))
-            instanceName = instanceName0;
-        else
-            throw new CommandValidationException(strings.get("Instance.badInstanceName"));
-
-        // call this AFTER the above!  validate() calls initInstance() which
-        // will use instanceName.
-
-        super.validate(); // sets all the dirs
-    }
-
     /**
      */
     @Override
-    protected int executeCommand()
-            throws CommandException, CommandValidationException {
+    protected int executeCommand() throws CommandException {
 
         logger.printDebugMessage(toString());
+
+        if (nosync) {
+            logger.printMessage(strings.get("Instance.nosync"));
+        } else {
+            if (!synchronizeInstance())
+                logger.printMessage(strings.get("Instance.syncFailed"));
+        }
+
         try {
                  // createLauncher needs to go before the helper is created!!
             createLauncher();
@@ -173,7 +168,7 @@ public class StartLocalInstanceCommand extends LocalInstanceCommand implements S
     public String toString() {
         return ObjectAnalyzer.toStringWithSuper(this);
     }
-    private static final String MASTER_PASSWORD = "AS_ADMIN_MASTERPASSWORD";
+
     private GFLauncherInfo info;
     private GFLauncher launcher;
 }

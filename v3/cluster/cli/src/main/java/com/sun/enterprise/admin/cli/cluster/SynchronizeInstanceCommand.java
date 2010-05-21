@@ -37,6 +37,7 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.util.*;
 import java.util.logging.*;
 import java.util.zip.*;
@@ -77,17 +78,16 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             new LocalStringsImpl(SynchronizeInstanceCommand.class);
 
     @Override
-    protected void validate()
-                        throws CommandException, CommandValidationException {
-        instanceName = instanceName0;
+    protected void validate() throws CommandException {
+        if (ok(instanceName0))
+            instanceName = instanceName0;
         super.validate();
     }
 
     /**
      */
     @Override
-    protected int executeCommand()
-            throws CommandException, CommandValidationException {
+    protected int executeCommand() throws CommandException {
         if (synchronizeInstance())
             return SUCCESS;
         else
@@ -117,88 +117,94 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         syncCmd = new RemoteCommand("_synchronize-files", programOpts, env);
         syncCmd.setFileOutputDirectory(instanceDir);
 
-        /*
-         * First, synchronize the config directory.
-         */
-        File domainXml =
-            new File(new File(instanceDir, "config"), "domain.xml");
-        long dtime = domainXml.lastModified();
+        try {
+            /*
+             * First, synchronize the config directory.
+             */
+            File domainXml =
+                new File(new File(instanceDir, "config"), "domain.xml");
+            long dtime = domainXml.lastModified();
 
-        SyncRequest sr = getModTimes("config", SyncLevel.DIRECTORY);
-        synchronizeFiles(sr);
+            SyncRequest sr = getModTimes("config", SyncLevel.DIRECTORY);
+            synchronizeFiles(sr);
 
-        /*
-         * Was domain.xml updated?
-         * If not, we're all done.
-         */
-        if (domainXml.lastModified() == dtime) {
-            logger.printDetailMessage(strings.get("Sync.alreadySynced"));
-            return true;
-        }
-
-        /*
-         * Now synchronize the applications.
-         */
-        sr = getModTimes("applications", SyncLevel.DIRECTORY);
-        synchronizeFiles(sr);
-
-        /*
-         * Did we get any archive files?  If so,
-         * have to unzip them in the applications
-         * directory.
-         */
-        File appsDir = new File(instanceDir, "applications");
-        File archiveDir = new File(appsDir, "__internal");
-        for (File adir : FileUtils.listFiles(archiveDir)) {
-            File[] af = FileUtils.listFiles(adir);
-            if (af.length != 1) {
-System.out.println("IGNORING " + adir + ", # files " + af.length);
-                continue;
+            /*
+             * Was domain.xml updated?
+             * If not, we're all done.
+             */
+            if (domainXml.lastModified() == dtime) {
+                logger.printDetailMessage(strings.get("Sync.alreadySynced"));
+                return true;
             }
-            File archive = af[0];
-            File appDir = new File(appsDir, adir.getName());
-System.out.println("UNZIP " + archive + " TO " + appDir);
-            try {
-                expand(appDir, archive);
-            } catch (Exception ex) { }
+
+            /*
+             * Now synchronize the applications.
+             */
+            sr = getModTimes("applications", SyncLevel.DIRECTORY);
+            synchronizeFiles(sr);
+
+            /*
+             * Did we get any archive files?  If so,
+             * have to unzip them in the applications
+             * directory.
+             */
+            File appsDir = new File(instanceDir, "applications");
+            File archiveDir = new File(appsDir, "__internal");
+            for (File adir : FileUtils.listFiles(archiveDir)) {
+                File[] af = FileUtils.listFiles(adir);
+                if (af.length != 1) {
+                    logger.printDebugMessage("IGNORING " + adir +
+                                                ", # files " + af.length);
+                    continue;
+                }
+                File archive = af[0];
+                File appDir = new File(appsDir, adir.getName());
+                logger.printDebugMessage("UNZIP " + archive + " TO " + appDir);
+                try {
+                    expand(appDir, archive);
+                } catch (Exception ex) { }
+            }
+
+            FileUtils.whack(archiveDir);
+
+            /*
+             * Next, the libraries.
+             * We assume there's usually very few files in the
+             * "lib" directory so we check them all individually.
+             */
+            sr = getModTimes("lib", SyncLevel.RECURSIVE);
+            synchronizeFiles(sr);
+
+            /*
+             * Next, the docroot.
+             * The docroot could be full of files, so we only check
+             * one level.
+             */
+            sr = getModTimes("docroot", SyncLevel.DIRECTORY);
+            synchronizeFiles(sr);
+
+            /*
+             * Check any subdirectories of the instance directory.
+             * We only expect one - the config-specific directory,
+             * but since we don't have an easy way of knowing the
+             * name of that directory, we include them all.  The
+             * DAS will tell us to remove anything that shouldn't
+             * be there.
+             */
+            sr = new SyncRequest();
+            sr.instance = instanceName;
+            sr.dir = "config-specific";
+            File configDir = new File(instanceDir, "config");
+            for (File f : configDir.listFiles()) {
+                if (!f.isDirectory())
+                    continue;
+                getFileModTimes(f, configDir, sr, SyncLevel.DIRECTORY);
+            }
+            synchronizeFiles(sr);
+        } catch (ConnectException cex) {
+            logger.printDebugMessage("Couldn't connect to DAS: " + cex);
+            return false;
         }
-
-        FileUtils.whack(archiveDir);
-
-        /*
-         * Next, the libraries.
-         * We assume there's usually very few files in the
-         * "lib" directory so we check them all individually.
-         */
-        sr = getModTimes("lib", SyncLevel.RECURSIVE);
-        synchronizeFiles(sr);
-
-        /*
-         * Next, the docroot.
-         * The docroot could be full of files, so we only check
-         * one level.
-         */
-        sr = getModTimes("docroot", SyncLevel.DIRECTORY);
-        synchronizeFiles(sr);
-
-        /*
-         * Check any subdirectories of the instance directory.
-         * We only expect one - the config-specific directory,
-         * but since we don't have an easy way of knowing the
-         * name of that directory, we include them all.  The
-         * DAS will tell us to remove anything that shouldn't
-         * be there.
-         */
-        sr = new SyncRequest();
-        sr.instance = instanceName;
-        sr.dir = "config-specific";
-        File configDir = new File(instanceDir, "config");
-        for (File f : configDir.listFiles()) {
-            if (!f.isDirectory())
-                continue;
-            getFileModTimes(f, configDir, sr, SyncLevel.DIRECTORY);
-        }
-        synchronizeFiles(sr);
 
         return true;
     }
@@ -254,7 +260,8 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
     /**
      * Ask the server to synchronize the files in the SyncRequest.
      */
-    private void synchronizeFiles(SyncRequest sr) throws CommandException {
+    private void synchronizeFiles(SyncRequest sr)
+                                throws CommandException, ConnectException {
         File tempFile = null;
         try {
             tempFile = File.createTempFile("mt.", ".xml");
@@ -270,18 +277,25 @@ System.out.println("UNZIP " + archive + " TO " + appDir);
             File syncdir = new File(instanceDir, sr.dir);
             logger.printDebugMessage("Sync directory: " + syncdir);
             // _synchronize-files takes a single operand of type File
-            syncCmd.execute("_synchronize-files",
+            // Note: we throw the output away to avoid printing a blank line
+            syncCmd.executeAndReturnOutput("_synchronize-files",
                 "--syncarchive", Boolean.toString(syncArchive),
                 "--syncallapps", Boolean.toString(syncAllApps),
                 tempFile.getPath());
 
             // the returned files are automatically saved by the command
-        } catch (IOException ioex) {
-            throw new CommandException(strings.get("sync.failed", sr.dir));
-        } catch (JAXBException jbex) {
-            throw new CommandException(strings.get("sync.failed", sr.dir));
+        } catch (IOException ex) {
+            logger.printDebugMessage("Got exception: " + ex);
+            throw new CommandException(strings.get("Sync.failed", sr.dir), ex);
+        } catch (JAXBException jex) {
+            logger.printDebugMessage("Got exception: " + jex);
+            throw new CommandException(strings.get("Sync.failed", sr.dir), jex);
         } catch (CommandException cex) {
-            throw new CommandException(strings.get("sync.failed", sr.dir));
+            logger.printDebugMessage("Got exception: " + cex);
+            logger.printDebugMessage("  cause: " + cex.getCause());
+            if (cex.getCause() instanceof ConnectException)
+                throw (ConnectException)cex.getCause();
+            throw new CommandException(strings.get("Sync.failed", sr.dir), cex);
         } finally {
             // remove tempFile
             if (tempFile != null)
