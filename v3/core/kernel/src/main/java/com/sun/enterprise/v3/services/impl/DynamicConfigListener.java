@@ -37,7 +37,6 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.beans.PropertyChangeEvent;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Collection;
@@ -56,8 +55,17 @@ import org.jvnet.hk2.config.NotProcessed;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.util.Result;
+import com.sun.enterprise.v3.services.impl.GrizzlyProxy.GrizzlyFuture;
 import com.sun.grizzly.config.dom.FileCache;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Grizzly dynamic configuration handler
@@ -69,6 +77,9 @@ public class DynamicConfigListener implements ConfigListener {
 
     private Logger logger;
 
+    private static final int RECONFIG_LOCK_TIMEOUT_SEC = 30;
+    private static final ReentrantLock reconfigLock = new ReentrantLock();
+    private static final Map<Integer, GrizzlyFuture> reconfigByPortLock = new HashMap<Integer, GrizzlyFuture>();
 
     public DynamicConfigListener() {
     }
@@ -122,26 +133,35 @@ public class DynamicConfigListener implements ConfigListener {
     private <T extends ConfigBeanProxy> NotProcessed processNetworkListener(Changed.TYPE type,
         NetworkListener listener) {
         if (!"admin-listener".equals(listener.getName())) {
-            int listenerPort = -1;
+            int listenerPort = getPort(listener);
+
+            Lock portLock = null;
             try {
-                listenerPort = Integer.parseInt(listener.getPort());
-            } catch (NumberFormatException e) {
-                logger.log(Level.WARNING, "Can not parse network-listener port number: " + listener.getPort());
-            }
-            if (type == Changed.TYPE.ADD) {
-                grizzlyService.createNetworkProxy(listener);
-                grizzlyService.registerNetworkProxy(listenerPort);
-            } else if (type == Changed.TYPE.REMOVE) {
-                grizzlyService.removeNetworkProxy(listenerPort);
-            } else if (type == Changed.TYPE.CHANGE) {
-                // Restart GrizzlyProxy on the port
-                // Port number or id could be changed - so try to find
-                // corresponding proxy both ways
-                boolean isRemovedOld =
-                    grizzlyService.removeNetworkProxy(listenerPort) ||
-                        grizzlyService.removeNetworkProxy(listener.getName());
-                grizzlyService.createNetworkProxy(listener);
-                grizzlyService.registerNetworkProxy(listenerPort);
+                portLock = acquirePortLock(listener);
+                
+                if (type == Changed.TYPE.ADD) {
+                    final Future future = grizzlyService.createNetworkProxy(listener);
+                    future.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
+                    grizzlyService.registerNetworkProxy(listenerPort);
+                } else if (type == Changed.TYPE.REMOVE) {
+                    grizzlyService.removeNetworkProxy(listenerPort);
+                } else if (type == Changed.TYPE.CHANGE) {
+                    // Restart GrizzlyProxy on the port
+                    // Port number or id could be changed - so try to find
+                    // corresponding proxy both ways
+                    NetworkProxy proxy = grizzlyService.lookupNetworkProxy(listener);
+
+                    boolean isRemovedOld = grizzlyService.removeNetworkProxy(proxy);
+                    final Future future = grizzlyService.createNetworkProxy(listener);
+                    future.get(30, TimeUnit.SECONDS);
+                    grizzlyService.registerNetworkProxy(listenerPort);
+                }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Network listener configuration error. Type: " + type, e);
+            } finally {
+                if (portLock != null) {
+                    releaseListenerLock(portLock);
+                }
             }
         }
         return null;
@@ -179,5 +199,126 @@ public class DynamicConfigListener implements ConfigListener {
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    /**
+     * Lock TCP ports, which will take part in the reconfiguration to avoid collisions
+     */
+    private Lock acquirePortLock(NetworkListener listener) throws InterruptedException, TimeoutException {
+        final boolean isLoggingFinest = logger.isLoggable(Level.FINEST);
+        
+        final int port = getPort(listener);
+
+        try {
+            while (true) {
+                logger.finest("Aquire reconfig lock");
+                if (reconfigLock.tryLock(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS)) {
+                    Future lock = null;
+
+                    lock = reconfigByPortLock.get(port);
+
+                    if (isLoggingFinest) {
+                        logger.finest("Reconfig lock for port: " + port + " is " + lock);
+                    }
+
+                    int proxyPort = -1;
+                    if (lock == null) {
+                        final NetworkProxy runningProxy = grizzlyService.lookupNetworkProxy(listener);
+                        if (runningProxy != null) {
+                            proxyPort = runningProxy.getPort();
+                            if (port != proxyPort) {
+                                lock = reconfigByPortLock.get(proxyPort);
+                                if (isLoggingFinest) {
+                                    logger.finest("Reconfig lock for proxyport: " + proxyPort + " is " + lock);
+                                }
+                            } else {
+                                proxyPort = -1;
+                            }
+                        }
+                    }
+
+                    if (lock != null) {
+                        reconfigLock.unlock();
+                        try {
+                            logger.finest("Waiting on reconfig lock");
+                            lock.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
+                        } catch (ExecutionException e) {
+                            throw new IllegalStateException(e);
+                        }
+                    } else {
+                        GrizzlyFuture future = new GrizzlyFuture();
+                        if (isLoggingFinest) {
+                            logger.finest("Set reconfig lock for ports: " + port + " and " + proxyPort + ": " + future);
+                        }
+                        
+                        reconfigByPortLock.put(port, future);
+                        if (proxyPort != -1) {
+                            reconfigByPortLock.put(proxyPort, future);
+                        }
+
+                        return new Lock(port, proxyPort);
+                    }
+                } else {
+                    throw new TimeoutException("Lock timeout");
+                }
+            }
+        } finally {
+            if (reconfigLock.isHeldByCurrentThread()) {
+                reconfigLock.unlock();
+            }
+        }
+    }
+
+    private void releaseListenerLock(Lock lock) {
+        final boolean isLoggingFinest = logger.isLoggable(Level.FINEST);
+
+        reconfigLock.lock();
+
+        try {
+            final int[] ports = lock.getPorts();
+
+            if (isLoggingFinest) {
+                logger.finest("Release reconfig lock for ports: " + Arrays.toString(ports));
+            }
+            
+            GrizzlyFuture future = null;
+            for (int port : ports) {
+                if (port != -1) {
+                    future = reconfigByPortLock.remove(port);
+                }
+            }
+
+            if (future != null) {
+                if (isLoggingFinest) {
+                    logger.finest("Release reconfig lock, set result: " + future);
+                }
+                future.setResult(new Result<Thread>(Thread.currentThread()));
+            }
+        } finally {
+            reconfigLock.unlock();
+        }
+    }
+
+    private int getPort(NetworkListener listener) {
+        int listenerPort = -1;
+        try {
+            listenerPort = Integer.parseInt(listener.getPort());
+        } catch (NumberFormatException e) {
+            logger.log(Level.WARNING, "Can not parse network-listener port number: " + listener.getPort());
+        }
+
+        return listenerPort;
+    }
+
+    private static final class Lock {
+        private final int[] ports;
+
+        public Lock(int... ports) {
+            this.ports = ports;
+        }
+
+        public int[] getPorts() {
+            return ports;
+        }
     }
 }

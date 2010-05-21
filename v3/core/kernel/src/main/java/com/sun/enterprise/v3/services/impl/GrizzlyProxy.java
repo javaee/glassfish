@@ -352,7 +352,7 @@ public class GrizzlyProxy implements NetworkProxy {
     }
     
 
-    public final class GrizzlyFuture implements Future<Result<Thread>> {
+    public static final class GrizzlyFuture implements Future<Result<Thread>> {
         Result<Thread> result;
         CountDownLatch latch = new CountDownLatch(1);
 

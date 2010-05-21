@@ -61,7 +61,7 @@ import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
-import com.sun.hk2.component.ConstructorWomb;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -107,7 +107,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     @Inject
     ProbeProviderFactory probeProviderFactory;
 
-    List<NetworkProxy> proxies = new ArrayList<NetworkProxy>();
+    private final Collection<NetworkProxy> proxies = new LinkedBlockingQueue<NetworkProxy>();
 
     List<Future<Result<Thread>>> futures;
 
@@ -135,7 +135,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     
     
     /**
-     * Remove the new proxy from our list of proxies by port.
+     * Remove the proxy from our list of proxies by port.
      * @param port number to be removed
      * @return <tt>true</tt>, if proxy on specified port was removed,
      *         <tt>false</tt> if no proxy was associated with the port.
@@ -148,19 +148,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 break;
             }
         }
-        if (proxy != null) {
-            proxy.stop();
-            proxy.destroy();
-            proxies.remove(proxy);
-            return true;
-        }
 
-        return false;
+        return removeNetworkProxy(proxy);
     }
 
     
     /**
-     * Remove the new proxy from our list of proxies by id.
+     * Remove the proxy from our list of proxies by id.
      * @return <tt>true</tt>, if proxy on specified port was removed,
      *         <tt>false</tt> if no proxy was associated with the port.
      */
@@ -177,7 +171,16 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                 }
             }
         }
-        
+
+        return removeNetworkProxy(proxy);
+    }
+
+    /**
+     * Remove the  proxy from our list of proxies.
+     * @return <tt>true</tt>, if proxy on specified port was removed,
+     *         <tt>false</tt> otherwise.
+     */
+    public boolean removeNetworkProxy(NetworkProxy proxy) {
         if (proxy != null) {
             proxy.stop();
             proxy.destroy();
@@ -186,6 +189,44 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         }
 
         return false;
+    }
+
+    /**
+     * Lookup {@link GrizzlyProxy}, which corresponds to the {@link NetworkListener}.
+     * 
+     * @param listener {@link NetworkListener}.
+     * @return {@link GrizzlyProxy}, or <tt>null</tt>, if correspondent {@link GrizzlyProxy} wasn't found.
+     */
+    public NetworkProxy lookupNetworkProxy(NetworkListener listener) {
+        int listenerPort = -1;
+        try {
+            listenerPort = Integer.parseInt(listener.getPort());
+        } catch (NumberFormatException e) {
+        }
+
+        if (listenerPort != -1) {
+            for (NetworkProxy p : proxies) {
+                if (p.getPort() == listenerPort) {
+                    return p;
+                }
+            }
+        }
+
+        final String listenerId = listener.getName();
+        
+        for (NetworkProxy p : proxies) {
+            if (p instanceof GrizzlyProxy) {
+                GrizzlyProxy grizzlyProxy = (GrizzlyProxy) p;
+                if (grizzlyProxy.networkListener != null &&
+                        grizzlyProxy.networkListener.getName() != null &&
+                        grizzlyProxy.networkListener.getName().equals(listenerId)) {
+                    return p;
+                }
+            }
+        }
+
+        return null;
+        
     }
 
     /**
@@ -536,7 +577,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             proxy.unregisterEndpoint(contextRoot, app);
         }
     }
-
 
     /**
      * Probe provider that implements each probe provider method as a 
