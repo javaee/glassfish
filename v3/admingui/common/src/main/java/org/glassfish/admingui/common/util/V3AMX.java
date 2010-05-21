@@ -490,9 +490,9 @@ public class V3AMX {
      * show that in the Properties table.
      */
     public static List getNonSkipPropertiesMap(AMXConfigProxy amx, List skipList) {
-        boolean noSkip = false;
+        boolean hasSkip = true;
         if (skipList == null || skipList.size()==0){
-            noSkip = true;
+            hasSkip = false;
         }
         Map<String, AMXProxy> children = amx.childrenMap("property");
         List result = new ArrayList();
@@ -500,13 +500,14 @@ public class V3AMX {
             HashMap oneRow = new HashMap();
             oneRow.put("selected", false);
             String name = oneChild.getName();
-            if ( noSkip || skipList.contains(name)){
+            if ( hasSkip && skipList.contains(name)){
                 continue;
             }
             oneRow.put(PROPERTY_NAME, name);
             oneRow.put(PROPERTY_VALUE, oneChild.attributesMap().get(PROPERTY_VALUE));
             final Object desc = oneChild.attributesMap().get(PROPERTY_DESC);
             oneRow.put(PROPERTY_DESC, (desc == null) ? "" : desc);
+            result.add(oneRow);
         }
         return result;
     }
