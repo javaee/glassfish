@@ -84,7 +84,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Param(name="name", primary = true)
     public void setName(String value) throws PropertyVetoException;
-    
+
     /**
      * points to a named config. All server instances in the cluster
      * will share this config.
@@ -113,7 +113,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * cluster.When "heartbeat-enabled" is set to "false", GMS will not be
      * started and its services will be unavailable. Clusters should function
      * albeit with reduced functionality.
-     * 
+     *
      * @return true | false as a string, null means false
      */
     @Attribute (defaultValue="true",dataType=Boolean.class)
@@ -133,7 +133,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      *
      * This is the communication port GMS uses to listen for group  events.
      * This should be a valid port number.
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -176,7 +176,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      * Gets the value of the serverRef property.
      *
      * List of servers in the cluster
-     * 
+     *
      * @return list of configured {@link ServerRef }
      */
     @Element
@@ -232,21 +232,21 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         }
 
         public static List<Server> getInstances(Cluster cluster) {
-            
+
             Dom clusterDom = Dom.unwrap(cluster);
-            Domain domain = 
-                clusterDom.getHabitat().getComponent(Domain.class);
+            Domain domain =
+                    clusterDom.getHabitat().getComponent(Domain.class);
 
             ArrayList<Server> instances = new ArrayList<Server>();
             for (ServerRef sRef : cluster.getServerRef()) {
-                instances.add(domain.getServerNamed(sRef.getRef()));    
+                instances.add(domain.getServerNamed(sRef.getRef()));
             }
             return instances;
         }
     }
 
     @Service
-    @Scoped(PerLookup.class)    
+    @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<Cluster> {
 
         @Param(name="config", optional=true)
@@ -267,7 +267,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
         @Param(optional = true)
         String devicesize=null;
 
-        @Param(optional = true)        
+        @Param(optional = true)
         String haproperty=null;
 
         @Param(optional = true)
@@ -292,7 +292,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
          *      - creates a new config from the default-config if no config-ref
          *        was provided.
          *      - check for deprecated parameters.
-         *  
+         *
          * @param context administration command context
          * @param instance newly created configuration element
          * @throws TransactionFailure
@@ -306,8 +306,8 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             //There should be no instance/config with the same name as the cluster
             if ((domain.getServerNamed(instance.getName()) != null) ||
                     (domain.getConfigNamed(instance.getName()) != null)){
-                 throw new TransactionFailure(localStrings.getLocalString(
-                            "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
+                throw new TransactionFailure(localStrings.getLocalString(
+                        "cannotAddDuplicate", "There is an instance {0} already present.", instance.getName()));
             }
 
             if (configRef==null) {
@@ -315,18 +315,18 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
                 if (config==null) {
                     config = habitat.getAllByContract(Config.class).iterator().next();
                     logger.warning(localStrings.getLocalString(Cluster.class,
-                    "Cluster.no_default_config_found",
-                    "No default config found, using config {0} as the default config for the cluster {1}",
-                    config.getName(), instance.getName()));
+                            "Cluster.no_default_config_found",
+                            "No default config found, using config {0} as the default config for the cluster {1}",
+                            config.getName(), instance.getName()));
                 }
                 final Config configCopy;
                 try {
                     configCopy = (Config) config.deepCopy();
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, localStrings.getLocalString(Cluster.class,
-                    "Cluster.error_while_copying",
-                    "Error while copying the default configuration {0)",
-                    e.toString(), e));
+                            "Cluster.error_while_copying",
+                            "Error while copying the default configuration {0)",
+                            e.toString(), e));
                     throw new TransactionFailure(e.toString(),e);
                 }
 
@@ -396,10 +396,45 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Service
     @Scoped(PerLookup.class)
     class DeleteDecorator implements DeletionDecorator<Clusters, Cluster> {
+
+        @Inject
+        Configs configs;
+        
         @Override
-        public void decorate(AdminCommandContext context, Clusters parent, Cluster child) {
+        public void decorate(AdminCommandContext context, Clusters parent, Cluster child) throws
+                PropertyVetoException, TransactionFailure{
             // check if the config is still in used, otherwise delete it.
-            System.out.println("sad ! Cluster " + child.getName() + " was deleted");
+            Logger logger = LogDomains.getLogger(Cluster.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Cluster.class);
+            final ActionReport report = context.getActionReport();
+
+
+            String instanceConfig = child.getConfigRef();
+            final Config config = configs.getConfigByName(instanceConfig);
+            try {
+                ConfigSupport.apply(new SingleConfigCode<Configs>() {
+
+                    @Override
+                    public Object run(Configs c) throws PropertyVetoException, TransactionFailure {
+                        List<Config> configList = c.getConfig();
+                        configList.remove(config);
+                        return null;
+                    }
+                }, configs);
+            } catch (TransactionFailure ex) {
+                logger.log(Level.SEVERE,
+                        localStrings.getLocalString("deleteConfigFailed",
+                                "Unable to remove config {0}", instanceConfig), ex);
+                String msg = ex.getMessage() != null ? ex.getMessage()
+                        : localStrings.getLocalString("deleteConfigFailed",
+                        "Unable to remove config {0}", instanceConfig);
+                report.setMessage(msg);
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                report.setFailureCause(ex);
+                throw ex;
+            }
+
         }
-    }    
+    }
 }
+
