@@ -38,13 +38,12 @@ package org.glassfish.ant.embedded.tasks;
 
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 
 import org.glassfish.api.embedded.Server;
 import org.glassfish.api.embedded.EmbeddedDeployer;
 
 
-public class UndeployTask extends Task {
+public class UndeployTask extends TaskBase {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
     String name;
@@ -60,15 +59,16 @@ public class UndeployTask extends Task {
     public void execute() throws BuildException {
         log("undeploying");
         if (name == null) {
-            throw new BuildException("Name of application to be undeployed not specified");
+            error("Name of application to be undeployed not specified");
+            return;
         }
 
         Server server = Server.getServer(serverID);
         if (server == null) {
-           throw new BuildException("Embedded Server [" + serverID + "] not running");
+           error("Embedded Server [" + serverID + "] not running");
+           return;
         }
         EmbeddedDeployer deployer = server.getDeployer();
         deployer.undeploy(name, null);
-
     }
 }

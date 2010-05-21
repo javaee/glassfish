@@ -46,10 +46,9 @@ import org.glassfish.api.ActionReport;
 import com.sun.enterprise.admin.cli.Parser;
 import com.sun.enterprise.admin.cli.ArgumentTokenizer;
 
-
 import java.util.*;
 
-public class AdminTask extends Task {
+public class AdminTask extends TaskBase {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
     String command, commandLine;
@@ -93,11 +92,13 @@ public class AdminTask extends Task {
 
     public void execute() throws BuildException {
         if (command == null && commandLine == null) {
-            throw new BuildException("Either command or commandLine should be specified");
+            error("Either command or commandLine should be specified");
+            return;
         }
         Server server = Server.getServer(serverID);
         if (server == null) {
-           throw new BuildException("Embedded Server [" + serverID + "] not running");
+           error("Embedded Server [" + serverID + "] not running");
+           return;
         }
         CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
         ActionReport report = server.getHabitat().getComponent(ActionReport.class);
@@ -107,7 +108,8 @@ public class AdminTask extends Task {
             log("executing admin task : " + commandLine + " serverID = " + serverID);
                 String args[] = getArgs(commandLine);
                 if (args.length == 0) {
-                   throw new BuildException("admin command not specified");
+                   error("admin command not specified");
+                   return;
                 }
                 if (args[0].equalsIgnoreCase("set") && args.length > 1) {
                     commandLine = args[0] + " --values = " + commandLine.substring(args[0].length() + 1);
@@ -119,7 +121,7 @@ public class AdminTask extends Task {
                     parameters(pMap).execute();
                 System.out.println("executed : " + commandLine);
             } catch (Exception ex) {
-                    throw new BuildException(ex);
+                error(ex);
             }
         }
         else {

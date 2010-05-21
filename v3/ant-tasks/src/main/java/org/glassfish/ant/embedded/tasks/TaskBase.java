@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,64 +39,26 @@ package org.glassfish.ant.embedded.tasks;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.ContainerBuilder;
+public class TaskBase extends Task {
 
-public class StartServerTask extends TaskBase {
+    Boolean failOnError = false;
 
-    String serverID = Constants.DEFAULT_SERVER_ID;
-    int port = -1;
-    String installRoot = null, instanceRoot = null, configFile = null;
-    Boolean autoDelete;
-    ContainerBuilder.Type containerType = ContainerBuilder.Type.all;
-
-    public void setServerID(String serverID) {
-        this.serverID = serverID;
+    public void setFailOnError(Boolean failOnError) {
+        this.failOnError = failOnError;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setInstallRoot(String installRoot) {
-        this.installRoot = installRoot;
-    }
-
-    public void setInstanceRoot(String instanceRoot) {
-        this.instanceRoot = instanceRoot;
-    }
-
-    public void setConfigFile(String configFile) {
-        this.configFile = configFile;
-    }
-
-    public void setAutoDelete(Boolean autoDelete) {
-        this.autoDelete = autoDelete;
-    }
-
-
-    public void execute() throws BuildException {
-        log ("Starting server");
-
-        try {
-            Server server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
-
-            Util.createPort(server, configFile, port);
-
-            server.addContainer(getContainerType());
-            server.start();
-
-        } catch (Exception ex) {
-            error(ex);
+    void error(String message) throws BuildException {
+        if (failOnError) {
+            throw new BuildException(message);
         }
+        log(message);
     }
 
-    ContainerBuilder.Type getContainerType() {
-        return containerType;
-    }
-
-    void setContainerType(ContainerBuilder.Type type) {
-        this.containerType = type;
+    void error(Exception ex) throws BuildException {
+        if (failOnError) {
+            throw new BuildException(ex);
+        }
+        ex.printStackTrace();
     }
 
 }

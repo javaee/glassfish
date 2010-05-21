@@ -46,7 +46,7 @@ import org.glassfish.api.deployment.DeployCommandParameters;
 import java.io.*;
 
 
-public class DeployTask extends Task {
+public class DeployTask extends TaskBase {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
     String app = null; // a default value?
@@ -133,25 +133,26 @@ public class DeployTask extends Task {
             cmdParams.deploymentplan = new File(deploymentplan);
     }
 
-
-
     public void execute() throws BuildException {
         if (app == null) {
-            throw new BuildException("app not specified");
+            error("app not specified");
+            return;
         }
         log("deploying " + app);
 
         File f = new File(app);
         if (!f.exists()) {
-            throw new BuildException(app + " not found");
+            error (app + " not found");
+            return;
         }
         Server server = Server.getServer(serverID);
 
         if (server == null) {
-           throw new BuildException("Embedded Server [" + serverID + "] not running");
+           error("Embedded Server [" + serverID + "] not running");
+           return;
         }
-        System.out.println("server = " + server);
         EmbeddedDeployer deployer = server.getDeployer();
         deployer.deploy(new File(app), cmdParams);
     }
+
 }
