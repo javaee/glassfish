@@ -5,6 +5,9 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.TransactionFailure;
+
+import java.beans.PropertyVetoException;
 
 /**
  * A decorator for acting upon a configuration element deletion.
@@ -29,12 +32,12 @@ public interface DeletionDecorator<T extends ConfigBeanProxy, U extends ConfigBe
      * @param parent the parent instance the element was removed from
      * @param child the deleted instance
      */
-    public void decorate(AdminCommandContext context, T parent, U child);
+    public void decorate(AdminCommandContext context, T parent, U child) throws TransactionFailure, PropertyVetoException;
 
     @Service
     public static class NoDecoration implements DeletionDecorator<ConfigBeanProxy, ConfigBeanProxy> {
         @Override
-        public void decorate(AdminCommandContext context, ConfigBeanProxy parent, ConfigBeanProxy child) {
+        public void decorate(AdminCommandContext context, ConfigBeanProxy parent, ConfigBeanProxy child) throws TransactionFailure, PropertyVetoException {
             // do nothing.
         }
     }

@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
@@ -117,7 +118,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name = "nodeagent")
+    @Param(name = "nodeagent", optional = true)
     void setNodeAgentRef(String value) throws PropertyVetoException;
 
     /**
@@ -329,6 +330,22 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     throw new TransactionFailure(localStrings.getLocalString(
                             "noSuchCluster", "Cluster {0} does not exist.", clusterName));
                 }
+
+                Cluster cluster = domain.getClusterNamed(clusterName);
+                final String instanceName = instance.getName();
+
+                if (cluster != null) {
+                    ConfigSupport.apply(new SingleConfigCode<Cluster>() {
+
+                        @Override
+                        public Object run(Cluster c) throws PropertyVetoException, TransactionFailure {
+                            ServerRef newServerRef = c.createChild(ServerRef.class);
+                            newServerRef.setRef(instanceName);
+                            c.getServerRef().add(newServerRef);
+                            return null;
+                        }
+                    }, cluster);
+                }
             }
 
             // instance using specified config
@@ -410,10 +427,77 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Service
     @Scoped(PerLookup.class)    
     class DeleteDecorator implements DeletionDecorator<Servers, Server> {
+        @Inject
+        Configs configs;
+
         @Override
-        public void decorate(AdminCommandContext context, Servers parent, Server child) {
-            // check if the config is still in used, otherwise delete it.
-            System.out.println("I am called !");
+        public void decorate(AdminCommandContext context, Servers parent, final Server child) throws PropertyVetoException, TransactionFailure  {
+            Logger logger = LogDomains.getLogger(Server.class, LogDomains.ADMIN_LOGGER);
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Server.class);
+            final ActionReport report = context.getActionReport();
+
+            boolean isStandAlone = child.getCluster() == null ? true : false;
+            if (isStandAlone) { // remove config <instance>-config
+                String instanceConfig = child.getConfigRef();
+                final Config config = configs.getConfigByName(instanceConfig);
+                try {
+                    ConfigSupport.apply(new SingleConfigCode<Configs>() {
+
+                        @Override
+                        public Object run(Configs c) throws PropertyVetoException, TransactionFailure {
+                            List<Config> configList = c.getConfig();
+                            configList.remove(config);
+                            return null;
+                        }
+                    }, configs);
+                } catch (TransactionFailure ex) {
+                    logger.log(Level.SEVERE,
+                            localStrings.getLocalString("deleteConfigFailed",
+                            "Unable to remove config {0}", instanceConfig), ex);
+                    String msg = ex.getMessage() != null ? ex.getMessage()
+                            : localStrings.getLocalString("deleteConfigFailed",
+                            "Unable to remove config {0}", instanceConfig);
+                    report.setMessage(msg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setFailureCause(ex);
+                    throw ex;
+                }
+            } else { // remove server-ref from cluster
+                Cluster cluster = child.getCluster();
+                final String instanceName = child.getName();
+
+                try {
+                    ConfigSupport.apply(new SingleConfigCode<Cluster>() {
+
+                        @Override
+                        public Object run(Cluster c) throws PropertyVetoException, TransactionFailure {
+                            List<ServerRef> serverRefList = c.getServerRef();
+                            ServerRef serverRef = null;
+                            for (ServerRef sr : serverRefList) {
+                                if (sr.getRef().equals(instanceName)) {
+                                    serverRef = sr;
+                                    break;
+                                }
+                            }
+                            if (serverRef != null) {
+                                serverRefList.remove(serverRef);
+                            }
+                            return null;
+                        }
+                    }, cluster);
+                } catch (TransactionFailure ex) {
+                    logger.log(Level.SEVERE,
+                            localStrings.getLocalString("deleteServerRefFailed",
+                            "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName()), ex);
+                    String msg = ex.getMessage() != null ? ex.getMessage()
+                            : localStrings.getLocalString("deleteServerRefFailed",
+                            "Unable to remove server-ref {0} from cluster {1}", instanceName, cluster.getName());
+                    report.setMessage(msg);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setFailureCause(ex);
+                    throw ex;
+                }
+            }
         }
     }
 }
