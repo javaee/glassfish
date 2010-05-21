@@ -44,7 +44,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish OSGi Admin Console",
-                        "pkg.description" : "GlassFish OSGi Admin Console description placeholder. "+conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish OSGi Admin Console installs bundles required to run web based administration console for OSGi runtime. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 
