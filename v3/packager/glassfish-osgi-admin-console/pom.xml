@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 2010 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -44,10 +44,10 @@
         <version>3.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>glassfish-jdbc</artifactId>
-    <name>Glassfish JDBC Package</name>
+    <artifactId>glassfish-osgi-admin-console</artifactId>
+    <name>Glassfish OSGi HTTP Service package</name>
     <packaging>distribution-base-zip</packaging>
-    <description>This pom describes how to assemble the GlassFish JDBC package</description>
+    <description>This pom describes how to assemble the GlassFish OSGi Admin console package</description>
 
     <build>
         <plugins>
@@ -70,37 +70,27 @@
     <dependencies>
         <!--
           modules to be included in this bundle
-        -->       
-        <dependency>        
-          <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-ra-distribution</groupId>
-            <artifactId>jdbc-ra</artifactId>
-            <version>${project.version}</version>
-            <type>distribution-fragment</type> 
-        </dependency>
-        <dependency>        
-           <groupId>org.glassfish.jdbc</groupId>
-           <artifactId>jdbc-admin</artifactId>
-           <version>${project.version}</version>
-        </dependency>
+        --> 
         <dependency>
-            <groupId>org.glassfish.admingui</groupId>
-	    <artifactId>console-jdbc-plugin</artifactId>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.webconsole</artifactId>
+        </dependency>      
+        <dependency>
+            <groupId>org.glassfish.osgi-platforms</groupId>
+            <artifactId>felix-webconsole-extension</artifactId>
             <version>${project.version}</version>
-    	</dependency> 
-    	<dependency>
-            <groupId>org.glassfish.admingui</groupId>
-	    <artifactId>console-jdbc-plugin-help</artifactId>
-    	</dependency> 
-
+        </dependency>
+    
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
  
-       <dependency>        
+        <dependency>        
            <groupId>org.glassfish.packager</groupId>
-           <artifactId>glassfish-osgi-admin-console</artifactId>
+           <artifactId>glassfish-osgi-http</artifactId>
            <version>${project.version}</version>
-	   <type>zip</type>
+           <type>zip</type>
        </dependency>
+        
     </dependencies>
 
     <profiles>
@@ -110,7 +100,7 @@
              -->
             <id>ips</id>
 	    <activation>
-	       <activeByDefault>false</activeByDefault>  
+	      <activeByDefault>false</activeByDefault>  
 	    </activation>
 	    <build>
             <plugins>
