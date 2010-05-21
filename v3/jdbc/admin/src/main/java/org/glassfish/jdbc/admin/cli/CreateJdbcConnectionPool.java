@@ -75,7 +75,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="datasourceclassname", alias = "datasourceClassname",  optional=true)
     String datasourceclassname;
 
-    @Param(optional=true, alias = "restType",  acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
+    @Param(optional=true, alias = "resType",  acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
     String restype;
 
     @Param(name="steadypoolsize", alias = "steadyPoolSize",  optional=true)
