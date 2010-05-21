@@ -59,7 +59,7 @@ import com.sun.appserv.server.util.Version;
  * @author Jerome Dochez
  * 
  */
-public class GlassFishDocument extends DomDocument {
+public class GlassFishDocument extends DomDocument<GlassFishConfigBean> {
 
     Logger logger = LogDomains.getLogger(GlassFishDocument.class, LogDomains.CORE_LOGGER);
 
@@ -102,7 +102,8 @@ public class GlassFishDocument extends DomDocument {
         });
     }
 
-    public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
+    @Override
+    public GlassFishConfigBean make(final Habitat habitat, XMLStreamReader xmlStreamReader, GlassFishConfigBean dom, ConfigModel configModel) {
         // by default, people get the translated view.
         return new GlassFishConfigBean(habitat,this, dom, configModel, xmlStreamReader);
     }

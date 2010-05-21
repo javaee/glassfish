@@ -59,7 +59,7 @@ public interface Clusters extends ConfigBeanProxy, Injectable {
       */
     @Element
     @Create(value="create-cluster", decorator=Cluster.Decorator.class)
-    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class)
+    @Delete(value="delete-cluster", resolver= TypeAndNameResolver.class, decorator=Cluster.DeleteDecorator.class)
     @Listing(value="list-clusters")
     public List<Cluster> getCluster();
 }

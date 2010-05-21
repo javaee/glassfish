@@ -286,7 +286,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
 
     @Service
     @Scoped(PerLookup.class)
-    class Decorator implements CreationDecorator<Server> {
+    class CreateDecorator implements CreationDecorator<Server> {
         @Param(name="cluster", optional=true)
         String clusterName;
 
@@ -404,6 +404,16 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                     instance.getApplicationRef().add(newAppRef);
                 }
             }
+        }
+    }
+
+    @Service
+    @Scoped(PerLookup.class)    
+    class DeleteDecorator implements DeletionDecorator<Servers, Server> {
+        @Override
+        public void decorate(AdminCommandContext context, Servers parent, Server child) {
+            // check if the config is still in used, otherwise delete it.
+            System.out.println("I am called !");
         }
     }
 }

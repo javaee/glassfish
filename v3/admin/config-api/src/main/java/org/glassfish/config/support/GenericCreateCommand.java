@@ -35,7 +35,6 @@
  */
 package org.glassfish.config.support;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
@@ -46,7 +45,6 @@ import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import com.sun.logging.LogDomains;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -157,8 +155,11 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
                     try {
                         if (targetMethod.getParameterTypes().length==0) {
                             // return type must be a list to which we add our child.
-                            List<ConfigBeanProxy> children = (List<ConfigBeanProxy>) targetMethod.invoke(writableParent);
-                            children.add(childBean);
+                            Object result = targetMethod.invoke(writableParent);
+                            if (result instanceof List) {                                
+                                List<ConfigBeanProxy> children = List.class.cast(result);
+                                children.add(childBean);
+                            }
                         } else {
                             targetMethod.invoke(writableParent, childBean);
                         }

@@ -78,7 +78,7 @@ public final class GlassFishConfigBean extends ConfigBean {
         return rawTransformer.transform(s);
     }
 
-    public GlassFishConfigBean(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
+    public GlassFishConfigBean(Habitat habitat, DomDocument document, GlassFishConfigBean parent, ConfigModel model, XMLStreamReader in) {
         super(habitat, document, parent, model, in);                
     }
 

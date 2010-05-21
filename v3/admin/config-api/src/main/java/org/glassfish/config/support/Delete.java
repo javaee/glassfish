@@ -39,6 +39,7 @@ package org.glassfish.config.support;
 import org.glassfish.api.admin.Cluster;
 import org.jvnet.hk2.annotations.*;
 import org.glassfish.api.admin.AdminCommand;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -109,6 +110,14 @@ public @interface Delete {
      * @return the instance targeted for deletion.
      */
     Class<? extends CrudResolver> resolver() default CrudResolver.DefaultResolver.class;
+
+    /**
+     * Returns a decorator type that should be looked up and called when a
+     * configuration element of the annotated type is deleted.
+     *
+     * @return a deletion decorator for the annotated type
+     */
+    Class<? extends DeletionDecorator> decorator() default DeletionDecorator.NoDecoration.class;    
 
     /**
      * Returns the desired behaviors in a clustered environment. By default, using all the

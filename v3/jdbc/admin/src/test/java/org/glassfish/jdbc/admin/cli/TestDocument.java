@@ -53,13 +53,13 @@ import javax.xml.stream.XMLStreamReader;
  * User: Jerome Dochez
  */
 @Ignore
-public class TestDocument extends DomDocument {
+public class TestDocument extends DomDocument<GlassFishConfigBean> {
 
     public TestDocument(Habitat habitat) {
         super(habitat);
     }
 
-    public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, Dom dom, ConfigModel configModel) {
+    public Dom make(final Habitat habitat, XMLStreamReader xmlStreamReader, GlassFishConfigBean dom, ConfigModel configModel) {
         // by default, people get the translated view.
         return new GlassFishConfigBean(habitat,this, dom, configModel, xmlStreamReader);
     }

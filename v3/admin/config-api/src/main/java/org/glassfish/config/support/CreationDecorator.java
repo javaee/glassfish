@@ -39,6 +39,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
@@ -50,7 +51,7 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 @Scoped(PerLookup.class)
-public interface CreationDecorator<T> {
+public interface CreationDecorator<T extends ConfigBeanProxy> {
 
     /**
      * The element instance has been created and added to the parent, it can be
@@ -66,13 +67,11 @@ public interface CreationDecorator<T> {
 
     /**
      * Default implementation of a decorator that does nothing.
-     * 
-     * @param <T> the decorated type
      */
     @Service
-    public class NoDecoration<T> implements CreationDecorator<T> {
+    public class NoDecoration implements CreationDecorator<ConfigBeanProxy> {
         @Override
-        public void decorate(AdminCommandContext context, T instance) throws TransactionFailure, PropertyVetoException {
+        public void decorate(AdminCommandContext context, ConfigBeanProxy instance) throws TransactionFailure, PropertyVetoException {
             // do nothing
         }
     }

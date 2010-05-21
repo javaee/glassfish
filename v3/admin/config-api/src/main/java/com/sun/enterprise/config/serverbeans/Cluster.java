@@ -392,4 +392,14 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
             }
         }
     }
+
+    @Service
+    @Scoped(PerLookup.class)
+    class DeleteDecorator implements DeletionDecorator<Clusters, Cluster> {
+        @Override
+        public void decorate(AdminCommandContext context, Clusters parent, Cluster child) {
+            // check if the config is still in used, otherwise delete it.
+            System.out.println("sad ! Cluster " + child.getName() + " was deleted");
+        }
+    }    
 }

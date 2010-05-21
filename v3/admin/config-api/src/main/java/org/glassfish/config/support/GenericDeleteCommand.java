@@ -35,6 +35,7 @@
  */
 package org.glassfish.config.support;
 
+import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -45,7 +46,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 
-import java.util.logging.Level;
+import java.beans.PropertyVetoException;
+import java.lang.reflect.Proxy;
 
 /**
  * Implementation of the generic delete command
@@ -60,7 +62,6 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
 
     Class<? extends CrudResolver> resolverType;
     CommandModel model;
-    String elementName;
     Delete delete;    
     
     @Override
@@ -95,7 +96,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
     }
 
     @Override
-    public void execute(AdminCommandContext context) {
+    public void execute(final AdminCommandContext context) {
 
         final ActionReport result = context.getActionReport();
         // inject resolver with command parameters...
@@ -103,7 +104,9 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
 
         CrudResolver resolver = habitat.getComponent(resolverType);
 
-        manager.inject(resolver, getInjectionResolver());
+        final InjectionResolver paramResolver = getInjectionResolver();
+
+        manager.inject(resolver, paramResolver);
 
         final ConfigBeanProxy target = resolver.resolve(context, targetType);
         if (target==null) {
@@ -117,7 +120,33 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
         final ConfigBean child = (ConfigBean) ConfigBean.unwrap(target);
 
         try {
-            ConfigSupport.deleteChild((ConfigBean) child.parent(), child);
+            ConfigBeanProxy parentProxy = child.parent().createProxy();
+            ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+                @Override
+                public Object run(ConfigBeanProxy parentProxy) throws PropertyVetoException, TransactionFailure {
+                    ConfigSupport._deleteChild(child.parent(), (WriteableView) Proxy.getInvocationHandler(parentProxy), child);
+
+                    DeletionDecorator<ConfigBeanProxy, ConfigBeanProxy> decorator = habitat.getComponent(delete.decorator());
+                    if (decorator==null) {
+                        String msg = localStrings.getLocalString(GenericCrudCommand.class,
+                                "GenericCreateCommand.deletion_decorator_not_found",
+                                "The DeletionDecorator {0} could not be found in the habitat,is it annotated with @Service ?",
+                                delete.decorator().toString());
+                        result.failure(logger, msg);
+                        throw new TransactionFailure(msg);
+                    } else {
+                        // inject the decorator with any parameters from the initial CLI invocation
+                        manager.inject(decorator, paramResolver);
+
+                        // invoke the decorator
+                        decorator.decorate(context, parentProxy, target);
+
+                    }
+                    return null;
+                }
+            }, parentProxy);
+
+
         } catch(TransactionFailure e) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericDeleteCommand.transaction_exception",
