@@ -67,6 +67,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.util.ArrayList;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
@@ -96,6 +97,13 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     protected E entity;
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
+
+    final private static List<String> attributesToSkip = new ArrayList<String>() {{
+        add("parent");
+        add("name");
+        add("children");
+        add("submit");
+    }};
 
     /** Creates a new instance of xxxResource */
     public TemplateResource() {
@@ -133,7 +141,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     public Response updateEntity(HashMap<String, String> data) {
         try {
-            data.remove("submit");
+            //data.remove("submit");
+            removeAttributesToBeSkipped(data);
             if (data.containsKey("error")) {
                 String errorMessage = localStrings.getLocalString("rest.request.parsing.error",
                         "Unable to parse the input entity. Please check the syntax.");
@@ -168,6 +177,12 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
+        }
+    }
+
+    protected void removeAttributesToBeSkipped(Map<String, String> data) {
+        for (String item : attributesToSkip) {
+            data.remove(item);
         }
     }
 
