@@ -539,7 +539,7 @@ logger.setLevel(Level.FINEST);
             return;             // nothing to do
 
         List<String> fileSet = new ArrayList<String>();
-        getFileNames(configSpecificDir, configDir, fileSet, null,
+        getFileNames(configSpecificDir, configDir, null, fileSet,
                                                         SyncLevel.DIRECTORY);
         synchronizeDirectory(context, server, sr, configDir, fileSet);
     }
@@ -614,6 +614,10 @@ logger.setLevel(Level.FINEST);
         if (logger.isLoggable(Level.FINER))
             logger.finer("SynchronizeFiles: attach directory " +
                             domainRootUri.relativize(dir.toURI()));
+        if (!dir.exists()) {
+            logger.finer("SynchronizeFiles: nothing to attach");
+            return;
+        }
         outboundPayload.requestFileReplacement("application/octet-stream",
             domainRootUri.relativize(dir.toURI()),
             "configChange", null, dir, true);
