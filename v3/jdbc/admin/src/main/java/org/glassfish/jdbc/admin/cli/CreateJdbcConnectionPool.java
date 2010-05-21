@@ -78,19 +78,19 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(optional=true, alias = "resType",  acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
     String restype;
 
-    @Param(name="steadypoolsize", alias = "steadyPoolSize",  optional=true)
+    @Param(name="steadypoolsize", alias = "steadyPoolSize",  optional=true, defaultValue = "8")
     String steadypoolsize = "8";
 
-    @Param(name="maxpoolsize", alias = "maxPoolSize",  optional=true)
+    @Param(name="maxpoolsize", alias = "maxPoolSize",  optional=true, defaultValue = "32")
     String maxpoolsize = "32";
     
-    @Param(name="maxwait", alias = "maxWaitTimeInMillis",  optional=true)
+    @Param(name="maxwait", alias = "maxWaitTimeInMillis",  optional=true, defaultValue = "60000")
     String maxwait = "60000";
 
-    @Param(name="poolresize", alias = "poolResizeQuantity",  optional=true)
+    @Param(name="poolresize", alias = "poolResizeQuantity",  optional=true, defaultValue = "2")
     String poolresize = "2";
     
-    @Param(name="idletimeout", alias = "idleTimeoutInSeconds",  optional=true)
+    @Param(name="idletimeout", alias = "idleTimeoutInSeconds",  optional=true, defaultValue = "300")
     String idletimeout = "300";
 
     @Param(alias = "initSql", optional=true)
@@ -105,7 +105,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="isconnectvalidatereq", alias = "isConnectionValidationRequired",  optional=true, defaultValue="false")
     Boolean isconnectvalidatereq;
     
-    @Param(optional=true, alias = "connectionValidationMethod",  acceptableValues="auto-commit,meta-data,table,custom-validation")
+    @Param(optional=true, alias = "connectionValidationMethod",  acceptableValues="auto-commit,meta-data,table,custom-validation", defaultValue = "table")
     String validationmethod = "table";
     
     @Param(name="validationtable", alias = "validationTableName",  optional=true)
@@ -120,25 +120,25 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="nontransactionalconnections", alias = "nonTransactionalConnections",  optional=true, defaultValue="false")
     Boolean nontransactionalconnections;
     
-    @Param(name="validateatmostonceperiod", alias = "validateAtmostOncePeriodInSeconds",  optional=true)
+    @Param(name="validateatmostonceperiod", alias = "validateAtmostOncePeriodInSeconds",  optional=true, defaultValue = "0")
     String validateatmostonceperiod = "0";
     
-    @Param(name="leaktimeout", alias = "connectionLeakTimeoutInSeconds",  optional=true)
+    @Param(name="leaktimeout", alias = "connectionLeakTimeoutInSeconds",  optional=true, defaultValue = "0")
     String leaktimeout = "0";
     
     @Param(name="leakreclaim", alias = "connectionLeakReclaim",  optional=true, defaultValue="false")
     Boolean leakreclaim;
     
-    @Param(name="creationretryattempts", alias = "connectionCreationRetryAttempts",  optional=true)
+    @Param(name="creationretryattempts", alias = "connectionCreationRetryAttempts",  optional=true, defaultValue = "0")
     String creationretryattempts = "0";
     
-    @Param(name="creationretryinterval", alias = "connectionCreationRetryIntervalInSeconds",  optional=true)
+    @Param(name="creationretryinterval", alias = "connectionCreationRetryIntervalInSeconds",  optional=true, defaultValue = "10")
     String creationretryinterval = "10";
 
     @Param(alias = "sqlTraceListeners", optional=true)
     String sqltracelisteners;
     
-    @Param(name="statementtimeout", alias = "statementTimeoutInSeconds",  optional=true)
+    @Param(name="statementtimeout", alias = "statementTimeoutInSeconds",  optional=true, defaultValue = "-1")
     String statementtimeout = "-1";
     
     @Param(name="lazyconnectionenlistment", alias = "lazyConnectionEnlistment",  optional=true, defaultValue="false")
@@ -159,7 +159,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="matchconnections", alias = "matchConnections",  optional=true, defaultValue="false")
     Boolean matchconnections;
     
-    @Param(name="maxconnectionusagecount", alias = "maxConnectionUsageCount",  optional=true)
+    @Param(name="maxconnectionusagecount", alias = "maxConnectionUsageCount",  optional=true, defaultValue = "0")
     String maxconnectionusagecount = "0";
 
     @Param(optional=true, alias = "ping",  defaultValue="false")
@@ -183,7 +183,7 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     @Param(name="property", alias = "property",  optional=true, separator=':')
     Properties properties;
     
-    @Param(alias = "target",  optional=true)
+    @Param(alias = "target",  optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
     
     @Param(name="jdbc_connection_pool_id", alias = "name" /*Mapped to ResourceConstants.CONNECTION_POOL_NAME below */,  primary=true)
