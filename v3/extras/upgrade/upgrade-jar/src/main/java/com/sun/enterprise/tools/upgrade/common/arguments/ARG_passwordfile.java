@@ -36,17 +36,8 @@
 
 package com.sun.enterprise.tools.upgrade.common.arguments;
 
-import com.sun.enterprise.tools.upgrade.common.CLIConstants;
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- *
- * @author Hans Hrasna
- */
 public class ARG_passwordfile extends ArgumentHandler {
 
     /** Creates a new instance of ARG_passwordfile */
@@ -58,34 +49,13 @@ public class ARG_passwordfile extends ArgumentHandler {
 	public void setRawParameters(String p){
 		rawParameters = p;
 		if (p != null){
-			// TODO check of file exists
 			File userPasswordFile = new File(p);
 			if (userPasswordFile.exists() && userPasswordFile.isFile()){
 				super._isValidParameter = true;
+                commonInfo.getSource().getDomainCredentials().setPasswordFile(
+                    userPasswordFile);
 			}
 		}
 	}
 
-    @Override
-	public List<ArgumentHandler> getChildren(){
-		List<ArgumentHandler> list = new ArrayList<ArgumentHandler>();
-        try {
-			File userPasswordFile = new File(rawParameters);
-            BufferedReader reader =
-                new BufferedReader(new FileReader(userPasswordFile));
-            while( reader.ready() ) {
-                String line = reader.readLine();
-                if ( line.startsWith("AS_ADMIN_MASTERPASSWORD=") ) {
-					ARG_masterpassword tmpA = new ARG_masterpassword();
-					tmpA.setRawParameters(line.substring(line.indexOf("=") + 1));
-					tmpA.setCmd(CLIConstants.MASTERPASSWORD_SHORT);
-					list.add(tmpA);
-                }
-            }
-            reader.close();
-        } catch (Exception e) {
-            logger.severe(sm.getString("upgrade.common.general_exception") + " " + e.getMessage());
-        }
-		return list;
-    }
 }

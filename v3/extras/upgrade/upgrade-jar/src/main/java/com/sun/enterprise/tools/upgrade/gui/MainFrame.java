@@ -42,7 +42,7 @@ import com.sun.enterprise.tools.upgrade.common.Credentials;
 import com.sun.enterprise.tools.upgrade.common.DirectoryMover;
 import com.sun.enterprise.tools.upgrade.common.UpgradeConstants;
 import com.sun.enterprise.tools.upgrade.common.UpgradeUtils;
-import com.sun.enterprise.tools.upgrade.common.arguments.ARG_masterpassword;
+import com.sun.enterprise.tools.upgrade.common.arguments.ARG_passwordfile;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_source;
 import com.sun.enterprise.tools.upgrade.common.arguments.ARG_target;
 import com.sun.enterprise.tools.upgrade.gui.util.Utils;
@@ -398,7 +398,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         System.exit(0);
     }
 
-    /**
+    /*
      * Method to validate source and target directory inputs on the GUI panel
      * Also checks whether the upgrade path is supported or not.
      */
@@ -439,10 +439,14 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
             return false;
         }
 
-        // check credentials
-        ARG_masterpassword argMasterPW = new ARG_masterpassword();
-        argMasterPW.setRawParameters(dataCollectionPanel.getMasterPassword());
-        argMasterPW.exec();
+        // store credentials if given in GUI
+        char [] masterPassword = dataCollectionPanel.getMasterPassword();
+        if (masterPassword.length > 0) {
+            Credentials creds =
+                commonInfoModel.getSource().getDomainCredentials();
+            creds.setMasterPassword(masterPassword);
+        }
+
         return true;
     }
 
@@ -453,8 +457,7 @@ public class MainFrame extends javax.swing.JFrame implements DirectoryMover {
         Credentials c = commonInfoModel.getSource().getDomainCredentials();
         logger.info(UpgradeConstants.ASUPGRADE + " -s " +
             commonInfoModel.getSource().getInstallDir() +
-            "\t -t " + commonInfoModel.getTarget().getInstallDir() +
-            "\t -m " + c.getMasterPassword().replaceAll(".", "*"));
+            "\t -t " + commonInfoModel.getTarget().getInstallDir());
     }
 
 }

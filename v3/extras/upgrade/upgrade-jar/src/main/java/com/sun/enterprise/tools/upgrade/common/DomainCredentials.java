@@ -41,16 +41,20 @@ import com.sun.enterprise.util.i18n.StringManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
+ * Rewrote to not save the password except in the file. When a
+ * password is set, it is saved in a temporary file. If a user
+ * passes in an existing file location, will use that instead.
  *
- * @author rebeccas
+ * For 3.1, we will change this to pass the password characters
+ * into asadmin without the text file.
  */
 public class DomainCredentials implements Credentials {
 
-    private File passwordFile;
-    private String masterPassword;
+    private File passwordFile = null;
 
     private static final Logger logger = LogService.getLogger();
 
@@ -58,39 +62,33 @@ public class DomainCredentials implements Credentials {
         StringManager.getManager(DomainCredentials.class);
 
     @Override
-	public void setMasterPassword(String s){
-		masterPassword = s;
-	}
-
-    @Override
-	public String getMasterPassword(){
-		return masterPassword;
-	}
-
-    @Override
-    public String getPasswordFile() {
-        if (passwordFile == null) {
+	public void setMasterPassword(char [] chars){
             try {
-                passwordFile = java.io.File.createTempFile("ugpw", null);
+                passwordFile = File.createTempFile("ugpw", null);
                 FileWriter writer = new FileWriter(passwordFile);
-                if (getMasterPassword() != null) {
-                    writer.write("AS_ADMIN_MASTERPASSWORD=" +
-                        getMasterPassword() + "\n");
-                }
+                writer.write("AS_ADMIN_MASTERPASSWORD=");
+                writer.write(chars);
+                writer.write("\n");
                 writer.close();
             } catch (IOException ioe) {
                 logger.severe(stringManager.getString(
                     "upgrade.common.general_exception") +
                     " " + ioe.getMessage());
+            } finally {
+                Arrays.fill(chars, ' ');
             }
+	}
+
+    @Override
+    public String getPasswordFile() {
+        if (passwordFile == null) {
+            return null;
         }
         return passwordFile.getAbsolutePath();
     }
 
     @Override
-	public void deletePasswordFile() {
-        if (passwordFile != null) {
-            passwordFile.delete();
-        }
+    public void setPasswordFile(File file) {
+        passwordFile = file;
     }
 }

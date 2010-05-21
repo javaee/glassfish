@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.tools.upgrade.common;
 
+import java.io.File;
 
 /**
  * Stores the master password and password file when used with
@@ -43,9 +44,8 @@ package com.sun.enterprise.tools.upgrade.common;
  */
 public interface Credentials {
 
-    public void setMasterPassword(String s);
-	public String getMasterPassword();
-	
+    public void setMasterPassword(char [] c);
+    public void setPasswordFile(File file);
 	public String getPasswordFile();
-	public void deletePasswordFile();
+
 }

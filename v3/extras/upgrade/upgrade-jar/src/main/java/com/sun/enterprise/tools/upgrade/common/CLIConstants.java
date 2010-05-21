@@ -67,8 +67,6 @@ public class CLIConstants {
     public static final String SOURCE_SHORT = "s";
     public static final String TARGET = "target";
     public static final String TARGET_SHORT = "t";
-    public static final String MASTERPASSWORD = "masterpassword";
-    public static final String MASTERPASSWORD_SHORT = "m";
 	
     public static final String CLI_OPTION_CONSOLE_SHORT = "-c";
     public static final String CLI_OPTION_CONSOLE_LONG = "--console";
