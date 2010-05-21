@@ -81,10 +81,12 @@ public class MonitorableSSLSelectorHandler extends SSLSelectorThreadHandler {
     public SelectableChannel acceptWithoutRegistration(SelectionKey key)
             throws IOException {
         final SocketChannel channel = (SocketChannel) super.acceptWithoutRegistration(key);
-        final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
+        if (channel != null) {
+            final String address = ((InetSocketAddress) channel.socket().getRemoteSocketAddress()).toString();
 
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
-                monitoringId, channel.hashCode(), address);
+            grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
+                    monitoringId, channel.hashCode(), address);
+        }
 
         return channel;
     }
