@@ -48,8 +48,9 @@ public abstract class BaseDevTest {
      * @return true if successful
      */
     public boolean asadmin(final String... args) {
+        String asadmincmd = isWindows() ? "/bin/asadmin.bat" :"/bin/asadmin";
         List<String> command = new ArrayList<String>();
-        command.add(System.getenv().get("S1AS_HOME") + "/bin/asadmin");
+        command.add(System.getenv().get("S1AS_HOME") + asadmincmd);
         command.addAll(Arrays.asList(antProp("as.props").split(" ")));
         command.addAll(Arrays.asList(args));
         ProcessBuilder builder = new ProcessBuilder(command);
@@ -90,6 +91,11 @@ public abstract class BaseDevTest {
             writer.close();
         }
         return success;
+    }
+
+    public boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return (os.indexOf("win") >= 0);
     }
 
     public String antProp(final String key) {
