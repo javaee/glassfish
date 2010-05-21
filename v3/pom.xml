@@ -117,6 +117,7 @@
         <hk2.plugin.version>1.0.19</hk2.plugin.version>
         <jsr223-api.version>1.0</jsr223-api.version>
         <phobos.version>0.5.10</phobos.version>
+        <trilead-ssh2.version>build212-hudson-5</trilead-ssh2.version>
         <product.name>GlassFish</product.name>
         <abbrev_product_name>glassfish</abbrev_product_name>
         <version_prefix></version_prefix>
@@ -1328,6 +1329,11 @@
                 <artifactId>asm-commons</artifactId>
                 <version>${asm.version}</version>
             </dependency>
+	    <dependency>
+              <groupId>org.jvnet.hudson</groupId>
+              <artifactId>trilead-ssh2</artifactId>
+              <version>${trilead-ssh2.version}</version>
+	    </dependency>
 
         </dependencies>
     </dependencyManagement>
