@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -145,7 +146,6 @@ public class ResourceUtil extends Util {
      * @param commandName the command to execute
      * @param parameters the command parameters
      * @param habitat the habitat
-     * @param logger the logger to use
      * @return ActionReport object with command execute status details.
      */
     public ActionReport runCommand(String commandName,
@@ -166,7 +166,6 @@ public class ResourceUtil extends Util {
     * @param commandName the command to execute
     * @param parameters the command parameters
     * @param habitat the habitat
-    * @param logger the logger to use
     * @return ActionReport object with command execute status details.
     */
     public ActionReport runCommand(String commandName,
@@ -247,13 +246,20 @@ public class ResourceUtil extends Util {
 
                 String parameterName =
                     (paramModel.getParam().primary())?"id":paramModel.getName();
+                String parameterCamelCasedName = paramModel.getParam().alias(); // It is expected that an alias on parameter if defined will be camel cased name of corresponding serverbean attribute
+                if(parameterCamelCasedName == null || parameterCamelCasedName.isEmpty()) {
+                    // We are dealing with a command where camelCasedName is not defined. It is assumed that parameterName
+                    // will be name of corresponding serverbean attribute.
+                    // TODO Discuss with Jerome, Bill. Ideally this concern should be pushed into ParamModel to better encapsulate
+                    parameterCamelCasedName = parameterName;
+                }
 
                 if (pamameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQureyParamMetaData(parameterName,
+                    methodMetaData.putQureyParamMetaData(parameterCamelCasedName,
                         parameterMetaData);
                 } else {
                     //message parameter
-                    methodMetaData.putParameterMetaData(parameterName,
+                    methodMetaData.putParameterMetaData(parameterCamelCasedName,
                         parameterMetaData);
                 }
             }
@@ -324,6 +330,8 @@ public class ResourceUtil extends Util {
                         if (attribute != null) {
                             ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
 
+                            //camelCase the attributeName before passing out
+                            attributeName = eleminateHypen(attributeName);
                             if (parameterType == Constants.QUERY_PARAMETER) {
                                 methodMetaData.putQureyParamMetaData(attributeName, parameterMetaData);
                             } else {
@@ -560,6 +568,85 @@ public class ResourceUtil extends Util {
 
     private String getAttributeMethodName(String attributeName) {
         return methodNameFromDtdName(attributeName, "get");
+    }
+
+    /**
+     * Translates all param names in </code>sourceMap</code> that corresponds to camelCasedName of a command param into corresponding command param name
+     * @param sourceMap - The input. Contains untranslated names
+     * @param commandName - The command we want to translate for
+     * @param habitat
+     * @param logger
+     * @return A HashMap<String, String> that contains (1) all the entries from <code>sourceMap<code> whose key matches camleCaseName of
+     * one of the parameters of command. The key of this entry is translated to corresponding command param name (2)
+     * All the remaining entries from sourceMap as it is.
+     */
+    public HashMap<String, String> translateCamelCasedNamesToCommandParamNames(HashMap<String, String> sourceMap, String commandName, Habitat habitat, Logger logger) {
+        //TODO after Bills changes to call toLowerCase() this translation might not be required as he will accept camleCased parameters. Remove this code then.
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        CommandModel cm = cr.getModel(commandName, logger);
+        Collection<CommandModel.ParamModel> paramModels = cm.getParameters();
+        HashMap<String, String> translatedMap = new HashMap<String, String>();
+        for (CommandModel.ParamModel paramModel : paramModels) {
+            Param param = paramModel.getParam(); 
+            String camelCaseName = param.alias();
+            if(sourceMap.containsKey(camelCaseName)) {
+                String paramValue = sourceMap.remove(camelCaseName);
+                translatedMap.put(paramModel.getName(), paramValue);
+            }
+        }
+        //Copy over the remaining values from sourceMap
+        translatedMap.putAll(sourceMap);
+
+        return translatedMap;
+
+    }
+
+    //TODO this is copied from org.jvnet.hk2.config.Dom. If we are not able to encapsulate the conversion in Dom, need to make sure that the method convertName is refactored into smaller methods such that trimming of prefixes stops. We will need a promotion of HK2 for this. 
+    static final Pattern TOKENIZER;
+    private static String split(String lookback,String lookahead) {
+        return "((?<="+lookback+")(?="+lookahead+"))";
+    }
+    private static String or(String... tokens) {
+        StringBuilder buf = new StringBuilder();
+        for (String t : tokens) {
+            if(buf.length()>0)  buf.append('|');
+            buf.append(t);
+        }
+        return buf.toString();
+    }
+    static {
+        String pattern = or(
+                split("x","X"),     // AbcDef -> Abc|Def
+                split("X","Xx"),    // USArmy -> US|Army
+                //split("\\D","\\d"), // SSL2 -> SSL|2
+                split("\\d","\\D")  // SSL2Connector -> SSL|2|Connector
+        );
+        pattern = pattern.replace("x","\\p{Lower}").replace("X","\\p{Upper}");
+        TOKENIZER = Pattern.compile(pattern);
+    }
+
+    public static String convertToXMLName(String name) {
+        // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
+        StringBuilder buf = new StringBuilder(name.length()+5);
+        for(String t : TOKENIZER.split(name)) {
+            if(buf.length()>0)  buf.append('-');
+            buf.append(t.toLowerCase());
+        }
+        return buf.toString();
+    }
+
+
+    /**
+     * @return A copy of given <code>sourceData</code> where key of each entry from it is converted to xml name
+     */
+    public static HashMap<String, String> translateCamelCasedNamesToXMLNames(Map<String, String> sourceData) {
+        HashMap<String, String> convertedData = new HashMap<String, String>(sourceData.size());
+        for (Map.Entry<String, String> entry : sourceData.entrySet()) {
+            String camelCasedKeyName = entry.getKey();
+            String xmlKeyName = convertToXMLName(camelCasedKeyName);
+            convertedData.put(xmlKeyName, entry.getValue());
+        }
+        return convertedData;
     }
 
 }

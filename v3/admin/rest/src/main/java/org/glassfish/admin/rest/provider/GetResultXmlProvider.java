@@ -141,9 +141,9 @@ public class GetResultXmlProvider extends ProviderUtil implements MessageBodyWri
 
     private String getAttributes(Dom proxy) {
         String result ="";
-        Set<String> attributes = proxy.model.getAttributeNames();
-        for (String attribute : attributes) {
-            result = result + attribute + "=" + quote(proxy.attribute(attribute));
+        Set<String> attributeNames = proxy.model.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            result = result + eleminateHypen(attributeName) + "=" + quote(proxy.attribute(attributeName));
             result = result + " ";
         }
         

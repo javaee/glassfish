@@ -65,6 +65,11 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
      @Context
      protected UriInfo uriInfo;
 
+    private final static String QUERY_PARAMETERS = "queryParameters";
+    private final static String MESSAGE_PARAMETERS = "messageParameters";
+    private final static String METHOD = "method";
+
+
      @Override
      public long getSize(final OptionsResult proxy, final Class<?> type, final Type genericType,
                final Annotation[] annotations, final MediaType mediaType) {
@@ -96,7 +101,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
 
         result = result + getRespresenationForMethodMetaData(proxy, indent);
 
-        result = result + "\n" + "</" + proxy.getName() + ">" ;
+        result = result + "\n" + getEndXmlElement(proxy.getName());
         return result;
     }
 
@@ -124,7 +129,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
                indent + Constants.INDENT);
 
            result = result + "\n" + indent;
-           result = result + getEndXmlElement("Method");
+           result = result + getEndXmlElement(METHOD);
         }
         return result;
     }
@@ -133,7 +138,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
     //get xml representation for the given method name
     private String getMethod(String method, String indent) {
         String result = "\n" + indent + "<";
-        result = result + "Method name=";
+        result = result + METHOD + " name=";
         result = result + quote(method);
         result = result + ">";
         return result;
@@ -143,10 +148,11 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
     //get xml representation for the method query parameters
     private String getQueryParams(MethodMetaData methodMetaData,
             String indent) {
+        //TODO too many string concatenations happening here. Change this and other methods in this class to use StringBuffer
         String result = "";
         if (methodMetaData.sizeQueryParamMetaData() > 0) {
             result = result + "\n" + indent;
-            result = result + "<Query-Parameters>";
+            result = result + "<" + QUERY_PARAMETERS + ">";
 
             Set<String> queryParams = methodMetaData.queryParams();
             Iterator<String> iterator = queryParams.iterator();
@@ -159,7 +165,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
                     indent + Constants.INDENT);
             }
             result = result + "\n" + indent;
-            result = result + "</Query-Parameters>";
+            result = result +  getEndXmlElement(QUERY_PARAMETERS);
         }
         return result;
     }
@@ -171,7 +177,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
         String result = "";
         if (methodMetaData.sizeParameterMetaData() > 0) {
             result = result + "\n" + indent;
-            result = result + "<Message-Parameters>";
+            result = result + "<" + MESSAGE_PARAMETERS + ">";
 
             Set<String> parameters = methodMetaData.parameters();
             Iterator<String> iterator = parameters.iterator();
@@ -184,7 +190,7 @@ public class OptionsResultXmlProvider extends ProviderUtil implements MessageBod
                    indent + Constants.INDENT);
             }
             result = result + "\n" + indent;
-            result = result + "</Message-Parameters>";
+            result = result + getEndXmlElement(MESSAGE_PARAMETERS);
         }
         return result;
     }

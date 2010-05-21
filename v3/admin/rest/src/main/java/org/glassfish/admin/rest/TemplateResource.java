@@ -154,6 +154,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+            data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
             mapOfChanges.put(getConfigBean(), data);
             RestService.getConfigSupport().apply(mapOfChanges); //throws TransactionFailure
 
@@ -404,19 +405,6 @@ public class TemplateResource<E extends ConfigBeanProxy> {
         return __resourceUtil.getCommand(
                 RestRedirect.OpType.DELETE, getConfigBean());
     }
-
-    private ActionReport processRedirectsAnnotation(RestRedirect.OpType type,
-            HashMap<String, String> data) {
-
-        String commandName = __resourceUtil.getCommand(type, getConfigBean());
-        if (commandName != null) {
-            return __resourceUtil.runCommand(commandName,
-                    data, RestService.getHabitat());//processed
-        }
-
-        return null;//not processed
-    }
-
 
     private ActionReport runCommand(String commandName,
             HashMap<String, String> data) {

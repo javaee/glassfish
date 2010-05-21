@@ -253,9 +253,11 @@ public class ProviderUtil extends Util {
         while (iterator.hasNext()) {
             parameter = iterator.next();
             parameterMetaData = methodMetaData.getParameterMetaData(parameter);
+            //parameterMetaData contains attributeNames in camelCasedNames convert them to xmlNames to get the attribute's current value
+            String xmlAttributeName = ResourceUtil.convertToXMLName(parameter);
             result = result +
                 getHtmlRespresentationForParameter(parameter, parameterMetaData,
-                    proxy.attribute(parameter));
+                    proxy.attribute(xmlAttributeName));
         }
 
         if (!result.equals("")) {
@@ -477,17 +479,17 @@ public class ProviderUtil extends Util {
 
 
     static protected String getResourcesKey() {
-        return "Child Resources";
+        return "childResources";
     }
 
 
     static protected String getResourceKey() {
-        return "Child Resource";
+        return "childResource";
     }
 
 
     static protected String getMethodsKey() {
-        return "Methods";
+        return "methods";
     }
 
 

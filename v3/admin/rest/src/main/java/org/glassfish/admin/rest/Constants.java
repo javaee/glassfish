@@ -47,14 +47,6 @@ public interface Constants {
 
     public static final int MESSAGE_PARAMETER = 1;
 
-    public static final String TRUE = "true";
-
-    public static final String ON = "on";
-
-    public static final String FALSE = "false";
-
-    public static final String OFF = "off";
-
     public static final String JAVA_STRING_TYPE = "java.lang.String";
 
     public static final String JAVA_BOOLEAN_TYPE = "java.lang.Boolean";
@@ -71,15 +63,15 @@ public interface Constants {
 
     public static final String XSD_PROPERTIES_TYPE = "string"; //?
 
-    public static final String TYPE = "Type";
+    public static final String TYPE = "type";
 
-    public static final String KEY = "Key";
+    public static final String KEY = "key";
 
-    public static final String OPTIONAL = "Optional";
+    public static final String OPTIONAL = "optional";
 
-    public static final String DEFAULT_VALUE = "Default Value";
+    public static final String DEFAULT_VALUE = "defaultValue";
 
-    public static final String ACCEPTABLE_VALUES = "Acceptable Values";
+    public static final String ACCEPTABLE_VALUES = "acceptableValues";
 
     public static final String PARENT_NAME_VARIABLE = "$parent";
 }

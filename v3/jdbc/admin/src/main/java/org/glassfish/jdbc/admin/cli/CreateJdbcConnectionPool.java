@@ -71,121 +71,122 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcConnectionPool.class);    
 
-    @Param(name="datasourceclassname", optional=true)
+    //TODO once Billl starts doing toLowerCase() for name. Cleanup duplicate alias entries from the file. 
+    @Param(name="datasourceclassname", alias = "datasourceClassname",  optional=true)
     String datasourceclassname;
 
-    @Param(optional=true, acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
+    @Param(optional=true, alias = "restType",  acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
     String restype;
 
-    @Param(name="steadypoolsize", optional=true)
+    @Param(name="steadypoolsize", alias = "steadyPoolSize",  optional=true)
     String steadypoolsize = "8";
 
-    @Param(name="maxpoolsize", optional=true)
+    @Param(name="maxpoolsize", alias = "maxPoolSize",  optional=true)
     String maxpoolsize = "32";
     
-    @Param(name="maxwait", optional=true)
+    @Param(name="maxwait", alias = "maxWaitTimeInMillis",  optional=true)
     String maxwait = "60000";
 
-    @Param(name="poolresize", optional=true)
+    @Param(name="poolresize", alias = "poolResizeQuantity",  optional=true)
     String poolresize = "2";
     
-    @Param(name="idletimeout", optional=true)
+    @Param(name="idletimeout", alias = "idleTimeoutInSeconds",  optional=true)
     String idletimeout = "300";
 
-    @Param(optional=true)
+    @Param(alias = "initSql", optional=true)
     String initsql;
         
-    @Param(name="isolationlevel", optional=true)
+    @Param(name="isolationlevel", alias = "transactionIsolationLevel",  optional=true)
     String isolationlevel;
             
-    @Param(name="isisolationguaranteed", optional=true, defaultValue="true")
+    @Param(name="isisolationguaranteed", alias = "isIsolationLevelGuaranteed",  optional=true, defaultValue="true")
     Boolean isisolationguaranteed;
                 
-    @Param(name="isconnectvalidatereq", optional=true, defaultValue="false")
+    @Param(name="isconnectvalidatereq", alias = "isConnectionValidationRequired",  optional=true, defaultValue="false")
     Boolean isconnectvalidatereq;
     
-    @Param(optional=true, acceptableValues="auto-commit,meta-data,table,custom-validation")
+    @Param(optional=true, alias = "connectionValidationMethod",  acceptableValues="auto-commit,meta-data,table,custom-validation")
     String validationmethod = "table";
     
-    @Param(name="validationtable", optional=true)
+    @Param(name="validationtable", alias = "validationTableName",  optional=true)
     String validationtable;
     
-    @Param(name="failconnection", optional=true, defaultValue="false")
+    @Param(name="failconnection", alias = "failAllConnections",  optional=true, defaultValue="false")
     Boolean failconnection;
     
-    @Param(name="allownoncomponentcallers", optional=true, defaultValue="false")
+    @Param(name="allownoncomponentcallers", alias = "allowNonComponentCallers",  optional=true, defaultValue="false")
     Boolean allownoncomponentcallers;
     
-    @Param(name="nontransactionalconnections", optional=true, defaultValue="false")
+    @Param(name="nontransactionalconnections", alias = "nonTransactionalConnections",  optional=true, defaultValue="false")
     Boolean nontransactionalconnections;
     
-    @Param(name="validateatmostonceperiod", optional=true)
+    @Param(name="validateatmostonceperiod", alias = "validateAtmostOncePeriodInSeconds",  optional=true)
     String validateatmostonceperiod = "0";
     
-    @Param(name="leaktimeout", optional=true)
+    @Param(name="leaktimeout", alias = "connectionLeakTimeoutInSeconds",  optional=true)
     String leaktimeout = "0";
     
-    @Param(name="leakreclaim", optional=true, defaultValue="false")
+    @Param(name="leakreclaim", alias = "connectionLeakReclaim",  optional=true, defaultValue="false")
     Boolean leakreclaim;
     
-    @Param(name="creationretryattempts", optional=true)
+    @Param(name="creationretryattempts", alias = "connectionCreationRetryAttempts",  optional=true)
     String creationretryattempts = "0";
     
-    @Param(name="creationretryinterval", optional=true)
+    @Param(name="creationretryinterval", alias = "connectionCreationRetryIntervalInSeconds",  optional=true)
     String creationretryinterval = "10";
 
-    @Param(optional=true)
+    @Param(alias = "sqlTraceListeners", optional=true)
     String sqltracelisteners;
     
-    @Param(name="statementtimeout", optional=true)
+    @Param(name="statementtimeout", alias = "statementTimeoutInSeconds",  optional=true)
     String statementtimeout = "-1";
     
-    @Param(name="lazyconnectionenlistment", optional=true, defaultValue="false")
+    @Param(name="lazyconnectionenlistment", alias = "lazyConnectionEnlistment",  optional=true, defaultValue="false")
     Boolean lazyconnectionenlistment;
     
-    @Param(name="lazyconnectionassociation", optional=true, defaultValue="false")
+    @Param(name="lazyconnectionassociation", alias = "lazyConnectionAssociation",  optional=true, defaultValue="false")
     Boolean lazyconnectionassociation;
     
-    @Param(name="associatewiththread", optional=true, defaultValue="false")
+    @Param(name="associatewiththread", alias = "associateWithThread",  optional=true, defaultValue="false")
     Boolean associatewiththread;
 
     //@Param(optional=true, defaultValue="1")
     //String associatewiththreadconnectionscount;
 
-    @Param(optional=true)
+    @Param(alias = "driverClassname",  optional=true)
     String driverclassname;
     
-    @Param(name="matchconnections", optional=true, defaultValue="false")
+    @Param(name="matchconnections", alias = "matchConnections",  optional=true, defaultValue="false")
     Boolean matchconnections;
     
-    @Param(name="maxconnectionusagecount", optional=true)
+    @Param(name="maxconnectionusagecount", alias = "maxConnectionUsageCount",  optional=true)
     String maxconnectionusagecount = "0";
 
-    @Param(optional=true, defaultValue="false")
+    @Param(optional=true, alias = "ping",  defaultValue="false")
     Boolean ping;
 
-    @Param(optional=true, defaultValue="true")
+    @Param(optional=true, alias = "pooling",  defaultValue="true")
     Boolean pooling;
 
-    @Param(optional=true, defaultValue="0")
+    @Param(optional=true, alias = "statementCacheSize",  defaultValue="0")
     String statementcachesize;
 
-    @Param(optional=true)
+    @Param(alias = "validationClassname",  optional=true)
     String validationclassname;
     
-    @Param(name="wrapjdbcobjects", optional=true, defaultValue="true")
+    @Param(name="wrapjdbcobjects", alias = "wrapJdbcObjects",  optional=true, defaultValue="true")
     Boolean wrapjdbcobjects;
     
-    @Param(name="description", optional=true)
+    @Param(name="description", alias = "description",  optional=true)
     String description;
     
-    @Param(name="property", optional=true, separator=':')
+    @Param(name="property", alias = "property",  optional=true, separator=':')
     Properties properties;
     
-    @Param(optional=true)
+    @Param(alias = "target",  optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
     
-    @Param(name="jdbc_connection_pool_id", primary=true)
+    @Param(name="jdbc_connection_pool_id", alias = "name" /*Mapped to ResourceConstants.CONNECTION_POOL_NAME below */,  primary=true)
     String jdbc_connection_pool_id; 
   
     @Inject

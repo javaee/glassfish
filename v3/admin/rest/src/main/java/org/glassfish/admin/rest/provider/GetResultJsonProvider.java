@@ -137,9 +137,9 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
 
     private String getAttributes(Dom proxy) {
         String result ="";
-        Set<String> attributes = proxy.model.getAttributeNames();
-        for (String attribute : attributes) {
-            result = result + quote(attribute) + ":" + quote(proxy.attribute(attribute));
+        Set<String> attributeNames = proxy.model.getAttributeNames();
+        for (String attributeName : attributeNames) {
+            result = result + quote(eleminateHypen(attributeName)) + ":" + quote(proxy.attribute(attributeName));
             result = result + ", ";
         }
 
@@ -179,6 +179,7 @@ public class GetResultJsonProvider extends ProviderUtil implements MessageBodyWr
         if (endIndex > 0) result = result.substring(0, endIndex );
 
         //add command resources
+        //TODO commandResourcePath is two dimensional array. It seems the second e.x. see DomainResource#getCommandResourcesPaths(). The second dimension POST/GET etc. does not seem to be used. Discussed with Ludo. Need to be removed in a separate checkin.
         for (String[] commandResourcePath : commandResourcesPaths) {
             try {
                 if (result.length() > 0) {
