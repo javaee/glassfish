@@ -520,4 +520,14 @@ public class StringUtils {
         pw.close();
         return sw.toString();
     }
+    public static final boolean isToken(String s) {
+        return s != null && s.startsWith("${") && s.endsWith("}") && s.length() > 3;
+    }
+    public static final String stripToken(String s) {
+        if(isToken(s))
+            // NO possible wrong assumptions here -- see isToken()
+            return s.substring(2, s.length() - 1);
+        else
+            return s;   // GIGO
+    }
 }

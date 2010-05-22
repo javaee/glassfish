@@ -39,6 +39,7 @@ import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.common.util.logging.LoggingPropertyNames;
 import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.StringUtils;
 
 import javax.xml.stream.XMLInputFactory;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
@@ -712,11 +713,21 @@ public class MiniXmlParser {
 
     private void addPort(String portString) {
         try {
-            int port = Integer.parseInt(portString);
-            adminPorts.add(port);
+            adminPorts.add(Integer.parseInt(portString));
         }
         catch (Exception e) {
-            // ignore, just return....
+            // HEY!  Why are you not checking BEFORE the Exception?
+            // Well, it might be slower to call isToken() on strings that consist
+            // of just numbers.  We just do this stuff if necessary...
+            try {
+                portString = sysProps.get(StringUtils.stripToken(portString));
+
+                if(portString != null && portString.length() > 0)
+                    adminPorts.add(Integer.parseInt(portString));
+            }
+            catch (Exception e2) {
+                // GI but not GO !
+            }
         }
     }
 
