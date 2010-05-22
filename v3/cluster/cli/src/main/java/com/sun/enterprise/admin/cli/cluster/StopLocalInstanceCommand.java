@@ -51,7 +51,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Byron Nevins
  *
  */
-@Service(name = "stop-instance")
+@Service(name = "stop-local-instance")
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
