@@ -437,7 +437,8 @@ public class CommandRunnerImpl implements CommandRunner {
         StringBuffer operand = new StringBuffer();
         for (CommandModel.ParamModel pModel : model.getParameters()) {
             final Param param = pModel.getParam();
-            final String paramName = pModel.getName();
+            final String paramName =
+		    		pModel.getName().toLowerCase(Locale.ENGLISH);
             // do not want to display password as an option
             if (param.password())
                 continue;
@@ -647,9 +648,12 @@ public class CommandRunnerImpl implements CommandRunner {
         Param param = model.getParam();
         if (param!=null) {
              // this is a param.
-            String paramName = model.getName();
+            String paramName = model.getName().toLowerCase(Locale.ENGLISH);
             //do not want to display password in the usage
-            if (param.primary())
+            if (param.password())
+                return;
+            //do not want to display obsolete options
+            if (param.obsolete())
                 return;
             if (param.primary()) {
                 //if primary then it's an operand

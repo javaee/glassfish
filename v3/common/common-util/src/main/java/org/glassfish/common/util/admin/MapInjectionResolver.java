@@ -178,7 +178,7 @@ public class MapInjectionResolver extends InjectionResolver<Param> {
                                       true);
         if (paramValueStr == null && param.alias().length() > 0) {
             // check for alias
-            paramValueStr = parameters.getOne(param.alias());
+            paramValueStr = getParameterValue(parameters, param.alias(), true);
         }
         if (paramValueStr == null) {
             // check for shortName

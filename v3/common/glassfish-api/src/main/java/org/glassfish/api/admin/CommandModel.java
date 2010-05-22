@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.beans.Introspector;
 
 import com.sun.hk2.component.InjectionResolver;
 
@@ -93,7 +94,8 @@ public abstract class CommandModel {
                 return ((Field) annotated).getName();
             }
             if (annotated instanceof Method) {
-                return ((Method) annotated).getName().substring(3).toLowerCase();
+                String name = ((Method) annotated).getName().substring(3);
+                return Introspector.decapitalize(name);
             }
         } else if (param.password()) {
             return ASADMIN_CMD_PREFIX + param.name().toUpperCase();
@@ -115,14 +117,14 @@ public abstract class CommandModel {
 
         public boolean isParamId(String key) {
             if (getParam().primary()) {
-                return "DEFAULT".equals(key) || getName().equals(key);
+                return "DEFAULT".equals(key) || getName().equalsIgnoreCase(key);
             }
             if (getParam().password()) {
                 return key.startsWith(ASADMIN_CMD_PREFIX);
             }
-            return getName().equals(key) ||
+            return getName().equalsIgnoreCase(key) ||
 		    getParam().shortName().equals(key) ||
-		    getParam().alias().equals(key);
+		    getParam().alias().equalsIgnoreCase(key);
         }
 
     }

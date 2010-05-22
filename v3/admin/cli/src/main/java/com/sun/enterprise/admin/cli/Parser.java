@@ -273,9 +273,9 @@ public class Parser {
         for (ParamModel od : options) {
             if (od.getParam().primary())
 		continue;
-            if (s.equals(od.getName()))
+            if (s.equalsIgnoreCase(od.getName()))
                 return od;
-	    if (s.equals(od.getParam().alias()))
+	    if (s.equalsIgnoreCase(od.getParam().alias()))
                 return od;
         }
         return null;

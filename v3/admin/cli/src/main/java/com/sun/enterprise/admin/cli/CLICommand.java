@@ -134,7 +134,10 @@ public abstract class CLICommand implements PostConstruct {
 
     /**
      * The options parsed from the command line.
-     * Initialized by the parse method.
+     * Initialized by the parse method.  The keys
+     * are the parameter names from the command model,
+     * not the "forced to all lower case" names that
+     * are presented to the user.
      */
     protected ParameterMap options;
 
@@ -282,7 +285,7 @@ public abstract class CLICommand implements PostConstruct {
         String lsep = System.getProperty("line.separator");
         for (ParamModel opt : usageOptions()) {
             optText.setLength(0);
-            final String optName = opt.getName();
+            final String optName = lc(opt.getName());
             // do not want to display password as an option
             if (opt.getParam().password())
                 continue;
@@ -347,7 +350,8 @@ public abstract class CLICommand implements PostConstruct {
 
         optText.setLength(0);
         ParamModel operandParam = getOperandModel();
-        String opname = operandParam != null ? operandParam.getName() : null;
+        String opname = operandParam != null ?
+	    	lc(operandParam.getName()) : null;
         if (!ok(opname))
             opname = "operand";
 
@@ -418,7 +422,7 @@ public abstract class CLICommand implements PostConstruct {
                 if (value == null)
                     value = opt.getParam().defaultValue();
                 if (ok(value)) {
-                    sb.append("--").append(opt.getName());
+                    sb.append("--").append(lc(opt.getName()));
                     if (opt.getType() == Boolean.class ||
                         opt.getType() == boolean.class) {
                         if (Boolean.parseBoolean(value))
@@ -486,7 +490,7 @@ public abstract class CLICommand implements PostConstruct {
                         // find the corresponding ParamModel
                         ParamModel opt = null;
                         for (ParamModel vo : programOptions) {
-                            if (vo.getName().equals(p.getKey())) {
+                            if (vo.getName().equalsIgnoreCase(p.getKey())) {
                                 opt = vo;
                                 break;
                             }
@@ -656,7 +660,7 @@ public abstract class CLICommand implements PostConstruct {
             if (getOption(opt.getName()) == null && cons != null &&
                     !missingOption) {
                 cons.printf("%s",
-                    strings.get("optionPrompt", opt.getName()));
+                    strings.get("optionPrompt", lc(opt.getName())));
                 String val = cons.readLine();
                 if (ok(val))
                     options.set(opt.getName(), val);
@@ -980,6 +984,11 @@ public abstract class CLICommand implements PostConstruct {
 
     protected static boolean ok(String s) {
         return s != null && s.length() > 0;
+    }
+
+    // shorthand for this too-verbose operation
+    private static String lc(String s) {
+    	return s.toLowerCase(Locale.ENGLISH);
     }
 
     /**
