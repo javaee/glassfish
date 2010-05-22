@@ -33,6 +33,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package com.sun.enterprise.deployment;
 
 import org.glassfish.api.event.EventTypes;
@@ -546,7 +547,7 @@ public class WebBundleDescriptor extends BundleDescriptor
     }
 
     protected void combineJmsDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (JmsDestinationReferenceDescriptor jdRef: getJmsDestinationReferenceDescriptors()) {
+        for (JmsDestinationReferenceDescriptor jdRef: webBundleDescriptor.getJmsDestinationReferenceDescriptors()) {
             JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
             if (jdr != null) {
                 combineInjectionTargets(jdr, jdRef);
@@ -946,7 +947,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineEntityManagerFactoryReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EntityManagerFactoryReferenceDescriptor emfRef :
-                getEntityManagerFactoryReferenceDescriptors()) {
+            webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
             EntityManagerFactoryReferenceDescriptor emfr =
                 _getEntityManagerFactoryReferenceByName(emfRef.getName());
             if (emfr != null) {
@@ -1008,7 +1009,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineEntityManagerReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EntityManagerReferenceDescriptor emRef :
-                getEntityManagerReferenceDescriptors()) {
+                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
             EntityManagerReferenceDescriptor emr =
                 _getEntityManagerReferenceByName(emRef.getName());
             if (emr != null) {
@@ -1184,7 +1185,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineMessageDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (MessageDestinationReferenceDescriptor mdRef :
-                getMessageDestinationReferenceDescriptors()) {
+            webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
             MessageDestinationReferenceDescriptor mdr =
                 _getMessageDestinationReferenceByName(mdRef.getName());
             if (mdr != null) {
@@ -1728,7 +1729,7 @@ public class WebBundleDescriptor extends BundleDescriptor
                             "Two or more web fragments define the same Filter with conflicting implementation class names that are not overridden by the web.xml"));
                 }
             } else {
-               if (servletFilterDesc.isConflict()) {
+                if (servletFilterDesc.isConflict()) {
                     throw new IllegalArgumentException(localStrings.getLocalString(
                             "enterprise.deployment.exceptionconflictfilter",
                             "One or more web fragments define the same Filter in a conflicting way, and the Filter is not defined in web.xml"));
