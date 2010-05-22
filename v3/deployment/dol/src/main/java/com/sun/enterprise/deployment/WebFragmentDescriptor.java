@@ -206,7 +206,7 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
 
     @Override
     protected void combineJmsDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (JmsDestinationReferenceDescriptor jdRef: getJmsDestinationReferenceDescriptors()) {
+        for (JmsDestinationReferenceDescriptor jdRef: webBundleDescriptor.getJmsDestinationReferenceDescriptors()) {
             JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
             if (jdr != null) {
                 webBundleDescriptor.conflictJmsDestinationReference = true;
@@ -220,7 +220,7 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     @Override
     protected void combineMessageDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (MessageDestinationReferenceDescriptor mdRef :
-                getMessageDestinationReferenceDescriptors()) {
+            webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
             MessageDestinationReferenceDescriptor mdr =
                 _getMessageDestinationReferenceByName(mdRef.getName());
             if (mdr != null) {
@@ -235,7 +235,7 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     @Override
     protected void combineEntityManagerReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EntityManagerReferenceDescriptor emRef :
-                getEntityManagerReferenceDescriptors()) {
+                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
             EntityManagerReferenceDescriptor emr =
                 _getEntityManagerReferenceByName(emRef.getName());
             if (emr != null) {
@@ -250,7 +250,7 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     @Override
      protected void combineEntityManagerFactoryReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EntityManagerFactoryReferenceDescriptor emfRef :
-                getEntityManagerFactoryReferenceDescriptors()) {
+                webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
             EntityManagerFactoryReferenceDescriptor emfr =
                 _getEntityManagerFactoryReferenceByName(emfRef.getName());
             if (emfr != null) {

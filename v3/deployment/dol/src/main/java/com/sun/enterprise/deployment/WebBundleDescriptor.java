@@ -547,7 +547,7 @@ public class WebBundleDescriptor extends BundleDescriptor
     }
 
     protected void combineJmsDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (JmsDestinationReferenceDescriptor jdRef: getJmsDestinationReferenceDescriptors()) {
+        for (JmsDestinationReferenceDescriptor jdRef: webBundleDescriptor.getJmsDestinationReferenceDescriptors()) {
             JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
             if (jdr != null) {
                 combineInjectionTargets(jdr, jdRef);
@@ -947,7 +947,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineEntityManagerFactoryReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EntityManagerFactoryReferenceDescriptor emfRef :
-                getEntityManagerFactoryReferenceDescriptors()) {
+            webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
             EntityManagerFactoryReferenceDescriptor emfr =
                 _getEntityManagerFactoryReferenceByName(emfRef.getName());
             if (emfr != null) {
@@ -1009,7 +1009,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineEntityManagerReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (EntityManagerReferenceDescriptor emRef :
-                getEntityManagerReferenceDescriptors()) {
+                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
             EntityManagerReferenceDescriptor emr =
                 _getEntityManagerReferenceByName(emRef.getName());
             if (emr != null) {
@@ -1185,7 +1185,7 @@ public class WebBundleDescriptor extends BundleDescriptor
 
     protected void combineMessageDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
         for (MessageDestinationReferenceDescriptor mdRef :
-                getMessageDestinationReferenceDescriptors()) {
+            webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
             MessageDestinationReferenceDescriptor mdr =
                 _getMessageDestinationReferenceByName(mdRef.getName());
             if (mdr != null) {
