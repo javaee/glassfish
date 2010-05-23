@@ -1366,9 +1366,9 @@ public class ResourcesXMLParser implements EntityResolver
         throws SAXException {
         InputSource is = null;
         try {
-            String dtd = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
-                         File.separator + "lib" + File.separator + "dtds" + File.separator +
-                         "sun-resources_1_4.dtd";
+             String dtd = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
+                          File.separator + "lib" + File.separator + "dtds" + File.separator +
+                          "glassfish-resources_1_5.dtd";
             is = new InputSource(new java.io.FileInputStream(dtd));
         } catch(Exception e) {
             throw new SAXException("cannot resolve dtd", e);
