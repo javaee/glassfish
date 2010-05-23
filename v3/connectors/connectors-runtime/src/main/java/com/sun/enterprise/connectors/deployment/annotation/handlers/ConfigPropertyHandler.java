@@ -233,21 +233,24 @@ public class ConfigPropertyHandler extends AbstractHandler {
     private void handleConfigPropertyAnnotation(AnnotationInfo element, ConnectorDescriptor desc,
                                                 ConnectorConfigProperty ep, Class declaringClass) {
 
-        if (ResourceAdapter.class.isAssignableFrom(declaringClass)
-                || declaringClass.getAnnotation(Connector.class)!= null) {
-            if(!processConnector(desc, ep, declaringClass)){
+        if ((ResourceAdapter.class.isAssignableFrom(declaringClass)
+                && (!Modifier.isAbstract(declaringClass.getModifiers()))) ||
+                ( declaringClass.getAnnotation(Connector.class) != null)){
+            if (!processConnector(desc, ep, declaringClass)) {
                 //need to book-keep the annotation for post-processing
                 desc.addConfigPropertyAnnotation(declaringClass.getName(), element);
             }
-        } else if (ManagedConnectionFactory.class.isAssignableFrom(declaringClass)) {
-            //@ConnectionDefintion, @ConnectionDefinitions must be of type ManagedConnectionFactory and hence
-            //the above check is sufficient to take care of JavaBean as well annotation.
-            processConnectionDefinition(element, desc, ep, declaringClass);
-        } else if (ActivationSpec.class.isAssignableFrom(declaringClass)
-                || declaringClass.getAnnotation(Activation.class) != null) {
+        } else if (ManagedConnectionFactory.class.isAssignableFrom(declaringClass) &&
+                (!Modifier.isAbstract(declaringClass.getModifiers()))) {
+                //@ConnectionDefintion, @ConnectionDefinitions must be of type ManagedConnectionFactory and hence
+                //the above check is sufficient to take care of JavaBean as well annotation.
+                processConnectionDefinition(element, desc, ep, declaringClass);
+        } else if ((ActivationSpec.class.isAssignableFrom(declaringClass) &&
+                (!Modifier.isAbstract(declaringClass.getModifiers()))) ||
+                (declaringClass.getAnnotation(Activation.class) != null) ) {
             processActivation(element, desc, ep, declaringClass);
-        } else if (declaringClass.getAnnotation(AdministeredObject.class) != null
-                || isAdminObjectJavaBean(declaringClass, desc) ) {
+        } else if (declaringClass.getAnnotation(AdministeredObject.class) != null ||
+                isAdminObjectJavaBean(declaringClass, desc)){
             processAdministeredObject(element, desc, ep, declaringClass);
         }
     }
@@ -534,7 +537,8 @@ public class ConfigPropertyHandler extends AbstractHandler {
                     throw new IllegalStateException(result);
                 }
                 String defaultValue = property.defaultValue();
-                processConfigProperty(configProperties, m.getName().substring(3), property, defaultValue);
+                Class type = getType(property, m.getParameterTypes()[0]);
+                processConfigProperty(configProperties, m.getName().substring(3), property, defaultValue, type);
             }
         }
 
@@ -553,7 +557,7 @@ public class ConfigPropertyHandler extends AbstractHandler {
                 if (defaultValue == null || defaultValue.equals("")) {
                     defaultValue = deriveDefaultValueOfField(f);
                 }
-                processConfigProperty(configProperties, f.getName(), property, defaultValue);
+                processConfigProperty(configProperties, f.getName(), property, defaultValue, f.getType());
             }
         }
 
@@ -564,14 +568,15 @@ public class ConfigPropertyHandler extends AbstractHandler {
     }
 
     private static void processConfigProperty(Set configProperties, String propertyName,
-                                              ConfigProperty property, String defaultValue) {
+                                              ConfigProperty property, String defaultValue, Class declaredEntityType) {
         String description = "";
         if(property.description() != null && property.description().length > 0){
             description = property.description()[0];
         }
+        Class type = getType(property, declaredEntityType);
         ConnectorConfigProperty ccp = getConfigProperty(defaultValue, description,
                 property.ignore(), property.supportsDynamicUpdates(), property.confidential(),
-                property.type(), propertyName);
+                type, propertyName);
         if(!isConfigDefined(configProperties, ccp)){
             configProperties.add(ccp);
         }
