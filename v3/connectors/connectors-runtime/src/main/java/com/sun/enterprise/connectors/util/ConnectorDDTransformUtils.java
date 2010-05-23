@@ -37,6 +37,7 @@
 package com.sun.enterprise.connectors.util;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.connectors.ConnectorDescriptorInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -175,6 +176,7 @@ public class ConnectorDDTransformUtils {
     public static ConnectorDescriptor getConnectorDescriptor(String moduleDir, String rarModuleName)
             throws ConnectorRuntimeException {
 
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
 
             File module = new File(moduleDir);
@@ -182,7 +184,13 @@ public class ConnectorDDTransformUtils {
             FileArchive fileArchive = new FileArchive();
             fileArchive.open(module.toURI());  // directory where rar is exploded
             ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
-            ClassLoader loader = runtime.createConnectorClassLoader(moduleDir, null, rarModuleName);
+            ClassLoader loader ;
+            if(ConnectorsUtil.belongsToSystemRA(rarModuleName)){
+                loader = ConnectorRuntime.getRuntime().getSystemRARClassLoader(rarModuleName);
+                Thread.currentThread().setContextClassLoader(loader);
+            }else{
+                loader = runtime.createConnectorClassLoader(moduleDir, null, rarModuleName);
+            }
 
             ConnectorArchivist connectorArchivist = runtime.getConnectorArchvist();
             //TODO V3 what happens to embedded .rar ? as its parent classloader should be application CL
@@ -208,6 +216,8 @@ public class ConnectorDDTransformUtils {
             _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_parse_error", moduleDir);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
+        }finally{
+            Thread.currentThread().setContextClassLoader(cl);
         }
     }
 
