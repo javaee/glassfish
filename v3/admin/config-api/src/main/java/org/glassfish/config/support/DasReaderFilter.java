@@ -37,7 +37,6 @@
 package org.glassfish.config.support;
 
 import java.net.*;
-import java.util.logging.*;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.jvnet.hk2.component.Habitat;
@@ -47,8 +46,8 @@ import org.jvnet.hk2.component.Habitat;
  */
 class DasReaderFilter extends ServerReaderFilter {
     DasReaderFilter(Habitat theHabitat, URL theDomainXml,
-            XMLInputFactory theXif, Logger theLogger) throws XMLStreamException {
-        super(theHabitat, theDomainXml, theXif, theLogger);
+            XMLInputFactory theXif) throws XMLStreamException {
+        super(theHabitat, theDomainXml, theXif);
     }
 
     /**

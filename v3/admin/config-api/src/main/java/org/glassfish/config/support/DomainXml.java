@@ -37,12 +37,16 @@
 
 package org.glassfish.config.support;
 
+import com.sun.enterprise.universal.Duration;
+import com.sun.enterprise.universal.NanoDuration;
+import com.sun.enterprise.util.EarlyLogger;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -69,14 +73,12 @@ import org.glassfish.api.admin.RuntimeType;
  *
  * @author Jerome Dochez
  * @author Kohsuke Kawaguchi
+ * @author Byron Nevins
  */
 public abstract class DomainXml implements Populator {
 
     @Inject
     StartupContext context;
-
-    @Inject
-    Logger logger;
 
     @Inject
     protected Habitat habitat;
@@ -92,9 +94,7 @@ public abstract class DomainXml implements Populator {
 
     @Override
     public void run(ConfigParser parser) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Startup class : " + this.getClass().getName());
-        }
+            EarlyLogger.add(Level.FINE, "Startup class : " + this.getClass().getName());
 
         habitat.addComponent("parent-class-loader",
                 new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
@@ -131,10 +131,10 @@ public abstract class DomainXml implements Populator {
         for (Inhabitant<? extends ConfigurationUpgrade> cu : habitat.getInhabitants(ConfigurationUpgrade.class)) {
             try {
                 cu.get(); // run the upgrade                
-                Logger.getAnonymousLogger().fine("Successful Upgrade domain.xml with " + cu.getClass());
+                EarlyLogger.add(Level.FINE, "Successful Upgrade domain.xml with " + cu.getClass());
             } catch (Exception e) {
-                Logger.getAnonymousLogger().log(Level.FINE,e.toString(),e);
-                Logger.getAnonymousLogger().severe(cu.getClass() + " upgrading domain.xml failed " + e);
+                EarlyLogger.add(Level.FINE,e.toString()+e);
+                EarlyLogger.add(Level.SEVERE, cu.getClass() + " upgrading domain.xml failed " + e);
             }
         }
     }
@@ -151,13 +151,15 @@ public abstract class DomainXml implements Populator {
      * Parses <tt>domain.xml</tt>
      */
     protected void parseDomainXml(ConfigParser parser, final URL domainXml, final String serverName) {
+        long startNano = System.nanoTime();
+
         try {
             ServerReaderFilter xsr = null;
 
             if(env.getRuntimeType() == RuntimeType.DAS)
-                xsr = new DasReaderFilter(habitat, domainXml, xif, logger);
+                xsr = new DasReaderFilter(habitat, domainXml, xif);
             else if(env.getRuntimeType() == RuntimeType.INSTANCE)
-                xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif, logger);
+                xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif);
             else
                 throw new RuntimeException("Internal Error: Unknown server type: "
                         + env.getRuntimeType());
@@ -167,15 +169,16 @@ public abstract class DomainXml implements Populator {
             String errorMessage = xsr.configWasFound();
 
             if(errorMessage != null)
-                logger.warning(errorMessage);
+                EarlyLogger.add(Level.WARNING, errorMessage);
         } catch (Exception e) {
             if(e instanceof RuntimeException)
                 throw (RuntimeException) e;
             else
                 throw new RuntimeException("Fatal Error.  Unable to parse " + domainXml, e);
         }
+        EarlyLogger.add(Level.INFO, strings.get("time", new NanoDuration(System.nanoTime() - startNano).toString()));
     }
 
     protected abstract DomDocument getDomDocument();
-
+    private final static LocalStringsImpl strings = new LocalStringsImpl(DomainXml.class);
 }

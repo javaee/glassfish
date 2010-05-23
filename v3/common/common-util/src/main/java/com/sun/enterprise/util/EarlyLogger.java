@@ -1,8 +1,7 @@
 /*
- *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2008-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -34,55 +33,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.config.support;
+package com.sun.enterprise.util;
 
-import java.io.*;
-import java.net.*;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.*;
-import javax.xml.stream.*;
-import org.jvnet.hk2.component.Habitat;
 
 /**
- * Instances and DAS' are quite different
- * @author Byron Nevins
+ *
+ * @author bnevins
  */
-abstract class ServerReaderFilter extends XMLStreamReaderFilter {
-    ServerReaderFilter(Habitat theHabitat, URL theDomainXml,
-            XMLInputFactory theXif) throws XMLStreamException {
-
-        try {
-            domainXml = theDomainXml;
-            xif = theXif;
-            stream = domainXml.openStream();
-            habitat =  theHabitat;
-            setParent(xif.createXMLStreamReader(domainXml.toExternalForm(), stream));
-        }
-        catch(IOException e) {
-            throw new XMLStreamException(e);
-        }
+public class EarlyLogger {
+    private EarlyLogger() {
+        // no instances allowed...
     }
 
-    @Override
-    final public void close() throws XMLStreamException {
-        try {
-            super.close();
-            stream.close();
-        }
-        catch (Exception e) {
-            throw new XMLStreamException(e);
-        }
+    public final static void add(Level level, String message) {
+        messages.add(new LevelAndMessage(level, prepend + message));
+        // also log to the console...
+        logger.log(level, message);
     }
 
-    /**
-     * Report on whether parsing was a success or not.  If there is a missing config
-     * for a server just return a String message.
-     * @return a String error message if there was an error else return null for all-ok
-     */
-    abstract String configWasFound();
+    public final static List<LevelAndMessage> getEarlyMessages() {
+        return messages;
+    }
 
-    final URL domainXml;
-    final XMLInputFactory xif;
-    final InputStream stream;
-    final Habitat habitat;
+    public final static class LevelAndMessage {
+        public String msg;
+        public Level level;
+
+        LevelAndMessage(Level l, String m) {
+            msg = m;
+            level = l;
+        }
+    }
+    private final static List<LevelAndMessage> messages =
+            new CopyOnWriteArrayList<LevelAndMessage>();
+    private final static LocalStringsImpl strings =
+            new LocalStringsImpl(EarlyLogger.class);
+    private final static String prepend = strings.get("EarlyLogger.prepend");
+    private final static Logger logger = Logger.getAnonymousLogger();
 }

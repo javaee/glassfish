@@ -39,6 +39,7 @@ package com.sun.enterprise.v3.services.impl;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.server.logging.FormatterDelegate;
 import com.sun.enterprise.server.logging.UniformLogFormatter;
+import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.io.FileUtils;
@@ -292,6 +293,16 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy {
                     logger.log(Level.INFO, "logging.properties file removed, updating log levels disabled");
                 }
             });
+        }
+        // Log the messages that were generated very early before this Service
+        // started.  Just use our own logger...
+        List<EarlyLogger.LevelAndMessage> catchUp = EarlyLogger.getEarlyMessages();
+
+        if(!catchUp.isEmpty()) {
+            for(EarlyLogger.LevelAndMessage levelAndMessage : catchUp) {
+                logger.log(levelAndMessage.level, levelAndMessage.msg);
+            }
+            catchUp.clear();
         }
     }
 

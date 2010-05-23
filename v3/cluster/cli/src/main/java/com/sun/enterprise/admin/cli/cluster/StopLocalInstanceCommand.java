@@ -153,7 +153,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     private final int doRemoteCommand()
             throws CommandException, CommandValidationException {
         // run the remote stop-domain command and throw away the output
-        RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
+        RemoteCommand cmd = new RemoteCommand("stop-instance", programOpts, env);
         cmd.executeAndReturnOutput("stop-domain");
         waitForDeath();
         return 0;

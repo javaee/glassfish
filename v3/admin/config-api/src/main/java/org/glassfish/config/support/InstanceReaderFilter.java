@@ -39,12 +39,12 @@ package org.glassfish.config.support;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.util.StringUtils;
-import java.awt.datatransfer.StringSelection;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.Level;
 import javax.xml.stream.XMLInputFactory;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import javax.xml.stream.XMLStreamException;
@@ -85,9 +85,6 @@ import org.jvnet.hk2.component.Habitat;
 ////////  TODO TODO TODO TODO TODO
 
 
-// strings to constants
-
-
 ////////  TODO TODO TODO TODO TODO
 ////////  TODO TODO TODO TODO TODO
 ////////  TODO TODO TODO TODO TODO
@@ -104,9 +101,9 @@ import org.jvnet.hk2.component.Habitat;
 ////////  TODO TODO TODO TODO TODO
 class InstanceReaderFilter extends ServerReaderFilter {
     InstanceReaderFilter(String theServerName, Habitat theHabitat, URL theDomainXml,
-            XMLInputFactory theXif, Logger theLogger) throws XMLStreamException {
+            XMLInputFactory theXif) throws XMLStreamException {
 
-        super(theHabitat, theDomainXml, theXif, theLogger);
+        super(theHabitat, theDomainXml, theXif);
         instanceName = theServerName;
     }
 
@@ -182,6 +179,7 @@ class InstanceReaderFilter extends ServerReaderFilter {
     }
 
     private void reparseBegin() throws XMLStreamException {
+        EarlyLogger.add(Level.WARNING, strings.get("InstanceReaderFilter.ReparseNeeded"));
         InputStream stream2 = null;
         reparseReader = null;
 
@@ -197,7 +195,10 @@ class InstanceReaderFilter extends ServerReaderFilter {
                     reparse();
             }
         }
-        catch(IOException e) {
+        catch(XMLStreamException e) {
+            throw e;
+        }
+        catch(Exception e) {
             throw new XMLStreamException("Failed to parse " + domainXml, e);
         }
         finally {
@@ -217,8 +218,6 @@ class InstanceReaderFilter extends ServerReaderFilter {
      * @param reader
      */
     private void reparse() throws XMLStreamException {
-        logger.warning(strings.get("InstanceReaderFilter.ReparseNeeded"));
-
         String name = reparseReader.getLocalName();
 
         if(!StringUtils.ok(name))
@@ -401,9 +400,9 @@ class InstanceReaderFilter extends ServerReaderFilter {
     private static final String CONFIG_REF = "config-ref";
     private static final String NAME = "name";
 
+    // "signaling" exceptions to get back from nested locations simply
     private static class GoodException extends Exception {
     }
-
     private static class NotFoundException extends Exception {
     }
 }
