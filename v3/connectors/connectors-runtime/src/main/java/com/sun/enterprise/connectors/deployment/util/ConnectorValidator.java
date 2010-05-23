@@ -150,7 +150,7 @@ public class ConnectorValidator implements ConnectorVisitor {
                 ConnectionDefDescriptor connectionDef = (ConnectionDefDescriptor) it.next();
                 //connection-factory class is the unique identifier.
                 String connectionFactoryClass = connectionDef.getConnectionFactoryIntf();
-                if (connectionFactoryClass != null && connectionFactoryClass.equals("")) {
+                if (connectionFactoryClass != null && !connectionFactoryClass.equals("")) {
                     if (!desc.getConfigPropertyProcessedClasses().contains(connectionFactoryClass)) {
                         Class claz = getClass(connectionDef.getManagedConnectionFactoryImpl());
                         ConfigPropertyHandler.processParent(claz, connectionDef.getConfigProperties());
@@ -166,7 +166,7 @@ public class ConnectorValidator implements ConnectorVisitor {
             while (it.hasNext()) {
                 MessageListener ml = (MessageListener) it.next();
                 String activationSpecClass = ml.getActivationSpecClass();
-                if (activationSpecClass != null && activationSpecClass.equals("")) {
+                if (activationSpecClass != null && !activationSpecClass.equals("")) {
                     if (!desc.getConfigPropertyProcessedClasses().contains(activationSpecClass)) {
                         Class claz = getClass(activationSpecClass);
                         ConfigPropertyHandler.processParent(claz, ml.getConfigProperties());
