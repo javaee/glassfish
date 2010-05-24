@@ -98,8 +98,15 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
         if (nosync) {
             logger.printMessage(strings.get("Instance.nosync"));
         } else {
-            if (!synchronizeInstance())
+            if (!synchronizeInstance()) {
+                File domainXml =
+                    new File(new File(instanceDir, "config"), "domain.xml");
+                if (!domainXml.exists()) {
+                    logger.printMessage(strings.get("Instance.nodomainxml"));
+                    return ERROR;
+                }
                 logger.printMessage(strings.get("Instance.syncFailed"));
+            }
         }
 
         try {

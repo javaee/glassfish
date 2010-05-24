@@ -70,6 +70,9 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     @Param(name = "syncallapps", optional = true)
     private boolean syncAllApps;
 
+    @Param(name = "syncfull", optional = true)
+    private boolean syncFull;
+
     private RemoteCommand syncCmd;
 
     private static enum SyncLevel { TOP, DIRECTORY, RECURSIVE };
@@ -116,6 +119,19 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          */
         syncCmd = new RemoteCommand("_synchronize-files", programOpts, env);
         syncCmd.setFileOutputDirectory(instanceDir);
+
+        /*
+         * If --syncfull, we remove all local state related to the instance,
+         * then do a sync.
+         */
+        if (syncFull) {
+            logger.printDetailMessage(
+                                strings.get("Instance.fullsync", instanceName));
+            for (File f : FileUtils.listFiles(instanceDir)) {
+                FileUtils.whack(f);
+                logger.printDebugMessage("Removing: " + f);
+            }
+        }
 
         try {
             /*
