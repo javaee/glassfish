@@ -103,6 +103,7 @@
 	<module>glassfish-full-incorporation</module>
 	<module>glassfish-web-profile</module>
 	<module>glassfish-full-profile</module>
+	<module>glassfish-ant-tasks</module>
 	<module>sun-javaee-engine</module>
     </modules>
 
