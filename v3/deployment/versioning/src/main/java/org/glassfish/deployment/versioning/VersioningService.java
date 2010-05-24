@@ -233,7 +233,7 @@ public class VersioningService {
      * @param appName the application name containing the expression
      * @return the expression matched list
      * @throws VersioningException if the expression is an identifier matching
-     * a version not registred, or if getExpression throws an exception
+     * a version not registered, or if getExpression throws an exception
      */
     public final List<String> matchExpression(List<String> listVersion, String appName)
             throws VersioningException {
@@ -254,7 +254,7 @@ public class VersioningService {
             } else {
                 throw new VersioningException(
                     LOCALSTRINGS.getLocalString("version.notreg",
-                    "version {0} not registred",
+                    "version {0} not registered",
                     appName));
             }
         }
@@ -268,7 +268,7 @@ public class VersioningService {
             } else {
                 throw new VersioningException(
                     LOCALSTRINGS.getLocalString("version.notreg",
-                    "Version {0} not registred",
+                    "Version {0} not registered",
                     appName));
             }
         }
@@ -311,7 +311,7 @@ public class VersioningService {
      *
      * @param name the application name containing the version expression
      * @return a List of all expression matched versions
-     * @throws VersioningException if the application has no version registred,
+     * @throws VersioningException if the application has no version registered,
      * or if getUntaggedName throws an exception
      */
     public final List<String> getMatchedVersions(String name)
@@ -323,7 +323,7 @@ public class VersioningService {
         if(allVersions.size() == 0){
             throw new VersioningException(
                 LOCALSTRINGS.getLocalString("application.noversion",
-                "Application {0} has no version registred",
+                "Application {0} has no version registered",
                 untagged));
         }
         
