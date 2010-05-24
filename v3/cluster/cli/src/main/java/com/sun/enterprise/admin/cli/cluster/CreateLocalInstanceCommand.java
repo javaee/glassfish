@@ -36,6 +36,7 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.admin.cli.CLILogger;
 import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -68,7 +69,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?
 
-    public static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
+    private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
+    private String INSTANCE_DOTTED_NAME;
+    private String RENDEZVOUS_DOTTED_NAME;
+    private boolean _rendezvousOccurred;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceCommand.class);
@@ -77,16 +81,28 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
      */
     @Override
     protected void validate()
-            throws CommandException, CommandValidationException  {
-        if (configName != null && clusterName != null)
-            throw new CommandValidationException(
-                                        strings.get("ConfigClusterConflict"));
-
-        super.validate();
+            throws CommandException {
         
-        if (!rendezvousWithDAS()) {
-           throw new CommandValidationException(
-                                        strings.get("Unable to rendezvous with DAS on host={0}, port={1}, protocol={2}", DASHost, DASPort, DASProtocol));
+        if (configName != null && clusterName != null) {
+            throw new CommandException(
+                    strings.get("ConfigClusterConflict"));
+        }
+
+        super.validate();  // instanceName is validated and set in super.validate()
+        INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
+        RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
+
+        if (!filesystemOnly) {
+            if (!rendezvousWithDAS()) {
+                throw new CommandException(
+                        strings.get("Unable to rendezvous with DAS on host={0}, port={1}, protocol={2}", DASHost, DASPort, DASProtocol));
+            }
+
+            _rendezvousOccurred = rendezvousOccurred();
+            if (_rendezvousOccurred) {
+                throw new CommandException(
+                        strings.get("Rendezvous with DAS on host {0}, port {1} has already occurred to create instance {2}", DASHost, DASPort, instanceName));
+            }
         }
     }
 
@@ -95,18 +111,35 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-            int exitCode = -1;
-            int exitCodeRegister = -1;
-            if (!this.filesystemOnly) {
-               exitCodeRegister = registerToDAS();
-            }
-            if (exitCodeRegister == SUCCESS) {
-                exitCode = super.executeCommand();
-            } else {
-                exitCode = exitCodeRegister;
-            }
+        int exitCode = -1;
+        
+        if (!this.filesystemOnly) {
+            if (isRegisteredToDAS()) {
+                if (!_rendezvousOccurred) {
+                    setRendezvousOccurred("true");
+                    _rendezvousOccurred = true;
+                }
 
-            return exitCode;
+            } else {
+                registerToDAS();
+                _rendezvousOccurred = true;
+            }
+        }
+        try {
+            exitCode = super.executeCommand();
+        } catch (CommandException ce) {
+            String msg = "Something went wrong in creating the local filesystem for instance {0}" + instanceName;
+            if (ce.getLocalizedMessage() != null) {
+                msg = msg + ": " + ce.getLocalizedMessage();
+            }
+            logger.printError(msg);
+            if (!filesystemOnly) {
+                setRendezvousOccurred("false");
+                _rendezvousOccurred = false;
+            }
+            throw new CommandException(msg, ce);
+        }
+        return exitCode;
     }
 
     private boolean rendezvousWithDAS() {
@@ -140,6 +173,8 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             argsList.add("--systemproperties");
             argsList.add(systemProperties);
         }
+        argsList.add("--properties");
+        argsList.add(RENDEZVOUS_PROPERTY_NAME+"=true");
         argsList.add(this.instanceName);
 
         String[] argsArray = new String[argsList.size()];
@@ -147,5 +182,57 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
         RemoteCommand rc = new RemoteCommand("create-instance", this.programOpts, this.env);
         return rc.execute(argsArray);
+    }
+
+    private boolean isRegisteredToDAS() {
+        boolean isRegistered = false;
+        try {
+            RemoteCommand rc = new RemoteCommand("get", this.programOpts, this.env);
+            int exitCode = rc.execute("get", INSTANCE_DOTTED_NAME);
+            if (exitCode == SUCCESS) {
+                isRegistered = true;
+            }
+        } catch (CommandException ex) {
+            logger.printDebugMessage("asadmin get " + INSTANCE_DOTTED_NAME + " failed.");
+            logger.printDebugMessage(instanceName +" may not be registered yet to DAS.");
+            //logger.printExceptionStackTrace(ex);
+        }
+        return isRegistered;
+    }
+
+    private boolean rendezvousOccurred() {
+        boolean rendezvousOccurred = false;
+        RemoteCommand rc = null;
+        try {
+            rc = new RemoteCommand("get", this.programOpts, this.env);
+            Map<String, String> map = rc.executeAndReturnAttributes("get", RENDEZVOUS_DOTTED_NAME);
+            String output = map.get("children");
+            String val = output.substring(output.indexOf("=") + 1);
+            rendezvousOccurred = Boolean.parseBoolean(val);
+            if (CLILogger.isDebug()) {
+                logger.printDebugMessage("rendezvousOccurred = " + val + " for instance " + instanceName);
+            }
+        } catch (CommandException ce) {
+            logger.printDebugMessage("Remote command failed:");
+            if (rc != null) {
+                logger.printDebugMessage(rc.toString());
+            }
+            logger.printDebugMessage(RENDEZVOUS_PROPERTY_NAME+" property may not be set yet on instance " + instanceName);
+            if (ce.getLocalizedMessage() != null) {
+                logger.printDebugMessage(ce.getLocalizedMessage());
+            }
+            logger.printExceptionStackTrace(ce);
+        }
+        return rendezvousOccurred;
+    }
+
+    private int setRendezvousOccurred(String rendezVal) throws CommandException {
+        String dottedName = RENDEZVOUS_DOTTED_NAME + "=" + rendezVal;
+        RemoteCommand rc = new RemoteCommand("set", this.programOpts, this.env);
+        if (CLILogger.isDebug()) {
+            logger.printDebugMessage("Setting rendezvousOccurred to " + rendezVal + " for instance " + instanceName);
+            logger.printDebugMessage(rc.toString());
+        }
+        return rc.execute("set", dottedName);
     }
 }
