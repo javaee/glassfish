@@ -1967,6 +1967,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     try {
                         mapper.setDefaultContextPath(virtualServer.getName(),
                             defaultContextPath);
+                        for (String alias : virtualServer.findAliases()) {
+                            mapper.setDefaultContextPath(alias,
+                                    defaultContextPath);
+                        }
                         virtualServer.setDefaultContextPath(defaultContextPath);
                     } catch (Exception e) {
                         throw new LifecycleException(e);
