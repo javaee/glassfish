@@ -312,4 +312,8 @@ public interface RuntimeTagNames extends TagNames {
     public final static String VENDOR = "vendor";
     public final static String JNLP_DOC = "jnlp-document";
     // also uses CONTEXT_ROOT defined above in the application-related section
+
+    // Weblogic specific
+    public final static String PREFER_WEB_INF_CLASSES = "prefer-web-inf-classes";
+    public final static String CONTAINER_DESCRIPTOR = "container-descriptor";
 }

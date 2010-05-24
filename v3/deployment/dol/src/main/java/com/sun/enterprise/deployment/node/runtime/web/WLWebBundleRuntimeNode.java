@@ -40,6 +40,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.node.runtime.RuntimeBundleNode;
 import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.runtime.web.ClassLoader;
 import com.sun.enterprise.deployment.xml.DTDRegistry;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.TagNames;
@@ -79,6 +80,14 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     public WLWebBundleRuntimeNode() {
         super(null);    
     }
+
+    /**
+     * Initialize the child handlers
+     */
+    protected void Init() {
+        registerElementHandler(new XMLElement(RuntimeTagNames.CONTAINER_DESCRIPTOR),
+                WLContainerDescriptorNode.class);
+    }
     
     /**
      * @return the XML tag associated with this XMLNode
@@ -112,7 +121,7 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
     * @return the web bundle descriptor instance to associate with this XMLNode
     */    
     public WebBundleDescriptor getDescriptor() {    
-	return descriptor;               
+        return descriptor;               
     }
 
     /**
@@ -130,8 +139,9 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
             if ( (app == null) || (app!=null && app.isVirtual()) ) {
                 descriptor.setContextRoot(value);
             }
-        } else
-	super.setElementValue(element, value);
+        } else {
+            super.setElementValue(element, value);
+        }
     }
 
     /**
@@ -147,6 +157,15 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
 
         // context-root?
         appendTextChild(root, RuntimeTagNames.CONTEXT_ROOT, bundleDescriptor.getContextRoot());
+
+        // container-descriptor/prefer-web-inf-classes
+        ClassLoader clBean = bundleDescriptor.getSunDescriptor().getClassLoader();
+        if (clBean != null) {
+            Node containerDescriptorNode = appendChild(root, RuntimeTagNames.CONTAINER_DESCRIPTOR);
+            appendTextChild(containerDescriptorNode,
+                    RuntimeTagNames.PREFER_WEB_INF_CLASSES,
+                    clBean.getAttributeValue(ClassLoader.DELEGATE));
+        }
 
         return root;
     }
