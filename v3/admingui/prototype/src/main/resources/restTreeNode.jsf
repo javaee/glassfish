@@ -1,6 +1,6 @@
 <sun:treeNode id="rest"
         text="JDBC (REST)"
-        url="/jdbc/jdbc.jsf"
+        url="/rest/jdbc.jsf"
         imageURL="/resource/jdbc/images/JDBC.gif"
         >
     <dynamicTreeNode id="connectionPoolResources"
@@ -10,11 +10,11 @@
         attributeName="name"
         childImageURL="/resource/jdbc/images/JDBC.gif"
         childExpanded="$boolean{false}"
-        childURL="/jdbc/jdbcConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
+        childURL="/rest/jdbcConnectionPoolEdit.jsf?name=#{$this{valueBinding}.text}"
         text="Connection Pools (REST)"
-        url="/jdbc/jdbcConnectionPools.jsf">
+        url="/rest/jdbcConnectionPools.jsf">
             <!facet image>
-                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/jdbc/jdbcConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18njdbc.tree.connectionPools}"/>
+                <sun:iconHyperlink id="abc" icon="TREE_FOLDER" url="/rest/jdbcConnectionPools.jsf"  border="$int{0}" immediate="$boolean{true}" alt="$resource{i18njdbc.tree.connectionPools}"/>
             </facet>
     </dynamicTreeNode>
  </sun:treeNode>
