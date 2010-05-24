@@ -97,9 +97,8 @@ public final class PamRealm extends AppservRealm {
     }
     
     @Override
-    public Enumeration getGroupNames(String username) throws NoSuchUserException {
-   //Commenting this currently - waiting for hte latest libpam4j (1.3-snapshot) to be published
-      /*  try {
+    public Enumeration getGroupNames(String username) throws NoSuchUserException {   
+        try {
             Set<String> groupsSet = Collections.EMPTY_SET;
             groupsSet = new PAM(PAM_SERVICE).getGroupsOfUser(username);
             return Collections.enumeration(groupsSet);
@@ -107,8 +106,7 @@ public final class PamRealm extends AppservRealm {
             Logger.getLogger(PamRealm.class.getName()).log(Level.SEVERE,
                     "pam_exception_getgroupsofuser", ex);
             return null;
-        }*/
-        return null;
+        }       
     }
 
     /**
