@@ -44,7 +44,9 @@ own identifying information: Portions Copyright [yyyy]
 
 <property name="sun.contrib.authority" value="contrib.glassfish.sun.com"/>
 <property name="sun.release.authority" value="release.glassfish.sun.com"/>
+<property name="javaeesdk.release.authority" value="release.javaeesdk.sun.com"/>
 <property name="sun.release.repository.url" value="http://pkg.sun.com/glassfish/v3/release/"/>
+<property name="javaeesdk.release.repository.url" value="http://pkg.sun.com/javaeesdk/6/release/"/>
 <property name="sun.contrib.repository.url" value="http://pkg.sun.com/glassfish/v3/contrib/"/>
 
 <target name="init"> 
@@ -242,7 +244,7 @@ own identifying information: Portions Copyright [yyyy]
         <arg line="set-authority -O ${contrib.repository.url} '${contrib.authority}'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-	    <arg line="set-authority -O ${sun.release.repository.url} '${sun.release.authority}'"/>
+	    <arg line="set-authority -O ${javaeesdk.release.repository.url} '${javaeesdk.release.authority}'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
 	    <arg line="set-authority -O ${sun.contrib.repository.url} '${sun.contrib.authority}'"/>
