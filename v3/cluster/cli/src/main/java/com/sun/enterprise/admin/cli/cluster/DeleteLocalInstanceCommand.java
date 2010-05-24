@@ -59,12 +59,12 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 /**
  * Delete a local server instance.
  */
-@Service(name = "delete-instance")
+@Service(name = "delete-local-instance")
 @Scoped(PerLookup.class)
-public final class DeleteLocalInstanceCommand extends LocalInstanceCommand {
+public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
-    @Param(name = "local_only", primary = false, optional = true, defaultValue = "false")
+    @Param(name = "filesystemonly", primary = false, optional = true, defaultValue = "false")
     private boolean localOnly;
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(DeleteLocalInstanceCommand.class);
