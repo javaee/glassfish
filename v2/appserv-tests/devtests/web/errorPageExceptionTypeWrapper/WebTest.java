@@ -101,8 +101,9 @@ public class WebTest {
                 stat.addStatus("Missing response", stat.FAIL);
             } else {
                 if (!lastLine.equals(EXPECTED)) {
-                    stat.addStatus("Wrong response: EXPECTED: " + EXPECTED
-                                   + ", received: " + lastLine, stat.FAIL);
+                    System.out.println("Wrong response: EXPECTED: " + EXPECTED
+                                   + ", received: " + lastLine);
+                    stat.addStatus(TEST_NAME, stat.FAIL);
                 } else {
                     stat.addStatus(TEST_NAME, stat.PASS);
                 }
