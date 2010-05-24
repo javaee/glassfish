@@ -48,6 +48,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.util.Utility;
 import org.glassfish.admin.payload.PayloadFilesManager;
 
 import org.glassfish.api.ActionReport;
@@ -801,19 +803,10 @@ public class CommandRunnerImpl implements CommandRunner {
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
         // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
         boolean doReplication = false;
-        if(!processEnv.getProcessType().isEmbedded()) {
-            Config cfg;
-            if(serverEnv.isDas()) {
-                cfg = domain.getConfigNamed("server-config");
-            } else {
-                Server svr = domain.getServerNamed(serverEnv.getInstanceName());
-                cfg = domain.getConfigNamed(svr.getConfigRef());
-            }
-            List<String> jvmOpts=cfg.getJavaConfig().getJvmOptions();
-            if(jvmOpts.contains("-Dcommand.replication.enabled=true"))
-                doReplication = true;
-        }
-        //TODO : Remove the above flag check by MS2
+        if(Utility.getEnvOrProp("ENABLE_REPLICATION")!=null) {
+            doReplication = Boolean.parseBoolean(Utility.getEnvOrProp("ENABLE_REPLICATION"));
+         }
+        //TODO : Remove the above flag check by MS3
 
         try {
             /*
