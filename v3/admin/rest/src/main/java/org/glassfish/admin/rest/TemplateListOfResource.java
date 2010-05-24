@@ -145,7 +145,8 @@ public abstract class TemplateListOfResource<E extends ConfigBeanProxy> {
                 "/" + data.get("DEFAULT");
 
             if (null != commandName) {
-                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
+                // TODO: Not needed anymore?
+//                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
                 ActionReport actionReport = __resourceUtil.runCommand(commandName,
                     data, RestService.getHabitat());
 

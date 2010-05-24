@@ -222,7 +222,7 @@ public class ResourceUtil extends Util {
      * @return MethodMetaData the meta-data store for the resource method.
      */
     public MethodMetaData getMethodMetaData(String command,
-            HashMap<String, String> commandParamsToSkip, int pamameterType,
+            HashMap<String, String> commandParamsToSkip, int parameterType,
                 Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
@@ -241,26 +241,23 @@ public class ResourceUtil extends Util {
                 paramModel = iterator.next();
                 Param param = paramModel.getParam();
 
-                ParameterMetaData parameterMetaData =
-                    getParameterMetaData(paramModel);
+                ParameterMetaData parameterMetaData = getParameterMetaData(paramModel);
+
 
                 String parameterName =
-                    (paramModel.getParam().primary())?"id":paramModel.getName();
-                String parameterCamelCasedName = paramModel.getParam().alias(); // It is expected that an alias on parameter if defined will be camel cased name of corresponding serverbean attribute
-                if(parameterCamelCasedName == null || parameterCamelCasedName.isEmpty()) {
-                    // We are dealing with a command where camelCasedName is not defined. It is assumed that parameterName
-                    // will be name of corresponding serverbean attribute.
-                    // TODO Discuss with Jerome, Bill. Ideally this concern should be pushed into ParamModel to better encapsulate
-                    parameterCamelCasedName = parameterName;
+                    (param.primary())?"id":paramModel.getName();
+
+                // If the Param has an alias, use it instead of the name
+                String alias = param.alias();
+                if (alias != null && (!alias.isEmpty())) {
+                    parameterName = alias;
                 }
 
-                if (pamameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQureyParamMetaData(parameterCamelCasedName,
-                        parameterMetaData);
+                if (parameterType == Constants.QUERY_PARAMETER) {
+                    methodMetaData.putQureyParamMetaData(parameterName, parameterMetaData);
                 } else {
                     //message parameter
-                    methodMetaData.putParameterMetaData(parameterCamelCasedName,
-                        parameterMetaData);
+                    methodMetaData.putParameterMetaData(parameterName, parameterMetaData);
                 }
             }
         }
@@ -629,7 +626,9 @@ public class ResourceUtil extends Util {
         // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
         StringBuilder buf = new StringBuilder(name.length()+5);
         for(String t : TOKENIZER.split(name)) {
-            if(buf.length()>0)  buf.append('-');
+            if(buf.length()>0) {
+                buf.append('-');
+            }
             buf.append(t.toLowerCase());
         }
         return buf.toString();

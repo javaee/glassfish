@@ -71,119 +71,118 @@ public class CreateJdbcConnectionPool implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJdbcConnectionPool.class);    
 
-    //TODO once Billl starts doing toLowerCase() for name. Cleanup duplicate alias entries from the file. 
-    @Param(name="datasourceclassname", alias = "datasourceClassname",  optional=true)
+    @Param(name = "datasourceClassname",  optional=true)
     String datasourceclassname;
 
-    @Param(optional=true, alias = "resType",  acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
+    @Param(optional=true, name = "resType",  acceptableValues="javax.sql.DataSource,javax.sql.XADataSource,javax.sql.ConnectionPoolDataSource,java.sql.Driver")
     String restype;
 
-    @Param(name="steadypoolsize", alias = "steadyPoolSize",  optional=true, defaultValue = "8")
+    @Param(name = "steadyPoolSize",  optional=true, defaultValue = "8")
     String steadypoolsize = "8";
 
-    @Param(name="maxpoolsize", alias = "maxPoolSize",  optional=true, defaultValue = "32")
+    @Param(name = "maxPoolSize",  optional=true, defaultValue = "32")
     String maxpoolsize = "32";
     
-    @Param(name="maxwait", alias = "maxWaitTimeInMillis",  optional=true, defaultValue = "60000")
+    @Param(name="maxWait", alias = "maxWaitTimeInMillis",  optional=true, defaultValue = "60000")
     String maxwait = "60000";
 
-    @Param(name="poolresize", alias = "poolResizeQuantity",  optional=true, defaultValue = "2")
+    @Param(name="poolResize", alias = "poolResizeQuantity",  optional=true, defaultValue = "2")
     String poolresize = "2";
     
-    @Param(name="idletimeout", alias = "idleTimeoutInSeconds",  optional=true, defaultValue = "300")
+    @Param(name="idleTimeout", alias = "idleTimeoutInSeconds",  optional=true, defaultValue = "300")
     String idletimeout = "300";
 
-    @Param(alias = "initSql", optional=true)
+    @Param(name = "initSql", optional=true)
     String initsql;
         
-    @Param(name="isolationlevel", alias = "transactionIsolationLevel",  optional=true)
+    @Param(name="isolationLevel", alias = "transactionIsolationLevel",  optional=true)
     String isolationlevel;
             
-    @Param(name="isisolationguaranteed", alias = "isIsolationLevelGuaranteed",  optional=true, defaultValue="true")
+    @Param(name="isIsolationGuaranteed", alias = "isIsolationLevelGuaranteed",  optional=true, defaultValue="true")
     Boolean isisolationguaranteed;
                 
-    @Param(name="isconnectvalidatereq", alias = "isConnectionValidationRequired",  optional=true, defaultValue="false")
+    @Param(name="isConnectValidateReq", alias = "isConnectionValidationRequired",  optional=true, defaultValue="false")
     Boolean isconnectvalidatereq;
     
-    @Param(optional=true, alias = "connectionValidationMethod",  acceptableValues="auto-commit,meta-data,table,custom-validation", defaultValue = "table")
+    @Param(name = "validationMethod", optional=true, alias = "connectionValidationMethod",  acceptableValues="auto-commit,meta-data,table,custom-validation", defaultValue = "table")
     String validationmethod = "table";
     
-    @Param(name="validationtable", alias = "validationTableName",  optional=true)
+    @Param(name="validationTable", alias = "validationTableName",  optional=true)
     String validationtable;
     
-    @Param(name="failconnection", alias = "failAllConnections",  optional=true, defaultValue="false")
+    @Param(name="failConnection", alias = "failAllConnections",  optional=true, defaultValue="false")
     Boolean failconnection;
     
-    @Param(name="allownoncomponentcallers", alias = "allowNonComponentCallers",  optional=true, defaultValue="false")
+    @Param(name = "allowNonComponentCallers",  optional=true, defaultValue="false")
     Boolean allownoncomponentcallers;
     
-    @Param(name="nontransactionalconnections", alias = "nonTransactionalConnections",  optional=true, defaultValue="false")
+    @Param(name = "nonTransactionalConnections",  optional=true, defaultValue="false")
     Boolean nontransactionalconnections;
     
-    @Param(name="validateatmostonceperiod", alias = "validateAtmostOncePeriodInSeconds",  optional=true, defaultValue = "0")
+    @Param(name="validateAtMostOncePeriod", alias = "validateAtmostOncePeriodInSeconds",  optional=true, defaultValue = "0")
     String validateatmostonceperiod = "0";
     
-    @Param(name="leaktimeout", alias = "connectionLeakTimeoutInSeconds",  optional=true, defaultValue = "0")
+    @Param(name="leakTimeout", alias = "connectionLeakTimeoutInSeconds",  optional=true, defaultValue = "0")
     String leaktimeout = "0";
     
-    @Param(name="leakreclaim", alias = "connectionLeakReclaim",  optional=true, defaultValue="false")
+    @Param(name="leakReclaim", alias = "connectionLeakReclaim",  optional=true, defaultValue="false")
     Boolean leakreclaim;
     
-    @Param(name="creationretryattempts", alias = "connectionCreationRetryAttempts",  optional=true, defaultValue = "0")
+    @Param(name="creationRetryAttempts", alias = "connectionCreationRetryAttempts",  optional=true, defaultValue = "0")
     String creationretryattempts = "0";
     
-    @Param(name="creationretryinterval", alias = "connectionCreationRetryIntervalInSeconds",  optional=true, defaultValue = "10")
+    @Param(name="creationRetryInterval", alias = "connectionCreationRetryIntervalInSeconds",  optional=true, defaultValue = "10")
     String creationretryinterval = "10";
 
-    @Param(alias = "sqlTraceListeners", optional=true)
+    @Param(name = "sqlTraceListeners", optional=true)
     String sqltracelisteners;
     
-    @Param(name="statementtimeout", alias = "statementTimeoutInSeconds",  optional=true, defaultValue = "-1")
+    @Param(name="statementTimeout", alias = "statementTimeoutInSeconds",  optional=true, defaultValue = "-1")
     String statementtimeout = "-1";
     
-    @Param(name="lazyconnectionenlistment", alias = "lazyConnectionEnlistment",  optional=true, defaultValue="false")
+    @Param(name = "lazyConnectionEnlistment",  optional=true, defaultValue="false")
     Boolean lazyconnectionenlistment;
     
-    @Param(name="lazyconnectionassociation", alias = "lazyConnectionAssociation",  optional=true, defaultValue="false")
+    @Param(name = "lazyConnectionAssociation",  optional=true, defaultValue="false")
     Boolean lazyconnectionassociation;
     
-    @Param(name="associatewiththread", alias = "associateWithThread",  optional=true, defaultValue="false")
+    @Param(name = "associateWithThread",  optional=true, defaultValue="false")
     Boolean associatewiththread;
 
     //@Param(optional=true, defaultValue="1")
     //String associatewiththreadconnectionscount;
 
-    @Param(alias = "driverClassname",  optional=true)
+    @Param(name = "driverClassname",  optional=true)
     String driverclassname;
     
-    @Param(name="matchconnections", alias = "matchConnections",  optional=true, defaultValue="false")
+    @Param(name = "matchConnections",  optional=true, defaultValue="false")
     Boolean matchconnections;
     
-    @Param(name="maxconnectionusagecount", alias = "maxConnectionUsageCount",  optional=true, defaultValue = "0")
+    @Param(name = "maxConnectionUsageCount",  optional=true, defaultValue = "0")
     String maxconnectionusagecount = "0";
 
-    @Param(optional=true, alias = "ping",  defaultValue="false")
+    @Param(optional=true, defaultValue="false")
     Boolean ping;
 
-    @Param(optional=true, alias = "pooling",  defaultValue="true")
+    @Param(optional=true, defaultValue="true")
     Boolean pooling;
 
-    @Param(optional=true, alias = "statementCacheSize",  defaultValue="0")
+    @Param(optional=true, name = "statementCacheSize",  defaultValue="0")
     String statementcachesize;
 
-    @Param(alias = "validationClassname",  optional=true)
+    @Param(name = "validationClassname",  optional=true)
     String validationclassname;
     
-    @Param(name="wrapjdbcobjects", alias = "wrapJdbcObjects",  optional=true, defaultValue="true")
+    @Param(name = "wrapJdbcObjects",  optional=true, defaultValue="true")
     Boolean wrapjdbcobjects;
     
-    @Param(name="description", alias = "description",  optional=true)
+    @Param(name="description", optional=true)
     String description;
     
-    @Param(name="property", alias = "property",  optional=true, separator=':')
+    @Param(name="property", optional=true, separator=':')
     Properties properties;
     
-    @Param(alias = "target",  optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(optional=true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
     
     @Param(name="jdbc_connection_pool_id", alias = "name" /*Mapped to ResourceConstants.CONNECTION_POOL_NAME below */,  primary=true)
