@@ -48,6 +48,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.net.NetUtils;
 
 /**
  *  This is a local command that creates a local instance.
@@ -69,12 +70,12 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 @Service(name = "_create-instance-filesystem")
 @Scoped(PerLookup.class)
 public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
-    //TODO --agentport, --agentproperties not needed until we have node agent.
-    //@Param(name = "agentport", optional = true)
-    //private String agentPort;  --> nodeagent.properties agent.adminPort
+    
+    @Param(name = "agentport", optional = true)
+    private String agentPort;  //nodeagent.properties agent.adminPort
 
-    //@Param(name = "agentproperties", optional = true, separator = ':')
-    //private Properties agentProperties;  --> nodeagent.properties
+    @Param(name = "agentproperties", optional = true, separator = ':')
+    private Properties agentProperties;  //TODO Properties error handling
 
     //TODO where to get masterpassword?
     //@Param(name = "savemasterpassword", optional = true, defaultValue = "false")
@@ -88,6 +89,10 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     String DASProtocol;
     boolean dasIsSecure;
 
+    public static final String K_ADMIN_PORT = "agent.adminPort";
+    public static final String K_ADMIN_HOST = "agent.adminHost";
+    public static final String K_AGENT_PROTOCOL = "agent.protocol";
+    public static final String K_CLIENT_HOST = "agent.client.host";
     public static final String K_DAS_HOST = "agent.das.host";
     public static final String K_DAS_PROTOCOL = "agent.das.protocol";
     public static final String K_DAS_PORT = "agent.das.port";
@@ -96,8 +101,17 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     public static final String K_MASTER_PASSWORD = "agent.masterpassword";
     public static final String K_SAVE_MASTER_PASSWORD = "agent.saveMasterPassword";
 
+    public static final String AGENT_LISTEN_ADDRESS_NAME="listenaddress";
+    public static final String REMOTE_CLIENT_ADDRESS_NAME="remoteclientaddress";
+    public static final String AGENT_JMX_PROTOCOL_NAME="agentjmxprotocol";
+    public static final String DAS_JMX_PROTOCOL_NAME="dasjmxprotocol";
+    public static final String AGENT_DAS_IS_SECURE="isDASSecure";
+
     public static final String NODEAGENT_DEFAULT_DAS_IS_SECURE = "false";
     public static final String NODEAGENT_DEFAULT_DAS_PORT = String.valueOf(CLIConstants.DEFAULT_ADMIN_PORT);
+    public static final String NODEAGENT_DEFAULT_HOST_ADDRESS = "0.0.0.0";
+    public static final String NODEAGENT_JMX_DEFAULT_PROTOCOL = "rmi_jrmp";
+    public static final String HOST_NAME_PROPERTY = "com.sun.aas.hostName";
 
     private File agentConfigDir;
     private File applicationsDir;
@@ -107,6 +121,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     private File docrootDir;
     private File dasPropsFile;
     private Properties dasProperties;
+    private File nodeagentPropsFile;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceFilesystemCommand.class);
@@ -115,28 +130,12 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
      */
     @Override
     protected void validate()
-            throws CommandException, CommandValidationException  {
+            throws CommandException {
 
         if(ok(instanceName0))
             instanceName = instanceName0;
         else
-            throw new CommandValidationException(strings.get("Instance.badInstanceName"));
-
-        super.validate();
-
-        String agentPath = "agent" + File.separator + "config";
-        agentConfigDir = new File(nodeAgentDir, agentPath);
-        dasPropsFile = new File(agentConfigDir, "das.properties");
-
-        applicationsDir = new File(instanceDir, "applications");
-        configDir = new File(instanceDir, "config");
-        generatedDir = new File(instanceDir, "generated");
-        libDir = new File(instanceDir, "lib");
-        docrootDir = new File(instanceDir, "docroot");
-
-        DASHost = programOpts.getHost();
-        DASPort = programOpts.getPort();
-        dasIsSecure = programOpts.isSecure();
+            throw new CommandException(strings.get("Instance.badInstanceName"));
 
         //ProgramOptions should takes care of default values?
         if (!ok(DASHost)) {
@@ -148,6 +147,29 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
                 DASHost = CLIConstants.DEFAULT_HOSTNAME;
             }
         }
+
+        if (agentPort != null) {
+            if (!NetUtils.isPortStringValid(agentPort)) {
+                throw new CommandException(strings.get("Instance.invalidAgentPort", agentPort));
+            }
+        }
+
+        super.validate();
+
+        String agentPath = "agent" + File.separator + "config";
+        agentConfigDir = new File(nodeAgentDir, agentPath);
+        dasPropsFile = new File(agentConfigDir, "das.properties");
+        nodeagentPropsFile = new File(agentConfigDir, "nodeagent.properties");
+
+        applicationsDir = new File(instanceDir, "applications");
+        configDir = new File(instanceDir, "config");
+        generatedDir = new File(instanceDir, "generated");
+        libDir = new File(instanceDir, "lib");
+        docrootDir = new File(instanceDir, "docroot");
+
+        DASHost = programOpts.getHost();
+        DASPort = programOpts.getPort();
+        dasIsSecure = programOpts.isSecure();
         
         if (DASPort == -1) {
             DASPort = dasIsSecure ? 4849 : 4848;
@@ -203,8 +225,9 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         }
         try {
             writeDasProperties();
+            writeNodeagentProperties();
         } catch (IOException ex) {
-            throw new CommandException(strings.get("Instance.cantWriteDasProperties", dasPropsFile.getName()), ex);
+            throw new CommandException(strings.get("Instance.cantWriteProperties", dasPropsFile.getName(), nodeagentPropsFile.getName()), ex);
         }
         if (badfile != null) {
             throw new CommandException(strings.get("Instance.cannotMkDir", badfile));
@@ -227,5 +250,60 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         FileOutputStream fos = new FileOutputStream(dasPropsFile);
         dasProperties.store(fos, strings.get("Instance.dasPropertyComment"));
         fos.close();
+    }
+
+    private void writeNodeagentProperties() throws IOException, CommandException {
+        //TODO allow any properties?
+        if (!nodeagentPropsFile.isFile()) {
+            nodeagentPropsFile.createNewFile();
+        }
+
+        String remoteClientAddress = getSystemProperty(HOST_NAME_PROPERTY);
+        String listenAddress = NODEAGENT_DEFAULT_HOST_ADDRESS;
+        String agentProtocol = NODEAGENT_JMX_DEFAULT_PROTOCOL; //??
+        String dasProtocol = DASProtocol;
+        String isDasSecure = String.valueOf(dasIsSecure);
+
+        if (agentProperties != null && !agentProperties.isEmpty()) {
+            remoteClientAddress = agentProperties.getProperty(REMOTE_CLIENT_ADDRESS_NAME, getSystemProperty(HOST_NAME_PROPERTY));
+            listenAddress = agentProperties.getProperty(AGENT_LISTEN_ADDRESS_NAME, NODEAGENT_DEFAULT_HOST_ADDRESS);
+            agentProtocol = agentProperties.getProperty(AGENT_JMX_PROTOCOL_NAME, NODEAGENT_JMX_DEFAULT_PROTOCOL);
+            dasProtocol = agentProperties.getProperty(DAS_JMX_PROTOCOL_NAME, DASProtocol);
+            isDasSecure = agentProperties.getProperty(NODEAGENT_DEFAULT_DAS_IS_SECURE, String.valueOf(dasIsSecure));
+        }
+
+        Properties _nodeagentProps = new Properties();
+        _nodeagentProps.setProperty(K_CLIENT_HOST, remoteClientAddress);
+        _nodeagentProps.setProperty(K_ADMIN_HOST, listenAddress);
+        _nodeagentProps.setProperty(K_ADMIN_PORT, String.valueOf(getAgentPort()));
+        _nodeagentProps.setProperty(K_AGENT_PROTOCOL, agentProtocol);
+        _nodeagentProps.setProperty(K_DAS_PROTOCOL, dasProtocol);
+        _nodeagentProps.setProperty(K_DAS_IS_SECURE, isDasSecure);
+
+        FileOutputStream fos = new FileOutputStream(nodeagentPropsFile);
+        _nodeagentProps.store(fos, strings.get("Instance.nodeagentPropertiesComment"));
+        fos.close();
+    }
+
+    /**
+     * Returns the agent port specified by the --agentport option. If unspecified a
+     * random free port is chosen. We ensure that the agent port is not in use or
+     * a CommandException is thrown.
+     */
+    protected int getAgentPort() throws CommandException
+    {
+        //verify admin port is not in use
+        int port;
+        if (agentPort == null) {
+            port = NetUtils.getFreePort();
+        } else {
+            port = Integer.parseInt(agentPort);
+        }
+        if (!NetUtils.isPortFree(port)) {
+            throw new CommandException(strings.get("AgentPortInUse",
+                agentPort));
+        }
+        logger.printDebugMessage("agentPort = " + port);
+        return port;
     }
 }
