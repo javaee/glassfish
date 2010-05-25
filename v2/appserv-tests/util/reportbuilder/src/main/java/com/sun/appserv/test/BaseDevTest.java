@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
@@ -48,7 +50,7 @@ public abstract class BaseDevTest {
      * @return true if successful
      */
     public boolean asadmin(final String... args) {
-        String asadmincmd = isWindows() ? "/bin/asadmin.bat" :"/bin/asadmin";
+        String asadmincmd = isWindows() ? "/bin/asadmin.bat" : "/bin/asadmin";
         List<String> command = new ArrayList<String>();
         command.add(System.getenv().get("S1AS_HOME") + asadmincmd);
         command.addAll(Arrays.asList(antProp("as.props").split(" ")));
@@ -109,8 +111,21 @@ public abstract class BaseDevTest {
                     props.load(reader);
                 } finally {
                     reader.close();
+
                 }
-                value = props.getProperty(key);
+                System.getProperties().putAll(props);
+                System.setProperty("as.props", String.format("--user %s --passwordfile %s --host %s --port %s"
+                    + " --echo=true --terse=true", antProp("admin.user"), antProp("admin.password.file"),
+                    antProp("admin.host"), antProp("admin.port")));
+                value = System.getProperty(key);
+                int index = -1;
+                while((index = value.indexOf("${env.")) != -1) {
+                    int end = value.indexOf("}", index);
+                    String var = value.substring(index, end + 1);
+                    final String name = var.substring(6, var.length() - 1);
+                    value = value.replace(var, System.getenv(name));
+                    System.setProperty(key, value);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException(e.getMessage(), e);
@@ -120,7 +135,7 @@ public abstract class BaseDevTest {
     }
 
     public void write(final String out) {
-        if(DEBUG) {
+        if (DEBUG) {
             System.out.println(out);
         }
         writer.println(out);
