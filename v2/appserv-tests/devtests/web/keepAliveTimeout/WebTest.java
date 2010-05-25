@@ -33,18 +33,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.io.*;
-import java.net.*;
-import com.sun.ejte.ccl.reporter.*;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
 /*
- * Unit test for 6273998
- */
+* Unit test for 6273998
+*/
 public class WebTest {
-
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "keepAliveTimeoutInSecondsZero";
+    public static final String TEST_NAME = "keepAliveTimeoutInSeconds";
+    private static final SimpleReporterAdapter stat
+        = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
 
     private String host;
     private String port;
@@ -57,18 +62,17 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("keepAliveTimeoutInSecondsZero");
+        stat.addDescription(TEST_NAME);
         WebTest webTest = new WebTest(args);
         webTest.doTest();
-        stat.printSummary(TEST_NAME);
+        stat.printSummary();
     }
 
     public void doTest() {     
         try { 
             invoke();
         } catch (Exception ex) {
-            System.out.println(TEST_NAME + " test failed.");
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            stat.addStatus(TEST_NAME, SimpleReporterAdapter.FAIL);
             ex.printStackTrace();
         }
     }
@@ -83,6 +87,8 @@ public class WebTest {
         os.write(get.getBytes());
         os.write("Host: localhost\n".getBytes());
         os.write("\n".getBytes());
+
+        Thread.sleep(6000);
         
         InputStream is = sock.getInputStream();
         BufferedReader bis = new BufferedReader(new InputStreamReader(is));
@@ -107,9 +113,9 @@ public class WebTest {
         sock.close();
 
         if (found) {
-            stat.addStatus(TEST_NAME, stat.PASS);
+            stat.addStatus(TEST_NAME, SimpleReporterAdapter.PASS);
         } else {
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            stat.addStatus(TEST_NAME, SimpleReporterAdapter.FAIL);
         }
     }
 }

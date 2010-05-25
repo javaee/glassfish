@@ -471,8 +471,8 @@
         <ant dir="httpResponseServerHeader" target="all"/>
         <ant dir="httpServletDoPost" target="all"/>
         <ant dir="keepAlive" target="all"/>
-        <ant dir="keepAliveTimeoutZero" target="all"/>
-        <ant dir="keepAliveTimeoutZeroSSL" target="all"/>
+        <ant dir="keepAliveTimeout" target="all"/>
+        <ant dir="keepAliveTimeoutSSL" target="all"/>
         <ant dir="listenerDisabled" target="all"/>
         <ant dir="maxKeepAliveRequests" target="all"/>
         <ant dir="multiByteHttpRequestBuffer" target="all"/>

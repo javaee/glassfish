@@ -33,35 +33,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.io.*;
-import java.util.Properties;
-import java.net.*;
-import java.security.KeyStore;
-import javax.net.*;
-import javax.net.ssl.*;
-import com.sun.ejte.ccl.reporter.*;
 
-public class WebTest{
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
+import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
-    static SimpleReporterAdapter stat=
-           new SimpleReporterAdapter("appserv-tests");
-    
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 1;
+public class WebTest {
     private static final String TEST_NAME = "keepAliveTimeoutInSecondsZeroSSL";
-    static String host =""; 
-    static String port ="";
+    private static final SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
+    private int count = 0;
+    private int EXPECTED_COUNT = 1;
+    static String host = "";
+    static String port = "";
     public static final String SSL = "SSL";
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String args[]) throws Exception {
         host = args[0];
         port = args[1];
         String contextRoot = args[2];
         String trustStorePath = args[3];
-
         stat.addDescription("Testing keep-alive timeout-in-seconds=0");
-
         try {
             doTest();
         } catch (Throwable t) {
@@ -70,21 +72,18 @@ public class WebTest{
         stat.printSummary(TEST_NAME);
     }
 
-    private static void doTest() throws Throwable{
+    private static void doTest() throws Throwable {
         SSLSocketFactory sslsocketfactory = getSSLSocketFactory();
-        SSLSocket sslsocket = 
-            (SSLSocket)sslsocketfactory
-            .createSocket(host,Integer.parseInt(port));
-
+        SSLSocket sslsocket =
+            (SSLSocket) sslsocketfactory
+                .createSocket(host, Integer.parseInt(port));
         OutputStream outputstream = sslsocket.getOutputStream();
-        OutputStreamWriter outputstreamwriter 
-                                = new OutputStreamWriter(outputstream);
+        OutputStreamWriter outputstreamwriter
+            = new OutputStreamWriter(outputstream);
         BufferedWriter bufferedwriter = new BufferedWriter(outputstreamwriter);
-
         bufferedwriter.write("GET / HTTP/1.1" + '\n');
-        bufferedwriter.write("Host: localhost" + '\n'+'\n');
+        bufferedwriter.write("Host: localhost" + '\n' + '\n');
         bufferedwriter.flush();
-        
         InputStream sslIn = sslsocket.getInputStream();
         InputStreamReader inputstreamreader1 = new InputStreamReader(sslIn);
         BufferedReader bufferedreader1 = new BufferedReader(inputstreamreader1);
@@ -95,20 +94,19 @@ public class WebTest{
         }
         System.out.println('\n');
         long t2 = System.currentTimeMillis();
-        String val = String.valueOf((t2-t1)/1000);
-        System.out.println("keep alive for "+val+" seconds");
-        if (t2-t1 < 5000) {
+        String val = String.valueOf((t2 - t1) / 1000);
+        System.out.println("keep alive for " + val + " seconds");
+        if (t2 - t1 < 5000) {
             stat.addStatus(TEST_NAME, stat.PASS);
         } else {
             stat.addStatus(TEST_NAME, stat.FAIL);
         }
     }
 
-    public static SSLSocketFactory getSSLSocketFactory() throws IOException{
-        if(host == null || port==null) {
+    public static SSLSocketFactory getSSLSocketFactory() throws IOException {
+        if (host == null || port == null) {
             throw new IOException("null");
         }
-        
         try {
             //---------------------------------
             // Create a trust manager that does not validate certificate chains
@@ -117,25 +115,25 @@ public class WebTest{
                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                         return null;
                     }
+
                     public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
+                        java.security.cert.X509Certificate[] certs, String authType) {
                     }
+
                     public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
+                        java.security.cert.X509Certificate[] certs, String authType) {
                     }
                 }
             };
-            
             // Install the all-trusting trust manager
             SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            
             //---------------------------------
             return sc.getSocketFactory();
-        } catch(Exception e){
-                e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new IOException(e.getMessage());
-        }finally {
+        } finally {
         }
-    }        
+    }
 }

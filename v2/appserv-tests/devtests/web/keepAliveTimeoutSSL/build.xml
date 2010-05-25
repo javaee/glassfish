@@ -54,7 +54,12 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=0"/>
+						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-2.http.timeout-seconds=5"/>
+        </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
         </antcall>
         <sleep seconds="10"/>
     </target>
@@ -63,17 +68,23 @@
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="set" />
             <param name="operand.props"
-						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds="/>
+						 value="configs.config.server-config.network-config.protocols.protocol.http-listener-2.http.timeout-seconds="/>
+        </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
         </antcall>
     </target>
 
-    <target name="run" depends="init-common">
+    <target name="run" depends="init-common,prepare-keystore-common">
         <javac srcdir="." classpath="${env.APS_HOME}/lib/reportbuilder.jar"
                includes="WebTest.java"/>
         <java classname="WebTest">
           <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
+          <arg value="${https.port}"/>
           <arg value="${contextroot}"/>
+          <arg value="${keystore.db.file}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
