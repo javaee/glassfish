@@ -113,7 +113,7 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
     private void callInstance() {
         try {
             if(!StringUtils.ok(instanceName)) {
-                logger.severe("stop.instance.noInstanceName");
+                logger.severe(strings.get("stop.instance.noInstanceName"));
                 return;
             }
             final Server instance = helper.getServer(instanceName);
@@ -153,7 +153,7 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
     private ModulesRegistry registry;
     @Param(optional = true, defaultValue = "true")
     private Boolean force;
-    @Param(optional = true)
+    @Param(optional = true, primary = true)
     private String instanceName;
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
