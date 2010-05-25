@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -35,35 +34,27 @@
  holder.
 -->
 <!DOCTYPE project [
-        <!ENTITY commonSetup SYSTEM "./../../../config/properties.xml">
-        <!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
-        <!ENTITY run SYSTEM "./../../../config/run.xml">
-        <!ENTITY testproperties SYSTEM "./build.properties">
-        ]>
+        <!ENTITY commonSetup SYSTEM "./../../config/properties.xml">
+        <!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+        <!ENTITY run SYSTEM "./../../config/run.xml">
+]>
+<project name="reportbuilder">
+    <path id="reportbuilder.class.path">
+        <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
+        <pathelement location="build/classes"/>
+        <fileset dir="${env.S1AS_HOME}/modules"/>
+    </path>
+    <pathconvert refid="reportbuilder.class.path" property="reportbuilder.path.property"/>
 
-<project name="webcontainer_unittest" default="all" basedir=".">
-
-    &commonSetup;
-    &commonBuild;
-    &testproperties;
-    &run;
-    
-    <import file="../reportbuilder.xml"/>
-
-    <target name="jar" depends="build">
-        <jar file="build/dummy-protocol.jar" basedir="build/classes" includes="**/DummyProtocol*"
-             manifest="src/main/resources/META-INF/MANIFEST.MF"/>
+    <target name="build" depends="init-common">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src/main/java" destdir="build/classes" debug="true"
+               classpath="${reportbuilder.path.property}"
+               includes="**/*.java"/>
     </target>
 
-    <target name="all" depends="init-common, jar">
-        <copy file="build/dummy-protocol.jar" tofile="${env.S1AS_HOME}/domains/domain1/autodeploy/bundles/dummy-protocol.jar" verbose="true"/>
-        <sleep seconds = "5" description="waiting for autodeploy to detect the new bundle" failonerror="true"/>
-        <run-test classname="org.glassfish.devtests.web.portunif.PortUnificationTest" classpath="${reportbuilder.path.property}"/>
-        <delete file="${env.S1AS_HOME}/domains/domain1/autodeploy/bundles/build/dummy-protocol.jar"/>
-        <sleep seconds = "5" description="waiting for autodeploy to detect the deleted bundle" failonerror="true"/>
-    </target>
-
-    <target name="usage">
-        <antcall target="usage-common"/>
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common"/>
+        <delete dir="build"/>
     </target>
 </project>

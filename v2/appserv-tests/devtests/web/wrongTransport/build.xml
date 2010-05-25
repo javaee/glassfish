@@ -46,43 +46,19 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="setup,run,restore"/>
+    <import file="../reportbuilder.xml"/>
 
-    <target name="clean" depends="init-common">
-      <antcall target="clean-common"/>
-    </target>
-       
-    <target name="setup" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.transport=tls"/>
-        </antcall>
-    </target>
-
-    <target name="restore" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.transport=tcp"/>
-        </antcall>
-    </target>
-    
-    <target name="run" depends="init-common,prepare-truststore-common">
-          <javac
-            srcdir="."
-            classpath="${env.APS_HOME}/lib/reportbuilder.jar"
-            includes="WebTest.java"/>
-
-        <java classname="WebTest">
+    <target name="all" depends="build,init-common,prepare-truststore-common">
+        <java classname="wrongtransport.WrongTransport" classpathref="reportbuilder.class.path">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
-          <arg value="${contextroot}"/>
           <arg value="${truststore.db.file}"/>
+<!--
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
          </classpath>
+-->
         </java>
     </target>
  
