@@ -90,6 +90,7 @@ public class CometEchoServlet extends HttpServlet {
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         contextPath = config.getServletContext().getContextPath() + "/echo";
 
         CometContext context = CometEngine.getEngine().register(contextPath);

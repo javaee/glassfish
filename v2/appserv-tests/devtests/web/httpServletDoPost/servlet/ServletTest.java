@@ -46,6 +46,7 @@ public class ServletTest extends HttpServlet {
     private ServletContext context;
     
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
