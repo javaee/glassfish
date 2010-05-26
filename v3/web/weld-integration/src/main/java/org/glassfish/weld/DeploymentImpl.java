@@ -117,12 +117,12 @@ public class DeploymentImpl implements Deployment {
 
         BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(archive, ejbs);
         this.beanDeploymentArchives.add(bda);
-        if (((BeanDeploymentArchiveImpl)bda).bdaType.equals(BeanDeploymentArchiveImpl.WAR)) {
+        if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.WAR)) {
             if (null == warBDAs) {
                 warBDAs = new ArrayList();
             }
             warBDAs.add(bda);
-        } else if (((BeanDeploymentArchiveImpl)bda).bdaType.equals(BeanDeploymentArchiveImpl.JAR)) {
+        } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.JAR)) {
             if (null == jarBDAs) {
                 jarBDAs = new ArrayList();
             }
@@ -158,12 +158,12 @@ public class DeploymentImpl implements Deployment {
         }
 
         beanDeploymentArchives.add(bda);
-        if (((BeanDeploymentArchiveImpl)bda).bdaType.equals(BeanDeploymentArchiveImpl.WAR)) {
+        if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.WAR)) {
             if (null == warBDAs) {
                 warBDAs = new ArrayList();
             }
             warBDAs.add(bda);
-        } else if (((BeanDeploymentArchiveImpl)bda).bdaType.equals(BeanDeploymentArchiveImpl.JAR)) {
+        } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.JAR)) {
             if (null == jarBDAs) {
                 jarBDAs = new ArrayList();
             }

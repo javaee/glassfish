@@ -80,7 +80,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
     public static final String WAR = "WAR";
     public static final String JAR = "JAR";
-    public static String bdaType;
+    public String bdaType;
 
     /**
      * Produce a <code>BeanDeploymentArchive</code> form information contained 
@@ -177,6 +177,10 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             val += "   ID: "+bda.getId()+" CLASSES: "+bda.getBeanClasses();
         }
         return val;
+    }
+
+    public String getBDAType() {
+        return bdaType;
     }
 
     private void populate() {

@@ -36,6 +36,8 @@
 
 package org.glassfish.weld.services;
 
+import java.util.List;
+
 import javax.servlet.ServletContext;
 
 import org.glassfish.api.deployment.DeploymentContext;
@@ -54,9 +56,18 @@ public class ServletServicesImpl implements ServletServices {
     }
 
     public BeanDeploymentArchive getBeanDeploymentArchive(ServletContext ctx) {
+        BeanDeploymentArchive returnBDA = null;
         DeploymentImpl deploymentImpl = (DeploymentImpl)deploymentContext.getTransientAppMetaData(
                 WeldDeployer.WELD_DEPLOYMENT, DeploymentImpl.class);
-        return deploymentImpl.getBeanDeploymentArchives().get(0);
+        List<BeanDeploymentArchive> bdaList = deploymentImpl.getBeanDeploymentArchives();
+        for(BeanDeploymentArchive bda : bdaList) {
+            if (((org.glassfish.weld.BeanDeploymentArchiveImpl)bda).getBDAType().equals(
+                org.glassfish.weld.BeanDeploymentArchiveImpl.WAR)) {
+                returnBDA = bda;
+                break;
+            }
+        }
+        return returnBDA;
     }
 
     public void cleanup() {
