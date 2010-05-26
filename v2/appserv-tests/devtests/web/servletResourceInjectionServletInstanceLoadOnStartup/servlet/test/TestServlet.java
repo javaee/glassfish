@@ -64,6 +64,7 @@ public class TestServlet extends HttpServlet {
     private @Resource String welcomeMessage;
 
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
 
         sc = config.getServletContext();
 
