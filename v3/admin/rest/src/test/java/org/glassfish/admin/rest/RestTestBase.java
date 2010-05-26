@@ -121,6 +121,13 @@ public class RestTestBase {
         }
         return formData;
     }
+
+    protected void checkStatusForSuccess(ClientResponse cr) {
+        int status = cr.getStatus();
+        if ((status < 200) || (status > 299)) {
+            throw new RuntimeException(cr.toString());
+        }
+    }
 }
 /*
 private HttpURLConnection getConnection(String address, String responseType) throws MalformedURLException, IOException {
