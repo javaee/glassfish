@@ -75,7 +75,7 @@ public class ASMain {
             }
 
         } else {
-            logger.severe("Cannot launch GlassFish on the unkown " + platform + " platform");
+            logger.severe("Cannot launch GlassFish on the unknown " + platform + " platform");
         }
     }
 
