@@ -46,8 +46,10 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
 
 /**
@@ -122,6 +124,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
     private File dasPropsFile;
     private Properties dasProperties;
     private File nodeagentPropsFile;
+    private File loggingPropsFile;
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(CreateLocalInstanceFilesystemCommand.class);
@@ -166,6 +169,7 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         generatedDir = new File(instanceDir, "generated");
         libDir = new File(instanceDir, "lib");
         docrootDir = new File(instanceDir, "docroot");
+        loggingPropsFile = new File(configDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
 
         DASHost = programOpts.getHost();
         DASPort = programOpts.getPort();
@@ -182,8 +186,10 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
      */
     @Override
     protected int executeCommand()
-            throws CommandException, CommandValidationException {
-        
+            throws CommandException {
+        //if (saveMasterPassword) {
+        //    createMasterPasswordFile();
+        //}
         return createDirectories();
     }
 
@@ -223,16 +229,25 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
             }
             createDirsComplete = true;
         }
-        try {
-            writeDasProperties();
-            writeNodeagentProperties();
-        } catch (IOException ex) {
-            throw new CommandException(strings.get("Instance.cantWriteProperties", dasPropsFile.getName(), nodeagentPropsFile.getName()), ex);
-        }
         if (badfile != null) {
             throw new CommandException(strings.get("Instance.cannotMkDir", badfile));
         }
+        writeProperties();
         return SUCCESS;
+    }
+
+    private void writeProperties() throws CommandException {
+        String filename = "";
+        try {
+            filename = dasPropsFile.getName();
+            writeDasProperties();
+            filename = nodeagentPropsFile.getName();
+            writeNodeagentProperties();
+            filename = loggingPropsFile.getName();
+            writeLoggingProperties();
+        } catch (IOException ex) {
+            throw new CommandException(strings.get("Instance.cantWriteProperties", filename), ex);
+        }
     }
 
     private void writeDasProperties() throws IOException {
@@ -306,4 +321,12 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         logger.printDebugMessage("agentPort = " + port);
         return port;
     }
+
+    private void writeLoggingProperties() throws IOException {
+        String rootFolder = getSystemProperty(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+        String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+        File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+        FileUtils.copy(src, loggingPropsFile);
+    }
+
 }
