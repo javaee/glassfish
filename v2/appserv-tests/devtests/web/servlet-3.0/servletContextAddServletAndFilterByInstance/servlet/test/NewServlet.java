@@ -49,6 +49,7 @@ public class NewServlet extends HttpServlet {
     }
 
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         initParamValue = config.getInitParameter("servletInitParamName");
     }
 
