@@ -130,6 +130,7 @@ import java.util.logging.Logger;
  *
  * @author jluehe
  * @author amyroh
+ * @author swchan2
  */
 @SuppressWarnings({"StringContatenationInLoop"})
 @Service(name="com.sun.enterprise.web.WebContainer")
@@ -213,12 +214,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject
     FileLoggerHandler logHandler;
 
-    HashMap<String, Integer> portMap = new HashMap<String, Integer>();
-    HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
+    private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
-    EmbeddedWebContainer _embedded;
-    Engine engine;
-    String instanceName;
+    private EmbeddedWebContainer _embedded;
+    private Engine engine;
+    private String instanceName;
 
     private String logLevel = "INFO";
     
@@ -839,7 +839,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         connector.setMapper(mapper);
        
-        _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[] {listener.getName(), listener.getPort()});
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[] {listener.getName(), listener.getPort()});
+        }
         
         connector.setName(listener.getName());
         connector.setInstanceName(instanceName);
@@ -852,7 +854,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         _embedded.addConnector(connector);
 
-        portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
         connectorMap.put(listener.getName(), connector);
 
         // If we already know the redirect port, then set it now
@@ -934,11 +935,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         jkConnector.setInstanceName(instanceName);
         if (listener!=null) {
             jkConnector.configure(listener, isSecure, httpService);
-            portMap.put(listener.getName(), Integer.valueOf(listener.getPort()));
             connectorMap.put(listener.getName(), jkConnector);
         }
         
-        _logger.log(Level.INFO, "webContainer.virtualServer.hostAndPort", new Object[] {defaultHost, port});
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.log(Level.INFO, "webContainer.virtualServer.hostAndPort", new Object[] {defaultHost, port});
+        }
 
         
         for (Mapper m : habitat.getAllByContract(Mapper.class)) {
@@ -1107,7 +1109,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers = httpService.getVirtualServer();
         for (com.sun.enterprise.config.serverbeans.VirtualServer vs : virtualServers) {
             createHost(vs, httpService, securityService);
-            _logger.log(Level.INFO, "webContainer.virtualServer.created", vs.getId());
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO, "webContainerFINE.virtualServer.created", vs.getId());
+            }
 
         }
     }
@@ -1254,16 +1258,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     protected void configureHostPortNumbers(VirtualServer vs,
         HashSet<NetworkListener> listeners){
 
-        boolean addJkListenerPort = jkConnector != null &&
+        boolean addJkListenerName = jkConnector != null &&
             !vs.getName().equalsIgnoreCase(
                 org.glassfish.api.web.Constants.ADMIN_VS);
 
-        ArrayList<Integer> portsList = new ArrayList<Integer>();
+        List<String> listenerNames = new ArrayList<String>();
         for (NetworkListener listener : listeners){
             if (Boolean.valueOf(listener.getEnabled())){
-                Integer port = portMap.get(listener.getName());
-                if (port != null) {
-                    portsList.add(port);
+                listenerNames.add(listener.getName());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Virtual Server " + vs.getID() +
+                            " set listener name " + listener.getName());
                 }
             } else {
                 if (vs.getName().equalsIgnoreCase(
@@ -1277,29 +1282,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        int numPorts = portsList.size();
-        if (addJkListenerPort) {
-            numPorts++;
-        }
-        if (numPorts > 0) {
-            int[] ports = new int[numPorts];
-            int i=0;
-            for (i=0; i<portsList.size(); i++) {
-                ports[i] = portsList.get(i);
-                 if (_logger.isLoggable(Level.FINE)) {
-                     _logger.fine("Virtual Server " + vs.getID() +
-                                  " set port " + ports[i]);
-                 }
+        if (addJkListenerName && (!listenerNames.contains(jkConnector.getName()))) {
+            listenerNames.add(jkConnector.getName());
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Virtual Server " + vs.getID() +
+                        " set jk listener name " + jkConnector.getName());
             }
-            if (addJkListenerPort) {
-                ports[i] = jkConnector.getPort();
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("Virtual Server " + vs.getID() +
-                                 " set jk port " + ports[i]);
-                }
-            }
-            vs.setPorts(ports);
         }
+
+        vs.setNetworkListenerNames(
+            listenerNames.toArray(new String[listenerNames.size()]));
     }
 
 
@@ -1397,9 +1389,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     defaultPath = wmInfo.getContextPath();
                     loadStandaloneWebModule(vs, wmInfo);
                 }
-                _logger.log(Level.INFO,
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.log(Level.INFO,
                         "webContainer.virtualServer.loadedDefaultWebModule",
                         new Object[] { vs.getName(), defaultPath });
+                }
                 
             }
         }
@@ -1436,7 +1430,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     defaultPath = wmInfo.getContextPath();
                     // Virtual server declares default-web-module
                     try {
-                        updateDefaultWebModule(vs, vs.getPorts(), wmInfo);
+                        updateDefaultWebModule(vs, vs.getNetworkListenerNames(), wmInfo);
                     } catch (LifecycleException le) {
                         String msg = rb.getString(
                             "webcontainer.defaultWebModuleError");
@@ -1444,7 +1438,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                             vs.getName());
                         _logger.log(Level.SEVERE, msg, le);
                     }
-                    _logger.log(Level.INFO, "webContainer.virtual-server.loadedDefaultWebModule", new Object[] {vs.getName(), defaultPath});
+                    if (_logger.isLoggable(Level.INFO)) {
+                        _logger.log(Level.INFO, "webContainer.virtual-server.loadedDefaultWebModule",
+                                new Object[] {vs.getName(), defaultPath});
+                    }
 
                 } else {
                     // No need to create default web module off of virtual
@@ -1485,7 +1482,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             defaultPath = wmInfo.getContextPath();
             // Virtual server declares default-web-module
             try {
-                updateDefaultWebModule(vs, vs.getPorts(), wmInfo);
+                updateDefaultWebModule(vs, vs.getNetworkListenerNames(), wmInfo);
             } catch (LifecycleException le) {
                 String msg = rb.getString("webcontainer.defaultWebModuleError");
                 msg = MessageFormat.format(msg, defaultPath, vs.getName());
@@ -1504,7 +1501,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        _logger.log(Level.INFO, "webContainer.virtual-server.loadedDefaultWebModule", new Object[] {vs.getName(), defaultPath});
+        if (_logger.isLoggable(Level.INFO)) {
+            _logger.log(Level.INFO, "webContainer.virtual-server.loadedDefaultWebModule",
+                    new Object[] {vs.getName(), defaultPath});
+        }
     }
 
 
@@ -1943,7 +1943,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * if the virtual server no longer has any default-web-module
      */
     protected void updateDefaultWebModule(VirtualServer virtualServer,
-            int[] ports,
+            String[] listenerNames,
             WebModuleConfig wmInfo)
             throws LifecycleException {
 
@@ -1960,9 +1960,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         Connector[] connectors = _embedded.findConnectors();
         for (Connector connector : connectors) {
             PECoyoteConnector conn = (PECoyoteConnector) connector;
-            int port = conn.getPort();
-            for (int port1 : ports) {
-                if (port == port1) {
+            String name = conn.getName();
+            for (String listenerName : listenerNames) {
+                if (name.equals(listenerName)) {
                     Mapper mapper = conn.getMapper();
                     try {
                         mapper.setDefaultContextPath(virtualServer.getName(),
@@ -2592,7 +2592,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             if (propName.equalsIgnoreCase("enableCookies")) {
                 instanceEnableCookies = ConfigBeansUtilities.toBoolean(propValue);
-            } else {
+            } else if (_logger.isLoggable(Level.INFO)) {
                 Object[] params = { propName };
                 _logger.log(Level.INFO, "webcontainer.notYet", params);
             }
@@ -2708,13 +2708,14 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
             globalAccessLoggingEnabled);
 
-        int[] oldPorts = vs.getPorts();
-
-        List<String> listeners = StringUtils.parseStringList(
+        // old listener names
+        List<String> oldListenerList = StringUtils.parseStringList(
             vsBean.getNetworkListeners(), ",");
-        if (listeners != null) {
-            HashSet<NetworkListener> networkListeners = new HashSet<NetworkListener>();
-            for (String listener : listeners) {
+        String[] oldListeners = oldListenerList.toArray(new String[oldListenerList.size()]);
+        // new listener config
+        HashSet<NetworkListener> networkListeners = new HashSet<NetworkListener>();
+        if (oldListeners != null) {
+            for (String listener : oldListeners) {
                 boolean found = false;
                 for (NetworkListener httpListener :
                         serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
@@ -2736,17 +2737,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             configureHostPortNumbers(vs, networkListeners);
         } else {
             // The virtual server is not associated with any http listeners
-            vs.setPorts(new int[0]);
+            vs.setNetworkListenerNames(new String[0]);
         }
-
-        int[] newPorts = vs.getPorts();
 
         // Disassociate the virtual server from all http listeners that
         // have been removed from its http-listeners attribute
-        for (int oldPort : oldPorts) {
+        for (String oldListener : oldListeners) {
             boolean found = false;
-            for (int newPort : newPorts) {
-                if (oldPort == newPort) {
+            for (NetworkListener httpListener : networkListeners) {
+                if (httpListener.getName().equals(oldListener)) {
                     found = true;
                 }
             }
@@ -2755,7 +2754,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 Connector[] connectors = _embedded.findConnectors();
                 for (Connector connector : connectors) {
                     WebConnector conn = (WebConnector) connector;
-                    if (oldPort == conn.getPort()) {
+                    if (oldListener.equals(conn.getName())) {
                         try {
                             conn.getMapperListener().unregisterHost(
                                 vs.getJmxName());
@@ -2770,10 +2769,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         // Associate the virtual server with all http listeners that
         // have been added to its http-listeners attribute
-        for (int newPort : newPorts) {
+        for (NetworkListener httpListener : networkListeners) {
             boolean found = false;
-            for (int oldPort : oldPorts) {
-                if (newPort == oldPort) {
+            for (String oldListener : oldListeners) {
+                if (httpListener.getName().equals(oldListener)) {
                     found = true;
                 }
             }
@@ -2783,7 +2782,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 for (Connector connector : connectors) {
                     WebConnector conn = (WebConnector)
                         connector;
-                    if (newPort == conn.getPort()) {
+                    if (httpListener.getName().equals(conn.getName())) {
                         if (!conn.isAvailable()) {
                             conn.start();
                         }
@@ -2801,7 +2800,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Remove the old default web module if one was configured, by
         // passing in "null" as the default context path
         if (oldDefaultWebModule != null) {
-            updateDefaultWebModule(vs, oldPorts, null);
+            updateDefaultWebModule(vs, oldListeners, null);
         }
 
         /*
@@ -2820,7 +2819,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             // a context exists
             removeDummyModule(vs);
             updateDefaultWebModule(vs,
-                                   vs.getPorts(),
+                                   vs.getNetworkListenerNames(),
                                    wmInfo);
         } else {
             WebModuleConfig wmc =
@@ -2998,8 +2997,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
             connector = addConnector(networkListener, httpService, false);
 
-            // Update the list of ports of all associated virtual servers with
-            // the listener's new port number, so that the associated virtual
+            // Update the list of listener names of all associated virtual servers with
+            // the listener's new listener name , so that the associated virtual
             // servers will be registered with the listener's request mapper when
             // the listener is started
             List<VirtualServer> virtualServers =
@@ -3008,18 +3007,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 Mapper mapper = connector.getMapper();
                 for (VirtualServer vs : virtualServers) {
                     boolean found = false;
-                    int[] ports = vs.getPorts();
-                    for (int i = 0; i < ports.length; i++) {
-                        if (ports[i] == connector.getPort()) {
+                    String[] listenerNames = vs.getNetworkListenerNames();
+                    String name = connector.getName();
+                    for (String listenerName : listenerNames) {
+                        if (listenerName.equals(name)) {
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        int[] newPorts = new int[ports.length + 1];
-                        System.arraycopy(ports, 0, newPorts, 0, ports.length);
-                        newPorts[ports.length] = connector.getPort();
-                        vs.setPorts(newPorts);
+                        String[] newListenerNames = new String[listenerNames.length + 1];
+                        System.arraycopy(listenerNames, 0, newListenerNames, 0, listenerNames.length);
+                        newListenerNames[listenerNames.length] = connector.getName();
+                        vs.setNetworkListenerNames(newListenerNames);
                     }
 
                     // Check if virtual server has default-web-module configured,
@@ -3074,7 +3074,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         synchronized(mapperUpdateSync) {
             int port = Integer.parseInt(httpListener.getPort());
 
-            // Add the port number of the new http-listener to its
+            // Add the listener name of the new http-listener to its
             // default-virtual-server, so that when the new http-listener
             // and its MapperListener are started, they will recognize the
             // default-virtual-server as one of their own, and add it to the
@@ -3082,11 +3082,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String virtualServerName = httpListener.findHttpProtocol().getHttp().getDefaultVirtualServer();
             VirtualServer vs =
                     (VirtualServer) getEngine().findChild(virtualServerName);
-            int[] oldPorts = vs.getPorts();
-            int[] newPorts = new int[oldPorts.length + 1];
-            System.arraycopy(oldPorts, 0, newPorts, 0, oldPorts.length);
-            newPorts[oldPorts.length] = port;
-            vs.setPorts(newPorts);
+            String[] oldListenerNames = vs.getNetworkListenerNames();
+            String[] newListenerNames = new String[oldListenerNames.length + 1];
+            System.arraycopy(oldListenerNames, 0, newListenerNames, 0, oldListenerNames.length);
+            newListenerNames[oldListenerNames.length] = httpListener.getName();
+            vs.setNetworkListenerNames(newListenerNames);
 
             Mapper mapper = null;
             for (Mapper m : habitat.getAllByContract(Mapper.class)) {
@@ -3120,14 +3120,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     public void deleteConnector(WebConnector connector)
             throws LifecycleException{
 
-        int port = connector.getPort();
+        String name = connector.getName();
 
         Connector[] connectors = _embedded.findConnectors();
         for (Connector connector1 : connectors) {
             WebConnector conn = (WebConnector) connector1;
-            if (port == conn.getPort()) {
+            if (name.equals(conn.getName())) {
                 _embedded.removeConnector(conn);
-                portMap.remove(connector.getName());
                 connectorMap.remove(connector.getName());
             }
         }
@@ -3141,13 +3140,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             throws LifecycleException{
 
         Connector[] connectors = _embedded.findConnectors();
-        int port = Integer.parseInt(httpListener.getPort());
+        String name = httpListener.getName();
         for (Connector connector : connectors) {
             WebConnector conn = (WebConnector) connector;
-            if (port == conn.getPort()) {
+            if (name.equals(conn.getName())) {
                 _embedded.removeConnector(conn);
-                portMap.remove(httpListener.getName());
-                connectorMap.remove(httpListener.getName());
+                connectorMap.remove(name);
             }
         }
 

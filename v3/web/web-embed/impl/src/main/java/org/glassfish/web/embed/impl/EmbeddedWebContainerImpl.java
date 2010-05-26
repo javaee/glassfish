@@ -494,12 +494,14 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
         } 
-        int[] ports = new int[webListeners.length];
+        String[] names = new String[webListeners.length];
         for (int i=0; i<webListeners.length; i++) {
-            ports[i] = webListeners[i].getPort();
-            log.info(""+ports[i]);
+            names[i] = webListeners[i].getId();
+            if (log.isLoggable(Level.INFO)) {
+                log.info(""+ names[i]);
+            }
         }
-        virtualServer.setPorts(ports);
+        virtualServer.setNetworkListenerNames(names);
         
         return virtualServer;
         
@@ -526,19 +528,20 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             virtualServer.setAppBase(docRoot.getPath());
         }     
         Ports ports = habitat.getComponent(Ports.class);
-        int[] portsArray = null;
+        // the port is use as unique identifier network listener name
+        String[] portsArray = null;
         if (ports != null) {
             Collection<Port> coll = ports.getPorts();
-            portsArray = new int[coll.size()];
+            portsArray = new String[coll.size()];
             int i=0;
             for (Port port:coll) {
-                portsArray[i] = port.getPortNumber();
+                portsArray[i] = Integer.toString(port.getPortNumber());
                 if (log.isLoggable(Level.INFO)) {
                     log.info("port = "+portsArray[i]);
                 }
                 i++;
             }
-            virtualServer.setPorts(portsArray);
+            virtualServer.setNetworkListenerNames(portsArray);
         }
         
         return virtualServer;

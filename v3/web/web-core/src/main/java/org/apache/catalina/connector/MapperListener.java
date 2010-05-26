@@ -113,9 +113,9 @@ public class MapperListener
 
 
     // BEGIN S1AS 5000999
-    private int port;
+    private String networkListenerName;
     private String defaultHost;
-    private ConcurrentHashMap<ObjectName,int[]> virtualServerPorts;
+    private ConcurrentHashMap<ObjectName,String[]> virtualServerListenerNames;
     // END S1AS 5000999
 
 
@@ -132,7 +132,7 @@ public class MapperListener
      */
     public MapperListener(Mapper mapper) {
         this.mapper = mapper;
-        virtualServerPorts = new ConcurrentHashMap<ObjectName,int[]>();
+        virtualServerListenerNames = new ConcurrentHashMap<ObjectName,String[]>();
     }
 
 
@@ -155,12 +155,12 @@ public class MapperListener
     }
 
     // BEGIN S1AS 5000999
-    public int getPort() {
-        return port;
+    public String getNetworkListenerName() {
+        return networkListenerName;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setNetworkListenerName(String networkListenerName) {
+        this.networkListenerName = networkListenerName;
     }
 
     public void setInstanceName(String instanceName) {
@@ -476,32 +476,32 @@ public class MapperListener
 
             // BEGIN S1AS 5000999
             /*
-             * Register the given Host only if one of its associated port
-             * numbers matches the port number of this MapperListener
+             * Register the given Host only if one of its associated network listener
+             * names matches the network listener name of this MapperListener
              */
-            int[] ports = ((StandardHost) host).findPorts();
-            boolean portMatch = false;
-            if (ports != null) {
-                for (int i=0; i<ports.length; i++) {
-                    if (ports[i] == this.port) {
-                        portMatch = true;
+            String[] nlNames = ((StandardHost) host).getNetworkListenerNames();
+            boolean nameMatch = false;
+            if (nlNames != null) {
+                for (String nlName : nlNames) {
+                    if (nlName.equals(this.networkListenerName)) {
+                        nameMatch = true;
                         break;
                     }
                 }
             }
-            if (!portMatch) {
+            if (!nameMatch) {
                 if (log.isLoggable(Level.FINE)) {
-                    log.fine("HTTP listener with port " + port
+                    log.fine("HTTP listener with network listener name " + networkListenerName
                              + " ignoring registration of host with object "
                              + "name " + objectName + ", because none of the "
                              + "host's associated HTTP listeners matches "
-                             + "this port");
+                             + "this network listener name");
                 }
                 return;
             }
 
-            if (ports != null) {
-                virtualServerPorts.put(objectName, ports);
+            if (nlNames != null) {
+                virtualServerListenerNames.put(objectName, nlNames);
             }
             // END S1AS 5000999
 
@@ -520,18 +520,18 @@ public class MapperListener
         String name=objectName.getKeyProperty("host");
         // BEGIN S1AS 5000999
         if (name != null) {
-            int[] ports = virtualServerPorts.get(objectName);
-            boolean portMatch = false;
-            if (ports != null) {
-                virtualServerPorts.remove(objectName);
-                for (int i=0; i<ports.length; i++) {
-                    if (ports[i] == this.port) {
-                        portMatch = true;
+            String[] nlNames = virtualServerListenerNames.get(objectName);
+            boolean nameMatch = false;
+            if (nlNames != null) {
+                virtualServerListenerNames.remove(objectName);
+                for (String nlName : nlNames) {
+                    if (nlName.equals(this.networkListenerName)) {
+                        nameMatch = true;
                         break;
                     }
                 }
             }
-            if (!portMatch) {
+            if (!nameMatch) {
                 return;
             }
         }

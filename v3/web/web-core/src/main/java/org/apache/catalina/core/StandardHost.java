@@ -216,9 +216,9 @@ public class StandardHost
 
     // BEGIN S1AS 5000999
     /**
-     * The port numbers with which this StandardHost is associated
+     * The network listener names with which this StandardHost is associated
      */
-    private int[] ports = new int[0];
+    private String[] networkListenerNames = new String[0];
     // END S1AS 5000999
 
 
@@ -579,25 +579,25 @@ public class StandardHost
 
     // BEGIN S1AS 5000999
     /**
-     * Associates this StandardHost with the given port numbers.
+     * Associates this StandardHost with the given network listener names.
      *
-     * @param ports The port numbers with which to associate this StandardHost
+     * @param networkListenerNames The network listener names with which to associate this StandardHost
      */
-    public void setPorts(int[] ports) {
-        int[] oldPorts = this.ports;
-        this.ports = ports.clone();
-        support.firePropertyChange("ports", oldPorts, this.ports);
+    public void setNetworkListenerNames(String[] networkListenerNames) {
+        String[] oldListenerNames = this.networkListenerNames;
+        this.networkListenerNames = networkListenerNames.clone();
+        support.firePropertyChange("ports", oldListenerNames, this.networkListenerNames);
     }
 
 
     /**
-     * Gets the port numbers with which this StandardHost is associated.
+     * Gets the network listener names with which this StandardHost is associated.
      *
-     * @return The port numbers with which this StandardHost is associated,
+     * @return The network listener names with which this StandardHost is associated,
      * or null if this StandardHost has not been associated with any ports
      */
-    public int[] getPorts() {
-        return this.ports.clone();
+    public String[] getNetworkListenerNames() {
+        return this.networkListenerNames.clone();
     }
     // END S1AS 5000999
 
@@ -707,20 +707,6 @@ public class StandardHost
         return (this.aliases);
 
     }
-
-
-    // BEGIN S1AS 5000999
-    /**
-     * Gets the port numbers with which this StandardHost is associated.
-     *
-     * @return The port numbers with which this StandardHost is associated,
-     * or null if this StandardHost has not been associated with any port
-     * numbers
-     */ 
-    public int[] findPorts() {
-        return getPorts();
-    }
-    // END S1AS 5000999
 
 
     public Host findMappingObject() {

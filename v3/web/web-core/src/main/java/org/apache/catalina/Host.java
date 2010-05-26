@@ -217,19 +217,19 @@ public interface Host extends Container {
 
     // BEGIN S1AS 5000999
     /**
-     * Associates this Host with the given port numbers.
+     * Associates this Host with the given network listener names.
      *
-     * @param ports The port numbers with which to associate this Host
+     * @param networkListenerNames The network listener names with which to associate this Host
      */
-    public void setPorts(int[] ports);
+    public void setNetworkListenerNames(String[] networkListenerNames);
 
     /**
-     * Gets the port numbers with which this Host is associated.
+     * Gets the network listener names with which this Host is associated.
      *
-     * @return The port numbers with which this Host is associated,
-     * or null if this Host has not been associated with any ports
+     * @return The network listener names with which this Host is associated,
+     * or null if this Host has not been associated with any network listener
      */
-    public int[] getPorts();
+    public String[] getNetworkListenerNames();
     // END S1AS 5000999
 
 

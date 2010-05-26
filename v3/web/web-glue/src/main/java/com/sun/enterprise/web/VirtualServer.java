@@ -213,7 +213,7 @@ public class VirtualServer extends StandardHost
     private String defaultContextPath = null;
 
     private ServerContext serverContext;
-    
+
 
     // ------------------------------------------------------------- Properties
 

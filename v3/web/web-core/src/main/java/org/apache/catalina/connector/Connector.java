@@ -1526,7 +1526,7 @@ public class Connector
             }
             mapperListener.setDomain(domain);
             // BEGIN S1AS 5000999
-            mapperListener.setPort(this.getPort());
+            mapperListener.setNetworkListenerName(this.getName());
             mapperListener.setDefaultHost(this.defaultHost);
             // END S1AS 5000999
             //mapperListener.setEngine( service.getContainer().getName() );
