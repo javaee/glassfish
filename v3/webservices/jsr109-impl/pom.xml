@@ -73,7 +73,7 @@
                                     <groupId>javax.xml.bind</groupId>
                                     <artifactId>jaxb-api-osgi</artifactId>
                                     <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
-                                    <version>${jaxb.version}</version>
+                                    <version>${jaxb-api.version}</version>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -86,7 +86,7 @@
                 <artifactId>hk2-maven-plugin</artifactId>
                 <configuration>
                     <compilerArguments>
-                        <bootclasspath>${project.build.directory}/endorsed/webservices-api-osgi-${webservices.version}.jar${path.separator}${project.build.directory}/endorsed/jaxb-api-osgi-${jaxb.version}.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
+                        <bootclasspath>${project.build.directory}/endorsed/webservices-api-osgi-${webservices.version}.jar${path.separator}${project.build.directory}/endorsed/jaxb-api-osgi-${jaxb-api.version}.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
                     </compilerArguments>
                     <fork>true</fork>
                     <archive>
