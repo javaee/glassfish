@@ -40,9 +40,10 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Config; 
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -54,6 +55,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
@@ -74,6 +77,7 @@ import org.jvnet.hk2.config.Transactions;
 @Service(name = "create-http-listener")
 @Scoped(PerLookup.class)
 @I18n("create.http.listener")
+@Cluster(value={RuntimeType.DAS})
 public class CreateHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateHttpListener.class);
     @Param(name = "listeneraddress")
@@ -100,6 +104,8 @@ public class CreateHttpListener implements AdminCommand {
     Boolean secure; //FIXME
     @Param(name = "listener_id", primary = true)
     String listenerId;
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
     @Inject
@@ -108,6 +114,8 @@ public class CreateHttpListener implements AdminCommand {
     CommandRunner runner;
     @Inject
     Logger logger;
+    @Inject
+    Domain domain;
     private static final String DEFAULT_TRANSPORT = "tcp";
 
     /**
@@ -117,6 +125,14 @@ public class CreateHttpListener implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         final ActionReport report = context.getActionReport();
         NetworkConfig networkConfig = config.getNetworkConfig();
         HttpService httpService = config.getHttpService();

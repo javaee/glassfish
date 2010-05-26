@@ -38,12 +38,17 @@ package org.glassfish.web.admin.cli;
 import java.util.List;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -56,11 +61,16 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-network-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.network.listeners")
+@Cluster(value={RuntimeType.DAS})
 public class ListNetworkListeners implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListNetworkListeners.class);
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
+    @Inject
+    Domain domain;
 
     /**
      * Executes the command with the command parameters passed as Properties where the keys are the paramter names and
@@ -69,6 +79,14 @@ public class ListNetworkListeners implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         final ActionReport report = context.getActionReport();
         List<NetworkListener> list = config.getNetworkConfig().getNetworkListeners().getNetworkListener();
         for (NetworkListener networkListener : list) {

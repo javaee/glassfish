@@ -40,9 +40,9 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-
 import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
@@ -55,6 +55,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.Cluster;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -72,18 +74,26 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="delete-virtual-server")
 @Scoped(PerLookup.class)
 @I18n("delete.virtual.server")
+@Cluster(value={RuntimeType.DAS})
 public class DeleteVirtualServer implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteVirtualServer.class);
-
+ 
+    @Param(name = "target", optional = true, defaultValue = "server")
+    String target;
+    
     @Param(name="virtual_server_id", primary=true)
     String vsid;
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
+    @Inject
+    Domain domain;
+
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
+
     private HttpService httpService;
     private NetworkConfig networkConfig;
 
@@ -94,6 +104,14 @@ public class DeleteVirtualServer implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
+        Server targetServer = domain.getServerNamed(target);
+        if (targetServer!=null) {
+            config = domain.getConfigNamed(targetServer.getConfigRef());
+        }
+        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+        if (cluster!=null) {
+            config = domain.getConfigNamed(cluster.getConfigRef());
+        }
         ActionReport report = context.getActionReport();
         httpService = config.getHttpService();
         networkConfig = config.getNetworkConfig();
