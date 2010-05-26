@@ -44,6 +44,7 @@ public class TestServlet extends HttpServlet {
     ServletContext sc;
 
     public void init(ServletConfig config) throws ServletException {
+        super.init(config);
         sc = config.getServletContext();
     }
 
