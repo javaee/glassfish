@@ -214,7 +214,7 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
     /**
      * Return the application Filter we are configured for.
      */
-    Filter getFilter() throws Exception {
+    synchronized Filter getFilter() throws Exception {
 
         // Return the existing filter instance, if any
         if (filter != null && !needInitialize) {
