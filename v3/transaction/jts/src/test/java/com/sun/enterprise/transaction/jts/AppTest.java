@@ -57,6 +57,7 @@ import com.sun.enterprise.transaction.JavaEETransactionManagerSimplifiedDelegate
 import com.sun.enterprise.transaction.TransactionServiceConfigListener;
 
 import com.sun.jts.jtsxa.OTSResourceImpl;
+import com.sun.jts.jta.SynchronizationImpl;
 
 import com.sun.enterprise.resource.*;
 import com.sun.enterprise.resource.allocator.ResourceAllocator;
@@ -398,11 +399,12 @@ public class AppTest extends TestCase {
         }
     }
 
-    public void testTxCommitFailBC() {
-        System.out.println("**Testing TX commit with exception in beforeCompletion ===>");
+    public void testTxCommitFailBC2PC() {
+        System.out.println("**Testing TX commit with exception in beforeCompletion of 2PC ===>");
         try {
             // Suppress warnings from beforeCompletion() logging
             ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+            LogDomains.getLogger(SynchronizationImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
 
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -417,12 +419,84 @@ public class AppTest extends TestCase {
 
             assertEquals (status, "Active");
 
+            TestResource theResource = new TestResource();
+            TestResource theResource1 = new TestResource();
+
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            t.enlistResource(tx, new TestResourceHandle(theResource1));
+
+            theResource.setCommitErrorCode(9999);
+            theResource1.setCommitErrorCode(9999);
+
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+            t.delistResource(tx, new TestResourceHandle(theResource1), XAResource.TMSUCCESS);
+
             System.out.println("**Calling TX commit ===>");
             try {
                 tx.commit();
                 assert (false);
             } catch (RollbackException ex) {
                 System.out.println("**Caught expected exception...");
+
+                Throwable te = ex.getCause();
+                if (te != null && te instanceof MyRuntimeException) {
+                    System.out.println("**Caught expected nested exception...");
+                } else {
+                    System.out.println("**Unexpected nested exception: " + te);
+                    assert (false);
+                }
+            }
+            System.out.println("**Status after commit: "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
+                    + " <===");
+            assertTrue ("beforeCompletion was not called", s.called_beforeCompletion);
+            assertTrue ("afterCompletion was not called", s.called_afterCompletion);
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+    public void testTxCommitFailBC1PC() {
+        System.out.println("**Testing TX commit with exception in beforeCompletion of 1PC ===>");
+        try {
+            // Suppress warnings from beforeCompletion() logging
+            ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+            LogDomains.getLogger(SynchronizationImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            Transaction tx = t.getTransaction();
+
+            System.out.println("**Registering Synchronization ....");
+            TestSync s = new TestSync(true);
+            tx.registerSynchronization(s);
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**TX Status after begin: " + status);
+
+            assertEquals (status, "Active");
+
+            TestResource theResource = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+
+            theResource.setCommitErrorCode(9999);
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+
+            System.out.println("**Calling TX commit ===>");
+            try {
+                tx.commit();
+                assert (false);
+            } catch (RollbackException ex) {
+                System.out.println("**Caught expected exception...");
+
+                Throwable te = ex.getCause();
+                if (te != null && te instanceof MyRuntimeException) {
+                    System.out.println("**Caught expected nested exception...");
+                } else {
+                    System.out.println("**Unexpected nested exception: " + te);
+                    assert (false);
+                }
             }
             System.out.println("**Status after commit: "
                     + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
@@ -632,7 +706,8 @@ public class AppTest extends TestCase {
                         e.printStackTrace();
                     }
                 } else {
-                    throw new RuntimeException("");
+                    System.out.println("**Throwing MyRuntimeException... **");
+                    throw new MyRuntimeException("test");
                 }
             }
         }
@@ -641,6 +716,12 @@ public class AppTest extends TestCase {
             System.out.println("**Called afterCompletion with status:  "
                     + JavaEETransactionManagerSimplified.getStatusAsString(status));
             called_afterCompletion = true;
+        }
+    }
+
+    static class MyRuntimeException extends RuntimeException {
+        public MyRuntimeException(String msg) {
+            super(msg);
         }
     }
 
@@ -659,6 +740,7 @@ public class AppTest extends TestCase {
     
       public void commit(Xid xid, boolean onePhase) throws XAException{
         // test goes here
+        System.out.println("in XA commit");
         if (commitErrorCode != 9999) {
           System.out.println("throwing XAException." + commitErrorCode + " during " + (onePhase? "1" : "2") + "pc");
           throw new XAException(commitErrorCode);
@@ -673,16 +755,18 @@ public class AppTest extends TestCase {
     
       public void rollback(Xid xid)
             throws XAException {
+          System.out.println("in XA rollback");
       }
     
       public int prepare(Xid xid)
             throws XAException {
-              return XAResource.XA_OK;
+          System.out.println("in XA prepare");
+          return XAResource.XA_OK;
       }
     
       public boolean setTransactionTimeout(int i)
             throws XAException {
-              return true;
+          return true;
        }
     
        public int getTransactionTimeout()

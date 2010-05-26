@@ -2549,8 +2549,13 @@ public class TopCoordinator extends CoordinatorImpl {
             // messages. If an exception is raised, then mark the transaction
             // rollback-only.
 
-            if (!synchronizations.distributeBefore()) {
+            try {
+                if (!synchronizations.distributeBefore()) {
+                    rollbackOnly = true;
+                }
+            } catch (RuntimeException ex) {
                 rollbackOnly = true;
+                throw ex;
             }
         }
     }

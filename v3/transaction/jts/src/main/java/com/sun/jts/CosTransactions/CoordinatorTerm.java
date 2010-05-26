@@ -260,6 +260,7 @@ class CoordinatorTerm implements CompletionHandler {
         // If this CoordinatorTerm was created by a Factory, then this commit will
         // not have context because the Terminator is not a transactional object.
 
+        RuntimeException rte = null;
         if( !subtransaction ) {
             try {
                 if( current == null ||
@@ -283,6 +284,8 @@ class CoordinatorTerm implements CompletionHandler {
             catch( SystemException exc ) {
                 completing = false;
                 throw exc;
+            } catch (RuntimeException exc) {
+                rte = exc;
             }
 
             // If a temporary context was established, end it now.
@@ -313,23 +316,25 @@ class CoordinatorTerm implements CompletionHandler {
         // the commitOnePhase method will return false if this is
         // not possible.
 
-        try {
-            commit_one_phase_worked_ok = coordinator.commitOnePhase();
-        } catch( Throwable exc ) {
+        if (rte == null) {
+            try {
+                commit_one_phase_worked_ok = coordinator.commitOnePhase();
+            } catch( Throwable exc ) {
 
-            if( exc instanceof HeuristicHazard ||
-                exc instanceof HeuristicMixed ) {
-                heuristicExc = exc;
-            } else if( exc instanceof TRANSACTION_ROLLEDBACK ) {
-                status = Status.StatusRolledBack;
-            } else if( exc instanceof INVALID_TRANSACTION ) {
-                // Why have we driven before completion before now?
-                throw (INVALID_TRANSACTION)exc;
-            } if (exc instanceof INTERNAL) {
-                // ADDED(Ram J) percolate any system exception
-                // back to the caller.
-                throw (INTERNAL) exc;
-            }else {
+                if( exc instanceof HeuristicHazard ||
+                        exc instanceof HeuristicMixed ) {
+                    heuristicExc = exc;
+                } else if( exc instanceof TRANSACTION_ROLLEDBACK ) {
+                    status = Status.StatusRolledBack;
+                } else if( exc instanceof INVALID_TRANSACTION ) {
+                    // Why have we driven before completion before now?
+                    throw (INVALID_TRANSACTION)exc;
+                } if (exc instanceof INTERNAL) {
+                    // ADDED(Ram J) percolate any system exception
+                    // back to the caller.
+                    throw (INTERNAL) exc;
+                }else {
+                }
             }
         }
 
@@ -347,15 +352,17 @@ class CoordinatorTerm implements CompletionHandler {
             // Get the prepare vote from the root Coordinator.
             Vote prepareResult = Vote.VoteRollback;
 
-            try {
-                prepareResult = coordinator.prepare();
-            } catch( HeuristicHazard exc ) {
-                heuristicExc = exc;
-            } catch( HeuristicMixed exc ) {
-                heuristicExc = exc;
-            } catch( INVALID_TRANSACTION exc ) {
-                throw exc;
-            } catch( Throwable exc ) {
+            if (rte == null) {
+                try {
+                    prepareResult = coordinator.prepare();
+                } catch( HeuristicHazard exc ) {
+                    heuristicExc = exc;
+                } catch( HeuristicMixed exc ) {
+                    heuristicExc = exc;
+                } catch( INVALID_TRANSACTION exc ) {
+                    throw exc;
+                } catch( Throwable exc ) {
+                }
             }
 
             if( subtransaction ) {
@@ -452,6 +459,9 @@ class CoordinatorTerm implements CompletionHandler {
 
         if( status == Status.StatusRolledBack ) {
             TRANSACTION_ROLLEDBACK exc = new TRANSACTION_ROLLEDBACK(0,CompletionStatus.COMPLETED_YES);
+            if (rte != null) {
+                exc.initCause(rte);
+            }
             throw exc;
         }
 

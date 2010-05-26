@@ -125,7 +125,12 @@ public class TransactionImpl implements TransactionInternal {
                 control.get_terminator().commit(true);
             }
         } catch (TRANSACTION_ROLLEDBACK ex) {
-            throw new RollbackException();
+            RollbackException rbe = new RollbackException();
+            Throwable cause = ex.getCause();
+            if (cause != null) {
+                rbe.initCause(cause);
+            }
+            throw rbe;
         } catch (INVALID_TRANSACTION ex) {
             throw new IllegalStateException();
         } catch (HeuristicMixed ex) {

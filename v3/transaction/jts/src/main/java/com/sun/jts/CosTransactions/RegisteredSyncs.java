@@ -162,6 +162,9 @@ class RegisteredSyncs {
 					_logger.logp(Level.FINEST,"RegisterdSyncs","distributeBefore()", 
 					 		 "After invoking before_completion() on synchronization object " + sync);
                 }
+            } catch (RuntimeException rex) {
+                // Exception was logged in SynchronizationImpl
+                throw rex;
             } catch (Throwable exc) {
 
                 // Discard any exceptions at this point and return false.

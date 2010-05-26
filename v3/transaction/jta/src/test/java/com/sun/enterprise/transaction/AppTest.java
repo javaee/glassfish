@@ -401,6 +401,14 @@ public class AppTest extends TestCase {
                 assert (false);
             } catch (RollbackException ex) {
                 System.out.println("**Caught expected exception...");
+
+                Throwable te = ex.getCause();
+                if (te != null && te instanceof MyRuntimeException) {
+                    System.out.println("**Caught expected nested exception...");
+                } else {
+                    System.out.println("**Unexpected nested exception: " + te);
+                    assert (false);
+                }
             }
             System.out.println("**Status after commit: "
                     + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
@@ -491,7 +499,8 @@ public class AppTest extends TestCase {
                         e.printStackTrace();
                     }
                 } else {
-                    throw new RuntimeException("");
+                    System.out.println("**Throwing MyRuntimeException... **");
+                    throw new MyRuntimeException("test");
                 }
             }
         }
@@ -502,4 +511,11 @@ public class AppTest extends TestCase {
             called_afterCompletion = true;
         }
     }
+
+    static class MyRuntimeException extends RuntimeException {
+        public MyRuntimeException(String msg) {
+            super(msg);
+        }
+    }
+
 }
