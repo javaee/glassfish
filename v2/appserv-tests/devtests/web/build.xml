@@ -498,6 +498,7 @@
 
     <target name="weblogicDD" depends="init-report">
         <ant dir="weblogicDD/contextRoot" target="all"/>
+        <ant dir="weblogicDD/delegate" target="all"/>
     </target>
 
     <target name="init-report" unless="report.inited">
