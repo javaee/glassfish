@@ -1,6 +1,7 @@
 package org.glassfish.admin.rest;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -16,7 +17,7 @@ public class DomainTest extends RestTestBase {
     @Test
     public void testDomainGet() throws IOException {
         Map payload = new HashMap();
-        Map<String, String> current = getEntityValues(get(BASE_URL+"/domain", "application/xml"));
+        Map<String, String> current = getEntityValues(get(BASE_URL+"/domain"));
 
         // Select a random locale so we're not setting the locale to its current value
         List<String> locales = new ArrayList<String>() {{
@@ -34,10 +35,10 @@ public class DomainTest extends RestTestBase {
 
         payload.put("locale", newLocale);
 
-        String response = post(BASE_URL+"/domain", payload, "application/xml");
+        ClientResponse response = post(BASE_URL+"/domain", payload);
 
         // Reload the domain and make sure our new locale was saved
-        Map<String, String> map = getEntityValues(this.get(BASE_URL+"/domain", "application/xml"));
+        Map<String, String> map = getEntityValues(this.get(BASE_URL+"/domain"));
         assertEquals(newLocale, map.get("locale"));
     }
 }

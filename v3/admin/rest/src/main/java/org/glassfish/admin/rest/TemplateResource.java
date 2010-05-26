@@ -68,6 +68,7 @@ import java.util.logging.Logger;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
+import javax.ws.rs.PathParam;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.RestRedirect;
@@ -159,7 +160,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
             if ((data.containsKey("operation")) &&
                     (data.get("operation").equals("__deleteoperation"))) {
                 data.remove("operation");
-                return delete(data);
+                return delete(data, "true");
             }
 
             Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
@@ -187,8 +188,8 @@ public class TemplateResource<E extends ConfigBeanProxy> {
     }
 
     @DELETE
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response delete(HashMap<String, String> data) {
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
+    public Response delete(HashMap<String, String> data, @DefaultValue("false") @QueryParam("cascade") String cascade) {
         //User can not directly delete the resource. User can only
         //do so implicitly through asadmin command
         try {
@@ -199,6 +200,7 @@ public class TemplateResource<E extends ConfigBeanProxy> {
                         errorMessage, requestHeaders, uriInfo);
             }
 
+            data.put("cascade", cascade);
             __resourceUtil.purgeEmptyEntries(data);
 
             __resourceUtil.adjustParameters(data);

@@ -55,7 +55,7 @@ import javax.ws.rs.ext.Provider;
  * @author mh124079
  * @author Ludovic Champenois ludo@dev.java.net
  */
-@Consumes("application/x-www-form-urlencoded")
+@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.APPLICATION_OCTET_STREAM})
 @Provider
 public class FormReader implements MessageBodyReader<HashMap<String, String>> {
 

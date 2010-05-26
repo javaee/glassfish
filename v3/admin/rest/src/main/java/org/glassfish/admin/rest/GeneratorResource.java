@@ -70,6 +70,78 @@ public class GeneratorResource {
     private DomDocument document;
     protected String genDir;
 
+    private static String MappingConfigBeansToPOSTCommands[][] = {
+        {"ListApplication", "deploy"},
+        {"Application", "redeploy"},
+        {"ListAdminObjectResource", "create-admin-object"},
+        {"ListCustomResource", "create-custom-resource"},
+        {"ListJdbcResource", "create-jdbc-resource"},
+        {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
+        {"ListConnectorResource", "create-connector-resource"},
+        {"ListMailResource", "create-javamail-resource"},
+        {"ListResourceAdapterConfig", "create-resource-adapter-config"},
+        {"ListConnectorConnectionPool", "create-connector-connection-pool"},
+        {"ListAuthRealm", "create-auth-realm"},
+        {"ListAuditModule", "create-audit-module"},
+        {"ListHttpListener", "create-http-listener"},
+        {"ListIiopListener", "create-iiop-listener"},
+        {"ListNetworkListener", "create-network-listener"},
+        {"ListTransport", "create-transport"},
+        {"ListProtocol", "create-protocol"},
+        {"ListJmsHost", "create-jms-host"},
+        {"ListMessageSecurityConfig", "create-message-security-provider"},
+        {"JavaConfig", "create-profiler"},
+        {"ListResourceRef", "create-resource-ref"},
+        {"ListSystemProperty", "create-system-properties"},
+        {"ListVirtualServer", "create-virtual-server"},
+        {"ListThreadPool", "create-threadpool"}
+     };
+
+
+    private static String MappingConfigBeansToDELETECommands[][] = {
+        {"Transport", "delete-transport"},
+        {"ThreadPool", "delete-threadpool"},
+        {"NetworkListener", "delete-network-listener"},
+        {"Protocol", "delete-protocol"}
+    };
+
+
+    //This map is used to generate CollectionLeaf resources.
+    //Example: JVM Options. This information will eventually move to config bean-
+    //JavaConfig or JvmOptionBag
+    private static String ConfigBeansToCommands[][] = {
+        //{config-bean, post command, delete command, disaplay name}
+        {"JvmOptions", "create-jvm-options", "delete-jvm-options", "JvmOption"}
+    };
+
+
+    private static String ConfigBeansToCommandResourcesMap[][] = {
+        //{config-bean, command, method, resource-path, command-action, command-params...}
+        {"Domain", "stop-domain", "POST", "stop", "Stop"},
+        {"Domain", "restart-domain", "POST", "restart", "Restart"},
+        {"Domain", "uptime", "GET", "uptime", "Uptime"},
+        {"Domain", "version", "GET", "version", "Version"},
+        {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
+        {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
+        ///{"ListApplication", "deploy"},
+        ///{"Application", "redeploy"},
+        {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
+        {"Application", "disable", "POST", "disable", "Disable", "id=$parent"},
+        {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
+        {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
+        {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
+        {"IiopListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=iiop-listener"},
+        {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
+        {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},
+        {"AuthRealm", "delete-file-user", "DELETE", "delete-user", "Delete", "authrealmname=$parent"},
+        {"AuthRealm", "list-file-users", "GET", "list-users", "List", "authrealmname=$parent"},
+        {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
+        {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
+        {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
+        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"}
+    };
+
+
     /** Creates a new instance of xxxResource */
     public GeneratorResource() {
     }
@@ -150,12 +222,11 @@ public class GeneratorResource {
 
     }
 
-
     private void genHeader(BufferedWriter out) throws IOException {
         out.write("/*\n");
         out.write(" * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.\n");
         out.write(" *\n");
-        out.write(" * Copyright 2009 Sun Microsystems, Inc. All rights reserved.\n");
+        out.write(" * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.\n");
         out.write(" *\n");
         out.write(" * The contents of this file are subject to the terms of either the GNU\n");
         out.write(" * General Public License Version 2 only (\"GPL\") or the Common Development\n");
@@ -670,79 +741,7 @@ public class GeneratorResource {
      };
 */
 
-    private static String MappingConfigBeansToPOSTCommands[][] = {
-        {"ListApplication", "deploy"},
-        {"Application", "redeploy"},
-        {"ListAdminObjectResource", "create-admin-object"},
-        {"ListCustomResource", "create-custom-resource"},
-        {"ListJdbcResource", "create-jdbc-resource"},
-        {"ListJdbcConnectionPool", "create-jdbc-connection-pool"},
-        {"ListConnectorResource", "create-connector-resource"},
-        {"ListMailResource", "create-javamail-resource"},
-        {"ListResourceAdapterConfig", "create-resource-adapter-config"},
-        {"ListConnectorConnectionPool", "create-connector-connection-pool"},
-        {"ListAuthRealm", "create-auth-realm"},
-        {"ListAuditModule", "create-audit-module"},
-        {"ListHttpListener", "create-http-listener"},
-        {"ListIiopListener", "create-iiop-listener"},
-        {"ListNetworkListener", "create-network-listener"},
-        {"ListTransport", "create-transport"},
-        {"ListProtocol", "create-protocol"},
-        {"ListJmsHost", "create-jms-host"},
-        {"ListMessageSecurityConfig", "create-message-security-provider"},
-        {"JavaConfig", "create-profiler"},
-        {"ListResourceRef", "create-resource-ref"},
-        {"ListSystemProperty", "create-system-properties"},
-        {"ListVirtualServer", "create-virtual-server"},
-        {"ListThreadPool", "create-threadpool"}
-     };
-
-
-    private static String MappingConfigBeansToDELETECommands[][] = {
-        {"Transport", "delete-transport"},
-        {"ThreadPool", "delete-threadpool"},
-        {"NetworkListener", "delete-network-listener"},
-        {"Protocol", "delete-protocol"}
-    };
-
-
-    //This map is used to generate CollectionLeaf resources.
-    //Example: JVM Options. This information will eventually move to config bean-
-    //JavaConfig or JvmOptionBag
-    private static String ConfigBeansToCommands[][] = {
-        //{config-bean, post command, delete command, disaplay name}
-        {"JvmOptions", "create-jvm-options", "delete-jvm-options", "JvmOption"}
-    };
-
-
-    private static String ConfigBeansToCommandResourcesMap[][] = {
-        //{config-bean, command, method, resource-path, command-action, command-params...}
-        {"Domain", "stop-domain", "POST", "stop", "Stop"},
-        {"Domain", "restart-domain", "POST", "restart", "Restart"},
-        {"Domain", "uptime", "GET", "uptime", "Uptime"},
-        {"Domain", "version", "GET", "version", "Version"},
-        {"Domain", "rotate-log", "POST", "rotate-log", "RotateLog"},
-        {"Domain", "get-host-and-port", "GET", "host-port", "HostPort"},
-        ///{"ListApplication", "deploy"},
-        ///{"Application", "redeploy"},
-        {"Application", "enable", "POST", "enable", "Enable", "id=$parent"},
-        {"Application", "disable", "POST", "disable", "Disable", "id=$parent"},
-        {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
-        {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
-        {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
-        {"IiopListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=iiop-listener"},
-        {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
-        {"AuthRealm", "create-file-user", "POST", "create-user", "Create", "authrealmname=$parent"},
-        {"AuthRealm", "delete-file-user", "DELETE", "delete-user", "Delete", "authrealmname=$parent"},
-        {"AuthRealm", "list-file-users", "GET", "list-users", "List", "authrealmname=$parent"},
-        {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
-        {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
-        {"Protocol", "create-http", "POST", "create-http", "Create", "id=$parent"},
-        {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"}
-    };
-
-
-    private void generateCommandResources(String resourceName, 
+    private void generateCommandResources(String resourceName,
         BufferedWriter out) throws IOException {
 
         if (genCommandResourceFiles.containsKey(resourceName)) {

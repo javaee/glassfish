@@ -64,6 +64,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -134,6 +135,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 reportError(res, report, HttpURLConnection.HTTP_UNAVAILABLE);
                 return;
             } else {
+
                 Cookie[] cookies = req.getCookies();
                 boolean isAdminClient = false;
                 String uid = RestService.getRestUID();
@@ -151,8 +153,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 }
 
                 if (!isAdminClient) { //authenticate all clients except admin client
-                    if (!authenticate(req, report, res)) //admin client - client with valid rest interface uid
+                    if (!authenticate(req, report, res)) { //admin client - client with valid rest interface uid
                         return;
+                    }
                 }
 
                 //delegate to adapter managed by Jersey.
@@ -180,6 +183,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
         
         try {
+            // TODO: this may not be the right status code
             res.setStatus(200);
             res.getOutputStream().flush();
             res.finishResponse();
