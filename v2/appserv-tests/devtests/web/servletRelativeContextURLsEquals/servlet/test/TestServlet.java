@@ -44,8 +44,9 @@ public class TestServlet extends HttpServlet {
 
     private ServletContext context;
 
-    public void init(ServletConfig sconfig) {
-	this.context = sconfig.getServletContext();
+    public void init(ServletConfig sconfig) throws ServletException {
+        super.init(sconfig);
+        this.context = sconfig.getServletContext();
     }
 
     public void service(HttpServletRequest req, HttpServletResponse res)
