@@ -1,10 +1,5 @@
-asadminDeletes #comment out IT 11904 is fixed
 keepAliveTimeout  # redoing these tests
 keepAliveTimeoutSSL  # redoing these tests
-pipelineQueueFull #comment out IT 11905 is fixed
-portUnification # skip until the next grizzly integration so GF code can be committed
 servlet-3.0/asyncContextSetTimeout # comment out until https://grizzly.dev.java.net/issues/show_bug.cgi?id=825 is fixed
 servlet-3.0/asyncListenerOnTimeout # comment out until https://grizzly.dev.java.net/issues/show_bug.cgi?id=825 is fixed
 servlet-3.0/asyncTimeoutNoListener # comment out until https://grizzly.dev.java.net/issues/show_bug.cgi?id=825 is fixed
-threadPoolIdleTimeout #comment out IT 11907 is fixed
-wrongTransport #Exclude since port unification is not supported in v3, see IT 4675
