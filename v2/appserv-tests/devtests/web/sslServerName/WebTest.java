@@ -33,70 +33,82 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-import java.io.*;
-import java.util.Properties;
-import java.net.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.security.KeyStore;
-import javax.net.*;
-import javax.net.ssl.*;
-import com.sun.ejte.ccl.reporter.*;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
+import com.sun.appserv.test.BaseDevTest;
 
 /**
  * Bugster 6480567
  */
-public class WebTest{
+public class WebTest extends BaseDevTest {
 
-
-    static SimpleReporterAdapter stat=
-           new SimpleReporterAdapter("appserv-tests");
-    
-    private static int count = 0;
-    private static int EXPECTED_COUNT = 3;
-
-    public static void main(String args[]) throws Exception{
-        String host = args[0];
-        String port = args[1];
-        String contextRoot = args[2];
-        String trustStorePath = args[3];
-
-        stat.addDescription("serverName SSL");
-
+    public WebTest(String host, String port, String contextRoot, String trustStorePath) {
+        HttpsURLConnection connection = null;
         try {
             SSLSocketFactory ssf = getSSLSocketFactory(trustStorePath);
-            HttpsURLConnection connection = doSSLHandshake(
-                            "https://" + host  + ":" + port + "/", ssf);
-            checkStatus(connection); 
+            report("enable-listener-2", asadmin("set",
+                "configs.config.server-config.network-config.network-listeners.network-listener"
+                    + ".http-listener-2.enabled=true"));
+            connection = doSSLHandshake("https://" + host + ":" + port + "/", ssf);
+            int count = 1;
+            checkStatus(connection, count++);
+            connection.disconnect();
 
-            connection = doSSLHandshake(
-                "https://" + host  + ":" + port + "/" + contextRoot 
-                + "/ServletTest", ssf);
+            connection = doSSLHandshake("https://" + host  + ":" + port + "/" + contextRoot + "/ServletTest", ssf);
+            checkStatus(connection, count++);
         } catch (Throwable t) {
             t.printStackTrace();
+        } finally {
+            report("disable-listener-2", asadmin("set",
+                "configs.config.server-config.network-config.network-listeners.network-listener"
+                    + ".http-listener-2.enabled=false"));
+            if(connection != null) {
+                connection.disconnect();
+            }
         }
 
-        if (count != EXPECTED_COUNT){
-            stat.addStatus("sslServerName", stat.FAIL);
-        }           
-
-        stat.printSummary("sslServerName");
+        stat.printSummary();
     }
 
-    private static SSLSocketFactory getSSLSocketFactory(String trustStorePath)
-                    throws Exception {
+    @Override
+    protected String getTestName() {
+        return "sslServerName";
+    }
+
+    @Override
+    protected String getTestDescription() {
+        return "serverName SSL";
+    }
+
+    public static void main(String args[]) throws Exception{
+        new WebTest(args[0], args[1], args[2], args[3]);
+
+    }
+
+    private SSLSocketFactory getSSLSocketFactory(String trustStorePath) throws Exception {
         SSLContext sc = SSLContext.getInstance("SSL");
         sc.init(null, getTrustManagers(trustStorePath), null);
         return sc.getSocketFactory();
     }
 
-    private static HttpsURLConnection doSSLHandshake(String urlAddress,
-                                                     SSLSocketFactory ssf)
-                    throws Exception{
+    private HttpsURLConnection doSSLHandshake(String urlAddress, SSLSocketFactory ssf) throws Exception {
         URL url = new URL(urlAddress);
         HttpsURLConnection.setDefaultSSLSocketFactory(ssf);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-        connection.setHostnameVerifier(
-            new HostnameVerifier() {
+        connection.setHostnameVerifier(new HostnameVerifier() {
                 public boolean verify(String rserver, SSLSession sses) {
                     return true;
                 }
@@ -105,38 +117,28 @@ public class WebTest{
         return connection;
     }
 
-    private static void checkStatus(HttpsURLConnection connection)
-                    throws Exception{
-
-        int responseCode=  connection.getResponseCode();
-        System.out.println("Response code: " + responseCode + " Expected code: 200"); 
-        if (connection.getResponseCode() != 200){
-            stat.addStatus("sslServerName", stat.FAIL);
-        } else {
-            stat.addStatus("sslServerName", stat.PASS);
-        }
+    private void checkStatus(HttpsURLConnection connection, final int iteration) throws Exception {
+        report("response-code-" + iteration, connection.getResponseCode() == 200);
     }
 
-    private static TrustManager[] getTrustManagers(String path)
-                    throws Exception {
-
+    private TrustManager[] getTrustManagers(String path) throws Exception {
         TrustManager[] tms = null;
-        InputStream istream = null;
+        InputStream stream;
 
+        stream = new FileInputStream(path);
         try {
             KeyStore trustStore = KeyStore.getInstance("JKS");
-            istream = new FileInputStream(path);
-            trustStore.load(istream, null);
-            istream.close();
-            istream = null;
+            trustStore.load(stream, null);
+            stream.close();
+            stream = null;
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
             tmf.init(trustStore);
             tms = tmf.getTrustManagers();
 
         } finally {
-            if (istream != null) {
+            if (stream != null) {
                 try {
-                    istream.close();
+                    stream.close();
                 } catch (IOException ioe) {
                     // Do nothing
                 }

@@ -78,7 +78,14 @@
 		<antcall target="deploy-war-common"/>
 	 </target>
 
-    <target name="all" depends="init-common, build, deploy">
+	 <target name="undeploy">
+		<property name="force" value="true"/>
+		<antcall target="undeploy-war-common"/>
+	 </target>
+
+    <target name="all" depends="init-common, build, run, deploy, undeploy"/>
+    
+    <target name="run" depends="init-common, build, deploy">
 		<java classname="org.glassfish.devtests.web.filedownload.WebTest" classpath="${test}"/>
     </target>
 

@@ -35,7 +35,7 @@ public class WebTest extends BaseDevTest {
 	public void run() throws Exception {
 		asadmin("set", "configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.timeout-seconds=300");
 		// TODO code application logic here
-		URL u = new URL("http://localhost:8080/web-file-download-timeout/webservices-osgi.jar");
+		URL u = new URL("http://localhost:" + antProp("http.port") + "/web-file-download-timeout/webservices-osgi.jar");
 		HttpURLConnection huc = (HttpURLConnection) u.openConnection();
 		huc.setRequestMethod("GET");
 		huc.setReadTimeout(0);

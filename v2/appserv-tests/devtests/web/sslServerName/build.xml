@@ -46,33 +46,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="create-http-listener,build,deploy,run,delete-http-listener,undeploy"/>
-
-    <target name="create-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="create-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="--listeneraddress ${http.address}" />
-            <arg line="--listenerport ${http.alternate.port}" />
-            <arg line="--defaultvs server" />
-            <arg line="--securityenabled=true" />
-            <arg line="http-listener-3" />
-        </exec>
-    </target>
-
-    <target name="delete-http-listener" depends="init-common">
-        <exec executable="${ASADMIN}">
-            <arg line="delete-http-listener"/>
-            <arg line="-u ${admin.user}"/>
-            <arg line="--passwordfile ${admin.password.file}"/>
-            <arg line="--host ${admin.host}"/>
-            <arg line="--port ${admin.port}"/>
-            <arg line="http-listener-3" />
-        </exec>
-    </target>
+    <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -93,6 +67,7 @@
 
          <javac
             srcdir="."
+            debug="true"            
             classpath="${env.APS_HOME}/lib/reportbuilder.jar"
             includes="*.java"/>
 
@@ -107,7 +82,7 @@
     <target name="run" depends="init-common,prepare-keystore-common">
         <java classname="WebTest">
           <arg value="${http.host}"/>
-          <arg value="${http.alternate.port}"/>
+          <arg value="${https.port}"/>
           <arg value="${contextroot}"/>
           <arg value="${keystore.db.file}"/>
           <classpath>
