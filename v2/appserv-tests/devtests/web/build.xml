@@ -546,12 +546,6 @@
         </delete>
     </target>
 
-    <target name="dev-report" depends="init-common">
-       <java classname="com.sun.appserv.test.util.results.HtmlReportProducer" fork="true" failonerror="false"
-             classpath="${env.APS_HOME}/lib/reportbuilder.jar">
-           <arg value="${env.APS_HOME}/test_results.xml"/>
-       </java>
-    </target>
 
     <target name="clean-webapps" depends="clean-webapps-common" />
 
