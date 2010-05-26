@@ -37,6 +37,7 @@
         <ant dir="google" target="all"/> <!-- 1 test -->
         <record name="webservice.output" action="stop" />
         <antcall target="report"/>
+        <antcall target="dev-report"/>
     </target>
 
     <target name="google">
@@ -88,4 +89,5 @@
 			ant xsdany (Executes the xsdany tests)
 	</echo>
     </target>
+
 </project>

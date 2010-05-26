@@ -111,7 +111,7 @@
   
     <target name="run" depends="init-common">
         <antcall target="runclient-common">
-          <param name="appclient.application.args" value="http://${http.host}:${http.port}//WebServiceTestServlet/WebServiceTestService"/>
+          <param name="appclient.application.args" value="http://${http.host}:${http.port}/WebServiceTestServlet/WebServiceTestService"/>
         </antcall>
     </target>  
 

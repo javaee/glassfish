@@ -1720,3 +1720,15 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     </exec>
 </target>
 
+<!-- ================================================================ -->
+<!-- Target to generate a neat Html report -->
+<!-- ================================================================ -->
+<target name="dev-report" depends="init-common">
+       <java classname=
+"com.sun.appserv.test.util.results.HtmlReportProducer" fork="true" failonerror="false"
+             classpath="${env.APS_HOME}/lib/reportbuilder.jar">
+           <arg value="${env.APS_HOME}/test_results.xml"/>
+       </java>
+    </target>
+
+
