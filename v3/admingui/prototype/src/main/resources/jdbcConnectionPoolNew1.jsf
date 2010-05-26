@@ -56,7 +56,7 @@
     </event>
             <sun:form id="propertyForm">
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle}"
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.step1PageTitle} (REST)"
                     helpText="$resource{i18njdbc.jdbcConnection.step1PageHelp}">
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">

@@ -66,11 +66,10 @@
         />
         </event>
             <sun:form id="propertyForm">
-                "<h4>REST</h4>
 #include "/rest/jdbcConnectionPoolTabs.inc"
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.editPageTitle}" 
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.editPageTitle} (REST)"
                     helpText="$resource{i18njdbc.jdbcConnection.editPageHelp}">
                     <!-- Buttons  -->  
 #include "/rest/editPageLoadDefaultButton.inc"

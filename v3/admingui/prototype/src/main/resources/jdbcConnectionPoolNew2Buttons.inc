@@ -48,7 +48,6 @@
             gf.navigate(page="#{request.contextPath}/rest/#{step1Page}");
         />
     </sun:button>
-    "<h4>REST!</h4>
     <sun:button id="finishButton" text="$resource{i18n.button.Finish}"
         onClick="document.getElementById('form2:validate').value='true'; if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
        <!command

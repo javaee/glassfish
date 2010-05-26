@@ -44,7 +44,7 @@
                 getClientId(component="$this{component}" clientId=>$page{tableId});
             />
     
-#include "/jdbc/poolTableButtons.inc"
+#include "/rest/poolTableButtons.inc"
 
    <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$attribute{listOfRows}"} sourceVar="td">
      <!afterCreate

@@ -41,7 +41,7 @@
         We only show this button if #{pageSession.edit} is set to true.  refer to issue#8660
     -->
 
-    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults}" >
+    <sun:button id="loadDefaults" style="margin-left: 8pt"  rendered="#{pageSession.showDef}" primary="#{false}" text="$resource{i18n.button.LoadDefaults} via REST" >
         <!beforeCreate
             if (!#{pageSession.edit}){
                 setPageSessionAttribute(key="showDef" value="#{false}");
@@ -58,5 +58,4 @@
             }
         />
     </sun:button>
-    "&lt;-- REST
    

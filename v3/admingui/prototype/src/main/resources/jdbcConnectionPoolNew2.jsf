@@ -78,15 +78,12 @@
 #include "/common/shared/alertMsg.inc"
             <sun:hidden id="validate"  value="TRUE" />
                 <!-- Page Title -->
-                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}"
+                <sun:title id="propertyContentPage" title="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle} (REST)"
                     helpText="$resource{i18njdbc.jdbcConnection.step2PageHelp}">
 #include "/rest/jdbcConnectionPoolNew2Buttons.inc"
                  </sun:title>
-"<h4>grr1</h4><hr/>
 #include "/rest/poolPropertyNew.inc"
-"<h4>grr1</h4><hr/>
 #include "/common/shared/propertyDescTable.inc"
-"<h4>grr1</h4><hr/>
                  <sun:title >
 #include "/rest/jdbcConnectionPoolNew2Buttons.inc"
                  </sun:title>

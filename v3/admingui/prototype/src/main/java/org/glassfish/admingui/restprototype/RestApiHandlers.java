@@ -33,16 +33,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admingui.common.handlers;
+package org.glassfish.admingui.restprototype;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.impl.ClientRequestImpl;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.io.BufferedReader;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,15 +58,22 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.w3c.dom.NamedNodeMap;
 
 /**
  * @author jasonlee
  */
 public class RestApiHandlers {
+    public static final String FORM_ENCODING = "application/x-www-form-urlencoded";
+    public static final String RESPONSE_TYPE = "application/xml";
 
     @Handler(id = "getDefaultProxyAttrsViaRest",
              input = {
@@ -112,7 +122,7 @@ public class RestApiHandlers {
     public static void getProxyAttrs(HandlerContext handlerCtx) {
         try {
             String endpoint = getRestEndPoint((String) handlerCtx.getInputValue("objectNameStr"));
-            String entity = get(endpoint, "application/xml");
+            String entity = get(endpoint);
 
             handlerCtx.setOutputValue("valueMap", getEntityAttrs(entity));
         } catch (Exception ex) {
@@ -179,9 +189,42 @@ public class RestApiHandlers {
 
     }
 
+    /*  deleteCascade handles delete for jdbc connection pool and connector connection pool
+     *  The dependent resources jdbc resource and connector resource are deleted on deleting
+     *  the pools
+     *
+     */
+    @Handler(id = "deleteCascadeViaRest",
+             input = {
+        @HandlerInput(name = "objectNameStr", type = String.class, required = true),
+        @HandlerInput(name = "type", type = String.class, required = true),
+        @HandlerInput(name = "dependentType", type = String.class),
+        @HandlerInput(name = "selectedRows", type = List.class, required = true)})
+    public static void deleteCascade(HandlerContext handlerCtx) {
+        try {
+            String endpoint = getRestEndPoint((String) handlerCtx.getInputValue("objectNameStr"),
+                    (String) handlerCtx.getInputValue("type"));
 
+            Map<String, String> payload = new HashMap<String, String>();
+            payload.put("cascade", "true");
 
-    protected static int sendCreateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
+            for (Map oneRow : (List<Map>) handlerCtx.getInputValue("selectedRows")) {
+                delete(endpoint + "/" + (String) oneRow.get("Name"), payload);
+            }
+        } catch (Exception ex) {
+            GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    protected static MultivaluedMap buildMultivalueMap(Map<String, String> payload) {
+        MultivaluedMap formData = new MultivaluedMapImpl();
+        for (final Map.Entry<String, String> entry : payload.entrySet()) {
+            formData.putSingle(entry.getKey(), entry.getValue());
+        }
+        return formData;
+    }
+
+    public static int sendCreateRequest(String endpoint, Map<String, String> attrs, List<String> skipAttrs, List<String> onlyUseAttrs, List<String> convertToFalse) {
         //Should specify either skipAttrs or onlyUseAttrs
         removeSpecifiedAttrs(attrs, skipAttrs);
 
@@ -197,7 +240,7 @@ public class RestApiHandlers {
         attrs = convertNullValuesToFalse(attrs, convertToFalse);
         attrs = fixKeyNames(attrs);
 
-        return post(endpoint, attrs, "text/html");
+        return post(endpoint, attrs);
     }
 
     // This method may be a really bad idea. :P
@@ -303,18 +346,20 @@ public class RestApiHandlers {
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
-    protected static String get(String address, String responseType) {
-        return Client.create().resource(address).accept(responseType).get(String.class);
+    protected static String get(String address) {
+        return Client.create().resource(address)
+                .accept(RESPONSE_TYPE)
+                .get(String.class);
     }
 
-    protected static int post(String address, Map<String, String> payload, String responseType) {
+    protected static int post(String address, Map<String, String> payload) {
         WebResource webResource = Client.create().resource(address);
-
-        MultivaluedMap formData = new MultivaluedMapImpl();
-        for (final Map.Entry<String, String> entry : payload.entrySet()) {
-            formData.putSingle(entry.getKey(), entry.getValue());
-        }
-        ClientResponse cr = webResource.type("application/x-www-form-urlencoded").accept(responseType).post(ClientResponse.class, formData);
+        MultivaluedMap formData = buildMultivalueMap(payload);
+        ClientResponse cr = webResource
+//                .type(FORM_ENCODING)
+//                .accept(RESPONSE_TYPE)
+                .post(ClientResponse.class, formData);
+        checkStatus(cr);
         return cr.getStatus();
     }
 
@@ -322,11 +367,30 @@ public class RestApiHandlers {
         throw new UnsupportedOperationException();
     }
 
-    protected static String delete(String address) {
-        throw new UnsupportedOperationException();
+    protected static int delete(String address, Map<String, String> payload) {
+        WebResource webResource = Client.create().resource(address);
+        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload))
+//                .type(FORM_ENCODING)
+//                .accept(RESPONSE_TYPE)
+                .delete(ClientResponse.class);
+        checkStatus(cr);
+        return cr.getStatus();
+    }
+
+    protected static void checkStatus(ClientResponse cr) {
+        int status = cr.getStatus();
+        if ((status < 200) || (status > 299)) {
+            throw new RuntimeException(cr.toString());
+        }
     }
 
     protected static String options(String address, String responseType) {
-        return Client.create().resource(address).accept(responseType).options(String.class);
+        return Client.create().resource(address)
+                .accept(responseType)
+                .options(String.class);
     }
+
+    //******************************************************************************************************************
+    // Jersey client methods
+    //******************************************************************************************************************
 }
