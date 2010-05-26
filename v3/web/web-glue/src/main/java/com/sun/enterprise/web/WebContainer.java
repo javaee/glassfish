@@ -404,14 +404,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         webContainerFeatureFactory = habitat.getComponent(
                 PEWebContainerFeatureFactoryImpl.class);
 
-        Config cfg = habitat.getComponent(Config.class);
-        serverConfigLookup = new ServerConfigLookup(cfg, clh);
+        serverConfigLookup = new ServerConfigLookup(serverConfig, clh);
         configureDynamicReloadingSettings();
         setDebugLevel();
 
         String maxDepth = null;
-        if(cfg.getWebContainer()!=null)
-            maxDepth = cfg.getWebContainer().getPropertyValue(DISPATCHER_MAX_DEPTH);
+        if(serverConfig.getWebContainer()!=null)
+            maxDepth = serverConfig.getWebContainer().getPropertyValue(DISPATCHER_MAX_DEPTH);
         if (maxDepth != null) {
             int depth = -1;
             try {
@@ -1773,7 +1772,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // Object containing web.xml information
         WebBundleDescriptor wbd = wmInfo.getDescriptor();
 
-        // Set the context root
+        // Set the context root 
         if (wbd != null) {
             ctx.setContextRoot(wbd.getContextRoot());
         } else {
