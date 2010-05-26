@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -99,6 +99,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
             new HashMap<Class<? extends Annotation>, Annotation>();
     /** Creates a new instance of WebServiceRefHandler */
     public WebServiceRefHandler() {
+
     }
     
     public Class<? extends Annotation> getAnnotationType() {
@@ -128,6 +129,13 @@ public class WebServiceRefHandler extends AbstractHandler  {
         
         Class annotatedType = null;
         Class declaringClass = null;
+        //Fix for 6925544
+        //Make sure these fields are initialized to null
+        //Clean up the local variables since by default the scope is Singleton
+        //Note Also tried @Scoped(PerLookup) but that did not work
+        mtom = null;
+        addressing = null;
+        respectBinding = null;
         String serviceRefName = annotation.name();
         if (annInfo.getElementType().equals(ElementType.FIELD)) {
             // this is a field injection
