@@ -35,5 +35,5 @@
  holder.
 -->
 <weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
- <context-root>test</context-root>
+ <context-root>wlctest</context-root>
 </weblogic-web-app>

@@ -78,7 +78,7 @@
         <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
-          <arg value="test"/>
+          <arg value="wlctest"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
