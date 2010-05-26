@@ -422,6 +422,52 @@ public class AppTest extends TestCase {
         }
     }
 
+    public void testTxCommitFailInterposedSyncBC() {
+        System.out.println("**Testing TX commit with exception in InterposedSync in beforeCompletion ===>");
+        try {
+            // Suppress warnings from beforeCompletion() logging
+            ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            Transaction tx = t.getTransaction();
+
+            System.out.println("**Registering InterposedSynchronization ....");
+            TestSync s = new TestSync(true);
+            ((JavaEETransactionImpl)tx).registerInterposedSynchronization(s);
+
+            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+            System.out.println("**TX Status after begin: " + status);
+
+            assertEquals (status, "Active");
+
+            System.out.println("**Calling TX commit ===>");
+            try {
+                tx.commit();
+                assert (false);
+            } catch (RollbackException ex) {
+                System.out.println("**Caught expected exception...");
+
+                Throwable te = ex.getCause();
+                if (te != null && te instanceof MyRuntimeException) {
+                    System.out.println("**Caught expected nested exception...");
+                } else {
+                    System.out.println("**Unexpected nested exception: " + te);
+                    assert (false);
+                }
+            }
+            System.out.println("**Status after commit: "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
+                    + " <===");
+            assertTrue ("beforeCompletion was not called", s.called_beforeCompletion);
+            assertTrue ("afterCompletion was not called", s.called_afterCompletion);
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+    }
+
     public void testTxCommitRollbackBC() {
         System.out.println("**Testing TX commit with rollback in beforeCompletion ===>");
         try {
