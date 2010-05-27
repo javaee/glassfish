@@ -328,6 +328,7 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                     DeployCommandParameters deploymentParams =
                         app.getDeployParameters(appRef);
+                    deploymentParams.target = server.getName();
                     deploymentParams.origin = DeployCommandParameters.Origin.load;
 
                     archive = archiveFactory.get().openArchive(sourceFile, deploymentParams);

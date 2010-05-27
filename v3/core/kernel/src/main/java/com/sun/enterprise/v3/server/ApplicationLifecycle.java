@@ -125,6 +125,9 @@ public class ApplicationLifecycle implements Deployment {
     @Inject
     protected Applications applications;
 
+    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    Server server;
+
     @Inject
     protected Domain domain;
 
@@ -341,10 +344,10 @@ public class ApplicationLifecycle implements Deployment {
                 // time the containers are set up, all the modules have been prepared in their
                 // associated engines and the application info is created and registered
                  // if enable attribute is set to true
-                 // and the target is the default server instance
+                 // and the target is the default server instance of current VM
                  // we load and start the application
                 if (commandParams.enabled && commandParams.target.equals(
-                    "server")) {
+                    server.getName())) {
                     Thread.currentThread().setContextClassLoader(context.getFinalClassLoader());
                     appInfo.setLibraries(commandParams.libraries());
                     try {
