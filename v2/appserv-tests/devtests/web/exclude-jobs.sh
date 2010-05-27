@@ -22,7 +22,8 @@ then
     echo no JOB_NAME defined.  using the default of webtier-dev-tests-v3
     JOB_NAME=webtier-dev-tests-v3
 fi
-if [ -e "${JOB_NAME}.skip" ]
+
+if [ -f "${JOB_NAME}.skip" ]
 then
     skip ${JOB_NAME}.skip
 fi
