@@ -81,21 +81,23 @@ public class PortImpl implements Port {
     public void bind(final int portNumber) {
         number = portNumber;
         listenerName = getListenerName();
-        try {
-            ConfigSupport.apply(new ConfigCode() {
-                public Object run(ConfigBeanProxy... params) throws TransactionFailure, PropertyVetoException {
 
-                    Protocols protocols = (Protocols) params[0];
-                    final Protocol protocol = protocols.createChild(Protocol.class);
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Protocols>() {
+                public Object run(Protocols param) throws TransactionFailure {
+                    final Protocol protocol = param.createChild(Protocol.class);
                     protocol.setName(listenerName);
-                    protocols.getProtocol().add(protocol);
+                    param.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
                     http.setDefaultVirtualServer(defaultVirtualServer);
                     protocol.setHttp(http);
-
-
-                    NetworkListeners listeners = (NetworkListeners) params[1];
-                    Transports transports = (Transports) params[2];
+                    return protocol;
+                }
+            }, config.getProtocols());
+            ConfigSupport.apply(new ConfigCode() {
+                public Object run(ConfigBeanProxy... params) throws TransactionFailure {
+                    NetworkListeners listeners = (NetworkListeners) params[0];
+                    Transports transports = (Transports) params[1];
                     final NetworkListener listener = listeners.createChild(NetworkListener.class);
                     listener.setName(listenerName);
                     listener.setPort(Integer.toString(portNumber));
@@ -113,17 +115,19 @@ public class PortImpl implements Port {
                         listener.setTransport(listenerName);
                     }
                     listeners.getNetworkListener().add(listener);
-
-                    VirtualServer readOnlyVS = httpService.getVirtualServerByName(defaultVirtualServer);
-                    ConfigSupport configSupport = new ConfigSupport();
-                    Transaction t = configSupport.getTransaction(protocols);
-                    VirtualServer vs = configSupport.enrollInTransaction(t, readOnlyVS);
-                    vs.addNetworkListener(listenerName);
-
                     return listener;
                 }
-            }, config.getProtocols(), config.getNetworkListeners(), config.getTransports());
+            }, config.getNetworkListeners(), config.getTransports());
+
+            VirtualServer vs = httpService.getVirtualServerByName(defaultVirtualServer);
+            ConfigSupport.apply(new SingleConfigCode<VirtualServer>() {
+                public Object run(VirtualServer avs) throws PropertyVetoException {
+                    avs.addNetworkListener(listenerName);
+                    return avs;
+                }
+            }, vs);
         } catch (Exception e) {
+            removeListener();
             e.printStackTrace();
         }
     }
@@ -137,6 +141,7 @@ public class PortImpl implements Port {
         return name;
     }
 
+
     private boolean existsListener(String lName) {
         for (NetworkListener nl : config.getNetworkListeners().getNetworkListener()) {
             if (nl.getName().equals(lName)) {
@@ -147,6 +152,11 @@ public class PortImpl implements Port {
     }
 
     public void close() {
+        removeListener();
+        ports.remove(this);
+    }
+
+    private void removeListener() {
         try {
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy[] params) throws PropertyVetoException, TransactionFailure {
@@ -169,7 +179,9 @@ public class PortImpl implements Port {
                     }
                     String regex = listenerName + ",?";
                     String lss = vs.getNetworkListeners();
-                    vs.setNetworkListeners(lss.replaceAll(regex, ""));
+                    if (lss != null) {
+                        vs.setNetworkListeners(lss.replaceAll(regex, ""));
+                    }
                     return null;
                 }
             }, config.getNetworkListeners(),
@@ -179,7 +191,6 @@ public class PortImpl implements Port {
             tf.printStackTrace();
             throw new RuntimeException(tf);
         }
-        ports.remove(this);
     }
 
     public int getPortNumber() {
