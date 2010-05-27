@@ -23,7 +23,8 @@ then
     JOB_NAME=webtier-dev-tests-v3
 fi
 
+JOB_NAME=${JOB_NAME%%-source}
 if [ -f "${JOB_NAME}.skip" ]
 then
-    skip ${JOB_NAME}.skip
+    echo skip ${JOB_NAME}.skip
 fi
