@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup-appserv,build,deploy,run,undeploy"/>
+    <target name="all" depends="setup-appserv,test-sun-web-xml,test-glassfish-web-xml,restore-appserv"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -62,11 +62,39 @@
               todir="${env.S1AS_HOME}/lib"/>
         <antcall target="restart-server-instance-common"/>        
     </target>
+
+    <target name="test-sun-web-xml">
+        <antcall target="copy-sun-web-xml"/>
+        <antcall target="build"/>
+        <antcall target="deploy"/>
+        <antcall target="run"/>
+        <antcall target="undeploy"/>
+    </target>
+
+    <target name="test-glassfish-web-xml">
+        <antcall target="copy-glassfish-web-xml"/>
+        <antcall target="build"/>
+        <antcall target="deploy"/>
+        <antcall target="run"/>
+        <antcall target="undeploy"/>
+    </target>
        
     <target name="compile" depends="clean">
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
         </antcall>
+    </target>
+
+    <target name="copy-sun-web-xml" depends="init-common">
+        <delete file="${sun-web.xml}" failonerror="false"/>
+        <delete file="${glassfish-web.xml}" failonerror="false"/>
+        <copy file="${sun-web.xml}.template" tofile="${sun-web.xml}"/>
+    </target>
+
+    <target name="copy-glassfish-web-xml" depends="init-common">
+        <delete file="${sun-web.xml}" failonerror="false"/>
+        <delete file="${glassfish-web.xml}" failonerror="false"/>
+        <copy file="${glassfish-web.xml}.template" tofile="${glassfish-web.xml}"/>
     </target>
 
     <target name="build" depends="compile">
@@ -80,6 +108,9 @@
             srcdir="."
             classpath="${env.APS_HOME}/lib/reportbuilder.jar"
             includes="WebTest.java"/>
+
+        <delete file="${sun-web.xml}" failonerror="false"/>
+        <delete file="${glassfish-web.xml}" failonerror="false"/>
     </target> 
     
     <target name="build-publish-war" depends="build, publish-war-common" />
