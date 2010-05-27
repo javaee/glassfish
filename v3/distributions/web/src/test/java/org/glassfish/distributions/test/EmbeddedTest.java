@@ -172,7 +172,6 @@ public class EmbeddedTest {
 
         System.out.println("Deploying " + p);
         String appName = null;
-        try {
             appName = deployer.deploy(builder.buildWar(), dp);
             System.out.println("Deployed " + appName);
             Assert.assertTrue(appName != null); 
@@ -191,10 +190,6 @@ public class EmbeddedTest {
                 e.printStackTrace();
                 throw e;
             }
-        } catch(Exception e) {
-            // mask exceptions for now
-            // e.printStackTrace();
-        }
         if (appName!=null)
             deployer.undeploy(appName, null);
 
