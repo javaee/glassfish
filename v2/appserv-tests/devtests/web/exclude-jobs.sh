@@ -26,5 +26,5 @@ fi
 JOB_NAME=${JOB_NAME%%-source}
 if [ -f "${JOB_NAME}.skip" ]
 then
-    echo skip ${JOB_NAME}.skip
+    skip ${JOB_NAME}.skip
 fi
