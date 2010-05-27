@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -35,18 +35,47 @@
  */
 package admin;
 
-
 import com.sun.appserv.test.BaseDevTest;
+import java.io.*;
+import java.net.*;
 
 /*
  * Dev test for create/delete/list instance
  * @author Bhakti Mehta
  */
 public class AdminInfraTest extends BaseDevTest {
+    public AdminInfraTest() {
+        String host0 = null;
+        try {
+            host0 = InetAddress.getLocalHost().getHostName();
+        }
+        catch(Exception e) {
+            host0 = "localhost";
+        }
+        host = host0;
+        String home = System.getenv("S1AS_HOME");
 
-    private static final boolean DEBUG = false;
+        if(home == null)
+            throw new IllegalStateException("No S1AS_HOME set!");
 
-    public static void main(String[] args)  {
+        File f = new File(home);
+
+        try {
+            f = f.getCanonicalFile();
+        }
+        catch(Exception e) {
+            f = f.getAbsoluteFile();
+        }
+        glassFishHome = f;
+
+        if(!glassFishHome.isDirectory())
+            throw new IllegalStateException("S1AS_HOME is not poiting at a real directory!");
+
+        // it does NOT need to exist -- do not insist!
+        instancesHome = new File( new File(glassFishHome, "nodeagents"), host);
+    }
+
+    public static void main(String[] args) {
         new AdminInfraTest().run();
     }
 
@@ -61,17 +90,50 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     public void run() {
-        report("create-instance", asadmin("create-instance",
-                "--nodeagent","localhost",
-                "ins1"));
+        bhakti();
+        byron();
+        stat.printSummary();
+    }
 
+    private void bhakti() {
+        report("create-instance", asadmin("create-instance",
+                "--nodeagent", "localhost",
+                "ins1"));
 
         //list-instances
         report("list-instances", asadmin("list-instances"));
 
         report("delete-instance", asadmin("delete-instance", "ins1"));
-
-
-        stat.printSummary();
     }
+
+    private void byron() {
+        // pidgin English because the strings get truncated.
+        report("i1 dir not exists", !checkInstanceDir(I1));
+        report("create-local-instance", asadmin("create-local-instance", "--nodeagent", host, I1));
+        report("list-instances", asadmin("list-instances"));
+        report("i1 dir created", checkInstanceDir(I1));
+        printf("Awesome -- the directory was created!!");
+        report("delete-local-instance", asadmin("delete-local-instance", "i1"));
+        report("i1 dir destroyed", !checkInstanceDir(I1));
+    }
+
+    private boolean checkInstanceDir(String name) {
+        File inf = new File(instancesHome, name);
+        boolean exists = inf.isDirectory();
+        String existsString = exists ? "DOES exist" : "does NOT exist";
+        printf("The instance-dir, %s, %s\n", inf.toString(), existsString);
+        return exists;
+    }
+
+    private void printf(String fmt, Object... args) {
+        if(DEBUG)
+            System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
+    }
+
+    private final String host;
+    private final String I1 = "i1";
+    private final File glassFishHome;
+    private final File instancesHome;
+
+    private final static boolean DEBUG = false;
 }
