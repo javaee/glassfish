@@ -68,7 +68,7 @@ import org.jvnet.hk2.config.types.Property;
 @Service(name = "create-virtual-server")
 @Scoped(PerLookup.class)
 @I18n("create.virtual.server")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class CreateVirtualServer implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateVirtualServer.class);
     @Param(name = "hosts")

@@ -77,7 +77,7 @@ import org.jvnet.hk2.config.Transactions;
 @Service(name = "create-http-listener")
 @Scoped(PerLookup.class)
 @I18n("create.http.listener")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class CreateHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateHttpListener.class);
     @Param(name = "listeneraddress")

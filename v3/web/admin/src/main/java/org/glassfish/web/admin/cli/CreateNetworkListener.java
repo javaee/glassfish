@@ -73,7 +73,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "create-network-listener")
 @Scoped(PerLookup.class)
 @I18n("create.network.listener")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class CreateNetworkListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateNetworkListener.class);

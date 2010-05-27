@@ -61,7 +61,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-network-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.network.listeners")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class ListNetworkListeners implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListNetworkListeners.class);

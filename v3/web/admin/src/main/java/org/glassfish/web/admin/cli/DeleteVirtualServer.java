@@ -74,7 +74,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name="delete-virtual-server")
 @Scoped(PerLookup.class)
 @I18n("delete.virtual.server")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class DeleteVirtualServer implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteVirtualServer.class);

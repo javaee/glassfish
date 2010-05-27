@@ -73,7 +73,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "delete-http-listener")
 @Scoped(PerLookup.class)
 @I18n("delete.http.listener")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class DeleteHttpListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeleteHttpListener.class);
     @Param(name = "listener_id", primary = true)

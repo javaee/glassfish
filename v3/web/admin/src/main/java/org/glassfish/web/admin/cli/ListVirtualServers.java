@@ -63,7 +63,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-virtual-servers")
 @Scoped(PerLookup.class)
 @I18n("list.virtual.servers")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class ListVirtualServers implements AdminCommand {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ListVirtualServers.class);
     @Param(name = "target", optional = true, defaultValue = "server")

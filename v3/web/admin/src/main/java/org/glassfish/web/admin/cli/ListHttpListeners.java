@@ -62,7 +62,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "list-http-listeners")
 @Scoped(PerLookup.class)
 @I18n("list.http.listeners")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class ListHttpListeners implements AdminCommand {
     final private static LocalStringManagerImpl localStrings
         = new LocalStringManagerImpl(ListHttpListeners.class);

@@ -68,7 +68,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Service(name = "delete-network-listener")
 @Scoped(PerLookup.class)
 @I18n("delete.network.listener")
-@Cluster(value={RuntimeType.DAS})
+@Cluster({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class DeleteNetworkListener implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(DeleteNetworkListener.class);
