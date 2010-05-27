@@ -245,10 +245,10 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
 
         String CLInames[] = {"asadmin", "stopserv", "startserv", "jspc"};
         for (int i = 0; i < CLInames.length; i++) {
-            Runtime.getRuntime().exec("/bin/chmod a+x " +
+            Runtime.getRuntime().exec("/bin/chmod +x " +
                                installDir + "/glassfish/bin/" + CLInames[i]);
 		}
-	Runtime.getRuntime().exec("/bin/chmod a+x " +
+	Runtime.getRuntime().exec("/bin/chmod +x " +
 			installDir + "/bin/asadmin");
     }
 
@@ -336,8 +336,8 @@ boolean configureGlassfish(String installDir, String adminPort, String httpPort,
             wrapperWriter.close();
             wrapperWriter = null;
 
-	    Runtime.getRuntime().exec("/bin/chmod a+x " + stopWrapperFile.getAbsolutePath());
-	    Runtime.getRuntime().exec("/bin/chmod a+x " + startWrapperFile.getAbsolutePath());
+	    Runtime.getRuntime().exec("/bin/chmod +x " + stopWrapperFile.getAbsolutePath());
+	    Runtime.getRuntime().exec("/bin/chmod +x " + startWrapperFile.getAbsolutePath());
 	}
     } catch (Exception ex) {
             LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
@@ -561,11 +561,11 @@ boolean configureJDK(String installDir) throws Exception {
 
         File JDKFiles[] = new File(installDir + "/jdk/bin").listFiles();
         for (int i = 0; i < JDKFiles.length; i++) {
-            Runtime.getRuntime().exec("/bin/chmod a+x " + JDKFiles[i].getAbsolutePath());
+            Runtime.getRuntime().exec("/bin/chmod +x " + JDKFiles[i].getAbsolutePath());
 		}
 	File JREFiles[] = new File(installDir + "/jdk/jre/bin").listFiles();
         for (int i = 0; i < JREFiles.length; i++) {
-            Runtime.getRuntime().exec("/bin/chmod a+x " + JREFiles[i].getAbsolutePath());
+            Runtime.getRuntime().exec("/bin/chmod +x " + JREFiles[i].getAbsolutePath());
 		}
 	
     }
@@ -591,7 +591,7 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
 
         String CLInames[] = {"pkg", "updatetool"};
         for (int i = 0; i < CLInames.length; i++) {
-            Runtime.getRuntime().exec("/bin/chmod a+x " +
+            Runtime.getRuntime().exec("/bin/chmod +x " +
                                installDir + "/bin/" + CLInames[i]);
 	}
     }
@@ -640,7 +640,7 @@ boolean configureUpdatetool(String installDir, String bootstrap, String allowUpd
             wrapperWriter.close();
             wrapperWriter = null;
 	    
-	    Runtime.getRuntime().exec("/bin/chmod a+x " + startWrapperFile.getAbsolutePath());
+	    Runtime.getRuntime().exec("/bin/chmod +x " + startWrapperFile.getAbsolutePath());
 	}
     } catch (Exception ex) {
             LOGGER.log(Level.INFO, "Error while creating wrapper file: " + ex.getMessage());
