@@ -9,11 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: May 17, 2010
- * Time: 1:29:57 PM
- * To change this template use File | Settings | File Templates.
+ * Model a annotation instance
  */
 public class AnnotationModelImpl implements AnnotationModel {
     
