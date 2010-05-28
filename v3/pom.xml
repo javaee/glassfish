@@ -185,6 +185,7 @@
                 <module>cluster</module>
                 <module>javaee-api</module>
                 <module>common</module>
+                <module>ha</module>
                 <module>deployment</module>
                 <module>admin</module>
                 <module>core</module>
@@ -250,6 +251,7 @@
                 <module>cluster</module>
                 <module>javaee-api</module>
                 <module>common</module>
+                <module>ha</module>
                 <module>deployment</module>
                 <module>admin</module>
                 <module>core</module>
@@ -322,6 +324,7 @@
                 <module>cluster</module>
                 <module>javaee-api</module>
                 <module>common</module>
+                <module>ha</module>
                 <module>deployment</module>
                 <module>admin</module>
                 <module>core</module>
@@ -372,6 +375,7 @@
                 <module>build</module>
                 <module>javaee-api</module>
                 <module>common</module>
+                <module>ha</module>
                 <module>deployment</module>
                 <module>admin</module>
                 <module>core</module>
