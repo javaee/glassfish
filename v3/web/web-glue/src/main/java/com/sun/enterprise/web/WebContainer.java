@@ -2710,10 +2710,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         // old listener names
         List<String> oldListenerList = StringUtils.parseStringList(
             vsBean.getNetworkListeners(), ",");
-        String[] oldListeners = oldListenerList.toArray(new String[oldListenerList.size()]);
+        String[] oldListeners = (oldListenerList != null) ?
+            oldListenerList.toArray(new String[oldListenerList.size()]) :
+            new String[0];
         // new listener config
         HashSet<NetworkListener> networkListeners = new HashSet<NetworkListener>();
-        if (oldListeners != null) {
+        if (oldListenerList != null) {
             for (String listener : oldListeners) {
                 boolean found = false;
                 for (NetworkListener httpListener :
