@@ -94,8 +94,11 @@ class ManifestManager implements ResponseManager {
     private void processGeneric() throws RemoteSuccessException, RemoteFailureException {
         StringBuilder sb = new StringBuilder();
         String msg = response.getMainMessage();
-        if(ok(msg))
-            sb.append(msg).append(EOL);
+        if(ok(msg)) {
+            sb.append(msg);
+            if (!msg.endsWith(EOL))
+                sb.append(EOL);
+        }
 
         boolean useMainChildrenAttr = Boolean.valueOf(response.getMainAtts().get("use-main-children-attribute"));
 

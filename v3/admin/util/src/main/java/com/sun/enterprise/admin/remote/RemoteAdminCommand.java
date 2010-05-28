@@ -446,7 +446,7 @@ public class RemoteAdminCommand {
             for (Header h : requestHeaders)
                 urlConnection.addRequestProperty(h.getName(), h.getValue());
 
-            urlConnection.connect();
+            doConnect(urlConnection);
             if (doUpload) {
                 outboundPayload.writeTo(urlConnection.getOutputStream());
                 outboundPayload = null; // no longer needed
@@ -458,6 +458,9 @@ public class RemoteAdminCommand {
             Payload.Inbound inboundPayload =
                 PayloadImpl.Inbound.newInstance(responseContentType, in);
 
+            if (inboundPayload == null)
+                throw new IOException(
+                    strings.get("NoPayloadSupport", responseContentType));
             PayloadFilesManager downloadedFilesMgr =
                 new PayloadFilesManager.Perm(fileOutputDir, null, logger,
                     new PayloadFilesManager.ActionReportHandler() {
@@ -564,26 +567,39 @@ public class RemoteAdminCommand {
             }
         } catch (IOException e) {
             logger.finer("doHttpCommand: IO exception " + e);
-            String msg = "I/O Error: " + e.getMessage();
-            if (urlConnection != null) {
-                try {
-                    int rc = urlConnection.getResponseCode();
-                    if (HttpURLConnection.HTTP_UNAUTHORIZED == rc) {
-                        msg = reportAuthenticationException();
-                        throw new AuthenticationException(msg);
-                    } else {
-                        msg = "Status: " + rc;
-                    }
-                } catch (IOException ioex) {
-                    // ignore it
-                }
-            }
-            throw new CommandException(msg, e);
+            throw new CommandException(
+                strings.get("IOError", e.getMessage()), e);
+        } catch (CommandException e) {
+            throw e;
         } catch (Exception e) {
+            // logger.log(Level.FINER, "doHttpCommand: exception", e);
             logger.finer("doHttpCommand: exception " + e);
-            // XXX - logger.printExceptionStackTrace(e);
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            e.printStackTrace(new PrintStream(buf));
+            logger.finer(buf.toString());
             throw new CommandException(e);
         }
+    }
+
+    /**
+     * Call HttpURLConnection.connect and handle any error responses,
+     * turning them into exceptions.
+     */
+    private void doConnect(HttpURLConnection urlConnection)
+                                throws IOException, CommandException {
+        urlConnection.connect();
+        int code = urlConnection.getResponseCode();
+        if (code == -1) {
+            URL url = urlConnection.getURL();
+            throw new CommandException(
+                strings.get("NotHttpResponse", url.getHost(), url.getPort()));
+        }
+        if (code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new AuthenticationException(reportAuthenticationException());
+        }
+        if (code != HttpURLConnection.HTTP_OK)
+            throw new CommandException(strings.get("BadResponse", "" + code,
+                                        urlConnection.getResponseMessage()));
     }
 
     /**
@@ -721,12 +737,17 @@ public class RemoteAdminCommand {
 
                 //urlConnection.setRequestProperty("Accept: ", "text/xml");
                 urlConnection.setRequestProperty("User-Agent", "metadata");
-                urlConnection.connect();
+                doConnect(urlConnection);
                 InputStream in = urlConnection.getInputStream();
 
                 String responseContentType = urlConnection.getContentType();
+                logger.finer("Response Content-Type: " + responseContentType);
                 Payload.Inbound inboundPayload =
                     PayloadImpl.Inbound.newInstance(responseContentType, in);
+
+                if (inboundPayload == null)
+                    throw new IOException(
+                        strings.get("NoPayloadSupport", responseContentType));
 
                 boolean isReportProcessed = false;
                 Iterator<Payload.Part> partIt = inboundPayload.parts();
@@ -750,8 +771,12 @@ public class RemoteAdminCommand {
                 }
             }
         });
-        if (commandModel == null)
-            throw new InvalidCommandException(metadataErrors.toString()); // XXX
+        if (commandModel == null) {
+            if (metadataErrors != null)
+                throw new InvalidCommandException(metadataErrors.toString());
+            else
+                throw new InvalidCommandException(strings.get("unknownError"));
+        }
     }
 
     /**
