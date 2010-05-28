@@ -116,8 +116,10 @@ public class RestTestBase {
 
     private MultivaluedMap buildMultivalueMap(Map<String, String> payload) {
         MultivaluedMap formData = new MultivaluedMapImpl();
-        for (final Map.Entry<String, String> entry : payload.entrySet()) {
-            formData.putSingle(entry.getKey(), entry.getValue());
+        if (payload != null) {
+            for (final Map.Entry<String, String> entry : payload.entrySet()) {
+                formData.putSingle(entry.getKey(), entry.getValue());
+            }
         }
         return formData;
     }

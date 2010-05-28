@@ -3,12 +3,12 @@ package org.glassfish.admin.rest;
 import com.sun.jersey.api.client.ClientResponse;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class JmsTest extends RestTestBase {
+    static final String URL_ADMIN_OBJECT_RESOURCE = BASE_URL + "/domain/resources/admin-object-resource";
     static final String URL_CONNECTOR_CONNECTION_POOL = BASE_URL + "/domain/resources/connector-connection-pool";
     static final String URL_CONNECTOR_RESOURCE = BASE_URL + "/domain/resources/connector-resource";
 
@@ -51,20 +52,52 @@ public class JmsTest extends RestTestBase {
         assertFalse(resource.size() == 0);
 
         // Edit and check ccp
-        response = this.post(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String,String>() {{ put("description", poolName); }});
+        response = this.post(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {{
+            put("description", poolName);
+        }});
         assertEquals(200, response.getStatus());
 
         pool = getEntityValues(get(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
 
         // Edit and check cr
-        response = this.post(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String,String>() {{ put("description", poolName); }});
+        response = this.post(URL_CONNECTOR_RESOURCE + "/" + poolName, new HashMap<String, String>() {{
+            put("description", poolName);
+        }});
         assertEquals(200, response.getStatus());
 
         resource = getEntityValues(get(URL_CONNECTOR_RESOURCE + "/" + poolName));
         assertTrue(pool.get("description").equals(poolName));
 
         // Delete objects
-        response = delete(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String,String>() {{ put("cascade", "true"); }});
+        response = delete(URL_CONNECTOR_CONNECTION_POOL + "/" + poolName, new HashMap<String, String>() {{
+            put("cascade", "true");
+        }});
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testJmsDestinationResources() {
+        final String jndiName = "jndi/" + generateRandomString();
+        String encodedJndiName = jndiName;
+        try {
+            encodedJndiName = URLEncoder.encode(URLEncoder.encode(jndiName, "UTF-8"), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        Map<String, String> attrs = new HashMap<String, String>();
+        attrs.put("id", jndiName);
+        attrs.put("raname", "jmsra");
+        attrs.put("restype", "javax.jms.Topic");
+
+        ClientResponse response = this.post(URL_ADMIN_OBJECT_RESOURCE, attrs);
+        assertEquals(201, response.getStatus());
+
+        Map<String, String> entity = getEntityValues(get(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName));
+        assertFalse(entity.size() == 0);
+
+        response = delete(URL_ADMIN_OBJECT_RESOURCE + "/" + encodedJndiName, null);
+        assertEquals(200, response.getStatus());
     }
 }
