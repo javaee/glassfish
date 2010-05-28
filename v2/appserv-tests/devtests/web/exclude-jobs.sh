@@ -5,26 +5,26 @@ skip() {
     echo Parsing ${FILE}
     cat ${FILE} | while read LINE
     do
-        NAME=${LINE%% *}
+        NAME=`echo $LINE | sed -e 's/[   ].*//'`
         if [ -d "${NAME}" ]
         then
             echo excluding \"${NAME}\"
             sed -e "s@^ *<ant dir=\"${NAME}\" target=\"all\"/>@<!--&-->@" build.xml > build.xml.sed
             mv build.xml.sed build.xml
         else
-            echo "***** ${NAME} is not a valid test directory *****" 
+            echo "***** ${NAME} is not a valid test directory *****"
         fi
     done
 }
 
-if [ -z "${JOB_NAME}" ]
+echo start
+if [ -z "${JOB_NAME}" -o "$JOB_NAME" -eq "webtier-dev-tests-v3-source" ]
 then
-    echo no JOB_NAME defined.  using the default of webtier-dev-tests-v3
     JOB_NAME=webtier-dev-tests-v3
 fi
 
-JOB_NAME=${JOB_NAME%%-source}
 if [ -f "${JOB_NAME}.skip" ]
 then
     skip ${JOB_NAME}.skip
 fi
+
