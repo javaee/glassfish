@@ -45,7 +45,7 @@ import org.glassfish.api.admin.ParameterMap;
  * It also does internet work
  * @author byron Nevins
  */
-public class InstanceInfo {
+public final class InstanceInfo {
     public InstanceInfo(String name0, int port0, String host0, Logger logger0, int timeout0) {
         name = name0;
         port = port0;
@@ -56,12 +56,20 @@ public class InstanceInfo {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return "name: " + getName()
                 + ", host: " + getHost()
                 + ", port: " + getPort()
                 + ", state: " + running;
     }
+
+	public final static String getFormattedHeader() {
+		return FORMATTED_HEADER;
+	}
+
+	public String toFormattedString() {
+		return String.format(FORMATTED_LINE, getName(), getHost(), "" + getPort(), running);
+	}
 
     /**
      * @return the host
@@ -123,31 +131,8 @@ public class InstanceInfo {
     private  String running;
     private  Logger logger;
     private final int timeoutInMsec;
+	// TODO i18n
+	private final static String BREAKER = "\n---------------|------------------------------|---------------|--------------------";
+	private final static String FORMATTED_LINE = "%-15s %-30s %-15s %-20s";
+	private final static String FORMATTED_HEADER = String.format(FORMATTED_LINE, "Instance Name", "Host", "Admin Port", "Current State") + BREAKER;
 }
-/** delete this stuff after May 30, 2010
-private boolean simplePortTest() {
-return !NetUtils.isPortFree(host, port);
-}
-
-private boolean advancedPortTest() {
-Socket socket = NetUtils.getClientSocket(host, port, 1000);
-BufferedReader reader = null  ;
-
-try {
-reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-return true;
-}
-catch (IOException ex) {
-return false;
-}
-finally {
-try {
-if(reader != null)
-reader.close();
-}
-catch(Exception e) {
-// ignore
-}
-}
-}
- */

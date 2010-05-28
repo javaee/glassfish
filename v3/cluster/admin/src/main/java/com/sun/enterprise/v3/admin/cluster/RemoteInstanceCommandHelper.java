@@ -36,7 +36,6 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -218,5 +217,4 @@ final class RemoteInstanceCommandHelper {
     final private ServerEnvironment env;
     final private List<Server> servers;
     final private List<Config> configs;
-    final private static LocalStringsImpl strings = new LocalStringsImpl(RemoteInstanceCommandHelper.class);
 }

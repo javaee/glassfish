@@ -40,8 +40,6 @@ import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Module;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,7 +82,7 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
             callInstance();
         }
         else if(env.isInstance()) {
-            logger.info(strings.get("stop.instance.init"));
+            logger.info(Strings.get("stop.instance.init"));
             Collection<Module> modules = registry.getModules(
                     "org.glassfish.core.glassfish");
             if(modules.size() == 1) {
@@ -99,7 +97,7 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
             }
         }
         else {
-            String msg = strings.get("stop.instance.notAnInstanceOrDas",
+            String msg = Strings.get("stop.instance.notAnInstanceOrDas",
                     env.getRuntimeType().toString());
             logger.warning(msg);
         }
@@ -113,22 +111,22 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
     private void callInstance() {
         try {
             if(!StringUtils.ok(instanceName)) {
-                logger.severe(strings.get("stop.instance.noInstanceName"));
+                logger.severe(Strings.get("stop.instance.noInstanceName"));
                 return;
             }
             final Server instance = helper.getServer(instanceName);
             if(instance == null) {
-                logger.severe(strings.get("stop.instance.noSuchInstance", instanceName));
+                logger.severe(Strings.get("stop.instance.noSuchInstance", instanceName));
                 return;
             }
             String host = helper.getHost(instance);
             if(host == null) {
-                logger.severe(strings.get("stop.instance.noHost", instanceName));
+                logger.severe(Strings.get("stop.instance.noHost", instanceName));
                 return;
             }
             int port = helper.getAdminPort(instance);
             if(port < 0) {
-                logger.severe(strings.get("stop.instance.noPort", instanceName));
+                logger.severe(Strings.get("stop.instance.noPort", instanceName));
                 return;
             }
 
@@ -139,7 +137,7 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
             rac.executeCommand(new ParameterMap());
         }
         catch (CommandException ex) {
-            logger.severe(strings.get("stop.instance.racError", instanceName));
+            logger.severe(Strings.get("stop.instance.racError", instanceName));
         }
     }
     
@@ -157,6 +155,4 @@ public class StopInstanceCommand implements AdminCommand, PostConstruct {
     private String instanceName;
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
-    final private static LocalStringsImpl strings =
-            new LocalStringsImpl(StopInstanceCommand.class);
 }

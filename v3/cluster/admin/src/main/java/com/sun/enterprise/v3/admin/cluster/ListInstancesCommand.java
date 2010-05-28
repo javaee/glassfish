@@ -37,7 +37,6 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.cluster.InstanceInfo;
 import java.util.*;
@@ -73,7 +72,6 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
     String timeoutInMsecString;
 
     private List<InstanceInfo> infos = new LinkedList<InstanceInfo>();
-    final private static LocalStringsImpl strings = new LocalStringsImpl(ListInstancesCommand.class);
 
     @Override
     public void postConstruct() {
@@ -98,7 +96,7 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
 
         // Require that we be a DAS
         if(!helper.isDas()) {
-            String msg = strings.get("list.instances.onlyRunsOnDas");
+            String msg = Strings.get("list.instances.onlyRunsOnDas");
             logger.warning(msg);
             report.setActionExitCode(ExitCode.FAILURE);
             report.setMessage(msg);
@@ -120,11 +118,23 @@ public class ListInstancesCommand implements AdminCommand, PostConstruct {
         }
 
         // report the list
-        // TODO i18n
-        StringBuilder sb = new StringBuilder("*** list-instances ***\n");
+        StringBuilder sb = new StringBuilder();
 
-        for(InstanceInfo info : infos) {
-            sb.append(info).append('\n');
+		if(infos.size() < 1) {
+			sb.append(Strings.get("list.instances.none"));
+		}
+		else {    
+			sb.append(InstanceInfo.getFormattedHeader()).append('\n');
+			boolean first = true;	// no useless extra "\n" at end
+
+			for(InstanceInfo info : infos) {
+				if(first)
+					first = false;
+				else
+					sb.append('\n');
+
+				sb.append(info.toFormattedString());
+			}
         }
 
         report.setActionExitCode(ExitCode.SUCCESS);
