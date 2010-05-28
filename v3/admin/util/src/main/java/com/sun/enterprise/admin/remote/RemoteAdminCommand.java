@@ -446,11 +446,12 @@ public class RemoteAdminCommand {
             for (Header h : requestHeaders)
                 urlConnection.addRequestProperty(h.getName(), h.getValue());
 
-            doConnect(urlConnection);
+            urlConnection.connect();
             if (doUpload) {
                 outboundPayload.writeTo(urlConnection.getOutputStream());
                 outboundPayload = null; // no longer needed
             }
+            checkConnect(urlConnection);
             InputStream in = urlConnection.getInputStream();
 
             String responseContentType = urlConnection.getContentType();
@@ -582,12 +583,11 @@ public class RemoteAdminCommand {
     }
 
     /**
-     * Call HttpURLConnection.connect and handle any error responses,
+     * Check that the connection was successful and handle any error responses,
      * turning them into exceptions.
      */
-    private void doConnect(HttpURLConnection urlConnection)
+    private void checkConnect(HttpURLConnection urlConnection)
                                 throws IOException, CommandException {
-        urlConnection.connect();
         int code = urlConnection.getResponseCode();
         if (code == -1) {
             URL url = urlConnection.getURL();
@@ -737,7 +737,8 @@ public class RemoteAdminCommand {
 
                 //urlConnection.setRequestProperty("Accept: ", "text/xml");
                 urlConnection.setRequestProperty("User-Agent", "metadata");
-                doConnect(urlConnection);
+                urlConnection.connect();
+                checkConnect(urlConnection);
                 InputStream in = urlConnection.getInputStream();
 
                 String responseContentType = urlConnection.getContentType();
