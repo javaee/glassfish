@@ -53,24 +53,7 @@ public class AdminInfraTest extends BaseDevTest {
             host0 = "localhost";
         }
         host = host0;
-        String home = System.getenv("S1AS_HOME");
-
-        if(home == null)
-            throw new IllegalStateException("No S1AS_HOME set!");
-
-        File f = new File(home);
-
-        try {
-            f = f.getCanonicalFile();
-        }
-        catch(Exception e) {
-            f = f.getAbsoluteFile();
-        }
-        glassFishHome = f;
-
-        if(!glassFishHome.isDirectory())
-            throw new IllegalStateException("S1AS_HOME is not poiting at a real directory!");
-
+        glassFishHome = getGlassFishHome();
         // it does NOT need to exist -- do not insist!
         instancesHome = new File( new File(glassFishHome, "nodeagents"), host);
     }

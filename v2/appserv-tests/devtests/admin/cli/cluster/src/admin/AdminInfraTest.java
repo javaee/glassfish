@@ -38,6 +38,9 @@ package admin;
 
 import com.sun.appserv.test.BaseDevTest;
 
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathConstants;
+
 /*
  * Dev test for create/delete/list cluster
  * @author Bhakti Mehta
@@ -47,7 +50,9 @@ public class AdminInfraTest extends BaseDevTest {
     private static final boolean DEBUG = false;
 
     public static void main(String[] args)  {
-        new AdminInfraTest().run();
+        AdminInfraTest test = new AdminInfraTest();
+        test.run();
+        test.cleanup();
     }
 
     @Override
@@ -81,17 +86,33 @@ public class AdminInfraTest extends BaseDevTest {
                 "--systemproperties" ,"foo=bar",
                 "cl4"));
 
+        //evaluate using xpath that there are 3 elements in the domain.xml
+        String xpathExpr = "count"+"("+"/domain/clusters/cluster"+")";
+
+        Object o = evalXPath(xpathExpr, XPathConstants.NUMBER);
+        System.out.println ("No of cluster elements in cluster: "+o);
+        if (o instanceof Double) {
+            report ("evaluation-xpath-create-cluster",o.equals(new Double("3")));
+        } else {
+            report ("evaluation-xpath-create-cluster",false);
+        }
+
         //list-clusters
         report("list-clusters", asadmin("list-clusters"));
 
         report("delete-cluster", asadmin("delete-cluster", "cl1"));
+        
+        stat.printSummary();
 
+    }
+
+    @Override
+    public void cleanup(){
         //Cleanup the code so that tests run successfully next time
         asadmin("delete-cluster", "cl1");
         asadmin("delete-cluster", "cl2") ;
         asadmin("delete-cluster", "cl3")    ;
         asadmin("delete-cluster", "cl4")    ;
 
-        stat.printSummary();
     }
 }

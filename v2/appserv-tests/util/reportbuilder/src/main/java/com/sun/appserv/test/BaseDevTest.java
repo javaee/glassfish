@@ -16,6 +16,15 @@ import java.util.regex.Pattern;
 
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
 
+import javax.xml.xpath.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 public abstract class BaseDevTest {
     public final SimpleReporterAdapter stat;
     public PrintWriter writer;
@@ -95,6 +104,10 @@ public abstract class BaseDevTest {
         return success;
     }
 
+    /**
+     * Checks if the os is windows
+     * @return  true if the os is win
+     */
     public boolean isWindows() {
         String os = System.getProperty("os.name").toLowerCase();
         return (os.indexOf("win") >= 0);
@@ -141,4 +154,120 @@ public abstract class BaseDevTest {
         writer.println(out);
         writer.flush();
     }
+
+    /**
+     * Evaluates the Xpath expression
+     * @param expr  The expression to evaluate
+     * @param f  The file to parse
+     * @param ret  The return type of the expression  can be
+     *
+     * XPathConstants.NODESET
+     * XPathConstants.BOOLEAN
+     * XPathConstants.NUMBER
+     * XPathConstants.STRING
+     * XPathConstants.NODE
+
+     * @return  the object after evaluation can be of type
+     * number maps to a java.lang.Double
+     * string maps to a java.lang.String
+     * boolean maps to a java.lang.Boolean
+     * node-set maps to an org.w3c.dom.NodeList
+
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     */
+    public Object evalXPath(String expr, File f, QName ret)  {
+        try {
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            domFactory.setNamespaceAware(true); // never forget this!
+            DocumentBuilder builder = domFactory.newDocumentBuilder();
+            Document doc = builder.parse(f);
+            if (DEBUG) {
+                System.out.println("Parsing"+ f.getAbsolutePath());
+            }
+            XPathFactory factory = XPathFactory.newInstance();
+            XPath xpath = factory.newXPath();
+            XPathExpression xexpr = xpath.compile(expr);
+            Object result = xexpr.evaluate(doc, ret);
+            System.out.println("Evaluating"+ f.getAbsolutePath());
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        
+
+    }
+
+     /**
+     *  Evaluates the Xpath expression by parsing the DAS's domain.xml
+     * @param expr  The Xpath expression to evaluate
+     * @return the object after evaluation can be of type
+     * number maps to a java.lang.Double
+     * string maps to a java.lang.String
+     * boolean maps to a java.lang.Boolean
+     * node-set maps to an org.w3c.dom.NodeList
+     * @throws XPathExpressionException
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     */
+    public Object evalXPath(String expr,QName ret)  {
+        return evalXPath(expr, getDASDomainXML(),ret);
+
+    }
+
+    /**
+     * Gets the domains folder for DAS
+     * @return GF_HOME/domains/domain1
+     */
+    public File getDASDomainDir(){
+        return new File(new File(getGlassFishHome(),"domains"),"domain1");
+    }
+
+    /**
+     * Gets the domain.xml for DAS
+     * @return GF_HOME/domains/domain1/config/domain.xml
+     */
+    public File getDASDomainXML(){
+        return new File(new File(getDASDomainDir(),"config"),"domain.xml");
+    }
+
+    /**
+     * Get the Glassfish home from the environment variable S1AS_HOME
+     * @return
+     */
+    public File getGlassFishHome() {
+        File glassFishHome;
+        String home = System.getenv("S1AS_HOME");
+
+        if(home == null)
+            throw new IllegalStateException("No S1AS_HOME set!");
+
+        File f = new File(home);
+
+        try {
+            f = f.getCanonicalFile();
+        }
+        catch(Exception e) {
+            f = f.getAbsoluteFile();
+        }
+        glassFishHome = f;
+
+        if(!glassFishHome.isDirectory())
+            throw new IllegalStateException("S1AS_HOME is not poiting at a real directory!");
+        return glassFishHome;
+
+    }
+
+    /**
+     * Implementations can override this method to do the cleanup
+     * for eg deleting instances, deleting clusters etc
+     */
+    public void cleanup() {
+        
+    }
+
 }
