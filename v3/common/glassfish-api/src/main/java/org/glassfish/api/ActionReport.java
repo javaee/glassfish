@@ -40,6 +40,7 @@ import org.jvnet.hk2.annotations.Contract;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -173,5 +174,15 @@ public abstract class ActionReport {
 
     public void setExtraProperties(Properties properties) {
         extraProperties = properties;
+    }
+
+    private Map resultTypes = new ConcurrentHashMap();
+
+    public <T> T getResultType(Class<T> resultType) {
+        return (T) resultTypes.get(resultType);
+    }
+
+    public <T> void setResultType(Class<T> resultType, T resultTypeInstance) {
+        resultTypes.put(resultType, resultTypeInstance);
     }
 }

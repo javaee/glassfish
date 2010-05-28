@@ -208,24 +208,16 @@ public class CommandRunnerImpl implements CommandRunner {
      * @param model model of the command (used for logging and reporting)
      * @param command the command service to execute
      * @param injector injector capable of populating the command parameters
-     * @param report will hold the result of the command's execution
-     * @param inboundPayload files uploaded from the client
-     * @param outboundPayload files downloaded to the client
+     * @param context the AdminCommandcontext that has the payload and report
      */
     private ActionReport doCommand(
             final CommandModel model,
             final AdminCommand command,
             final InjectionResolver<Param> injector,
-            final ActionReport report,
-            final Payload.Inbound inboundPayload,
-            final Payload.Outbound outboundPayload) {
+            final AdminCommandContext context) {
 
+        ActionReport report = context.getActionReport();
         report.setActionDescription(model.getCommandName() + " AdminCommand");
-
-        final AdminCommandContext context = new AdminCommandContext(
-                LogDomains.getLogger(command.getClass(),
-                    LogDomains.ADMIN_LOGGER),
-                report, inboundPayload, outboundPayload);
 
         try {
             GenericCrudCommand c = GenericCrudCommand.class.cast(command);
@@ -800,6 +792,10 @@ public class CommandRunnerImpl implements CommandRunner {
         UploadedFilesManager ufm = null;
         final ActionReport report = inv.report();
         ParameterMap parameters;
+        final AdminCommandContext context = new AdminCommandContext(
+                LogDomains.getLogger(command.getClass(), LogDomains.ADMIN_LOGGER),
+                report, inv.inboundPayload(), inv.outboundPayload());
+
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
         // TODO : Remove this flag once CLIs are compliant with @Cluster requirements
         boolean doReplication = false;
@@ -821,8 +817,7 @@ public class CommandRunnerImpl implements CommandRunner {
                     new DelegatedInjectionResolver(model, inv.typedParams(),
                         ufm.optionNameToFileMap()
                         );
-                doCommand(model, command, injectionTarget, inv.report(),
-                            inv.inboundPayload(), inv.outboundPayload());
+                doCommand(model, command, injectionTarget, context);
                 return;
             }
 
@@ -881,8 +876,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
                         "SupplementalCommandExecutorImpl");
                 ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                            Supplemental.Timing.Before,
-                            new AdminCommandContext(logger, report, inv.inboundPayload(), inv.outboundPayload()));
+                            Supplemental.Timing.Before, context);
                 //TODO : Apply FailurePolicy for the above
                 //Run main command if it is applicable for this instance type
                 org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
@@ -901,17 +895,14 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
                 if( (serverEnv.isDas() && runtimeTypes.contains(RuntimeType.DAS)) ||
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
-                    doCommand(model, command, injectionMgr, report,
-                            inv.inboundPayload(), inv.outboundPayload());
+                    doCommand(model, command, injectionMgr, context);
                 }
                 //Run Supplemental commands that have to be run after this command on this instance type
                 supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                        Supplemental.Timing.After,
-                        new AdminCommandContext(logger, report, inv.inboundPayload(), inv.outboundPayload()));
+                        Supplemental.Timing.After,context);
                 //TODO : Apply FailurePolicy for the above
             } else
-                doCommand(model, command, injectionMgr, report,
-                        inv.inboundPayload(), inv.outboundPayload());
+                doCommand(model, command, injectionMgr, context);
 
         } catch (Exception ex) {
             logger.severe(ex.getMessage());
