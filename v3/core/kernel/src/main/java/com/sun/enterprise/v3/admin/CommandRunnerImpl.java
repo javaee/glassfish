@@ -876,7 +876,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 SupplementalCommandExecutor supplementalExecutor = habitat.getComponent(SupplementalCommandExecutor.class,
                         "SupplementalCommandExecutorImpl");
                 ActionReport.ExitCode supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                            Supplemental.Timing.Before, context);
+                            Supplemental.Timing.Before, context, injectionMgr);
                 //TODO : Apply FailurePolicy for the above
                 //Run main command if it is applicable for this instance type
                 org.glassfish.api.admin.Cluster clAnnotation = model.getClusteringAttributes();
@@ -899,7 +899,7 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
                 //Run Supplemental commands that have to be run after this command on this instance type
                 supplementalReturn = supplementalExecutor.execute(model.getCommandName(),
-                        Supplemental.Timing.After,context);
+                        Supplemental.Timing.After, context, injectionMgr);
                 //TODO : Apply FailurePolicy for the above
             } else
                 doCommand(model, command, injectionMgr, context);

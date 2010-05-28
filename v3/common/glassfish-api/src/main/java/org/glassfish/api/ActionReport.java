@@ -178,10 +178,24 @@ public abstract class ActionReport {
 
     private Map resultTypes = new ConcurrentHashMap();
 
+    /**
+     * Gets a type that was set by the command implementation
+     * @param resultType the type requested
+     * @return <T> the actual instance that was set
+     */
     public <T> T getResultType(Class<T> resultType) {
         return (T) resultTypes.get(resultType);
     }
 
+    /**
+     * Stores the supplies type and its instance. This is a way for the command implementation
+     * to pass information between Supplemental command(s) and the main command. For example, the Supplemental
+     * command for DeployCommand requires information on pay load, generated directories etc. In this case, the
+     * DeployCommand will be expected to set this information in, for example DeployResult, and set it in the
+     * ActionReport. The Supplemental Command will then retrieve the DeployResult for its use. 
+     * @param resultType the type
+     * @param resultTypeInstance the actual instance
+     */
     public <T> void setResultType(Class<T> resultType, T resultTypeInstance) {
         resultTypes.put(resultType, resultTypeInstance);
     }

@@ -36,7 +36,9 @@
  */
 package org.glassfish.api.admin;
 
+import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -47,5 +49,6 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface SupplementalCommandExecutor {
 
-    public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,  AdminCommandContext context);
+    public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,
+                                         AdminCommandContext context, InjectionResolver<Param> injector);
 }

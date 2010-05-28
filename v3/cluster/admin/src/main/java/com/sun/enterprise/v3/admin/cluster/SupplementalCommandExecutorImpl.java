@@ -41,15 +41,16 @@ import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.hk2.component.InjectionResolver;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.common.util.admin.UnacceptableValueException;
+import org.jvnet.hk2.component.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.config.support.GenericCrudCommand;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.MultiMap;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -83,7 +84,8 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
 
     private Map<String, List<SupplementalCommand>> supplementalCommandsMap = null;
 
-    public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time, AdminCommandContext context) {
+    public ActionReport.ExitCode execute(String commandName, Supplemental.Timing time,
+                                         AdminCommandContext context, InjectionResolver<Param> injector) {
         //TODO : Use the executor service to parallelize this
         if(!getSupplementalCommandsList().isEmpty() && getSupplementalCommandsList().containsKey(commandName)) {
             List<SupplementalCommand> cmds = getSupplementalCommandsList().get(commandName);
@@ -92,7 +94,9 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                     (serverEnv.isInstance() && aCmd.whereToRun().contains(RuntimeType.INSTANCE)) ) {
                     if( (time.equals(Supplemental.Timing.Before) && aCmd.toBeExecutedBefore()) ||
                         (time.equals(Supplemental.Timing.After) && aCmd.toBeExecutedAfter()) ) {
-                        aCmd.execute(context);
+                        if(inject(aCmd, injector, context).equals(ActionReport.ExitCode.SUCCESS)) {
+                            aCmd.execute(context);
+                        }
                     }
                 }
             }
@@ -132,6 +136,23 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
             }
         }
         return supplementalCommandsMap;
+    }
+
+    private ActionReport.ExitCode inject(SupplementalCommand cmd,InjectionResolver<Param> injector,
+                                         AdminCommandContext context) {
+
+        ActionReport.ExitCode result = ActionReport.ExitCode.SUCCESS;
+        ActionReport report = context.getActionReport();
+
+        try {
+            new InjectionManager().inject(cmd.command, injector);
+        } catch (Exception e) {
+            result = ActionReport.ExitCode.FAILURE;
+            report.setActionExitCode(result);
+            report.setMessage(e.getMessage());
+            report.setFailureCause(e);
+        }
+        return result;
     }
 
     private class SupplementalCommand {
