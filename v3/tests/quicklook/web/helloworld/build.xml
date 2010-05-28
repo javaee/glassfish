@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -44,9 +44,15 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>   
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
     
-    <target name="all" depends="build,deploy,runtest,undeploy" />        
+    <target name="all" depends="build,deploy,runtest,undeploy,test-upload" />
     <target name="build-deploy" depends="build,deploy" />
-   
+
+    <target name="test-upload">
+        <antcall target="deploy-upload"/>
+        <antcall target="runtest"/>
+        <antcall target="undeploy"/>
+    </target>
+
     <target name="build" depends="compile-tests">
         <antcall target="build-impl"/>
     </target>
@@ -54,7 +60,11 @@
     <target name="deploy">
         <antcall target="deploy-${deploy.platform}-impl"/>
     </target>
-    
+
+    <target name="deploy-upload">
+        <antcall target="deploy-upload-${deploy.platform}-impl"/>
+    </target>
+
     <target  name="runtest"> 
         <antcall target="runtest-impl">
         <param name="contextroot" value="hellojsp"/>

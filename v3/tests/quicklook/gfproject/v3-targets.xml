@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -178,6 +178,30 @@
 <target name="deploy-v3-impl-unix" if="isUnix">
   <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
     <arg value="deploy"/>
+    <arg line="${dist.dir}/${app.file.ext}"/>
+  </exec>
+</target>
+
+<target name="deploy-upload-v3-impl" depends="setOSConditions">
+    <echo message="deploying ${app.file.ext} with --upload"/>
+    <antcall target="deploy-upload-v3-impl-unix"/>
+    <antcall target="deploy-upload-v3-impl-windows"/>
+</target>
+
+<target name="deploy-upload-v3-impl-windows" if="isWindows">
+   <exec executable="cmd" failonerror="true">
+    <arg value="/c"/>
+    <arg value="${glassfish.home}\bin\asadmin.bat"/>
+    <arg value="deploy"/>
+    <arg value="--upload"/>
+    <arg line="${dist.dir}/${app.file.ext}"/>   
+   </exec>  
+</target>
+  
+<target name="deploy-upload-v3-impl-unix" if="isUnix">
+  <exec executable="${glassfish.home}/bin/asadmin" failonerror="false">
+    <arg value="deploy"/>
+    <arg value="--upload"/>
     <arg line="${dist.dir}/${app.file.ext}"/>
   </exec>
 </target>
