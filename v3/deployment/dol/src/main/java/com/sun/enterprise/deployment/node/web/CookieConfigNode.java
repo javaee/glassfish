@@ -110,10 +110,18 @@ public class CookieConfigNode extends DeploymentDescriptorNode {
      */
     public Node writeDescriptor(Node parent, String nodeName, CookieConfigDescriptor descriptor) {       
         Node myNode = appendChild(parent, nodeName);
-        appendTextChild(myNode, WebTagNames.COMMON_NAME, descriptor.getName());         
-        appendTextChild(myNode, WebTagNames.DOMAIN, descriptor.getDomain());         
-        appendTextChild(myNode, WebTagNames.PATH, descriptor.getPath());     
-        appendTextChild(myNode, WebTagNames.COMMENT, descriptor.getComment());     
+        if (descriptor.getName() != null && descriptor.getName().length() > 0) {
+            appendTextChild(myNode, WebTagNames.COMMON_NAME, descriptor.getName());         
+        }
+        if (descriptor.getDomain() != null) {
+            appendTextChild(myNode, WebTagNames.DOMAIN, descriptor.getDomain());         
+        }
+        if (descriptor.getPath() != null) {
+            appendTextChild(myNode, WebTagNames.PATH, descriptor.getPath());     
+        }
+        if (descriptor.getComment() != null) {
+            appendTextChild(myNode, WebTagNames.COMMENT, descriptor.getComment());     
+        }
         appendTextChild(myNode, WebTagNames.HTTP_ONLY, Boolean.toString(descriptor.isHttpOnly()));     
         appendTextChild(myNode, WebTagNames.SECURE, Boolean.toString(descriptor.isSecure()));     
         appendTextChild(myNode, WebTagNames.MAX_AGE, Integer.toString(descriptor.getMaxAge()));     
