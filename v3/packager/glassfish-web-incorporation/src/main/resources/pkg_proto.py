@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+# Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -59,6 +59,8 @@ pkg = {
 			"pkg:/glassfish-grizzly-full@" + conf.grizzly_version : {"type" : "incorporate" },
 			"pkg:/glassfish-scripting@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-common@" + conf.glassfish_version : {"type" : "incorporate" },
+			"pkg:/glassfish-cluster@" + conf.glassfish_version : {"type" : "incorporate" },
+			"pkg:/glassfish-ha@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-javahelp@" + conf.javahelp_version : {"type" : "incorporate" },
 			"pkg:/glassfish-upgrade@" + conf.glassfish_version : {"type" : "incorporate" },
 			"pkg:/glassfish-registration@" + conf.glassfish_version : {"type" : "incorporate" },
