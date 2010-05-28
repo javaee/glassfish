@@ -81,6 +81,16 @@ public class WebService extends Descriptor {
     // is initiated.  URL schemes other than file: are legal but ignored.
     private URL publishUrl;
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /** type JAX-WS or JAX-RPC */
+    private String type;
     /**
      * Default constructor. 
      */
@@ -100,6 +110,7 @@ public class WebService extends Descriptor {
         mappingFile = other.mappingFile;
         publishUrl = other.publishUrl;
         webServicesDesc = other.webServicesDesc; // copy as-is
+        type = other.type;
         if (other.endpoints != null) {
             endpoints = new HashMap<String, WebServiceEndpoint>();
             for (WebServiceEndpoint wsep : other.endpoints.values()) {
@@ -193,6 +204,11 @@ public class WebService extends Descriptor {
         WebServiceEndpoint endpoint = (WebServiceEndpoint)
                 endpoints.remove(endpointName);
         endpoint.setWebService(null);
+    }
+
+    public WebServiceEndpoint getEndpointByName(String name) {
+        return endpoints.get(name);
+
     }
 
     public void removeEndpoint(WebServiceEndpoint endpoint) {

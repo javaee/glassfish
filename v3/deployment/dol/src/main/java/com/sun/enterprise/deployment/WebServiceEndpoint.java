@@ -40,6 +40,7 @@ package com.sun.enterprise.deployment;
  * This class represents information about a web service
  * endpoint.
  *
+ * @author Rama Pulavarthi
  * @author Kenneth Saks
  */
 
@@ -187,6 +188,37 @@ public class WebServiceEndpoint extends Descriptor
     //jbi related properties
     private List props = null;
 
+    /** Should the wsdl be published? */
+    private String wsdlExposed = null;
+
+    public String getWsdlExposed() {
+        return wsdlExposed;
+    }
+
+    public void setWsdlExposed(String wsdlExposed) {
+        this.wsdlExposed = wsdlExposed;
+    }
+
+    /** Validate request messages? */
+    private String validateRequest = null;
+
+    public String getValidateRequest() {
+        return validateRequest;
+    }
+
+    public void setValidateRequest(String validateRequests) {
+        this.validateRequest = validateRequests;
+    }
+
+    /** Is streaming attachments feature enabled? */
+    private String streamAttachments = null;
+    public String getStreamAttachments() {
+        return streamAttachments;
+    }
+
+    public void setStreamAttachments(String streamAttachments) {
+        this.streamAttachments = streamAttachments;
+    }
 
     // copy constructor
     public WebServiceEndpoint(WebServiceEndpoint other) {
@@ -234,6 +266,7 @@ public class WebServiceEndpoint extends Descriptor
         serviceLocalPart = other.serviceLocalPart; // String
         servletImplClass = other.servletImplClass; // String
         tieClassName = other.tieClassName; // String
+        wsdlExposed = other.wsdlExposed;
     }
 
     public WebServiceEndpoint() {

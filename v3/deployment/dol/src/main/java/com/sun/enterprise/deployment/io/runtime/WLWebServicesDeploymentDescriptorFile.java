@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -32,60 +32,52 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
- *
  */
 
-package com.sun.enterprise.deployment.archivist;
+package com.sun.enterprise.deployment.io.runtime;
 
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.WebServicesDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.RootDeploymentDescriptor;
-import com.sun.enterprise.deployment.WebServicesDescriptor;
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.util.XModuleType;
-import com.sun.enterprise.deployment.io.runtime.WLWebServicesDeploymentDescriptorFile;
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.jvnet.hk2.annotations.Service;
+import com.sun.enterprise.deployment.node.RootXMLNode;
+import com.sun.enterprise.deployment.node.ws.WLDescriptorConstants;
+import com.sun.enterprise.deployment.node.ws.WLWebServicesDescriptorNode;
 
-import java.io.IOException;
-import org.xml.sax.SAXParseException;
+import java.util.Vector;
 
 /**
- * Extension Archivist for webservices.
+ * This class is responsible for handling the WebLogic webservices deployment descriptor.
+ * This file weblogic-webservices.xml complements JSR-109 defined webservices.xml
+ * to define extra configuration.
+ *
+ * @author Rama Pulavarthi
  */
-@Service
-public class WebServicesArchivist extends ExtensionsArchivist {
+public class WLWebServicesDeploymentDescriptorFile extends DeploymentDescriptorFile {
+    private String descriptorPath;
 
-    public DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor) {
-        return new WebServicesDeploymentDescriptorFile(descriptor);
-    }
-
-    public DeploymentDescriptorFile getConfigurationDDFile(RootDeploymentDescriptor descriptor) {
-        return new WLWebServicesDeploymentDescriptorFile(descriptor); 
-    }
-
-    public XModuleType getModuleType() {
-        return XModuleType.WebServices;
-    }
-
-    public boolean supportsModuleType(XModuleType moduleType) {
-        return (XModuleType.WAR==moduleType || XModuleType.EJB==moduleType
-                || XModuleType.EjbInWar==moduleType);
+    public WLWebServicesDeploymentDescriptorFile(RootDeploymentDescriptor desc) {
+        descriptorPath = (((WebServicesDescriptor)desc).getBundleDescriptor() instanceof WebBundleDescriptor) ?
+                WLDescriptorConstants.WL_WEB_WEBSERVICES_JAR_ENTRY : WLDescriptorConstants.WL_EJB_WEBSERVICES_JAR_ENTRY;
     }
 
     @Override
-    public Object open(Archivist main, ReadableArchive archive, RootDeploymentDescriptor descriptor) throws IOException, SAXParseException {
-        BundleDescriptor bundleDescriptor =
-            BundleDescriptor.class.cast(super.open(main, archive, descriptor));
+    public String getDeploymentDescriptorPath() {
+        return descriptorPath;
+    }
 
-        if (bundleDescriptor != null) {
-            return bundleDescriptor.getWebServices();
-        } else {
-            return null;
+    public static Vector getAllDescriptorPaths() {
+        Vector allDescPaths = new Vector();
+        allDescPaths.add(WLDescriptorConstants.WL_WEB_WEBSERVICES_JAR_ENTRY);
+        allDescPaths.add(WLDescriptorConstants.WL_EJB_WEBSERVICES_JAR_ENTRY);
+
+        return allDescPaths;
+    }
+
+    @Override
+    public RootXMLNode getRootXMLNode(Descriptor descriptor) {
+        if (descriptor instanceof WebServicesDescriptor) {
+            return new WLWebServicesDescriptorNode((WebServicesDescriptor) descriptor);
         }
+        return null;
     }
 
-    public RootDeploymentDescriptor getDefaultDescriptor() {
-        return new WebServicesDescriptor();
-    }
 }

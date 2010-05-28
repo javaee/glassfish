@@ -46,6 +46,7 @@ import static com.sun.enterprise.deployment.io.DescriptorConstants.PERSISTENCE_D
 import com.sun.enterprise.deployment.io.PersistenceDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.WebServicesDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.*;
+import com.sun.enterprise.deployment.io.runtime.WLWebServicesDeploymentDescriptorFile;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.shared.ArchivistUtils;
@@ -987,6 +988,11 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 out.closeEntry();
             }
         }
+
+        // only bundle descriptor can have web services
+        if (desc instanceof BundleDescriptor) {
+            writeWLWebServicesDescriptors((BundleDescriptor) desc, out);
+        }
     }
 
     /**
@@ -1034,6 +1040,22 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             out.closeEntry();
         }
     }
+
+    /**
+     * Write weblogic web services related descriptors
+     * @param desc the module descriptor
+     * @param out the output archive
+     */
+    private void writeWLWebServicesDescriptors(BundleDescriptor desc, WritableArchive out)
+            throws IOException {
+        if (desc.hasWebServices()) {
+            DeploymentDescriptorFile webServicesDD = new WLWebServicesDeploymentDescriptorFile(desc);
+            OutputStream os = out.putNextEntry(webServicesDD.getDeploymentDescriptorPath());
+            webServicesDD.write(desc.getWebServices(), os);
+            out.closeEntry();
+        }
+    }
+
 
     /**
      * @return the location of the DeploymentDescriptor file for a
