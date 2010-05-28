@@ -62,6 +62,10 @@ own identifying information: Portions Copyright [yyyy]
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-ha"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-javahelp"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>

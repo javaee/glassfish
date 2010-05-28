@@ -69,6 +69,7 @@
 	<module>glassfish-corba-base</module>
 	<module>glassfish-common-tmp</module>
 	<module>glassfish-cluster</module>
+        <module>glassfish-ha</module>
 	<module>glassfish-javahelp</module>
 	<module>glassfish-upgrade</module>
 	<module>glassfish-registration</module>
