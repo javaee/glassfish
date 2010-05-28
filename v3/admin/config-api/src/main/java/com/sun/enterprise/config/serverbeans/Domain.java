@@ -225,6 +225,22 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     void setClusters(Clusters value) throws PropertyVetoException;
 
     /**
+     * Gets the value of the nodes property.
+     *
+     * @return possible object is
+     *         {@link Nodes }
+     */
+    @Element
+    Nodes getNodes();
+
+    /**
+     * Sets the value of the nodes property.
+     *
+     * @param value allowed object is
+     *              {@link Nodes }
+     */
+    void setNodes(Nodes value) throws PropertyVetoException;
+    /**
      * Gets the value of the nodeAgents property.
      *
      * @return possible object is

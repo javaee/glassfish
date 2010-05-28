@@ -160,6 +160,8 @@ public class ServerTags  {
     static public final String RESOURCE_ADAPTER = "resource-adapter";
     static public final String SYNCHRONIZATION = "synchronization";
     //static public final String NODE_AGENT = "node-agent";
+    static public final String NODES ="nodes";
+    
     static public final String SELF_MANAGEMENT = "self-management";
     static public final String GROUP_MANAGEMENT_SERVICE = "group-management-service";
     static public final String MANAGEMENT_EVENT = "management-event";
