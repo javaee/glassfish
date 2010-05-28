@@ -55,7 +55,7 @@ public class AdminInfraTest extends BaseDevTest {
         host = host0;
         glassFishHome = getGlassFishHome();
         // it does NOT need to exist -- do not insist!
-        instancesHome = new File( new File(glassFishHome, "nodeagents"), host);
+        instancesHome = new File(new File(glassFishHome, "nodeagents"), host);
     }
 
     public static void main(String[] args) {
@@ -73,9 +73,33 @@ public class AdminInfraTest extends BaseDevTest {
     }
 
     public void run() {
-        bhakti();
-        byron();
-        stat.printSummary();
+        boolean wasRunning = false;
+        try {
+            startDomain();
+            bhakti();
+            byron();
+            stat.printSummary();
+        }
+        finally {
+            stopDomain();
+        }
+    }
+
+    private void startDomain() {
+        domain1WasRunning = asadmin("start-domain", "domain1");
+
+        if(domain1WasRunning)
+            printf("\n*******  IGNORE THE SCARY ERROR ABOVE !!!!!!\n"
+                    + "domain1 was already running.  It will not be stopped "
+                    + "at the end of the tests.\n******\n");
+        else
+            printf("domain1 was started.");
+
+    }
+
+    private void stopDomain() {
+        if(!domain1WasRunning)
+            asadmin("stop-domain", "domain1");
     }
 
     private void bhakti() {
@@ -112,11 +136,10 @@ public class AdminInfraTest extends BaseDevTest {
         if(DEBUG)
             System.out.printf("**** DEBUG MESSAGE ****  " + fmt + "\n", args);
     }
-
     private final String host;
     private final String I1 = "i1";
     private final File glassFishHome;
     private final File instancesHome;
-
-    private final static boolean DEBUG = false;
+    private boolean domain1WasRunning;
+    private final static boolean DEBUG = true;
 }
